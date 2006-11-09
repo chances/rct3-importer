@@ -44,6 +44,8 @@ void cModel::SetupFileProperties(cMeshStruct* ms, c3DLoader* obj, unsigned int n
             || (obj->GetObjectVertexCount(n) < 3)
             || (!obj->IsObjectValid(n))) {
         ms->valid = false;
+        if (!ms->disabled)
+            error.push_back(wxString::Format(_("Mesh '%s' has been automatically disabled as it is invalid (broken or missing uv-mapping)."), obj->GetObjectName(n).c_str()));
         ms->disabled = true;
     } else {
         ms->valid = true;
