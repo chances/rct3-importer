@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<resource xmlns="http://www.wxwindows.org/wxxrc" version="2.3.0.1">
+    <object class="wxMenu" name="menu_effect">
+      <label>_Effect Points</label>
+      <style>wxMENU_TEAROFF</style>
+      <object class="wxMenu" name="menu_effect_light">
+        <label>_Light</label>
+          <object class="wxMenuItem" name="menu_effect_light_start">
+            <label>_Start</label>
+          </object>
+      </object>
+      <object class="wxMenu" name="menu_effect_particle">
+        <label>_Particle Effect</label>
+          <object class="wxMenuItem" name="menu_effect_particle_start">
+            <label>_Start</label>
+          </object>
+          <object class="wxMenuItem" name="menu_effect_particle_end">
+            <label>_End</label>
+          </object>
+      </object>
+      <object class="wxMenu" name="menu_effect_launcher">
+        <label>L_auncher</label>
+          <object class="wxMenuItem" name="menu_effect_launcher_start">
+            <label>_Start</label>
+          </object>
+          <object class="wxMenuItem" name="menu_effect_launcher_end">
+            <label>_End</label>
+          </object>
+      </object>
+      <object class="wxMenu" name="menu_effect_peep">
+        <label>P_eep</label>
+          <object class="wxMenuItem" name="menu_effect_peep_peep">
+            <label>_Peep</label>
+          </object>
+          <object class="wxMenuItem" name="menu_effect_peep_vendor">
+            <label>_Vendor</label>
+          </object>
+      </object>
+      <object class="wxMenu" name="menu_effect_fountain">
+        <label>Path _Fountain</label>
+          <object class="wxMenuItem" name="menu_effect_fountain_nozbl">
+            <label>nozbl</label>
+          </object>
+          <object class="wxMenuItem" name="menu_effect_fountain_nozbr">
+            <label>nozbr</label>
+          </object>
+          <object class="wxMenuItem" name="menu_effect_fountain_noztl">
+            <label>noztl</label>
+          </object>
+          <object class="wxMenuItem" name="menu_effect_fountain_noztr">
+            <label>noztr</label>
+          </object>
+      </object>
+    </object>
+</resource>

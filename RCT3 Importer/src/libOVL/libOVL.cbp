@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="5" />
+	<Project>
+		<Option title="libOVL" />
+		<Option pch_mode="2" />
+		<Option default_target="" />
+		<Option compiler="gcc" />
+		<Option virtualFolders="" />
+		<Build>
+			<Target title="Release">
+				<Option output="..\..\lib\libOVL.a" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-Os" />
+					<Add option="-O2" />
+					<Add option="-DLIBOVL_STATIC" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+			<Target title="Debug">
+				<Option output="..\..\lib\libOVLd.a" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="" />
+				<Option object_output="..\..\lib\obj" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-pg" />
+					<Add option="-g" />
+					<Add option="-DLIBOVL_STATIC" />
+				</Compiler>
+				<Linker>
+					<Add option="-pg -lgmon" />
+				</Linker>
+			</Target>
+			<Target title="Release DLL">
+				<Option output="..\..\bin\libOVL.dll" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="..\..\bin" />
+				<Option object_output="..\..\lib\obj\release dll" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-Os" />
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+			<Target title="Debug DLL">
+				<Option output="..\..\bin\libOVLd.dll" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="..\..\bin" />
+				<Option object_output="..\..\lib\obj\debug dll" />
+				<Option type="3" />
+				<Option compiler="gcc" />
+				<Option host_application="RCT3 Importer.exe" />
+				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-pg" />
+					<Add option="-g" />
+					<Add option="-D_STLP_DEBUG" />
+				</Compiler>
+				<Linker>
+					<Add option="-pg -lgmon" />
+				</Linker>
+			</Target>
+		</Build>
+		<VirtualTargets>
+			<Add alias="All DLL" targets="Release DLL;Debug DLL;" />
+		</VirtualTargets>
+		<Compiler>
+			<Add option="-DBUILDING_DLL=1" />
+			<Add option="-DLIBOVL_EXPORTS=1" />
+			<Add directory="..\..\include" />
+		</Compiler>
+		<Linker>
+			<Add option="--no-export-all-symbols --add-stdcall-alias" />
+		</Linker>
+		<Unit filename="..\..\include\boneanim.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="..\..\include\boneshape.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="..\..\include\flexitexture.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="..\..\include\guiicon.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="..\..\include\icontexture.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="..\..\include\path.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="..\..\include\scenery.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="..\..\include\sceneryvisual.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="..\..\include\stall.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="..\..\include\staticshape.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="..\..\include\terraintype.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="..\..\include\vertex.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="Common.cpp">
+			<Option compilerVar="CPP" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="Common.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="CommonOVL.cpp">
+			<Option compilerVar="CPP" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="CommonOVL.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="DisplayText.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="OVL.CPP">
+			<Option compilerVar="CPP" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="OVL.H">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="StyleOVL.cpp">
+			<Option compilerVar="CPP" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="StyleOVL.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="attract.cpp">
+			<Option compilerVar="CPP" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="attract.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="guiskin.cpp">
+			<Option compilerVar="CPP" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="guiskin.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="icon.cpp">
+			<Option compilerVar="CPP" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="icon.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="stalls.cpp">
+			<Option compilerVar="CPP" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="stalls.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="textstring.cpp">
+			<Option compilerVar="CPP" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Unit filename="textstring.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+		</Unit>
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>

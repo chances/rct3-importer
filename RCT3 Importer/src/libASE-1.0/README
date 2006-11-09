@@ -1,0 +1,49 @@
+
+======
+libASE
+======
+
+LibASE is a library for parsing and reading information out of ASE files,
+the "ASCII" export format of the 3D Studio  and 3ds Max 3D modelling programs
+(see <http://www.discreet.com>). LibASE was created as part of the Interreality
+project (see <http://www.interreality.org>).
+
+The libASE home page is <http://www.interreality.org/software/libASE/>
+
+Neither libASE, VOS nor the Interreality project as a whole are
+affiliated with or endorsed by Discreet or Autodesk, Inc. 
+"3D Studio" and "3ds Max" are trademarks of Autodesk, Inc.
+
+To build LibASE, first run the configure script:
+    
+    ./configure
+
+To install in some place other than "/usr/local", use the "--prefix" option:
+
+    ./configure --prefix=/opt
+
+The header file, "libASE.h", will be installed in the "include" subdirectory.
+The libraries, libASE.a (static library) and libASE.so (dynamic library on
+Linux) will be installed in the "lib" subdirectory.  use the "--help" option
+for more compile options:
+
+    ./configure --help
+
+
+After configuring, use make to build:
+
+    make
+
+After building, you can use make to install:
+
+    make install
+
+
+For more exhaustive building and installing information, see the file INSTALL.
+
+LibASE is Copyright 2003 Peter Amstutz, and is published under the terms of the
+GNU Lesser General Public License: see the file COPYING for full information.
+
+    
+
+

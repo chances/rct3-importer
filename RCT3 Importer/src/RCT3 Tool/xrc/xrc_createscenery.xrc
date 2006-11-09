@@ -1,0 +1,870 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<resource xmlns="http://www.wxwindows.org/wxxrc" version="2.3.0.1">
+	<object class="wxDialog" name="dlgCreateScenery">
+		<style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
+		<title>Create Scenery</title>
+		<centered>1</centered>
+		<object class="wxBoxSizer">
+			<orient>wxVERTICAL</orient>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxEXPAND|wxTOP</flag>
+				<border>5</border>
+				<object class="wxStaticLine" name="m_staticline1">
+					<style>wxLI_HORIZONTAL</style>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>1</option>
+						<flag>wxEXPAND</flag>
+						<border>5</border>
+						<object class="wxFlexGridSizer">
+							<rows>4</rows>
+							<cols>1</cols>
+							<vgap>0</vgap>
+							<hgap>0</hgap>
+							<growablecols>0</growablecols>
+							<growablerows>0,1,2</growablerows>
+							<object class="sizeritem">
+								<option>1</option>
+								<flag>wxEXPAND|wxTOP|wxLEFT</flag>
+								<border>5</border>
+								<object class="wxStaticBoxSizer">
+									<orient>wxVERTICAL</orient>
+									<label>Textures</label>
+									<object class="sizeritem">
+										<option>1</option>
+										<flag>wxEXPAND</flag>
+										<border>5</border>
+										<object class="wxFlexGridSizer">
+											<rows>1</rows>
+											<cols>2</cols>
+											<vgap>0</vgap>
+											<hgap>0</hgap>
+											<growablecols>0</growablecols>
+											<growablerows>0</growablerows>
+											<object class="sizeritem">
+												<option>1</option>
+												<flag>wxALL|wxEXPAND</flag>
+												<border>5</border>
+												<object class="unknown" name="m_htlbTexture" />
+											</object>
+											<object class="sizeritem">
+												<option>1</option>
+												<flag>wxEXPAND</flag>
+												<border>5</border>
+												<object class="wxFlexGridSizer">
+													<rows>7</rows>
+													<cols>1</cols>
+													<vgap>0</vgap>
+													<hgap>0</hgap>
+													<growablecols></growablecols>
+													<growablerows>0,6</growablerows>
+													<object class="spacer">
+														<size>0,0</size>
+														<option>1</option>
+														<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxALL</flag>
+														<border>5</border>
+														<object class="wxSpinButton" name="m_spinTexture">
+															<size>20,40</size>
+															<enabled>0</enabled>
+															<tooltip>Move texture up/down</tooltip>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btTextureAdd">
+															<size>20,20</size>
+															<tooltip>Add Texture</tooltip>
+															<label>+</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btTextureEdit">
+															<size>20,20</size>
+															<enabled>0</enabled>
+															<tooltip>Edit Texture</tooltip>
+															<label>E</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btTextureCopy">
+															<size>20,20</size>
+															<enabled>0</enabled>
+															<tooltip>Copy Texture</tooltip>
+															<label>C</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btTextureDel">
+															<size>20,20</size>
+															<enabled>0</enabled>
+															<tooltip>Delete Texture</tooltip>
+															<label>-</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="spacer">
+														<size>0,0</size>
+														<option>1</option>
+														<flag>wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxALL</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btTextureClear">
+															<style>wxNO_BORDER</style>
+															<size>20,20</size>
+															<enabled>0</enabled>
+															<tooltip>Delete all textures</tooltip>
+															<label>C</label>
+															<default>0</default>
+														</object>
+													</object>
+												</object>
+											</object>
+										</object>
+									</object>
+								</object>
+							</object>
+							<object class="sizeritem">
+								<option>1</option>
+								<flag>wxEXPAND|wxTOP|wxLEFT</flag>
+								<border>5</border>
+								<object class="wxStaticBoxSizer">
+									<orient>wxVERTICAL</orient>
+									<label>Models</label>
+									<object class="sizeritem">
+										<option>1</option>
+										<flag>wxEXPAND</flag>
+										<border>5</border>
+										<object class="wxFlexGridSizer">
+											<rows>1</rows>
+											<cols>2</cols>
+											<vgap>0</vgap>
+											<hgap>0</hgap>
+											<growablecols>0</growablecols>
+											<growablerows>0</growablerows>
+											<object class="sizeritem">
+												<option>1</option>
+												<flag>wxALL|wxEXPAND</flag>
+												<border>5</border>
+												<object class="unknown" name="m_htlbModel" />
+											</object>
+											<object class="sizeritem">
+												<option>1</option>
+												<flag>wxEXPAND</flag>
+												<border>5</border>
+												<object class="wxFlexGridSizer">
+													<rows>7</rows>
+													<cols>1</cols>
+													<vgap>0</vgap>
+													<hgap>0</hgap>
+													<growablecols></growablecols>
+													<growablerows>0,6</growablerows>
+													<object class="spacer">
+														<size>0,0</size>
+														<option>1</option>
+														<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxALL</flag>
+														<border>5</border>
+														<object class="wxSpinButton" name="m_spinModel">
+															<size>20,40</size>
+															<enabled>0</enabled>
+															<tooltip>Move model up/down</tooltip>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btModelAdd">
+															<size>20,20</size>
+															<tooltip>Add Model</tooltip>
+															<label>+</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btModelEdit">
+															<size>20,20</size>
+															<enabled>0</enabled>
+															<tooltip>Edit Model</tooltip>
+															<label>E</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btModelCopy">
+															<size>20,20</size>
+															<enabled>0</enabled>
+															<tooltip>Copy Model</tooltip>
+															<label>C</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btModelDel">
+															<size>20,20</size>
+															<enabled>0</enabled>
+															<tooltip>Delete Model</tooltip>
+															<label>-</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="spacer">
+														<size>0,0</size>
+														<option>1</option>
+														<flag>wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxALL</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btModelClear">
+															<style>wxNO_BORDER</style>
+															<size>20,20</size>
+															<enabled>0</enabled>
+															<tooltip>Delete all models</tooltip>
+															<label>C</label>
+															<default>0</default>
+														</object>
+													</object>
+												</object>
+											</object>
+										</object>
+									</object>
+								</object>
+							</object>
+							<object class="sizeritem">
+								<option>1</option>
+								<flag>wxEXPAND|wxTOP|wxBOTTOM|wxLEFT</flag>
+								<border>5</border>
+								<object class="wxStaticBoxSizer">
+									<orient>wxVERTICAL</orient>
+									<label>LODs</label>
+									<object class="sizeritem">
+										<option>1</option>
+										<flag>wxEXPAND</flag>
+										<border>5</border>
+										<object class="wxFlexGridSizer">
+											<rows>1</rows>
+											<cols>2</cols>
+											<vgap>0</vgap>
+											<hgap>0</hgap>
+											<growablecols>0</growablecols>
+											<growablerows>0</growablerows>
+											<object class="sizeritem">
+												<option>1</option>
+												<flag>wxALL|wxEXPAND</flag>
+												<border>5</border>
+												<object class="unknown" name="m_htlbLOD" />
+											</object>
+											<object class="sizeritem">
+												<option>1</option>
+												<flag>wxEXPAND</flag>
+												<border>5</border>
+												<object class="wxFlexGridSizer">
+													<rows>7</rows>
+													<cols>1</cols>
+													<vgap>0</vgap>
+													<hgap>0</hgap>
+													<growablecols></growablecols>
+													<growablerows>0,5</growablerows>
+													<object class="spacer">
+														<size>0,0</size>
+														<option>1</option>
+														<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btLODAdd">
+															<size>20,20</size>
+															<enabled>0</enabled>
+															<tooltip>Add Level of Detail</tooltip>
+															<label>+</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btLODEdit">
+															<size>20,20</size>
+															<enabled>0</enabled>
+															<tooltip>Edit Level of Detail</tooltip>
+															<label>E</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btLODCopy">
+															<size>20,20</size>
+															<enabled>0</enabled>
+															<tooltip>Copy Level of Detail</tooltip>
+															<label>C</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btLODDel">
+															<size>20,20</size>
+															<enabled>0</enabled>
+															<tooltip>Delete Level of Detail</tooltip>
+															<label>-</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="spacer">
+														<size>0,0</size>
+														<option>1</option>
+														<flag>wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxALL</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btLODAuto">
+															<style>wxNO_BORDER</style>
+															<size>20,20</size>
+															<enabled>0</enabled>
+															<tooltip>Automatically add the Levels of Detail the old Importer used</tooltip>
+															<label>A</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btLODClear">
+															<style>wxNO_BORDER</style>
+															<size>20,20</size>
+															<enabled>0</enabled>
+															<tooltip>Delete all Levels of Detail</tooltip>
+															<label>C</label>
+															<default>0</default>
+														</object>
+													</object>
+												</object>
+											</object>
+										</object>
+									</object>
+								</object>
+							</object>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>1</option>
+						<flag>wxEXPAND|wxLEFT</flag>
+						<border>5</border>
+						<object class="wxFlexGridSizer">
+							<rows>3</rows>
+							<cols>1</cols>
+							<vgap>0</vgap>
+							<hgap>0</hgap>
+							<growablecols>0</growablecols>
+							<growablerows>2</growablerows>
+							<object class="sizeritem">
+								<option>0</option>
+								<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+								<border>15</border>
+								<object class="wxButton" name="m_btCreate">
+									<style>wxBU_EXACTFIT</style>
+									<size>-1,40</size>
+									<enabled>0</enabled>
+									<tooltip>Create the scenery or texture ovl.</tooltip>
+									<label>Create Scenery OVL</label>
+									<default>0</default>
+								</object>
+							</object>
+							<object class="sizeritem">
+								<option>0</option>
+								<flag>wxTOP|wxRIGHT|wxEXPAND</flag>
+								<border>5</border>
+								<object class="wxStaticBoxSizer">
+									<orient>wxVERTICAL</orient>
+									<label>Visual Options</label>
+									<object class="sizeritem">
+										<option>0</option>
+										<flag>wxEXPAND</flag>
+										<border>5</border>
+										<object class="wxFlexGridSizer">
+											<rows>5</rows>
+											<cols>1</cols>
+											<vgap>0</vgap>
+											<hgap>0</hgap>
+											<growablecols>0</growablecols>
+											<growablerows></growablerows>
+											<object class="sizeritem">
+												<option>0</option>
+												<flag>wxEXPAND</flag>
+												<border>5</border>
+												<object class="wxFlexGridSizer">
+													<rows>1</rows>
+													<cols>2</cols>
+													<vgap>0</vgap>
+													<hgap>0</hgap>
+													<growablecols>1</growablecols>
+													<growablerows></growablerows>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+														<border>5</border>
+														<object class="wxStaticText" name="m_staticText19">
+															<label>Expansion Flag:</label>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>1</option>
+														<flag>wxALL|wxEXPAND</flag>
+														<border>5</border>
+														<object class="wxChoice" name="m_choiceExpansion">
+															<tooltip>Set the expansion flag. No known effect in game.</tooltip>
+															<content>
+																<item>None</item>
+																<item>Soaked!</item>
+																<item>Wild!</item>
+															</content>
+															<selection>0</selection>
+														</object>
+													</object>
+												</object>
+											</object>
+											<object class="sizeritem">
+												<option>0</option>
+												<flag>wxEXPAND</flag>
+												<border>5</border>
+												<object class="wxFlexGridSizer">
+													<rows>3</rows>
+													<cols>3</cols>
+													<vgap>0</vgap>
+													<hgap>0</hgap>
+													<growablecols>2</growablecols>
+													<growablerows></growablerows>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+														<border>5</border>
+														<object class="wxCheckBox" name="m_checkGreenery">
+															<tooltip>This flag is set on trees, shrubs and prehistoric fern. No known effect in game.</tooltip>
+															<label>Greenery</label>
+															<checked>0</checked>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxALIGN_CENTER_VERTICAL|wxALL</flag>
+														<border>5</border>
+														<object class="wxStaticText" name="m_staticText20">
+															<label>Swaying Factor:</label>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>1</option>
+														<flag>wxEXPAND|wxTOP|wxBOTTOM|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_textSway">
+															<size>40,-1</size>
+															<tooltip>Amount of swaying. 0.2 on almost all trees _ shrubs. 0.0 for safari trees.</tooltip>
+															<value>0.0</value>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+														<object class="wxCheckBox" name="m_checkShadow">
+															<tooltip>Deactivate shadows for the object</tooltip>
+															<label>No Shadow</label>
+															<checked>0</checked>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+														<object class="wxStaticText" name="m_staticText21">
+															<label>Brightness Variation:</label>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>1</option>
+														<flag>wxEXPAND|wxBOTTOM|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_textBrightness">
+															<size>40,-1</size>
+															<tooltip>If &lt; 1.0, object brightness varies on placement.</tooltip>
+															<value>1.0</value>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+														<object class="wxCheckBox" name="m_checkRotation">
+															<tooltip>Random object rotation on placement. Set on trees _ shrubs.</tooltip>
+															<label>Vary Rotation</label>
+															<checked>0</checked>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+														<object class="wxStaticText" name="m_staticText22">
+															<label>Scale Variation:</label>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>1</option>
+														<flag>wxEXPAND|wxBOTTOM|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_textScale">
+															<size>40,-1</size>
+															<tooltip>If &gt; 0.0, object size varies on placement.</tooltip>
+															<value>0.0</value>
+														</object>
+													</object>
+												</object>
+											</object>
+											<object class="sizeritem">
+												<option>0</option>
+												<flag>wxALIGN_CENTER_HORIZONTAL</flag>
+												<border>5</border>
+												<object class="wxBoxSizer">
+													<orient>wxHORIZONTAL</orient>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxALL</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btVisualNormal">
+															<tooltip>Set visual options to the normal scenery defaults</tooltip>
+															<label>Normal Scenery</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxALL</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btVisualSwayingTree">
+															<tooltip>Set visual options to the default of swaying trees.</tooltip>
+															<label>Swaying Tree</label>
+															<default>0</default>
+														</object>
+													</object>
+												</object>
+											</object>
+											<object class="sizeritem">
+												<option>0</option>
+												<flag>wxALL|wxALIGN_CENTER_HORIZONTAL</flag>
+												<border>5</border>
+												<object class="wxCheckBox" name="m_checkShowUnknown">
+													<tooltip>Show settings with unknown effect. Better leave them alone.</tooltip>
+													<label>Show Unknown Settings</label>
+													<checked>0</checked>
+												</object>
+											</object>
+											<object class="sizeritem">
+												<option>0</option>
+												<flag>wxEXPAND</flag>
+												<border>5</border>
+												<object class="wxPanel" name="m_panelUnknown">
+													<style>wxTAB_TRAVERSAL</style>
+													<hidden>1</hidden>
+													<object class="wxFlexGridSizer">
+														<rows>8</rows>
+														<cols>2</cols>
+														<vgap>0</vgap>
+														<hgap>0</hgap>
+														<growablecols>0</growablecols>
+														<growablerows></growablerows>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxALL</flag>
+															<border>5</border>
+															<object class="wxStaticText" name="m_staticText23">
+																<label>Set Unknown Flags:</label>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxALL|wxALIGN_CENTER_HORIZONTAL</flag>
+															<border>5</border>
+															<object class="wxCheckBox" name="m_checkUnknown">
+																<label></label>
+																<checked>0</checked>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+															<border>5</border>
+															<object class="wxStaticText" name="m_staticText24">
+																<label>Unknown Factor:</label>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
+															<border>5</border>
+															<object class="wxTextCtrl" name="m_textUnknownFactor">
+																<size>40,-1</size>
+																<value>1.0</value>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+															<border>5</border>
+															<object class="wxStaticText" name="m_staticText25">
+																<label>Unknown 6:</label>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
+															<border>5</border>
+															<object class="wxTextCtrl" name="m_textUnknown6">
+																<size>40,-1</size>
+																<value>0</value>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxRIGHT|wxLEFT</flag>
+															<border>5</border>
+															<object class="wxStaticText" name="m_staticText26">
+																<label>Unknown 7:</label>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
+															<border>5</border>
+															<object class="wxTextCtrl" name="m_textUnknown7">
+																<size>40,-1</size>
+																<value>0</value>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+															<border>5</border>
+															<object class="wxStaticText" name="m_staticText27">
+																<label>Unknown 8:</label>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
+															<border>5</border>
+															<object class="wxTextCtrl" name="m_textUnknown8">
+																<size>40,-1</size>
+																<value>0</value>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxALL</flag>
+															<border>5</border>
+															<object class="wxStaticText" name="m_staticText28">
+																<label>Unknown 9:</label>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
+															<border>5</border>
+															<object class="wxTextCtrl" name="m_textUnknown9">
+																<size>40,-1</size>
+																<value>0</value>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxRIGHT|wxLEFT</flag>
+															<border>5</border>
+															<object class="wxStaticText" name="m_staticText29">
+																<label>Unknown 10:</label>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
+															<border>5</border>
+															<object class="wxTextCtrl" name="m_textUnknown10">
+																<size>40,-1</size>
+																<value>0</value>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+															<border>5</border>
+															<object class="wxStaticText" name="m_staticText30">
+																<label>Unknown 11:</label>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
+															<border>5</border>
+															<object class="wxTextCtrl" name="m_textUnknown11">
+																<size>40,-1</size>
+																<value>0</value>
+															</object>
+														</object>
+													</object>
+												</object>
+											</object>
+										</object>
+									</object>
+								</object>
+							</object>
+							<object class="sizeritem">
+								<option>1</option>
+								<flag>wxEXPAND|wxTOP|wxBOTTOM|wxRIGHT</flag>
+								<border>5</border>
+								<object class="wxStaticBoxSizer">
+									<orient>wxVERTICAL</orient>
+									<label>References</label>
+									<object class="sizeritem">
+										<option>1</option>
+										<flag>wxEXPAND</flag>
+										<border>5</border>
+										<object class="wxFlexGridSizer">
+											<rows>2</rows>
+											<cols>1</cols>
+											<vgap>0</vgap>
+											<hgap>0</hgap>
+											<growablecols>0</growablecols>
+											<growablerows>0</growablerows>
+											<object class="sizeritem">
+												<option>1</option>
+												<flag>wxALL|wxEXPAND</flag>
+												<border>5</border>
+												<object class="unknown" name="m_htlbReferences" />
+											</object>
+											<object class="sizeritem">
+												<option>0</option>
+												<flag>wxEXPAND</flag>
+												<border>5</border>
+												<object class="wxFlexGridSizer">
+													<rows>1</rows>
+													<cols>8</cols>
+													<vgap>0</vgap>
+													<hgap>0</hgap>
+													<growablecols>0</growablecols>
+													<growablerows></growablerows>
+													<object class="sizeritem">
+														<option>1</option>
+														<flag>wxEXPAND|wxBOTTOM|wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_textReference">
+															<tooltip>Reference. Should be relative to where the current ovl ends up.</tooltip>
+															<value></value>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btReferenceAdd">
+															<size>20,20</size>
+															<tooltip>Add Reference</tooltip>
+															<label>+</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btReferenceDel">
+															<size>20,20</size>
+															<enabled>0</enabled>
+															<tooltip>Delete Reference</tooltip>
+															<label>-</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btReferenceClear">
+															<style>wxNO_BORDER</style>
+															<size>20,20</size>
+															<enabled>0</enabled>
+															<tooltip>Delete all references</tooltip>
+															<label>C</label>
+															<default>0</default>
+														</object>
+													</object>
+												</object>
+											</object>
+										</object>
+									</object>
+								</object>
+							</object>
+						</object>
+					</object>
+				</object>
+			</object>
+		</object>
+	</object>
+</resource>

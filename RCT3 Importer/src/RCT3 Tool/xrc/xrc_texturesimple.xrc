@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<resource xmlns="http://www.wxwindows.org/wxxrc" version="2.3.0.1">
+	<object class="wxDialog" name="dlgTextureSimple">
+		<style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
+		<title>Add Texture</title>
+		<centered>1</centered>
+		<object class="wxFlexGridSizer">
+			<rows>10</rows>
+			<cols>1</cols>
+			<vgap>0</vgap>
+			<hgap>0</hgap>
+			<growablecols>0</growablecols>
+			<growablerows>8</growablerows>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALL</flag>
+				<border>5</border>
+				<object class="wxStaticText" name="m_staticText5">
+					<label>Texture Name:</label>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxTextCtrl" name="m_textTextureName">
+					<size>200,-1</size>
+					<tooltip>A descriptive name for the texture.</tooltip>
+					<value></value>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALL</flag>
+				<border>5</border>
+				<object class="wxStaticText" name="m_staticText6">
+					<label>Texture Filename:</label>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>1</option>
+						<flag>wxBOTTOM|wxLEFT</flag>
+						<border>5</border>
+						<object class="wxTextCtrl" name="m_textTextureFile">
+							<tooltip>Filename for the texture.\nThe texture has to be square and the dimensions need to be a power of two.\nCommon sizes are 128x128, 256x256 or 512x512.</tooltip>
+							<value></value>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxBOTTOM</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btTextureInfo">
+							<style>wxBU_EXACTFIT</style>
+							<tooltip>Show some information about the texture.</tooltip>
+							<label>I</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxBOTTOM|wxRIGHT</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btTextureOpen">
+							<style>wxBU_EXACTFIT</style>
+							<tooltip>Select a filename for the texture.\nThe texture has to be square and the dimensions need to be a power of two.\nCommon sizes are 128x128, 256x256 or 512x512.</tooltip>
+							<label>Open</label>
+							<default>0</default>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALL</flag>
+				<border>5</border>
+				<object class="wxStaticText" name="m_staticText8">
+					<label>Alpha Texture Filename:</label>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>1</option>
+						<flag>wxBOTTOM|wxLEFT</flag>
+						<border>5</border>
+						<object class="wxTextCtrl" name="m_textAlphaFile">
+							<tooltip>Filename for the alpha channel of the texture.\nThe alpha has to be square and the dimensions need to be a power of two.\nCommon sizes are 128x128, 256x256 or 512x512.</tooltip>
+							<value></value>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxBOTTOM</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btAlphaInfo">
+							<style>wxBU_EXACTFIT</style>
+							<tooltip>Show some information about the alpha.</tooltip>
+							<label>I</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxBOTTOM|wxRIGHT</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btAlphaOpen">
+							<style>wxBU_EXACTFIT</style>
+							<tooltip>Select a filename for the alpha channel of the texture.\nThe alpha has to be square and the dimensions need to be a power of two.\nCommon sizes are 128x128, 256x256 or 512x512.</tooltip>
+							<label>Open</label>
+							<default>0</default>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALL</flag>
+				<border>5</border>
+				<object class="wxStaticText" name="m_staticText9">
+					<label>Object Colors Player Can Change</label>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxChoice" name="m_choiceColors">
+					<tooltip>Select how many colours the player can customize.</tooltip>
+					<content>
+						<item>No Colors</item>
+						<item>One Color</item>
+						<item>Two Colors</item>
+						<item>Three Colors</item>
+					</content>
+					<selection>0</selection>
+				</object>
+			</object>
+			<object class="spacer">
+				<size>0,0</size>
+				<option>1</option>
+				<flag></flag>
+				<border>5</border>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btAdvanced">
+							<style>wxBU_EXACTFIT|wxNO_BORDER</style>
+							<tooltip>Switch to advanced intreface.</tooltip>
+							<label>Advanced</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="spacer">
+						<size>0,0</size>
+						<option>1</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btOk">
+							<label>Ok</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btCancel">
+							<label>Cancel</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="spacer">
+						<size>0,0</size>
+						<option>1</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+					</object>
+				</object>
+			</object>
+		</object>
+	</object>
+</resource>

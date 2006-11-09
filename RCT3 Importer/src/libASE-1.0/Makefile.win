@@ -1,0 +1,37 @@
+# Project: libASE
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe
+CC   = gcc.exe
+WINDRES = windres.exe
+RES  = 
+OBJ  = loader.o ASElexer.o $(RES)
+LINKOBJ  = loader.o ASElexer.o $(RES)
+LIBS =  -L"C:/Dev-Cpp/lib" --no-export-all-symbols --add-stdcall-alias --output-def liblibASE.def --driver-name c++  
+INCS =  -I"C:/Dev-Cpp/include" 
+CXXINCS =  -I"C:/Dev-Cpp/lib/gcc/mingw32/3.4.2/include"  -I"C:/Dev-Cpp/include/c++/3.4.2/backward"  -I"C:/Dev-Cpp/include/c++/3.4.2/mingw32"  -I"C:/Dev-Cpp/include/c++/3.4.2"  -I"C:/Dev-Cpp/include" 
+BIN  = libASE.dll
+CXXFLAGS = $(CXXINCS) -DBUILDING_DLL=1 -DLIBASE_EXPORTS=1 -D_WIN32=1 -D_MSC_VER=1  
+CFLAGS = $(INCS) -DBUILDING_DLL=1 -DLIBASE_EXPORTS=1 -D_WIN32=1 -D_MSC_VER=1  
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before libASE.dll all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+DLLWRAP=dllwrap.exe
+DEFFILE=liblibASE.def
+STATICLIB=liblibASE.a
+
+$(BIN): $(LINKOBJ)
+	$(DLLWRAP) --output-def $(DEFFILE) --driver-name c++ --implib $(STATICLIB) $(LINKOBJ) $(LIBS) -o $(BIN)
+
+loader.o: loader.c
+	$(CPP) -c loader.c -o loader.o $(CXXFLAGS)
+
+ASElexer.o: ASElexer.c
+	$(CPP) -c ASElexer.c -o ASElexer.o $(CXXFLAGS)

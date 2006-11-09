@@ -1,0 +1,591 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<resource xmlns="http://www.wxwindows.org/wxxrc" version="2.3.0.1">
+	<object class="wxDialog" name="dlgTexture">
+		<style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
+		<title>Edit Texture</title>
+		<centered>1</centered>
+		<object class="wxFlexGridSizer">
+			<rows>4</rows>
+			<cols>1</cols>
+			<vgap>0</vgap>
+			<hgap>0</hgap>
+			<growablecols>0</growablecols>
+			<growablerows>2</growablerows>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText5">
+							<label>Texture Name:</label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>1</option>
+						<flag>wxEXPAND|wxALL</flag>
+						<border>5</border>
+						<object class="wxTextCtrl" name="m_textTextureName">
+							<size>200,-1</size>
+							<tooltip>A descriptive name for the texture.</tooltip>
+							<value></value>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
+						<border>5</border>
+						<object class="wxToggleButton" name="m_togglePreview">
+							<size>60,-1</size>
+							<tooltip>Toggle Preview</tooltip>
+							<label>Preview</label>
+							<checked>0</checked>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxEXPAND|wxBOTTOM|wxRIGHT|wxLEFT</flag>
+						<border>5</border>
+						<object class="wxStaticLine" name="m_staticline11">
+							<style>wxLI_VERTICAL</style>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText9">
+							<label>Object Colours Player Can Change:</label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxBOTTOM|wxRIGHT|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxCheckBox" name="m_checkCustom1">
+							<tooltip>Activate first colour choice.</tooltip>
+							<label>First</label>
+							<checked>0</checked>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxBOTTOM|wxRIGHT|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxCheckBox" name="m_checkCustom2">
+							<tooltip>Activate second colour choice.</tooltip>
+							<label>Second</label>
+							<checked>0</checked>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxBOTTOM|wxRIGHT|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxCheckBox" name="m_checkCustom3">
+							<tooltip>Activate third colour choice.</tooltip>
+							<label>Third</label>
+							<checked>0</checked>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxEXPAND|wxBOTTOM|wxRIGHT|wxLEFT</flag>
+						<border>5</border>
+						<object class="wxStaticLine" name="m_staticline1">
+							<style>wxLI_VERTICAL</style>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText6">
+							<label>Animation Framerate:</label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>1</option>
+						<flag>wxBOTTOM|wxRIGHT|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxTextCtrl" name="m_textFramerate">
+							<enabled>0</enabled>
+							<tooltip>Framerate for texture animation. Rougly in frames per second.</tooltip>
+							<value></value>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>1</option>
+						<flag>wxEXPAND|wxTOP|wxLEFT</flag>
+						<border>5</border>
+						<object class="wxPanel" name="m_panelPreview">
+							<style>wxTAB_TRAVERSAL</style>
+							<hidden>1</hidden>
+							<object class="wxBoxSizer">
+								<orient>wxVERTICAL</orient>
+								<object class="sizeritem">
+									<option>1</option>
+									<flag>wxALIGN_CENTER|wxALL|wxEXPAND|wxSHAPED</flag>
+									<border>5</border>
+									<object class="unknown" name="m_ilpictPreview" />
+								</object>
+							</object>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>1</option>
+						<flag>wxEXPAND|wxLEFT</flag>
+						<border>5</border>
+						<object class="wxStaticBoxSizer">
+							<orient>wxHORIZONTAL</orient>
+							<label>Texture Frames</label>
+							<object class="sizeritem">
+								<option>1</option>
+								<flag>wxALL|wxEXPAND</flag>
+								<border>5</border>
+								<object class="unknown" name="m_htlbFrame" />
+							</object>
+							<object class="sizeritem">
+								<option>0</option>
+								<flag>wxEXPAND</flag>
+								<border>5</border>
+								<object class="wxFlexGridSizer">
+									<rows>8</rows>
+									<cols>1</cols>
+									<vgap>0</vgap>
+									<hgap>0</hgap>
+									<growablecols></growablecols>
+									<growablerows>0,6</growablerows>
+									<object class="spacer">
+										<size>0,0</size>
+										<option>1</option>
+										<flag>wxBOTTOM|wxRIGHT</flag>
+										<border>5</border>
+									</object>
+									<object class="sizeritem">
+										<option>0</option>
+										<flag>wxTOP|wxBOTTOM|wxRIGHT</flag>
+										<border>5</border>
+										<object class="wxSpinButton" name="m_spinFrame">
+											<size>20,40</size>
+											<enabled>0</enabled>
+											<tooltip>Move texture frame up/down.</tooltip>
+										</object>
+									</object>
+									<object class="sizeritem">
+										<option>0</option>
+										<flag>wxTOP|wxRIGHT</flag>
+										<border>5</border>
+										<object class="wxButton" name="m_btFrameAdd">
+											<size>20,20</size>
+											<tooltip>Add texture frame.</tooltip>
+											<label>+</label>
+											<default>0</default>
+										</object>
+									</object>
+									<object class="sizeritem">
+										<option>0</option>
+										<flag>wxRIGHT</flag>
+										<border>5</border>
+										<object class="wxButton" name="m_btFrameEdit">
+											<size>20,20</size>
+											<enabled>0</enabled>
+											<tooltip>Edit texture frame.</tooltip>
+											<label>E</label>
+											<default>0</default>
+										</object>
+									</object>
+									<object class="sizeritem">
+										<option>0</option>
+										<flag>wxRIGHT</flag>
+										<border>5</border>
+										<object class="wxButton" name="m_btFrameCopy">
+											<size>20,20</size>
+											<enabled>0</enabled>
+											<tooltip>Copy texture frame.</tooltip>
+											<label>C</label>
+											<default>0</default>
+										</object>
+									</object>
+									<object class="sizeritem">
+										<option>0</option>
+										<flag>wxBOTTOM|wxRIGHT</flag>
+										<border>5</border>
+										<object class="wxButton" name="m_btFrameDel">
+											<size>20,20</size>
+											<enabled>0</enabled>
+											<tooltip>Delete texture frame.\nThis will also delete all refernces to this frame in the animation sequence.</tooltip>
+											<label>-</label>
+											<default>0</default>
+										</object>
+									</object>
+									<object class="spacer">
+										<size>0,0</size>
+										<option>1</option>
+										<flag>wxRIGHT</flag>
+										<border>5</border>
+									</object>
+									<object class="sizeritem">
+										<option>0</option>
+										<flag>wxTOP|wxBOTTOM|wxRIGHT</flag>
+										<border>5</border>
+										<object class="wxButton" name="m_btFrameClear">
+											<style>wxNO_BORDER</style>
+											<size>20,20</size>
+											<enabled>0</enabled>
+											<tooltip>Delete all texture frames.</tooltip>
+											<label>C</label>
+											<default>0</default>
+										</object>
+									</object>
+								</object>
+							</object>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>1</option>
+						<flag>wxEXPAND|wxRIGHT|wxLEFT</flag>
+						<border>5</border>
+						<object class="wxStaticBoxSizer">
+							<orient>wxHORIZONTAL</orient>
+							<label>Animation Sequence</label>
+							<object class="sizeritem">
+								<option>1</option>
+								<flag>wxALL|wxEXPAND</flag>
+								<border>5</border>
+								<object class="unknown" name="m_htlbAnimation" />
+							</object>
+							<object class="sizeritem">
+								<option>0</option>
+								<flag>wxEXPAND</flag>
+								<border>5</border>
+								<object class="wxFlexGridSizer">
+									<rows>7</rows>
+									<cols>1</cols>
+									<vgap>0</vgap>
+									<hgap>0</hgap>
+									<growablecols></growablecols>
+									<growablerows>0,5</growablerows>
+									<object class="spacer">
+										<size>0,0</size>
+										<option>1</option>
+										<flag>wxBOTTOM|wxRIGHT</flag>
+										<border>5</border>
+									</object>
+									<object class="sizeritem">
+										<option>0</option>
+										<flag>wxTOP|wxBOTTOM|wxRIGHT</flag>
+										<border>5</border>
+										<object class="wxSpinButton" name="m_spinAnimation">
+											<size>20,40</size>
+											<enabled>0</enabled>
+											<tooltip>Move selected frame up/down in the animation sequence.</tooltip>
+										</object>
+									</object>
+									<object class="sizeritem">
+										<option>0</option>
+										<flag>wxTOP|wxRIGHT</flag>
+										<border>5</border>
+										<object class="wxButton" name="m_btAnimationAdd">
+											<size>20,20</size>
+											<enabled>0</enabled>
+											<tooltip>Add the frame selected on the left after the currently selected position in the animation sequence.</tooltip>
+											<label>+</label>
+											<default>0</default>
+										</object>
+									</object>
+									<object class="sizeritem">
+										<option>0</option>
+										<flag>wxRIGHT</flag>
+										<border>5</border>
+										<object class="wxButton" name="m_btAnimationCopy">
+											<size>20,20</size>
+											<enabled>0</enabled>
+											<tooltip>Duplicate the currently selected frame in the animation sequence.</tooltip>
+											<label>C</label>
+											<default>0</default>
+										</object>
+									</object>
+									<object class="sizeritem">
+										<option>0</option>
+										<flag>wxBOTTOM|wxRIGHT</flag>
+										<border>5</border>
+										<object class="wxButton" name="m_btAnimationDel">
+											<size>20,20</size>
+											<enabled>0</enabled>
+											<tooltip>Remove the currently selected frame in the animation sequence</tooltip>
+											<label>-</label>
+											<default>0</default>
+										</object>
+									</object>
+									<object class="spacer">
+										<size>0,0</size>
+										<option>1</option>
+										<flag>wxRIGHT</flag>
+										<border>5</border>
+									</object>
+									<object class="sizeritem">
+										<option>0</option>
+										<flag>wxTOP|wxRIGHT</flag>
+										<border>5</border>
+										<object class="wxToggleButton" name="m_toggleAnimationFreeze">
+											<size>20,20</size>
+											<enabled>0</enabled>
+											<tooltip>Freeze the animation sequence.\nAs long as the list is frozen, changes in the texture frame list will not affect the sequence.\nAs soon as you unfreeze the list, all sequence entries that refer to positions after the last texture frame will be deleted.\nYou need to unfreeze the sequence before you can press &apos;Ok&apos;.</tooltip>
+											<label>F</label>
+											<checked>0</checked>
+										</object>
+									</object>
+									<object class="sizeritem">
+										<option>0</option>
+										<flag>wxTOP|wxBOTTOM|wxRIGHT</flag>
+										<border>5</border>
+										<object class="wxButton" name="m_btAnimationClear">
+											<style>wxNO_BORDER</style>
+											<size>20,20</size>
+											<enabled>0</enabled>
+											<tooltip>Clear animation sequence.</tooltip>
+											<label>C</label>
+											<default>0</default>
+										</object>
+									</object>
+								</object>
+							</object>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btLoad">
+							<style>wxBU_EXACTFIT|wxNO_BORDER</style>
+							<tooltip>Load settings from an other scenery file.</tooltip>
+							<label>Load</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="spacer">
+						<size>0,0</size>
+						<option>1</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btOk">
+							<label>Ok</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btCancel">
+							<label>Cancel</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="spacer">
+						<size>0,0</size>
+						<option>1</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+					</object>
+				</object>
+			</object>
+		</object>
+	</object>
+	<object class="wxDialog" name="dlgTextureFrame">
+		<style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
+		<title>Edit Texture Frame</title>
+		<centered>1</centered>
+		<object class="wxFlexGridSizer">
+			<rows>6</rows>
+			<cols>1</cols>
+			<vgap>0</vgap>
+			<hgap>0</hgap>
+			<growablecols>0</growablecols>
+			<growablerows>4</growablerows>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALL</flag>
+				<border>5</border>
+				<object class="wxStaticText" name="m_staticText6">
+					<label>Texture Filename:</label>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>1</option>
+						<flag>wxBOTTOM|wxLEFT</flag>
+						<border>5</border>
+						<object class="wxTextCtrl" name="m_textTextureFile">
+							<tooltip>Filename for the texture.\nThe texture has to be square and the dimensions need to be a power of two.\nCommon sizes are 128x128, 256x256 or 512x512.</tooltip>
+							<value></value>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxBOTTOM</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btTextureInfo">
+							<style>wxBU_EXACTFIT</style>
+							<tooltip>Show some information about the texture.</tooltip>
+							<label>I</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxBOTTOM|wxRIGHT</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btTextureOpen">
+							<style>wxBU_EXACTFIT</style>
+							<tooltip>Select a filename for the texture.\nThe texture has to be square and the dimensions need to be a power of two.\nCommon sizes are 128x128, 256x256 or 512x512.</tooltip>
+							<label>Open</label>
+							<default>0</default>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALL</flag>
+				<border>5</border>
+				<object class="wxStaticText" name="m_staticText8">
+					<label>Alpha Texture Filename:</label>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>1</option>
+						<flag>wxBOTTOM|wxLEFT</flag>
+						<border>5</border>
+						<object class="wxTextCtrl" name="m_textAlphaFile">
+							<tooltip>Filename for the alpha channel of the texture.\nThe alpha has to be square and the dimensions need to be a power of two.\nCommon sizes are 128x128, 256x256 or 512x512.</tooltip>
+							<value></value>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxBOTTOM</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btAlphaInfo">
+							<style>wxBU_EXACTFIT</style>
+							<tooltip>Show some information about the alpha.</tooltip>
+							<label>I</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxBOTTOM|wxRIGHT</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btAlphaOpen">
+							<style>wxBU_EXACTFIT</style>
+							<tooltip>Select a filename for the alpha channel of the texture.\nThe alpha has to be square and the dimensions need to be a power of two.\nCommon sizes are 128x128, 256x256 or 512x512.</tooltip>
+							<label>Open</label>
+							<default>0</default>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="spacer">
+				<size>0,0</size>
+				<option>1</option>
+				<flag></flag>
+				<border>5</border>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btLoad">
+							<style>wxBU_EXACTFIT|wxNO_BORDER</style>
+							<tooltip>Load settings from an other scenery file.</tooltip>
+							<label>Load</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="spacer">
+						<size>0,0</size>
+						<option>1</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btOk">
+							<label>Ok</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btCancel">
+							<label>Cancel</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="spacer">
+						<size>0,0</size>
+						<option>1</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+					</object>
+				</object>
+			</object>
+		</object>
+	</object>
+</resource>

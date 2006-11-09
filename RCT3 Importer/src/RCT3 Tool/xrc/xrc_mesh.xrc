@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<resource xmlns="http://www.wxwindows.org/wxxrc" version="2.3.0.1">
+	<object class="wxDialog" name="dlgMesh">
+		<style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
+		<title>Mesh Flags</title>
+		<centered>1</centered>
+		<object class="wxFlexGridSizer">
+			<rows>14</rows>
+			<cols>1</cols>
+			<vgap>0</vgap>
+			<hgap>0</hgap>
+			<growablecols>0</growablecols>
+			<growablerows>11</growablerows>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALL</flag>
+				<border>5</border>
+				<object class="wxCheckBox" name="m_checkDontImport">
+					<label>Don&apos;t Import Mesh</label>
+					<checked>0</checked>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALL</flag>
+				<border>5</border>
+				<object class="wxStaticText" name="m_staticText5">
+					<label>Texture Name</label>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxComboBox" name="m_cbTextureName">
+					<value></value>
+					<content />
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALL</flag>
+				<border>5</border>
+				<object class="wxStaticText" name="m_staticText6">
+					<label>Texture Style</label>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxChoice" name="m_choiceTextureStyle">
+					<content>
+						<item>SIOpaque</item>
+						<item>SIOpaqueDS</item>
+						<item>SIAlpha</item>
+						<item>SIAlphaDS</item>
+						<item>SIAlphaMask</item>
+						<item>SIAlphaMaskDS</item>
+						<item>SIAlphaMaskLow</item>
+						<item>SIEmissiveMask</item>
+						<item>SIGlass</item>
+						<item>SIWater</item>
+						<item>SIOpaqueCaustics</item>
+						<item>SIOpaqueCausticsGlossSpecular100</item>
+						<item>SIOpaqueCausticsReflection</item>
+						<item>SIOpaqueCausticsSpecular50</item>
+						<item>SIOpaqueCausticsSpecular100</item>
+						<item>SIOpaqueChrome</item>
+						<item>SIOpaqueChromeModulate</item>
+						<item>SIOpaqueGlossReflection</item>
+						<item>SIOpaqueGlossSpecular50</item>
+						<item>SIOpaqueGlossSpecular100</item>
+						<item>SIOpaqueReflection</item>
+						<item>SIOpaqueSpecular50</item>
+						<item>SIOpaqueSpecular50Reflection</item>
+						<item>SIOpaqueSpecular100</item>
+						<item>SIOpaqueSpecular100Reflection</item>
+						<item>SIOpaqueText</item>
+						<item>SIOpaqueUnlit</item>
+						<item>SIAlphaChrome</item>
+						<item>SIAlphaReflection</item>
+						<item>SIAlphaSpecular50</item>
+						<item>SIAlphaSpecular50Reflection</item>
+						<item>SIAlphaSpecular100</item>
+						<item>SIAlphaSpecular100Reflection</item>
+						<item>SIAlphaText</item>
+						<item>SIAlphaUnlit</item>
+						<item>SIAlphaMaskCaustics</item>
+						<item>SIAlphaMaskChrome</item>
+						<item>SIAlphaMaskReflection</item>
+						<item>SIAlphaMaskSpecular50</item>
+						<item>SIAlphaMaskSpecular50Reflection</item>
+						<item>SIAlphaMaskSpecular100</item>
+						<item>SIAlphaMaskSpecular100Reflection</item>
+						<item>SIAlphaMaskUnlit</item>
+						<item>SIAlphaMaskLowCaustics</item>
+						<item>SIAlphaMaskLowSpecular50</item>
+						<item>SIAlphaMaskLowSpecular50Reflection</item>
+						<item>SIAlphaMaskLowSpecular100</item>
+						<item>SIAlphaMaskLowSpecular100Reflection</item>
+						<item>SIAlphaMaskUnlitLow</item>
+						<item>SIEmissiveMaskReflection</item>
+						<item>SIEmissiveMaskSpecular50</item>
+						<item>SIEmissiveMaskSpecular50Reflection</item>
+						<item>SIEmissiveMaskSpecular100</item>
+						<item>SIEmissiveMaskSpecular100Reflection</item>
+						<item>SIFillZ</item>
+					</content>
+					<selection>0</selection>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALL</flag>
+				<border>5</border>
+				<object class="wxStaticText" name="m_staticText7">
+					<label>Show Texture When Placing</label>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND|wxBOTTOM|wxRIGHT|wxLEFT</flag>
+				<border>5</border>
+				<object class="wxChoice" name="m_choiceShowTexture">
+					<content>
+						<item>Show Texture And Mesh When Placing</item>
+						<item>Show Only Texture When Placing</item>
+						<item>Unknown</item>
+					</content>
+					<selection>0</selection>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALL</flag>
+				<border>5</border>
+				<object class="wxStaticText" name="m_staticText8">
+					<label>Texture Flags</label>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxChoice" name="m_choiceTextureFlags">
+					<content>
+						<item>None</item>
+						<item>Scrolling Sign</item>
+						<item>Terrain Texture</item>
+						<item>Cliffs Texture</item>
+						<item>Water Texture</item>
+						<item>Water Mask Texture</item>
+						<item>Billboard Texture</item>
+					</content>
+					<selection>0</selection>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALL</flag>
+				<border>5</border>
+				<object class="wxStaticText" name="m_staticText9">
+					<label>Unknown</label>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND|wxBOTTOM|wxRIGHT|wxLEFT</flag>
+				<border>5</border>
+				<object class="wxChoice" name="m_choiceUnknown">
+					<content>
+						<item>Unknown 1</item>
+						<item>Unknown 2</item>
+					</content>
+					<selection>1</selection>
+				</object>
+			</object>
+			<object class="spacer">
+				<size>0,0</size>
+				<option>1</option>
+				<flag>wxALL</flag>
+				<border>0</border>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+				<border>5</border>
+				<object class="wxCheckBox" name="m_checkApplyAll">
+					<label>Apply To All Meshes</label>
+					<checked>0</checked>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btLoad">
+							<style>wxBU_EXACTFIT|wxNO_BORDER</style>
+							<label>Load</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="spacer">
+						<size>0,0</size>
+						<option>1</option>
+						<flag>wxALL</flag>
+						<border>0</border>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btOk">
+							<label>Ok</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btCancel">
+							<label>Cancel</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="spacer">
+						<size>0,0</size>
+						<option>1</option>
+						<flag>wxALL</flag>
+						<border>0</border>
+					</object>
+				</object>
+			</object>
+		</object>
+	</object>
+</resource>

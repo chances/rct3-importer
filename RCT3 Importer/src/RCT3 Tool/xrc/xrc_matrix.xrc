@@ -1,0 +1,764 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<resource xmlns="http://www.wxwindows.org/wxxrc" version="2.3.0.1">
+	<object class="wxDialog" name="dlgMatrix">
+		<style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
+		<title>Matrix Editor</title>
+		<centered>1</centered>
+		<object class="wxFlexGridSizer">
+			<rows>14</rows>
+			<cols>1</cols>
+			<vgap>0</vgap>
+			<hgap>0</hgap>
+			<growablecols>0</growablecols>
+			<growablerows>0</growablerows>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxFlexGridSizer">
+					<rows>1</rows>
+					<cols>2</cols>
+					<vgap>0</vgap>
+					<hgap>0</hgap>
+					<growablecols>0</growablecols>
+					<growablerows>0</growablerows>
+					<object class="sizeritem">
+						<option>1</option>
+						<flag>wxEXPAND</flag>
+						<border>5</border>
+						<object class="wxFlexGridSizer">
+							<rows>2</rows>
+							<cols>1</cols>
+							<vgap>0</vgap>
+							<hgap>0</hgap>
+							<growablecols>0</growablecols>
+							<growablerows>0</growablerows>
+							<object class="sizeritem">
+								<option>1</option>
+								<flag>wxEXPAND|wxRIGHT</flag>
+								<border>5</border>
+								<object class="wxStaticBoxSizer">
+									<orient>wxHORIZONTAL</orient>
+									<label>Transformation List</label>
+									<object class="sizeritem">
+										<option>1</option>
+										<flag>wxEXPAND</flag>
+										<border>5</border>
+										<object class="wxFlexGridSizer">
+											<rows>1</rows>
+											<cols>2</cols>
+											<vgap>0</vgap>
+											<hgap>0</hgap>
+											<growablecols>0</growablecols>
+											<growablerows>0</growablerows>
+											<object class="sizeritem">
+												<option>1</option>
+												<flag>wxALL|wxEXPAND</flag>
+												<border>5</border>
+												<object class="unknown" name="m_htlbMatrix" />
+											</object>
+											<object class="sizeritem">
+												<option>1</option>
+												<flag>wxEXPAND</flag>
+												<border>5</border>
+												<object class="wxBoxSizer">
+													<orient>wxVERTICAL</orient>
+													<object class="spacer">
+														<size>0,0</size>
+														<option>1</option>
+														<flag></flag>
+														<border>5</border>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxTOP|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxSpinButton" name="m_spinMatrix">
+															<size>20,40</size>
+															<tooltip>Click: Move selected matrix up/down.\nShift-Click: Merge matrix up/down</tooltip>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxTOP|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btMatrixCopy">
+															<style>wxBU_EXACTFIT</style>
+															<size>20,20</size>
+															<tooltip>Copy selected matrix</tooltip>
+															<label>C</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btMatrixInvert">
+															<style>wxBU_EXACTFIT</style>
+															<size>20,20</size>
+															<tooltip>Invert selected matrix. This makes the matrix undo what the original did</tooltip>
+															<label>I</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btMatrixDel">
+															<style>wxBU_EXACTFIT</style>
+															<size>20,20</size>
+															<tooltip>Delete selected matrix</tooltip>
+															<label>-</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="spacer">
+														<size>0,0</size>
+														<option>1</option>
+														<flag></flag>
+														<border>5</border>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxTOP|wxBOTTOM|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btMatrixClearAll">
+															<style>wxBU_EXACTFIT|wxNO_BORDER</style>
+															<size>20,20</size>
+															<tooltip>Delete all matrices</tooltip>
+															<label>C</label>
+															<default>0</default>
+														</object>
+													</object>
+												</object>
+											</object>
+										</object>
+									</object>
+								</object>
+							</object>
+							<object class="sizeritem">
+								<option>1</option>
+								<flag>wxEXPAND|wxTOP|wxRIGHT</flag>
+								<border>5</border>
+								<object class="wxStaticBoxSizer">
+									<orient>wxVERTICAL</orient>
+									<label>Edit Transformation Matrix</label>
+									<object class="sizeritem">
+										<option>1</option>
+										<flag>wxEXPAND</flag>
+										<border>5</border>
+										<object class="wxFlexGridSizer">
+											<rows>2</rows>
+											<cols>1</cols>
+											<vgap>0</vgap>
+											<hgap>0</hgap>
+											<growablecols>0</growablecols>
+											<growablerows></growablerows>
+											<object class="sizeritem">
+												<option>0</option>
+												<flag>wxEXPAND|wxTOP|wxRIGHT|wxLEFT</flag>
+												<border>5</border>
+												<object class="wxTextCtrl" name="m_textMatrixName">
+													<tooltip>Edit matrix name</tooltip>
+													<value></value>
+												</object>
+											</object>
+											<object class="sizeritem">
+												<option>1</option>
+												<flag>wxEXPAND</flag>
+												<border>5</border>
+												<object class="wxFlexGridSizer">
+													<rows>4</rows>
+													<cols>4</cols>
+													<vgap>0</vgap>
+													<hgap>0</hgap>
+													<growablecols>0,1,2,3</growablecols>
+													<growablerows></growablerows>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxEXPAND|wxTOP|wxLEFT</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_text11">
+															<size>60,-1</size>
+															<value></value>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxTOP|wxEXPAND</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_text12">
+															<size>60,-1</size>
+															<value></value>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxTOP|wxEXPAND</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_text13">
+															<size>60,-1</size>
+															<value></value>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxTOP|wxRIGHT|wxEXPAND</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_text14">
+															<size>60,-1</size>
+															<value></value>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxLEFT|wxEXPAND</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_text21">
+															<size>60,-1</size>
+															<value></value>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxEXPAND</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_text22">
+															<size>60,-1</size>
+															<value></value>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxEXPAND</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_text23">
+															<size>60,-1</size>
+															<value></value>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxEXPAND|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_text24">
+															<size>60,-1</size>
+															<value></value>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxLEFT|wxEXPAND</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_text31">
+															<size>60,-1</size>
+															<value></value>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxEXPAND</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_text32">
+															<size>60,-1</size>
+															<value></value>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxEXPAND</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_text33">
+															<size>60,-1</size>
+															<value></value>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxRIGHT|wxEXPAND</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_text34">
+															<size>60,-1</size>
+															<value></value>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM|wxLEFT|wxEXPAND</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_text41">
+															<size>60,-1</size>
+															<value></value>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM|wxEXPAND</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_text42">
+															<size>60,-1</size>
+															<value></value>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM|wxEXPAND</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_text43">
+															<size>60,-1</size>
+															<value></value>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM|wxRIGHT|wxEXPAND</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_text44">
+															<size>60,-1</size>
+															<value></value>
+														</object>
+													</object>
+												</object>
+											</object>
+										</object>
+									</object>
+								</object>
+							</object>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>1</option>
+						<flag>wxEXPAND</flag>
+						<border>5</border>
+						<object class="wxStaticBoxSizer">
+							<orient>wxVERTICAL</orient>
+							<label>Insert Transformation</label>
+							<object class="sizeritem">
+								<option>1</option>
+								<flag>wxEXPAND</flag>
+								<border>5</border>
+								<object class="wxFlexGridSizer">
+									<rows>5</rows>
+									<cols>1</cols>
+									<vgap>0</vgap>
+									<hgap>0</hgap>
+									<growablecols></growablecols>
+									<growablerows>4</growablerows>
+									<object class="sizeritem">
+										<option>1</option>
+										<flag>wxEXPAND</flag>
+										<border>5</border>
+										<object class="wxStaticBoxSizer">
+											<orient>wxVERTICAL</orient>
+											<label>Translation</label>
+											<object class="sizeritem">
+												<option>0</option>
+												<flag>wxALL|wxEXPAND</flag>
+												<border>5</border>
+												<object class="wxChoice" name="m_choiceTranslationPoint">
+													<tooltip>Select an available one-vertex mesh for translation</tooltip>
+													<content />
+													<selection>0</selection>
+												</object>
+											</object>
+											<object class="sizeritem">
+												<option>1</option>
+												<flag>wxALIGN_CENTER_HORIZONTAL</flag>
+												<border>5</border>
+												<object class="wxBoxSizer">
+													<orient>wxHORIZONTAL</orient>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxLEFT|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxStaticText" name="m_staticText6">
+															<label>X</label>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_textTranslationX">
+															<size>40,-1</size>
+															<tooltip>Amount to translate in x direction</tooltip>
+															<value></value>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxLEFT|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxStaticText" name="m_staticText7">
+															<label>Y</label>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_textTranslationY">
+															<size>40,-1</size>
+															<tooltip>Amount to translate in y direction</tooltip>
+															<value></value>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxLEFT|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxStaticText" name="m_staticText8">
+															<label>Z</label>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_textTranslationZ">
+															<size>40,-1</size>
+															<tooltip>Amount to translate in z direction</tooltip>
+															<value></value>
+														</object>
+													</object>
+												</object>
+											</object>
+											<object class="sizeritem">
+												<option>1</option>
+												<flag>wxEXPAND</flag>
+												<border>5</border>
+												<object class="wxBoxSizer">
+													<orient>wxHORIZONTAL</orient>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btTranslate">
+															<tooltip>Add translation matrix.</tooltip>
+															<label>Translate</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>1</option>
+														<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxEXPAND</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btTranslateOrigin">
+															<tooltip>Set the origin for other transforms to the vector given.\nThis adds two translation matrices to the stack. Transforms that use this vector as origin need to be added between.</tooltip>
+															<label>Set Origin to</label>
+															<default>0</default>
+														</object>
+													</object>
+												</object>
+											</object>
+										</object>
+									</object>
+									<object class="sizeritem">
+										<option>1</option>
+										<flag>wxEXPAND|wxTOP</flag>
+										<border>5</border>
+										<object class="wxStaticBoxSizer">
+											<orient>wxHORIZONTAL</orient>
+											<label>Rotation</label>
+											<object class="sizeritem">
+												<option>0</option>
+												<flag>wxTOP|wxBOTTOM|wxLEFT|wxEXPAND</flag>
+												<border>5</border>
+												<object class="wxTextCtrl" name="m_textRotation">
+													<size>40,-1</size>
+													<tooltip>Angle to rotate in degrees.</tooltip>
+													<value></value>
+												</object>
+											</object>
+											<object class="sizeritem">
+												<option>0</option>
+												<flag>wxALL</flag>
+												<border>2</border>
+												<object class="wxStaticText" name="m_staticDegree">
+													<label>º</label>
+												</object>
+											</object>
+											<object class="spacer">
+												<size>0,0</size>
+												<option>0</option>
+												<flag>wxTOP|wxBOTTOM|wxLEFT</flag>
+												<border>5</border>
+											</object>
+											<object class="sizeritem">
+												<option>1</option>
+												<flag>wxTOP|wxBOTTOM|wxRIGHT</flag>
+												<border>5</border>
+												<object class="wxButton" name="m_btRotationX">
+													<style>wxBU_EXACTFIT</style>
+													<tooltip>Rotate around the x-axis.\nRotations are in a right-handed coordinate system. By definition the direction is clockwise if you sit at the positive end of the axis and look towards the origin.</tooltip>
+													<label>RotX</label>
+													<default>0</default>
+												</object>
+											</object>
+											<object class="sizeritem">
+												<option>1</option>
+												<flag>wxTOP|wxBOTTOM|wxRIGHT</flag>
+												<border>5</border>
+												<object class="wxButton" name="m_btRotationY">
+													<style>wxBU_EXACTFIT</style>
+													<tooltip>Rotate around the y-axis.\nRotations are in a right-handed coordinate system. By definition the direction is clockwise if you sit at the positive end of the axis and look towards the origin.</tooltip>
+													<label>RotY</label>
+													<default>0</default>
+												</object>
+											</object>
+											<object class="sizeritem">
+												<option>1</option>
+												<flag>wxTOP|wxBOTTOM|wxRIGHT</flag>
+												<border>5</border>
+												<object class="wxButton" name="m_btRotationZ">
+													<style>wxBU_EXACTFIT</style>
+													<tooltip>Rotate around the z-axis.\nRotations are in a right-handed coordinate system. By definition the direction is clockwise if you sit at the positive end of the axis and look towards the origin.</tooltip>
+													<label>RotZ</label>
+													<default>0</default>
+												</object>
+											</object>
+										</object>
+									</object>
+									<object class="sizeritem">
+										<option>1</option>
+										<flag>wxEXPAND|wxTOP</flag>
+										<border>5</border>
+										<object class="wxStaticBoxSizer">
+											<orient>wxVERTICAL</orient>
+											<label>Scale</label>
+											<object class="sizeritem">
+												<option>1</option>
+												<flag>wxALIGN_CENTER_HORIZONTAL</flag>
+												<border>5</border>
+												<object class="wxBoxSizer">
+													<orient>wxHORIZONTAL</orient>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxLEFT|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxStaticText" name="m_staticText61">
+															<label>X</label>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_textScaleX">
+															<size>40,-1</size>
+															<tooltip>Scale factor in x-direction.</tooltip>
+															<value>1.0</value>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxLEFT|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxStaticText" name="m_staticText71">
+															<label>Y</label>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_textScaleY">
+															<size>40,-1</size>
+															<tooltip>Scale factor in y-direction.</tooltip>
+															<value>1.0</value>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxLEFT|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxStaticText" name="m_staticText81">
+															<label>Z</label>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_textScaleZ">
+															<size>40,-1</size>
+															<tooltip>Scale factor in z-direction.</tooltip>
+															<value>1.0</value>
+														</object>
+													</object>
+												</object>
+											</object>
+											<object class="sizeritem">
+												<option>1</option>
+												<flag>wxEXPAND</flag>
+												<border>5</border>
+												<object class="wxBoxSizer">
+													<orient>wxHORIZONTAL</orient>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btScale">
+															<style>wxBU_EXACTFIT</style>
+															<tooltip>Add scale matrix.</tooltip>
+															<label>Scale</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btMirrorX">
+															<style>wxBU_EXACTFIT</style>
+															<tooltip>Add a simple matrix that mirrors in the x-direction.</tooltip>
+															<label>MirrorX</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btMirrorY">
+															<style>wxBU_EXACTFIT</style>
+															<tooltip>Add a simple matrix that mirrors in the y-direction.</tooltip>
+															<label>MirrorY</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxBOTTOM|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btMirrorZ">
+															<style>wxBU_EXACTFIT</style>
+															<tooltip>Add a simple matrix that mirrors in the z-direction.</tooltip>
+															<label>MirrorZ</label>
+															<default>0</default>
+														</object>
+													</object>
+												</object>
+											</object>
+										</object>
+									</object>
+									<object class="sizeritem">
+										<option>1</option>
+										<flag>wxEXPAND|wxTOP</flag>
+										<border>5</border>
+										<object class="wxStaticBoxSizer">
+											<orient>wxVERTICAL</orient>
+											<label>Special</label>
+											<object class="sizeritem">
+												<option>1</option>
+												<flag>wxEXPAND|wxALL</flag>
+												<border>5</border>
+												<object class="wxGridSizer">
+													<rows>2</rows>
+													<cols>2</cols>
+													<vgap>5</vgap>
+													<hgap>5</hgap>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxEXPAND</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btUnity">
+															<tooltip>Add the unity (no operation) matrix</tooltip>
+															<label>Unity</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxEXPAND</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btDefault">
+															<tooltip>Add the default matrix.</tooltip>
+															<label>Default</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxEXPAND</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btFixOrient">
+															<tooltip>Add the classic fix orientation matrix.</tooltip>
+															<label>Fix Orientation</label>
+															<default>0</default>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxEXPAND</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btLoad">
+															<tooltip>Load a matrix from a SCN file.</tooltip>
+															<label>Load</label>
+															<default>0</default>
+														</object>
+													</object>
+												</object>
+											</object>
+										</object>
+									</object>
+								</object>
+							</object>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btMatrixLoadAll">
+							<style>wxBU_EXACTFIT|wxNO_BORDER</style>
+							<tooltip>Load the matrix stack from a SCN file.</tooltip>
+							<label>Load</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="spacer">
+						<size>0,0</size>
+						<option>1</option>
+						<flag>wxALL</flag>
+						<border>0</border>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btOk">
+							<label>Ok</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btCancel">
+							<label>Cancel</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="spacer">
+						<size>0,0</size>
+						<option>1</option>
+						<flag>wxALL</flag>
+						<border>0</border>
+					</object>
+				</object>
+			</object>
+		</object>
+	</object>
+</resource>
