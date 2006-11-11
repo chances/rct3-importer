@@ -59,14 +59,50 @@ D3DMATRIX matrixGetUnity() {
     return m;
 }
 
-D3DMATRIX matrixGetLegacyFixOrientation() {
-    D3DMATRIX m;
-    memset(&m, 0, sizeof(m));
-    m._13 = -1.0;
-    m._21 = 1.0;
-    m._32 = 1.0;
-    m._44 = 1.0;
-    return m;
+D3DMATRIX matrixGetFixOrientation(c3DLoaderOrientation orient) {
+    switch (orient) {
+        case ORIENTATION_RIGHT_XUP: { // Whatever...            | s-x m-y a-z
+            D3DMATRIX m;
+            memset(&m, 0, sizeof(m));
+            m._12 = 1.0;
+            m._23 = -1.0;
+            m._31 = 1.0;
+            m._44 = 1.0;
+            return m;
+        }
+        case ORIENTATION_RIGHT_YUP: // MirrorZ                  | s-y m-z a-x
+            return matrixGetScale(1.0, 1.0, -1.0);
+        case ORIENTATION_RIGHT_ZUP: { // MirrorZ, -90 X, -90 Y  | s-z m-x a-y
+            D3DMATRIX m;
+            memset(&m, 0, sizeof(m));
+            m._13 = -1.0;
+            m._21 = 1.0;
+            m._32 = 1.0;
+            m._44 = 1.0;
+            return m;
+        }
+        case ORIENTATION_LEFT_XUP: { // Whatever...              | s-x m--y a-z
+            D3DMATRIX m;
+            memset(&m, 0, sizeof(m));
+            m._12 = 1.0;
+            m._23 = 1.0;
+            m._31 = 1.0;
+            m._44 = 1.0;
+            return m;
+        }
+        // case ORIENTATION_LEFT_YUP: // Fall through to default | s-y m--z a-x
+        case ORIENTATION_LEFT_ZUP: { // Whatever...              | s-z m--x a-y
+            D3DMATRIX m;
+            memset(&m, 0, sizeof(m));
+            m._13 = 1.0;
+            m._21 = 1.0;
+            m._32 = 1.0;
+            m._44 = 1.0;
+            return m;
+        }
+        default:
+            return matrixGetUnity();
+    }
 }
 
 D3DMATRIX matrixGetTranslation(float x, float y, float z) {

@@ -192,3 +192,8 @@ Version 16 (Belgabor)
 * FIX4: Fixed .scn appearing for new scenery items in the create ovl save dialog
 * FIX4: Enforce invalid meshes to be disabled
 * FIX4: Particleend now also asks for the particle name
+
+CVS:
+* Warn when an enabled mesh is invalid on loading a scn file.
+* Added possibility to transfer model name and orientation to the c3DLoader interface.
+* The model orientation is checked against the current model transformation matrix when opening a new 3D model file in the model settings window.

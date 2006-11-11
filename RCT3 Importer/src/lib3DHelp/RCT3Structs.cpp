@@ -34,7 +34,7 @@ void cMeshStruct::CopySettingsFrom(const cMeshStruct& from) {
     unknown = from.unknown;
 }
 
-cModel::cModel(D3DMATRIX def): name(wxT("")), file(wxT("")), fatal_error(false) {
+cModel::cModel(D3DMATRIX def): name(wxT("")), file(wxT("")), orientation(ORIENTATION_UNKNOWN), fatal_error(false) {
     transforms.push_back(def);
     transformnames.push_back(_("Default Matrix"));
 }
@@ -88,12 +88,17 @@ bool cModel::Load() {
         return false;
     }
 
+    if (name == wxT(""))
+        name = obj->GetName();
+
     if (name == wxT("")) {
         wxFileName t = file;
         name = t.GetName();
     }
     fatal_error = false;
     error.clear();
+
+    orientation = obj->GetOrientation();
 
     meshstructs.clear();
     // Load the object into mesh structs
@@ -125,6 +130,8 @@ bool cModel::Sync() {
         error.push_back(_("Model file not found or of an unknown format."));
         return false;
     }
+
+    orientation = obj->GetOrientation();
 
     // Predeclare to make goto work
     wxString notify;

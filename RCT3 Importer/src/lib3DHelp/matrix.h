@@ -28,6 +28,7 @@
 
 #include <vector>
 #include "vertex.h"
+#include "3DLoaderTypes.h"
 
 float Deg2Rad(float deg);
 
@@ -38,7 +39,7 @@ inline D3DVECTOR vectorNormalize(const D3DVECTOR v) {
 }
 
 D3DMATRIX matrixGetUnity();
-D3DMATRIX matrixGetLegacyFixOrientation();
+D3DMATRIX matrixGetFixOrientation(c3DLoaderOrientation orient = ORIENTATION_RIGHT_ZUP);
 D3DMATRIX matrixGetTranslation(float x, float y, float z);
 D3DMATRIX matrixGetTranslation(D3DVECTOR v);
 D3DMATRIX matrixGetScale(float x, float y, float z);

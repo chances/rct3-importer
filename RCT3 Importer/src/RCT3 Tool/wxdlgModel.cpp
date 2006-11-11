@@ -283,12 +283,31 @@ void dlgModel::OnModelOpen(wxCommandEvent& WXUNUSED(event)) {
         if (m_model.Load(dialog->GetPath())) {
             TransferDataToWindow();
             UpdateAll();
+            if (m_model.orientation != ORIENTATION_UNKNOWN) {
+                if (matrixIsEqual(matrixMultiply(m_model.transforms), matrixGetUnity())) {
+                    // No transform matrix, set the right one.
+                    m_model.transforms.clear();
+                    m_model.transformnames.clear();
+                    m_model.transforms.push_back(matrixGetFixOrientation(m_model.orientation));
+                    m_model.transformnames.push_back(wxT("Fix-up from model file"));
+                    ShowTransform();
+                } else if (!matrixIsEqual(matrixMultiply(m_model.transforms), matrixGetFixOrientation(m_model.orientation))) {
+                    // Model matrix differs from the current one
+                    if (::wxMessageBox(_("The model file you just opened suggests a orientation fix matrix different from your current one.\nDo you want to replace the current one with the one suggested in the file?"), _("Question"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this) == wxYES) {
+                        m_model.transforms.clear();
+                        m_model.transformnames.clear();
+                        m_model.transforms.push_back(matrixGetFixOrientation(m_model.orientation));
+                        m_model.transformnames.push_back(wxT("Fix-up from model file"));
+                        ShowTransform();
+                    }
+                }
+            }
         } else {
             ::wxMessageBox(m_model.error[0], _("Error"), wxOK | wxICON_ERROR, this);
             m_model.file = oldfile;
         }
     }
-
+    dialog->Destroy();
 }
 
 void dlgModel::OnControlUpdate(wxCommandEvent& WXUNUSED(event)) {

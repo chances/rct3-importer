@@ -108,13 +108,14 @@ public:
 	wxArrayString transformnames;
     std::vector<cMeshStruct> meshstructs;
     std::vector<cEffectPoint> effectpoints;
+    c3DLoaderOrientation orientation; // This is the orientation reported by the 3DLoader
 	wxArrayString error;
 	bool fatal_error;
 	bool used;          // Used during ovl generation to see if the model is actually used.
 
-	cModel(): name(wxT("")), file(wxT("")), fatal_error(false) {};
+	cModel(): name(wxT("")), file(wxT("")), orientation(ORIENTATION_UNKNOWN), fatal_error(false) {};
 	cModel(D3DMATRIX def);
-	cModel(wxString filen): name(wxT("")), file(filen), fatal_error(false) {
+	cModel(wxString filen): name(wxT("")), file(filen), orientation(ORIENTATION_UNKNOWN), fatal_error(false) {
         Load();
     };
 	bool Load();

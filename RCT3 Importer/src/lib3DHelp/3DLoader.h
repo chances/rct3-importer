@@ -47,10 +47,12 @@ public:
 class c3DLoader {
 protected:
     wxString m_filename;
+    wxString m_name;
     std::vector<c3DMesh> m_meshes;
 public:
     c3DLoader(const char *filename) : m_meshes(0) {
         m_filename = filename;
+        m_name = wxT("");
     };
 
     virtual ~c3DLoader() {};
@@ -86,6 +88,8 @@ public:
     virtual bool FetchObject(unsigned int index, unsigned long *vertexcount, VERTEX **vertices, unsigned long *index_count, unsigned long **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform);
 
     virtual int GetType() {return C3DLOADER_GENERIC;};
+    virtual wxString GetName() {return m_name;};
+    virtual c3DLoaderOrientation GetOrientation() {return ORIENTATION_UNKNOWN;};
 
     static c3DLoader *LoadFile(const char *filename);
 };

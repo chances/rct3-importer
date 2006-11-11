@@ -464,7 +464,7 @@ void dlgMatrix::OnSpecialDefault(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void dlgMatrix::OnSpecialFix(wxCommandEvent& WXUNUSED(event)) {
-    AddMatrix(_("Legacy Fix Orientation"), matrixGetLegacyFixOrientation());
+    AddMatrix(_("Legacy Fix Orientation"), matrixGetFixOrientation());
 }
 
 void dlgMatrix::OnSpecialLoad(wxCommandEvent& WXUNUSED(event)) {

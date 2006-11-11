@@ -33,6 +33,7 @@ class cMS3DLoader: public c3DLoader
 public:
     cMS3DLoader(const char *filename);
     virtual int GetType() {return C3DLOADER_MS3D;};
+    virtual c3DLoaderOrientation GetOrientation() {return ORIENTATION_RIGHT_YUP;};
 };
 
 #endif // MS3DLOADER_H_INCLUDED

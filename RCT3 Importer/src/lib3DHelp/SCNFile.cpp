@@ -573,7 +573,7 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
             long fixorient = 0;
             fread(&fixorient, sizeof(long), 1, f);
             if ((version <=2) && fixorient) {
-                models[0].transforms.push_back(matrixGetLegacyFixOrientation());
+                models[0].transforms.push_back(matrixGetFixOrientation());
                 models[0].transformnames.push_back("Fix Orientation (old scn)");
             }
         }
