@@ -30,7 +30,15 @@
 #include "libASE.h"
 
 cASE3DLoader::cASE3DLoader(const char *filename): c3DLoader(filename) {
-    ASE_Scene *scene = ASE_loadFilename(const_cast<char *> (filename));
+    ASE_Scene *scene = NULL;
+    try {
+        scene = ASE_loadFilename(const_cast<char *> (filename));
+    } catch (...) {
+        try {
+            ASE_freeScene(scene);
+        } catch (...) {}
+        return;
+    }
     if (scene) {
         for (int m = 0; m < scene->objectCount; m++) {
             c3DMesh cmesh;

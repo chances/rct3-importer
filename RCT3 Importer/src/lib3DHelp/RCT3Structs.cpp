@@ -106,6 +106,11 @@ bool cModel::Load() {
         meshstructs.push_back(MakeMesh(obj, j));
     }
 
+    if (obj->GetWarnings().size() > 0) {
+        error.Add(_("The 3D model loader reported the following problems:"));
+        error.insert(error.end(), obj->GetWarnings().begin(), obj->GetWarnings().end());
+    }
+
     delete obj;
 
     return true;
@@ -282,6 +287,12 @@ bool cModel::Sync() {
 fixupsinglevertexmeshes:
     for (unsigned int i = 0; i < obj->GetObjectCount(); i++)
         SetupFileProperties(&meshstructs[i], obj, i);
+
+    if (obj->GetWarnings().size() > 0) {
+        error.Add(_("The 3D model loader reported the following problems:"));
+        error.insert(error.end(), obj->GetWarnings().begin(), obj->GetWarnings().end());
+    }
+
     delete obj;
     return true;
 }

@@ -24,7 +24,7 @@
 					<Add option="-Os" />
 					<Add option="-O2" />
 					<Add directory="..\libOVL" />
-					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.7" />
+					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.8" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -32,7 +32,7 @@
 					<Add library="3DHelp" />
 					<Add library="WXHelp" />
 					<Add library="libASE" />
-					<Add library="wx_msw-2.7" />
+					<Add library="wx_msw-2.8" />
 					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
@@ -50,14 +50,14 @@
 					<Add option="-g" />
 					<Add option="-DDEBUG" />
 					<Add directory="..\libOVL" />
-					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.7" />
+					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.8" />
 				</Compiler>
 				<Linker>
 					<Add library="libOVLd" />
 					<Add library="3DHelpd" />
 					<Add library="WXHelpd" />
 					<Add library="libASE" />
-					<Add library="wx_msw-2.7" />
+					<Add library="wx_msw-2.8" />
 					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
@@ -73,7 +73,7 @@
 					<Add option="-Os" />
 					<Add option="-O2" />
 					<Add directory="..\libOVL-old" />
-					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.7" />
+					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.8" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -81,7 +81,7 @@
 					<Add library="3DHelp" />
 					<Add library="WXHelp" />
 					<Add library="libASE" />
-					<Add library="wx_msw-2.7" />
+					<Add library="wx_msw-2.8" />
 					<Add directory="libOVL" />
 				</Linker>
 			</Target>
@@ -99,7 +99,7 @@
 					<Add option="-pg" />
 					<Add option="-g" />
 					<Add directory="..\libOVL-old" />
-					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.7" />
+					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.8" />
 				</Compiler>
 				<Linker>
 					<Add option="-pg -lgmon" />
@@ -107,7 +107,7 @@
 					<Add library="3DHelpd" />
 					<Add library="WXHelpd" />
 					<Add library="libASEd" />
-					<Add library="wx_msw-2.7" />
+					<Add library="wx_msw-2.8" />
 					<Add directory="libOVL" />
 				</Linker>
 			</Target>

@@ -61,7 +61,7 @@ c3DLoader *c3DLoader::LoadFile(const char *filename) {
 
     res = new cMS3DLoader(filename);
     if (res) {
-        if (res->Ok())
+        if (!res->Failed())
             return res;
         else
             delete res;
@@ -69,7 +69,7 @@ c3DLoader *c3DLoader::LoadFile(const char *filename) {
 
     res = new cASE3DLoader(filename);
     if (res) {
-        if (res->Ok())
+        if (!res->Failed())
             return res;
         else
             delete res;

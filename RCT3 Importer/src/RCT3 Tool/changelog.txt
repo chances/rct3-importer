@@ -197,3 +197,6 @@ CVS:
 * Warn when an enabled mesh is invalid on loading a scn file.
 * Added possibility to transfer model name and orientation to the c3DLoader interface.
 * The model orientation is checked against the current model transformation matrix when opening a new 3D model file in the model settings window.
+* Added warning capabilities to loaders
+* Updated paths and linker settings for wxWidgets 2.8 (requires wxWidgets pack 20061111)
+* Hopefully fool-proofed the ase-loader by try-catch blocks. Testing shows it can still crash the app, but maybe it's better...

@@ -28,9 +28,9 @@
 
 #include "wx_pch.h"
 
-#include "vertex.h"
-#include <string>
 #include <vector>
+
+#include "vertex.h"
 
 #include "3DLoaderTypes.h"
 
@@ -48,7 +48,12 @@ class c3DLoader {
 protected:
     wxString m_filename;
     wxString m_name;
+    // Having no meshes signifies an invalid file
     std::vector<c3DMesh> m_meshes;
+    // Warnings should only be added by a loader implementation if it
+    // recognized the file is of it's type but is otherwise invalid
+    wxArrayString m_warnings;
+    // no m_meshes and no m_warnigs signal that the loader did not recognive the file.
 public:
     c3DLoader(const char *filename) : m_meshes(0) {
         m_filename = filename;
@@ -60,9 +65,10 @@ public:
     virtual int GetObjectCount() {
         return m_meshes.size();
     };
-    virtual bool Ok() {
-        return m_meshes.size()>0;
+    virtual bool Failed() {
+        return ((m_meshes.size()==0) && (m_warnings.size()==0));
     };
+    virtual wxArrayString GetWarnings() const {return m_warnings;};
     virtual wxString GetObjectName(unsigned int index) {
         return (index>=m_meshes.size())?"":m_meshes[index].m_name;
     };
