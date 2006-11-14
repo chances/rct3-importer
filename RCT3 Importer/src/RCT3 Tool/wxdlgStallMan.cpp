@@ -57,7 +57,7 @@ dlgStallMan::dlgStallMan(wxWindow *parent) {
 	}
 }
 
-void dlgStallMan::OnAdd(wxCommandEvent& event)
+void dlgStallMan::OnAdd(wxCommandEvent& WXUNUSED(event))
 {
     CurrentStall = -1;
     dlgStall *dialog = new dlgStall(NULL);
@@ -80,16 +80,18 @@ void dlgStallMan::OnAdd(wxCommandEvent& event)
         s->Items = 0;
         s->ItemCount = 0;
         Stalls.push_back(s);
+
+        m_StallList->Clear();
+        for (unsigned int i = 0;i < Stalls.size();i++)
+        {
+            m_StallList->Append(*(new wxString(Stalls[i]->Name)));
+        }
+        m_StallList->SetSelection(Stalls.size()-1);
     }
     dialog->Destroy();
-    m_StallList->Clear();
-	for (unsigned int i = 0;i < Stalls.size();i++)
-	{
-	    m_StallList->Append(*(new wxString(Stalls[i]->Name)));
-	}
 }
 
-void dlgStallMan::OnEdit(wxCommandEvent& event)
+void dlgStallMan::OnEdit(wxCommandEvent& WXUNUSED(event))
 {
     CurrentStall = m_StallList->GetSelection();
     dlgStall *dialog = new dlgStall(NULL);
@@ -140,16 +142,18 @@ void dlgStallMan::OnEdit(wxCommandEvent& event)
         {
             Stalls.push_back(s);
         }
+
+        m_StallList->Clear();
+        for (unsigned int i = 0;i < Stalls.size();i++)
+        {
+            m_StallList->Append(*(new wxString(Stalls[i]->Name)));
+        }
+        m_StallList->SetSelection(CurrentStall);
     }
     dialog->Destroy();
-    m_StallList->Clear();
-	for (unsigned int i = 0;i < Stalls.size();i++)
-	{
-	    m_StallList->Append(*(new wxString(Stalls[i]->Name)));
-	}
 }
 
-void dlgStallMan::OnDelete(wxCommandEvent& event)
+void dlgStallMan::OnDelete(wxCommandEvent& WXUNUSED(event))
 {
     if (::wxMessageBox(_("Are you sure you want to delete?"), _("Are You Sure"), wxYES_NO | wxICON_QUESTION, this) == wxYES)
     {
@@ -171,11 +175,12 @@ void dlgStallMan::OnDelete(wxCommandEvent& event)
             {
                 m_StallList->Append(*(new wxString(Stalls[i]->Name)));
             }
+            m_StallList->SetSelection(CurrentStall-1);
         }
     }
 }
 
-void dlgStallMan::OnClose(wxCommandEvent& event)
+void dlgStallMan::OnClose(wxCommandEvent& WXUNUSED(event))
 {
     EndModal(0);
 }

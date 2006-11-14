@@ -255,6 +255,7 @@ BOOL CALLBACK GSIEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
         break;
     case WM_COMMAND:
         switch (LOWORD(wParam)) {
+        case IDC_NAME:
         case IDC_TOP:
         case IDC_LEFT:
         case IDC_BOTTOM:
@@ -1298,9 +1299,9 @@ BOOL CALLBACK SIDEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
             break;
         case ID_EDIT_CREATESCENERY: {
             char *tmp = new char[MAX_PATH];
-            GetDlgItemText(GetParent(hwnd), IDC_THEMEPREFIX, tmp, MAX_PATH);
+            GetDlgItemText(GetParent(GetParent(hwnd)), IDC_THEMEPREFIX, tmp, MAX_PATH);
             wxString prefix = tmp;
-            GetDlgItemText(GetParent(hwnd), IDC_THEMENAME, tmp, MAX_PATH);
+            GetDlgItemText(GetParent(GetParent(hwnd)), IDC_THEMENAME, tmp, MAX_PATH);
             wxString theme = tmp;
             delete[] tmp;
             wxWindow *tempwind = new wxWindow();
@@ -1363,6 +1364,7 @@ BOOL CALLBACK SIDManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPara
                     SendDlgItemMessage(hwnd, IDC_LIST, LB_ADDSTRING, 0,
                                        (LPARAM) (*SceneryItemsIterator)->name);
                 }
+                SendDlgItemMessage(hwnd, IDC_LIST, LB_SETCURSEL, SceneryItems.size()-1, 0);
             }
             break;
         case IDC_LIST:
@@ -1378,6 +1380,7 @@ BOOL CALLBACK SIDManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPara
                     SendDlgItemMessage(hwnd, IDC_LIST, LB_ADDSTRING, 0,
                                        (LPARAM) (*SceneryItemsIterator)->name);
                 }
+                SendDlgItemMessage(hwnd, IDC_LIST, LB_SETCURSEL, CurrentScenery, 0);
             }
             break;
         case IDC_DEL: {
@@ -1404,6 +1407,7 @@ BOOL CALLBACK SIDManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPara
                         SendDlgItemMessage(hwnd, IDC_LIST, LB_ADDSTRING, 0,
                                            (LPARAM) (*SceneryItemsIterator)->name);
                     }
+                    SendDlgItemMessage(hwnd, IDC_LIST, LB_SETCURSEL, CurrentScenery-1, 0);
                 }
             }
             break;
@@ -1442,6 +1446,7 @@ BOOL CALLBACK TextureManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM l
                     SendDlgItemMessage(hwnd, IDC_LIST, LB_ADDSTRING, 0,
                                        (LPARAM) (*IconTexturesIterator)->name);
                 }
+                SendDlgItemMessage(hwnd, IDC_LIST, LB_SETCURSEL, IconTextures.size()-1, 0);
             }
             break;
         case IDC_LIST:
@@ -1457,6 +1462,7 @@ BOOL CALLBACK TextureManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM l
                     SendDlgItemMessage(hwnd, IDC_LIST, LB_ADDSTRING, 0,
                                        (LPARAM) (*IconTexturesIterator)->name);
                 }
+                SendDlgItemMessage(hwnd, IDC_LIST, LB_SETCURSEL, CurrentIconTexture, 0);
             }
             break;
         case IDC_DEL: {
@@ -1477,6 +1483,7 @@ BOOL CALLBACK TextureManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM l
                         SendDlgItemMessage(hwnd, IDC_LIST, LB_ADDSTRING, 0,
                                            (LPARAM) (*IconTexturesIterator)->name);
                     }
+                    SendDlgItemMessage(hwnd, IDC_LIST, LB_SETCURSEL, CurrentIconTexture-1, 0);
                 }
             }
             break;
@@ -1569,6 +1576,7 @@ BOOL CALLBACK GSIManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPara
                     SendDlgItemMessage(hwnd, IDC_LIST, LB_ADDSTRING, 0,
                                        (LPARAM) (*IconsIterator)->name);
                 }
+                SendDlgItemMessage(hwnd, IDC_LIST, LB_SETCURSEL, Icons.size()-1, 0);
             }
             break;
         case IDC_AUTO_ICONS: {
@@ -1593,6 +1601,7 @@ BOOL CALLBACK GSIManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPara
                     SendDlgItemMessage(hwnd, IDC_LIST, LB_ADDSTRING, 0,
                                        (LPARAM) (*IconsIterator)->name);
                 }
+                SendDlgItemMessage(hwnd, IDC_LIST, LB_SETCURSEL, CurrentIcon, 0);
             }
             break;
         case IDC_DEL: {
@@ -1612,6 +1621,7 @@ BOOL CALLBACK GSIManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPara
                         SendDlgItemMessage(hwnd, IDC_LIST, LB_ADDSTRING, 0,
                                            (LPARAM) (*IconsIterator)->name);
                     }
+                    SendDlgItemMessage(hwnd, IDC_LIST, LB_SETCURSEL, CurrentIcon-1, 0);
                 }
             }
             break;
@@ -1650,6 +1660,7 @@ BOOL CALLBACK TextManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
                     SendDlgItemMessage(hwnd, IDC_LIST, LB_ADDSTRING, 0,
                                        (LPARAM) (TextStringsIterator->name.c_str()));
                 }
+                SendDlgItemMessage(hwnd, IDC_LIST, LB_SETCURSEL, cTextStrings.size()-1, 0);
             }
             break;
         case IDC_LIST:
@@ -1665,6 +1676,7 @@ BOOL CALLBACK TextManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
                     SendDlgItemMessage(hwnd, IDC_LIST, LB_ADDSTRING, 0,
                                        (LPARAM) (TextStringsIterator->name.c_str()));
                 }
+                SendDlgItemMessage(hwnd, IDC_LIST, LB_SETCURSEL, CurrentTextString, 0);
             }
             break;
         case IDC_DEL: {
@@ -1682,6 +1694,7 @@ BOOL CALLBACK TextManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
                         SendDlgItemMessage(hwnd, IDC_LIST, LB_ADDSTRING, 0,
                                            (LPARAM) (TextStringsIterator->name.c_str()));
                     }
+                    SendDlgItemMessage(hwnd, IDC_LIST, LB_SETCURSEL, CurrentTextString-1, 0);
                 }
             }
             break;

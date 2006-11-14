@@ -57,7 +57,7 @@ dlgAttractMan::dlgAttractMan(wxWindow *parent) {
 	}
 }
 
-void dlgAttractMan::OnAdd(wxCommandEvent& event)
+void dlgAttractMan::OnAdd(wxCommandEvent& WXUNUSED(event))
 {
     CurrentAttraction = -1;
     dlgAttract *dialog = new dlgAttract(NULL);
@@ -72,16 +72,17 @@ void dlgAttractMan::OnAdd(wxCommandEvent& event)
         s->Unk3 = dialog->Unk3;
         s->SID = strdup(dialog->SID.c_str());
         Attractions.push_back(s);
+        m_AttractionList->Clear();
+        for (unsigned int i = 0;i < Attractions.size();i++)
+        {
+            m_AttractionList->Append(*(new wxString(Attractions[i]->Name)));
+        }
+        m_AttractionList->SetSelection(Attractions.size()-1);
     }
     dialog->Destroy();
-    m_AttractionList->Clear();
-	for (unsigned int i = 0;i < Attractions.size();i++)
-	{
-	    m_AttractionList->Append(*(new wxString(Attractions[i]->Name)));
-	}
 }
 
-void dlgAttractMan::OnEdit(wxCommandEvent& event)
+void dlgAttractMan::OnEdit(wxCommandEvent& WXUNUSED(event))
 {
     CurrentAttraction = m_AttractionList->GetSelection();
     dlgAttract *dialog = new dlgAttract(NULL);
@@ -118,16 +119,18 @@ void dlgAttractMan::OnEdit(wxCommandEvent& event)
         {
             Attractions.push_back(s);
         }
+
+        m_AttractionList->Clear();
+        for (unsigned int i = 0;i < Attractions.size();i++)
+        {
+            m_AttractionList->Append(*(new wxString(Attractions[i]->Name)));
+        }
+        m_AttractionList->SetSelection(CurrentAttraction);
     }
     dialog->Destroy();
-    m_AttractionList->Clear();
-	for (unsigned int i = 0;i < Attractions.size();i++)
-	{
-	    m_AttractionList->Append(*(new wxString(Attractions[i]->Name)));
-	}
 }
 
-void dlgAttractMan::OnDelete(wxCommandEvent& event)
+void dlgAttractMan::OnDelete(wxCommandEvent& WXUNUSED(event))
 {
     if (::wxMessageBox(_("Are you sure you want to delete?"), _("Are You Sure"), wxYES_NO | wxICON_QUESTION, this) == wxYES)
     {
@@ -145,11 +148,12 @@ void dlgAttractMan::OnDelete(wxCommandEvent& event)
             {
                 m_AttractionList->Append(*(new wxString(Attractions[i]->Name)));
             }
+            m_AttractionList->SetSelection(CurrentAttraction-1);
         }
     }
 }
 
-void dlgAttractMan::OnClose(wxCommandEvent& event)
+void dlgAttractMan::OnClose(wxCommandEvent& WXUNUSED(event))
 {
     EndModal(0);
 }
