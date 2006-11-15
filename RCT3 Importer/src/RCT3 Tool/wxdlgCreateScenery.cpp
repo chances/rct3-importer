@@ -1105,6 +1105,7 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
 
     cSCNFile work = m_SCN;
     wxFileName sfile;
+    wxFileDialog *dialog = NULL;
 
     wxLogGuiExt *logex = new wxLogGuiExt(&cont);
     wxLog *old = wxLog::SetActiveTarget(logex);
@@ -1321,7 +1322,7 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
         sfile = work.ovlname;
     }
     //sfile.SetExt(wxT("common.ovl"));
-    wxFileDialog *dialog = new wxFileDialog(
+    dialog = new wxFileDialog(
                                this,
                                _T("Save Scenery OVL"),
                                wxEmptyString,

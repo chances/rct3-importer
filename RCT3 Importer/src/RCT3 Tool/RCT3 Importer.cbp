@@ -119,6 +119,7 @@
 			<Add option="-fexceptions" />
 			<Add option='-include &quot;wx_pch.h&quot;' />
 			<Add option="-Winvalid-pch" />
+			<Add option="-fno-strict-aliasing" />
 			<Add option="-DUSE_PCH" />
 			<Add option="-D__GNUWIN32__" />
 			<Add option="-D__WXMSW__" />

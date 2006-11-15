@@ -82,6 +82,7 @@
 			<Add alias="All DLL" targets="Release DLL;Debug DLL;" />
 		</VirtualTargets>
 		<Compiler>
+			<Add option="-fno-strict-aliasing" />
 			<Add option="-DBUILDING_DLL=1" />
 			<Add option="-DLIBOVL_EXPORTS=1" />
 			<Add directory="..\..\include" />

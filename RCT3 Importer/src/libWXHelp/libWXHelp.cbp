@@ -18,7 +18,7 @@
 				<Compiler>
 					<Add option="-Wall" />
 					<Add option="-g" />
-					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.7" />
+					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.8" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -31,7 +31,7 @@
 				<Compiler>
 					<Add option="-Os" />
 					<Add option="-O2" />
-					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.7" />
+					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.8" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -43,6 +43,11 @@
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="-mthreads" />
+			<Add option="-pipe" />
+			<Add option="-fmessage-length=0" />
+			<Add option="-fexceptions" />
+			<Add option="-fno-strict-aliasing" />
 			<Add option="-DIL_STATIC_LIB" />
 			<Add directory="..\libASE-1.0" />
 			<Add directory="..\..\include" />
