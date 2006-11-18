@@ -43,6 +43,7 @@
 #include "htmlentities.h"
 #include "logext.h"
 #include "matrix.h"
+#include "popupmessagewin.h"
 #include "rct3log.h"
 #include "valext.h"
 #include "wxdevil.h"
@@ -141,7 +142,7 @@ wxString wxModelListBox::OnGetItem(size_t n) const {
     }
     ret += wxString::Format(wxT("<br>&nbsp;&nbsp;(%ld/%d meshes"), mesh_enabled, m_contents->models[n].meshstructs.size());
     if (mesh_faces)
-        ret += wxString::Format(wxT(", %d faces"), mesh_faces);
+        ret += wxString::Format(wxT(", %ld faces"), mesh_faces);
     if (m_contents->models[n].effectpoints.size())
         ret += wxString::Format(wxT(", %d effect points"), m_contents->models[n].effectpoints.size());
     return ret + wxT(")</font>");
@@ -475,6 +476,7 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
             // Shouldn't happen, but you never know...
             id = wxID_SAVEAS;
         } else {
+            TransferDataFromWindow();
             if (m_SCN.version < 4) {
                 if (::wxMessageBox(_("You are going to overwrite a old version scenery file.\nYou will not be able to open it with older importer versions anymore.\nDo you want to continue?"), _("Warning"), wxYES_NO|wxICON_WARNING|wxNO_DEFAULT, this) == wxNO) {
                     return;
@@ -491,6 +493,7 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
     ////////////////////////////
     // Save Scenery As
     if (id == wxID_SAVEAS) {
+        TransferDataFromWindow();
         wxFileDialog *dialog = new wxFileDialog(
                                    this,
                                    _T("Save Scenery File"),
@@ -1109,6 +1112,8 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
 
     wxLogGuiExt *logex = new wxLogGuiExt(&cont);
     wxLog *old = wxLog::SetActiveTarget(logex);
+
+    TransferDataFromWindow();
 
     /////////////////////////////////////////////////////
     // Sanity Checks & fix the work copy for processing
@@ -1773,7 +1778,7 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                 memcpy(texture, ilGetData(), width * height);
                 memcpy(colors, ilGetPalette(), ilGetInteger(IL_PALETTE_NUM_COLS) * 4);
                 for (unsigned int j = 0; j < 256; j++)
-                    colors[j].rgbReserved = 0;
+                    colors[j].rgbReserved = i_ftxfr->AlphaCutoff;
                 if (AlphaPresent == true) {
                     alphadata = new unsigned char[width * height];
                     ilBindImage(tex[1]);
@@ -1872,7 +1877,9 @@ deinitlogger:
             wxString msg = _("Saving ");
             msg += (textureovl)?_("Texture"):_("Scenery");
             msg += _(" OVL successful.");
-            ::wxMessageBox(msg);
+//            ::wxMessageBox(msg);
+            wxPopupTransientMessageWindow *popup = new wxPopupTransientMessageWindow(msg, wxT(""), this);
+            popup->Popup();
         }
     }
     wxLog::SetActiveTarget(old);

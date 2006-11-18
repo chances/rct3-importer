@@ -34,12 +34,12 @@
 
 IMPLEMENT_DYNAMIC_CLASS(wxTextureValidator, wxExtendedValidator)
 
-wxTextureValidator::wxTextureValidator(wxString *val, wxString context, bool empty_allowed, unsigned int *force_size):wxExtendedValidator(val, empty_allowed, true) {
+wxTextureValidator::wxTextureValidator(wxString *val, const wxString& context, bool empty_allowed, unsigned int *force_size):wxExtendedValidator(val, empty_allowed, true) {
     m_context = context;
     m_forceSize = force_size;
 }
 
-wxTextureValidator::wxTextureValidator(wxFileName *val, wxString context, bool empty_allowed, unsigned int *force_size):wxExtendedValidator(val, empty_allowed, true) {
+wxTextureValidator::wxTextureValidator(wxFileName *val, const wxString& context, bool empty_allowed, unsigned int *force_size):wxExtendedValidator(val, empty_allowed, true) {
     m_context = context;
     m_forceSize = force_size;
 }

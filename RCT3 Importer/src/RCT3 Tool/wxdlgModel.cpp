@@ -353,7 +353,7 @@ void dlgModel::OnMatrixClear(wxCommandEvent& WXUNUSED(event)) {
 //
 ////////////////////////////////////////////////////////////////////////
 
-void dlgModel::OnMeshEdit(wxCommandEvent& event) {
+void dlgModel::OnMeshEdit(wxCommandEvent& WXUNUSED(event)) {
     int sel = m_htlbMesh->GetSelection();
     if (sel < 0)
         return;
@@ -516,7 +516,7 @@ void dlgModel::OnEffectClear(wxCommandEvent& WXUNUSED(event)) {
 //
 ////////////////////////////////////////////////////////////////////////
 
-void dlgModel::OnLoad(wxCommandEvent& event) {
+void dlgModel::OnLoad(wxCommandEvent& WXUNUSED(event)) {
     wxFileDialog *dialog = new wxFileDialog(
                                      this,
                                      _T("Open Scenery File (Load model)"),

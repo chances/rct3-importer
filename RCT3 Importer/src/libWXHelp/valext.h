@@ -23,6 +23,7 @@ public:
     wxExtendedValidator():wxValidator(){Initialize();};
     wxExtendedValidator(float* val, unsigned int precision = 4, bool zero_allowed = true, bool use_default = true, float default_val = 0.0);
     wxExtendedValidator(double* val, unsigned int precision = 4, bool zero_allowed = true, bool use_default = true, double default_val = 0.0);
+    wxExtendedValidator(unsigned char* val, bool zero_allowed = true, bool use_default = true, unsigned int default_val = 0);
     wxExtendedValidator(unsigned int* val, bool zero_allowed = true, bool use_default = true, unsigned int default_val = 0);
     wxExtendedValidator(unsigned long* val, bool zero_allowed = true, bool use_default = true, unsigned long default_val = 0);
     wxExtendedValidator(wxString* val, bool empty_allowed = true, bool check_exist = false);
@@ -45,6 +46,7 @@ protected:
 
     float*          m_pFloat;
     double*         m_pDouble;
+    unsigned char*  m_pUChar;
     unsigned int*   m_pUInt;
     unsigned long*  m_pULong;
     wxString*       m_pString;

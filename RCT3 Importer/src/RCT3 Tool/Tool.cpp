@@ -2937,9 +2937,10 @@ bool InstallTheme(HWND hwnd) {
     unsigned long styleval, len;
 //    char InstallLocation[MAX_PATH] = "";
 //    char Location[MAX_PATH] = "";
-    std::string sInstallLocation = "";
-    std::string sLocation = "";
-    std::string stemp = "";
+    wxString sInstallLocation = "";
+    wxString sLocation = "";
+    wxString stemp = "";
+    wxString sTheme = "";
     HKEY key;
 
     char *temp = new char[MAX_PATH];
@@ -2948,19 +2949,19 @@ bool InstallTheme(HWND hwnd) {
 //    wxFileName test2 = test1;
 
     styleval = SendDlgItemMessage(hwnd, IDC_THEME, LB_GETCURSEL, 0, 0);
+/*
     len =
         GetWindowTextLength(GetDlgItem(hwnd, IDC_THEMENAME)) +
         GetWindowTextLength(GetDlgItem(hwnd, IDC_THEMEPREFIX)) + 1;
     char *theme = new char[len];
-    GetDlgItemText(hwnd, IDC_THEMEPREFIX, theme, len);
-    {
-        wxString test = theme;
-        if (!test.IsAscii()) {
-            ::wxMessageBox(_("The prefix may only contain AscII characters.\nOther characters (eg. German umlauts, accented characters, ...) can cause problems and are therefore not allowed."), _("Error"), wxOK|wxICON_ERROR);
-            delete[] temp;
-            delete[] theme;
-            return false;
-        }
+*/
+
+    GetDlgItemText(hwnd, IDC_THEMEPREFIX, temp, len);
+    sTheme = temp;
+    if (!sTheme.IsAscii()) {
+        ::wxMessageBox(_("The prefix may only contain AscII characters.\nOther characters (eg. German umlauts, accented characters, ...) can cause problems and are therefore not allowed."), _("Error"), wxOK|wxICON_ERROR);
+        delete[] temp;
+        return false;
     }
     GetDlgItemText(hwnd, IDC_THEMENAME, temp, len);
     {
@@ -2968,11 +2969,12 @@ bool InstallTheme(HWND hwnd) {
         if (!test.IsAscii()) {
             ::wxMessageBox(_("The theme name may only contain AscII characters.\nOther characters (eg. German umlauts, accented characters, ...) can cause problems and are therefore not allowed."), _("Error"), wxOK|wxICON_ERROR);
             delete[] temp;
-            delete[] theme;
             return false;
         }
     }
-    strcat(theme, temp);
+    sTheme += temp;
+    // Make sure the theme doesn't end with whitespace
+    sTheme.Trim();
 
     LONG res = RegOpenKeyEx(HKEY_LOCAL_MACHINE,
                             "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{907B4640-266B-4A21-92FB-CD1A86CD0F63}",
@@ -2997,22 +2999,20 @@ bool InstallTheme(HWND hwnd) {
                 sInstallLocation = temp;
             } else {
                 MessageBox(hwnd, "InstallTheme: Invalid Folder selected.", "Error", MB_OK | MB_ICONERROR);
-                delete[] theme;
                 delete[] temp;
                 return false;
             }
         } else {
-            delete[] theme;
             delete[] temp;
             return false;
         }
     }
     unsigned long stringtablesize = 0;
 
-    std::string sFileName = "";
-    sprintf(temp, "%s\\%s%s\\", sInstallLocation.c_str(), stdstyle, theme);
+    wxString sFileName = "";
+    sprintf(temp, "%s\\%s%s\\", sInstallLocation.c_str(), stdstyle, sTheme.fn_str());
     sFileName = temp;
-    sFileName += "style.common.ovl";
+    sFileName += wxT("style.common.ovl");
 
 #ifndef LIBOVL_STATIC
     CreateStyleOvl(const_cast<char *> (sFileName.c_str()), styleval);
@@ -3062,7 +3062,7 @@ bool InstallTheme(HWND hwnd) {
         stringtablesize += strlen(temp) + 5;
         stringtablesize += strlen(temp) + 5;
         stringtablesize +=
-            strlen(stdstyle) + strlen(theme) + 1 + strlen(SceneryItems[i]->location) + 1 +
+            strlen(stdstyle) + strlen(sTheme.fn_str()) + 1 + strlen(SceneryItems[i]->location) + 1 +
             strlen(sfname.c_str()) + 1;
 
 
@@ -3076,8 +3076,8 @@ bool InstallTheme(HWND hwnd) {
 
         strcpy(strings, stdstyle);
         strings += strlen(stdstyle);
-        strcpy(strings, theme);
-        strings += strlen(theme);
+        strcpy(strings, sTheme.fn_str());
+        strings += strlen(sTheme.fn_str());
         strcpy(strings, "\\");
         strings++;
         strcpy(strings, sc->location);
@@ -3129,18 +3129,18 @@ bool InstallTheme(HWND hwnd) {
 //    char *texref = new char[GetWindowTextLength(GetDlgItem(GetParent(hwnd), IDC_THEMEPREFIX))+
 //                            GetWindowTextLength(GetDlgItem(GetParent(hwnd), IDC_THEMENAME))+9+1];
     GetDlgItemText(hwnd, IDC_THEMEPREFIX, temp, MAX_PATH);
-    std::string texname = temp;
+    wxString texname = temp;
     GetDlgItemText(hwnd, IDC_THEMENAME, temp, MAX_PATH);
     texname += temp;
     texname += "-texture";
-    std::string texbase = stemp + texname;
-    std::string textobase = "";
+    wxString texbase = stemp + texname;
+    wxString textobase = "";
 
     stemp = texbase + ".common.ovl";
     FILE *f = fopen(stemp.c_str(), "r");
     if (f) {
         fclose(f);
-        textobase = sInstallLocation + "\\" + stdstyle + theme + "\\shared\\";
+        textobase = sInstallLocation + "\\" + stdstyle + sTheme + "\\shared\\";
         SHCreateDirectoryEx(hwnd, textobase.c_str(), NULL);
         textobase += texname;
         sLocation = textobase + ".common.ovl";
@@ -3154,7 +3154,6 @@ bool InstallTheme(HWND hwnd) {
 
 //    delete[] texref;
     delete[] temp;
-    delete[] theme;
 
     return true;
 }
@@ -3162,6 +3161,8 @@ bool InstallTheme(HWND hwnd) {
 bool ReadIconTexture(HWND hwnd, IconTexture * t) {
     ILuint tex;
     ILenum Error;
+
+    wxMutexLocker lock(wxILMutex);
 
     ilGenImages(1, &tex);
     ilBindImage(tex);

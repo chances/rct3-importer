@@ -136,11 +136,11 @@ END_EVENT_TABLE()
 
 dlgTextureFrame::dlgTextureFrame(wxWindow *parent) {
     m_size = 0;
-
     InitWidgetsFromXRC((wxWindow *)parent);
 
     m_textTextureFile->SetValidator(wxTextureValidator(&m_frame.Texture, _("Texture File"), false, &m_size));
     m_textAlphaFile->SetValidator(wxTextureValidator(&m_frame.Alpha, _("Alpha Texture File"), true, &m_size));
+    m_textAlphaCutoff->SetValidator(wxExtendedValidator(&m_frame.AlphaCutoff));
 
     m_btOk->SetId(wxID_OK);
     m_btCancel->SetId(wxID_CANCEL);

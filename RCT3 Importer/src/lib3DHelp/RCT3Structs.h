@@ -69,11 +69,12 @@ public:
     wxFileName Texture;
     wxFileName Alpha;
     unsigned long Recolorable; // We don't expose this yet.
+    unsigned char AlphaCutoff;
 /*    unsigned long width; // Temporary for the UI to check that all frames are the same size
     unsigned long height;*/
 	bool used;          // Used during ovl generation to see if the texture frame is actually used.
 
-	cFlexiTextureFrame(): Texture(wxT("")), Alpha(wxT("")), Recolorable(0), used(false) {};
+	cFlexiTextureFrame(): Texture(wxT("")), Alpha(wxT("")), Recolorable(0), AlphaCutoff(0), used(false) {};
 };
 
 typedef std::vector<cFlexiTextureFrame>::iterator cFlexiTextureFrameIterator;

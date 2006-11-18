@@ -73,6 +73,7 @@ protected:
     wxTextCtrl* m_textAlphaFile;
     wxButton* m_btAlphaInfo;
     wxButton* m_btAlphaOpen;
+    wxTextCtrl* m_textAlphaCutoff;
     wxButton* m_btLoad;
     wxButton* m_btOk;
     wxButton* m_btCancel;
@@ -97,6 +98,7 @@ private:
         m_textAlphaFile = XRCCTRL(*this,"m_textAlphaFile",wxTextCtrl);
         m_btAlphaInfo = XRCCTRL(*this,"m_btAlphaInfo",wxButton);
         m_btAlphaOpen = XRCCTRL(*this,"m_btAlphaOpen",wxButton);
+        m_textAlphaCutoff = XRCCTRL(*this,"m_textAlphaCutoff",wxTextCtrl);
         m_btLoad = XRCCTRL(*this,"m_btLoad",wxButton);
         m_btOk = XRCCTRL(*this,"m_btOk",wxButton);
         m_btCancel = XRCCTRL(*this,"m_btCancel",wxButton);

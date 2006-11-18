@@ -73,7 +73,7 @@ void dlgEffectLight::OnColourPick(wxColourPickerEvent& event) {
     m_textLightGreen->SetValue(wxString::Format("%d", (unsigned int) col.Green()));
 }
 
-void dlgEffectLight::OnColourEdit(wxCommandEvent& event) {
+void dlgEffectLight::OnColourEdit(wxCommandEvent& WXUNUSED(event)) {
     UpdateLight();
 }
 

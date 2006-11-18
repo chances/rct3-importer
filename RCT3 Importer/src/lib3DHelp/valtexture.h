@@ -39,8 +39,8 @@ protected:
     unsigned int *m_forceSize;
 public:
     wxTextureValidator():wxExtendedValidator(),m_context(wxT("")){};
-    wxTextureValidator(wxString *val, wxString context = wxT(""), bool empty_allowed = false, unsigned int *force_size = NULL);
-    wxTextureValidator(wxFileName *val, wxString context = wxT(""), bool empty_allowed = false, unsigned int *force_size = NULL);
+    wxTextureValidator(wxString *val, const wxString& context = wxT(""), bool empty_allowed = false, unsigned int *force_size = NULL);
+    wxTextureValidator(wxFileName *val, const wxString& context = wxT(""), bool empty_allowed = false, unsigned int *force_size = NULL);
     wxTextureValidator(const wxTextureValidator& val);
 
     virtual ~wxTextureValidator(){}

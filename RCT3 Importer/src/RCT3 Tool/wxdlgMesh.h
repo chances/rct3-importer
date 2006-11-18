@@ -58,7 +58,7 @@ protected:
     bool m_rareadded;
 
     void OnLoad(wxCommandEvent& event);
-    void OnChange(wxCommandEvent& event) {RefreshAll();}
+    void OnChange(wxCommandEvent& WXUNUSED(event)) {RefreshAll();}
     void OnRDbl(wxMouseEvent& event);
 
 private:

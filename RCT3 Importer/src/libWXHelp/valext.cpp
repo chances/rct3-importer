@@ -33,6 +33,14 @@ wxExtendedValidator::wxExtendedValidator(double* val, unsigned int precision, bo
     m_floatDefault = default_val;
 }
 
+wxExtendedValidator::wxExtendedValidator(unsigned char* val, bool zero_allowed, bool use_default, unsigned int default_val) {
+    Initialize();
+    m_pUChar = val;
+    m_zeroAllowed = zero_allowed;
+    m_useDefault = use_default;
+    m_uintDefault = default_val;
+}
+
 wxExtendedValidator::wxExtendedValidator(unsigned int* val, bool zero_allowed, bool use_default, unsigned int default_val) {
     Initialize();
     m_pUInt = val;
@@ -72,6 +80,7 @@ bool wxExtendedValidator::Copy(const wxExtendedValidator& val) {
 
     m_pFloat = val.m_pFloat;
     m_pDouble = val.m_pDouble;
+    m_pUChar = val.m_pUChar;
     m_pUInt = val.m_pUInt;
     m_pULong = val.m_pULong;
     m_pString = val.m_pString;
@@ -89,6 +98,7 @@ bool wxExtendedValidator::Copy(const wxExtendedValidator& val) {
 void wxExtendedValidator::Initialize() {
     m_pFloat = NULL;
     m_pDouble = NULL;
+    m_pUChar = NULL;
     m_pUInt = NULL;
     m_pULong = NULL;
     m_pString = NULL;
@@ -131,7 +141,7 @@ bool wxExtendedValidator::Validate(wxWindow* parent) {
                 return false;
             }
         }
-    } else if (m_pUInt || m_pULong) {
+    } else if (m_pUChar || m_pUInt || m_pULong) {
         unsigned long test;
 
         if (!(pControl->GetValue().ToULong(&test))) {
@@ -204,6 +214,9 @@ bool wxExtendedValidator::TransferToWindow(void) {
     wxTextCtrl *pControl = (wxTextCtrl *) m_validatorWindow;
     if ( m_pFloat || m_pDouble ) {
         pControl->SetValue(wxString::Format(wxT("%.*f"), m_precision, (m_pFloat)?(*m_pFloat):(*m_pDouble)));
+    } else if (m_pUChar) {
+        unsigned int t = *m_pUChar;
+        pControl->SetValue(wxString::Format(wxT("%u"), t));
     } else if (m_pUInt) {
         pControl->SetValue(wxString::Format(wxT("%u"), *m_pUInt));
     } else if (m_pULong) {
@@ -244,7 +257,7 @@ bool wxExtendedValidator::TransferFromWindow(void) {
         } else {
             *m_pDouble = test;
         }
-    } else if (m_pUInt || m_pULong) {
+    } else if (m_pUChar || m_pUInt || m_pULong) {
         unsigned long test;
 
         if (!(pControl->GetValue().ToULong(&test))) {
@@ -261,7 +274,9 @@ bool wxExtendedValidator::TransferFromWindow(void) {
                 return false;
             }
         }
-        if (m_pUInt) {
+        if (m_pUChar) {
+            *m_pUChar = test;
+        } else if (m_pUInt) {
             *m_pUInt = test;
         } else {
             *m_pULong = test;
