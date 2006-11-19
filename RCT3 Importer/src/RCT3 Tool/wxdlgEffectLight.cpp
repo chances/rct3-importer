@@ -129,11 +129,11 @@ void dlgEffectLight::UpdateLight() {
                 break;
         }
         if (option < 3) {
-            light += wxString::Format(wxT("r%dg%db%d_radius"), col.Red(), col.Green(), col.Blue());
+            light += wxString::Format(wxT("r%dg%db%d_"), col.Red(), col.Green(), col.Blue());
         }
         if (!m_textLightRadius->GetValue().ToULong(&r))
             r = 0;
-        light += wxString::Format(wxT("%ld"), r);
+        light += wxString::Format(wxT("radius%ld"), r);
         if (m_checkCM->IsChecked())
             light += wxT("cm");
         m_textPreview->SetValue(light);

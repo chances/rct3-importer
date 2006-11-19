@@ -13,7 +13,7 @@
   import will be explained, do not expect to hear about everything you can do
   with it.</para>
 
-  <para>This document applies to the RCT3 Importer Version 16fix4.</para>
+  <para>This document applies to the RCT3 Importer Version 16fix5.</para>
 
   <section>
     <title>Preparing for the import</title>
@@ -275,19 +275,22 @@
     <section id="sect14">
       <title>UV-Mapping</title>
 
-      <para>UV-Mapping is used to <quote>assign</quote> a (bitmap) texture to
-      a model and is done inside your 3D modeler. I put <quote>assign</quote>
-      in quotes since technically it's not correct. What you do is give the
-      vertices of your model an additional set of coordinates (additional to
-      its spacial x/y/z 3D coordinates) in so-called texture-space. These
-      coordinates are called <quote>u</quote> and <quote>v</quote> (hence
-      uv-mapping) or <quote>s</quote> and <quote>t</quote>. There is a
-      difference between these two naming conventions but that doesn't need to
-      concern you for creating custom scenery. You also should know that these
-      coordinates are relative. That means 0 represents one end of the texture
-      and 1 the other one, so the size of the texture you use for uv-mapping
-      can differ from the one you use later in the importer, only the layout
-      of the texture has to match (ie don't mirror it).</para>
+      <para><indexterm zone="sect14">
+          <primary>UV-Mapping</primary>
+        </indexterm>UV-Mapping is used to <quote>assign</quote> a (bitmap)
+      texture to a model and is done inside your 3D modeler. I put
+      <quote>assign</quote> in quotes since technically it's not correct. What
+      you do is give the vertices of your model an additional set of
+      coordinates (additional to its spacial x/y/z 3D coordinates) in
+      so-called texture-space. These coordinates are called <quote>u</quote>
+      and <quote>v</quote> (hence uv-mapping) or <quote>s</quote> and
+      <quote>t</quote>. There is a difference between these two naming
+      conventions but that doesn't need to concern you for creating custom
+      scenery. You also should know that these coordinates are relative. That
+      means 0 represents one end of the texture and 1 the other one, so the
+      size of the texture you use for uv-mapping can differ from the one you
+      use later in the importer, only the layout of the texture has to match
+      (ie don't mirror it).</para>
 
       <para>While this may sound complicated or strange, it just tells the
       model (and later the 3D engine) which part of the texture to use for
@@ -620,7 +623,8 @@
 
                 <entry>MilkShape</entry>
 
-                <entry>MirrorZ</entry>
+                <entry>MirrorZ <emphasis role="bold">(Automatically set since
+                v16fix5)</emphasis></entry>
               </row>
             </tbody>
           </tgroup>
@@ -919,14 +923,28 @@
         you plan to use them on your website, please observe the <ulink
         url="http://www.matterform.com/qbullets/usage.html">QBullets usage
         terms</ulink>.</para>
-
-        <para role="matterform"><ulink
-        url="http://www.matterform.com/"><inlinemediaobject>
-            <imageobject>
-              <imagedata fileref="images/qb_credit.gif" />
-            </imageobject>
-          </inlinemediaobject></ulink></para>
       </listitem>
     </itemizedlist>
+
+    <para role="matterform"><ulink
+    url="http://www.matterform.com/"><inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="images/qb_credit.gif" scale="100" scalefit="0" />
+        </imageobject>
+      </inlinemediaobject></ulink></para>
+
+    <para><ulink url="http://sourceforge.net/"><inlinemediaobject>
+        <imageobject role="html">
+          <imagedata fileref="http://sourceforge.net/sflogo.php?group_id=181524&amp;type=4" />
+        </imageobject>
+
+        <imageobject role="pdf">
+          <imagedata fileref="images/sflogo.png" />
+        </imageobject>
+
+        <imageobject role="chm">
+          <imagedata fileref="images/sflogo.png" />
+        </imageobject>
+      </inlinemediaobject></ulink></para>
   </section>
 </article>
