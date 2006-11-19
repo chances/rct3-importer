@@ -31,6 +31,22 @@
 
 cASE3DLoader::cASE3DLoader(const char *filename): c3DLoader(filename) {
     ASE_Scene *scene = NULL;
+
+    {
+        // Test whether it's an ASE
+        FILE *fp = fopen(filename, "r");
+        if (!fp)
+            return;
+        char test[20];
+        test[19] = 0;
+        fread(&test, 1, 19, fp);
+        fclose(fp);
+        if (stricmp(test, "*3DSMAX_ASCIIEXPORT") != 0)
+            return;
+    }
+
+
+
     try {
         scene = ASE_loadFilename(const_cast<char *> (filename));
     } catch (...) {
