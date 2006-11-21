@@ -1,0 +1,44 @@
+% ##############################################################################
+% ### Header and Footer Page
+% ##############################################################################
+
+\pagestyle{fancyplain}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+\renewcommand{\plainheadrulewidth}{0.5pt}
+\renewcommand{\plainfootrulewidth}{0.5pt}
+\setcounter{page}{1}
+
+% Fancy header/footer for the first page
+
+\chead[]{%
+  \begin{tabular}{
+    >{\raggedright}p{5.6cm} >{\centering}p{5.6cm} >{\raggedleft}p{5.6cm}} %
+    \multirow{3}{5.6cm}{\DBKtitle}
+    & & \tabularnewline%
+    & {}
+    & \textsf{\arabic{page} / \getpagerefnumber{LastPage}} \tabularnewline %
+    & & \tabularnewline%
+  \end{tabular}%
+} %
+
+\lfoot[]{\@ifundefined{DBKpublisher}{}{\DBKpublisher}}
+\rfoot[]{}
+\cfoot[]{}
+
+% Fancy header/footer for the doc body
+
+\def\DBKcheadbody{%
+  \begin{tabular}{
+    >{\raggedright}p{5.6cm} >{\centering}p{5.6cm} >{\raggedleft}p{5.6cm}} %
+    \multirow{3}{5.6cm}{\DBKtitle}
+    & & \textsf{\DBKreference{} \edhead} \tabularnewline%
+    & {} &  \tabularnewline %
+    & & \textsf{\arabic{page} / \getpagerefnumber{LastPage}}
+  \tabularnewline%
+  \end{tabular}%
+}
+
+\lhead[]{}
+\rhead[]{}
+

@@ -4,6 +4,44 @@
 <article class="whitepaper" revision="1.0">
   <title>Beginner's Tutorial for the RCT3 Custom Scenery Importer</title>
 
+  <articleinfo>
+    <date>12.11.2006</date>
+
+    <revhistory>
+      <revision>
+        <revnumber>1</revnumber>
+
+        <date>14.11.2006</date>
+
+        <author>
+          <surname>Belgabor</surname>
+        </author>
+
+        <revdescription>
+          <para>Initial version for v16fix4</para>
+        </revdescription>
+      </revision>
+
+      <revision>
+        <revnumber>2</revnumber>
+
+        <date>21.11.2006</date>
+
+        <author>
+          <surname>Belgabor</surname>
+        </author>
+
+        <revdescription>
+          <para>Update for v16fix5</para>
+        </revdescription>
+      </revision>
+    </revhistory>
+
+    <author>
+      <surname>Belgabor</surname>
+    </author>
+  </articleinfo>
+
   <tocchap>
     <tocentry></tocentry>
   </tocchap>
@@ -502,7 +540,7 @@
 
         <mediaobject>
           <imageobject>
-            <imagedata fileref="create scenery.png" />
+            <imagedata fileref="createscenery.png" />
           </imageobject>
         </mediaobject>
       </figure>
@@ -737,7 +775,7 @@
 
           <mediaobject>
             <imageobject>
-              <imagedata fileref="icon texture.png" />
+              <imagedata fileref="icontexture.png" />
             </imageobject>
           </mediaobject>
         </figure>

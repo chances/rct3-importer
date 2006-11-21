@@ -1,0 +1,7 @@
+#
+# Dblatex spec file for DB2LaTeX style
+#
+TexInputs: .//
+TexStyle:  rct3imp
+XslParam: param.xsl
+# XslParam: /mnt/hd/f/Development/svn/RCT3%20Importer/doc/rct3dblatex/param.xsl
