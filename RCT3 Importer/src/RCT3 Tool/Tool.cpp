@@ -2943,14 +2943,14 @@ bool InstallTheme(HWND hwnd) {
     wxString sTheme = "";
     HKEY key;
 
-    char *temp = new char[MAX_PATH];
+    char *temp = new char[MAX_PATH+1];
 
 //    wxString test1 = "blah";
 //    wxFileName test2 = test1;
 
     styleval = SendDlgItemMessage(hwnd, IDC_THEME, LB_GETCURSEL, 0, 0);
+    len = MAX_PATH;
 /*
-    len =
         GetWindowTextLength(GetDlgItem(hwnd, IDC_THEMENAME)) +
         GetWindowTextLength(GetDlgItem(hwnd, IDC_THEMEPREFIX)) + 1;
     char *theme = new char[len];

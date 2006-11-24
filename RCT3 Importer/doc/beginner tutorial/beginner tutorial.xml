@@ -51,7 +51,8 @@
   import will be explained, do not expect to hear about everything you can do
   with it.</para>
 
-  <para>This document applies to the RCT3 Importer Version 16fix5.</para>
+  <para>This document applies to the <application>RCT3 Importer</application>
+  Version 16fix5.</para>
 
   <section>
     <title>Preparing for the import</title>
@@ -79,34 +80,39 @@
 
       <itemizedlist>
         <listitem>
-          <para>3DStudio / 3DSmax. Very expensive professional 3D modeler. If
-          you can get an academic license you might be able to afford
-          it.</para>
+          <para><application>3DStudio</application> /
+          <application>3DSmax</application>. Very expensive professional 3D
+          modeler. If you can get an academic license you might be able to
+          afford it.</para>
         </listitem>
 
         <listitem>
-          <para>MilkShape. Cheap (25$) shareware with a 30 day trial period.
-          Was the custom scenery creation tool of choice for a long time, but
-          more and more try their hands on</para>
+          <para><application>MilkShape</application>. Cheap (25$) shareware
+          with a 30 day trial period. Was the custom scenery creation tool of
+          choice for a long time, but more and more try their hands on</para>
         </listitem>
 
         <listitem>
-          <para>Blender. Free open source professional modeler. It's user
-          interface is pretty non-standard and therefore requires a bit of
-          patience to get used to. When you get acquainted to it you won't
-          want to miss it anymore and Blender becomes a very powerful
+          <para><application>Blender</application>. Free open source
+          professional modeler. It's user interface is pretty non-standard and
+          therefore requires a bit of patience to get used to. When you get
+          acquainted to it you won't want to miss it anymore and
+          <application>Blender</application> becomes a very powerful
           tool.</para>
         </listitem>
 
         <listitem>
-          <para>SketchUp. Comes in two versions, Google SketchUp (free) and
-          SketchUp Pro (commercial, trial available). Very easy and intuitive
-          to use. Current drawbacks are that the free version can only export
-          to Google Earth formats, which need to be imported and manipulated
-          in Blender to bring them into a state suitable for using in the
-          importer. Another drawback is that SketchUp sometimes produces
-          superfluous faces and edges which have to be cleaned up in Blender
-          (more on faces below).</para>
+          <para><application>SketchUp</application>. Comes in two versions,
+          <application>Google SketchUp</application> (free) and
+          <application>SketchUp Pro</application> (commercial, trial
+          available). Very easy and intuitive to use. Current drawbacks are
+          that the free version can only export to Google Earth formats, which
+          need to be imported and manipulated in
+          <application>Blender</application> to bring them into a state
+          suitable for using in the importer. Another drawback is that
+          SketchUp sometimes produces superfluous faces and edges which have
+          to be cleaned up in <application>Blender</application> (more on
+          faces below).</para>
         </listitem>
       </itemizedlist>
 
@@ -133,18 +139,19 @@
         </listitem>
 
         <listitem>
-          <para>Keep the number of faces as low as possible. A face (also
-          called <quote>poly</quote>, <quote>tri</quote> or
-          <quote>triangle</quote>) is the smallest surface subunit of a model
-          and the unit that causes <quote>work</quote> for the 3D engine of
-          RCT3. Therefore the more faces your model has, the longer the engine
-          needs to display your scenery item which may lead to lag. As a rule
-          of thumb try to stay below 500 faces, even better below 300. Note
-          that the engine uses triangular faces while most modern modelers can
-          use at least quads (faces with four corners or vertices). These are
-          converted to triangles in the export or conversion process, so the
-          actual number of faces may be a lot higher than your modeler
-          shows.</para>
+          <para>Keep the number of faces as low as possible. A face<indexterm>
+              <primary>face</primary>
+            </indexterm> (also called <quote>poly</quote>, <quote>tri</quote>
+          or <quote>triangle</quote>) is the smallest surface subunit of a
+          model and the unit that causes <quote>work</quote> for the 3D engine
+          of RCT3. Therefore the more faces your model has, the longer the
+          engine needs to display your scenery item which may lead to lag. As
+          a rule of thumb try to stay below 500 faces, even better below 300.
+          Note that the engine uses triangular faces while most modern
+          modelers can use at least quads (faces with four corners or
+          vertices). These are converted to triangles in the export or
+          conversion process, so the actual number of faces may be a lot
+          higher than your modeler shows.</para>
 
           <para>Some tips on how to keep your face number low:</para>
 
@@ -185,6 +192,14 @@
         </listitem>
 
         <listitem>
+          <indexterm>
+            <primary>Weld</primary>
+          </indexterm>
+
+          <indexterm>
+            <primary>Unweld</primary>
+          </indexterm>
+
           <para>Selectively weld/unweld your model. To understand this topic
           you first have to understand how the RCT3 3D engine (and probably
           all other 3D engines as well) calculates the lighting of the object.
@@ -214,18 +229,18 @@
           play. Imagine the corner of a cube. Usually your modeler creates it
           welded. This means the corner is only one vertex which is used by
           the three faces that border it. If you unweld this vertex (How to do
-          that depends on your modeler, search for <quote>Unweld</quote> or
-          <quote>Unbind points/vertices</quote>) a copy of it is created for
-          each face that uses it. In the example above the one corner vertex
-          is replaced by three, one for (and used by) each face. If you think
-          a bit about it you will realize what that means for the vertex
-          normal(s). If the vertex is welded, its vertex normal will point
-          away from the center of the cube and the engine of RCT3 will treat
-          it as if the object was supposed to be round there. If the vertex is
-          unwelded, each of the three vertices in it's place gets its own
-          vertex normal. As each is only part of one face, its vertex normal
-          is identical to the face normal. You may want to have a look at the
-          weld/unweld section on <ulink
+          that depends on your modeler, search for <guilabel>Unweld</guilabel>
+          or <guilabel>Unbind points/vertices</guilabel>) a copy of it is
+          created for each face that uses it. In the example above the one
+          corner vertex is replaced by three, one for (and used by) each face.
+          If you think a bit about it you will realize what that means for the
+          vertex normal(s). If the vertex is welded, its vertex normal will
+          point away from the center of the cube and the engine of RCT3 will
+          treat it as if the object was supposed to be round there. If the
+          vertex is unwelded, each of the three vertices in it's place gets
+          its own vertex normal. As each is only part of one face, its vertex
+          normal is identical to the face normal. You may want to have a look
+          at the weld/unweld section on <ulink
           url="http://belgabor.vodhin.net/facts">Belgabor's facts &amp;
           figures page</ulink> for some pictures about this. The take home
           message is you need to unweld vertices/edges if they are supposed to
@@ -237,8 +252,8 @@
           some edges that it's part of welded, you need to first unweld it and
           then weld the vertices of the faces whose common edge you want to
           have welded. Note: How to weld depends again on your modeler, it can
-          be a bit hard to find (for example it is called <quote>Remove
-          Doubles</quote> in Blender).</para>
+          be a bit hard to find (for example it is called <guilabel>Remove
+          Doubles</guilabel> in <application>Blender</application>).</para>
         </listitem>
 
         <listitem>
@@ -247,8 +262,9 @@
           uv-mapped bitmap textures, while most modelers use procedural
           (calculated) textures. There are ways to make a bitmap texture form
           such procedural textures (usually called
-          <quote>texture-baking</quote> or <quote>uv-baking</quote>), but
-          usually they don't lead to a satisfactory result.</para>
+          <guilabel>texture-baking</guilabel> or
+          <guilabel>uv-baking</guilabel>), but usually they don't lead to a
+          satisfactory result.</para>
         </listitem>
       </itemizedlist>
     </section>
@@ -256,19 +272,24 @@
     <section id="sect13">
       <title>Obtaining a bitmap texture for your model</title>
 
-      <para>As stated above you need to use bitmap textures for your custom
-      scenery 3D models. A further prerequisite for the final texture you'll
-      use in the importer is that it has to be square and its width and height
-      have to be a power of two (for example 64x64, 128x128 or 256x256). Note
-      that this size can have an effect on the objects load time and the
-      amount of memory needed later in the game leading to lag, so don't make
-      them bigger than necessary. I'd recommend to use 256x256. If you have a
-      very detailed texture you could use 512x512. If your object is
-      single-colored, even a 4x4 texture is enough (maybe even 1x1 works, but
-      I haven't tested that).</para>
+      <para><indexterm>
+          <primary>Model Texture</primary>
+
+          <secondary>Requirements</secondary>
+        </indexterm>As stated above you need to use bitmap textures for your
+      custom scenery 3D models. A further prerequisite for the final texture
+      you'll use in the importer is that it has to be square and its width and
+      height have to be a power of two (for example 64x64, 128x128 or
+      256x256). Note that this size can have an effect on the objects load
+      time and the amount of memory needed later in the game leading to lag,
+      so don't make them bigger than necessary. I'd recommend to use 256x256.
+      If you have a very detailed texture you could use 512x512. If your
+      object is single-colored, even a 4x4 texture is enough (maybe even 1x1
+      works, but I haven't tested that).</para>
 
       <para>The first (and hardest) option to obtain a texture is to draw it
-      yourself using a bitmap editor like Adobe Photoshop or The Gimp. Even if
+      yourself using a bitmap editor like <application>Adobe
+      Photoshop</application> or <application>The Gimp</application>. Even if
       you don't want to draw your own texture it is a good idea to have a
       bitmap editor around to resize or manipulate them.</para>
 
@@ -284,14 +305,20 @@
       others may not host the set or rip your models or textures without your
       permission =)</para>
 
-      <para>A third possibility is to use a special texture creation software.
-      A good (and free) example is Wood Workshop by <ulink
+      <para><indexterm>
+          <primary>Model Tetxure</primary>
+
+          <secondary>Creation Software</secondary>
+        </indexterm>A third possibility is to use a special texture creation
+      software. A good (and free) example is <application>Wood
+      Workshop</application> by <ulink
       url="http://www.spiralgraphics.biz/index.htm">Spiral Graphics</ulink>,
       which is a tuned-down version of their commercial texture creator,
-      Genetica. They also offer free texture packs which can be used with the
-      Genetica Viewer (also free). There are also other texture creation
-      software packages, just Google for them (and tell me if you find a good
-      free one :-P ).</para>
+      <application>Genetica</application>. They also offer free texture packs
+      which can be used with the <application>Genetica Viewer</application>
+      (also free). There are also other texture creation software packages,
+      just Google for them (and tell me if you find a good free one :-P
+      ).</para>
 
       <para>In whatever way you get your texture, it is always good to get a
       seamless one. A seamless texture is a texture that doesn't have a
@@ -299,15 +326,19 @@
       sloppiness when uv-mapping or getting a more detailed looking model with
       a smaller actual texture size.</para>
 
-      <para>You also should create an icon texture at this point. This is a
-      bitmap that will hold menu icons for your theme. It has the same
-      restrictions as a model texture, the only thing that is different is
-      that you can (and should) use a png with transparency here, otherwise
-      the alternating white/gray background will not show through. The
-      standard size is 512x512 and usually 64x64 icons are set up. You don't
-      need to create the final icons at this point, but at least a temporary
-      icon texture is needed. Icons are later numbered starting at the top
-      left, going right first and then down (like western writing).</para>
+      <para>You also should create an icon texture<indexterm>
+          <primary>Icon texture</primary>
+
+          <secondary>Creating</secondary>
+        </indexterm> at this point. This is a bitmap that will hold menu icons
+      for your theme. It has the same restrictions as a model texture, the
+      only thing that is different is that you can (and should) use a png with
+      transparency here, otherwise the alternating white/gray background will
+      not show through. The standard size is 512x512 and usually 64x64 icons
+      are set up. You don't need to create the final icons at this point, but
+      at least a temporary icon texture is needed. Icons are later numbered
+      starting at the top left, going right first and then down (like western
+      writing).</para>
     </section>
 
     <section id="sect14">
@@ -397,8 +428,10 @@
       <title>Coordinate system</title>
 
       <para>As long as you are still in your 3D modeler you should take note
-      which coordinate system it uses. We need two properties, which axis
-      points up and its handedness. The first is easy, just have a look
+      which <indexterm>
+          <primary>Coordinate systems</primary>
+        </indexterm>coordinate system it uses. We need two properties, which
+      axis points up and its handedness. The first is easy, just have a look
       whether the x, y or z axis points up. The second is a bit more tricky. A
       coordinate system can be left or right-handed. Here is how to determine
       the handedness:</para>
@@ -419,12 +452,16 @@
     <section>
       <title>Converting the model</title>
 
-      <para>The importer only supports loading ASE and MS3D files at the
-      moment. If you can directly save or export to one of these formats, do
-      so and skip this section. If not, you need to convert your model to ASE.
-      The free converter of choice is <ulink
-      url="http://mirex.mypage.sk/index.php?selected=1">Biturn</ulink>. Get it
-      and convert you model to ASE (3ds max ascii) format. It's not
+      <para><indexterm>
+          <primary>Model</primary>
+
+          <secondary>Converting</secondary>
+        </indexterm>The importer only supports loading ASE and MS3D files at
+      the moment. If you can directly save or export to one of these formats,
+      do so and skip this section. If not, you need to convert your model to
+      ASE. The free converter of choice is <ulink
+      url="http://mirex.mypage.sk/index.php?selected=1"><application>Biturn</application></ulink>.
+      Get it and convert you model to ASE (3ds max ascii) format. It's not
       recommended to convert to ms3d format as biturn is known to do strange
       coordinate system conversions when converting from ms3d, no one knows
       what it will do if you convert to ms3d.</para>
@@ -445,9 +482,10 @@
     <section>
       <title>A few notes on OVL files</title>
 
-      <para>The OVL file format has been designed for RCT3 by Frontier. You
-      don't have to know everything about their internals, but there are a few
-      things you have to know:</para>
+      <para>The OVL file format has been designed for
+      <application>RCT3</application> by Frontier. You don't have to know
+      everything about their internals, but there are a few things you have to
+      know:</para>
 
       <itemizedlist>
         <listitem>
@@ -481,8 +519,10 @@
     <section>
       <title>Primary setup</title>
 
-      <para>After starting the importer you'll see the main window of the
-      importer:</para>
+      <para><indexterm>
+          <primary>Main Window</primary>
+        </indexterm>After starting the importer you'll see the main window of
+      the importer:</para>
 
       <figure>
         <title>RCT3 Custom Scenery Importer, Main Window</title>
@@ -504,9 +544,13 @@
       to scenery ovl names and the set directory. It should identify you as
       the creator, so set it to your screen name or to an abbreviated form of
       it. You should also end it with a separator of some kind, recommended is
-      a <quote>-</quote>. At this point you can also save this prefix, choose
-      File-&gt;Save Default Prefix from the menu. If you do this you won't
-      have to repeat this step for you next theme.</para>
+      a <userinput>-</userinput>. At this point you can also save this prefix,
+      choose <menuchoice>
+          <guimenu>File</guimenu>
+
+          <guisubmenu>Save Default Prefix</guisubmenu>
+        </menuchoice> from the menu. If you do this you won't have to repeat
+      this step for you next theme.</para>
 
       <important>
         <para>You can leave the prefix empty, but it is not recommended to do
@@ -531,9 +575,14 @@
     <section id="sect22">
       <title>Create a scenery ovl</title>
 
-      <para>Now it's time to create the first scenery ovl, so press the
-      <quote>Create Scenery OVL</quote> button (7) in the main window. This
-      will open the Create Scenery OVL window:</para>
+      <para><indexterm>
+          <primary>Scenery OVL</primary>
+
+          <secondary>Creating</secondary>
+        </indexterm>Now it's time to create the first scenery ovl, so press
+      the <guibutton>Create Scenery OVL</guibutton> button (7) in the main
+      window. This will open the <guilabel>Create Scenery OVL</guilabel>
+      window:</para>
 
       <figure>
         <title>RCT3 Custom Scenery Importer, Create Scenery OVL Window</title>
@@ -551,24 +600,30 @@
       or have more, but basically they all work the same. For example take a
       look at the texture list (4). At the top you can find an up/down control
       that allows you to change the order of the items. Below it there's a
-      group of buttons that allow you to add a new item (<quote>+</quote>),
-      edit it (<quote>E</quote>), copy it (<quote>C</quote>) or delete it
-      (<quote>-</quote>). The flat <quote>C</quote> button will delete the
-      whole list. Double-clicking on a list entry will usually perform the
-      same action as selecting it and pressing the <quote>E</quote> edit
-      button. Don't worry, all buttons will show a short help text when you
-      hover the mouse cursor over them for a bit :-)</para>
+      group of buttons that allow you to add a new item
+      (<guibutton>+</guibutton>), edit it (<guibutton>E</guibutton>), copy it
+      (<guibutton>C</guibutton>) or delete it (<guibutton>-</guibutton>). The
+      flat <guibutton>C</guibutton> button will delete the whole list.
+      <mousebutton>Double-clicking</mousebutton> on a list entry will usually
+      perform the same action as selecting it and pressing the
+      <guibutton>E</guibutton> edit button. Don't worry, all buttons will show
+      a short help text when you hover the mouse cursor over them for a bit
+      :-)</para>
 
       <para>Now lets start.</para>
 
       <section>
         <title>Add the texture</title>
 
-        <para>First you have to add your model texture, so press the add
-        button (<quote>+</quote>) in the texture list (4). This will open a
-        file selection window, so go on and select your texture bitmap file
-        and press <quote>Ok</quote>. You will then get the <quote>Add
-        Texture</quote> window:</para>
+        <para><indexterm>
+            <primary>Model Texture</primary>
+
+            <secondary>Adding</secondary>
+          </indexterm>First you have to add your model texture, so press the
+        add button (<guibutton>+</guibutton>) in the texture list (4). This
+        will open a file selection window, so go on and select your texture
+        bitmap file and press <guibutton>Ok</guibutton>. You will then get the
+        <guilabel>Add Texture</guilabel> window:</para>
 
         <figure>
           <title>RCT3 Custom Scenery Importer, Add Texture Window</title>
@@ -580,20 +635,23 @@
           </mediaobject>
         </figure>
 
-        <para>The texture name (a) and file name (b) should be filled with the
-        name and path to the texture file you chose. Basically there is
-        nothing you need to change, although you can change the Texture Name
-        (a) if you want to. When you're finished, press Ok (c). If you get an
-        error message this usually means that something is wrong with your
-        texture bitmap (review <xref linkend="sect13" />). Fix the problem and
-        press Ok (c) again. If you need to change the file, press the Open
-        button in (6) and select the correct one.</para>
+        <para>The <guilabel>Texture Name</guilabel> (a) and <guilabel>Texture
+        Filename</guilabel> (b) should be filled with the name and path to the
+        texture file you chose. Basically there is nothing you need to change,
+        although you can change the <guilabel>Texture Name</guilabel> (a) if
+        you want to. When you're finished, press <guibutton>Ok</guibutton>
+        (c). If you get an error message this usually means that something is
+        wrong with your texture bitmap (review <xref linkend="sect13" />). Fix
+        the problem and press <guibutton>Ok</guibutton> (c) again. If you need
+        to change the file, press the <guibutton>Open</guibutton> button in
+        (6) and select the correct one.</para>
 
         <note>
-          <para>If you press <quote>Cancel</quote> in the first file selection
-          window or try to edit the texture later you get the Advanced Texture
-          Settings window. This is not covered here. If you can't figure it
-          out, simply delete and re add the texture.</para>
+          <para>If you press <guibutton>Cancel</guibutton> in the first file
+          selection window or try to edit the texture later you get the
+          <guilabel>Advanced Texture Settings</guilabel> window. This is not
+          covered here. If you can't figure it out, simply delete and re add
+          the texture.</para>
         </note>
 
         <para>After adding the texture it appears in the list (4).</para>
@@ -602,9 +660,18 @@
       <section>
         <title>Add the model</title>
 
-        <para>Back in the Create Scenery OVL window, press the add button
-        (<quote>+</quote>) in the model list (5). You will get the Model
-        Settings window:</para>
+        <para><indexterm>
+            <primary>Model</primary>
+
+            <secondary>Adding</secondary>
+          </indexterm><indexterm>
+            <primary>Model</primary>
+
+            <secondary>Settings</secondary>
+          </indexterm>Back in the <guilabel>Create Scenery OVL</guilabel>
+        window, press the add button (<guibutton>+</guibutton>) in the model
+        list (5). You will get the <guilabel>Model Settings</guilabel>
+        window:</para>
 
         <figure>
           <title>RCT3 Custom Scenery Importer, Model Settings Window</title>
@@ -616,13 +683,14 @@
           </mediaobject>
         </figure>
 
-        <para>First, press the Open button (b) and select your model file. If
-        you get an error, review <xref linkend="sect12" /> and/or <xref
-        linkend="sect14" />. Before continuing, have a look at the mesh list
-        (e). If there are only dark red (maroon) entries, you probably forgot
-        to uv-map the model (review <xref linkend="sect14" />). After opening
-        the file, the name (a) will be pre-filled based on the model file
-        name, you can change it if you want.</para>
+        <para>First, press the <guibutton>Open</guibutton> button (b) and
+        select your model file. If you get an error, review <xref
+        linkend="sect12" /> and/or <xref linkend="sect14" />. Before
+        continuing, have a look at the mesh list (e). If there are only dark
+        red (maroon) entries, you probably forgot to uv-map the model (review
+        <xref linkend="sect14" />). After opening the file, the name (a) will
+        be pre-filled based on the model file name, you can change it if you
+        want.</para>
 
         <para>Now it's time to setup the model transformation matrix that will
         convert the model from the coordinate system your modeler uses to the
@@ -643,7 +711,9 @@
               <row>
                 <entry>Left-handed, Y-up</entry>
 
-                <entry>Some 3DStudio/3DS max versions</entry>
+                <entry>Some
+                <application>3DStudio</application>/<application>3DS
+                max</application> versions</entry>
 
                 <entry>(none)</entry>
               </row>
@@ -651,7 +721,8 @@
               <row>
                 <entry>Right-handed, Z-up</entry>
 
-                <entry>Most 3d modelers (e.g. Blender)</entry>
+                <entry>Most 3d modelers (e.g.
+                <application>Blender</application>)</entry>
 
                 <entry>Fix Orientation</entry>
               </row>
@@ -659,7 +730,7 @@
               <row>
                 <entry>Right-handed, Y-up</entry>
 
-                <entry>MilkShape</entry>
+                <entry><application>MilkShape</application></entry>
 
                 <entry>MirrorZ <emphasis role="bold">(Automatically set since
                 v16fix5)</emphasis></entry>
@@ -668,21 +739,26 @@
           </tgroup>
         </informaltable>
 
-        <para>If you need a transformation matrix, press the Edit button (c)
-        to open the Matrix Editor and press the button name in the table
-        above. Close the editor by pressing the <quote>Ok</quote> button. Back
-        in the Model Settings window you can now press the Save Default button
-        (d). The transformation matrix you chose will then be applied to every
-        new model you add, so you won't have to repeat this step.</para>
+        <para>If you need a transformation matrix, press the
+        <guibutton>Edit</guibutton> button (c) to open the <guilabel>Matrix
+        Editor</guilabel> and press the button name in the table above. Close
+        the editor by pressing the <guibutton>Ok</guibutton> button. Back in
+        the Model Settings window you can now press the <guibutton>Save
+        Default</guibutton> button (d). The transformation matrix you chose
+        will then be applied to every new model you add, so you won't have to
+        repeat this step.</para>
 
         <para>The next step is to assign the model texture to your mesh.
         Usually you should have only one for your first object. If you used
-        Biturn to convert your model there will be an additional mesh called
-        <quote>root</quote>, just ignore it.</para>
+        <application>Biturn</application> to convert your model there will be
+        an additional mesh called <quote>root</quote>, just ignore it.</para>
 
-        <para>Double-click the mesh (which currently should be bright red) you
-        want to assign a texture to (or select it and press the <quote>Edit
-        Mesh Settings</quote> button). You will get the Mesh Settings
+        <para><indexterm>
+            <primary>Mesh Settings</primary>
+          </indexterm><mousebutton>Double-click</mousebutton> the mesh (which
+        currently should be bright red) you want to assign a texture to (or
+        select it and press the <guibutton>Edit Mesh Settings</guibutton>
+        button). You will get the <guilabel>Mesh Settings</guilabel>
         window:</para>
 
         <figure>
@@ -697,29 +773,31 @@
 
         <para>Select the model texture from the drop-down list (A). If your
         object has more than one mesh that should get the same settings, check
-        <quote>Apply to All Meshes</quote> (C). When you're finished, press Ok
-        (C).</para>
+        <guilabel>Apply to All Meshes</guilabel> (B). When you're finished,
+        press <guibutton>Ok</guibutton> (C).</para>
 
-        <para>We are now finished setting up the model, so back in the Model
-        Settings window close it by pressing Ok (f).</para>
+        <para>We are now finished setting up the model, so back in the
+        <guilabel>Model Settings</guilabel> window close it by pressing
+        <guibutton>Ok</guibutton> (f).</para>
       </section>
 
       <section>
         <title>Set up Levels of Detail (LODs)</title>
 
         <para>Fortunately for your first object this step is very easy, just
-        press the <quote>A</quote> button in the LOD list (6). This will add
-        three default levels of detail that use the model you just
+        press the <guibutton>A</guibutton> button in the LOD list (6). This
+        will add three default levels of detail that use the model you just
         added.</para>
       </section>
 
       <section>
         <title>Save and Create</title>
 
-        <para>Now everything is set up. First, press the save as button (2)
-        and save the settings for your object to a scn file. Now press the
-        Create button (7) which should now be enabled and say <quote>Create
-        Scenery OVL</quote> if you did everything correctly.</para>
+        <para>Now everything is set up. First, press the <guiicon>Save
+        As</guiicon> button (2) and save the settings for your object to a scn
+        file. Now press the <guibutton>Create</guibutton> button (7) which
+        should now be enabled and say <guibutton>Create Scenery
+        OVL</guibutton> if you did everything correctly.</para>
 
         <para>Select the filename you want to save the ovl to, do not enter
         any file extension and keep the prefix in the name. You also may only
@@ -730,13 +808,14 @@
         created successfully. If not, you didn't follow the instructions above
         (or did something unexpected).</para>
 
-        <para>After successfully creating the ovl, press the save button (1)
-        to save your scn file again (this will store the path of the ovl file
-        you just created so you don't have to enter it again when you need to
-        recreate it).</para>
+        <para>After successfully creating the ovl, press the
+        <guiicon>Save</guiicon> button (1) to save your scn file again (this
+        will store the path of the ovl file you just created so you don't have
+        to enter it again when you need to recreate it).</para>
 
         <para>You're now finished creating your first scenery ovl. Press the
-        exit button (3) to go back to the main window.</para>
+        <guiicon>Exit</guiicon> button (3) to go back to the main
+        window.</para>
       </section>
     </section>
 
@@ -749,8 +828,8 @@
       <section>
         <title>Add the icon texture</title>
 
-        <para>Press the <quote>Icon Textures</quote> button (6) to get to the
-        Icon Texture Management window:</para>
+        <para>Press the <guibutton>Icon Textures</guibutton> button (6) to get
+        to the <guilabel>Icon Texture Management</guilabel> window:</para>
 
         <figure>
           <title>RCT3 Custom Scenery Importer, Management Window</title>
@@ -767,8 +846,14 @@
           screen shots will be shown.</para>
         </note>
 
-        <para>Now press the <quote>Add</quote> button to get to the Icon
-        Texture window:</para>
+        <para><indexterm>
+            <primary>Icon Texture</primary>
+
+            <secondary>Adding</secondary>
+          </indexterm><indexterm>
+            <primary>Icon Texture, Settings</primary>
+          </indexterm>Now press the <guibutton>Add</guibutton> button to get
+        to the <guilabel>Icon Texture</guilabel> window:</para>
 
         <figure>
           <title>RCT3 Custom Scenery Importer, Icon Texture Window</title>
@@ -780,10 +865,11 @@
           </mediaobject>
         </figure>
 
-        <para>Press the Load Texture button (b) and select your icon texture.
-        As with the model texture, the name (a) will be filled in
-        automatically, but you can change it if you want. Press Ok (c) when
-        finished and close the management window.</para>
+        <para>Press the <guibutton>Load Texture</guibutton> button (b) and
+        select your icon texture. As with the model texture, the name (a) will
+        be filled in automatically, but you can change it if you want. Press
+        <guibutton>Ok</guibutton> (c) when finished and close the management
+        window.</para>
 
         <note>
           <para>As the management window implies you are not restricted to
@@ -795,22 +881,28 @@
       <section>
         <title>Add icon references</title>
 
-        <para>Back in the main window press the Icon References button (9) to
-        get to the Icon Reference Manager. Icon references are needed to tell
-        RCT3 where on the icon texture the individual icons are placed. We
-        will go the easy way, so just press the <quote>Auto</quote> button,
+        <para>Back in the main window press the <guibutton>Icon
+        References</guibutton> button (9) to get to the <guilabel>Icon
+        Reference Manager</guilabel>. Icon references are needed to tell RCT3
+        where on the icon texture the individual icons are placed. We will go
+        the easy way, so just press the <guibutton>Auto</guibutton> button,
         leave your icon texture selected in the window that pops up and press
-        <quote>Ok</quote>. This will add references for all icons as described
-        above (<xref linkend="sect13" />). Now close the management
+        <guibutton>Ok</guibutton>. This will add references for all icons as
+        described above (<xref linkend="sect13" />). Now close the management
         window.</para>
       </section>
 
       <section>
         <title>Add text strings</title>
 
-        <para>Text strings represent the menu text entries the user will see
-        in the game. Open the Text String Management window (8) and press the
-        <quote>Add</quote> button:</para>
+        <para><indexterm>
+            <primary>Text Strings</primary>
+
+            <secondary>Settings</secondary>
+          </indexterm>Text strings represent the menu text entries the user
+        will see in the game. Open the <guilabel>Text String
+        Manager</guilabel> window (8) and press the <guibutton>Add</guibutton>
+        button:</para>
 
         <figure>
           <title>RCT3 Custom Scenery Importer, Text String Window</title>
@@ -840,19 +932,24 @@
         </note>
 
         <para>After entering the menu text for the group, close the window by
-        pressing Ok (c).</para>
+        pressing <guibutton>Ok</guibutton> (c).</para>
 
         <para>Back in the manager add another text string for your scenery
-        object. The process is the same. When you're finished, close the Text
-        String Management window.</para>
+        object. The process is the same. When you're finished, close the
+        <guilabel>Text String Manager</guilabel> window.</para>
       </section>
 
       <section>
         <title>Add your scenery item</title>
 
-        <para>Open the Scenery Item Management window by pressing the
-        respective button (5). After pressing <quote>Add</quote> you get the
-        Scenery Item Settings window:</para>
+        <para><indexterm>
+            <primary>Scenery Item</primary>
+
+            <secondary>Settings</secondary>
+          </indexterm>Open the <guilabel>Scenery Item Manager</guilabel>
+        window by pressing the respective button (5). After pressing
+        <guibutton>Add</guibutton> you get the Scenery Item Settings
+        window:</para>
 
         <figure>
           <title>RCT3 Custom Scenery Importer, Scenery Item Settings
@@ -865,77 +962,95 @@
           </mediaobject>
         </figure>
 
-        <para>First, press the Select OVL button (a) and select the ovl you
-        created above (<xref linkend="sect22" />). Next enter a location (b).
-        This is the subdirectory of your installed theme the ovl will be
-        placed in. If you can't think of something better, use
-        <quote>misc</quote>. When you add more items to your set later, you
-        can use the drop-down list to select locations you used before. As
-        this translates directly into a directory, only ASCII characters are
-        allowed.</para>
+        <para>First, press the <guibutton>Select OVL</guibutton> button (a)
+        and select the ovl you created above (<xref linkend="sect22" />). Next
+        enter a location (b). This is the subdirectory of your installed theme
+        the ovl will be placed in. If you can't think of something better, use
+        <userinput>misc</userinput>. When you add more items to your set
+        later, you can use the drop-down list to select locations you used
+        before. As this translates directly into a directory, only ASCII
+        characters are allowed.</para>
 
         <para>If you don't want to use a group you have to disable it using
         the check box (c), but as mentioned above this is not recommended.
         Otherwise select an icon reference (d) and text string (e) for the
-        group. You have to do the same for your scenery item in (f) and
-        (g).</para>
+        <guilabel>Group</guilabel>. You have to do the same for your
+        <guilabel>Scenery</guilabel> item in (f) and (g).</para>
 
-        <para>Next set how much the item will cost and the refund (j).
-        Actually the latter is a misnomer, it is the cost of removing the
-        item, so if you want a real refund, enter a negative value. The values
-        you enter here are measured in the smallest unit of the users
-        configured currency (e.g. cents for Dollars or Euros).</para>
+        <para>Next set how much the item will <guilabel>Cost</guilabel> and
+        the <guilabel>Refund</guilabel> (j). Actually the latter is a
+        misnomer, it is the cost of removing the item, so if you want a real
+        refund, enter a negative value. The values you enter here are measured
+        in the smallest unit of the users configured currency (e.g. cents for
+        Dollars or Euros).</para>
 
-        <para>The scenery type (k) selects in which menu and category the item
-        will appear. For your first item, select <quote>Small Scenery</quote>.
-        Leave the support type (l) at <quote>None</quote> and set extra
-        parameters (m) to <quote>none</quote> as well.</para>
+        <para>The <guilabel>Scenery Type</guilabel> (k) selects in which menu
+        and category the item will appear. For your first item, select
+        <guilabel>Small Scenery</guilabel>. Leave the <guilabel>Support
+        Type</guilabel> (l) at <guilabel>None</guilabel> and set
+        <guilabel>Extra Parameters</guilabel> (m) to <guilabel>None</guilabel>
+        as well.</para>
 
-        <para>All position parameters (n) should be set to 0 (zero), the size
-        in squares (p) both to 1. The size (o) should be set to the size of
-        your model in modeler units. You have to keep in mind in this case
-        that x/y/z here refer to the game's coordinate system. This doesn't
-        matter if you didn't need a model transformation matrix or use
-        MilkShape. If you had to use the <quote>Fix Orientation</quote> matrix
-        you need to shift the values <quote>one up</quote>, so the size in the
-        x direction in your modeler goes into z, y into x and z into y.</para>
+        <para>All <guilabel>Position</guilabel> parameters (n) should be set
+        to <userinput>0</userinput> (zero), the <guilabel>Size in
+        squares</guilabel> (p) both to <userinput>1</userinput>. The
+        <guilabel>Size</guilabel> (o) should be set to the size of your model
+        in modeler units. You have to keep in mind in this case that x/y/z
+        here refer to the game's coordinate system. This doesn't matter if you
+        didn't need a model transformation matrix or use
+        <application>MilkShape</application>. If you had to use the
+        <guilabel>Fix Orientation</guilabel> matrix you need to shift the
+        values <quote>one up</quote>, so the size in the x direction in your
+        modeler goes into <guilabel>Z</guilabel>, y into
+        <guilabel>X</guilabel> and z into <guilabel>Y</guilabel>.</para>
 
-        <para>The size flag (q) is rather a positioning type flag. For your
-        first object, select <quote>Full Tile</quote>. If you want to know
-        more about this setting and how you need to position your model
-        correctly for them, see <ulink
+        <para>The <guilabel>Size Flag</guilabel> (q) is rather a positioning
+        type flag. For your first object, select <guilabel>Full
+        Tile</guilabel>. If you want to know more about this setting and how
+        you need to position your model correctly for them, see <ulink
         url="http://belgabor.vodhin.net/facts">Belgabor's facts &amp; figures
         page</ulink>.</para>
 
-        <para>We don't need to go into detail for the unknowns (r), not much
-        is known about them anyways. Set Unknown1 and 2 to unknown1 and enter
-        0 (zero) for all others. Leave the flags alone.</para>
+        <para>We don't need to go into detail for the
+        <guilabel>Unknowns</guilabel> (r), not much is known about them
+        anyways. Set <guilabel>Unknown1</guilabel> and
+        <guilabel>Unknown2</guilabel> to <guilabel>unknown1</guilabel> and
+        enter <userinput>0</userinput> (zero) for all others. Leave the flags
+        alone.</para>
 
         <note>
-          <para>You can use the Save SID as button (i) to save the Scenery
-          Options (with the exception of Cost, Refund and Supports Type),
-          Unknowns and Flags to a file for later reference (e.g. when you want
-          to create several items with the same settings). You can open these
-          files with the Open SID button (h). There is also a library of sid
-          files dumped form game objects on <ulink
-          url="http://www.sebar.com/jonwil">jonwil's page</ulink>.</para>
+          <para>You can use the <guibutton>Save SID as</guibutton> button (i)
+          to save the <guilabel>Scenery Options</guilabel> (with the exception
+          of Cost, Refund and Supports Type), <guilabel>Unknowns</guilabel>
+          and <guilabel>Flags</guilabel> to a file for later reference (e.g.
+          when you want to create several items with the same settings). You
+          can open these files with the <guibutton>Open SID</guibutton> button
+          (h). There is also a library of sid files dumped form game objects
+          on <ulink url="http://www.sebar.com/jonwil">jonwil's
+          page</ulink>.</para>
         </note>
 
-        <para>You're finished here, so press Ok (s) to close the window. Also
-        close the Scenery Item Management window.</para>
+        <para>You're finished here, so press <guibutton>Ok</guibutton> (s) to
+        close the window. Also close the <guilabel>Scenery Item
+        Management</guilabel> window.</para>
       </section>
     </section>
 
     <section>
       <title>Save and install the theme</title>
 
-      <para>Now we nearly made it. Choose File-&gt;Save Theme File from the
-      menu of the main window to save your theme file. Now press the Install
-      button (4) to install it. It will be saved to &lt;RCT3 Installation
-      Directory&gt;\Style\Themed into a subdirectory called PrefixThemename.
-      If you don't have RCT3 installed, you will be able to select a directory
-      to install to instead of &lt;RCT3 Installation
-      Directory&gt;\Style\Themed.</para>
+      <para>Now we nearly made it. Choose <menuchoice>
+          <guimenu>File</guimenu>
+
+          <guimenuitem>Save Theme File</guimenuitem>
+        </menuchoice> from the menu of the main window to save your theme
+      file. Now press the <guibutton>Install</guibutton> button (4) to install
+      it. It will be saved to <filename class="directory">&lt;RCT3
+      Installation Directory&gt;\Style\Themed</filename> into a subdirectory
+      called <filename class="directory">PrefixThemename</filename>. If you
+      don't have RCT3 installed, you will be able to select a directory to
+      install to instead of <filename class="directory">&lt;RCT3 Installation
+      Directory&gt;\Style\Themed</filename>.</para>
 
       <para>Now start RCT3 and test if everything went well.</para>
 
@@ -967,7 +1082,7 @@
     <para role="matterform"><ulink
     url="http://www.matterform.com/"><inlinemediaobject>
         <imageobject>
-          <imagedata fileref="images/qb_credit.gif" scale="100" scalefit="0" />
+          <imagedata fileref="/images/qb_credit.gif" scale="100" scalefit="0" />
         </imageobject>
       </inlinemediaobject></ulink></para>
 
@@ -977,11 +1092,11 @@
         </imageobject>
 
         <imageobject role="pdf">
-          <imagedata fileref="images/sflogo.png" />
+          <imagedata fileref="/images/sflogo.png" />
         </imageobject>
 
         <imageobject role="chm">
-          <imagedata fileref="images/sflogo.png" />
+          <imagedata fileref="/images/sflogo.png" />
         </imageobject>
       </inlinemediaobject></ulink></para>
   </section>

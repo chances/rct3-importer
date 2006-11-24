@@ -85,44 +85,48 @@ H2
         PADDING: 1px
 }
 
-div.IMPORTANT
-{
-        font-style:italic;
-        border: solid 2px #ff0000;
+div.important, div.note, div.caution, div.tip, div.warning {
         width: 70%;
-        margin-left: 15%;       
+        margin-left: 15%;
+		padding: 5px;
+		margin-top: 2px;
 }
-div.CAUTION
-{
+
+div.important p, div.note p, div.caution p, div.tip p, div.warning p {
         font-style:italic;
+		margin: 0px;
+}
+
+div.important h3, div.note h3, div.caution h3, div.tip h3, div.warning h3 {
+		margin-top: 0px;
+		margin-bottom: 8px;
+		font-size: large;
+}
+
+div.important
+{
+        border: solid 1px #ff0000;
+		background-color: #ffeeee;
+}
+div.caution
+{
         border: ridge 2px #ffff00;
-        width: 70%;
-        margin-left: 15%;       
 }
 
-div.NOTE
+div.note
 {
-        font-style:italic;
-        border: solid 1px #000000;
-        width: 70%;
-        margin-left: 15%;       
+        border: dotted 1px #663300;
+		background-color: #ffffcc;
 }
-TABLE.TIP
+div.tip
 {
-        font-style:italic;
         border: solid 1px #000000;
-        width: 70%;
-        margin-left: 15%;       
 }
 
-Tdiv.WARNING
+div.warning
 {
-        font-style:italic;
         font-weight: bold;
         border: ridge 4px #ff0000;
-        
-        width: 70%;
-        margin-left: 15%;       
 }
 
 DIV.VARIABLELIST {
@@ -302,10 +306,53 @@ DIV.TOC {
         width: 95%;
 }
 
-UL  {
-        list-style: url("images/tux-bullet.png") disc;
-    }
-	
+div.revhistory {
+	display: none;
+}
+
+span.guilabel {
+	font-weight: bold;
+}
+
+span.guibutton {
+	border: outset 1px #dddddd;
+	font-size: smaller;
+	padding: 2px;
+	font-style: normal;
+	background-color: #dddddd;
+}
+
+span.application {
+	font-variant: small-caps;
+}
+
+strong.userinput {
+	background-color: #eeeeee;
+	font-size: larger;
+}
+
+strong.keycap {
+	border: outset 2px;
+	font-size: smaller;
+	padding: 2px;
+	font-style: normal;
+	background-color: #fafafa;
+}
+
+span.mousebutton {
+	font-variant: small-caps;
+	font-weight: bold;
+}	
+
+h3.author, h3.author:before {
+	font-size: small;
+	font-weight: normal;
+}
+
+h3.author:before {
+	content: "Written by: ";
+}
+
 p.matterform img {
 	border: 0px;
 }
