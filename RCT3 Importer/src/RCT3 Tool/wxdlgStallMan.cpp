@@ -46,6 +46,7 @@ EVT_BUTTON(XRCID("m_Add"), dlgStallMan::OnAdd)
 EVT_BUTTON(XRCID("m_Edit"), dlgStallMan::OnEdit)
 EVT_BUTTON(XRCID("m_Delete"), dlgStallMan::OnDelete)
 EVT_BUTTON(XRCID("m_Close"), dlgStallMan::OnClose)
+EVT_LISTBOX_DCLICK(XRCID("m_StallList"), dlgStallMan::OnEdit)
 END_EVENT_TABLE()
 
 dlgStallMan::dlgStallMan(wxWindow *parent) {

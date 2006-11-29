@@ -46,6 +46,7 @@ EVT_BUTTON(XRCID("m_Add"), dlgAttractMan::OnAdd)
 EVT_BUTTON(XRCID("m_Edit"), dlgAttractMan::OnEdit)
 EVT_BUTTON(XRCID("m_Delete"), dlgAttractMan::OnDelete)
 EVT_BUTTON(XRCID("m_Close"), dlgAttractMan::OnClose)
+EVT_LISTBOX_DCLICK(XRCID("m_AttractionList"), dlgAttractMan::OnEdit)
 END_EVENT_TABLE()
 
 dlgAttractMan::dlgAttractMan(wxWindow *parent) {

@@ -2,7 +2,7 @@
 <resource xmlns="http://www.wxwindows.org/wxxrc" version="2.3.0.1">
 	<object class="wxDialog" name="dlgCreateScenery">
 		<style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
-		<title>Create Scenery</title>
+		<title>Create OVL</title>
 		<centered>1</centered>
 		<object class="wxBoxSizer">
 			<orient>wxVERTICAL</orient>

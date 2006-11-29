@@ -372,6 +372,7 @@ void dlgModel::OnMeshEdit(wxCommandEvent& WXUNUSED(event)) {
                 m_model.meshstructs[i].disabled = true;
         }
         m_htlbMesh->UpdateContents();
+        m_htlbMesh->ScrollToLine(sel);
         return;
     }
 
@@ -389,6 +390,7 @@ void dlgModel::OnMeshEdit(wxCommandEvent& WXUNUSED(event)) {
             m_model.meshstructs[sel] = dialog->GetMeshStruct();
         }
         m_htlbMesh->UpdateContents();
+        m_htlbMesh->ScrollToLine(sel);
     }
     dialog->Destroy();
 }

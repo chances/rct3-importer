@@ -42,6 +42,10 @@ extern std::vector <Scenery *> SceneryItems;
 extern bool save;
 extern int CurrentStall;
 
+BEGIN_EVENT_TABLE(dlgStall,wxDialog)
+EVT_BUTTON(XRCID("m_btDefault"), dlgStall::OnDefault)
+END_EVENT_TABLE()
+
 dlgStall::dlgStall(wxWindow *parent) {
     InitWidgetsFromXRC((wxWindow *)parent);
     for (unsigned int i = 0;i < cTextStrings.size();i++)
@@ -79,4 +83,15 @@ dlgStall::dlgStall(wxWindow *parent) {
     m_Unk16->SetValidator(wxGenericValidator((int *)&Unk16));
     m_OK->SetId(wxID_OK);
     m_Cancel->SetId(wxID_CANCEL);
+}
+
+void dlgStall::OnDefault(wxCommandEvent& WXUNUSED(event)) {
+    m_Unk2->SetValue(wxT("10000"));
+    m_Unk3->SetValue(wxT("-7500"));
+    m_Unk11->SetValue(wxT("6"));
+    m_Unk12->SetValue(wxT("7"));
+    m_Unk13->SetValue(wxT("5"));
+    m_Unk14->SetValue(wxT("7"));
+    m_Unk15->SetValue(wxT("8"));
+    m_Unk16->SetValue(wxT("9"));
 }

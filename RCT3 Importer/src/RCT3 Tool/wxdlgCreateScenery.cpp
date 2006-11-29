@@ -89,7 +89,14 @@ void wxTextureListBox::UpdateContents() {
 
 wxString wxTextureListBox::OnGetItem(size_t n) const {
     wxString addon = wxT("");
+    for (cFlexiTextureFrameIterator it = m_contents->flexitextures[n].Frames.begin(); it != m_contents->flexitextures[n].Frames.end(); it++) {
+        if (it->Alpha != wxT("")) {
+            addon += _("Alpha");
+            break;
+        }
+    }
     if (m_contents->flexitextures[n].Recolorable) {
+        addon += (addon != wxT(""))?wxT(", "):wxT("");
         addon += _("Recolorable");
     }
     if (m_contents->flexitextures[n].FPS > 0) {
@@ -353,6 +360,13 @@ void dlgCreateScenery::UpdateControlState() {
         m_btCreate->SetLabel(_("Create Scenery OVL"));
     else
         m_btCreate->SetLabel(_("Create Texture OVL"));
+
+    wxString title = _("Create OVL");
+    if (m_SCN.filename != wxT(""))
+        title += wxT(" - ") + m_SCN.filename.GetFullName();
+    if (m_SCN.ovlname != wxT(""))
+        title += wxT(" (") + m_SCN.ovlname.GetFullName() + wxT(")");
+    SetLabel(title);
 }
 
 bool dlgCreateScenery::TransferDataFromWindow() {

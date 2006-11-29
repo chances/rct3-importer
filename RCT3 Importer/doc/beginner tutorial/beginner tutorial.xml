@@ -25,7 +25,7 @@
       <revision>
         <revnumber>2</revnumber>
 
-        <date>21.11.2006</date>
+        <date>29.11.2006</date>
 
         <author>
           <surname>Belgabor</surname>
@@ -54,13 +54,13 @@
   <para>This document applies to the <application>RCT3 Importer</application>
   Version 16fix5.</para>
 
-  <section>
+  <section id="sect1">
     <title>Preparing for the import</title>
 
     <para>This section will show you what you need to do before running the
     importer.</para>
 
-    <section>
+    <section id="sect11">
       <title>Initial preparation</title>
 
       <para>While it may sound trivial, it's an important step to keep things
@@ -424,7 +424,7 @@
       </itemizedlist>
     </section>
 
-    <section>
+    <section id="sect15">
       <title>Coordinate system</title>
 
       <para>As long as you are still in your 3D modeler you should take note
@@ -449,7 +449,7 @@
       <para>In most cases you get a right-handed coordinate system.</para>
     </section>
 
-    <section>
+    <section id="sect16">
       <title>Converting the model</title>
 
       <para><indexterm>
@@ -467,7 +467,7 @@
       what it will do if you convert to ms3d.</para>
     </section>
 
-    <section>
+    <section id="sect17">
       <title>Getting and installing the importer</title>
 
       <para>Maybe you already did this, if not, get the importer form the
@@ -479,7 +479,7 @@
       update.</para>
     </section>
 
-    <section>
+    <section id="sect18">
       <title>A few notes on OVL files</title>
 
       <para>The OVL file format has been designed for
@@ -491,7 +491,7 @@
         <listitem>
           <para>You <emphasis>may not</emphasis> change the name of an OVL
           file in the Windows Explorer. If you want to change the name you
-          need to recreate it (see below).</para>
+          need to recreate it (see <xref linkend="sect224" />).</para>
         </listitem>
 
         <listitem>
@@ -504,19 +504,19 @@
         <listitem>
           <para>If you changed any file or directory name you have to delete
           any previously installed old version of your theme from Style/Themed
-          (see below).</para>
+          (see <xref linkend="sect24" />).</para>
         </listitem>
       </itemizedlist>
     </section>
   </section>
 
-  <section>
+  <section id="sect2">
     <title>Importing your first object</title>
 
     <para>At this point you should have installed the importer and prepared
     all necessary files (model, texture bitmap and icon bitmap).</para>
 
-    <section>
+    <section id="sect21">
       <title>Primary setup</title>
 
       <para><indexterm>
@@ -580,12 +580,11 @@
 
           <secondary>Creating</secondary>
         </indexterm>Now it's time to create the first scenery ovl, so press
-      the <guibutton>Create Scenery OVL</guibutton> button (7) in the main
-      window. This will open the <guilabel>Create Scenery OVL</guilabel>
-      window:</para>
+      the <guibutton>Create OVL</guibutton> button (7) in the main window.
+      This will open the <guilabel>Create OVL</guilabel> window:</para>
 
       <figure>
-        <title>RCT3 Custom Scenery Importer, Create Scenery OVL Window</title>
+        <title>RCT3 Custom Scenery Importer, Create OVL Window</title>
 
         <mediaobject>
           <imageobject>
@@ -612,7 +611,7 @@
 
       <para>Now lets start.</para>
 
-      <section>
+      <section id="sect221">
         <title>Add the texture</title>
 
         <para><indexterm>
@@ -657,7 +656,7 @@
         <para>After adding the texture it appears in the list (4).</para>
       </section>
 
-      <section>
+      <section id="sect222">
         <title>Add the model</title>
 
         <para><indexterm>
@@ -668,10 +667,9 @@
             <primary>Model</primary>
 
             <secondary>Settings</secondary>
-          </indexterm>Back in the <guilabel>Create Scenery OVL</guilabel>
-        window, press the add button (<guibutton>+</guibutton>) in the model
-        list (5). You will get the <guilabel>Model Settings</guilabel>
-        window:</para>
+          </indexterm>Back in the <guilabel>Create OVL</guilabel> window,
+        press the add button (<guibutton>+</guibutton>) in the model list (5).
+        You will get the <guilabel>Model Settings</guilabel> window:</para>
 
         <figure>
           <title>RCT3 Custom Scenery Importer, Model Settings Window</title>
@@ -781,7 +779,7 @@
         <guibutton>Ok</guibutton> (f).</para>
       </section>
 
-      <section>
+      <section id="sect223">
         <title>Set up Levels of Detail (LODs)</title>
 
         <para>Fortunately for your first object this step is very easy, just
@@ -790,7 +788,7 @@
         added.</para>
       </section>
 
-      <section>
+      <section id="sect224">
         <title>Save and Create</title>
 
         <para>Now everything is set up. First, press the <guiicon>Save
@@ -819,13 +817,13 @@
       </section>
     </section>
 
-    <section>
+    <section id="sect23">
       <title>Create the theme</title>
 
       <para>Back in the main window we'll now add an icon texture, icon
       references, text strings and the scenery item.</para>
 
-      <section>
+      <section id="sect231">
         <title>Add the icon texture</title>
 
         <para>Press the <guibutton>Icon Textures</guibutton> button (6) to get
@@ -878,7 +876,7 @@
         </note>
       </section>
 
-      <section>
+      <section id="sect232">
         <title>Add icon references</title>
 
         <para>Back in the main window press the <guibutton>Icon
@@ -892,7 +890,7 @@
         window.</para>
       </section>
 
-      <section>
+      <section id="sect233">
         <title>Add text strings</title>
 
         <para><indexterm>
@@ -939,7 +937,7 @@
         <guilabel>Text String Manager</guilabel> window.</para>
       </section>
 
-      <section>
+      <section id="sect234">
         <title>Add your scenery item</title>
 
         <para><indexterm>
@@ -973,9 +971,13 @@
 
         <para>If you don't want to use a group you have to disable it using
         the check box (c), but as mentioned above this is not recommended.
-        Otherwise select an icon reference (d) and text string (e) for the
-        <guilabel>Group</guilabel>. You have to do the same for your
-        <guilabel>Scenery</guilabel> item in (f) and (g).</para>
+        Otherwise select an <guilabel>Icon</guilabel> reference (d) and
+        <guilabel>Name String</guilabel> (e) for the
+        <guilabel>Group</guilabel>.</para>
+
+        <para>You always have to select an <guilabel>Icon</guilabel> and
+        <guilabel>Name String</guilabel> for your <guilabel>Scenery</guilabel>
+        item in (f) and (g).</para>
 
         <para>Next set how much the item will <guilabel>Cost</guilabel> and
         the <guilabel>Refund</guilabel> (j). Actually the latter is a
@@ -1036,7 +1038,7 @@
       </section>
     </section>
 
-    <section>
+    <section id="sect24">
       <title>Save and install the theme</title>
 
       <para>Now we nearly made it. Choose <menuchoice>

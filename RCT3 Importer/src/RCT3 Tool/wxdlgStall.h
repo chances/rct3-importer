@@ -52,29 +52,34 @@ protected:
     wxTextCtrl* m_Unk14;
     wxTextCtrl* m_Unk15;
     wxTextCtrl* m_Unk16;
+    wxButton* m_btDefault;
     wxButton* m_OK;
     wxButton* m_Cancel;
 
-private:
-void InitWidgetsFromXRC(wxWindow *parent) {
-    wxXmlResource::Get()->LoadObject(this,parent,_T("dlgStall"), _T("wxDialog"));
-    m_Name = XRCCTRL(*this,"m_Name",wxTextCtrl);
-    m_Type = XRCCTRL(*this,"m_Type",wxChoice);
-    m_NameString = XRCCTRL(*this,"m_NameString",wxChoice);
-    m_Description = XRCCTRL(*this,"m_Description",wxChoice);
-    m_Unk2 = XRCCTRL(*this,"m_Unk2",wxTextCtrl);
-    m_Unk3 = XRCCTRL(*this,"m_Unk3",wxTextCtrl);
-    m_SceneryItem = XRCCTRL(*this,"m_SceneryItem",wxChoice);
-    m_Unk11 = XRCCTRL(*this,"m_Unk11",wxTextCtrl);
-    m_Unk12 = XRCCTRL(*this,"m_Unk12",wxTextCtrl);
-    m_Unk13 = XRCCTRL(*this,"m_Unk13",wxTextCtrl);
-    m_Unk14 = XRCCTRL(*this,"m_Unk14",wxTextCtrl);
-    m_Unk15 = XRCCTRL(*this,"m_Unk15",wxTextCtrl);
-    m_Unk16 = XRCCTRL(*this,"m_Unk16",wxTextCtrl);
-    m_OK = XRCCTRL(*this,"m_OK",wxButton);
-    m_Cancel = XRCCTRL(*this,"m_Cancel",wxButton);
-}
+    void OnDefault(wxCommandEvent& event);
 
+private:
+    void InitWidgetsFromXRC(wxWindow *parent) {
+        wxXmlResource::Get()->LoadObject(this,parent,_T("dlgStall"), _T("wxDialog"));
+        m_Name = XRCCTRL(*this,"m_Name",wxTextCtrl);
+        m_Type = XRCCTRL(*this,"m_Type",wxChoice);
+        m_NameString = XRCCTRL(*this,"m_NameString",wxChoice);
+        m_Description = XRCCTRL(*this,"m_Description",wxChoice);
+        m_Unk2 = XRCCTRL(*this,"m_Unk2",wxTextCtrl);
+        m_Unk3 = XRCCTRL(*this,"m_Unk3",wxTextCtrl);
+        m_SceneryItem = XRCCTRL(*this,"m_SceneryItem",wxChoice);
+        m_Unk11 = XRCCTRL(*this,"m_Unk11",wxTextCtrl);
+        m_Unk12 = XRCCTRL(*this,"m_Unk12",wxTextCtrl);
+        m_Unk13 = XRCCTRL(*this,"m_Unk13",wxTextCtrl);
+        m_Unk14 = XRCCTRL(*this,"m_Unk14",wxTextCtrl);
+        m_Unk15 = XRCCTRL(*this,"m_Unk15",wxTextCtrl);
+        m_Unk16 = XRCCTRL(*this,"m_Unk16",wxTextCtrl);
+        m_btDefault = XRCCTRL(*this,"m_btDefault",wxButton);
+        m_OK = XRCCTRL(*this,"m_OK",wxButton);
+        m_Cancel = XRCCTRL(*this,"m_Cancel",wxButton);
+    }
+
+    DECLARE_EVENT_TABLE()
 public:
     dlgStall(wxWindow *parent);
     wxString Name;

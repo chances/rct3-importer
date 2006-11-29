@@ -120,7 +120,8 @@ div.note
 }
 div.tip
 {
-        border: solid 1px #000000;
+        border: dashed 1px #006633;
+		background-color: #eeffee;
 }
 
 div.warning
@@ -221,16 +222,15 @@ a[href$=".rtf"] {
         padding-right: 12px;
 }
 
-
-/* ...but not to absolute links in this domain... */
-a[href^="http://www.karakas-online.de"] {
-        background: transparent;
-        padding-right: 0px;
+div.toc a {
+        background: url(images/scrolldown.gif) right center no-repeat;
+        padding-right: 12px;
 }
 
-a[href^="http://www.karakas-online.de"]:hover {
-        background: transparent;
+div.toc a:hover {
+        background: url(images/scrolldown_a.gif) right center no-repeat;
 }
+	
 
 /* ...or to the translation links on each page */
 DIV.translatelink > a[href^="http:"] {

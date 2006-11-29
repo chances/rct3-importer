@@ -192,17 +192,20 @@ Version 16 (Belgabor)
 * FIX4: Fixed .scn appearing for new scenery items in the create ovl save dialog
 * FIX4: Enforce invalid meshes to be disabled
 * FIX4: Particleend now also asks for the particle name
-
-SVN:
-* Warn when an enabled mesh is invalid on loading a scn file.
-* Added possibility to transfer model name and orientation to the c3DLoader interface. Currently affects the MS3D loader which now auto-sets the correct transformation matrix.
-* The model orientation is checked against the current model transformation matrix when opening a new 3D model file in the model settings window.
-* Added warning capabilities to loaders
-* Fool-proofed the ase-loader by try-catch blocks & an ASE check
-* Made the success message of the Create Scenery OVL window less annoying. Click anywhere outside to close it.
-* Fixed Bug 1598473: Space at the end of the theme name prevents successful install.
-* Fixed Bug 1598664: Visual options do not work
-* Fixed Bug 1596179: Reference field not being filled in from scenery settings window
-* Fixed Bug 1596228: Typing name into icon window doesn't enable OK button
-* Fixed Bug 1596408: List boxes reset to the top after editing an item
-* Fixed Bug 1599068: "radius" missing from flexi lights
+* FIX5: Added possibility to transfer model name and orientation to the c3DLoader interface. Currently affects the MS3D loader which now auto-sets the correct transformation matrix.
+* FIX5: The model orientation is checked against the current model transformation matrix when opening a new 3D model file in the model settings window.
+* FIX5: Added warning capabilities to loaders
+* FIX5: Fool-proofed the ase-loader by try-catch blocks & an ASE check
+* FIX5: Redesigned the stall window and added a default button for the unknowns.
+* FIX5: Doubleclick editing now works in the stall and special attraction manager.
+* FIX5: Create OVL Window: Renamed from Create Scenery OVL window.
+* FIX5: Create OVL Window: Warn when an enabled mesh is invalid on loading a scn file.
+* FIX5: Create OVL Window: Made the success message of the creating an ovl less annoying. Click anywhere outside to close it.
+* FIX5: Create OVL Window: SCN file name and ovl name are now shown in the Create OVL window.
+* FIX5: Create OVL Window: Texture list now shows presence of an alpha texture.
+* FIX5: Fixed Bug 1598473: Space at the end of the theme name prevents successful install.
+* FIX5: Fixed Bug 1598664: Visual options do not work
+* FIX5: Fixed Bug 1596179: Reference field not being filled in from scenery settings window
+* FIX5: Fixed Bug 1596228: Typing name into icon window doesn't enable OK button
+* FIX5: Fixed Bug 1596408: List boxes reset to the top after editing an item
+* FIX5: Fixed Bug 1599068: "radius" missing from flexi lights
