@@ -2809,6 +2809,7 @@ bool ToolApp::OnInit()
 	::wxInitAllImageHandlers();
     wxXmlResource::Get()->InitAllHandlers();
     InitXmlResource();
+    InitResources();
 
     char *dir = new char[MAX_PATH];
     GetCurrentDirectory(MAX_PATH, dir);
@@ -2828,9 +2829,9 @@ bool ToolApp::OnInit()
 
     // Load/Create Palettes
     // Blue/Magenta/Yellow Palette
-    HRSRC hp = FindResourceA(hInst, MAKEINTRESOURCE(IDR_PALETTE_BMY), "PALETTE");
-    HGLOBAL hp2 = LoadResource(hInst, hp);
-    void *hp3 = LockResource(hp2);
+//    HRSRC hp = FindResourceA(hInst, MAKEINTRESOURCE(IDR_PALETTE_BMY), "PALETTE");
+//    HGLOBAL hp2 = LoadResource(hInst, hp);
+//    void *hp3 = LockResource(hp2);
     char tmprgb[3] = "\0\0";	// Last 0 is the 0-terminator =)
     {
         wxMutexLocker lock(wxILMutex);
@@ -2839,7 +2840,8 @@ bool ToolApp::OnInit()
         ilTexImage(1, 1, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, &tmprgb);
         ilConvertImage(IL_COLOUR_INDEX, IL_UNSIGNED_BYTE);
         ilConvertPal(IL_PAL_RGB24);
-        memcpy(ilGetPalette(), hp3, 256 * 3);
+//        memcpy(ilGetPalette(), hp3, 256 * 3);
+        memcpy(ilGetPalette(), GetResource_BMYPal(), 256 * 3);
         ilConvertPal(IL_PAL_BGR32);
         memcpy(&g_recolpalette_bmy, ilGetPalette(), 256 * 4);
         ilDeleteImage(tmp);

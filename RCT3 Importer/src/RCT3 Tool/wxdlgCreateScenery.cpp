@@ -274,15 +274,15 @@ dlgCreateScenery::dlgCreateScenery(wxWindow *parent) {
 
     m_tbCS = new wxToolBar(this, idToolBar, wxDefaultPosition, wxDefaultSize, wxTB_FLAT | wxTB_HORIZONTAL | wxTB_NODIVIDER);
     m_tbCS->SetToolBitmapSize(wxSize(wxArtProvider::GetBitmap(wxART_NEW, wxART_TOOLBAR).GetWidth(), wxArtProvider::GetBitmap(wxART_NEW, wxART_TOOLBAR).GetHeight()));
-    m_tbCS->AddTool(wxID_NEW, _("New"), wxArtProvider::GetBitmap(wxART_NEW, wxART_TOOLBAR), _("New Scenery File"));
-    m_tbCS->AddTool(wxID_OPEN, _("Open"), wxArtProvider::GetBitmap(wxART_FILE_OPEN, wxART_TOOLBAR), _("Open Scenery File..."));
-    m_tbCS->AddTool(wxID_SAVE, _("Save"), wxArtProvider::GetBitmap(wxART_FILE_SAVE, wxART_TOOLBAR), _("Save Scenery File"));
-    m_tbCS->AddTool(wxID_SAVEAS, _("Save As"), wxArtProvider::GetBitmap(wxART_FILE_SAVE_AS, wxART_TOOLBAR), _("Save Scenery File As..."));
+    m_tbCS->AddTool(wxID_NEW, _("New"), wxXmlResource::Get()->LoadBitmap("filenew_16x16"), _("New Scenery File"));
+    m_tbCS->AddTool(wxID_OPEN, _("Open"), wxXmlResource::Get()->LoadBitmap("fileopen_16x16"), _("Open Scenery File..."));
+    m_tbCS->AddTool(wxID_SAVE, _("Save"), wxXmlResource::Get()->LoadBitmap("filesave_16x16"), _("Save Scenery File"));
+    m_tbCS->AddTool(wxID_SAVEAS, _("Save As"), wxXmlResource::Get()->LoadBitmap("filesaveas_16x16"), _("Save Scenery File As..."));
     m_tbCS->AddSeparator();
-    m_tbCS->AddTool(tbLoadCache, _("Load Cache"), wxArtProvider::GetBitmap(wxART_ADD_BOOKMARK, wxART_TOOLBAR), _("Load SCN into Texture Cache..."));
-    m_tbCS->AddTool(tbClearCache, _("Clear Cache"), wxArtProvider::GetBitmap(wxART_DEL_BOOKMARK, wxART_TOOLBAR), _("Clear Texture Cache"));
+    m_tbCS->AddTool(tbLoadCache, _("Load Cache"), wxXmlResource::Get()->LoadBitmap("edit_add_16x16"), _("Load SCN into Texture Cache..."));
+    m_tbCS->AddTool(tbClearCache, _("Clear Cache"), wxXmlResource::Get()->LoadBitmap("editdelete_16x16"), _("Clear Texture Cache"));
     m_tbCS->AddSeparator();
-    m_tbCS->AddTool(wxID_CANCEL, _("Exit"), wxArtProvider::GetBitmap(wxART_QUIT, wxART_TOOLBAR), _("Leave Create Scenery OVL window"));
+    m_tbCS->AddTool(wxID_CANCEL, _("Exit"), wxXmlResource::Get()->LoadBitmap("exit_16x16"), _("Leave Create Scenery OVL window"));
     m_tbCS->Realize();
     m_tbCS->EnableTool(wxID_SAVE, false);
 
@@ -479,6 +479,7 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
             }
             UpdateAll();
             MakeDirty(false);
+            UpdateControlState();
         }
 
         dialog->Destroy();
@@ -501,6 +502,7 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
                 id = wxID_SAVEAS;
             } else {
                 MakeDirty(false);
+                UpdateControlState();
             }
         }
     }
@@ -530,6 +532,7 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
                 ::wxMessageBox(_("Error saving SCN file."), _("Error"), wxOK | wxICON_ERROR, this);
             } else {
                 MakeDirty(false);
+                UpdateControlState();
             }
         }
 
@@ -1399,6 +1402,7 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
             if (sovlname.GetFullPath() != m_SCN.ovlname.GetFullPath()) {
                 m_SCN.ovlname = sovlname.GetFullPath();
                 MakeDirty();
+                UpdateControlState();
             }
         }
 

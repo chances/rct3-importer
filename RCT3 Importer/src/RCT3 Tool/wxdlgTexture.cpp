@@ -40,6 +40,7 @@
 #include "SCNFile.h"
 #include "valext.h"
 #include "valtexture.h"
+#include "wxdevil.h"
 
 #include "ilhelper.h"
 #include "wxapp.h"

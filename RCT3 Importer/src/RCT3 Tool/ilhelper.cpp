@@ -158,26 +158,3 @@ void showBitmapInfo(wxWindow *parent, const char *filename) {
 
 }
 
-wxSize getBitmapSize(const char *filename) {
-    ILuint bmp;
-    ILenum Error;
-    wxSize res;
-
-    {
-        wxMutexLocker lock(wxILMutex);
-        ILuint old = ilGetInteger(IL_ACTIVE_IMAGE);
-        bmp = ilGenImage();
-        ilBindImage(bmp);
-
-        if (!ilLoadImage(filename)) {
-            res = wxDefaultSize;
-            // Flush error buffer
-            while ((Error = ilGetError())) {}
-        } else {
-            res = wxSize(ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
-        }
-        ilDeleteImage(bmp);
-        ilBindImage(old);
-    }
-    return res;
-}

@@ -1,6 +1,6 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:        wxdevil.h
-// Purpose:     Mutex to make devIL thread safe
+// Purpose:     Mutex to make devIL thread safe & related helper functions
 // Author:      Tobias Minich
 // Modified by:
 // Created:     Oct 28 2006
@@ -15,5 +15,7 @@
 #include "wx_pch.h"
 
 extern wxMutex wxILMutex;
+
+wxSize getBitmapSize(const char *filename);
 
 #endif // WXDEVIL_H_INCLUDED

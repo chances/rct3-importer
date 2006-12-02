@@ -32,6 +32,5 @@
 #include "wx_pch.h"
 
 void showBitmapInfo(wxWindow *parent, const char *filename);
-wxSize getBitmapSize(const char *filename);
 
 #endif // ILHELPER_H_INCLUDED

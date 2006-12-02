@@ -36,6 +36,9 @@
 #include "wxdlgAttract.h"
 #include "stall.h"
 
+#include "valsimplelist.h"
+#include "valext.h"
+
 extern std::vector <AttractionStr *> Attractions;
 extern std::vector<cText> cTextStrings;
 extern std::vector <Scenery *> SceneryItems;
@@ -58,13 +61,13 @@ dlgAttract::dlgAttract(wxWindow *parent) {
     }
     Unk2 = 0;
     Unk3 = 0;
-    m_Name->SetValidator(wxGenericValidator(&Name));
+    m_Name->SetValidator(wxExtendedValidator(&Name, false));
     m_Type->SetValidator(wxGenericValidator((int *)&AttractionType));
-    m_NameString->SetValidator(wxGenericValidator(&NameString));
-    m_Description->SetValidator(wxGenericValidator(&DescriptionString));
+    m_NameString->SetValidator(wxSimpleListValidator(&NameString));
+    m_Description->SetValidator(wxSimpleListValidator(&DescriptionString));
     m_Unk2->SetValidator(wxGenericValidator((int *)&Unk2));
     m_Unk3->SetValidator(wxGenericValidator((int *)&Unk3));
-    m_SceneryItem->SetValidator(wxGenericValidator(&SID));
+    m_SceneryItem->SetValidator(wxSimpleListValidator(&SID));
     m_OK->SetId(wxID_OK);
     m_Cancel->SetId(wxID_CANCEL);
 }

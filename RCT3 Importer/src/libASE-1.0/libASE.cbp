@@ -116,6 +116,8 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 		</Unit>
-		<Extensions />
+		<Extensions>
+			<code_completion />
+		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

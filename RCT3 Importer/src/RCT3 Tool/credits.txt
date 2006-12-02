@@ -1,0 +1,25 @@
+The RCT3 Importer uses the follwing libraries and objects:
+
+zlib-1.2.3 
+  http://www.zilb.net
+  License: AS-IS
+expat-2.0.0
+  http://expat.sourceforge.net
+  License: AS-IS
+jpeg-6b
+  http://www.ijg.org/
+  License: Special, see homepage
+libpng-1.2.12
+  http://www.libpng.org/pub/png/libpng.html
+  License: AS-IS
+tiff-3.8.2
+  http://www.remotesensing.org/libtiff/
+  License: AS-IS
+wxWidgets-cvs
+  http://www.wxwidgets.org
+  License: wxWidgets v3.1
+Crystal Clear Icons
+  Everaldo (http://www.everaldo.com, http://www.yellowicon.com)
+  License: LGPL
+
+The developer team would like to thank everybody who contributed to one of these packages and to the importer itself.

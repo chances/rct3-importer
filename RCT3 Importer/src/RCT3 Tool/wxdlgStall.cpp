@@ -36,6 +36,9 @@
 #include "wxdlgStall.h"
 #include "stall.h"
 
+#include "valsimplelist.h"
+#include "valext.h"
+
 extern std::vector <StallStr *> Stalls;
 extern std::vector<cText> cTextStrings;
 extern std::vector <Scenery *> SceneryItems;
@@ -44,6 +47,7 @@ extern int CurrentStall;
 
 BEGIN_EVENT_TABLE(dlgStall,wxDialog)
 EVT_BUTTON(XRCID("m_btDefault"), dlgStall::OnDefault)
+EVT_CHOICE(XRCID("m_NameString"), dlgStall::OnNameString)
 END_EVENT_TABLE()
 
 dlgStall::dlgStall(wxWindow *parent) {
@@ -68,13 +72,13 @@ dlgStall::dlgStall(wxWindow *parent) {
     Unk14 = 0;
     Unk15 = 0;
     Unk16 = 0;
-    m_Name->SetValidator(wxGenericValidator(&Name));
+    m_Name->SetValidator(wxExtendedValidator(&Name, false));
     m_Type->SetValidator(wxGenericValidator((int *)&StallType));
-    m_NameString->SetValidator(wxGenericValidator(&NameString));
-    m_Description->SetValidator(wxGenericValidator(&DescriptionString));
+    m_NameString->SetValidator(wxSimpleListValidator(&NameString));
+    m_Description->SetValidator(wxSimpleListValidator(&DescriptionString));
     m_Unk2->SetValidator(wxGenericValidator((int *)&Unk2));
     m_Unk3->SetValidator(wxGenericValidator((int *)&Unk3));
-    m_SceneryItem->SetValidator(wxGenericValidator(&SID));
+    m_SceneryItem->SetValidator(wxSimpleListValidator(&SID));
     m_Unk11->SetValidator(wxGenericValidator((int *)&Unk11));
     m_Unk12->SetValidator(wxGenericValidator((int *)&Unk12));
     m_Unk13->SetValidator(wxGenericValidator((int *)&Unk13));
@@ -94,4 +98,11 @@ void dlgStall::OnDefault(wxCommandEvent& WXUNUSED(event)) {
     m_Unk14->SetValue(wxT("7"));
     m_Unk15->SetValue(wxT("8"));
     m_Unk16->SetValue(wxT("9"));
+}
+
+void dlgStall::OnNameString(wxCommandEvent& WXUNUSED(event)) {
+    int sel = m_NameString->GetSelection();
+    if ((sel != wxNOT_FOUND) && (m_Name->GetValue() == wxT(""))) {
+        m_Name->SetValue(m_NameString->GetStringSelection());
+    }
 }

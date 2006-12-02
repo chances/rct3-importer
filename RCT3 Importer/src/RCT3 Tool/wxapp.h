@@ -35,6 +35,7 @@
 #include <list>
 
 #include "xrc/xrcres.h"
+#include "resources.h"
 #include "rct3config.h"
 
 class ToolApp : public wxApp

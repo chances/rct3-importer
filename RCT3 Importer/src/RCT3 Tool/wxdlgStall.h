@@ -57,6 +57,7 @@ protected:
     wxButton* m_Cancel;
 
     void OnDefault(wxCommandEvent& event);
+    void OnNameString(wxCommandEvent& event);
 
 private:
     void InitWidgetsFromXRC(wxWindow *parent) {

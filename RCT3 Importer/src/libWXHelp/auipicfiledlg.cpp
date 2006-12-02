@@ -13,6 +13,8 @@
 
 #include "auipicfiledlg.h"
 
+#include "wxdevil.h"
+
 BEGIN_EVENT_TABLE(wxPicPanel, wxPanel)
     EVT_PAINT(wxPicPanel::OnPaint)
     EVT_SIZE(wxPicPanel::OnSize)
@@ -77,9 +79,9 @@ void wxAUIPicFileDialog::HandleFilenameChange() {
     wxString fullname = m_list->GetDir() + wxFILE_SEP_PATH + m_text->GetValue();
     if (wxFileExists(fullname)) {
         m_picFileName->SetLabel(m_text->GetValue());
-        wxImage img(fullname);
-        if (img.Ok()) {
-            wxString det = wxString::Format("%dx%d\n", img.GetWidth(), img.GetHeight());
+        wxSize imgsize = getBitmapSize(fullname.fn_str());
+        if (imgsize != wxDefaultSize) {
+            wxString det = wxString::Format("%dx%d\n", imgsize.GetWidth(), imgsize.GetHeight());
 
             m_picDetails->SetLabel(det);
             //m_pic->SetBitmap(wxBitmap(img));

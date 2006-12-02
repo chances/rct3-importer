@@ -6,7 +6,7 @@
 		<Option pch_mode="2" />
 		<Option default_target="" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="wx\;xrc\;" />
+		<Option virtualFolders="wx\;xrc\;resources\;" />
 		<Build>
 			<Target title="Precompile XRC">
 				<Option type="4" />
@@ -161,6 +161,24 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 		</Unit>
+		<Unit filename="bmy.pal">
+			<Option compilerVar="CPP" />
+			<Option link="0" />
+			<Option weight="1" />
+			<Option virtualFolder="resources\" />
+			<Option compiler="gcc" use="1" buildCommand="bin2c -c $file $file.h" />
+			<Option target="Precompile XRC" />
+		</Unit>
+		<Unit filename="bmy.pal.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option virtualFolder="resources\" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+			<Option target="Release" />
+			<Option target="Debug" />
+		</Unit>
 		<Unit filename="changelog.txt">
 			<Option compilerVar="CPP" />
 			<Option compile="0" />
@@ -169,6 +187,14 @@
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+		</Unit>
+		<Unit filename="crystal\crystal.xrc">
+			<Option compilerVar="CPP" />
+			<Option link="0" />
+			<Option weight="10" />
+			<Option virtualFolder="xrc\" />
+			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_bitmap_crystal.cpp --function=InitXmlBitmapCrystal $file" />
+			<Option target="Precompile XRC" />
 		</Unit>
 		<Unit filename="global.cpp">
 			<Option compilerVar="CPP" />
@@ -231,6 +257,24 @@
 			<Option compilerVar="CPP" />
 			<Option compile="0" />
 			<Option link="0" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+			<Option target="Release" />
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="resources.cpp">
+			<Option compilerVar="CPP" />
+			<Option virtualFolder="resources\" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+			<Option target="Release" />
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="resources.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option virtualFolder="resources\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
@@ -520,21 +564,18 @@
 		<Unit filename="xrc\xrc_effect.xrc">
 			<Option compilerVar="CPP" />
 			<Option link="0" />
-			<Option weight="0" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_effect.cpp --function=InitXmlEffect $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
 		<Unit filename="xrc\xrc_effectmenu.xrc">
 			<Option compilerVar="CPP" />
 			<Option link="0" />
-			<Option weight="0" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_effectmenu.cpp --function=InitXmlEffectMenu $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
 		<Unit filename="xrc\xrc_info.xrc">
 			<Option compilerVar="CPP" />
 			<Option link="0" />
-			<Option weight="0" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_info.cpp --function=InitXmlInfo $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
@@ -553,7 +594,6 @@
 		<Unit filename="xrc\xrc_mesh.xrc">
 			<Option compilerVar="CPP" />
 			<Option link="0" />
-			<Option weight="0" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_mesh.cpp --function=InitXmlMesh $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
@@ -578,7 +618,6 @@
 		<Unit filename="xrc\xrc_texture.xrc">
 			<Option compilerVar="CPP" />
 			<Option link="0" />
-			<Option weight="0" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_texture.cpp --function=InitXmlTexture $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
@@ -624,6 +663,24 @@
 			<Option target="Debug" />
 		</Unit>
 		<Unit filename="xrc_attractman.h">
+			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option virtualFolder="xrc\" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+			<Option target="Release" />
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="xrc_bitmap_crystal.cpp">
+			<Option compilerVar="CPP" />
+			<Option virtualFolder="xrc\" />
+			<Option target="Release DLL" />
+			<Option target="Debug DLL" />
+			<Option target="Release" />
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="xrc_bitmap_crystal.h">
 			<Option compilerVar="CPP" />
 			<Option compile="0" />
 			<Option link="0" />
@@ -849,6 +906,8 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 		</Unit>
-		<Extensions />
+		<Extensions>
+			<code_completion />
+		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

@@ -351,6 +351,8 @@
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 		</Unit>
-		<Extensions />
+		<Extensions>
+			<code_completion />
+		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

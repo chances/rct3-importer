@@ -316,4 +316,4 @@ END
 
 IDI_ICON2           ICON          "Object-Importer.Ico"
 
-IDR_PALETTE_BMY PALETTE ".\\bmy.pal"
+//IDR_PALETTE_BMY PALETTE ".\\bmy.pal"

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<resource version="2.3.0.1">
+
+<object class="wxBitmap" name="edit_add_16x16">icons/edit_add_16x16.png</object>
+<object class="wxBitmap" name="editdelete_16x16">icons/editdelete_16x16.png</object>
+<object class="wxBitmap" name="exit_16x16">icons/exit_16x16.png</object>
+<object class="wxBitmap" name="filenew_16x16">icons/filenew_16x16.png</object>
+<object class="wxBitmap" name="fileopen_16x16">icons/fileopen_16x16.png</object>
+<object class="wxBitmap" name="filesave_16x16">icons/filesave_16x16.png</object>
+<object class="wxBitmap" name="filesaveas_16x16">icons/filesaveas_16x16.png</object>
+
+</resource>
