@@ -85,7 +85,7 @@ IMPLEMENT_APP_NO_MAIN(ToolApp)
 //  Globals (???)
 //
 //////////////////////////////////
-#define TITLE_VERSION "RCT3 Object Importer (v16fix5)"
+#define TITLE_VERSION "RCT3 Object Importer (v17)"
 
 
 
@@ -541,27 +541,27 @@ BOOL CALLBACK SIDEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
         SendDlgItemMessage(hwnd, IDC_SUPPORTS, CB_ADDSTRING, 0, (WPARAM) "TS6");
         SendDlgItemMessage(hwnd, IDC_SUPPORTS, CB_ADDSTRING, 0, (WPARAM) "TS7");
         SendDlgItemMessage(hwnd, IDC_SUPPORTS, CB_ADDSTRING, 0, (WPARAM) "TS8");
-        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "unknown 1");
-        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "unknown 2");
-        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "unknown 3");
-        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "unknown 4");
-        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "unknown 5");
-        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "unknown 6");
-        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "unknown 7");
-        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "unknown 8");
-        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "unknown 9");
-        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "unknown 10");
-        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "unknown 11");
-        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "unknown 12");
-        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "unknown 13");
-        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "unknown 14");
-        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "unknown 15");
-        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "unknown 16");
-        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "unknown 17");
-        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "unknown 18");
-        SendDlgItemMessage(hwnd, IDC_UNK17, CB_ADDSTRING, 0, (WPARAM) "unknown 1");
-        SendDlgItemMessage(hwnd, IDC_UNK17, CB_ADDSTRING, 0, (WPARAM) "unknown 2");
-        SendDlgItemMessage(hwnd, IDC_UNK17, CB_ADDSTRING, 0, (WPARAM) "unknown 3");
+        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "0 (unknown 1)");
+        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "1 (unknown 2)");
+        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "2 (unknown 3)");
+        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "3 (unknown 4)");
+        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "4 (unknown 5)");
+        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "5 (unknown 6)");
+        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "6 (unknown 7)");
+        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "7 (unknown 8)");
+        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "8 (unknown 9)");
+        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "9 (unknown 10)");
+        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "10 (unknown 11)");
+        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "11 (unknown 12)");
+        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "12 (unknown 13)");
+        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "13 (unknown 14)");
+        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "14 (unknown 15)");
+        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "15 (unknown 16)");
+        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "16 (unknown 17)");
+        SendDlgItemMessage(hwnd, IDC_UNK4, CB_ADDSTRING, 0, (WPARAM) "17 (unknown 18)");
+        SendDlgItemMessage(hwnd, IDC_UNK17, CB_ADDSTRING, 0, (WPARAM) "0 (unknown 1)");
+        SendDlgItemMessage(hwnd, IDC_UNK17, CB_ADDSTRING, 0, (WPARAM) "1 (unknown 2)");
+        SendDlgItemMessage(hwnd, IDC_UNK17, CB_ADDSTRING, 0, (WPARAM) "2 (unknown 3)");
         SendDlgItemMessage(hwnd, IDC_SIZEFLAG, CB_ADDSTRING, 0, (WPARAM) "Full Tile");
         SendDlgItemMessage(hwnd, IDC_SIZEFLAG, CB_ADDSTRING, 0, (WPARAM) "Path Edge (Inner)");
         SendDlgItemMessage(hwnd, IDC_SIZEFLAG, CB_ADDSTRING, 0, (WPARAM) "Path Edge (Outer)");

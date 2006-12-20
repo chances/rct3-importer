@@ -14,13 +14,16 @@
 
 #include "wx_pch.h"
 
-#include <wx/validate.h>
+#include <wx/combo.h>
 #include <wx/filename.h>
+#include <wx/validate.h>
 
-class wxExtendedValidator : public wxValidator {
+#include "silence.h"
+
+class wxExtendedValidator : public wxValidator, public wxSilent {
 DECLARE_CLASS(wxExtendedValidator)
 public:
-    wxExtendedValidator():wxValidator(){Initialize();};
+    wxExtendedValidator():wxValidator(),wxSilent(){Initialize();};
     wxExtendedValidator(float* val, unsigned int precision = 4, bool zero_allowed = true, bool use_default = true, float default_val = 0.0);
     wxExtendedValidator(double* val, unsigned int precision = 4, bool zero_allowed = true, bool use_default = true, double default_val = 0.0);
     wxExtendedValidator(unsigned char* val, bool zero_allowed = true, bool use_default = true, unsigned int default_val = 0);
@@ -62,8 +65,8 @@ protected:
     {
         wxCHECK_MSG( m_validatorWindow, false,
                      _T("No window associated with validator") );
-        wxCHECK_MSG( m_validatorWindow->IsKindOf(CLASSINFO(wxTextCtrl)), false,
-                     _T("wxExtendedValidator is only for wxTextCtrl's") );
+        wxCHECK_MSG( (m_validatorWindow->IsKindOf(CLASSINFO(wxTextCtrl))) || (m_validatorWindow->IsKindOf(CLASSINFO(wxComboCtrl))), false,
+                     _T("wxExtendedValidator is only for wxTextCtrls & ComboCtrls") );
 
         return true;
     }

@@ -58,11 +58,15 @@ public:
     bool effectpoint;
     D3DVECTOR effectpoint_vert;
 
-    cMeshStruct(): disabled(true), TXS(wxT("")), FTX(wxT("")), place(0), flags(0), unknown(3), Name(wxT("")), valid(false), faces(0), effectpoint(0) {};
+    cMeshStruct(): disabled(true), TXS(wxT("SIOpaque")), FTX(wxT("")), place(0), flags(0), unknown(3), Name(wxT("")), valid(false), faces(0), effectpoint(0) {};
     void CopySettingsFrom(const cMeshStruct& from);
 };
 
 typedef std::vector<cMeshStruct>::iterator cMeshStructIterator;
+
+#define CFTF_ALPHA_NONE     0
+#define CFTF_ALPHA_INTERNAL 1
+#define CFTF_ALPHA_EXTERNAL 2
 
 class cFlexiTextureFrame {
 public:
@@ -70,11 +74,11 @@ public:
     wxFileName Alpha;
     unsigned long Recolorable; // We don't expose this yet.
     unsigned char AlphaCutoff;
-/*    unsigned long width; // Temporary for the UI to check that all frames are the same size
-    unsigned long height;*/
+    unsigned long AlphaSource;
+
 	bool used;          // Used during ovl generation to see if the texture frame is actually used.
 
-	cFlexiTextureFrame(): Texture(wxT("")), Alpha(wxT("")), Recolorable(0), AlphaCutoff(0), used(false) {};
+	cFlexiTextureFrame(): Texture(wxT("")), Alpha(wxT("")), Recolorable(0), AlphaCutoff(0), AlphaSource(0), used(false) {};
 };
 
 typedef std::vector<cFlexiTextureFrame>::iterator cFlexiTextureFrameIterator;

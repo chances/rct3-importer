@@ -37,10 +37,11 @@ DECLARE_DYNAMIC_CLASS(wxTextureValidator)
 protected:
     wxString m_context;
     unsigned int *m_forceSize;
+    bool m_alphaNecessary;
 public:
     wxTextureValidator():wxExtendedValidator(),m_context(wxT("")){};
-    wxTextureValidator(wxString *val, const wxString& context = wxT(""), bool empty_allowed = false, unsigned int *force_size = NULL);
-    wxTextureValidator(wxFileName *val, const wxString& context = wxT(""), bool empty_allowed = false, unsigned int *force_size = NULL);
+    wxTextureValidator(wxString *val, const wxString& context = wxT(""), bool empty_allowed = false, bool alpha_necessary = false, unsigned int *force_size = NULL);
+    wxTextureValidator(wxFileName *val, const wxString& context = wxT(""), bool empty_allowed = false, bool alpha_necessary = false, unsigned int *force_size = NULL);
     wxTextureValidator(const wxTextureValidator& val);
 
     virtual ~wxTextureValidator(){}

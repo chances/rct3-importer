@@ -13,49 +13,49 @@
 
 IMPLEMENT_CLASS(wxSimpleListValidator, wxValidator)
 
-wxSimpleListValidator::wxSimpleListValidator(char* val) {
+wxSimpleListValidator::wxSimpleListValidator(char* val):wxSilent() {
     Initialize();
     m_kind = Val_Char;
     m_pChar = val;
 }
 
-wxSimpleListValidator::wxSimpleListValidator(unsigned char* val) {
+wxSimpleListValidator::wxSimpleListValidator(unsigned char* val):wxSilent() {
     Initialize();
     m_kind = Val_UChar;
     m_pUChar = val;
 }
 
-wxSimpleListValidator::wxSimpleListValidator(int* val) {
+wxSimpleListValidator::wxSimpleListValidator(int* val):wxSilent() {
     Initialize();
     m_kind = Val_Int;
     m_pInt = val;
 }
 
-wxSimpleListValidator::wxSimpleListValidator(unsigned int* val) {
+wxSimpleListValidator::wxSimpleListValidator(unsigned int* val):wxSilent() {
     Initialize();
     m_kind = Val_UInt;
     m_pUInt = val;
 }
 
-wxSimpleListValidator::wxSimpleListValidator(long* val) {
+wxSimpleListValidator::wxSimpleListValidator(long* val):wxSilent() {
     Initialize();
     m_kind = Val_Long;
     m_pLong = val;
 }
 
-wxSimpleListValidator::wxSimpleListValidator(unsigned long* val) {
+wxSimpleListValidator::wxSimpleListValidator(unsigned long* val):wxSilent() {
     Initialize();
     m_kind = Val_ULong;
     m_pULong = val;
 }
 
-wxSimpleListValidator::wxSimpleListValidator(wxString* val) {
+wxSimpleListValidator::wxSimpleListValidator(wxString* val):wxSilent() {
     Initialize();
     m_kind = Val_String;
     m_pString = val;
 }
 
-wxSimpleListValidator::wxSimpleListValidator(const wxSimpleListValidator& copyFrom):wxValidator() {
+wxSimpleListValidator::wxSimpleListValidator(const wxSimpleListValidator& copyFrom):wxValidator(),wxSilent() {
     Copy(copyFrom);
 }
 
@@ -84,7 +84,7 @@ bool wxSimpleListValidator::Validate(wxWindow* parent) {
         valid = (dynamic_cast<wxVListBox*>(m_validatorWindow)->GetSelection()!=wxNOT_FOUND);
     }
 
-    if (!valid) {
+    if ((!valid) && (!m_silent)) {
         m_validatorWindow->SetFocus();
         ::wxMessageBox(_("You need to select something in this list."), _("Validation conflict"), wxOK|wxICON_ERROR, parent);
     }

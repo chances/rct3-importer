@@ -14,8 +14,13 @@
 
 #include "wx_pch.h"
 
+#include <IL/il.h>
+#include <IL/ilu.h>
+
 extern wxMutex wxILMutex;
 
 wxSize getBitmapSize(const char *filename);
+bool getBitmapInfo(const char *filename, ILinfo& info);
+bool ilInfoHasAlpha(const ILinfo& info);
 
 #endif // WXDEVIL_H_INCLUDED

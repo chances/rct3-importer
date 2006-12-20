@@ -37,6 +37,8 @@
 
 #include "RCT3Structs.h"
 
+class wxEffectCombo;
+
 class dlgEffect : public wxDialog {
 protected:
     wxStaticText* m_Matrix[4][4];
@@ -47,13 +49,14 @@ protected:
     wxButton* m_btPos;
     wxButton* m_btEdit;
     wxButton* m_btClear;
-    wxTextCtrl* m_textEffectName;
     wxButton* m_btCreate;
     wxButton* m_btLoad;
     wxButton* m_btOk;
     wxButton* m_btCancel;
 
-    wxMenu* m_menuPopup;
+    wxEffectCombo* m_textEffectName;
+
+//    wxMenu* m_menuPopup;
 
     void SelectNr(wxString pt, unsigned int from);
     void ShowTransform(int pr = 4);
@@ -110,7 +113,7 @@ private:
         m_btPos = XRCCTRL(*this,"m_btPos",wxButton);
         m_btEdit = XRCCTRL(*this,"m_btEdit",wxButton);
         m_btClear = XRCCTRL(*this,"m_btClear",wxButton);
-        m_textEffectName = XRCCTRL(*this,"m_textEffectName",wxTextCtrl);
+        //m_textEffectName = XRCCTRL(*this,"m_textEffectName",wxTextCtrl);
         m_btCreate = XRCCTRL(*this,"m_btCreate",wxButton);
         m_btLoad = XRCCTRL(*this,"m_btLoad",wxButton);
         m_btOk = XRCCTRL(*this,"m_btOk",wxButton);
@@ -119,7 +122,7 @@ private:
     DECLARE_EVENT_TABLE()
 public:
     dlgEffect(wxWindow *parent=NULL);
-    virtual ~dlgEffect() {delete m_menuPopup;};
+//    virtual ~dlgEffect() {delete m_menuPopup;};
 
     void SetEffect(const cEffectPoint& ep) {
         m_ef = ep;

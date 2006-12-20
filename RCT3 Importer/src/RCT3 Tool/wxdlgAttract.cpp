@@ -45,8 +45,15 @@ extern std::vector <Scenery *> SceneryItems;
 extern bool save;
 extern int CurrentAttraction;
 
+BEGIN_EVENT_TABLE(dlgAttract,wxDialog)
+EVT_BUTTON(XRCID("m_btDefault"), dlgAttract::OnDefault)
+EVT_CHOICE(XRCID("m_NameString"), dlgAttract::OnNameString)
+END_EVENT_TABLE()
+
 dlgAttract::dlgAttract(wxWindow *parent) {
     InitWidgetsFromXRC((wxWindow *)parent);
+    SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
+
     for (unsigned int i = 0;i < cTextStrings.size();i++)
     {
         m_NameString->Append(cTextStrings[i].name);
@@ -61,6 +68,7 @@ dlgAttract::dlgAttract(wxWindow *parent) {
     }
     Unk2 = 0;
     Unk3 = 0;
+
     m_Name->SetValidator(wxExtendedValidator(&Name, false));
     m_Type->SetValidator(wxGenericValidator((int *)&AttractionType));
     m_NameString->SetValidator(wxSimpleListValidator(&NameString));
@@ -68,6 +76,40 @@ dlgAttract::dlgAttract(wxWindow *parent) {
     m_Unk2->SetValidator(wxGenericValidator((int *)&Unk2));
     m_Unk3->SetValidator(wxGenericValidator((int *)&Unk3));
     m_SceneryItem->SetValidator(wxSimpleListValidator(&SID));
+
+    wxInputBox *t_ibName = new wxInputBox(this, wxID_ANY);
+    t_ibName->SetEditor(m_Name);
+    m_ibNameString = new wxInputBox(this, wxID_ANY);
+    m_ibNameString->SetEditor(m_NameString);
+    m_ibDescription = new wxInputBox(this, wxID_ANY);
+    m_ibDescription->SetEditor(m_Description);
+    m_ibSceneryItem = new wxInputBox(this, wxID_ANY);
+    m_ibSceneryItem->SetEditor(m_SceneryItem);
+
+    Fit();
+    Layout();
+    GetSizer()->SetSizeHints(this);
+
     m_OK->SetId(wxID_OK);
     m_Cancel->SetId(wxID_CANCEL);
+}
+
+void dlgAttract::OnDefault(wxCommandEvent& WXUNUSED(event)) {
+    m_Unk2->SetValue(wxT("10000"));
+    m_Unk3->SetValue(wxT("-7500"));
+}
+
+void dlgAttract::OnNameString(wxCommandEvent& WXUNUSED(event)) {
+    int sel = m_NameString->GetSelection();
+    if ((sel != wxNOT_FOUND) && (m_Name->GetValue() == wxT(""))) {
+        m_Name->SetValue(m_NameString->GetStringSelection());
+    }
+}
+
+bool dlgAttract::TransferDataToWindow() {
+    bool ret = wxDialog::TransferDataToWindow();
+    m_ibDescription->Update();
+    m_ibNameString->Update();
+    m_ibSceneryItem->Update();
+    return ret;
 }

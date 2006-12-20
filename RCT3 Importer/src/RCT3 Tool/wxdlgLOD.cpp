@@ -51,6 +51,7 @@ END_EVENT_TABLE()
 
 dlgLOD::dlgLOD(const std::vector<cModel>& mods, wxWindow *parent) {
     InitWidgetsFromXRC((wxWindow *)parent);
+    SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
 
     for(int i = 0; i < mods.size(); i++) {
         m_choiceModel->Append(mods[i].name);
@@ -68,17 +69,17 @@ dlgLOD::dlgLOD(const std::vector<cModel>& mods, wxWindow *parent) {
 }
 
 void dlgLOD::OnShowUnknowns(wxCommandEvent& WXUNUSED(event)) {
-    if (m_checkShowUnknown->IsChecked()) {
-        if (::wxMessageBox(_("You should better leave these settings alone.\nDo you want to continue?"), _("Warning"), wxYES_NO | wxNO_DEFAULT | wxICON_WARNING, this)==wxNO) {
-            m_checkShowUnknown->SetValue(false);
-            return;
-        }
-    }
-    TransferDataFromWindow();
+//    if (m_checkShowUnknown->IsChecked()) {
+//        if (::wxMessageBox(_("You should better leave these settings alone.\nDo you want to continue?"), _("Warning"), wxYES_NO | wxNO_DEFAULT | wxICON_WARNING, this)==wxNO) {
+//            m_checkShowUnknown->SetValue(false);
+//            return;
+//        }
+//    }
+//    TransferDataFromWindow();
     m_panelUnknown->Show( m_checkShowUnknown->IsChecked());
     Fit();
     Layout();
-    TransferDataToWindow();
+//    TransferDataToWindow();
 }
 
 void dlgLOD::OnDist40(wxCommandEvent& WXUNUSED(event)) {

@@ -209,3 +209,51 @@ Version 16 (Belgabor)
 * FIX5: Fixed Bug 1596228: Typing name into icon window doesn't enable OK button
 * FIX5: Fixed Bug 1596408: List boxes reset to the top after editing an item
 * FIX5: Fixed Bug 1599068: "radius" missing from flexi lights
+
+Experimental:
+* Uses icons to show whether an input is valid in many cases
+* New controls for text entry/button combinations (Mostly when file names are involved)
+* Grid Control for groups/meshes. Usage should be mostly intuitive.
+** Here is the tooltip:
+    List of the meshes/groups/objects in your model file.
+
+    Icon (Name Colours):
+    Green Led (black) - Mesh activated and ready for import.
+    Yellow Led (red) - Mesh activated but lacks data needed for import.
+    Red Led (grey) - Deactivatet mesh.
+    Red Star (dark red) - Mesh is invalid/broken.
+    Green Star (green) - One-vertex mesh that can be used for matrices (e.g. effect points).
+
+    Clicking on the icon or on the name will activate/deactivate the mesh.
+    Clicking other values will let you edit them (Press Escape to cancel the edit).
+    Shift-Click on the name will single it out.
+    Ctrl-Click on the name will copy that mesh's settings to all others.
+
+    Press 'F5' to refresh the list.
+** You can maximize the group grid with the button in the upper left corner.
+** Known problems:
+*** When editing, using the mouse-wheel will not work properly
+*** Widths do not auto-update. Press F5 to do that.
+*** Horizontal mouse-wheels do not work. That's a wxWidgets problem and probably unfixable.
+*** Small display glitch in the bottom-right corner
+** Planned improvements:
+*** Tabbing through the editable values
+*** Right-click context menu for singeling out/copying settings
+* Create OVL/LODs: Saving issues of unknowns fixed (Fixes Bug #1612254)
+* Create OVL/LODs: Unknown warning removed
+* Create OVL: "Set Unknown Flags" renamed to "Unknown Flags" and the box has a somewhat descriptive tool tip
+* Create OVL: Texture cache entries are now shown in the texture list in gray
+* Fixed Bug 1611229: Some controls in Create OVL stay enabled on New
+* Lots of renaming:
+** "Meshes" to "Groups"
+** "Size Flag" to "Positioning Flag"
+** "Unknown" in mesh settings to "Faces" and selections to "Single-Sided" (default) and "Double-Sided" (see separate point).
+** "Alpha texture" to "Alpha channel"
+** Several other unknowns were renamed to their internal values/names
+  Usually the old names are added in parenthesis to reduce confision
+* Matched appearance of the Special Attractions window with the Stalls window
+* Separator to allow discrimination of other model modification matrices from the one/those that fix the coordinate system. This is needed for correct transformation of effect points.
+  A bit of explanation: To correctly use effect point matrices for peeps/vendors in modeller space they need to be transformed from in-game space first using the inverse of the fix-up matrix. Older versions of the importer applied the inverse of the complete model transformation matrix, so if you used the model transformation matrix to move around your object in addition to the fix-up, it had no effect on effect points.
+  Usage: In the stack, put matrices to move/rotate your object first, then a separator and the modeller coordinate system fix-up matrix/matrices last
+* Implemented support for png transparency in object textures. You can now choose between no alpha channel, an internal alpha channel (as in pngs) and an external alpha channel from a separate file (the classic alpha texture)
+* The simple texture window now also appears when you edit a texture as long as you don't make any changes that require the advanced view.

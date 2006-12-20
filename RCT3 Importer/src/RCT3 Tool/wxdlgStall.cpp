@@ -52,6 +52,8 @@ END_EVENT_TABLE()
 
 dlgStall::dlgStall(wxWindow *parent) {
     InitWidgetsFromXRC((wxWindow *)parent);
+    SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
+
     for (unsigned int i = 0;i < cTextStrings.size();i++)
     {
         m_NameString->Append(cTextStrings[i].name);
@@ -85,6 +87,20 @@ dlgStall::dlgStall(wxWindow *parent) {
     m_Unk14->SetValidator(wxGenericValidator((int *)&Unk14));
     m_Unk15->SetValidator(wxGenericValidator((int *)&Unk15));
     m_Unk16->SetValidator(wxGenericValidator((int *)&Unk16));
+
+    wxInputBox *t_ibName = new wxInputBox(this, wxID_ANY);
+    t_ibName->SetEditor(m_Name);
+    m_ibNameString = new wxInputBox(this, wxID_ANY);
+    m_ibNameString->SetEditor(m_NameString);
+    m_ibDescription = new wxInputBox(this, wxID_ANY);
+    m_ibDescription->SetEditor(m_Description);
+    m_ibSceneryItem = new wxInputBox(this, wxID_ANY);
+    m_ibSceneryItem->SetEditor(m_SceneryItem);
+
+    Fit();
+    Layout();
+    GetSizer()->SetSizeHints(this);
+
     m_OK->SetId(wxID_OK);
     m_Cancel->SetId(wxID_CANCEL);
 }
@@ -105,4 +121,12 @@ void dlgStall::OnNameString(wxCommandEvent& WXUNUSED(event)) {
     if ((sel != wxNOT_FOUND) && (m_Name->GetValue() == wxT(""))) {
         m_Name->SetValue(m_NameString->GetStringSelection());
     }
+}
+
+bool dlgStall::TransferDataToWindow() {
+    bool ret = wxDialog::TransferDataToWindow();
+    m_ibDescription->Update();
+    m_ibNameString->Update();
+    m_ibSceneryItem->Update();
+    return ret;
 }

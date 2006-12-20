@@ -38,8 +38,10 @@
 #include <wx/tglbtn.h>
 
 #include "colhtmllbox.h"
+#include "fileselectorcombo.h"
 #include "ilpict.h"
 #include "RCT3Structs.h"
+#include "wxInputBox.h"
 
 class wxTextureEditListBox : public wxColourHtmlListBox {
 public:
@@ -67,23 +69,25 @@ protected:
 
 class dlgTextureFrame : public wxDialog {
 protected:
-    wxTextCtrl* m_textTextureFile;
-    wxButton* m_btTextureInfo;
-    wxButton* m_btTextureOpen;
-    wxTextCtrl* m_textAlphaFile;
-    wxButton* m_btAlphaInfo;
-    wxButton* m_btAlphaOpen;
+    wxBitmapButton* m_btTextureInfo;
+    wxChoice* m_choiceAlpha;
+    wxBitmapButton* m_btAlphaInfo;
     wxTextCtrl* m_textAlphaCutoff;
     wxButton* m_btLoad;
     wxButton* m_btOk;
     wxButton* m_btCancel;
 
+    wxFileSelectorCombo* m_textTextureFile;
+    wxFileSelectorCombo* m_textAlphaFile;
+    wxInputBox *m_ibTextureFile;
+    wxInputBox *m_ibAlphaFile;
+
     virtual bool Validate();
 
     void OnTextureInfo(wxCommandEvent& event);
     void OnAlphaInfo(wxCommandEvent& event);
+    void OnAlpha(wxCommandEvent& event);
     void OnTextureOpen(wxCommandEvent& event);
-    void OnAlphaOpen(wxCommandEvent& event);
     void OnLoad(wxCommandEvent& event);
 
 private:
@@ -92,12 +96,9 @@ private:
 
     void InitWidgetsFromXRC(wxWindow *parent) {
         wxXmlResource::Get()->LoadObject(this,parent,_T("dlgTextureFrame"), _T("wxDialog"));
-        m_textTextureFile = XRCCTRL(*this,"m_textTextureFile",wxTextCtrl);
-        m_btTextureInfo = XRCCTRL(*this,"m_btTextureInfo",wxButton);
-        m_btTextureOpen = XRCCTRL(*this,"m_btTextureOpen",wxButton);
-        m_textAlphaFile = XRCCTRL(*this,"m_textAlphaFile",wxTextCtrl);
-        m_btAlphaInfo = XRCCTRL(*this,"m_btAlphaInfo",wxButton);
-        m_btAlphaOpen = XRCCTRL(*this,"m_btAlphaOpen",wxButton);
+        m_btTextureInfo = XRCCTRL(*this,"m_btTextureInfo",wxBitmapButton);
+        m_choiceAlpha = XRCCTRL(*this,"m_choiceAlpha",wxChoice);
+        m_btAlphaInfo = XRCCTRL(*this,"m_btAlphaInfo",wxBitmapButton);
         m_textAlphaCutoff = XRCCTRL(*this,"m_textAlphaCutoff",wxTextCtrl);
         m_btLoad = XRCCTRL(*this,"m_btLoad",wxButton);
         m_btOk = XRCCTRL(*this,"m_btOk",wxButton);
@@ -222,31 +223,31 @@ class dlgTextureSimple : public dlgTextureBase {
 public:
     dlgTextureSimple(wxWindow *parent=NULL);
 
-    virtual void SetFlexiTexture(const cFlexiTexture& WXUNUSED(val)) {
-        ::wxMessageBox(wxT("SetFlexiTexture is not supposed to be called on this subclass"), wxT("Internal Error"));
-    };
+    virtual void SetFlexiTexture(const cFlexiTexture& val);
     virtual cFlexiTexture GetFlexiTexture();
     virtual void SetTextureName(const wxString& val);
 
 protected:
     wxTextCtrl* m_textTextureName;
-    wxTextCtrl* m_textTextureFile;
-    wxButton* m_btTextureInfo;
-    wxButton* m_btTextureOpen;
-    wxTextCtrl* m_textAlphaFile;
-    wxButton* m_btAlphaInfo;
-    wxButton* m_btAlphaOpen;
+    wxBitmapButton* m_btTextureInfo;
+    wxChoice* m_choiceAlpha;
+    wxBitmapButton* m_btAlphaInfo;
     wxChoice* m_choiceColors;
     wxButton* m_btAdvanced;
     wxButton* m_btOk;
     wxButton* m_btCancel;
 
+    wxFileSelectorCombo* m_textTextureFile;
+    wxFileSelectorCombo* m_textAlphaFile;
+    wxInputBox *m_ibTextureFile;
+    wxInputBox *m_ibAlphaFile;
+
     virtual bool Validate();
 
     void OnTextureInfo(wxCommandEvent& event);
+    void OnAlpha(wxCommandEvent& event);
     void OnAlphaInfo(wxCommandEvent& event);
     void OnTextureOpen(wxCommandEvent& event);
-    void OnAlphaOpen(wxCommandEvent& event);
     void OnAdvanced(wxCommandEvent& event);
 
 private:
@@ -257,12 +258,9 @@ private:
     void InitWidgetsFromXRC(wxWindow *parent) {
         wxXmlResource::Get()->LoadObject(this,parent,_T("dlgTextureSimple"), _T("wxDialog"));
         m_textTextureName = XRCCTRL(*this,"m_textTextureName",wxTextCtrl);
-        m_textTextureFile = XRCCTRL(*this,"m_textTextureFile",wxTextCtrl);
-        m_btTextureInfo = XRCCTRL(*this,"m_btTextureInfo",wxButton);
-        m_btTextureOpen = XRCCTRL(*this,"m_btTextureOpen",wxButton);
-        m_textAlphaFile = XRCCTRL(*this,"m_textAlphaFile",wxTextCtrl);
-        m_btAlphaInfo = XRCCTRL(*this,"m_btAlphaInfo",wxButton);
-        m_btAlphaOpen = XRCCTRL(*this,"m_btAlphaOpen",wxButton);
+        m_btTextureInfo = XRCCTRL(*this,"m_btTextureInfo",wxBitmapButton);
+        m_choiceAlpha = XRCCTRL(*this,"m_choiceAlpha",wxChoice);
+        m_btAlphaInfo = XRCCTRL(*this,"m_btAlphaInfo",wxBitmapButton);
         m_choiceColors = XRCCTRL(*this,"m_choiceColors",wxChoice);
         m_btAdvanced = XRCCTRL(*this,"m_btAdvanced",wxButton);
         m_btOk = XRCCTRL(*this,"m_btOk",wxButton);

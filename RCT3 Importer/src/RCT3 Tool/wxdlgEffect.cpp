@@ -36,11 +36,66 @@
 #include "matrix.h"
 #include "SCNFile.h"
 #include "valext.h"
+#include "wxInputBox.h"
 
 #include "wxapp.h"
 #include "wxdlgEffectLight.h"
 #include "wxdlgMatrix.h"
 #include "wxdlgModel.h"
+
+////////////////////////////////////////////////////////////////////////
+//
+//  wxEffectCombo
+//
+////////////////////////////////////////////////////////////////////////
+
+class wxEffectCombo : public wxComboCtrl
+{
+public:
+    wxEffectCombo() : wxComboCtrl() { Init(); }
+    virtual ~wxEffectCombo() {delete m_menuPopup;};
+
+    wxEffectCombo(wxWindow *parent,
+                        wxWindowID id = wxID_ANY,
+                        const wxString& value = wxEmptyString,
+                        const wxPoint& pos = wxDefaultPosition,
+                        const wxSize& size = wxDefaultSize,
+                        long style = 0,
+                        const wxValidator& validator = wxDefaultValidator,
+                        const wxString& name = wxComboBoxNameStr)
+        : wxComboCtrl()
+    {
+        Init();
+        Create(parent,id,value,
+               pos,size,
+               // Style flag wxCC_STD_BUTTON makes the button
+               // behave more like a standard push button.
+               style | wxCC_STD_BUTTON,
+               validator,name);
+
+        m_menuPopup = wxXmlResource::Get()->LoadMenu(wxT("menu_effect"));
+
+        SetButtonBitmaps(wxXmlResource::Get()->LoadBitmap("bookmark_16x16"),true);
+    }
+
+    virtual void OnButtonClick()
+    {
+        PopupMenu(m_menuPopup);
+    }
+
+    // Implement empty DoSetPopupControl to prevent assertion failure.
+    virtual void DoSetPopupControl(wxComboPopup* WXUNUSED(popup))
+    {
+    }
+
+private:
+    wxMenu* m_menuPopup;
+
+    void Init()
+    {
+        // Initialize member variables here
+    }
+};
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -73,10 +128,16 @@ END_EVENT_TABLE()
 
 dlgEffect::dlgEffect(wxWindow *parent) {
     InitWidgetsFromXRC((wxWindow *)parent);
+    SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
+
+    wxTextCtrl *t_text = XRCCTRL(*this,"m_textEffectName",wxTextCtrl);
+    m_textEffectName = new wxEffectCombo(this, XRCID("m_textEffectName"));
+    t_text->GetContainingSizer()->Replace(t_text, m_textEffectName);
+    t_text->Destroy();
 
     m_textEffectName->SetValidator(wxExtendedValidator(&m_ef.Name, false));
 
-    m_menuPopup = wxXmlResource::Get()->LoadMenu(wxT("menu_effect"));
+//    m_menuPopup = wxXmlResource::Get()->LoadMenu(wxT("menu_effect"));
 
     m_choicePoint->Append(_("(Custom)"));
     m_choicePoint->SetSelection(0);
@@ -88,6 +149,13 @@ dlgEffect::dlgEffect(wxWindow *parent) {
         m_choicePoint->Append(names);
     }
     m_choicePoint->Enable(m_points.size()>0);
+
+    wxInputBox *t_ibEffectName = new wxInputBox(this, wxID_ANY);
+    t_ibEffectName->SetEditor(m_textEffectName);
+
+    Fit();
+    Layout();
+    GetSizer()->SetSizeHints(this);
 
     m_btOk->SetId(wxID_OK);
     m_btCancel->SetId(wxID_CANCEL);
@@ -107,13 +175,13 @@ void dlgEffect::UpdateAll() {
 }
 
 void dlgEffect::SelectNr(wxString pt, unsigned int from) {
-    m_textEffectName->SetValue(pt);
+    m_textEffectName->GetTextCtrl()->SetValue(pt);
     m_textEffectName->SetFocus();
     m_textEffectName->SetSelection(from, from+2);
 }
 
 void dlgEffect::OnCreateClick(wxCommandEvent& WXUNUSED(event)) {
-    PopupMenu(m_menuPopup);
+//    PopupMenu(m_menuPopup);
 }
 
 bool dlgEffect::Validate() {

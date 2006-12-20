@@ -70,12 +70,13 @@ cMeshStruct cModel::MakeMesh(c3DLoader* obj, unsigned int n) {
     }
     SetupFileProperties(&ms, obj, n);
     ms.Name = obj->GetObjectName(n);
+/*
     ms.flags = 0;
     ms.place = 0;
     ms.unknown = 3;
     ms.FTX = "";
     ms.TXS = "";
-
+*/
     return ms;
 }
 

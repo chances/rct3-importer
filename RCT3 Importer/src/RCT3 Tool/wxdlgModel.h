@@ -31,12 +31,17 @@
 #ifndef WXDLGMODEL_H_INCLUDED
 #define WXDLGMODEL_H_INCLUDED
 
+#include <wx/aui/aui.h>
 #include <wx/xrc/xmlres.h>
 #include <wx/htmllbox.h>
 #include <wx/spinbutt.h>
 
 #include "colhtmllbox.h"
+#include "exdataview.h"
+#include "fileselectorcombo.h"
 #include "RCT3Structs.h"
+
+class wxMeshListModel;
 
 class wxMeshListBox : public wxColourHtmlListBox {
 public:
@@ -62,12 +67,10 @@ protected:
 class dlgModel : public wxDialog {
 protected:
     wxTextCtrl* m_textModelName;
-    wxTextCtrl* m_textModelFile;
     wxButton* m_btMatrixEdit;
     wxButton* m_btMatrixSave;
     wxButton* m_btMatrixClear;
     wxStaticText* m_Matrix[4][4];
-    wxButton* m_btEditMesh;
     wxSpinButton* m_spinEffect;
     wxButton* m_btEffectAdd;
     wxButton* m_btEffectEdit;
@@ -79,8 +82,22 @@ protected:
     wxButton* m_btOk;
     wxButton* m_btCancel;
 
-    wxMeshListBox* m_htlbMesh;
+    wxFileSelectorCombo* m_textModelFile;
+
+    wxPanel* m_panModel;
+    wxPanel* m_panEffect;
+    wxPanel* m_panMeshes;
+    wxPanel* m_panButtons;
+
+    //wxMeshListBox* m_htlbMesh;
     wxEffectListBox* m_htlbEffect;
+    wxExDataViewCtrl* m_dataviewMesh;
+    wxMeshListModel* m_modelMesh;
+
+    void OnWrapperEdit(wxCommandEvent& event);
+    void OnDoUpdate(wxCommandEvent& event);
+    void OnChar(wxKeyEvent& event);
+    //void OnPaneMaximize(wxAuiManagerEvent& event);
 
     void OnModelOpen(wxCommandEvent& event);
     void OnControlUpdate(wxCommandEvent& event);
@@ -106,51 +123,100 @@ protected:
     void UpdateAll();
     void UpdateControlState();
 
+    virtual bool ProcessEvent(wxEvent& event);
+
 private:
     cModel m_model;
+    wxArrayString m_textures;
+    wxAuiManager m_mgr;
+    wxEvtHandler* m_hookhandler;
 
     void InitWidgetsFromXRC(wxWindow *parent) {
         wxXmlResource::Get()->LoadObject(this,parent,_T("dlgModel"), _T("wxDialog"));
-        m_textModelName = XRCCTRL(*this,"m_textModelName",wxTextCtrl);
-        m_textModelFile = XRCCTRL(*this,"m_textModelFile",wxTextCtrl);
-        m_btMatrixEdit = XRCCTRL(*this,"m_btMatrixEdit",wxButton);
-        m_btMatrixSave = XRCCTRL(*this,"m_btMatrixSave",wxButton);
-        m_btMatrixClear = XRCCTRL(*this,"m_btMatrixClear",wxButton);
-        m_Matrix[0][0] = XRCCTRL(*this,"m_11",wxStaticText);
-        m_Matrix[0][1] = XRCCTRL(*this,"m_12",wxStaticText);
-        m_Matrix[0][2] = XRCCTRL(*this,"m_13",wxStaticText);
-        m_Matrix[0][3] = XRCCTRL(*this,"m_14",wxStaticText);
-        m_Matrix[1][0] = XRCCTRL(*this,"m_21",wxStaticText);
-        m_Matrix[1][1] = XRCCTRL(*this,"m_22",wxStaticText);
-        m_Matrix[1][2] = XRCCTRL(*this,"m_23",wxStaticText);
-        m_Matrix[1][3] = XRCCTRL(*this,"m_24",wxStaticText);
-        m_Matrix[2][0] = XRCCTRL(*this,"m_31",wxStaticText);
-        m_Matrix[2][1] = XRCCTRL(*this,"m_32",wxStaticText);
-        m_Matrix[2][2] = XRCCTRL(*this,"m_33",wxStaticText);
-        m_Matrix[2][3] = XRCCTRL(*this,"m_34",wxStaticText);
-        m_Matrix[3][0] = XRCCTRL(*this,"m_41",wxStaticText);
-        m_Matrix[3][1] = XRCCTRL(*this,"m_42",wxStaticText);
-        m_Matrix[3][2] = XRCCTRL(*this,"m_43",wxStaticText);
-        m_Matrix[3][3] = XRCCTRL(*this,"m_44",wxStaticText);
-        m_btEditMesh = XRCCTRL(*this,"m_btEditMesh",wxButton);
-        m_spinEffect = XRCCTRL(*this,"m_spinEffect",wxSpinButton);
-        m_btEffectAdd = XRCCTRL(*this,"m_btEffectAdd",wxButton);
-        m_btEffectEdit = XRCCTRL(*this,"m_btEffectEdit",wxButton);
-        m_btEffectCopy = XRCCTRL(*this,"m_btEffectCopy",wxButton);
-        m_btEffectDel = XRCCTRL(*this,"m_btEffectDel",wxButton);
-        m_btEffectAuto = XRCCTRL(*this,"m_btEffectAuto",wxButton);
-        m_btEffectClear = XRCCTRL(*this,"m_btEffectClear",wxButton);
-        m_btLoad = XRCCTRL(*this,"m_btLoad",wxButton);
-        m_btOk = XRCCTRL(*this,"m_btOk",wxButton);
-        m_btCancel = XRCCTRL(*this,"m_btCancel",wxButton);
+        /*
+                m_textModelName = XRCCTRL(*this,"m_textModelName",wxTextCtrl);
+                m_btMatrixEdit = XRCCTRL(*this,"m_btMatrixEdit",wxButton);
+                m_btMatrixSave = XRCCTRL(*this,"m_btMatrixSave",wxButton);
+                m_btMatrixClear = XRCCTRL(*this,"m_btMatrixClear",wxButton);
+                m_Matrix[0][0] = XRCCTRL(*this,"m_11",wxStaticText);
+                m_Matrix[0][1] = XRCCTRL(*this,"m_12",wxStaticText);
+                m_Matrix[0][2] = XRCCTRL(*this,"m_13",wxStaticText);
+                m_Matrix[0][3] = XRCCTRL(*this,"m_14",wxStaticText);
+                m_Matrix[1][0] = XRCCTRL(*this,"m_21",wxStaticText);
+                m_Matrix[1][1] = XRCCTRL(*this,"m_22",wxStaticText);
+                m_Matrix[1][2] = XRCCTRL(*this,"m_23",wxStaticText);
+                m_Matrix[1][3] = XRCCTRL(*this,"m_24",wxStaticText);
+                m_Matrix[2][0] = XRCCTRL(*this,"m_31",wxStaticText);
+                m_Matrix[2][1] = XRCCTRL(*this,"m_32",wxStaticText);
+                m_Matrix[2][2] = XRCCTRL(*this,"m_33",wxStaticText);
+                m_Matrix[2][3] = XRCCTRL(*this,"m_34",wxStaticText);
+                m_Matrix[3][0] = XRCCTRL(*this,"m_41",wxStaticText);
+                m_Matrix[3][1] = XRCCTRL(*this,"m_42",wxStaticText);
+                m_Matrix[3][2] = XRCCTRL(*this,"m_43",wxStaticText);
+                m_Matrix[3][3] = XRCCTRL(*this,"m_44",wxStaticText);
+                m_spinEffect = XRCCTRL(*this,"m_spinEffect",wxSpinButton);
+                m_btEffectAdd = XRCCTRL(*this,"m_btEffectAdd",wxButton);
+                m_btEffectEdit = XRCCTRL(*this,"m_btEffectEdit",wxButton);
+                m_btEffectCopy = XRCCTRL(*this,"m_btEffectCopy",wxButton);
+                m_btEffectDel = XRCCTRL(*this,"m_btEffectDel",wxButton);
+                m_btEffectAuto = XRCCTRL(*this,"m_btEffectAuto",wxButton);
+                m_btEffectClear = XRCCTRL(*this,"m_btEffectClear",wxButton);
+                m_btLoad = XRCCTRL(*this,"m_btLoad",wxButton);
+                m_btOk = XRCCTRL(*this,"m_btOk",wxButton);
+                m_btCancel = XRCCTRL(*this,"m_btCancel",wxButton);
+        */
+    }
+    void InitModelFromXRC(wxWindow *parent) {
+        wxXmlResource::Get()->LoadObject(parent,this,_T("panModelModel"), _T("wxPanel"));
+        m_textModelName = XRCCTRL(*parent,"m_textModelName",wxTextCtrl);
+        m_btMatrixEdit = XRCCTRL(*parent,"m_btMatrixEdit",wxButton);
+        m_btMatrixSave = XRCCTRL(*parent,"m_btMatrixSave",wxButton);
+        m_btMatrixClear = XRCCTRL(*parent,"m_btMatrixClear",wxButton);
+        m_Matrix[0][0] = XRCCTRL(*parent,"m_11",wxStaticText);
+        m_Matrix[0][1] = XRCCTRL(*parent,"m_12",wxStaticText);
+        m_Matrix[0][2] = XRCCTRL(*parent,"m_13",wxStaticText);
+        m_Matrix[0][3] = XRCCTRL(*parent,"m_14",wxStaticText);
+        m_Matrix[1][0] = XRCCTRL(*parent,"m_21",wxStaticText);
+        m_Matrix[1][1] = XRCCTRL(*parent,"m_22",wxStaticText);
+        m_Matrix[1][2] = XRCCTRL(*parent,"m_23",wxStaticText);
+        m_Matrix[1][3] = XRCCTRL(*parent,"m_24",wxStaticText);
+        m_Matrix[2][0] = XRCCTRL(*parent,"m_31",wxStaticText);
+        m_Matrix[2][1] = XRCCTRL(*parent,"m_32",wxStaticText);
+        m_Matrix[2][2] = XRCCTRL(*parent,"m_33",wxStaticText);
+        m_Matrix[2][3] = XRCCTRL(*parent,"m_34",wxStaticText);
+        m_Matrix[3][0] = XRCCTRL(*parent,"m_41",wxStaticText);
+        m_Matrix[3][1] = XRCCTRL(*parent,"m_42",wxStaticText);
+        m_Matrix[3][2] = XRCCTRL(*parent,"m_43",wxStaticText);
+        m_Matrix[3][3] = XRCCTRL(*parent,"m_44",wxStaticText);
+    }
+    void InitEffectFromXRC(wxWindow *parent) {
+        wxXmlResource::Get()->LoadObject(parent,this,_T("panModelEffect"), _T("wxPanel"));
+        m_spinEffect = XRCCTRL(*parent,"m_spinEffect",wxSpinButton);
+        m_btEffectAdd = XRCCTRL(*parent,"m_btEffectAdd",wxButton);
+        m_btEffectEdit = XRCCTRL(*parent,"m_btEffectEdit",wxButton);
+        m_btEffectCopy = XRCCTRL(*parent,"m_btEffectCopy",wxButton);
+        m_btEffectDel = XRCCTRL(*parent,"m_btEffectDel",wxButton);
+        m_btEffectAuto = XRCCTRL(*parent,"m_btEffectAuto",wxButton);
+        m_btEffectClear = XRCCTRL(*parent,"m_btEffectClear",wxButton);
+    }
+    void InitButtonsFromXRC(wxWindow *parent) {
+        wxXmlResource::Get()->LoadObject(parent,this,_T("panModelButtons"), _T("wxPanel"));
+        m_btLoad = XRCCTRL(*parent,"m_btLoad",wxButton);
+        m_btOk = XRCCTRL(*parent,"m_btOk",wxButton);
+        m_btCancel = XRCCTRL(*parent,"m_btCancel",wxButton);
     }
 
     DECLARE_EVENT_TABLE()
 public:
+    bool m_Editing;
+
     dlgModel(wxWindow *parent=NULL);
+    virtual ~dlgModel();
 
     void SetModel(const cModel& model);
-    cModel GetModel() const {return m_model;};
+    cModel GetModel() const {
+        return m_model;
+    };
     void FetchOneVertexMeshes(wxArrayString& names, std::vector<D3DVECTOR>& points);
 };
 

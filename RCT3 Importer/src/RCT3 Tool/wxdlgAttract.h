@@ -36,6 +36,7 @@
 #include <wx/xrc/xmlres.h>
 
 #include "RCT3Structs.h"
+#include "wxInputBox.h"
 
 class dlgAttract : public wxDialog {
 protected:
@@ -48,6 +49,13 @@ protected:
     wxChoice* m_SceneryItem;
     wxButton* m_OK;
     wxButton* m_Cancel;
+
+    wxInputBox* m_ibNameString;
+    wxInputBox* m_ibDescription;
+    wxInputBox* m_ibSceneryItem;
+
+    void OnDefault(wxCommandEvent& event);
+    void OnNameString(wxCommandEvent& event);
 
 private:
 void InitWidgetsFromXRC(wxWindow *parent) {
@@ -63,6 +71,7 @@ void InitWidgetsFromXRC(wxWindow *parent) {
     m_Cancel = XRCCTRL(*this,"m_Cancel",wxButton);
 }
 
+    DECLARE_EVENT_TABLE()
 public:
     dlgAttract(wxWindow *parent);
     wxString Name;
@@ -72,6 +81,8 @@ public:
     unsigned long Unk2;
     long Unk3;
     wxString SID;
+
+    virtual bool TransferDataToWindow();
 };
 
 #endif

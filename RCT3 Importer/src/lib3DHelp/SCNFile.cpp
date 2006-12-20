@@ -73,6 +73,11 @@ bool cSCNFile::Load() {
 
     // Read version
     fread(&version, sizeof(long), 1, f);
+    if (version > VERSION_CSCNFILE) {
+        error = CSCNFILE_ERROR_VERSION;
+        fclose(f);
+        return false;
+    }
 
     // Read ovl name
     unsigned long count;
@@ -171,6 +176,15 @@ void cSCNFile::LoadTextures(FILE *f) {
                     }
                 }
                 delete[] tmp;
+            }
+            if (version >= 5) {
+                fread(&ftfr.AlphaCutoff, sizeof(ftfr.AlphaCutoff), 1, f);
+                fread(&ftfr.AlphaSource, sizeof(ftfr.AlphaSource), 1, f);
+            } else {
+                if (ftfr.Alpha != wxT(""))
+                    ftfr.AlphaSource = CFTF_ALPHA_EXTERNAL;
+                else
+                    ftfr.AlphaSource = CFTF_ALPHA_NONE;
             }
             ft.Frames.push_back(ftfr);
         }
@@ -500,6 +514,11 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
             delete[] tmp;
         } else
             ftfr.Alpha = wxT("");
+
+        if (ftfr.Alpha != wxT(""))
+            ftfr.AlphaSource = CFTF_ALPHA_EXTERNAL;
+        else
+            ftfr.AlphaSource = CFTF_ALPHA_NONE;
 
         if ((ftfr.Texture != wxT("")) || (ftfr.Alpha != wxT("")))
             ft.Frames.push_back(ftfr);
@@ -915,6 +934,9 @@ void cSCNFile::SaveTextures(FILE *f) {
             if (alphalen) {
                 fwrite(temp.GetFullPath().fn_str(), alphalen, 1, f);
             }
+
+            fwrite(&it->AlphaCutoff, sizeof(it->AlphaCutoff), 1, f);
+            fwrite(&it->AlphaSource, sizeof(it->AlphaSource), 1, f);
         }
     }
 }

@@ -138,13 +138,15 @@ void showBitmapInfo(wxWindow *parent, const char *filename) {
                 res += wxString::Format("  %s\n", iluErrorString(Error));
             }
         } else {
-            res += wxString::Format("Size: %dx%d\n", ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT));
-            res += wxString::Format("Origin: %s\n", getILString(ilGetInteger(IL_IMAGE_ORIGIN)));
-            res += wxString::Format("Format: %s\n", getILString(ilGetInteger(IL_IMAGE_FORMAT)));
-            res += wxString::Format("Type: %s\n", getILString(ilGetInteger(IL_IMAGE_TYPE)));
+            ILinfo inf;
+            iluGetImageInfo(&inf);
+            res += wxString::Format("Size: %dx%d\n", inf.Width, inf.Height);
+            res += wxString::Format("Origin: %s\n", getILString(inf.Origin));
+            res += wxString::Format("Format: %s\n", getILString(inf.Format));
+            res += wxString::Format("Type: %s\n", getILString(inf.Type));
             res += wxString::Format("Bits per Pixel: %d\n", ilGetInteger(IL_IMAGE_BITS_PER_PIXEL));
             res += wxString::Format("Colours: %d\n", iluColoursUsed());
-            res += wxString::Format("Palette Type: %s\n", getILString(ilGetInteger(IL_PALETTE_TYPE)));
+            res += wxString::Format("Palette Type: %s\n", getILString(inf.PalType));
             res += wxString::Format("Palette Bytes per Pixel: %d\n", ilGetInteger(IL_PALETTE_BPP));
             res += wxString::Format("Palette Colours: %d\n", ilGetInteger(IL_PALETTE_NUM_COLS));
         }

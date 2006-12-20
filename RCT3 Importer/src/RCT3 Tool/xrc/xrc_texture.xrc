@@ -2,7 +2,7 @@
 <resource xmlns="http://www.wxwindows.org/wxxrc" version="2.3.0.1">
 	<object class="wxDialog" name="dlgTexture">
 		<style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
-		<title>Edit Texture</title>
+		<title>Edit Texture (Advanced)</title>
 		<centered>1</centered>
 		<object class="wxFlexGridSizer">
 			<rows>4</rows>
@@ -462,23 +462,13 @@
 					</object>
 					<object class="sizeritem">
 						<option>0</option>
-						<flag>wxBOTTOM</flag>
+						<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
 						<border>5</border>
-						<object class="wxButton" name="m_btTextureInfo">
-							<style>wxBU_EXACTFIT</style>
-							<tooltip>Show some information about the texture.</tooltip>
-							<label>I</label>
-							<default>0</default>
-						</object>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxBOTTOM|wxRIGHT</flag>
-						<border>5</border>
-						<object class="wxButton" name="m_btTextureOpen">
-							<style>wxBU_EXACTFIT</style>
-							<tooltip>Select a filename for the texture.\nThe texture has to be square and the dimensions need to be a power of two.\nCommon sizes are 128x128, 256x256 or 512x512.</tooltip>
-							<label>Open</label>
+						<object class="wxBitmapButton" name="m_btTextureInfo">
+							<style>wxBU_AUTODRAW</style>
+							<size>22,22</size>
+							<tooltip>Show some information about the texture bitmap.</tooltip>
+							<bitmap />
 							<default>0</default>
 						</object>
 					</object>
@@ -486,10 +476,15 @@
 			</object>
 			<object class="sizeritem">
 				<option>0</option>
-				<flag>wxALL</flag>
+				<flag>wxALL|wxEXPAND</flag>
 				<border>5</border>
-				<object class="wxStaticText" name="m_staticText8">
-					<label>Alpha Texture Filename:</label>
+				<object class="wxChoice" name="m_choiceAlpha">
+					<content>
+						<item>Do not use any alpha channel</item>
+						<item>Use internal alpha channel</item>
+						<item>Use external alpha channel from file:</item>
+					</content>
+					<selection>0</selection>
 				</object>
 			</object>
 			<object class="sizeritem">
@@ -509,23 +504,13 @@
 					</object>
 					<object class="sizeritem">
 						<option>0</option>
-						<flag>wxBOTTOM</flag>
+						<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
 						<border>5</border>
-						<object class="wxButton" name="m_btAlphaInfo">
-							<style>wxBU_EXACTFIT</style>
-							<tooltip>Show some information about the alpha.</tooltip>
-							<label>I</label>
-							<default>0</default>
-						</object>
-					</object>
-					<object class="sizeritem">
-						<option>0</option>
-						<flag>wxBOTTOM|wxRIGHT</flag>
-						<border>5</border>
-						<object class="wxButton" name="m_btAlphaOpen">
-							<style>wxBU_EXACTFIT</style>
-							<tooltip>Select a filename for the alpha channel of the texture.\nThe alpha has to be square and the dimensions need to be a power of two.\nCommon sizes are 128x128, 256x256 or 512x512.</tooltip>
-							<label>Open</label>
+						<object class="wxBitmapButton" name="m_btAlphaInfo">
+							<style>wxBU_AUTODRAW</style>
+							<size>22,22</size>
+							<tooltip>Show some information about the alpha bitmap.</tooltip>
+							<bitmap />
 							<default>0</default>
 						</object>
 					</object>

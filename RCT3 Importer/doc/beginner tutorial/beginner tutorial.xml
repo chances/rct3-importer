@@ -774,6 +774,13 @@
         <guilabel>Apply to All Meshes</guilabel> (B). When you're finished,
         press <guibutton>Ok</guibutton> (C).</para>
 
+        <note>
+          <para>If the mesh in the list is dark red and you get an error
+          message when you try to edit it's settings, this means there is an
+          error in your mesh. Usually you didn't uv-map it at all or partly
+          (see <xref linkend="sect14" />).</para>
+        </note>
+
         <para>We are now finished setting up the model, so back in the
         <guilabel>Model Settings</guilabel> window close it by pressing
         <guibutton>Ok</guibutton> (f).</para>

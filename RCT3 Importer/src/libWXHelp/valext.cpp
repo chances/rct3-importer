@@ -15,7 +15,7 @@
 
 IMPLEMENT_CLASS(wxExtendedValidator, wxValidator)
 
-wxExtendedValidator::wxExtendedValidator(float* val, unsigned int precision, bool zero_allowed, bool use_default, float default_val) {
+wxExtendedValidator::wxExtendedValidator(float* val, unsigned int precision, bool zero_allowed, bool use_default, float default_val):wxSilent() {
     Initialize();
     m_pFloat = val;
     m_precision = precision;
@@ -24,7 +24,7 @@ wxExtendedValidator::wxExtendedValidator(float* val, unsigned int precision, boo
     m_floatDefault = default_val;
 }
 
-wxExtendedValidator::wxExtendedValidator(double* val, unsigned int precision, bool zero_allowed, bool use_default, double default_val) {
+wxExtendedValidator::wxExtendedValidator(double* val, unsigned int precision, bool zero_allowed, bool use_default, double default_val):wxSilent() {
     Initialize();
     m_pDouble = val;
     m_precision = precision;
@@ -33,7 +33,7 @@ wxExtendedValidator::wxExtendedValidator(double* val, unsigned int precision, bo
     m_floatDefault = default_val;
 }
 
-wxExtendedValidator::wxExtendedValidator(unsigned char* val, bool zero_allowed, bool use_default, unsigned int default_val) {
+wxExtendedValidator::wxExtendedValidator(unsigned char* val, bool zero_allowed, bool use_default, unsigned int default_val):wxSilent() {
     Initialize();
     m_pUChar = val;
     m_zeroAllowed = zero_allowed;
@@ -41,7 +41,7 @@ wxExtendedValidator::wxExtendedValidator(unsigned char* val, bool zero_allowed, 
     m_uintDefault = default_val;
 }
 
-wxExtendedValidator::wxExtendedValidator(unsigned int* val, bool zero_allowed, bool use_default, unsigned int default_val) {
+wxExtendedValidator::wxExtendedValidator(unsigned int* val, bool zero_allowed, bool use_default, unsigned int default_val):wxSilent() {
     Initialize();
     m_pUInt = val;
     m_zeroAllowed = zero_allowed;
@@ -49,7 +49,7 @@ wxExtendedValidator::wxExtendedValidator(unsigned int* val, bool zero_allowed, b
     m_uintDefault = default_val;
 }
 
-wxExtendedValidator::wxExtendedValidator(unsigned long* val, bool zero_allowed, bool use_default, unsigned long default_val) {
+wxExtendedValidator::wxExtendedValidator(unsigned long* val, bool zero_allowed, bool use_default, unsigned long default_val):wxSilent() {
     Initialize();
     m_pULong = val;
     m_zeroAllowed = zero_allowed;
@@ -57,26 +57,27 @@ wxExtendedValidator::wxExtendedValidator(unsigned long* val, bool zero_allowed, 
     m_uintDefault = default_val;
 }
 
-wxExtendedValidator::wxExtendedValidator(wxString* val, bool empty_allowed, bool check_exist) {
+wxExtendedValidator::wxExtendedValidator(wxString* val, bool empty_allowed, bool check_exist):wxSilent() {
     Initialize();
     m_pString = val;
     m_zeroAllowed = empty_allowed;
     m_useDefault = !check_exist; // Negate it to make the first general check in Validate work.
 }
 
-wxExtendedValidator::wxExtendedValidator(wxFileName* val, bool empty_allowed, bool check_exist) {
+wxExtendedValidator::wxExtendedValidator(wxFileName* val, bool empty_allowed, bool check_exist):wxSilent() {
     Initialize();
     m_pFileName = val;
     m_zeroAllowed = empty_allowed;
     m_useDefault = !check_exist; // Negate it to make the first general check in Validate work.
 }
 
-wxExtendedValidator::wxExtendedValidator(const wxExtendedValidator& copyFrom):wxValidator() {
+wxExtendedValidator::wxExtendedValidator(const wxExtendedValidator& copyFrom):wxValidator(),wxSilent() {
     Copy(copyFrom);
 }
 
 bool wxExtendedValidator::Copy(const wxExtendedValidator& val) {
     wxValidator::Copy(val);
+    wxSilent::Copy(val);
 
     m_pFloat = val.m_pFloat;
     m_pDouble = val.m_pDouble;
@@ -112,81 +113,103 @@ void wxExtendedValidator::Initialize() {
 }
 
 bool wxExtendedValidator::Validate(wxWindow* parent) {
-    if ( !CheckValidator() )
+    if (!CheckValidator()) {
         return false;
+    }
 
     if (m_zeroAllowed && m_useDefault) {
         // Validation cannot fail
         return true;
     }
 
-    wxTextCtrl* pControl = (wxTextCtrl*) m_validatorWindow;
+    wxString value = wxT("");
+
+    if (dynamic_cast<wxTextCtrl*>(m_validatorWindow)) {
+        value = (dynamic_cast<wxTextCtrl*>(m_validatorWindow))->GetValue();
+    } else if (dynamic_cast<wxComboCtrl*>(m_validatorWindow)) {
+        value = (dynamic_cast<wxComboCtrl*>(m_validatorWindow))->GetValue();
+    } else {
+        return false;
+    }
 
     if (m_pFloat || m_pDouble) {
         double test;
 
-        if (!(pControl->GetValue().ToDouble(&test))) {
+        if (!(value.ToDouble(&test))) {
             // Conversion failed
             if (!m_useDefault) {
                 // Not using default, validation error
-                m_validatorWindow->SetFocus();
-                ::wxMessageBox(wxT("'")+pControl->GetValue()+_("' is not a floating point number."), _("Validation conflict"), wxOK|wxICON_ERROR, parent);
+                if (!m_silent) {
+                    m_validatorWindow->SetFocus();
+                    ::wxMessageBox(wxT("'")+value+_("' is not a floating point number."), _("Validation conflict"), wxOK|wxICON_ERROR, parent);
+                }
                 return false;
             }
         } else {
             if ((!m_zeroAllowed) && (test == 0.0)) {
                 // Zero not allowed
-                m_validatorWindow->SetFocus();
-                ::wxMessageBox(_("You may not enter zero here."), _("Validation conflict"), wxOK|wxICON_ERROR, parent);
+                if (!m_silent) {
+                    m_validatorWindow->SetFocus();
+                    ::wxMessageBox(_("You may not enter zero here."), _("Validation conflict"), wxOK|wxICON_ERROR, parent);
+                }
                 return false;
             }
         }
     } else if (m_pUChar || m_pUInt || m_pULong) {
         unsigned long test;
 
-        if (!(pControl->GetValue().ToULong(&test))) {
+        if (!(value.ToULong(&test))) {
             // Conversion failed
             if (!m_useDefault) {
                 // Not using default, validation error
-                m_validatorWindow->SetFocus();
-                ::wxMessageBox(wxT("'")+pControl->GetValue()+_("' is not an integer number."), _("Validation conflict"), wxOK|wxICON_ERROR, parent);
+                if (!m_silent) {
+                    m_validatorWindow->SetFocus();
+                    ::wxMessageBox(wxT("'")+value+_("' is not an integer number."), _("Validation conflict"), wxOK|wxICON_ERROR, parent);
+                }
                 return false;
             }
         } else {
             if ((!m_zeroAllowed) && (test == 0)) {
                 // Zero not allowed
-                m_validatorWindow->SetFocus();
-                ::wxMessageBox(_("You may not enter zero here."), _("Validation conflict"), wxOK|wxICON_ERROR, parent);
+                if (!m_silent) {
+                    m_validatorWindow->SetFocus();
+                    ::wxMessageBox(_("You may not enter zero here."), _("Validation conflict"), wxOK|wxICON_ERROR, parent);
+                }
                 return false;
             }
         }
     } else if (m_pString) {
-        wxString test = pControl->GetValue();
-        if ((!m_zeroAllowed) && (test == wxT(""))) {
+        if ((!m_zeroAllowed) && (value == wxT(""))) {
             // Empty not allowed
-            m_validatorWindow->SetFocus();
-            ::wxMessageBox(_("This field may not be empty."), _("Validation conflict"), wxOK|wxICON_ERROR, parent);
+            if (!m_silent) {
+                m_validatorWindow->SetFocus();
+                ::wxMessageBox(_("This field may not be empty."), _("Validation conflict"), wxOK|wxICON_ERROR, parent);
+            }
             return false;
         }
         // If we arrive here, we have a value or it's allowed to have none
         if (!m_useDefault) {
             // We check if the file exists, but only if the value is non-empty
             // If it's empty at this stage, we interpret it as "either a valid file or nothing"
-            if (test != wxT("")) {
-                if (!::wxFileExists(test)) {
+            if (value != wxT("")) {
+                if (!::wxFileExists(value)) {
                     // File does not exist.
-                    m_validatorWindow->SetFocus();
-                    ::wxMessageBox(_("This file does not exist."), _("Validation conflict"), wxOK|wxICON_ERROR, parent);
+                    if (!m_silent) {
+                        m_validatorWindow->SetFocus();
+                        ::wxMessageBox(_("This file does not exist."), _("Validation conflict"), wxOK|wxICON_ERROR, parent);
+                    }
                     return false;
                 }
             }
         }
     } else if (m_pFileName) {
-        wxFileName test = pControl->GetValue();
+        wxFileName test = value;
         if ((!m_zeroAllowed) && (test == wxT(""))) {
             // Empty not allowed
-            m_validatorWindow->SetFocus();
-            ::wxMessageBox(_("This field may not be empty."), _("Validation conflict"), wxOK|wxICON_ERROR, parent);
+            if (!m_silent) {
+                m_validatorWindow->SetFocus();
+                ::wxMessageBox(_("This field may not be empty."), _("Validation conflict"), wxOK|wxICON_ERROR, parent);
+            }
             return false;
         }
         // If we arrive here, we have a value or it's allowed to have none
@@ -196,8 +219,10 @@ bool wxExtendedValidator::Validate(wxWindow* parent) {
             if (test != wxT("")) {
                 if (!::wxFileExists(test.GetFullPath())) {
                     // File does not exist.
-                    m_validatorWindow->SetFocus();
-                    ::wxMessageBox(_("This file does not exist."), _("Validation conflict"), wxOK|wxICON_ERROR, parent);
+                    if (!m_silent) {
+                        m_validatorWindow->SetFocus();
+                        ::wxMessageBox(_("This file does not exist."), _("Validation conflict"), wxOK|wxICON_ERROR, parent);
+                    }
                     return false;
                 }
             }
@@ -208,23 +233,44 @@ bool wxExtendedValidator::Validate(wxWindow* parent) {
 }
 
 bool wxExtendedValidator::TransferToWindow(void) {
-    if ( !CheckValidator() )
+    if (!CheckValidator()) {
         return false;
+    }
 
-    wxTextCtrl *pControl = (wxTextCtrl *) m_validatorWindow;
-    if ( m_pFloat || m_pDouble ) {
-        pControl->SetValue(wxString::Format(wxT("%.*f"), m_precision, (m_pFloat)?(*m_pFloat):(*m_pDouble)));
-    } else if (m_pUChar) {
-        unsigned int t = *m_pUChar;
-        pControl->SetValue(wxString::Format(wxT("%u"), t));
-    } else if (m_pUInt) {
-        pControl->SetValue(wxString::Format(wxT("%u"), *m_pUInt));
-    } else if (m_pULong) {
-        pControl->SetValue(wxString::Format(wxT("%lu"), *m_pULong));
-    } else if (m_pString) {
-        pControl->SetValue(*m_pString);
-    } else if (m_pFileName) {
-        pControl->SetValue(m_pFileName->GetFullPath());
+    if (dynamic_cast<wxTextCtrl*>(m_validatorWindow)) {
+        wxTextCtrl *pControl = dynamic_cast<wxTextCtrl*>(m_validatorWindow);
+        if ( m_pFloat || m_pDouble ) {
+            pControl->SetValue(wxString::Format(wxT("%.*f"), m_precision, (m_pFloat)?(*m_pFloat):(*m_pDouble)));
+        } else if (m_pUChar) {
+            unsigned int t = *m_pUChar;
+            pControl->SetValue(wxString::Format(wxT("%u"), t));
+        } else if (m_pUInt) {
+            pControl->SetValue(wxString::Format(wxT("%u"), *m_pUInt));
+        } else if (m_pULong) {
+            pControl->SetValue(wxString::Format(wxT("%lu"), *m_pULong));
+        } else if (m_pString) {
+            pControl->SetValue(*m_pString);
+        } else if (m_pFileName) {
+            pControl->SetValue(m_pFileName->GetFullPath());
+        }
+    } else if (dynamic_cast<wxComboCtrl*>(m_validatorWindow)) {
+        wxComboCtrl *pControl = dynamic_cast<wxComboCtrl*>(m_validatorWindow);
+        if ( m_pFloat || m_pDouble ) {
+            pControl->SetValue(wxString::Format(wxT("%.*f"), m_precision, (m_pFloat)?(*m_pFloat):(*m_pDouble)));
+        } else if (m_pUChar) {
+            unsigned int t = *m_pUChar;
+            pControl->SetValue(wxString::Format(wxT("%u"), t));
+        } else if (m_pUInt) {
+            pControl->SetValue(wxString::Format(wxT("%u"), *m_pUInt));
+        } else if (m_pULong) {
+            pControl->SetValue(wxString::Format(wxT("%lu"), *m_pULong));
+        } else if (m_pString) {
+            pControl->SetValue(*m_pString);
+        } else if (m_pFileName) {
+            pControl->SetValue(m_pFileName->GetFullPath());
+        }
+    } else {
+        return false;
     }
 
     return true;
@@ -234,11 +280,20 @@ bool wxExtendedValidator::TransferFromWindow(void) {
     if ( !CheckValidator() )
         return false;
 
-    wxTextCtrl *pControl = (wxTextCtrl *) m_validatorWindow;
+    wxString value = wxT("");
+
+    if (dynamic_cast<wxTextCtrl*>(m_validatorWindow)) {
+        value = (dynamic_cast<wxTextCtrl*>(m_validatorWindow))->GetValue();
+    } else if (dynamic_cast<wxComboCtrl*>(m_validatorWindow)) {
+        value = (dynamic_cast<wxComboCtrl*>(m_validatorWindow))->GetValue();
+    } else {
+        return false;
+    }
+
     if ( m_pFloat || m_pDouble ) {
         double test;
 
-        if (!(pControl->GetValue().ToDouble(&test))) {
+        if (!(value.ToDouble(&test))) {
             // Conversion failed
             if (!m_useDefault) {
                 // Not using default, validation error
@@ -260,7 +315,7 @@ bool wxExtendedValidator::TransferFromWindow(void) {
     } else if (m_pUChar || m_pUInt || m_pULong) {
         unsigned long test;
 
-        if (!(pControl->GetValue().ToULong(&test))) {
+        if (!(value.ToULong(&test))) {
             // Conversion failed
             if (!m_useDefault) {
                 // Not using default, validation error
@@ -282,8 +337,7 @@ bool wxExtendedValidator::TransferFromWindow(void) {
             *m_pULong = test;
         }
     } else if (m_pString) {
-        wxString test = pControl->GetValue();
-        if ((!m_zeroAllowed) && (test == wxT(""))) {
+        if ((!m_zeroAllowed) && (value == wxT(""))) {
             // Empty not allowed
             return false;
         }
@@ -291,16 +345,16 @@ bool wxExtendedValidator::TransferFromWindow(void) {
         if (!m_useDefault) {
             // We check if the file exists, but only if the value is non-empty
             // If it's empty at this stage, we interpret it as "either a valid file or nothing"
-            if (test != wxT("")) {
-                if (!::wxFileExists(test)) {
+            if (value != wxT("")) {
+                if (!::wxFileExists(value)) {
                     // File does not exist.
                     return false;
                 }
             }
         }
-        *m_pString = test;
+        *m_pString = value;
     } else if (m_pFileName) {
-        wxFileName test = pControl->GetValue();
+        wxFileName test = value;
         if ((!m_zeroAllowed) && (test == wxT(""))) {
             // Empty not allowed
             return false;

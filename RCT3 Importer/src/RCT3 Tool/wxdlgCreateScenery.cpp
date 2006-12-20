@@ -83,32 +83,49 @@ wxTextureListBox::wxTextureListBox(wxWindow *parent, cSCNFile *content):
 }
 
 void wxTextureListBox::UpdateContents() {
-    SetItemCount(m_contents->flexitextures.size());
+    SetItemCount(m_contents->flexitextures.size() + ::wxGetApp().g_texturecache.size());
+    if (GetSelection() >= m_contents->flexitextures.size())
+        SetSelection(wxNOT_FOUND);
     RefreshAll();
 }
 
 wxString wxTextureListBox::OnGetItem(size_t n) const {
-    wxString addon = wxT("");
-    for (cFlexiTextureFrameIterator it = m_contents->flexitextures[n].Frames.begin(); it != m_contents->flexitextures[n].Frames.end(); it++) {
-        if (it->Alpha != wxT("")) {
-            addon += _("Alpha");
-            break;
+    if (n < m_contents->flexitextures.size()) {
+        wxString addon = wxT("");
+        for (cFlexiTextureFrameIterator it = m_contents->flexitextures[n].Frames.begin(); it != m_contents->flexitextures[n].Frames.end(); it++) {
+            if (it->Alpha != wxT("")) {
+                addon += _("Alpha");
+                break;
+            }
         }
+        if (m_contents->flexitextures[n].Recolorable) {
+            addon += (addon != wxT(""))?wxT(", "):wxT("");
+            addon += _("Recolorable");
+        }
+        if (m_contents->flexitextures[n].FPS > 0) {
+             addon += (addon != wxT(""))?wxT(", "):wxT("");
+             addon += _("Animated");
+        }
+        if (addon != wxT(""))
+            return wxT("<font size='2'>")+wxEncodeHtmlEntities(m_contents->flexitextures[n].Name)
+                +wxT("<br>&nbsp;&nbsp;(")+addon+wxT(")")
+                +wxT("</font>");
+        else
+            return wxT("<font size='2'>")+wxEncodeHtmlEntities(m_contents->flexitextures[n].Name)+wxT("</font>");
+    } else if (n < (m_contents->flexitextures.size() + ::wxGetApp().g_texturecache.size())) {
+        wxString s = wxT("");
+        int i = n-m_contents->flexitextures.size();
+        for(std::list<wxString>::iterator it = ::wxGetApp().g_texturecache.begin(); it != ::wxGetApp().g_texturecache.end(); it++) {
+            if (!i) {
+                s = *it;
+                break;
+            }
+            i--;
+        }
+        return wxT("<font size='2' color='#808080'>")+wxEncodeHtmlEntities(s)+wxT("</font>");
+    } else {
+            return wxT("Internal Error");
     }
-    if (m_contents->flexitextures[n].Recolorable) {
-        addon += (addon != wxT(""))?wxT(", "):wxT("");
-        addon += _("Recolorable");
-    }
-    if (m_contents->flexitextures[n].FPS > 0) {
-         addon += (addon != wxT(""))?wxT(", "):wxT("");
-         addon += _("Animated");
-    }
-    if (addon != wxT(""))
-        return wxT("<font size='2'>")+wxEncodeHtmlEntities(m_contents->flexitextures[n].Name)
-            +wxT("<br>&nbsp;&nbsp;(")+addon+wxT(")")
-            +wxT("</font>");
-    else
-        return wxT("<font size='2'>")+wxEncodeHtmlEntities(m_contents->flexitextures[n].Name)+wxT("</font>");
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -125,6 +142,8 @@ wxModelListBox::wxModelListBox(wxWindow *parent, cSCNFile *content):
 
 void wxModelListBox::UpdateContents() {
     SetItemCount(m_contents->models.size());
+    if (GetSelection() >= m_contents->models.size())
+        SetSelection(wxNOT_FOUND);
     RefreshAll();
 }
 
@@ -169,11 +188,19 @@ wxLODListBox::wxLODListBox(wxWindow *parent, cSCNFile *content):
 
 void wxLODListBox::UpdateContents() {
     SetItemCount(m_contents->lods.size());
+    if (GetSelection() >= m_contents->lods.size())
+        SetSelection(wxNOT_FOUND);
     RefreshAll();
 }
 
 wxString wxLODListBox::OnGetItem(size_t n) const {
-    return wxT("<font size='2'>")+wxString::Format(wxT("%.1f<br>&nbsp;&nbsp;"), m_contents->lods[n].distance) + wxEncodeHtmlEntities(m_contents->lods[n].modelname)+wxT("</font>");
+    wxString addon = wxT("");
+    if ((m_contents->lods[n].unk2 != 0) || (m_contents->lods[n].unk4!=0) || (m_contents->lods[n].unk14!=0))
+        addon = wxString::Format(wxT(" (%d/%d/%d)"),
+            m_contents->lods[n].unk2,
+            m_contents->lods[n].unk4,
+            m_contents->lods[n].unk14);
+    return wxT("<font size='2'>")+wxString::Format(wxT("%.1f"), m_contents->lods[n].distance) + addon + wxT("<br>&nbsp;&nbsp;") + wxEncodeHtmlEntities(m_contents->lods[n].modelname)+wxT("</font>");
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -190,6 +217,8 @@ wxReferenceListBox::wxReferenceListBox(wxWindow *parent, cSCNFile *content):
 
 void wxReferenceListBox::UpdateContents() {
     SetItemCount(m_contents->references.size());
+    if (GetSelection() >= m_contents->references.size())
+        SetSelection(wxNOT_FOUND);
     RefreshAll();
 }
 
@@ -271,6 +300,7 @@ dlgCreateScenery::dlgCreateScenery(wxWindow *parent) {
     m_tbCS = NULL;
 
     InitWidgetsFromXRC((wxWindow *)parent);
+    SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
 
     m_tbCS = new wxToolBar(this, idToolBar, wxDefaultPosition, wxDefaultSize, wxTB_FLAT | wxTB_HORIZONTAL | wxTB_NODIVIDER);
     m_tbCS->SetToolBitmapSize(wxSize(wxArtProvider::GetBitmap(wxART_NEW, wxART_TOOLBAR).GetWidth(), wxArtProvider::GetBitmap(wxART_NEW, wxART_TOOLBAR).GetHeight()));
@@ -288,6 +318,7 @@ dlgCreateScenery::dlgCreateScenery(wxWindow *parent) {
 
     GetSizer()->Insert(0, m_tbCS, wxSizerFlags().Expand().Border(wxTOP));
     m_htlbTexture = new wxTextureListBox(this, &m_SCN);
+    m_htlbTexture->SetToolTip(_("Texture list\nTextures from the texture chache are shown in grey."));
     wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbTexture"), m_htlbTexture, this);
     m_htlbModel = new wxModelListBox(this, &m_SCN);
     m_htlbModel->SetToolTip(_("Model list\nOrange: Warnings occured during loading the model form the scenery file.\nRed: An error occured during loading the model form the scenery file. Usually the model file was not found."));
@@ -296,10 +327,6 @@ dlgCreateScenery::dlgCreateScenery(wxWindow *parent) {
     wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbLOD"), m_htlbLOD, this);
     m_htlbReferences = new wxReferenceListBox(this, &m_SCN);
     wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbReferences"), m_htlbReferences, this);
-
-    Fit();
-    Layout();
-    GetSizer()->SetSizeHints(this);
 
     m_textSway->SetValidator(wxExtendedValidator(&m_SCN.sivsettings.sway, 2));
     m_textBrightness->SetValidator(wxExtendedValidator(&m_SCN.sivsettings.brightness, 2));
@@ -311,6 +338,10 @@ dlgCreateScenery::dlgCreateScenery(wxWindow *parent) {
     m_textUnknown9->SetValidator(wxExtendedValidator(&m_SCN.sivsettings.unk9));
     m_textUnknown10->SetValidator(wxExtendedValidator(&m_SCN.sivsettings.unk10));
     m_textUnknown11->SetValidator(wxExtendedValidator(&m_SCN.sivsettings.unk11));
+
+    Fit();
+    Layout();
+    GetSizer()->SetSizeHints(this);
 
     UpdateAll();
 
@@ -328,9 +359,9 @@ void dlgCreateScenery::UpdateControlState() {
     int count = m_SCN.flexitextures.size();
     int sel = m_htlbTexture->GetSelection();
     m_spinTexture->Enable(count>=2);
-    m_btTextureEdit->Enable(sel>=0);
-    m_btTextureCopy->Enable(sel>=0);
-    m_btTextureDel->Enable(sel>=0);
+    m_btTextureEdit->Enable((sel>=0) && (sel<count));
+    m_btTextureCopy->Enable((sel>=0) && (sel<count));
+    m_btTextureDel->Enable((sel>=0) && (sel<count));
     m_btTextureClear->Enable(count>=1);
 
     count = m_SCN.models.size();
@@ -471,12 +502,16 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
             m_SCN.filename = dialog->GetPath();
             if (!m_SCN.Load()) {
                 if (m_SCN.error != CSCNFILE_NO_ERROR) {
-                    ::wxMessageBox(_("Error loading SCN file."), _("Error"), wxOK | wxICON_ERROR, this);
+                    if (m_SCN.error == CSCNFILE_ERROR_VERSION)
+                        ::wxMessageBox(_("Error loading SCN file.\nIncompatible file version."), _("Error"), wxOK | wxICON_ERROR, this);
+                    else
+                        ::wxMessageBox(_("Error loading SCN file."), _("Error"), wxOK | wxICON_ERROR, this);
                 } else {
                     // Errors in the models
                     ::wxMessageBox(_("There were warings or errors loading the model files.\nThey will be shown to you when you open the respective model settings."), _("Warning"), wxOK | wxICON_WARNING, this);
                 }
             }
+            TransferDataToWindow();
             UpdateAll();
             MakeDirty(false);
             UpdateControlState();
@@ -492,7 +527,7 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
             id = wxID_SAVEAS;
         } else {
             TransferDataFromWindow();
-            if (m_SCN.version < 4) {
+            if (m_SCN.version < 5) {
                 if (::wxMessageBox(_("You are going to overwrite a old version scenery file.\nYou will not be able to open it with older importer versions anymore.\nDo you want to continue?"), _("Warning"), wxYES_NO|wxICON_WARNING|wxNO_DEFAULT, this) == wxNO) {
                     return;
                 }
@@ -577,6 +612,8 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
                 ::wxGetApp().g_texturecache.unique();
                 if (::wxGetApp().g_texturecache.size()>oldcount) {
                     ::wxMessageBox(wxString::Format(_("Texture cache updated.\n%d new textures were added to the cache."), ::wxGetApp().g_texturecache.size()-oldcount), _("Texture Cache"), wxOK | wxICON_INFORMATION, this);
+                    m_htlbTexture->UpdateContents();
+                    UpdateControlState();
                 } else {
                     ::wxMessageBox(wxString::Format(_("No new textures in file."), ::wxGetApp().g_texturecache.size()-oldcount), _("Texture Cache"), wxOK | wxICON_INFORMATION, this);
                 }
@@ -590,6 +627,8 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
     if (id == tbClearCache) {
         if (::wxMessageBox(_("Do you really want to clear the texture cache?"), _("Texture Cache"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this) == wxYES) {
             ::wxGetApp().g_texturecache.clear();
+            m_htlbTexture->UpdateContents();
+            UpdateControlState();
         }
     }
     ////////////////////////////
@@ -600,19 +639,19 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
 }
 
 void dlgCreateScenery::OnShowUnknowns(wxCommandEvent& WXUNUSED(event)) {
-    if (m_checkShowUnknown->IsChecked()) {
-        if (::wxMessageBox(_("You should better leave these settings alone.\nDo you want to continue?"), _("Warning"), wxYES_NO | wxNO_DEFAULT | wxICON_WARNING, this)==wxNO) {
-            m_checkShowUnknown->SetValue(false);
-            return;
-        }
-    }
-    bool savedirty = m_dirtyfile;
-    TransferDataFromWindow();
+//    if (m_checkShowUnknown->IsChecked()) {
+//        if (::wxMessageBox(_("You should better leave these settings alone.\nDo you want to continue?"), _("Warning"), wxYES_NO | wxNO_DEFAULT | wxICON_WARNING, this)==wxNO) {
+//            m_checkShowUnknown->SetValue(false);
+//            return;
+//        }
+//    }
+//    bool savedirty = m_dirtyfile;
+//    TransferDataFromWindow();
     m_panelUnknown->Show( m_checkShowUnknown->IsChecked());
     Fit();
     Layout();
-    TransferDataToWindow();
-    m_dirtyfile = savedirty;
+//    TransferDataToWindow();
+//    MakeDirty(savedirty);
 }
 
 void dlgCreateScenery::OnControlUpdate(wxCommandEvent& WXUNUSED(event)) {
@@ -648,7 +687,7 @@ void dlgCreateScenery::OnMakeDirty(wxCommandEvent& WXUNUSED(event)) {
 
 void dlgCreateScenery::OnTextureUp(wxSpinEvent& WXUNUSED(event)) {
     int sel = m_htlbTexture->GetSelection();
-    if (sel < 1)
+    if ((sel < 1) || (sel >= m_SCN.flexitextures.size()))
         return;
     cFlexiTexture ft = m_SCN.flexitextures[sel];
     m_SCN.flexitextures.erase(m_SCN.flexitextures.begin() + sel);
@@ -663,7 +702,7 @@ void dlgCreateScenery::OnTextureUp(wxSpinEvent& WXUNUSED(event)) {
 void dlgCreateScenery::OnTextureDown(wxSpinEvent& WXUNUSED(event)) {
     int count = m_SCN.flexitextures.size();
     int sel = m_htlbTexture->GetSelection();
-    if ((count-sel) <= 1)
+    if (((count-sel) <= 1) || (sel >= m_SCN.flexitextures.size()))
         return;
     cFlexiTexture ft = m_SCN.flexitextures[sel];
     m_SCN.flexitextures.erase(m_SCN.flexitextures.begin() + sel);
@@ -730,22 +769,46 @@ void dlgCreateScenery::OnTextureAdd(wxCommandEvent& WXUNUSED(event)) {
 
 void dlgCreateScenery::OnTextureEdit(wxCommandEvent& WXUNUSED(event)) {
     int sel = m_htlbTexture->GetSelection();
-    if (sel < 0)
+    if ((sel < 0) || (sel >= m_SCN.flexitextures.size()))
         return;
-    dlgTexture *dialog = new dlgTexture(this);
+
+    dlgTextureBase *dialog = NULL;
+    bool simple = ((m_SCN.flexitextures[sel].Frames.size()<=1) &&
+                   (m_SCN.flexitextures[sel].Animation.size()==0) &&
+                   (m_SCN.flexitextures[sel].FPS == 0) &&
+                   ((m_SCN.flexitextures[sel].Recolorable <= 1) ||
+                    (m_SCN.flexitextures[sel].Recolorable == 3) ||
+                    (m_SCN.flexitextures[sel].Recolorable == 7)));
+    if (simple)
+        dialog = new dlgTextureSimple(this);
+    else
+        dialog = new dlgTexture(this);
     dialog->SetFlexiTexture(m_SCN.flexitextures[sel]);
-    if (dialog->ShowModal() == wxID_OK) {
+    int res = dialog->ShowModal();
+    if (res == wxID_OK) {
         m_SCN.flexitextures[sel] = dialog->GetFlexiTexture();
         MakeDirty();
         m_htlbTexture->UpdateContents();
         UpdateControlState();
+    } else if (res == wxID_SAVE) {
+        cFlexiTexture temp = dialog->GetFlexiTexture();
+        dialog->Destroy();
+
+        dialog = new dlgTexture(this);
+        dialog->SetFlexiTexture(temp);
+        if (dialog->ShowModal() == wxID_OK) {
+            m_SCN.flexitextures[sel] = dialog->GetFlexiTexture();
+            MakeDirty();
+            m_htlbTexture->UpdateContents();
+            UpdateControlState();
+        }
     }
     dialog->Destroy();
 }
 
 void dlgCreateScenery::OnTextureCopy(wxCommandEvent& WXUNUSED(event)) {
     int sel = m_htlbTexture->GetSelection();
-    if (sel<0)
+    if ((sel < 0) || (sel >= m_SCN.flexitextures.size()))
         return;
 
     cFlexiTexture ft = m_SCN.flexitextures[sel];
@@ -760,7 +823,7 @@ void dlgCreateScenery::OnTextureCopy(wxCommandEvent& WXUNUSED(event)) {
 
 void dlgCreateScenery::OnTextureDel(wxCommandEvent& WXUNUSED(event)) {
     int sel = m_htlbTexture->GetSelection();
-    if (sel<0)
+    if ((sel < 0) || (sel >= m_SCN.flexitextures.size()))
         return;
 
     m_SCN.flexitextures.erase(m_SCN.flexitextures.begin() + sel);
@@ -1259,10 +1322,9 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                         wxLogError(_("Texture '%s': Texture file '%s' not found."), i_ftx->Name.c_str(), i_ftxfr->Texture.GetName().c_str());
                         break;
                     }
-                    if ((i_ftxfr->Alpha != wxT("")) && (!(i_ftxfr->Alpha.IsOk() && i_ftxfr->Alpha.FileExists()))) {
-                        error = true;
-                        wxLogError(_("Texture '%s': Alpha file '%s' not found."), i_ftx->Name.c_str(), i_ftxfr->Alpha.GetName().c_str());
-                        break;
+                    if ((i_ftxfr->AlphaSource==CFTF_ALPHA_EXTERNAL) && (i_ftxfr->Alpha != wxT("")) && (!(i_ftxfr->Alpha.IsOk() && i_ftxfr->Alpha.FileExists()))) {
+                        i_ftxfr->AlphaSource = CFTF_ALPHA_NONE;
+                        wxLogWarning(_("Texture '%s': Alpha channel file '%s' not found. Alpha deactivated."), i_ftx->Name.c_str(), i_ftxfr->Alpha.GetName().c_str());
                     }
                     // Make sure recolorable flag matches
                     i_ftxfr->Recolorable = i_ftx->Recolorable;
@@ -1454,6 +1516,24 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                 sh->sh = new StaticShape2 *[mesh_count];
                 D3DMATRIX transformMatrix = matrixMultiply(i_mod->transforms);
                 bool do_transform = !matrixIsEqual(transformMatrix, matrixGetUnity());
+                D3DMATRIX undoDamage;
+                int m = 0;
+                for(m = i_mod->transformnames.size()-1; m>=0; m--) {
+                    if (i_mod->transformnames[m] == wxT("-"))
+                        break;
+                }
+                if (m>0) {
+                    // Note: if m=0, the first is the separator, so this can fall through to no separator
+                    std::vector<D3DMATRIX> undostack;
+                    for (int n = m; n < i_mod->transforms.size(); n++)
+                        undostack.push_back(i_mod->transforms[n]);
+                    undoDamage = matrixInverse(matrixMultiply(undostack));
+                } else {
+                    undoDamage = matrixInverse(transformMatrix);
+                }
+                // We need to reevaluate do_transform
+                if (!do_transform)
+                    do_transform = !matrixIsEqual(undoDamage, matrixGetUnity());
 
                 if (i_mod->effectpoints.size() != 0) {
                     unsigned int e;
@@ -1467,7 +1547,9 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                             // to correctely apply the model transformation matrix to effect points we have to
                             // transform in-game objects into modeler-space first by applying the inverse
                             // of the model transformation matrix
-                            tempstack.insert(tempstack.begin(), matrixInverse(transformMatrix));
+                            // (now replaced by the undoDamage matrix to allow separation of the coordinate
+                            // system fix from other model transformations)
+                            tempstack.insert(tempstack.begin(), undoDamage);
                             // At the end of the stack, transform back
                             tempstack.push_back(transformMatrix);
                             sh->EffectPosition[e] = matrixMultiply(tempstack);
@@ -1640,6 +1722,8 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
             for (cFlexiTextureFrameIterator i_ftxfr = i_ftx->Frames.begin(); i_ftxfr != i_ftx->Frames.end(); i_ftxfr++) {
                 ilBindImage(tex[0]);
 
+                unsigned char *alphadata = 0;
+
                 if (!ilLoadImage(i_ftxfr->Texture.GetFullPath().fn_str())) {
                     error = true;
                     wxLogError(_("Can't open texture '%s'. devIL errors follow:"), i_ftxfr->Texture.GetFullPath().fn_str());
@@ -1667,8 +1751,16 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                 }
                 if (width != fti->width) {
                     error = true;
-                    wxLogError(_("Texture '%s' size is different from sise of the first frame."), i_ftxfr->Texture.GetFullPath().fn_str());
+                    wxLogError(_("Texture '%s' size is different from size of the first frame."), i_ftxfr->Texture.GetFullPath().fn_str());
                     goto scenerycleanup;
+                }
+                if (i_ftxfr->AlphaSource == CFTF_ALPHA_INTERNAL) {
+                    alphadata = ilGetAlpha(IL_UNSIGNED_BYTE);
+                    if (!alphadata) {
+                        error = true;
+                        wxLogError(_("Texture '%s' was supposed to have an alpha channel but there was an error retrieving it."), i_ftxfr->Texture.GetFullPath().fn_str());
+                        goto scenerycleanup;
+                    }
                 }
                 if (ilGetInteger(IL_IMAGE_FORMAT) != IL_COLOUR_INDEX) {
                     if (i_ftxfr->Recolorable) {
@@ -1743,11 +1835,11 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                         }
                         goto scenerycleanup;
                     }
-                bool AlphaPresent = false;
-                if (i_ftxfr->Alpha != wxT("")) {
-                    AlphaPresent = true;
-                }
-                if (AlphaPresent == true) {
+//                bool AlphaPresent = false;
+//                if (i_ftxfr->Alpha != wxT("")) {
+//                    AlphaPresent = true;
+//                }
+                if (i_ftxfr->AlphaSource == CFTF_ALPHA_EXTERNAL) {
                     ilBindImage(tex[1]);
 
                     if (!ilLoadImage(i_ftxfr->Alpha.GetFullPath().fn_str())) {
@@ -1784,24 +1876,26 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                             }
                             goto scenerycleanup;
                         }
+                    alphadata = (unsigned char *) malloc(width * height);
+                    memcpy(alphadata, ilGetData(), width * height);
+
                 }
 
                 RGBQUAD *colors;
                 colors = new RGBQUAD[256];
                 memset(colors, 0, 256 * sizeof(RGBQUAD));
                 unsigned char *texture = 0;
-                unsigned char *alphadata = 0;
                 texture = new unsigned char[width * height];
                 ilBindImage(tex[0]);
                 memcpy(texture, ilGetData(), width * height);
                 memcpy(colors, ilGetPalette(), ilGetInteger(IL_PALETTE_NUM_COLS) * 4);
                 for (unsigned int j = 0; j < 256; j++)
                     colors[j].rgbReserved = i_ftxfr->AlphaCutoff;
-                if (AlphaPresent == true) {
-                    alphadata = new unsigned char[width * height];
-                    ilBindImage(tex[1]);
-                    memcpy(alphadata, ilGetData(), width * height);
-                }
+//                if (AlphaPresent == true) {
+//                    alphadata = malloc(width * height);
+//                    ilBindImage(tex[1]);
+//                    memcpy(alphadata, ilGetData(), width * height);
+//                }
 
                 fts[m].scale = local_log2(width);
                 fts[m].width = width;
@@ -1876,7 +1970,7 @@ scenerycleanup:
             for (unsigned int i = 0; i < ftid->fts2Count; i++) {
                 delete[] ftid->fts2[i].palette;
                 delete[] ftid->fts2[i].texture;
-                delete[] ftid->fts2[i].alpha;
+                free(ftid->fts2[i].alpha);
             }
             delete ftid->fts2;
             delete ftid;

@@ -36,6 +36,7 @@
 #include <wx/xrc/xmlres.h>
 
 #include "RCT3Structs.h"
+#include "wxInputBox.h"
 
 class dlgStall : public wxDialog {
 protected:
@@ -55,6 +56,10 @@ protected:
     wxButton* m_btDefault;
     wxButton* m_OK;
     wxButton* m_Cancel;
+
+    wxInputBox* m_ibNameString;
+    wxInputBox* m_ibDescription;
+    wxInputBox* m_ibSceneryItem;
 
     void OnDefault(wxCommandEvent& event);
     void OnNameString(wxCommandEvent& event);
@@ -96,6 +101,8 @@ public:
     unsigned long Unk14;
     unsigned long Unk15;
     unsigned long Unk16;
+
+    virtual bool TransferDataToWindow();
 };
 
 #endif

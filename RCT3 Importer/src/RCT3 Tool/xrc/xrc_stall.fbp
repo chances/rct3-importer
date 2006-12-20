@@ -327,7 +327,7 @@
                                         <property name="font"></property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
-                                        <property name="label">Unknown 1:</property>
+                                        <property name="label">Unknown 1 (2):</property>
                                         <property name="minimum_size"></property>
                                         <property name="name">m_staticText13</property>
                                         <property name="permission">protected</property>
@@ -376,7 +376,7 @@
                                         <property name="font"></property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
-                                        <property name="label">Unknown 2:</property>
+                                        <property name="label">Unknown 2 (3):</property>
                                         <property name="minimum_size"></property>
                                         <property name="name">m_staticText132</property>
                                         <property name="permission">protected</property>
@@ -425,7 +425,7 @@
                                         <property name="font"></property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
-                                        <property name="label">Unknown 3:</property>
+                                        <property name="label">Unknown 3 (11):</property>
                                         <property name="minimum_size"></property>
                                         <property name="name">m_staticText26</property>
                                         <property name="permission">protected</property>
@@ -474,7 +474,7 @@
                                         <property name="font"></property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
-                                        <property name="label">Unknown 4:</property>
+                                        <property name="label">Unknown 4 (12):</property>
                                         <property name="minimum_size"></property>
                                         <property name="name">m_staticText27</property>
                                         <property name="permission">protected</property>
@@ -523,7 +523,7 @@
                                         <property name="font"></property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
-                                        <property name="label">Unknown 5:</property>
+                                        <property name="label">Unknown 5 (13):</property>
                                         <property name="minimum_size"></property>
                                         <property name="name">m_staticText28</property>
                                         <property name="permission">protected</property>
@@ -572,7 +572,7 @@
                                         <property name="font"></property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
-                                        <property name="label">Unknown 6:</property>
+                                        <property name="label">Unknown 6 (14):</property>
                                         <property name="minimum_size"></property>
                                         <property name="name">m_staticText32</property>
                                         <property name="permission">protected</property>
@@ -621,7 +621,7 @@
                                         <property name="font"></property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
-                                        <property name="label">Unknown 7:</property>
+                                        <property name="label">Unknown 7 (15):</property>
                                         <property name="minimum_size"></property>
                                         <property name="name">m_staticText33</property>
                                         <property name="permission">protected</property>
@@ -670,7 +670,7 @@
                                         <property name="font"></property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
-                                        <property name="label">Unknown 8:</property>
+                                        <property name="label">Unknown 8 (16):</property>
                                         <property name="minimum_size"></property>
                                         <property name="name">m_staticText34</property>
                                         <property name="permission">protected</property>

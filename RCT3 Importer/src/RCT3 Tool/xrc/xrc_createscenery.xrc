@@ -637,7 +637,7 @@
 															<flag>wxALL</flag>
 															<border>5</border>
 															<object class="wxStaticText" name="m_staticText23">
-																<label>Set Unknown Flags:</label>
+																<label>Unknown Flags:</label>
 															</object>
 														</object>
 														<object class="sizeritem">
@@ -645,6 +645,7 @@
 															<flag>wxALL|wxALIGN_CENTER_HORIZONTAL</flag>
 															<border>5</border>
 															<object class="wxCheckBox" name="m_checkUnknown">
+																<tooltip>This setting sets two flags (0x70) in the SVD flags member (formerly unk1)</tooltip>
 																<label></label>
 																<checked>0</checked>
 															</object>

@@ -62,7 +62,10 @@ wxString wxMatrixListBox::OnGetItem(size_t n) const {
     if (n == 0) {
         return _("<font color='#C0C0C0' size='2'>(Insert at start)</font>");
     } else {
-        return wxT("<font size='2'>")+wxEncodeHtmlEntities(m_contents->Item(n-1))+wxT("</font>");
+        if (m_contents->Item(n-1) == wxT("-"))
+            return wxT("<hr>");
+        else
+            return wxT("<font size='2'>")+wxEncodeHtmlEntities(m_contents->Item(n-1))+wxT("</font>");
     }
 }
 
@@ -175,21 +178,27 @@ void dlgMatrix::AddMatrix(const wxString name, const D3DMATRIX mat, bool setcur)
 void dlgMatrix::DisplayMatrix() {
     unsigned int i, j;
     int sel = m_htlbMatrix->GetSelection();
-    for (i = 0; i < 4; i++)
-        for (j = 0; j < 4; j++)
-            m_textM[i][j]->Enable(sel>0);
-    m_textMatrixName->Enable(sel>0);
     m_spinMatrix->Enable(sel>0);
     m_btMatrixCopy->Enable(sel>0);
     m_btMatrixInvert->Enable(sel>0);
     m_btMatrixDel->Enable(sel>0);
+    bool matrix_enable = true;
     if (sel<=0) {
         m_textMatrixName->ChangeValue(_("<Preview of the combined matrix>"));
         ShowMatrix(matrixMultiply(m_matrices));
+        matrix_enable = false;
+    } else if (m_matrixnames[sel-1] == wxT("-")) {
+        m_textMatrixName->ChangeValue(_("<Separator>"));
+        ShowMatrix(m_matrices[sel-1], 10);
+        matrix_enable = false;
     } else {
         m_textMatrixName->ChangeValue(m_matrixnames[sel-1]);
         ShowMatrix(m_matrices[sel-1], 10);
     }
+    for (i = 0; i < 4; i++)
+        for (j = 0; j < 4; j++)
+            m_textM[i][j]->Enable(matrix_enable);
+    m_textMatrixName->Enable(matrix_enable);
 }
 
 void dlgMatrix::ShowMatrix(const D3DMATRIX m, unsigned int l) {
@@ -211,9 +220,12 @@ void dlgMatrix::OnMatrixChange(wxCommandEvent& WXUNUSED(event)) {
 
 void dlgMatrix::OnMatrixContentChange(wxCommandEvent& WXUNUSED(event)) {
     int sel = m_htlbMatrix->GetSelection();
-    if (sel>0) {
+    if ((sel>0) && (m_matrixnames[sel-1] != wxT("-"))) {
         D3DMATRIX *m = &m_matrices[sel-1];
-        m_matrixnames[sel-1] = m_textMatrixName->GetValue();
+        wxString t_name = m_textMatrixName->GetValue();
+        if (t_name == wxT("-"))
+            t_name = wxT("- ");
+        m_matrixnames[sel-1] = t_name;
         unsigned int i, j;
         double d;
         for (i = 0; i < 4; i++)
@@ -456,7 +468,7 @@ void dlgMatrix::OnMirror(wxCommandEvent& event) {
 ////////////////////////////////////////////////////////////////////////
 
 void dlgMatrix::OnSpecialUnity(wxCommandEvent& WXUNUSED(event)) {
-    AddMatrix(_("Unity (Null Transform)"), matrixGetUnity());
+    AddMatrix(wxT("-"), matrixGetUnity());
 }
 
 void dlgMatrix::OnSpecialDefault(wxCommandEvent& WXUNUSED(event)) {

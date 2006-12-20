@@ -30,6 +30,8 @@
 
 #include "wx_pch.h"
 
+#include "wxdlgTexture.h"
+
 #include <math.h>
 
 #include <wx/valtext.h>
@@ -43,8 +45,8 @@
 #include "wxdevil.h"
 
 #include "ilhelper.h"
+
 #include "wxapp.h"
-#include "wxdlgTexture.h"
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -130,18 +132,67 @@ wxString wxAnimationListBox::OnGetItem(size_t n) const {
 BEGIN_EVENT_TABLE(dlgTextureFrame,wxDialog)
 EVT_BUTTON(XRCID("m_btTextureInfo"), dlgTextureFrame::OnTextureInfo)
 EVT_BUTTON(XRCID("m_btAlphaInfo"), dlgTextureFrame::OnAlphaInfo)
-EVT_BUTTON(XRCID("m_btTextureOpen"), dlgTextureFrame::OnTextureOpen)
-EVT_BUTTON(XRCID("m_btAlphaOpen"), dlgTextureFrame::OnAlphaOpen)
+EVT_COMBOBOX(XRCID("m_textTextureFile"), dlgTextureFrame::OnTextureOpen)
+EVT_COMBOBOX(XRCID("m_textAlphaFile"), dlgTextureFrame::OnTextureOpen)
+EVT_CHOICE(XRCID("m_choiceAlpha"), dlgTextureFrame::OnAlpha)
 EVT_BUTTON(XRCID("m_btLoad"), dlgTextureFrame::OnLoad)
 END_EVENT_TABLE()
 
 dlgTextureFrame::dlgTextureFrame(wxWindow *parent) {
     m_size = 0;
     InitWidgetsFromXRC((wxWindow *)parent);
+    SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
 
-    m_textTextureFile->SetValidator(wxTextureValidator(&m_frame.Texture, _("Texture File"), false, &m_size));
-    m_textAlphaFile->SetValidator(wxTextureValidator(&m_frame.Alpha, _("Alpha Texture File"), true, &m_size));
+    wxTextCtrl *t_text = XRCCTRL(*this,"m_textTextureFile",wxTextCtrl);
+
+    wxAUIFileDialog *auidlg = new wxAUIPicFileDialog(
+                                     this,
+                                     _T("Select Texture File"),
+                                     wxEmptyString,
+                                     wxEmptyString,
+                                     _T("Supported Image Files|*.png;*.jpg;*.bmp;*.gif;*.jpeg;*.tiff;*.tif|All Files (*.*)|*.*"),
+                                     wxFD_FILE_MUST_EXIST|wxFD_CHANGE_DIR,
+                                     wxDefaultPosition,
+                                     wxSize(600,400)
+                                 );
+
+    m_textTextureFile = new wxFileSelectorCombo(this, auidlg, &::wxGetApp().g_workdir, XRCID("m_textTextureFile"));
+    t_text->GetContainingSizer()->Replace(t_text, m_textTextureFile);
+    t_text->Destroy();
+    t_text = XRCCTRL(*this,"m_textAlphaFile",wxTextCtrl);
+
+    auidlg = new wxAUIPicFileDialog(
+                                     this,
+                                     _T("Select Alpha Texture File"),
+                                     wxEmptyString,
+                                     wxEmptyString,
+                                     _T("Supported Image Files|*.png;*.jpg;*.bmp;*.gif;*.jpeg;*.tiff;*.tif|All Files (*.*)|*.*"),
+                                     wxFD_FILE_MUST_EXIST|wxFD_CHANGE_DIR,
+                                     wxDefaultPosition,
+                                     wxSize(600,400)
+                                 );
+
+    m_textAlphaFile = new wxFileSelectorCombo(this, auidlg, &::wxGetApp().g_workdir, XRCID("m_textAlphaFile"));
+    t_text->GetContainingSizer()->Replace(t_text, m_textAlphaFile);
+    t_text->Destroy();
+
+    m_textTextureFile->SetValidator(wxTextureValidator(&m_frame.Texture, _("Texture File"), false, false, &m_size));
+    m_textAlphaFile->SetValidator(wxTextureValidator(&m_frame.Alpha, _("Alpha Texture File"), true, false, &m_size));
     m_textAlphaCutoff->SetValidator(wxExtendedValidator(&m_frame.AlphaCutoff));
+    m_choiceAlpha->SetValidator(wxGenericValidator((int*) &m_frame.AlphaSource));
+
+    m_ibTextureFile = new wxInputBox(this, wxID_ANY);
+    m_ibTextureFile->SetEditor(m_textTextureFile);
+    m_ibAlphaFile = new wxInputBox(this, wxID_ANY);
+    m_ibAlphaFile->SetEditor(m_textAlphaFile);
+
+    m_btTextureInfo->SetBitmapLabel(wxXmlResource::Get()->LoadBitmap("documentinfo_16x16"));
+    m_btAlphaInfo->SetBitmapLabel(wxXmlResource::Get()->LoadBitmap("documentinfo_16x16"));
+
+    Fit();
+    Layout();
+    GetSizer()->SetSizeHints(this);
+
 
     m_btOk->SetId(wxID_OK);
     m_btCancel->SetId(wxID_CANCEL);
@@ -151,6 +202,9 @@ void dlgTextureFrame::SetFlexiTextureFrame(const cFlexiTextureFrame& val, unsign
     m_frame = val;
     m_size = force_size;
     TransferDataToWindow();
+    wxCommandEvent e;
+    e.SetInt(m_frame.AlphaSource);
+    OnAlpha(e);
 }
 
 cFlexiTextureFrame dlgTextureFrame::GetFlexiTextureFrame() {
@@ -191,53 +245,34 @@ void dlgTextureFrame::OnAlphaInfo(wxCommandEvent& WXUNUSED(event)) {
     }
 }
 
-void dlgTextureFrame::OnTextureOpen(wxCommandEvent& WXUNUSED(event)) {
-    wxFileName name = m_textTextureFile->GetValue();
-    wxAUIPicFileDialog *dialog = new wxAUIPicFileDialog(
-                                     this,
-                                     _T("Select Texture File"),
-                                     wxEmptyString,
-                                     wxEmptyString,
-                                     _T("Supported Image Files|*.png;*.jpg;*.bmp;*.gif;*.jpeg;*.tiff;*.tif|All Files (*.*)|*.*"),
-                                     wxFD_FILE_MUST_EXIST|wxFD_CHANGE_DIR,
-                                     wxDefaultPosition,
-                                     wxSize(600,400)
-                                 );
-    if (name!=wxT("")) {
-        dialog->SetFilename(name.GetFullName());
-        dialog->SetDirectory(name.GetPath());
-    } else {
-        dialog->SetDirectory(::wxGetApp().g_workdir.GetPath());
+void dlgTextureFrame::OnAlpha(wxCommandEvent& event) {
+    switch (event.GetInt()) {
+        case CFTF_ALPHA_INTERNAL: {
+            m_textAlphaFile->Enable(false);
+            m_textTextureFile->SetValidator(wxTextureValidator(&m_frame.Texture, _("Texture File"), false, true));
+            m_textAlphaFile->SetValidator(wxTextureValidator(&m_frame.Alpha, _("Alpha Channel File"), true));
+        }
+        break;
+        case CFTF_ALPHA_EXTERNAL: {
+            m_textAlphaFile->Enable(true);
+            m_textTextureFile->SetValidator(wxTextureValidator(&m_frame.Texture, _("Texture File"), false));
+            m_textAlphaFile->SetValidator(wxTextureValidator(&m_frame.Alpha, _("Alpha Channel File"), false));
+        }
+        break;
+        default: {
+            m_textAlphaFile->Enable(false);
+            m_textTextureFile->SetValidator(wxTextureValidator(&m_frame.Texture, _("Texture File"), false));
+            m_textAlphaFile->SetValidator(wxTextureValidator(&m_frame.Alpha, _("Alpha Channel File"), true));
+        }
     }
-    if (dialog->ShowModal() == wxID_OK) {
-        ::wxGetApp().g_workdir.AssignDir(wxFileName(dialog->GetPath()).GetPath());
-        m_textTextureFile->SetValue(dialog->GetPath());
-    }
-    dialog->Destroy();
+    m_ibTextureFile->Update();
+    m_ibAlphaFile->Update();
+    if ((event.GetInt() == CFTF_ALPHA_EXTERNAL) && (m_textAlphaFile->GetValue() == wxT("")))
+        m_textAlphaFile->OnButtonClick();
 }
 
-void dlgTextureFrame::OnAlphaOpen(wxCommandEvent& WXUNUSED(event)) {
-    wxFileName name = m_textAlphaFile->GetValue();
-    wxAUIPicFileDialog *dialog = new wxAUIPicFileDialog(
-                                     this,
-                                     _T("Select Alpha Texture File"),
-                                     wxEmptyString,
-                                     wxEmptyString,
-                                     _T("Supported Image Files|*.png;*.jpg;*.bmp;*.gif;*.jpeg;*.tiff;*.tif|All Files (*.*)|*.*"),
-                                     wxFD_FILE_MUST_EXIST|wxFD_CHANGE_DIR,
-                                     wxDefaultPosition,
-                                     wxSize(600,400)
-                                 );
-    if (name!=wxT("")) {
-        dialog->SetFilename(name.GetFullName());
-        dialog->SetDirectory(name.GetPath());
-    } else
-        dialog->SetDirectory(::wxGetApp().g_workdir.GetPath());
-    if (dialog->ShowModal() == wxID_OK) {
-        ::wxGetApp().g_workdir.AssignDir(wxFileName(dialog->GetPath()).GetPath());
-        m_textAlphaFile->SetValue(dialog->GetPath());
-    }
-    dialog->Destroy();
+void dlgTextureFrame::OnTextureOpen(wxCommandEvent& event) {
+    ::wxGetApp().g_workdir.AssignDir(wxFileName(event.GetString()).GetPath());
 }
 
 void dlgTextureFrame::OnLoad(wxCommandEvent& WXUNUSED(event)) {
@@ -316,6 +351,7 @@ dlgTexture::dlgTexture(wxWindow *parent) {
     m_size = 0;
 
     InitWidgetsFromXRC((wxWindow *)parent);
+    SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
 
     m_htlbAnimation = new wxAnimationListBox(this, &m_ft);
     wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbAnimation"), m_htlbAnimation, this);
@@ -330,6 +366,13 @@ dlgTexture::dlgTexture(wxWindow *parent) {
 
     m_textTextureName->SetValidator(wxExtendedValidator(&m_ft.Name, false));
     m_textFramerate->SetValidator(wxExtendedValidator(&m_ft.FPS));
+
+    wxInputBox *t_ibTextureName = new wxInputBox(this, wxID_ANY);
+    t_ibTextureName->SetEditor(m_textTextureName);
+
+    Fit();
+    Layout();
+    GetSizer()->SetSizeHints(this);
 
     m_btOk->SetId(wxID_OK);
     m_btCancel->SetId(wxID_CANCEL);
@@ -766,8 +809,9 @@ void dlgTexture::OnAnimationClear(wxCommandEvent& WXUNUSED(event)) {
 BEGIN_EVENT_TABLE(dlgTextureSimple,dlgTextureBase)
 EVT_BUTTON(XRCID("m_btTextureInfo"), dlgTextureSimple::OnTextureInfo)
 EVT_BUTTON(XRCID("m_btAlphaInfo"), dlgTextureSimple::OnAlphaInfo)
-EVT_BUTTON(XRCID("m_btTextureOpen"), dlgTextureSimple::OnTextureOpen)
-EVT_BUTTON(XRCID("m_btAlphaOpen"), dlgTextureSimple::OnAlphaOpen)
+EVT_COMBOBOX(XRCID("m_textTextureFile"), dlgTextureSimple::OnTextureOpen)
+EVT_COMBOBOX(XRCID("m_textAlphaFile"), dlgTextureSimple::OnTextureOpen)
+EVT_CHOICE(XRCID("m_choiceAlpha"), dlgTextureSimple::OnAlpha)
 EVT_BUTTON(XRCID("m_btAdvanced"), dlgTextureSimple::OnAdvanced)
 END_EVENT_TABLE()
 
@@ -775,11 +819,62 @@ dlgTextureSimple::dlgTextureSimple(wxWindow *parent) {
     m_recol = 0;
 
     InitWidgetsFromXRC((wxWindow *)parent);
+    SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
+
+    wxTextCtrl *t_text = XRCCTRL(*this,"m_textTextureFile",wxTextCtrl);
+
+    wxAUIFileDialog *auidlg = new wxAUIPicFileDialog(
+                                     this,
+                                     _T("Select Texture File"),
+                                     wxEmptyString,
+                                     wxEmptyString,
+                                     _T("Supported Image Files|*.png;*.jpg;*.bmp;*.gif;*.jpeg;*.tiff;*.tif|All Files (*.*)|*.*"),
+                                     wxFD_FILE_MUST_EXIST|wxFD_CHANGE_DIR,
+                                     wxDefaultPosition,
+                                     wxSize(600,400)
+                                 );
+
+    m_textTextureFile = new wxFileSelectorCombo(this, auidlg, &::wxGetApp().g_workdir, XRCID("m_textTextureFile"));
+    t_text->GetContainingSizer()->Replace(t_text, m_textTextureFile);
+    t_text->Destroy();
+    t_text = XRCCTRL(*this,"m_textAlphaFile",wxTextCtrl);
+
+    auidlg = new wxAUIPicFileDialog(
+                                     this,
+                                     _T("Select Alpha Texture File"),
+                                     wxEmptyString,
+                                     wxEmptyString,
+                                     _T("Supported Image Files|*.png;*.jpg;*.bmp;*.gif;*.jpeg;*.tiff;*.tif|All Files (*.*)|*.*"),
+                                     wxFD_FILE_MUST_EXIST|wxFD_CHANGE_DIR,
+                                     wxDefaultPosition,
+                                     wxSize(600,400)
+                                 );
+
+    m_textAlphaFile = new wxFileSelectorCombo(this, auidlg, &::wxGetApp().g_workdir, XRCID("m_textAlphaFile"));
+    t_text->GetContainingSizer()->Replace(t_text, m_textAlphaFile);
+    t_text->Destroy();
 
     m_textTextureName->SetValidator(wxExtendedValidator(&m_ft.Name, false));
     m_textTextureFile->SetValidator(wxTextureValidator(&m_frame.Texture, _("Texture File"), false));
-    m_textAlphaFile->SetValidator(wxTextureValidator(&m_frame.Alpha, _("Alpha Texture File"), true));
+    m_choiceAlpha->SetValidator(wxGenericValidator((int*) &m_frame.AlphaSource));
+    m_textAlphaFile->SetValidator(wxTextureValidator(&m_frame.Alpha, _("Alpha Channel File"), true));
     m_choiceColors->SetValidator(wxGenericValidator(&m_recol));
+
+    wxInputBox *t_ibTextureName = new wxInputBox(this, wxID_ANY);
+    t_ibTextureName->SetEditor(m_textTextureName);
+    m_ibTextureFile = new wxInputBox(this, wxID_ANY);
+    m_ibTextureFile->SetEditor(m_textTextureFile);
+    m_ibAlphaFile = new wxInputBox(this, wxID_ANY);
+    m_ibAlphaFile->SetEditor(m_textAlphaFile);
+
+    m_btTextureInfo->SetBitmapLabel(wxXmlResource::Get()->LoadBitmap("documentinfo_16x16"));
+    m_btAlphaInfo->SetBitmapLabel(wxXmlResource::Get()->LoadBitmap("documentinfo_16x16"));
+
+    m_textAlphaFile->Enable(false);
+
+    Fit();
+    Layout();
+    GetSizer()->SetSizeHints(this);
 
     m_btOk->SetId(wxID_OK);
     m_btCancel->SetId(wxID_CANCEL);
@@ -806,20 +901,58 @@ void dlgTextureSimple::SetTextureName(const wxString& val) {
     m_ft.Name = wxFileName(val).GetName();
 };
 
+void dlgTextureSimple::SetFlexiTexture(const cFlexiTexture& val) {
+    m_ft = val;
+    m_frame = val.Frames[0];
+    m_ft.Frames.clear();
+    m_ft.Animation.clear();
+    m_ft.FPS = 0;
+    m_recol = val.Recolorable;
+    switch (m_recol) {
+        case 3:
+            m_recol = 2;
+            break;
+        case 7:
+            m_recol = 3;
+    }
+
+    TransferDataToWindow();
+    wxCommandEvent e;
+    e.SetInt(m_frame.AlphaSource);
+    OnAlpha(e);
+}
+
 bool dlgTextureSimple::Validate() {
     if (!wxDialog::Validate())
         return false;
 
-    if (m_textAlphaFile->GetValue() == wxT(""))
-        return true;
+    int sel = m_choiceAlpha->GetSelection();
 
-    wxSize tex = getBitmapSize(m_textTextureFile->GetValue().fn_str());
-    wxSize alph = getBitmapSize(m_textAlphaFile->GetValue().fn_str());
+    switch (sel) {
+        case CFTF_ALPHA_INTERNAL: {
+            ILinfo inf;
+            getBitmapInfo(m_textTextureFile->GetValue().fn_str(), inf);
 
-    if (tex.GetWidth() != alph.GetWidth()) {
-        ::wxMessageBox(_("Both texture and alpha need to be the same size!"), _("Validation conflict"), wxICON_ERROR | wxOK, this);
-        return false;
+        }
+        break;
+        case CFTF_ALPHA_EXTERNAL: {
+            if (m_textAlphaFile->GetValue() == wxT("")) {
+                ::wxMessageBox(_("You selected to use an external alpha channel file but didn't give one."), _("Validation conflict"), wxICON_ERROR | wxOK, this);
+                m_textAlphaFile->SetFocus();
+                return false;
+            }
+
+            wxSize tex = getBitmapSize(m_textTextureFile->GetValue().fn_str());
+            wxSize alph = getBitmapSize(m_textAlphaFile->GetValue().fn_str());
+
+            if (tex.GetWidth() != alph.GetWidth()) {
+                ::wxMessageBox(_("Both texture and alpha need to be the same size!"), _("Validation conflict"), wxICON_ERROR | wxOK, this);
+                return false;
+            }
+        }
+        break;
     }
+
 
     return true;
 }
@@ -840,59 +973,40 @@ void dlgTextureSimple::OnAlphaInfo(wxCommandEvent& WXUNUSED(event)) {
     }
 }
 
-void dlgTextureSimple::OnTextureOpen(wxCommandEvent& WXUNUSED(event)) {
-    wxFileName name = m_textTextureFile->GetValue();
-    wxAUIPicFileDialog *dialog = new wxAUIPicFileDialog(
-                                     this,
-                                     _T("Select Texture File"),
-                                     wxEmptyString,
-                                     wxEmptyString,
-                                     _T("Supported Image Files|*.png;*.jpg;*.bmp;*.gif;*.jpeg;*.tiff;*.tif|All Files (*.*)|*.*"),
-                                     wxFD_FILE_MUST_EXIST|wxFD_CHANGE_DIR,
-                                     wxDefaultPosition,
-                                     wxSize(600,400)
-                                 );
-    if (name!=wxT("")) {
-        dialog->SetFilename(name.GetFullName());
-        dialog->SetDirectory(name.GetPath());
-    }
-    if (dialog->ShowModal() == wxID_OK) {
-        ::wxGetApp().g_workdir.AssignDir(wxFileName(dialog->GetPath()).GetPath());
-        m_textTextureFile->SetValue(dialog->GetPath());
-        if (m_textTextureName->GetValue() == wxT("")) {
-            name = dialog->GetPath();
-            m_textTextureName->SetValue(name.GetName());
+void dlgTextureSimple::OnAlpha(wxCommandEvent& event) {
+    switch (event.GetInt()) {
+        case CFTF_ALPHA_INTERNAL: {
+            m_textAlphaFile->Enable(false);
+            m_textTextureFile->SetValidator(wxTextureValidator(&m_frame.Texture, _("Texture File"), false, true));
+            m_textAlphaFile->SetValidator(wxTextureValidator(&m_frame.Alpha, _("Alpha Channel File"), true));
+        }
+        break;
+        case CFTF_ALPHA_EXTERNAL: {
+            m_textAlphaFile->Enable(true);
+            m_textTextureFile->SetValidator(wxTextureValidator(&m_frame.Texture, _("Texture File"), false));
+            m_textAlphaFile->SetValidator(wxTextureValidator(&m_frame.Alpha, _("Alpha Channel File"), false));
+        }
+        break;
+        default: {
+            m_textAlphaFile->Enable(false);
+            m_textTextureFile->SetValidator(wxTextureValidator(&m_frame.Texture, _("Texture File"), false));
+            m_textAlphaFile->SetValidator(wxTextureValidator(&m_frame.Alpha, _("Alpha Channel File"), true));
         }
     }
-    delete dialog;
+    m_ibTextureFile->Update();
+    m_ibAlphaFile->Update();
+    if ((event.GetInt() == CFTF_ALPHA_EXTERNAL) && (m_textAlphaFile->GetValue() == wxT("")))
+        m_textAlphaFile->OnButtonClick();
 }
 
-void dlgTextureSimple::OnAlphaOpen(wxCommandEvent& WXUNUSED(event)) {
-    wxFileName name = m_textAlphaFile->GetValue();
-    wxAUIPicFileDialog *dialog = new wxAUIPicFileDialog(
-                                     this,
-                                     _T("Select Alpha Texture File"),
-                                     wxEmptyString,
-                                     wxEmptyString,
-                                     _T("Supported Image Files|*.png;*.jpg;*.bmp;*.gif;*.jpeg;*.tiff;*.tif|All Files (*.*)|*.*"),
-                                     wxFD_FILE_MUST_EXIST|wxFD_CHANGE_DIR,
-                                     wxDefaultPosition,
-                                     wxSize(600,400)
-                                 );
-    if (name!=wxT("")) {
-        dialog->SetFilename(name.GetFullName());
-        dialog->SetDirectory(name.GetPath());
-    }
-    if (dialog->ShowModal() == wxID_OK) {
-        ::wxGetApp().g_workdir.AssignDir(wxFileName(dialog->GetPath()).GetPath());
-        m_textAlphaFile->SetValue(dialog->GetPath());
-    }
-    delete dialog;
+void dlgTextureSimple::OnTextureOpen(wxCommandEvent& event) {
+    ::wxGetApp().g_workdir.AssignDir(wxFileName(event.GetString()).GetPath());
 }
 
 void dlgTextureSimple::OnAdvanced(wxCommandEvent& WXUNUSED(event)) {
     m_textTextureName->SetValidator(wxExtendedValidator(&m_ft.Name, true));
     m_textTextureFile->SetValidator(wxTextureValidator(&m_frame.Texture, _("Texture File"), true));
+    m_textAlphaFile->SetValidator(wxTextureValidator(&m_frame.Alpha, _("Alpha Channel File"), true));
     TransferDataFromWindow();
     EndModal(wxID_SAVE);
 }

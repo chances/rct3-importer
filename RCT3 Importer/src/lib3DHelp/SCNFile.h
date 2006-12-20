@@ -31,11 +31,12 @@
 #include "RCT3Structs.h"
 //#include "3DLoader.h"
 
-#define VERSION_CSCNFILE 4
+#define VERSION_CSCNFILE 5
 
 #define CSCNFILE_NO_ERROR               0x00000000
 #define CSCNFILE_ERROR_FILENAME         0x00000001
 #define CSCNFILE_ERROR_WRONG_MAGIC      0x00000002
+#define CSCNFILE_ERROR_VERSION          0x00000004
 
 #define CSCNFILE_MAGIC                  "RCT3SCN"
 

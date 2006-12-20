@@ -2,130 +2,182 @@
 <resource xmlns="http://www.wxwindows.org/wxxrc" version="2.3.0.1">
 	<object class="wxDialog" name="dlgAttract">
 		<style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
-		<size>417,244</size>
 		<title>Special Attraction Editor</title>
 		<object class="wxFlexGridSizer">
-			<rows>15</rows>
-			<cols>2</cols>
+			<rows>3</rows>
+			<cols>1</cols>
 			<vgap>0</vgap>
 			<hgap>0</hgap>
-			<growablecols>0,1</growablecols>
-			<growablerows>6</growablerows>
+			<growablecols>0</growablecols>
+			<growablerows>1</growablerows>
 			<object class="sizeritem">
-				<option>0</option>
-				<flag>wxALL</flag>
+				<option>1</option>
+				<flag>wxEXPAND</flag>
 				<border>5</border>
-				<object class="wxStaticText" name="m_staticText1">
-					<label>Name:</label>
-				</object>
-			</object>
-			<object class="sizeritem">
-				<option>0</option>
-				<flag>wxALL</flag>
-				<border>5</border>
-				<object class="wxStaticText" name="m_staticText9">
-					<label>Attraction Type:</label>
-				</object>
-			</object>
-			<object class="sizeritem">
-				<option>0</option>
-				<flag>wxBOTTOM|wxEXPAND|wxLEFT|wxRIGHT</flag>
-				<border>5</border>
-				<object class="wxTextCtrl" name="m_Name">
-					<size>200,-1</size>
-					<value></value>
-				</object>
-			</object>
-			<object class="sizeritem">
-				<option>0</option>
-				<flag>wxBOTTOM|wxEXPAND|wxLEFT|wxRIGHT</flag>
-				<border>5</border>
-				<object class="wxChoice" name="m_Type">
-					<size>200,-1</size>
-					<content>
-						<item>Toilet</item>
-						<item>ATM</item>
-						<item>First Aid</item>
-					</content>
-					<selection>0</selection>
-				</object>
-			</object>
-			<object class="sizeritem">
-				<option>0</option>
-				<flag>wxALL</flag>
-				<border>5</border>
-				<object class="wxStaticText" name="m_staticText10">
-					<label>Name String:</label>
-				</object>
-			</object>
-			<object class="sizeritem">
-				<option>0</option>
-				<flag>wxALL</flag>
-				<border>5</border>
-				<object class="wxStaticText" name="m_staticText11">
-					<label>Description String:</label>
-				</object>
-			</object>
-			<object class="sizeritem">
-				<option>0</option>
-				<flag>wxBOTTOM|wxEXPAND|wxLEFT|wxRIGHT</flag>
-				<border>5</border>
-				<object class="wxChoice" name="m_NameString">
-					<size>200,-1</size>
-					<content />
-					<selection>0</selection>
-				</object>
-			</object>
-			<object class="sizeritem">
-				<option>0</option>
-				<flag>wxBOTTOM|wxEXPAND|wxLEFT|wxRIGHT</flag>
-				<border>5</border>
-				<object class="wxChoice" name="m_Description">
-					<size>200,-1</size>
-					<content />
-					<selection>0</selection>
-				</object>
-			</object>
-			<object class="sizeritem">
-				<option>0</option>
-				<flag>wxALL</flag>
-				<border>5</border>
-				<object class="wxStaticText" name="m_staticText13">
-					<label>Unknown 1:</label>
-				</object>
-			</object>
-			<object class="sizeritem">
-				<option>0</option>
-				<flag>wxALL</flag>
-				<border>5</border>
-				<object class="wxStaticText" name="m_staticText132">
-					<label>Unknown 2:</label>
-				</object>
-			</object>
-			<object class="sizeritem">
-				<option>0</option>
-				<flag>wxBOTTOM|wxEXPAND|wxLEFT|wxRIGHT</flag>
-				<border>5</border>
-				<object class="wxTextCtrl" name="m_Unk2">
-					<size>200,-1</size>
-					<value></value>
-				</object>
-			</object>
-			<object class="sizeritem">
-				<option>0</option>
-				<flag>wxBOTTOM|wxEXPAND|wxLEFT|wxRIGHT</flag>
-				<border>5</border>
-				<object class="wxTextCtrl" name="m_Unk3">
-					<size>200,-1</size>
-					<value></value>
-				</object>
-			</object>
-			<object class="sizeritem">
-				<option>0</option>
-				<flag>wxALL|wxALIGN_BOTTOM</flag>
-				<border>5</border>
-				<object class="wxStaticText" name="m_staticText25">
-					<label>Scenery Item:</label>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>1</option>
+						<flag>wxEXPAND</flag>
+						<border>5</border>
+						<object class="wxBoxSizer">
+							<orient>wxVERTICAL</orient>
+							<object class="sizeritem">
+								<option>0</option>
+								<flag>wxALL</flag>
+								<border>5</border>
+								<object class="wxStaticText" name="m_staticText1">
+									<label>Name:</label>
+								</object>
+							</object>
+							<object class="sizeritem">
+								<option>0</option>
+								<flag>wxBOTTOM|wxEXPAND|wxLEFT|wxRIGHT</flag>
+								<border>5</border>
+								<object class="wxTextCtrl" name="m_Name">
+									<size>200,-1</size>
+									<value></value>
+								</object>
+							</object>
+							<object class="sizeritem">
+								<option>0</option>
+								<flag>wxALL</flag>
+								<border>5</border>
+								<object class="wxStaticText" name="m_staticText10">
+									<label>Name String:</label>
+								</object>
+							</object>
+							<object class="sizeritem">
+								<option>0</option>
+								<flag>wxBOTTOM|wxEXPAND|wxLEFT|wxRIGHT</flag>
+								<border>5</border>
+								<object class="wxChoice" name="m_NameString">
+									<size>200,-1</size>
+									<content />
+									<selection>0</selection>
+								</object>
+							</object>
+							<object class="sizeritem">
+								<option>0</option>
+								<flag>wxALL</flag>
+								<border>5</border>
+								<object class="wxStaticText" name="m_staticText11">
+									<label>Description String:</label>
+								</object>
+							</object>
+							<object class="sizeritem">
+								<option>0</option>
+								<flag>wxBOTTOM|wxEXPAND|wxLEFT|wxRIGHT</flag>
+								<border>5</border>
+								<object class="wxChoice" name="m_Description">
+									<size>200,-1</size>
+									<content />
+									<selection>0</selection>
+								</object>
+							</object>
+							<object class="sizeritem">
+								<option>0</option>
+								<flag>wxALL</flag>
+								<border>5</border>
+								<object class="wxStaticText" name="m_staticText9">
+									<label>Attraction Type:</label>
+								</object>
+							</object>
+							<object class="sizeritem">
+								<option>0</option>
+								<flag>wxBOTTOM|wxEXPAND|wxLEFT|wxRIGHT</flag>
+								<border>5</border>
+								<object class="wxChoice" name="m_Type">
+									<size>200,-1</size>
+									<content>
+										<item>Toilet</item>
+										<item>ATM</item>
+										<item>First Aid</item>
+									</content>
+									<selection>0</selection>
+								</object>
+							</object>
+							<object class="sizeritem">
+								<option>0</option>
+								<flag>wxALIGN_BOTTOM|wxALL</flag>
+								<border>5</border>
+								<object class="wxStaticText" name="m_staticText25">
+									<label>Scenery Item:</label>
+								</object>
+							</object>
+							<object class="sizeritem">
+								<option>0</option>
+								<flag>wxBOTTOM|wxEXPAND|wxLEFT|wxRIGHT</flag>
+								<border>5</border>
+								<object class="wxChoice" name="m_SceneryItem">
+									<content />
+									<selection>0</selection>
+								</object>
+							</object>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>1</option>
+						<flag>wxEXPAND</flag>
+						<border>5</border>
+						<object class="wxFlexGridSizer">
+							<rows>2</rows>
+							<cols>2</cols>
+							<vgap>0</vgap>
+							<hgap>0</hgap>
+							<growablecols></growablecols>
+							<growablerows></growablerows>
+							<object class="sizeritem">
+								<option>0</option>
+								<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<object class="wxStaticText" name="m_staticText13">
+									<label>Unknown 1 (2):</label>
+								</object>
+							</object>
+							<object class="sizeritem">
+								<option>1</option>
+								<flag>wxEXPAND|wxALL</flag>
+								<border>5</border>
+								<object class="wxTextCtrl" name="m_Unk2">
+									<size>200,-1</size>
+									<value></value>
+								</object>
+							</object>
+							<object class="sizeritem">
+								<option>0</option>
+								<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<object class="wxStaticText" name="m_staticText132">
+									<label>Unknown 2 (3):</label>
+								</object>
+							</object>
+							<object class="sizeritem">
+								<option>1</option>
+								<flag>wxBOTTOM|wxLEFT|wxRIGHT</flag>
+								<border>5</border>
+								<object class="wxTextCtrl" name="m_Unk3">
+									<size>200,-1</size>
+									<value></value>
+								</object>
+							</object>
+							<object class="spacer">
+								<size>0,0</size>
+								<option>1</option>
+								<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
+								<border>5</border>
+							</object>
+							<object class="sizeritem">
+								<option>0</option>
+								<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_HORIZONTAL</flag>
+								<border>5</border>
+								<object class="wxButton" name="m_btDefault">
+									<label>Set Unknowns to Default</label>
+									<default>0</default>
+								</object>
+							</object>
+						</object>
+					</object>
 				</object>
 			</object>
 			<object class="spacer">
@@ -135,37 +187,29 @@
 				<border>5</border>
 			</object>
 			<object class="sizeritem">
-				<option>0</option>
-				<flag>wxBOTTOM|wxEXPAND|wxLEFT|wxRIGHT</flag>
-				<border>5</border>
-				<object class="wxChoice" name="m_SceneryItem">
-					<size>200,-1</size>
-					<content />
-					<selection>0</selection>
-				</object>
-			</object>
-			<object class="spacer">
-				<size>0,0</size>
 				<option>1</option>
-				<flag>wxALL</flag>
+				<flag>wxALIGN_CENTER_HORIZONTAL</flag>
 				<border>5</border>
-			</object>
-			<object class="sizeritem">
-				<option>0</option>
-				<flag>wxALIGN_CENTER|wxALL</flag>
-				<border>5</border>
-				<object class="wxButton" name="m_OK">
-					<label>_OK</label>
-					<default>0</default>
-				</object>
-			</object>
-			<object class="sizeritem">
-				<option>0</option>
-				<flag>wxALIGN_CENTER|wxALL</flag>
-				<border>5</border>
-				<object class="wxButton" name="m_Cancel">
-					<label>_Cancel</label>
-					<default>0</default>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALIGN_CENTER|wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_OK">
+							<label>_OK</label>
+							<default>0</default>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALIGN_CENTER|wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_Cancel">
+							<label>_Cancel</label>
+							<default>0</default>
+						</object>
+					</object>
 				</object>
 			</object>
 		</object>

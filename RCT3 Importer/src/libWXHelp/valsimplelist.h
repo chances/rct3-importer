@@ -18,10 +18,12 @@
 #include <wx/validate.h>
 #include <wx/vlbox.h>
 
-class wxSimpleListValidator : public wxValidator {
+#include "silence.h"
+
+class wxSimpleListValidator : public wxValidator, public wxSilent {
 DECLARE_CLASS(wxSimpleListValidator)
 public:
-    wxSimpleListValidator():wxValidator(){Initialize();};
+    wxSimpleListValidator():wxValidator(),wxSilent(){Initialize();};
     wxSimpleListValidator(char* val);
     wxSimpleListValidator(int* val);
     wxSimpleListValidator(long* val);
