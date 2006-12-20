@@ -21,5 +21,8 @@ wxWidgets-cvs
 Crystal Clear Icons
   Everaldo (http://www.everaldo.com, http://www.yellowicon.com)
   License: LGPL
+wxInputBox
+  T-Rex on wxForum (http://wxwidgets.info/?q=data_validation_tutorial_ru)
+  License: wxWidgets
 
 The developer team would like to thank everybody who contributed to one of these packages and to the importer itself.

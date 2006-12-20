@@ -1,0 +1,638 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<article class="whitepaper" revision="1.0">
+  <title>Advanced Techniques Tutorial for the RCT3 Custom Scenery
+  Importer</title>
+
+  <articleinfo>
+    <date>11.12.2006</date>
+
+    <revhistory>
+      <revision>
+        <revnumber>1</revnumber>
+
+        <date>11.12.2006</date>
+
+        <author>
+          <surname>Belgabor</surname>
+        </author>
+
+        <revdescription>
+          <para>Initial version</para>
+        </revdescription>
+      </revision>
+    </revhistory>
+
+    <author>
+      <surname>Vodhin</surname>
+    </author>
+
+    <author>
+      <surname>Belgabor</surname>
+    </author>
+  </articleinfo>
+
+  <tocchap>
+    <tocentry></tocentry>
+  </tocchap>
+
+  <para>This tutorial will show you various advanced techniques using the RCT3
+  Custom Scenery Importer.</para>
+
+  <para>This document applies to the <application>RCT3 Importer</application>
+  Version 16fix5.</para>
+
+  <section>
+    <sectioninfo>
+      <date>11.12.2006</date>
+
+      <author>
+        <surname>Belgabor</surname>
+      </author>
+    </sectioninfo>
+
+    <title>Creating simple advanced objects</title>
+
+    <section>
+      <title>Litter Bins</title>
+
+      <para>Set <guilabel>Extra Parameters</guilabel> and <guilabel>Scenery
+      Type</guilabel> to <guilabel>Litter Bin</guilabel> in the scenery
+      settings. Set the <guilabel>Size Flag</guilabel> to <guilabel>Path Edge
+      (Inner)</guilabel>. Maybe <guilabel>Path Edge (Outer)</guilabel> works
+      as well.</para>
+    </section>
+
+    <section>
+      <title>Loudspeakers</title>
+
+      <para>Set <guilabel>Extra Parameters</guilabel> to
+      <guilabel>Loudspeaker</guilabel> in the scenery settings.</para>
+    </section>
+
+    <section>
+      <title>Passport Machines</title>
+
+      <para>Set <guilabel>Extra Parameters</guilabel> to <guilabel>Passport
+      Post</guilabel> in the scenery settings. Set the <guilabel>Size
+      Flag</guilabel> to <guilabel>Path Edge (Inner)</guilabel> or
+      <guilabel>Path Edge (Outer)</guilabel>.</para>
+
+      <important>
+        <para>Somebody please verify that setting the <guilabel>Size
+        Flag</guilabel> is really necessary.</para>
+      </important>
+    </section>
+
+    <section>
+      <title>Photo Spots</title>
+
+      <para>Set <guilabel>Extra Parameters</guilabel> to <guilabel>Vista
+      Point</guilabel> and <guilabel>Scenery Type</guilabel> to
+      <guilabel>Photo Point</guilabel> in the scenery settings. Set the
+      <guilabel>Size Flag</guilabel> to <guilabel>Path Edge (Inner)</guilabel>
+      or <guilabel>Path Edge (Outer)</guilabel>.</para>
+
+      <important>
+        <para>Somebody please verify that setting the <guilabel>Size
+        Flag</guilabel> is really necessary.</para>
+      </important>
+    </section>
+
+    <section>
+      <title>Objects that conform to the terrain</title>
+
+      <para>There are two modes of conformance.</para>
+
+      <section>
+        <title>Full conform</title>
+
+        <itemizedlist>
+          <listitem>
+            <para><guilabel>Scenery Type</guilabel> <emphasis>must</emphasis>
+            be set to <guilabel>Flowers</guilabel>.</para>
+          </listitem>
+
+          <listitem>
+            <para>As <guilabel>Size Flag</guilabel> I only tested
+            <guilabel>Full Tile</guilabel>, but <guilabel>1/4 Tile</guilabel>
+            should also work. I have no idea how the latter actually works out
+            if the object is bigger than the quarter tile though...</para>
+          </listitem>
+
+          <listitem>
+            <para>Set <guilabel>Flag</guilabel> 13 and
+            <guilabel>Flag</guilabel> 14.</para>
+          </listitem>
+
+          <listitem>
+            <para>The model for the cover needs to be able to bend along both
+            diagonals, so a simple plane out of two faces will not work. You
+            need at least four faces with a vertex in the center of the model.
+            Actually I didn't try that, my simplest model has 16 faces, a 2x2
+            version of what I described.</para>
+          </listitem>
+
+          <listitem>
+            <para>Another disadvantage is that the engine is somewhat buggy
+            with this, so sometimes you see the tile straight.</para>
+          </listitem>
+
+          <listitem>
+            <para>This version does not work for terrain textured
+            tiles.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section>
+        <title>Conform to one edge of the tile</title>
+
+        <itemizedlist>
+          <listitem>
+            <para><guilabel>Scenery Type</guilabel> probably doesn't matter
+            here (I used <guilabel>Small Scenery</guilabel>).</para>
+          </listitem>
+
+          <listitem>
+            <para><guilabel>Size Flag</guilabel> has to be
+            <guilabel>Wall</guilabel> and the model has to be positioned
+            accordingly.</para>
+          </listitem>
+
+          <listitem>
+            <para>Set <guilabel>Flag</guilabel> 13 and
+            <guilabel>Flag</guilabel> 14.</para>
+          </listitem>
+
+          <listitem>
+            <para>The object is then placed like a in-game wall and conforms
+            to the edge this <quote>wall</quote> is placed at.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+    </section>
+  </section>
+
+  <section id="s_textureovl">
+    <title>Creating and using texture OVLs</title>
+
+    <para id="help">This section is so far unwritten and needs your help. If
+    you want to write it, please apply <ulink
+    url="http://www.vodhin.net/RCT3Community/e107_plugins/forum/forum_viewtopic.php?1129">here</ulink>
+    or <ulink
+    url="http://www.ataricommunity.com/forums/showthread.php?t=549880">here</ulink>.</para>
+  </section>
+
+  <section id="s_lights">
+    <title>Creating working lights</title>
+
+    <para id="help">This section is so far unwritten and needs your help. If
+    you want to write it, please apply <ulink
+    url="http://www.vodhin.net/RCT3Community/e107_plugins/forum/forum_viewtopic.php?1129">here</ulink>
+    or <ulink
+    url="http://www.ataricommunity.com/forums/showthread.php?t=549880">here</ulink>.</para>
+  </section>
+
+  <section id="s_particleeffects">
+    <title>Creating particle effect points</title>
+
+    <para id="help">This section is so far unwritten and needs your help. If
+    you want to write it, please apply <ulink
+    url="http://www.vodhin.net/RCT3Community/e107_plugins/forum/forum_viewtopic.php?1129">here</ulink>
+    or <ulink
+    url="http://www.ataricommunity.com/forums/showthread.php?t=549880">here</ulink>.</para>
+  </section>
+
+  <section id="s_fireworks">
+    <title>Creating firework launchers</title>
+
+    <para id="help">This section is so far unwritten and needs your help. If
+    you want to write it, please apply <ulink
+    url="http://www.vodhin.net/RCT3Community/e107_plugins/forum/forum_viewtopic.php?1129">here</ulink>
+    or <ulink
+    url="http://www.ataricommunity.com/forums/showthread.php?t=549880">here</ulink>.</para>
+  </section>
+
+  <section id="s_benches">
+    <title>Creating working benches</title>
+
+    <para id="help">This section is so far unwritten and needs your help. If
+    you want to write it, please apply <ulink
+    url="http://www.vodhin.net/RCT3Community/e107_plugins/forum/forum_viewtopic.php?1129">here</ulink>
+    or <ulink
+    url="http://www.ataricommunity.com/forums/showthread.php?t=549880">here</ulink>.</para>
+  </section>
+
+  <section id="s_bbss">
+    <sectioninfo>
+      <date>11.12.2006</date>
+
+      <author>
+        <surname>Belgabor</surname>
+      </author>
+    </sectioninfo>
+
+    <title>Creating billboards and scrolling signs</title>
+
+    <para>The creation of billboards and scrolling signs is very similar, so
+    I'll discuss them simultaneously.</para>
+
+    <section>
+      <title>Creating the model</title>
+
+      <para>The only thing you need to keep in mind when you create a model
+      for a billboard or scrolling sign is that the part that shows the user
+      image (billboards) or scrolling text (scrolling sign) needs to be a
+      separate mesh. It can be a single plane, but more complicated meshes are
+      also possible (<abbrev>eg.</abbrev> the round scrolling sign that comes
+      with the game).</para>
+    </section>
+
+    <section>
+      <title>UV-Mapping</title>
+
+      <para>That's where things get a bit tricky as RCT3 maps the
+      image/scrolling text in a strange way.</para>
+
+      <section>
+        <title>Billboards</title>
+
+        <para>You need to UV-map the mesh that will show the user image to the
+        <emphasis>lower half</emphasis> of texture space
+        <emphasis>upside-down</emphasis>. Do not overshoot.</para>
+
+        <para>Here is a screen shot from Blender to show you how it's done
+        (look at the coloured lines to get the orientation):</para>
+
+        <para><inlinemediaobject>
+            <imageobject>
+              <imagedata fileref="billboard.png" />
+            </imageobject>
+          </inlinemediaobject></para>
+      </section>
+
+      <section>
+        <title>Scrolling Signs</title>
+
+        <para><emphasis>One full height</emphasis> of texture space is filled
+        with the scrolling text, as billboards,
+        <emphasis>upside-down</emphasis>. To prevent distortion you need to
+        overshoot the mapping to the right, so it's width to height ration
+        matches the mesh you apply it to.</para>
+
+        <para>Here is a screen shot from Blender to show you how it's
+        done:</para>
+
+        <para><inlinemediaobject>
+            <imageobject>
+              <imagedata fileref="scrollsign.png" />
+            </imageobject>
+          </inlinemediaobject></para>
+      </section>
+    </section>
+
+    <section>
+      <title>Creating the OVLs</title>
+
+      <para>Basically set everything up like for a normal scenery
+      object.</para>
+
+      <para>For billboards, select <guilabel>Billboard Texture</guilabel> as
+      <guilabel>Texture Flags</guilabel> in the <guilabel>Mesh
+      Settings</guilabel> window of the billboard mesh. You do not need to
+      select a <guilabel>Texture</guilabel> or <guilabel>Texture
+      Style</guilabel> for it.</para>
+
+      <para>For scrolling signs, select <guilabel>Scrolling Sign</guilabel> as
+      <guilabel>Texture Flags</guilabel> in the <guilabel>Mesh
+      Settings</guilabel> window of the scrolling text mesh. In this case you
+      need to select a <guilabel>Texture</guilabel>. It is shown in the
+      preview when the user selects the sign in the menu. You can change the
+      <guilabel>Texture Style</guilabel>, but other ones as the default
+      <guilabel>SIOpaqueUnlit</guilabel> are untested.</para>
+    </section>
+
+    <section>
+      <title>Scenery Settings</title>
+
+      <para>The best option is to load a billboard or scrolling sign SID from
+      jonwil's collection <ulink url="http://www.sebar.com/jonwil">on his
+      page</ulink>. You only need to set <guilabel>Extra Parameters</guilabel>
+      to <guilabel>Sign</guilabel> for scrolling signs then.</para>
+
+      <para>The basic setup for billboards is to set <guilabel>Flag</guilabel>
+      26 and to keep <guilabel>Extra Parameters</guilabel> at
+      <guilabel>None</guilabel>. You don't need to set
+      <guilabel>Flag</guilabel> 26 for generic stalls with billboards.</para>
+
+      <para>The basic setup for scrolling signs is not fully tested, but at
+      least you have to set <guilabel>Extra Parameters</guilabel> to
+      <guilabel>Sign</guilabel>. If that doesn't work, try to set
+      <guilabel>Scenery Type</guilabel> to <guilabel>Sign</guilabel> and
+      <guilabel>Size Flag</guilabel> to <guilabel>Path Center</guilabel> or
+      <guilabel>Path Edge (Join)</guilabel>.</para>
+    </section>
+  </section>
+
+  <section id="s_stallssas">
+    <title>Creating stalls and special attractions</title>
+
+    <para id="help">This section is so far unwritten and needs your help. If
+    you want to write it, please apply <ulink
+    url="http://www.vodhin.net/RCT3Community/e107_plugins/forum/forum_viewtopic.php?1129">here</ulink>
+    or <ulink
+    url="http://www.ataricommunity.com/forums/showthread.php?t=549880">here</ulink>.</para>
+  </section>
+
+  <section id="s_lods">
+    <sectioninfo>
+      <date>23.11.2006</date>
+
+      <author>
+        <surname>Vodhin</surname>
+      </author>
+    </sectioninfo>
+
+    <title>Working with Levels of Detail (LODs)</title>
+
+    <para>We all want nice looking 3D models for RCT3 but we must remember
+    that a lot of folks out there cannot use high detail models without
+    lowering the performance of the game itself. It is now possible to use
+    Level Of Detail (<acronym>LOD</acronym>) setting when importing your
+    custom scenery into RCT3, a feature that will have thousands of RCT3 fans
+    out there grateful for your hard work.</para>
+
+    <section>
+      <title>Definition</title>
+
+      <para>First I'd like to explain a little about what
+      <acronym>LOD</acronym>s actually do and how to plan your model.
+      <acronym>LOD</acronym>s are simply a way of using multiple models for
+      both different graphics settings and Draw Distances
+      (<acronym>DD</acronym>). My computer's graphics card can handle some
+      pretty complex 3D models, but other players' computers may not, so
+      different <acronym>LOD</acronym>s become very helpful for making happy
+      graphics cards.</para>
+
+      <para><acronym>LOD</acronym>s also have assignable Draw Distances. You
+      can set how far away a particular version of your scenery is displayed.
+      If I'm over at one side of the park and I have a high detail model on
+      the other, there really is no need for the computer to try to draw the
+      whole thing off in the distance, or draw it at all if it's a tiny object
+      that really doesn't need to be seen that far away. Remember that RCT3
+      doesn't really know what your object is and it certainly can't decide to
+      just drop certain faces in an attempt to reduce the detail levels (there
+      are some rules it follows, but RCT3 still needs information to optimally
+      work). You have to do that yourself- but don't worry! It's really
+      easy!</para>
+    </section>
+
+    <section>
+      <title>Considerations about the model</title>
+
+      <para>First lets think about the scenery item itself. For this tutorial,
+      I'm going to use a sign with only two levels of detail. You can have
+      more if you like, and I think three or four is probably more than enough
+      for more complex items. If you were making a simple wall, there probably
+      should only be just one level of Detail, but if that wall had a window,
+      you might want to make several detail levels if, say, you had a fancy
+      window frame. Lets look at the first, High Detail model:</para>
+
+      <para><inlinemediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="LODs02.jpg" />
+          </imageobject>
+        </inlinemediaobject></para>
+
+      <para>My sign is essentially a wall, with some extra pieces in the way
+      of a frame and some decorations. Here I've made all the detail levels
+      needed in one 3D file- I simply choose to import the meshes designed for
+      the intended detail level. Note that I've named the meshes in my 3D file
+      according to the detail level they represent: HD= High Detail level, LD=
+      Low Detail level, and AD= Al Detail levels. For the High Detail version,
+      I've chosen not to import the Low Detail Meshes and added HD to the end
+      of the model name at the very top. Let's now look at the low detail
+      version:</para>
+
+      <para><inlinemediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="LODs03.jpg" />
+          </imageobject>
+        </inlinemediaobject></para>
+
+      <para>Here you'll notice that I've simply chosen to not import the High
+      Detail meshes and only import the Low Detail ones. What you don't see in
+      either of the two images above are the actual mesh settings- In my High
+      Detail meshes I've used a Gloss Reflection for the lamps, something that
+      isn't needed for the low detail version for two reasons: 1- the low
+      detail version is either going to be seen from far away or 2- the
+      player's computer isn't very powerful and will be displaying the Low
+      detail version, so why bog the computer down further if you don't have
+      to.</para>
+
+      <note>
+        <para>I've also included a DS in the Mesh Names that I intend to use a
+        double sided texture setting- very helpfull for my worn out little
+        brain.</para>
+      </note>
+
+      <para>You will also notice that the name for this model in the top of
+      the form has LD added to the end, to help identify it as a Low Detail
+      model in the main <guilabel>Create OVL</guilabel> window. Again,
+      remember that there is only one 3D model, I'm only changing what meshes
+      to import for different detail levels. The model name at the top is used
+      only by the importer and can be anything you want.</para>
+    </section>
+
+    <section>
+      <title>Setting up the LODs</title>
+
+      <para>Lets now look at the two Detail Levels now set up and give them
+      their Draw Distances:</para>
+
+      <para><inlinemediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="LODs01.jpg" />
+          </imageobject>
+        </inlinemediaobject></para>
+
+      <para>The <guilabel>Models</guilabel> list (top) shows the two unique
+      Detail Levels of the model I'm using. Note that this piece of scenery
+      has some Effect Points and I've only set them up on the High Detail
+      version. This is because Effect Points affect the entire Scenery OVL,
+      not the individual Detail Level versions. If you add a light Effect
+      Point to the high detail version, it will appear for all other versions
+      of this piece.</para>
+
+      <para>The bottom window is where you assign the Draw Distances for each
+      Level Of Detail version you have made. The numerical values are in the
+      same Modeler Units that you may already be familiar with: a value of 4
+      would be the same as one RCT3 grid Square. So, in my examples here my
+      High Detail version will be visible from 8 RCT3 grid squares away and
+      the Low Detail version will be visible from 96 RCT3 grid squares
+      away.</para>
+
+      <para>What does that actually mean? Remember that you are making
+      versions of your scenery piece at different Detail Levels to be shown
+      based on what the player's Detail Level Settings (in their graphics
+      settings menu) are set at. So what's going on with this Draw Distance
+      setting?</para>
+
+      <para>Well, each Detail level will be visible up to that distance away
+      from the player's current position in the game: If their Detail levels
+      are set low, then the Low version will draw from anywhere between 0 and
+      (in my example) 96 RCT3 grid squares away.</para>
+
+      <para>If the player has higher Detail Levels set, then the High detail
+      model will be visible anywhere from 0 to 8 RCT3 grid squares away, and
+      then the Low Detail version will then replace it from that point up to
+      96 RCT3 grid squares away.</para>
+    </section>
+
+    <section>
+      <title>New Observation</title>
+
+      <para>The Draw Distance value entered, while it does affect how far away
+      the model will be visible, it also decides where the detail level is on
+      the Detail Level Slider in the Graphics Settings LOD menu. I just made a
+      piece with 5 levels of detail, set at (High) 32, (Medium) 64, (Low) 128,
+      Extra-Low) 192, and (Ultra-Low) 384. These values caused the detail
+      levels to change only at one extreme end of the scale: in order to view
+      the lower detail levels I had to slide the control all the way over to
+      the left, until it wans nearly off.</para>
+
+      <para>The values entered here might just be a subtraction from a fixed
+      value- if you labeled the scale 4000 on the Left to 0 on the Right
+      (values found in the <application>Importer</application>) then my model
+      changes at intervals equal to these Draw Distance Values entered above
+      on that scale.</para>
+
+      <para>The last thing I want to point out is where the player's actual
+      Point Of View originates from: If you start the Attract Sequence Editor
+      (<keycombo>
+          <keycap function="control">Ctrl</keycap>
+
+          <keycap function="shift">Shift</keycap>
+
+          <keycap>0</keycap>
+        </keycombo>) and place a camera (insert) and then back away, you will
+      notice that the camera is about 1.5 RCT3 grid squares behind where you
+      think you actually were. This offset needs to be considered into your
+      Draw Distance settings: I always add a value of 8 to my intended Draw
+      Distance, which adds 2 RCT3 grid squares to the viewing distance. Just
+      something to remember.</para>
+    </section>
+
+    <section>
+      <title>Final Words</title>
+
+      <para>Finally, in closing. So what distances should you use? Well, that
+      depends on the size and type of the object. RCT3 will impose different
+      Draw Distances based on what the player has set in their Graphics
+      Settings, not just the Detail Levels. There are different Detail and
+      Draw Distance settings for different types of scenery, too: A tree can
+      have a whole different set of levels than the path items, which in turn
+      could have different levels than rides, supports, shops,
+      etcetera.</para>
+
+      <para>Think about your object, how big or important it is when viewed
+      from various distances, and then consider that the player's screen is
+      only truly 2D in nature, and at some point any extra features that make
+      your object 3D just cannot be drawn because there are only so many
+      pixels the computer can actually use. A good example to look for are the
+      heads of the peeps: at some point you will be too far away for the
+      peep's ears to be drawn. If you were making a peep model, then you would
+      make a detail level that does have some kind of simple ears (remember
+      that Low Detail Levels are used on some computers when up close), but
+      how complicated do they need to actually be?</para>
+    </section>
+  </section>
+
+  <section id="s_alphatextures">
+    <title>Working with transparent textures</title>
+
+    <para id="help">This section is so far unwritten and needs your help. If
+    you want to write it, please apply <ulink
+    url="http://www.vodhin.net/RCT3Community/e107_plugins/forum/forum_viewtopic.php?1129">here</ulink>
+    or <ulink
+    url="http://www.ataricommunity.com/forums/showthread.php?t=549880">here</ulink>.</para>
+  </section>
+
+  <section id="s_recoltextures">
+    <title>Creating and using recolorable textures</title>
+
+    <para id="help">This section is so far unwritten and needs your help. If
+    you want to write it, please apply <ulink
+    url="http://www.vodhin.net/RCT3Community/e107_plugins/forum/forum_viewtopic.php?1129">here</ulink>
+    or <ulink
+    url="http://www.ataricommunity.com/forums/showthread.php?t=549880">here</ulink>.</para>
+  </section>
+
+  <section id="s_animtextures">
+    <title>Creating and using animated textures</title>
+
+    <para id="help">This section is so far unwritten and needs your help. If
+    you want to write it, please apply <ulink
+    url="http://www.vodhin.net/RCT3Community/e107_plugins/forum/forum_viewtopic.php?1129">here</ulink>
+    or <ulink
+    url="http://www.ataricommunity.com/forums/showthread.php?t=549880">here</ulink>.</para>
+  </section>
+
+  <section id="s_texturestyles">
+    <title>Extensive discussion of texture styles</title>
+
+    <para id="help">This section is so far unwritten and needs your help. If
+    you want to write it, please apply <ulink
+    url="http://www.vodhin.net/RCT3Community/e107_plugins/forum/forum_viewtopic.php?1129">here</ulink>
+    or <ulink
+    url="http://www.ataricommunity.com/forums/showthread.php?t=549880">here</ulink>.</para>
+
+    <para>Some information can be found on <ulink
+    url="http://belgabor.vodhin.net/facts">Belgabor's facts &amp; figures
+    page</ulink>.</para>
+  </section>
+
+  <section>
+    <title>Credits</title>
+
+    <itemizedlist>
+      <listitem>
+        <para>The docbook css used for the html version of this document is
+        based upon the one created by <ulink
+        url="http://www.karakas-online.de">Chris Karakas</ulink>.</para>
+      </listitem>
+
+      <listitem>
+        <para>This CSS stylesheet uses <ulink
+        url="http://www.matterform.com/qbullets/index.php">QBullets</ulink> in
+        links. Thanks to Matterform Media for providing QBullets for free. If
+        you plan to use them on your website, please observe the <ulink
+        url="http://www.matterform.com/qbullets/usage.html">QBullets usage
+        terms</ulink>.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para role="matterform"><ulink
+    url="http://www.matterform.com/"><inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="/images/qb_credit.gif" scale="100" scalefit="0" />
+        </imageobject>
+      </inlinemediaobject></ulink></para>
+
+    <para><ulink url="http://sourceforge.net/"><inlinemediaobject>
+        <imageobject role="html">
+          <imagedata fileref="http://sourceforge.net/sflogo.php?group_id=181524&amp;type=4" />
+        </imageobject>
+
+        <imageobject role="pdf">
+          <imagedata fileref="/images/sflogo.png" />
+        </imageobject>
+
+        <imageobject role="chm">
+          <imagedata fileref="/images/sflogo.png" />
+        </imageobject>
+      </inlinemediaobject></ulink></para>
+  </section>
+</article>

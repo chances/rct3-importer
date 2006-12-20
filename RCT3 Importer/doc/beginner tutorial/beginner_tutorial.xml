@@ -35,6 +35,20 @@
           <para>Update for v16fix5</para>
         </revdescription>
       </revision>
+
+      <revision>
+        <revnumber>3</revnumber>
+
+        <date>20.12.2006</date>
+
+        <author>
+          <surname>Belgabor</surname>
+        </author>
+
+        <revdescription>
+          <para>Update for v17</para>
+        </revdescription>
+      </revision>
     </revhistory>
 
     <author>
@@ -51,8 +65,11 @@
   import will be explained, do not expect to hear about everything you can do
   with it.</para>
 
+  <para>This also means that <emphasis>all of these steps</emphasis> are
+  required!</para>
+
   <para>This document applies to the <application>RCT3 Importer</application>
-  Version 16fix5.</para>
+  Version 17.</para>
 
   <section id="sect1">
     <title>Preparing for the import</title>
@@ -74,15 +91,15 @@
       <title>Creating the 3D model</title>
 
       <para>This process is very much beyond the scope of this document. You
-      need to get a suitable 3D modeler and read a few tutorials on how to use
-      it. Here is a list of the modelers used most often for creating custom
-      scenery for RCT3:</para>
+      need to get a suitable 3D modeller and read a few tutorials on how to
+      use it. Here is a list of the modellers used most often for creating
+      custom scenery for RCT3:</para>
 
       <itemizedlist>
         <listitem>
           <para><application>3DStudio</application> /
           <application>3DSmax</application>. Very expensive professional 3D
-          modeler. If you can get an academic license you might be able to
+          modeller. If you can get an academic license you might be able to
           afford it.</para>
         </listitem>
 
@@ -94,9 +111,9 @@
 
         <listitem>
           <para><application>Blender</application>. Free open source
-          professional modeler. It's user interface is pretty non-standard and
-          therefore requires a bit of patience to get used to. When you get
-          acquainted to it you won't want to miss it anymore and
+          professional modeller. It's user interface is pretty non-standard
+          and therefore requires a bit of patience to get used to. When you
+          get acquainted to it you won't want to miss it anymore and
           <application>Blender</application> becomes a very powerful
           tool.</para>
         </listitem>
@@ -106,18 +123,19 @@
           <application>Google SketchUp</application> (free) and
           <application>SketchUp Pro</application> (commercial, trial
           available). Very easy and intuitive to use. Current drawbacks are
-          that the free version can only export to Google Earth formats, which
-          need to be imported and manipulated in
-          <application>Blender</application> to bring them into a state
-          suitable for using in the importer. Another drawback is that
-          SketchUp sometimes produces superfluous faces and edges which have
-          to be cleaned up in <application>Blender</application> (more on
-          faces below).</para>
+          that it tends to create too many faces on round objects which can be
+          hard to fix later. Another drawback is that SketchUp sometimes
+          produces superfluous faces and edges which have to be cleaned up in
+          <application>an other modeller</application> (more on faces below).
+          A script to export directly from <application>SketchUp</application>
+          to <filename>ASE</filename> can be found on <ulink
+          url="http://belgabor.vodhin.net/software">Belgabor's software
+          page</ulink>.</para>
         </listitem>
       </itemizedlist>
 
       <para>For more detailed information and links to less commonly used
-      modelers as well as modeler specific tutorials see <ulink
+      modellers as well as modeller specific tutorials see <ulink
       url="http://belgabor.vodhin.net/software">Belgabor's software
       page</ulink>.</para>
 
@@ -132,8 +150,9 @@
 
         <listitem>
           <para>Make your model the right size and position it correctly. A
-          RCT3 square is usually 4x4 of your modelers units big (in SketchUp
-          things are a bit more complex). For more information see <ulink
+          RCT3 square is usually 4x4 of your modellers units big (in
+          <application>SketchUp</application> things are a bit more complex).
+          For more information see <ulink
           url="http://belgabor.vodhin.net/facts">Belgabor's facts &amp;
           figures page</ulink>.</para>
         </listitem>
@@ -148,10 +167,10 @@
           engine needs to display your scenery item which may lead to lag. As
           a rule of thumb try to stay below 500 faces, even better below 300.
           Note that the engine uses triangular faces while most modern
-          modelers can use at least quads (faces with four corners or
+          modellers can use at least quads (faces with four corners or
           vertices). These are converted to triangles in the export or
           conversion process, so the actual number of faces may be a lot
-          higher than your modeler shows.</para>
+          higher than your modeller shows.</para>
 
           <para>Some tips on how to keep your face number low:</para>
 
@@ -165,10 +184,10 @@
               that below).</para>
 
               <para>The same applies to spheres. If possible use low iteration
-              icospheres. Modelers can also create so-called uv-spheres. These
-              use up more faces but are easier to uv-map (hence the name. More
-              on uv-mapping below), so use them only if you need a complex
-              texture on it.</para>
+              icospheres. Modellers can also create so-called uv-spheres.
+              These use up more faces but are easier to uv-map (hence the
+              name. More on uv-mapping below), so use them only if you need a
+              complex texture on it.</para>
             </listitem>
 
             <listitem>
@@ -221,27 +240,27 @@
           and put it on the top of your desk touching it only with one vertex.
           That (roughly) makes your desk the tangent plane of that vertex, so
           it's normal would point vertically to the floor in that position.
-          Vertex normals are automatically calculated by your 3D modeler,
+          Vertex normals are automatically calculated by your 3D modeller,
           usually as the mean of the face normals of all faces the vertex is
           part of.</para>
 
           <para>Here comes the concept of welded and unwelded vertices into
-          play. Imagine the corner of a cube. Usually your modeler creates it
+          play. Imagine the corner of a cube. Usually your modeller creates it
           welded. This means the corner is only one vertex which is used by
           the three faces that border it. If you unweld this vertex (How to do
-          that depends on your modeler, search for <guilabel>Unweld</guilabel>
-          or <guilabel>Unbind points/vertices</guilabel>) a copy of it is
-          created for each face that uses it. In the example above the one
-          corner vertex is replaced by three, one for (and used by) each face.
-          If you think a bit about it you will realize what that means for the
-          vertex normal(s). If the vertex is welded, its vertex normal will
-          point away from the center of the cube and the engine of RCT3 will
-          treat it as if the object was supposed to be round there. If the
-          vertex is unwelded, each of the three vertices in it's place gets
-          its own vertex normal. As each is only part of one face, its vertex
-          normal is identical to the face normal. You may want to have a look
-          at the weld/unweld section on <ulink
-          url="http://belgabor.vodhin.net/facts">Belgabor's facts &amp;
+          that depends on your modeller, search for
+          <guilabel>Unweld</guilabel> or <guilabel>Unbind
+          points/vertices</guilabel>) a copy of it is created for each face
+          that uses it. In the example above the one corner vertex is replaced
+          by three, one for (and used by) each face. If you think a bit about
+          it you will realize what that means for the vertex normal(s). If the
+          vertex is welded, its vertex normal will point away from the center
+          of the cube and the engine of RCT3 will treat it as if the object
+          was supposed to be round there. If the vertex is unwelded, each of
+          the three vertices in it's place gets its own vertex normal. As each
+          is only part of one face, its vertex normal is identical to the face
+          normal. You may want to have a look at the weld/unweld section on
+          <ulink url="http://belgabor.vodhin.net/facts">Belgabor's facts &amp;
           figures page</ulink> for some pictures about this. The take home
           message is you need to unweld vertices/edges if they are supposed to
           look <quote>pointy</quote>, if they are supposed to be round, keep
@@ -251,15 +270,15 @@
           certain edges, you can only fully unweld it. If you want to keep
           some edges that it's part of welded, you need to first unweld it and
           then weld the vertices of the faces whose common edge you want to
-          have welded. Note: How to weld depends again on your modeler, it can
-          be a bit hard to find (for example it is called <guilabel>Remove
+          have welded. Note: How to weld depends again on your modeller, it
+          can be a bit hard to find (for example it is called <guilabel>Remove
           Doubles</guilabel> in <application>Blender</application>).</para>
         </listitem>
 
         <listitem>
-          <para>Usually you shouldn't bother using the 3D modeler's materials
+          <para>Usually you shouldn't bother using the 3D modeller's materials
           for your object. RCT3 and therefore the Importer can only used
-          uv-mapped bitmap textures, while most modelers use procedural
+          uv-mapped bitmap textures, while most modellers use procedural
           (calculated) textures. There are ways to make a bitmap texture form
           such procedural textures (usually called
           <guilabel>texture-baking</guilabel> or
@@ -301,12 +320,12 @@
       free to use images or textures on it, <emphasis>you may not</emphasis>.
       Also remember that symbols and brand names can be protected by copyright
       or trademark laws, so it's better not to use them. If you're annoyed by
-      this, remember it protects you as well. So whatever CS you create,
-      others may not host the set or rip your models or textures without your
-      permission =)</para>
+      this, remember it protects you as well. So whatever
+      <acronym>CS</acronym> you create, others may not host the set or rip
+      your models or textures without your permission =)</para>
 
       <para><indexterm>
-          <primary>Model Tetxure</primary>
+          <primary>Model Texture</primary>
 
           <secondary>Creation Software</secondary>
         </indexterm>A third possibility is to use a special texture creation
@@ -347,7 +366,7 @@
       <para><indexterm zone="sect14">
           <primary>UV-Mapping</primary>
         </indexterm>UV-Mapping is used to <quote>assign</quote> a (bitmap)
-      texture to a model and is done inside your 3D modeler. I put
+      texture to a model and is done inside your 3D modeller. I put
       <quote>assign</quote> in quotes since technically it's not correct. What
       you do is give the vertices of your model an additional set of
       coordinates (additional to its spacial x/y/z 3D coordinates) in
@@ -359,7 +378,7 @@
       means 0 represents one end of the texture and 1 the other one, so the
       size of the texture you use for uv-mapping can differ from the one you
       use later in the importer, only the layout of the texture has to match
-      (ie don't mirror it).</para>
+      (ie. don't mirror it).</para>
 
       <para>While this may sound complicated or strange, it just tells the
       model (and later the 3D engine) which part of the texture to use for
@@ -394,7 +413,7 @@
 
       <itemizedlist>
         <listitem>
-          <para>The exact process depends on your 3D modeler. Usually there
+          <para>The exact process depends on your 3D modeller. Usually there
           are specific tutorials about uv-mapping for it.</para>
         </listitem>
 
@@ -427,7 +446,7 @@
     <section id="sect15">
       <title>Coordinate system</title>
 
-      <para>As long as you are still in your 3D modeler you should take note
+      <para>As long as you are still in your 3D modeller you should take note
       which <indexterm>
           <primary>Coordinate systems</primary>
         </indexterm>coordinate system it uses. We need two properties, which
@@ -456,15 +475,17 @@
           <primary>Model</primary>
 
           <secondary>Converting</secondary>
-        </indexterm>The importer only supports loading ASE and MS3D files at
-      the moment. If you can directly save or export to one of these formats,
-      do so and skip this section. If not, you need to convert your model to
-      ASE. The free converter of choice is <ulink
+        </indexterm>The importer only supports loading
+      <filename>ASE</filename> and <filename>MS3D</filename> files at the
+      moment. If you can directly save or export to one of these formats, do
+      so and skip this section. If not, you need to convert your model to
+      <filename>ASE</filename>. The free converter of choice is <ulink
       url="http://mirex.mypage.sk/index.php?selected=1"><application>Biturn</application></ulink>.
-      Get it and convert you model to ASE (3ds max ascii) format. It's not
-      recommended to convert to ms3d format as biturn is known to do strange
-      coordinate system conversions when converting from ms3d, no one knows
-      what it will do if you convert to ms3d.</para>
+      Get it and convert you model to <filename>ASE</filename> (3ds max ASCII)
+      format. It's not recommended to convert to <filename>MS3D</filename>
+      format as biturn is known to do strange coordinate system conversions
+      when converting from <filename>MS3D</filename>, no one knows what it
+      will do if you convert to <filename>MS3D</filename>.</para>
     </section>
 
     <section id="sect17">
@@ -482,16 +503,17 @@
     <section id="sect18">
       <title>A few notes on OVL files</title>
 
-      <para>The OVL file format has been designed for
+      <para>The <filename>OVL</filename> file format has been designed for
       <application>RCT3</application> by Frontier. You don't have to know
       everything about their internals, but there are a few things you have to
       know:</para>
 
       <itemizedlist>
         <listitem>
-          <para>You <emphasis>may not</emphasis> change the name of an OVL
-          file in the Windows Explorer. If you want to change the name you
-          need to recreate it (see <xref linkend="sect224" />).</para>
+          <para>You <emphasis>may not</emphasis> change the name of an
+          <filename>OVL</filename> file in the Windows Explorer. If you want
+          to change the name you need to recreate it (see <xref
+          linkend="sect224" />).</para>
         </listitem>
 
         <listitem>
@@ -649,8 +671,7 @@
           <para>If you press <guibutton>Cancel</guibutton> in the first file
           selection window or try to edit the texture later you get the
           <guilabel>Advanced Texture Settings</guilabel> window. This is not
-          covered here. If you can't figure it out, simply delete and re add
-          the texture.</para>
+          covered here.</para>
         </note>
 
         <para>After adding the texture it appears in the list (4).</para>
@@ -684,14 +705,15 @@
         <para>First, press the <guibutton>Open</guibutton> button (b) and
         select your model file. If you get an error, review <xref
         linkend="sect12" /> and/or <xref linkend="sect14" />. Before
-        continuing, have a look at the mesh list (e). If there are only dark
-        red (maroon) entries, you probably forgot to uv-map the model (review
-        <xref linkend="sect14" />). After opening the file, the name (a) will
-        be pre-filled based on the model file name, you can change it if you
+        continuing, have a look at the group list on the right. If there are
+        only dark red (maroon) entries (like the <guilabel>root</guilabel>
+        entry (e)), you probably forgot to uv-map the model (review <xref
+        linkend="sect14" />). After opening the file, the name (a) will be
+        pre-filled based on the model file name, you can change it if you
         want.</para>
 
         <para>Now it's time to setup the model transformation matrix that will
-        convert the model from the coordinate system your modeler uses to the
+        convert the model from the coordinate system your modeller uses to the
         one RCT3 uses. Use this table to find out which matrix is
         needed:</para>
 
@@ -701,7 +723,7 @@
               <row>
                 <entry>Coordinate System</entry>
 
-                <entry>Modeler</entry>
+                <entry>Modeller</entry>
 
                 <entry>Matrix</entry>
               </row>
@@ -719,7 +741,7 @@
               <row>
                 <entry>Right-handed, Z-up</entry>
 
-                <entry>Most 3d modelers (e.g.
+                <entry>Most 3d modellers (e.g.
                 <application>Blender</application>)</entry>
 
                 <entry>Fix Orientation</entry>
@@ -746,44 +768,31 @@
         will then be applied to every new model you add, so you won't have to
         repeat this step.</para>
 
-        <para>The next step is to assign the model texture to your mesh.
+        <para>The next step is to assign the model texture to your group.
         Usually you should have only one for your first object. If you used
         <application>Biturn</application> to convert your model there will be
-        an additional mesh called <quote>root</quote>, just ignore it.</para>
+        an additional group called <quote>root</quote> (e), just ignore
+        it.</para>
 
         <para><indexterm>
             <primary>Mesh Settings</primary>
-          </indexterm><mousebutton>Double-click</mousebutton> the mesh (which
-        currently should be bright red) you want to assign a texture to (or
-        select it and press the <guibutton>Edit Mesh Settings</guibutton>
-        button). You will get the <guilabel>Mesh Settings</guilabel>
-        window:</para>
+          </indexterm><indexterm>
+            <primary>group settings</primary>
+          </indexterm><mousebutton>Click</mousebutton> in the Texture column
+        of the group (f) you want to assign a texture to (It's name currently
+        should be bright red). </para>
 
-        <figure>
-          <title>RCT3 Custom Scenery Importer, Mesh Settings Window</title>
+        <para>Select the model texture from the drop-down list. If your object
+        has more than one group that should get the same settings, <keycombo>
+            <keycap function="control">Ctrl</keycap>
 
-          <mediaobject>
-            <imageobject>
-              <imagedata fileref="mesh.png" />
-            </imageobject>
-          </mediaobject>
-        </figure>
+            <mousebutton>Click</mousebutton>
+          </keycombo> on the name of the group you want to copy the settings
+        from and confirm that you want to copy the settings.</para>
 
-        <para>Select the model texture from the drop-down list (A). If your
-        object has more than one mesh that should get the same settings, check
-        <guilabel>Apply to All Meshes</guilabel> (B). When you're finished,
-        press <guibutton>Ok</guibutton> (C).</para>
-
-        <note>
-          <para>If the mesh in the list is dark red and you get an error
-          message when you try to edit it's settings, this means there is an
-          error in your mesh. Usually you didn't uv-map it at all or partly
-          (see <xref linkend="sect14" />).</para>
-        </note>
-
-        <para>We are now finished setting up the model, so back in the
-        <guilabel>Model Settings</guilabel> window close it by pressing
-        <guibutton>Ok</guibutton> (f).</para>
+        <para>We are now finished setting up the model, so close the
+        <guilabel>Model Settings</guilabel> window by pressing
+        <guibutton>Ok</guibutton> (g).</para>
       </section>
 
       <section id="sect223">
@@ -1004,19 +1013,20 @@
         to <userinput>0</userinput> (zero), the <guilabel>Size in
         squares</guilabel> (p) both to <userinput>1</userinput>. The
         <guilabel>Size</guilabel> (o) should be set to the size of your model
-        in modeler units. You have to keep in mind in this case that x/y/z
+        in modeller units. You have to keep in mind in this case that x/y/z
         here refer to the game's coordinate system. This doesn't matter if you
         didn't need a model transformation matrix or use
         <application>MilkShape</application>. If you had to use the
         <guilabel>Fix Orientation</guilabel> matrix you need to shift the
         values <quote>one up</quote>, so the size in the x direction in your
-        modeler goes into <guilabel>Z</guilabel>, y into
+        modeller goes into <guilabel>Z</guilabel>, y into
         <guilabel>X</guilabel> and z into <guilabel>Y</guilabel>.</para>
 
-        <para>The <guilabel>Size Flag</guilabel> (q) is rather a positioning
-        type flag. For your first object, select <guilabel>Full
-        Tile</guilabel>. If you want to know more about this setting and how
-        you need to position your model correctly for them, see <ulink
+        <para>The <guilabel>Placement Flag</guilabel> (q) selects how the game
+        will position the object in relation to where the user clicks. For
+        your first object, select <guilabel>Full Tile</guilabel>. If you want
+        to know more about this setting and how you need to position your
+        model correctly for them, see <ulink
         url="http://belgabor.vodhin.net/facts">Belgabor's facts &amp; figures
         page</ulink>.</para>
 

@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<article>
+  <title>Installing Custom Scenery</title>
+
+  <para>Installing Custom Scenery is not a difficult task. There are a few
+  things to consider though, like what file extension the pack might be in
+  among other things. Here is a walkthrough for those who need help.</para>
+
+  <important>
+    <para>In the following tutorial <filename>&lt;RCT3 dir&gt;</filename> will
+    be used as a placeholder for the directory you installed RCT3 to. Most
+    commonly this is</para>
+
+    <para><filename>C:\Program&nbsp;Files\Atari\RollerCoaster®&nbsp;Tycoon&nbsp;3</filename></para>
+
+    <para>but that may differ on international versions or maybe
+    <application>RCT3 Gold!</application> or <application>RCT3
+    Platinum!</application> (or when you installed it to a custom directory).
+    One thing you might easily miss is that some verisons leave out the
+    trademark sign and it looks like this:</para>
+
+    <para><filename>C:\Program&nbsp;Files\Atari\RollerCoaster&nbsp;Tycoon&nbsp;3</filename>
+    </para>
+  </important>
+
+  <section>
+    <title>Downloading Custom Scenery</title>
+
+    <para>The first thing needed to know is how to get Custom Scenery, or
+    <acronym>CS</acronym> for short.</para>
+
+    <para>The largest way to get these sets is to download them from a
+    third-party uploader, such as Rapidshare or Megaupload. Both options have
+    free downloading capability and good sets can remain in storage
+    indefinitely.</para>
+
+    <para>Another option is to download from private servers hosted by many
+    people from around the world. Both Vodhin and errt have great sites to
+    download from and have a large selection of objects. One thing to keep in
+    mind though, is that many of these servers require registration before you
+    download any objects.</para>
+  </section>
+
+  <section>
+    <title>Unpacking Custom Scenery</title>
+
+    <para>Once you have downloaded the set, you need to unpack it.</para>
+
+    <para>There are three main formats that <acronym>CS</acronym> sets are
+    downloaded in. The most common is in the <filename>.zip</filename> format
+    and can be unzipped by most computers without having to download any extra
+    software. The next most common is the <filename>.rar</filename> format,
+    which requires 3rd party software to unpack. Only a few sets, such as
+    MaxInfinity’s Gothic Wall set, are packaged as <filename>.rar</filename>
+    files.</para>
+
+    <para>The third format is in the form of a downloaded executable file. Not
+    too many sets are downloaded in this manner; there are too many unknowns
+    to make this an efficient method.</para>
+
+    <para>Occasionally, you might find a set that is an executable packaged as
+    a <filename>.zip</filename> for memory reasons. Just unzip it, and run the
+    executable.</para>
+
+    <para>The best place to unpack your downloaded <acronym>CS</acronym> sets
+    is to set aside a folder on the desktop to download them to. You can have
+    folders within that folder that contain unopened sets and keep the
+    original downloads if the set becomes corrupt for some reason.</para>
+
+    <para>Do <emphasis>NOT</emphasis> unpack or download your
+    <acronym>CS</acronym> sets into the
+    <filename>&lt;RCT3&nbsp;dir&gt;\Style\Themed</filename> folder as this is
+    the leading cause of errors.</para>
+
+    <para>After the <acronym>CS</acronym> set is unpackaged in a designated
+    spot, open the folder with the set’s name. You should see two or more
+    <filename>.ovl</filename> files and a few folders, the number depending on
+    the number of objects in the set. If you only see a folder with the name
+    of the set on it, then copy that folder into your storage spot (if
+    necessary renaming the <emphasis>OUTER</emphasis> folder
+    <emphasis>ONLY</emphasis>).</para>
+
+    <para>Check to see if the required files are in there.</para>
+
+    <para>After this point, check to see if a ReadMe folder was downloaded. If
+    so, <emphasis>READ IT!</emphasis> There are a few sets, such as Disfan1’s
+    table set and Nuclear Fish’s Particle Effects set that have specific
+    installation instructions in them. Not following them can lead to hours of
+    wasted time trying to get the set to work.</para>
+
+    <para>Only after all of this work is done place the folder with the
+    necessary files in your
+    <filename>&lt;RCT3&nbsp;dir&gt;\Style\Themed</filename> folder. Simply
+    copy and paste it into there. The set should be installed and accessible
+    when you start up RCT3 next.</para>
+  </section>
+
+  <section>
+    <title>Common Errors</title>
+
+    <section>
+      <title>Game appears to hang</title>
+
+      <para>On many errors the game appears to hang. This is caused by a
+      normal <application>Windows</application> message hidden behind the
+      game's graphic screen. Use <keycombo>
+          <keycap function="alt">Alt</keycap>
+
+          <keycap function="tab">Tab</keycap>
+        </keycombo> to get to your <application>Windows</application> desktop
+      and see the actual error message.</para>
+    </section>
+
+    <section>
+      <title>The vaunted <quote>no :siv: for :sid:</quote> error</title>
+
+      <para>This error simply states that there was an incorrect installation.
+      The culprit, almost every single time is having an extra folder hiding
+      the scenery items from being accessed by the game. Simply remove the
+      outer folder (do <emphasis>NOT RENAME THE INNER FOLDER</emphasis>) and
+      the set should run.</para>
+    </section>
+
+    <section>
+      <title>The scenery does not appear in game</title>
+
+      <para>If the scenery does not appear in game,</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Make sure <emphasis>ALL</emphasis> of the scenery filters are
+          enabled.</para>
+        </listitem>
+
+        <listitem>
+          <para>Make sure you looked everywhere and not only where you expect
+          it to be. For example old sets are often found among the
+          walls.</para>
+        </listitem>
+
+        <listitem>
+          <para>If you had RCT3 runnig when you installed the set, restart it.
+          Sometimes it's possible to install CS when RCT3 is running, but
+          sometimes it doesn't work.</para>
+        </listitem>
+
+        <listitem>
+          <para>Make sure it is installed in the correct place, namely
+          <filename>&lt;RCT3 dir&gt;\Style\Themed</filename>. If the set was
+          distributed as an executable installer it is possible that it
+          created another directory with or without the ® symbol in the
+          <filename>Program Files/Atari</filename> folder (as mentioned above
+          <application>Gold!</application> and non-US users are particularly
+          vulnerable to this) and the CS got installed in the wrong
+          directory.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title><quote>You do not have sufficient access rights to
+      open…</quote></title>
+
+      <para>This problem is currently (14.12.2006) exclusive (to my knowledge)
+      to Nuclear Fish’s Particle Effects pack. It is a result of improper
+      installation. Read the enclosed ReadMe or his thread on the Atari forums
+      for the solution to this problem which usually is a result of incorrect
+      installation of the particle effects of the set. (thanks to ckfour for
+      the pic :-P)</para>
+    </section>
+
+    <section>
+      <title>You have two copies of the set running in the game, but only one
+      folder with the files in your
+      <filename>&lt;RCT3&nbsp;dir&gt;\Style\Themed</filename> folder</title>
+
+      <para>This is a simple issue from incorrect installation and an
+      unfinished fix. This problem is a result of the nested folder issue but
+      with a twist; the set was later correctly installed without removing the
+      incorrect folder. Due to the way the game analyzes the
+      <filename>.ovl</filename> files, two options are created in the RCT3
+      menu. To fix this problem, just remove the redundant, nested
+      folder.</para>
+    </section>
+  </section>
+</article>

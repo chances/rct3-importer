@@ -93,7 +93,7 @@ wxString wxTextureListBox::OnGetItem(size_t n) const {
     if (n < m_contents->flexitextures.size()) {
         wxString addon = wxT("");
         for (cFlexiTextureFrameIterator it = m_contents->flexitextures[n].Frames.begin(); it != m_contents->flexitextures[n].Frames.end(); it++) {
-            if (it->Alpha != wxT("")) {
+            if (it->AlphaSource != CFTF_ALPHA_NONE) {
                 addon += _("Alpha");
                 break;
             }
