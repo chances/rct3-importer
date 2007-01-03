@@ -39,6 +39,7 @@
 
 #include "auipicfiledlg.h"
 #include "htmlentities.h"
+#include "rct3log.h"
 #include "SCNFile.h"
 #include "valext.h"
 #include "valtexture.h"
@@ -54,8 +55,8 @@
 //
 ////////////////////////////////////////////////////////////////////////
 
-wxTextureEditListBox::wxTextureEditListBox(wxWindow *parent, cFlexiTexture *content):
-        wxColourHtmlListBox(parent, wxID_ANY, wxDefaultPosition, wxSize(-1, 300), wxSUNKEN_BORDER) {
+wxTextureEditListBox::wxTextureEditListBox(wxWindow *parent, cFlexiTexture *content, int style):
+        wxColourHtmlListBox(parent, wxID_ANY, wxDefaultPosition, wxSize(-1, 300), style | wxSUNKEN_BORDER) {
     m_contents = content;
 }
 
@@ -66,7 +67,7 @@ wxTextureEditListBox::wxTextureEditListBox(wxWindow *parent, cFlexiTexture *cont
 ////////////////////////////////////////////////////////////////////////
 
 wxFrameListBox::wxFrameListBox(wxWindow *parent, cFlexiTexture *content):
-        wxTextureEditListBox(parent, content) {
+        wxTextureEditListBox(parent, content, wxLB_MULTIPLE) {
     UpdateContents();
     SetSelection(0);
 }
@@ -88,7 +89,12 @@ wxString wxFrameListBox::OnGetItem(size_t n) const {
             }
         }
     }
-    return wxString::Format(wxT("<font size='2'%s>"), color.c_str()) + wxEncodeHtmlEntities(wxString::Format(wxT("%0*d: %s"), rel, n+1, m_contents->Frames[n].Texture.GetName().c_str()))+wxT("</font>");
+    wxString alpha = wxT("");
+    if (m_contents->Frames[n].AlphaSource != CFTF_ALPHA_NONE)
+        alpha = _(" (Alpha)");
+    return wxString::Format(wxT("<font size='2'%s>"), color.c_str()) +
+           wxEncodeHtmlEntities(wxString::Format(wxT("%0*d: %s"), rel, n+1, m_contents->Frames[n].Texture.GetName().c_str()))+
+           alpha+wxT("</font>");
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -411,11 +417,12 @@ cFlexiTexture dlgTexture::GetFlexiTexture() {
 void dlgTexture::UpdateControlState() {
     long count = m_ft.Frames.size();
     long sel = m_htlbFrame->GetSelection();
+    long selcount = m_htlbFrame->GetSelectedCount();
     bool frozen = m_toggleAnimationFreeze->GetValue();
 
-    m_spinFrame->Enable(count>=2);
-    m_btFrameEdit->Enable(sel>=0);
-    m_btFrameCopy->Enable(sel>=0);
+    m_spinFrame->Enable((count>=2) && (selcount == 1));
+    m_btFrameEdit->Enable((sel>=0) && (selcount == 1));
+    m_btFrameCopy->Enable((sel>=0) && (selcount == 1));
     m_btFrameDel->Enable(sel>=0);
     m_btFrameClear->Enable(count>=1);
     m_btAnimationAdd->Enable(frozen?false:(sel>=0));
@@ -435,6 +442,11 @@ void dlgTexture::UpdateControlState() {
 void dlgTexture::UpdatePreview() {
     if (m_togglePreview->GetValue()) {
         m_ilpictPreview->SetFileName(m_previewFile);
+        int sel = m_htlbFrame->GetSelection();
+        if (sel >= 0) {
+            m_ilpictPreview->UseAlpha(m_ft.Frames[sel].AlphaSource == CFTF_ALPHA_INTERNAL);
+        }
+
         m_ilpictPreview->Refresh();
     }
 }
@@ -557,25 +569,110 @@ void dlgTexture::OnFrameDown(wxSpinEvent& WXUNUSED(event)) {
 }
 
 void dlgTexture::OnFrameAdd(wxCommandEvent& WXUNUSED(event)) {
-    dlgTextureFrame *dialog = new dlgTextureFrame(this);
-    dialog->SetFlexiTextureFrame(cFlexiTextureFrame(), m_size);
-    if (dialog->ShowModal() == wxID_OK) {
-        cFlexiTextureFrame fr = dialog->GetFlexiTextureFrame();
-        m_ft.Frames.push_back(fr);
-        if (m_size == 0) {
-            wxSize s = getBitmapSize(fr.Texture.GetFullPath().fn_str());
-            m_size = s.GetWidth();
-        }
-        if (m_textTextureName->GetValue() == wxT("")) {
-            m_textTextureName->SetValue(fr.Texture.GetName());
-        }
+    dlgTextureBase *dialog = NULL;
+    wxAUIPicFileDialog *fdialog = new wxAUIPicFileDialog(
+                                     this,
+                                     _("Select texture file(s) for new texture frame(s)"),
+                                     wxEmptyString,
+                                     wxEmptyString,
+                                     _("Supported Image Files|*.png;*.jpg;*.bmp;*.gif;*.jpeg;*.tiff;*.tif|All Files (*.*)|*.*"),
+                                     wxFD_FILE_MUST_EXIST|wxFD_CHANGE_DIR|wxFD_MULTIPLE,
+                                     wxDefaultPosition,
+                                     wxSize(600,400)
+                                 );
+    fdialog->SetDirectory(::wxGetApp().g_workdir.GetPath());
 
-        m_htlbFrame->UpdateContents();
-        m_htlbFrame->SetSelection(m_ft.Frames.size()-1);
-        FramePreview();
-        UpdateControlState();
+    if (fdialog->ShowModal() == wxID_OK) {
+        ::wxGetApp().g_workdir.AssignDir(wxFileName(fdialog->GetPath()).GetPath());
+
+        wxArrayString t_paths;
+        fdialog->GetPaths(t_paths);
+
+        ILinfo info;
+        if (t_paths.GetCount() == 1) {
+            cFlexiTextureFrame ftxf;
+            getBitmapInfo(t_paths[0].fn_str(), info);
+            ftxf.Texture = t_paths[0];
+            if (ilInfoHasAlpha(info))
+                ftxf.AlphaSource = CFTF_ALPHA_INTERNAL;
+
+            dlgTextureFrame *dialog = new dlgTextureFrame(this);
+            dialog->SetFlexiTextureFrame(ftxf, m_size);
+            if (dialog->ShowModal() == wxID_OK) {
+                cFlexiTextureFrame fr = dialog->GetFlexiTextureFrame();
+                m_ft.Frames.push_back(fr);
+                if (m_size == 0) {
+                    wxSize s = getBitmapSize(fr.Texture.GetFullPath().fn_str());
+                    m_size = s.GetWidth();
+                }
+                if (m_textTextureName->GetValue() == wxT("")) {
+                    m_textTextureName->SetValue(fr.Texture.GetName());
+                }
+
+                m_htlbFrame->UpdateContents();
+                m_htlbFrame->SetSelection(m_ft.Frames.size()-1);
+                FramePreview();
+                UpdateControlState();
+            }
+            dialog->Destroy();
+        } else {
+            int succeeded = 0;
+            for (wxArrayString::iterator it = t_paths.begin(); it != t_paths.end(); it++) {
+                cFlexiTextureFrame fr;
+                if (!getBitmapInfo(it->fn_str(), info))
+                    continue;
+
+                if ((info.Width != info.Height) || ((1 << local_log2(info.Width)) != info.Width))
+                    continue;
+
+                if ((m_size != 0) && (m_size != info.Width))
+                    continue;
+
+                fr.Texture = *it;
+                if (ilInfoHasAlpha(info))
+                    fr.AlphaSource = CFTF_ALPHA_INTERNAL;
+                m_ft.Frames.push_back(fr);
+                if (m_size == 0) {
+                    m_size = info.Width;
+                }
+                if (m_textTextureName->GetValue() == wxT("")) {
+                    m_textTextureName->SetValue(fr.Texture.GetName());
+                }
+                succeeded++;
+            }
+            if (succeeded != t_paths.GetCount()) {
+                wxMessageBox(wxString::Format(_("%d file(s) could not be added due to errors."), t_paths.GetCount()-succeeded), _("Warning"), wxOK|wxICON_WARNING, this);
+            }
+            if (succeeded) {
+                m_htlbFrame->UpdateContents();
+                m_htlbFrame->SetSelection(m_ft.Frames.size()-1);
+                FramePreview();
+                UpdateControlState();
+            }
+        }
+    } else {
+        dlgTextureFrame *dialog = new dlgTextureFrame(this);
+        dialog->SetFlexiTextureFrame(cFlexiTextureFrame(), m_size);
+        if (dialog->ShowModal() == wxID_OK) {
+            cFlexiTextureFrame fr = dialog->GetFlexiTextureFrame();
+            m_ft.Frames.push_back(fr);
+            if (m_size == 0) {
+                wxSize s = getBitmapSize(fr.Texture.GetFullPath().fn_str());
+                m_size = s.GetWidth();
+            }
+            if (m_textTextureName->GetValue() == wxT("")) {
+                m_textTextureName->SetValue(fr.Texture.GetName());
+            }
+
+            m_htlbFrame->UpdateContents();
+            m_htlbFrame->SetSelection(m_ft.Frames.size()-1);
+            FramePreview();
+            UpdateControlState();
+        }
+        dialog->Destroy();
     }
-    dialog->Destroy();
+
+    fdialog->Destroy();
 }
 
 void dlgTexture::OnFrameEdit(wxCommandEvent& WXUNUSED(event)) {
@@ -626,20 +723,39 @@ void dlgTexture::OnFrameCopy(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void dlgTexture::OnFrameDel(wxCommandEvent& WXUNUSED(event)) {
-    int sel = m_htlbFrame->GetSelection();
-    if (sel<0)
+    long selcount = m_htlbFrame->GetSelectedCount();
+    if (selcount == 0)
         return;
+    int sel = -1;
 
-    m_ft.Frames.erase(m_ft.Frames.begin() + sel);
-    if (!m_toggleAnimationFreeze->GetValue()) {
-        for(long i = m_ft.Animation.size()-1; i >=0; i--) {
-            if (m_ft.Animation[i] > sel)
-                m_ft.Animation[i]--;
-            else if (m_ft.Animation[i] == sel)
-                m_ft.Animation.erase(m_ft.Animation.begin() + i);
+    if (selcount == 1) {
+        sel = m_htlbFrame->GetSelection();
+
+        m_ft.Frames.erase(m_ft.Frames.begin() + sel);
+        if (!m_toggleAnimationFreeze->GetValue()) {
+            for(long i = m_ft.Animation.size()-1; i >=0; i--) {
+                if (m_ft.Animation[i] > sel)
+                    m_ft.Animation[i]--;
+                else if (m_ft.Animation[i] == sel)
+                    m_ft.Animation.erase(m_ft.Animation.begin() + i);
+            }
+        }
+    } else {
+        for (int run = m_ft.Frames.size()-1; run >= 0; run--) {
+            if (m_htlbFrame->IsSelected(run)) {
+                m_ft.Frames.erase(m_ft.Frames.begin() + run);
+                if (!m_toggleAnimationFreeze->GetValue()) {
+                    for(long i = m_ft.Animation.size()-1; i >=0; i--) {
+                        if (m_ft.Animation[i] > run)
+                            m_ft.Animation[i]--;
+                        else if (m_ft.Animation[i] == run)
+                            m_ft.Animation.erase(m_ft.Animation.begin() + i);
+                    }
+                }
+                sel = run;
+            }
         }
     }
-
     m_htlbFrame->UpdateContents();
     m_htlbAnimation->UpdateContents();
     m_htlbFrame->SetSelection(sel-1);
@@ -724,15 +840,20 @@ void dlgTexture::OnAnimationDown(wxSpinEvent& WXUNUSED(event)) {
 }
 
 void dlgTexture::OnAnimationAdd(wxCommandEvent& WXUNUSED(event)) {
-    int frame = m_htlbFrame->GetSelection();
-    if (frame<0)
+    long framecount = m_htlbFrame->GetSelectedCount();
+    if (framecount == 0)
         return;
     int sel = m_htlbAnimation->GetSelection();
     if (sel<0)
         sel = 0;
 
-    m_ft.Animation.insert(m_ft.Animation.begin() + sel, (unsigned long) frame);
-
+    unsigned long cookie;
+    long frame = m_htlbFrame->GetFirstSelected(cookie);
+    while (frame != wxNOT_FOUND) {
+        m_ft.Animation.insert(m_ft.Animation.begin() + sel, (unsigned long) frame);
+        frame = m_htlbFrame->GetNextSelected(cookie);
+        sel++;
+    }
 
     m_htlbAnimation->UpdateContents();
     m_htlbAnimation->SetSelection(sel+1);
@@ -899,6 +1020,13 @@ cFlexiTexture dlgTextureSimple::GetFlexiTexture() {
 void dlgTextureSimple::SetTextureName(const wxString& val) {
     m_frame.Texture = val;
     m_ft.Name = wxFileName(val).GetName();
+
+    ILinfo info;
+    if (getBitmapInfo(val.fn_str(), info)) {
+        if (ilInfoHasAlpha(info))
+            m_frame.AlphaSource = CFTF_ALPHA_INTERNAL;
+    }
+
 };
 
 void dlgTextureSimple::SetFlexiTexture(const cFlexiTexture& val) {

@@ -718,11 +718,11 @@ void dlgCreateScenery::OnTextureAdd(wxCommandEvent& WXUNUSED(event)) {
     dlgTextureBase *dialog = NULL;
     wxAUIPicFileDialog *fdialog = new wxAUIPicFileDialog(
                                      this,
-                                     _("Select texture file for new texture"),
+                                     _("Select texture file(s) for new texture(s)"),
                                      wxEmptyString,
                                      wxEmptyString,
                                      _("Supported Image Files|*.png;*.jpg;*.bmp;*.gif;*.jpeg;*.tiff;*.tif|All Files (*.*)|*.*"),
-                                     wxFD_FILE_MUST_EXIST|wxFD_CHANGE_DIR,
+                                     wxFD_FILE_MUST_EXIST|wxFD_CHANGE_DIR|wxFD_MULTIPLE,
                                      wxDefaultPosition,
                                      wxSize(600,400)
                                  );
@@ -730,23 +730,59 @@ void dlgCreateScenery::OnTextureAdd(wxCommandEvent& WXUNUSED(event)) {
     if (fdialog->ShowModal() == wxID_OK) {
         ::wxGetApp().g_workdir.AssignDir(wxFileName(fdialog->GetPath()).GetPath());
 
-        dialog = new dlgTextureSimple(this);
-        dialog->SetTextureName(fdialog->GetPath());
-        int res = dialog->ShowModal();
-        if (res == wxID_OK) {
-            m_SCN.flexitextures.push_back(dialog->GetFlexiTexture());
-            MakeDirty();
-            m_htlbTexture->UpdateContents();
-            m_htlbTexture->SetSelection(m_SCN.flexitextures.size()-1);
-            UpdateControlState();
-        } else if (res == wxID_SAVE) {
-            cFlexiTexture temp = dialog->GetFlexiTexture();
-            dialog->Destroy();
+        wxArrayString t_paths;
+        fdialog->GetPaths(t_paths);
 
-            dialog = new dlgTexture(this);
-            dialog->SetFlexiTexture(temp);
-            if (dialog->ShowModal() == wxID_OK) {
+        if (t_paths.GetCount() == 1) {
+            dialog = new dlgTextureSimple(this);
+            dialog->SetTextureName(fdialog->GetPath());
+            int res = dialog->ShowModal();
+            if (res == wxID_OK) {
                 m_SCN.flexitextures.push_back(dialog->GetFlexiTexture());
+                MakeDirty();
+                m_htlbTexture->UpdateContents();
+                m_htlbTexture->SetSelection(m_SCN.flexitextures.size()-1);
+                UpdateControlState();
+            } else if (res == wxID_SAVE) {
+                cFlexiTexture temp = dialog->GetFlexiTexture();
+                dialog->Destroy();
+
+                dialog = new dlgTexture(this);
+                dialog->SetFlexiTexture(temp);
+                if (dialog->ShowModal() == wxID_OK) {
+                    m_SCN.flexitextures.push_back(dialog->GetFlexiTexture());
+                    MakeDirty();
+                    m_htlbTexture->UpdateContents();
+                    m_htlbTexture->SetSelection(m_SCN.flexitextures.size()-1);
+                    UpdateControlState();
+                }
+            }
+        } else {
+            ILinfo info;
+            int succeeded = 0;
+            for (wxArrayString::iterator it = t_paths.begin(); it != t_paths.end(); it++) {
+                cFlexiTexture ftx;
+                cFlexiTextureFrame ftxf;
+                if (!getBitmapInfo(it->fn_str(), info)) {
+                    continue;
+                }
+
+                if ((info.Width != info.Height) || ((1 << local_log2(info.Width)) != info.Width)) {
+                    continue;
+                }
+
+                ftxf.Texture = *it;
+                if (ilInfoHasAlpha(info))
+                    ftxf.AlphaSource = CFTF_ALPHA_INTERNAL;
+                ftx.Frames.push_back(ftxf);
+                ftx.Name = wxFileName(*it).GetName();
+                m_SCN.flexitextures.push_back(ftx);
+                succeeded++;
+            }
+            if (succeeded != t_paths.GetCount()) {
+                wxMessageBox(wxString::Format(_("%d file(s) could not be added due to errors."), t_paths.GetCount()-succeeded), _("Warning"), wxOK|wxICON_WARNING, this);
+            }
+            if (succeeded) {
                 MakeDirty();
                 m_htlbTexture->UpdateContents();
                 m_htlbTexture->SetSelection(m_SCN.flexitextures.size()-1);
@@ -764,7 +800,8 @@ void dlgCreateScenery::OnTextureAdd(wxCommandEvent& WXUNUSED(event)) {
         }
     }
     fdialog->Destroy();
-    dialog->Destroy();
+    if (dialog)
+        dialog->Destroy();
 }
 
 void dlgCreateScenery::OnTextureEdit(wxCommandEvent& WXUNUSED(event)) {
@@ -1573,6 +1610,10 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
 
                 unsigned long CurrentMesh = 0;
                 unsigned long CurrentObj = 0;
+                D3DVECTOR temp_min, temp_max;
+                D3DVECTOR glass_min, glass_max;
+                boundsInit(&glass_min, &glass_max);
+                bool has_unknown = false;
                 for (cMeshStructIterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
                     if (i_mesh->disabled == false) {
                         progress.Update(++progress_count);
@@ -1585,15 +1626,42 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                         sh2->unk1 = 0xFFFFFFFF;
                         sh2->unk4 =i_mesh->unknown;
 
+                        boundsInit(&temp_min, &temp_max);
                         object->FetchObject(CurrentObj, &sh2->VertexCount, &sh2->Vertexes, &sh2->IndexCount,
-                                            &sh2->Triangles, &sh->BoundingBox1, &sh->BoundingBox2,
+                                            &sh2->Triangles, &temp_min, &temp_max,
                                             const_cast<D3DMATRIX *> ((do_transform)?(&transformMatrix):NULL));
+                        boundsContain(&temp_min, &temp_max, &sh->BoundingBox1, &sh->BoundingBox2);
+                        if (i_mesh->place == SS2_PLACE_UNKNOWN) {
+                            boundsContain(&temp_min, &temp_max, &glass_min, &glass_max);
+                            has_unknown = true;
+                        }
 
                         CurrentMesh++;
                     }
                     CurrentObj++;
                 }
-
+                if (has_unknown) {
+                    if ((glass_min.x - sh->BoundingBox1.x) < 0.001)
+                        sh->BoundingBox1.x -= 0.001;
+                    if ((glass_min.y - sh->BoundingBox1.y) < 0.001)
+                        sh->BoundingBox1.y -= 0.001;
+                    if ((glass_min.z - sh->BoundingBox1.z) < 0.001)
+                        sh->BoundingBox1.z -= 0.001;
+                    if ((sh->BoundingBox2.x - glass_max.x) < 0.001)
+                        sh->BoundingBox2.x += 0.001;
+                    if ((sh->BoundingBox2.y - glass_max.y) < 0.001)
+                        sh->BoundingBox2.y += 0.001;
+                    if ((sh->BoundingBox2.z - glass_max.z) < 0.001)
+                        sh->BoundingBox2.z += 0.001;
+                }
+/*
+                sh->BoundingBox1.x -= 0.0001;
+                sh->BoundingBox2.x += 0.0001;
+                sh->BoundingBox1.y -= 0.0001;
+                sh->BoundingBox2.y += 0.0001;
+                sh->BoundingBox1.z -= 0.0001;
+                sh->BoundingBox2.z += 0.0001;
+*/
                 char **ftx = new char *[mesh_count];
                 ftxstore.push_back(ftx);
                 char **txs = new char *[mesh_count];
@@ -1754,6 +1822,15 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                     wxLogError(_("Texture '%s' size is different from size of the first frame."), i_ftxfr->Texture.GetFullPath().fn_str());
                     goto scenerycleanup;
                 }
+                if (ilGetInteger(IL_IMAGE_ORIGIN) == IL_ORIGIN_UPPER_LEFT)
+                    if (!iluFlipImage()) {
+                        error = true;
+                        wxLogError(_("Couldn't flip texture '%s'."), i_ftxfr->Texture.GetFullPath().fn_str());
+                        while ((Error = ilGetError())) {
+                            wxLogError(iluErrorString(Error));
+                        }
+                        goto scenerycleanup;
+                    }
                 if (i_ftxfr->AlphaSource == CFTF_ALPHA_INTERNAL) {
                     alphadata = ilGetAlpha(IL_UNSIGNED_BYTE);
                     if (!alphadata) {
@@ -1821,15 +1898,6 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                     if (!ilConvertPal(IL_PAL_BGR32)) {
                         error = true;
                         wxLogError(_("Couldn't convert palette of texture '%s'."), i_ftxfr->Texture.GetFullPath().fn_str());
-                        while ((Error = ilGetError())) {
-                            wxLogError(iluErrorString(Error));
-                        }
-                        goto scenerycleanup;
-                    }
-                if (ilGetInteger(IL_IMAGE_ORIGIN) == IL_ORIGIN_UPPER_LEFT)
-                    if (!iluFlipImage()) {
-                        error = true;
-                        wxLogError(_("Couldn't flip texture '%s'."), i_ftxfr->Texture.GetFullPath().fn_str());
                         while ((Error = ilGetError())) {
                             wxLogError(iluErrorString(Error));
                         }

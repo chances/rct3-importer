@@ -85,7 +85,7 @@ IMPLEMENT_APP_NO_MAIN(ToolApp)
 //  Globals (???)
 //
 //////////////////////////////////
-#define TITLE_VERSION "RCT3 Object Importer (v17)"
+#define TITLE_VERSION "RCT3 Object Importer (v17fix1)"
 
 
 

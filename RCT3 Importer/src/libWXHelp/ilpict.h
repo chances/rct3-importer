@@ -160,6 +160,10 @@ public:
         *sy = ScaleY;
     }
 
+    void UseAlpha(bool use_alpha = true) {
+        m_alpha = use_alpha;
+    }
+
     bool Ok() const
     {
         return m_valid;
@@ -171,6 +175,7 @@ protected:
     bool m_valid;
     ILenum m_filter;
     ILuint m_width, m_height;
+    bool m_alpha;
 
     int Align;
 
@@ -186,6 +191,7 @@ protected:
         m_filter = ILU_BILINEAR;
         m_width = 0;
         m_height = 0;
+        m_alpha = false;
     }
 
     void FromImage(const wxImage& image);

@@ -58,7 +58,7 @@ public:
     bool effectpoint;
     D3DVECTOR effectpoint_vert;
 
-    cMeshStruct(): disabled(true), TXS(wxT("SIOpaque")), FTX(wxT("")), place(0), flags(0), unknown(3), Name(wxT("")), valid(false), faces(0), effectpoint(0) {};
+    cMeshStruct(): disabled(true), TXS(wxT("SIOpaque")), FTX(wxT("")), place(SS2_PLACE_TEXTURE_AND_MESH), flags(0), unknown(SS2_FACES_SINGLE_SIDED), Name(wxT("")), valid(false), faces(0), effectpoint(0) {};
     void CopySettingsFrom(const cMeshStruct& from);
 };
 
@@ -78,7 +78,7 @@ public:
 
 	bool used;          // Used during ovl generation to see if the texture frame is actually used.
 
-	cFlexiTextureFrame(): Texture(wxT("")), Alpha(wxT("")), Recolorable(0), AlphaCutoff(0), AlphaSource(0), used(false) {};
+	cFlexiTextureFrame(): Texture(wxT("")), Alpha(wxT("")), Recolorable(0), AlphaCutoff(0), AlphaSource(CFTF_ALPHA_NONE), used(false) {};
 };
 
 typedef std::vector<cFlexiTextureFrame>::iterator cFlexiTextureFrameIterator;

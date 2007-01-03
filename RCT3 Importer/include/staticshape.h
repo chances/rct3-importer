@@ -17,6 +17,13 @@
 
 using namespace std;
 
+#define SS2_PLACE_TEXTURE_AND_MESH  0
+#define SS2_PLACE_TEXTURE_ONLY      1
+#define SS2_PLACE_UNKNOWN           2
+
+#define SS2_FACES_SINGLE_SIDED      3
+#define SS2_FACES_DOUBLE_SIDED      1
+
 struct StaticShape2 {
 	unsigned long unk1; //always 0xFFFFFFFFF
 	FlexiTextureInfoStruct *fts; //is 0 in disk files

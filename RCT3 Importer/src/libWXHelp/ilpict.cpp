@@ -124,7 +124,7 @@ void wxILPicture::OnPaint(wxPaintEvent& WXUNUSED(event)) {
             dc.DrawBitmap( ScaledBitmap, pos.x, pos.y );
         } else
 */
-        dc.DrawBitmap( Bitmap, pos.x, pos.y );
+        dc.DrawBitmap( Bitmap, pos.x, pos.y, m_alpha );
     }
 }
 
@@ -161,6 +161,8 @@ wxImage wxILPicture::GetImage(int nw, int nh) {
         memcpy(data, ilGetData(), nw*nh*3);
         img = wxImage(nw, nh);
         img.SetData(data);
+        if (m_alpha)
+            img.SetAlpha(ilGetAlpha(IL_UNSIGNED_BYTE));
         ilBindImage(old);
         ilDeleteImage(temp);
     }

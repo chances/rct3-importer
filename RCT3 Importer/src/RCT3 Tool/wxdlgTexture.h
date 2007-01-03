@@ -45,7 +45,7 @@
 
 class wxTextureEditListBox : public wxColourHtmlListBox {
 public:
-    wxTextureEditListBox(wxWindow *parent, cFlexiTexture *contents);
+    wxTextureEditListBox(wxWindow *parent, cFlexiTexture *contents, int style = 0);
     virtual void UpdateContents() = 0;
 protected:
     cFlexiTexture* m_contents;
