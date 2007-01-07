@@ -137,10 +137,20 @@ void cSCNFile::LoadTextures(FILE *f) {
 
         unsigned long anim_count = 0;
         fread(&anim_count, sizeof(anim_count), 1, f);
+        unsigned long old_anim = 0;
+        unsigned long x = 0;
         for(unsigned long i = 0; i < anim_count; i++) {
             unsigned long l;
             fread(&l, sizeof(unsigned long), 1, f);
-            ft.Animation.push_back(l);
+            if (i && (l == old_anim)) {
+                ft.Animation[x].count++;
+            } else {
+                cFlexiTextureAnim an(l);
+                ft.Animation.push_back(an);
+                old_anim = l;
+                if (i)
+                    x++;
+            }
         }
 
         unsigned long frame_count = 0;
@@ -902,10 +912,14 @@ void cSCNFile::SaveTextures(FILE *f) {
         fwrite(&ft.Recolorable, sizeof(ft.Recolorable), 1, f);
         fwrite(&ft.FPS, sizeof(ft.FPS), 1, f);
 
-        unsigned long anim_count = ft.Animation.size();
+        unsigned long anim_count = 0;
+        for(cFlexiTextureAnimIterator it = ft.Animation.begin(); it != ft.Animation.end(); it++) {
+            anim_count += it->count;
+        }
         fwrite(&anim_count, sizeof(anim_count), 1, f);
-        for(std::vector<unsigned long>::iterator it = ft.Animation.begin(); it != ft.Animation.end(); it++) {
-            fwrite(&(*it), sizeof(unsigned long), 1, f);
+        for(unsigned long j = 0; j < ft.Animation.size(); j++) {
+            for(unsigned long k = 0; k < ft.Animation[j].count; k++)
+                fwrite(&ft.Animation[j].frame, sizeof(unsigned long), 1, f);
         }
 
         unsigned long frame_count = ft.Frames.size();

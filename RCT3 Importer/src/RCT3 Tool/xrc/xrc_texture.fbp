@@ -659,6 +659,29 @@
                                         </object>
                                         <object class="sizeritem">
                                             <property name="border">5</property>
+                                            <property name="flag">wxRIGHT</property>
+                                            <property name="proportion">0</property>
+                                            <object class="wxSpinButton">
+                                                <property name="bg"></property>
+                                                <property name="enabled">1</property>
+                                                <property name="fg"></property>
+                                                <property name="font"></property>
+                                                <property name="hidden">0</property>
+                                                <property name="id">ID_DEFAULT</property>
+                                                <property name="minimum_size"></property>
+                                                <property name="name">m_spinAnimationCount</property>
+                                                <property name="permission">protected</property>
+                                                <property name="pos"></property>
+                                                <property name="size">20,10</property>
+                                                <property name="style">wxSP_HORIZONTAL</property>
+                                                <property name="subclass"></property>
+                                                <property name="tooltip">Change the number of repeats for the currently selected frame in the animation sequence.</property>
+                                                <property name="window_extra_style"></property>
+                                                <property name="window_style"></property>
+                                            </object>
+                                        </object>
+                                        <object class="sizeritem">
+                                            <property name="border">5</property>
                                             <property name="flag">wxTOP|wxRIGHT</property>
                                             <property name="proportion">0</property>
                                             <object class="wxButton">
@@ -677,30 +700,6 @@
                                                 <property name="style"></property>
                                                 <property name="subclass"></property>
                                                 <property name="tooltip">Add the frame selected on the left after the currently selected position in the animation sequence.</property>
-                                                <property name="window_extra_style"></property>
-                                                <property name="window_style"></property>
-                                            </object>
-                                        </object>
-                                        <object class="sizeritem">
-                                            <property name="border">5</property>
-                                            <property name="flag">wxRIGHT</property>
-                                            <property name="proportion">0</property>
-                                            <object class="wxButton">
-                                                <property name="bg"></property>
-                                                <property name="enabled">0</property>
-                                                <property name="fg"></property>
-                                                <property name="font"></property>
-                                                <property name="hidden">0</property>
-                                                <property name="id">ID_DEFAULT</property>
-                                                <property name="label">C</property>
-                                                <property name="minimum_size">20,20</property>
-                                                <property name="name">m_btAnimationCopy</property>
-                                                <property name="permission">protected</property>
-                                                <property name="pos"></property>
-                                                <property name="size">20,20</property>
-                                                <property name="style"></property>
-                                                <property name="subclass"></property>
-                                                <property name="tooltip">Duplicate the currently selected frame in the animation sequence.</property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style"></property>
                                             </object>

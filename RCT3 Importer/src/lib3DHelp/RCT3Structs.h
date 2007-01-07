@@ -68,6 +68,20 @@ typedef std::vector<cMeshStruct>::iterator cMeshStructIterator;
 #define CFTF_ALPHA_INTERNAL 1
 #define CFTF_ALPHA_EXTERNAL 2
 
+class cFlexiTextureAnim {
+public:
+    unsigned long frame;
+    unsigned long count;
+
+    cFlexiTextureAnim(): frame(-1), count(0) {};
+    cFlexiTextureAnim(unsigned long fr, unsigned long co = 1) {
+        frame = fr;
+        count = co;
+    };
+};
+
+typedef std::vector<cFlexiTextureAnim>::iterator cFlexiTextureAnimIterator;
+
 class cFlexiTextureFrame {
 public:
     wxFileName Texture;
@@ -87,7 +101,7 @@ class cFlexiTexture {
 public:
     wxString Name;
     unsigned long FPS;
-    std::vector<unsigned long> Animation;
+    std::vector<cFlexiTextureAnim> Animation;
     std::vector<cFlexiTextureFrame> Frames;
     unsigned long Recolorable;
 	bool used;          // Used during ovl generation to see if the texture is actually used.

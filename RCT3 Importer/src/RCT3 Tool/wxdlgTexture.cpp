@@ -82,8 +82,8 @@ wxString wxFrameListBox::OnGetItem(size_t n) const {
     wxString color = wxT("");
     if (m_contents->Frames.size()>1) {
         color = wxT(" color='#FF3C3C'");
-        for (std::vector<unsigned long>::iterator i_anim = m_contents->Animation.begin(); i_anim != m_contents->Animation.end(); i_anim++) {
-            if (*i_anim == n) {
+        for (cFlexiTextureAnimIterator i_anim = m_contents->Animation.begin(); i_anim != m_contents->Animation.end(); i_anim++) {
+            if (i_anim->frame == n) {
                 color = wxT("");
                 break;
             }
@@ -120,12 +120,12 @@ wxString wxAnimationListBox::OnGetItem(size_t n) const {
     } else {
         int rel = (int) log10(m_contents->Animation.size());
         wxString res;
-        if (m_contents->Animation[n-1] >= m_contents->Frames.size()) {
+        if (m_contents->Animation[n-1].frame >= m_contents->Frames.size()) {
             res = _("<unavailable>");
         } else {
-            res = m_contents->Frames[m_contents->Animation[n-1]].Texture.GetName();
+            res = m_contents->Frames[m_contents->Animation[n-1].frame].Texture.GetName();
         }
-        return wxT("<font size='2'>")+wxEncodeHtmlEntities(wxString::Format(wxT("%0*d: %s (%ld)"), rel, n, res.c_str(), m_contents->Animation[n-1]+1))+wxT("</font>");
+        return wxT("<font size='2'>")+wxEncodeHtmlEntities(wxString::Format(wxT("%0*d: %ldx %s (%ld)"), rel, n, m_contents->Animation[n-1].count, res.c_str(), m_contents->Animation[n-1].frame+1))+wxT("</font>");
     }
 }
 
@@ -346,8 +346,10 @@ EVT_BUTTON(XRCID("m_btFrameClear"), dlgTexture::OnFrameClear)
 EVT_LISTBOX(XRCID("m_htlbAnimation"), dlgTexture::OnAnimationListUpdate)
 EVT_SPIN_UP(XRCID("m_spinAnimation"), dlgTexture::OnAnimationUp)
 EVT_SPIN_DOWN(XRCID("m_spinAnimation"), dlgTexture::OnAnimationDown)
+EVT_SPIN_UP(XRCID("m_spinAnimationCount"), dlgTexture::OnAnimationCountUp)
+EVT_SPIN_DOWN(XRCID("m_spinAnimationCount"), dlgTexture::OnAnimationCountDown)
 EVT_BUTTON(XRCID("m_btAnimationAdd"), dlgTexture::OnAnimationAdd)
-EVT_BUTTON(XRCID("m_btAnimationCopy"), dlgTexture::OnAnimationCopy)
+//EVT_BUTTON(XRCID("m_btAnimationCopy"), dlgTexture::OnAnimationCopy)
 EVT_BUTTON(XRCID("m_btAnimationDel"), dlgTexture::OnAnimationDel)
 EVT_TOGGLEBUTTON(XRCID("m_toggleAnimationFreeze"), dlgTexture::OnAnimationFreeze)
 EVT_BUTTON(XRCID("m_btAnimationClear"), dlgTexture::OnAnimationClear)
@@ -430,7 +432,8 @@ void dlgTexture::UpdateControlState() {
     count = m_ft.Animation.size();
     sel = m_htlbAnimation->GetSelection();
     m_spinAnimation->Enable(frozen?false:(count>=2));
-    m_btAnimationCopy->Enable(frozen?false:(sel>=0));
+    //m_btAnimationCopy->Enable(frozen?false:(sel>=0));
+    m_spinAnimationCount->Enable(sel>=0);
     m_btAnimationDel->Enable(frozen?false:(sel>=0));
     m_toggleAnimationFreeze->Enable(count>=1);
     m_btAnimationClear->Enable(frozen?false:(count>=1));
@@ -494,7 +497,28 @@ void dlgTexture::OnPreview(wxCommandEvent& WXUNUSED(event)) {
     UpdatePreview();
     Fit();
     Layout();
+}
 
+bool dlgTexture::Validate() {
+    if (!wxDialog::Validate())
+        return false;
+
+    if (m_ft.Frames.size() == 0) {
+        wxMessageBox(_("Your texture needs at least one frame."), _("Validation Error"), wxOK|wxICON_ERROR, this);
+        return false;
+    }
+
+    if (m_ft.Animation.size() > 0) {
+        long a = 0;
+        m_textFramerate->GetValue().ToLong(&a);
+        if (a == 0) {
+            if (wxMessageBox(_("You set up an animation, but the speed is zero. Therefore the animation will not run.\nDo you still want to close the texture window?"), _("Warning"), wxYES_NO|wxNO_DEFAULT|wxICON_WARNING, this) == wxNO) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -528,11 +552,11 @@ void dlgTexture::OnFrameUp(wxSpinEvent& WXUNUSED(event)) {
     m_ft.Frames.insert(m_ft.Frames.begin() + sel - 1, ft);
 
     if (!m_toggleAnimationFreeze->GetValue()) {
-        for (std::vector<unsigned long>::iterator i_anim = m_ft.Animation.begin(); i_anim != m_ft.Animation.end(); i_anim++) {
-            if (*i_anim == sel)
-                *i_anim -= 1;
-            else if (*i_anim == sel-1)
-                *i_anim += 1;
+        for (cFlexiTextureAnimIterator i_anim = m_ft.Animation.begin(); i_anim != m_ft.Animation.end(); i_anim++) {
+            if (i_anim->frame == sel)
+                i_anim->frame -= 1;
+            else if (i_anim->frame == sel-1)
+                i_anim->frame += 1;
         }
     }
 
@@ -553,11 +577,11 @@ void dlgTexture::OnFrameDown(wxSpinEvent& WXUNUSED(event)) {
     m_ft.Frames.insert(m_ft.Frames.begin() + sel + 1, ft);
 
     if (!m_toggleAnimationFreeze->GetValue()) {
-        for (std::vector<unsigned long>::iterator i_anim = m_ft.Animation.begin(); i_anim != m_ft.Animation.end(); i_anim++) {
-            if (*i_anim == sel)
-                *i_anim += 1;
-            else if (*i_anim == sel+1)
-                *i_anim -= 1;
+        for (cFlexiTextureAnimIterator i_anim = m_ft.Animation.begin(); i_anim != m_ft.Animation.end(); i_anim++) {
+            if (i_anim->frame == sel)
+                i_anim->frame += 1;
+            else if (i_anim->frame == sel+1)
+                i_anim->frame -= 1;
         }
     }
 
@@ -709,9 +733,9 @@ void dlgTexture::OnFrameCopy(wxCommandEvent& WXUNUSED(event)) {
     m_ft.Frames.insert(m_ft.Frames.begin() + sel + 1, m_ft.Frames[sel]);
 
     if (!m_toggleAnimationFreeze->GetValue()) {
-        for (std::vector<unsigned long>::iterator i_anim = m_ft.Animation.begin(); i_anim != m_ft.Animation.end(); i_anim++) {
-            if (*i_anim > sel)
-                *i_anim += 1;
+        for (cFlexiTextureAnimIterator i_anim = m_ft.Animation.begin(); i_anim != m_ft.Animation.end(); i_anim++) {
+            if (i_anim->frame > sel)
+                i_anim->frame += 1;
         }
     }
 
@@ -734,9 +758,9 @@ void dlgTexture::OnFrameDel(wxCommandEvent& WXUNUSED(event)) {
         m_ft.Frames.erase(m_ft.Frames.begin() + sel);
         if (!m_toggleAnimationFreeze->GetValue()) {
             for(long i = m_ft.Animation.size()-1; i >=0; i--) {
-                if (m_ft.Animation[i] > sel)
-                    m_ft.Animation[i]--;
-                else if (m_ft.Animation[i] == sel)
+                if (m_ft.Animation[i].frame > sel)
+                    m_ft.Animation[i].frame--;
+                else if (m_ft.Animation[i].frame == sel)
                     m_ft.Animation.erase(m_ft.Animation.begin() + i);
             }
         }
@@ -746,9 +770,9 @@ void dlgTexture::OnFrameDel(wxCommandEvent& WXUNUSED(event)) {
                 m_ft.Frames.erase(m_ft.Frames.begin() + run);
                 if (!m_toggleAnimationFreeze->GetValue()) {
                     for(long i = m_ft.Animation.size()-1; i >=0; i--) {
-                        if (m_ft.Animation[i] > run)
-                            m_ft.Animation[i]--;
-                        else if (m_ft.Animation[i] == run)
+                        if (m_ft.Animation[i].frame > run)
+                            m_ft.Animation[i].frame--;
+                        else if (m_ft.Animation[i].frame == run)
                             m_ft.Animation.erase(m_ft.Animation.begin() + i);
                     }
                 }
@@ -756,6 +780,11 @@ void dlgTexture::OnFrameDel(wxCommandEvent& WXUNUSED(event)) {
             }
         }
     }
+
+    if (m_ft.Frames.size() == 0) {
+        m_size = 0;
+    }
+
     m_htlbFrame->UpdateContents();
     m_htlbAnimation->UpdateContents();
     m_htlbFrame->SetSelection(sel-1);
@@ -795,7 +824,7 @@ void dlgTexture::AnimationPreview() {
 
     int sel = m_htlbAnimation->GetSelection();
     if (sel >= 1) {
-        int fr = m_ft.Animation[sel-1];
+        int fr = m_ft.Animation[sel-1].frame;
         if (fr < m_ft.Frames.size())
             m_previewFile = m_ft.Frames[fr].Texture.GetFullPath();
         else
@@ -814,7 +843,7 @@ void dlgTexture::OnAnimationUp(wxSpinEvent& WXUNUSED(event)) {
     int sel = m_htlbAnimation->GetSelection();
     if (sel < 2)
         return;
-    unsigned long ft = m_ft.Animation[sel-1];
+    cFlexiTextureAnim ft = m_ft.Animation[sel-1];
     m_ft.Animation.erase(m_ft.Animation.begin() + sel - 1);
     m_ft.Animation.insert(m_ft.Animation.begin() + sel - 2, ft);
 
@@ -829,7 +858,7 @@ void dlgTexture::OnAnimationDown(wxSpinEvent& WXUNUSED(event)) {
     int sel = m_htlbAnimation->GetSelection();
     if ((count-(sel-1)) <= 1)
         return;
-    unsigned long ft = m_ft.Animation[sel-1];
+    cFlexiTextureAnim ft = m_ft.Animation[sel-1];
     m_ft.Animation.erase(m_ft.Animation.begin() + sel - 1);
     m_ft.Animation.insert(m_ft.Animation.begin() + sel, ft);
 
@@ -849,10 +878,26 @@ void dlgTexture::OnAnimationAdd(wxCommandEvent& WXUNUSED(event)) {
 
     unsigned long cookie;
     long frame = m_htlbFrame->GetFirstSelected(cookie);
+    bool lastnotadded;
     while (frame != wxNOT_FOUND) {
-        m_ft.Animation.insert(m_ft.Animation.begin() + sel, (unsigned long) frame);
+        if ((sel>0) && (m_ft.Animation[sel-1].frame == frame)) {
+            m_ft.Animation[sel-1].count++;
+            lastnotadded = true;
+        } else {
+            cFlexiTextureAnim an(frame);
+            m_ft.Animation.insert(m_ft.Animation.begin() + sel, an);
+            lastnotadded = false;
+            sel++;
+        }
         frame = m_htlbFrame->GetNextSelected(cookie);
-        sel++;
+    }
+    if (!lastnotadded)
+        sel--;
+    if (sel+1 < m_ft.Animation.size()) {
+        if (m_ft.Animation[sel].frame == m_ft.Animation[sel+1].frame) {
+            m_ft.Animation[sel].count += m_ft.Animation[sel+1].count;
+            m_ft.Animation.erase(m_ft.Animation.begin() + sel + 1);
+        }
     }
 
     m_htlbAnimation->UpdateContents();
@@ -862,18 +907,34 @@ void dlgTexture::OnAnimationAdd(wxCommandEvent& WXUNUSED(event)) {
     UpdateControlState();
 }
 
-void dlgTexture::OnAnimationCopy(wxCommandEvent& WXUNUSED(event)) {
+//void dlgTexture::OnAnimationCopy(wxCommandEvent& WXUNUSED(event)) {
+void dlgTexture::OnAnimationCountUp(wxSpinEvent& WXUNUSED(event)) {
     int sel = m_htlbAnimation->GetSelection();
     if (sel<1)
         return;
 
-    unsigned long ft = m_ft.Animation[sel-1];
-    m_ft.Animation.insert(m_ft.Animation.begin() + sel, ft);
+    m_ft.Animation[sel-1].count++;
 
     m_htlbAnimation->UpdateContents();
-    m_htlbAnimation->SetSelection(sel+1);
-    AnimationPreview();
-    UpdateControlState();
+    m_htlbAnimation->SetSelection(sel);
+//    AnimationPreview();
+//    UpdateControlState();
+}
+
+void dlgTexture::OnAnimationCountDown(wxSpinEvent& WXUNUSED(event)) {
+    int sel = m_htlbAnimation->GetSelection();
+    if (sel<1)
+        return;
+
+    if (m_ft.Animation[sel-1].count == 1)
+        return;
+
+    m_ft.Animation[sel-1].count--;
+
+    m_htlbAnimation->UpdateContents();
+    m_htlbAnimation->SetSelection(sel);
+//    AnimationPreview();
+//    UpdateControlState();
 }
 
 void dlgTexture::OnAnimationDel(wxCommandEvent& WXUNUSED(event)) {
@@ -893,7 +954,7 @@ void dlgTexture::OnAnimationDel(wxCommandEvent& WXUNUSED(event)) {
 void dlgTexture::OnAnimationFreeze(wxCommandEvent& WXUNUSED(event)) {
     if (!m_toggleAnimationFreeze->GetValue()) {
         for(long i = m_ft.Animation.size()-1; i >=0; i--) {
-            if (m_ft.Animation[i] >= m_ft.Frames.size())
+            if (m_ft.Animation[i].frame >= m_ft.Frames.size())
                 m_ft.Animation.erase(m_ft.Animation.begin() + i);
         }
 

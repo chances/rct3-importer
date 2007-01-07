@@ -136,8 +136,9 @@ protected:
     wxButton* m_btFrameDel;
     wxButton* m_btFrameClear;
     wxSpinButton* m_spinAnimation;
+    wxSpinButton* m_spinAnimationCount;
     wxButton* m_btAnimationAdd;
-    wxButton* m_btAnimationCopy;
+//    wxButton* m_btAnimationCopy;
     wxButton* m_btAnimationDel;
     wxToggleButton* m_toggleAnimationFreeze;
     wxButton* m_btAnimationClear;
@@ -168,8 +169,10 @@ protected:
     void OnAnimationListUpdate(wxCommandEvent& event);
     void OnAnimationUp(wxSpinEvent& event);
     void OnAnimationDown(wxSpinEvent& event);
+    void OnAnimationCountUp(wxSpinEvent& event);
+    void OnAnimationCountDown(wxSpinEvent& event);
     void OnAnimationAdd(wxCommandEvent& event);
-    void OnAnimationCopy(wxCommandEvent& event);
+//    void OnAnimationCopy(wxCommandEvent& event);
     void OnAnimationDel(wxCommandEvent& event);
     void OnAnimationFreeze(wxCommandEvent& event);
     void OnAnimationClear(wxCommandEvent& event);
@@ -195,8 +198,9 @@ private:
         m_btFrameDel = XRCCTRL(*this,"m_btFrameDel",wxButton);
         m_btFrameClear = XRCCTRL(*this,"m_btFrameClear",wxButton);
         m_spinAnimation = XRCCTRL(*this,"m_spinAnimation",wxSpinButton);
+        m_spinAnimationCount = XRCCTRL(*this,"m_spinAnimationCount",wxSpinButton);
         m_btAnimationAdd = XRCCTRL(*this,"m_btAnimationAdd",wxButton);
-        m_btAnimationCopy = XRCCTRL(*this,"m_btAnimationCopy",wxButton);
+//        m_btAnimationCopy = XRCCTRL(*this,"m_btAnimationCopy",wxButton);
         m_btAnimationDel = XRCCTRL(*this,"m_btAnimationDel",wxButton);
         m_toggleAnimationFreeze = XRCCTRL(*this,"m_toggleAnimationFreeze",wxToggleButton);
         m_btAnimationClear = XRCCTRL(*this,"m_btAnimationClear",wxButton);
@@ -214,6 +218,8 @@ public:
     virtual void SetTextureName(const wxString& WXUNUSED(val)) {
         ::wxMessageBox(wxT("SetTextureName is not supposed to be called on this subclass"), wxT("Internal Error"));
     };
+
+    virtual bool Validate();
 
     void UpdateControlState();
 

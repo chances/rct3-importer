@@ -266,7 +266,8 @@ Version 17 (Belgabor):
 * Fixed Bug 1606383: Importer crashes when you try to select a jpeg file
 * Fixed Bug 1611229: Some controls in Create OVL stay enabled on New
 * FIX1: Fixed Bug: Internal alpha channel in PNGs flipped upside-down
-* FIX1: Model Settings: Placing set to Unknown no longer causes display artefacts.
+* FIX1: Fixed crash when trying to edit a texture with no frames.
 * FIX1: You can now select multiple files when adding textures or texture frames.
 * FIX1: When quick-adding (through the file dialog that comes up when you press add) textures or texture frames, internal alpha channels are automatically detected and activated.
 * FIX1: Advanced Texture Window: Add multiple frames at once to the animation list.
+* FIX1: Advanced Texture Window: Multiple consecutive frames are now summed up in the animation list. Note: The delete button will delete all summed up frames (ie the complete selected entry). There is a new spin control to change the number of repetitions.

@@ -810,7 +810,7 @@ void dlgCreateScenery::OnTextureEdit(wxCommandEvent& WXUNUSED(event)) {
         return;
 
     dlgTextureBase *dialog = NULL;
-    bool simple = ((m_SCN.flexitextures[sel].Frames.size()<=1) &&
+    bool simple = ((m_SCN.flexitextures[sel].Frames.size()==1) &&
                    (m_SCN.flexitextures[sel].Animation.size()==0) &&
                    (m_SCN.flexitextures[sel].FPS == 0) &&
                    ((m_SCN.flexitextures[sel].Recolorable <= 1) ||
@@ -1375,17 +1375,18 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                 // Check the animation
                 if (i_ftx->Animation.size()) {
                     for (unsigned long i = 0; i < i_ftx->Animation.size(); i++) {
-                        if (i_ftx->Animation[i] >= i_ftx->Frames.size()) {
+                        if (i_ftx->Animation[i].frame >= i_ftx->Frames.size()) {
                             // Illegal reference
                             error = true;
                             wxLogError(_("Texture '%s': Animation step %d references non-existing frame."), i_ftx->Name.c_str(), i+1);
                             break;
                         }
-                        i_ftx->Frames[i_ftx->Animation[i]].used = true;
+                        i_ftx->Frames[i_ftx->Animation[i].frame].used = true;
                     }
                 } else {
                     // We need to add one refering to the first frame
-                    i_ftx->Animation.push_back(0);
+                    cFlexiTextureAnim an(0);
+                    i_ftx->Animation.push_back(an);
                     i_ftx->Frames[0].used = true;
                 }
 
@@ -1399,9 +1400,9 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                         // Great -.-
                         i_ftx->Frames.erase(i_ftx->Frames.begin() + i);
                         // Fix animation
-                        for (std::vector<unsigned long>::iterator i_anim = i_ftx->Animation.begin(); i_anim != i_ftx->Animation.end(); i_anim++) {
-                            if (*i_anim > i)
-                                *i_anim -= 1;
+                        for (cFlexiTextureAnimIterator i_anim = i_ftx->Animation.begin(); i_anim != i_ftx->Animation.end(); i_anim++) {
+                            if (i_anim->frame > i)
+                                i_anim->frame -= 1;
                         }
                         warning = true;
                         wxLogWarning(_("Texture '%s', frame %d: Unused. It will not be written to the ovl file."), i_ftx->Name.c_str(), i);
@@ -1640,6 +1641,7 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                     }
                     CurrentObj++;
                 }
+/*
                 if (has_unknown) {
                     if ((glass_min.x - sh->BoundingBox1.x) < 0.001)
                         sh->BoundingBox1.x -= 0.001;
@@ -1654,13 +1656,6 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                     if ((sh->BoundingBox2.z - glass_max.z) < 0.001)
                         sh->BoundingBox2.z += 0.001;
                 }
-/*
-                sh->BoundingBox1.x -= 0.0001;
-                sh->BoundingBox2.x += 0.0001;
-                sh->BoundingBox1.y -= 0.0001;
-                sh->BoundingBox2.y += 0.0001;
-                sh->BoundingBox1.z -= 0.0001;
-                sh->BoundingBox2.z += 0.0001;
 */
                 char **ftx = new char *[mesh_count];
                 ftxstore.push_back(ftx);
@@ -1766,10 +1761,16 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
             fti->Recolorable = i_ftx->Recolorable;
 
             // Handle Animation
-            fti->offsetCount = i_ftx->Animation.size();
-            fti->offset1 = new unsigned long[i_ftx->Animation.size()];
-            for (unsigned long i = 0; i < i_ftx->Animation.size(); i++) {
-                fti->offset1[i] = i_ftx->Animation[i];
+            fti->offsetCount = 0;
+            for(cFlexiTextureAnimIterator i_anim = i_ftx->Animation.begin(); i_anim != i_ftx->Animation.end(); i_anim++)
+                fti->offsetCount += i_anim->count;
+            fti->offset1 = new unsigned long[fti->offsetCount];
+            unsigned long x = 0;
+            for(cFlexiTextureAnimIterator i_anim = i_ftx->Animation.begin(); i_anim != i_ftx->Animation.end(); i_anim++) {
+                for (unsigned long i = 0; i < i_anim->count; i++) {
+                    fti->offset1[x] = i_anim->frame;
+                    x++;
+                }
             }
 
             FlexiTextureStruct *fts = new FlexiTextureStruct[i_ftx->Frames.size()];

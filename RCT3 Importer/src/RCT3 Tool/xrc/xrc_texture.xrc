@@ -304,6 +304,16 @@
 									</object>
 									<object class="sizeritem">
 										<option>0</option>
+										<flag>wxRIGHT</flag>
+										<border>5</border>
+										<object class="wxSpinButton" name="m_spinAnimationCount">
+											<style>wxSP_HORIZONTAL</style>
+											<size>20,10</size>
+											<tooltip>Change the number of repeats for the currently selected frame in the animation sequence.</tooltip>
+										</object>
+									</object>
+									<object class="sizeritem">
+										<option>0</option>
 										<flag>wxTOP|wxRIGHT</flag>
 										<border>5</border>
 										<object class="wxButton" name="m_btAnimationAdd">
@@ -311,18 +321,6 @@
 											<enabled>0</enabled>
 											<tooltip>Add the frame selected on the left after the currently selected position in the animation sequence.</tooltip>
 											<label>+</label>
-											<default>0</default>
-										</object>
-									</object>
-									<object class="sizeritem">
-										<option>0</option>
-										<flag>wxRIGHT</flag>
-										<border>5</border>
-										<object class="wxButton" name="m_btAnimationCopy">
-											<size>20,20</size>
-											<enabled>0</enabled>
-											<tooltip>Duplicate the currently selected frame in the animation sequence.</tooltip>
-											<label>C</label>
 											<default>0</default>
 										</object>
 									</object>
