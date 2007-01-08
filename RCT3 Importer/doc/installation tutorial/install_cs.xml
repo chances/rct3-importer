@@ -4,8 +4,20 @@
 <article>
   <title>Installing Custom Scenery</title>
 
+  <articleinfo>
+    <date>7.1.2007</date>
+
+    <author>
+      <surname>Coinich</surname>
+    </author>
+
+    <editor>
+      <surname>Belgabor</surname>
+    </editor>
+  </articleinfo>
+
   <para>Installing Custom Scenery is not a difficult task. There are a few
-  things to consider though, like what file extension the pack might be in
+  things to consider though, for example what file extension the pack has
   among other things. Here is a walkthrough for those who need help.</para>
 
   <important>
@@ -21,89 +33,252 @@
     One thing you might easily miss is that some verisons leave out the
     trademark sign and it looks like this:</para>
 
-    <para><filename>C:\Program&nbsp;Files\Atari\RollerCoaster&nbsp;Tycoon&nbsp;3</filename>
-    </para>
+    <para><filename>C:\Program&nbsp;Files\Atari\RollerCoaster&nbsp;Tycoon&nbsp;3</filename></para>
   </important>
 
-  <section>
+  <para>For the less savvy in computer terms, <quote>folder</quote> and
+  <quote>directory</quote> are the same and are used interchangably in this
+  tutorial.</para>
+
+  <section id="sect1">
     <title>Downloading Custom Scenery</title>
 
-    <para>The first thing needed to know is how to get Custom Scenery, or
+    <para>The first thing you need to know is how to get Custom Scenery, or
     <acronym>CS</acronym> for short.</para>
 
-    <para>The largest way to get these sets is to download them from a
-    third-party uploader, such as Rapidshare or Megaupload. Both options have
-    free downloading capability and good sets can remain in storage
-    indefinitely.</para>
+    <para>Your first stop in your quest for <acronym>CS</acronym> should be
+    the <ulink
+    url="http://www.ataricommunity.com/forums/forumdisplay.php?f=406">Custom
+    Scenery forum</ulink> on the <ulink
+    url="http://www.ataricommunity.com/forums/index.php">Atari®
+    Community</ulink>. Most <acronym>CS</acronym> creators post about their
+    sets there and inform you where and how to download and install them.
+    There is also a <ulink
+    url="http://www.ataricommunity.com/forums/showthread.php?t=549086">stickied
+    list of all <acronym>CS</acronym></ulink> in this forum.</para>
 
-    <para>Another option is to download from private servers hosted by many
-    people from around the world. Both Vodhin and errt have great sites to
-    download from and have a large selection of objects. One thing to keep in
-    mind though, is that many of these servers require registration before you
-    download any objects.</para>
+    <para>Often these sets are hosted on a third-party uploader, such as
+    Rapidshare or Megaupload. Both options have free downloading capability
+    and good sets can remain in storage indefinitely.</para>
+
+    <para>Another option is to download sets from private servers hosted by
+    many people from around the world. One thing to keep in mind though, is
+    that some of these servers require registration before you download any
+    objects. Here is a list of some popular CS hosting sites:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>CSO Database <ulink
+        url="http://cso.rct-net.de/index.php?lang=1">English</ulink> / <ulink
+        url="http://cso.rct-net.de/">German</ulink></para>
+      </listitem>
+
+      <listitem>
+        <para><ulink
+        url="http://modstothemax.net/community/">ModsToTheMax</ulink> (free
+        registration required)</para>
+      </listitem>
+
+      <listitem>
+        <para><ulink
+        url="http://www.rctrevalutions.com/forums/index.php?showforum=175">RCT
+        Revalutions</ulink></para>
+      </listitem>
+
+      <listitem>
+        <para><ulink
+        url="http://www.vodhin.net/RCT3Community/news.php">Vodhin's Community
+        Pages</ulink>, <ulink
+        url="http://www.vodhin.net/RCT3Community/download.php?list.3">CS
+        Download section</ulink></para>
+      </listitem>
+    </itemizedlist>
+
+    <important>
+      <para>It's suggested to download sets to a folder you create especially
+      for this purpose (e.g. on your desktop). You can have subfolders within
+      that folder that contain unopened sets and keep the original downloads
+      if the set becomes corrupt for some reason.</para>
+
+      <para>Do NOT download in to <filename>&lt;RCT3&nbsp;dir&gt;</filename>
+      or any subfolder! This can lead to trouble.</para>
+    </important>
   </section>
 
-  <section>
-    <title>Unpacking Custom Scenery</title>
+  <section id="sect2">
+    <title>Unpacking and Installing Custom Scenery</title>
 
     <para>Once you have downloaded the set, you need to unpack it.</para>
 
     <para>There are three main formats that <acronym>CS</acronym> sets are
-    downloaded in. The most common is in the <filename>.zip</filename> format
-    and can be unzipped by most computers without having to download any extra
-    software. The next most common is the <filename>.rar</filename> format,
-    which requires 3rd party software to unpack. Only a few sets, such as
-    MaxInfinity’s Gothic Wall set, are packaged as <filename>.rar</filename>
-    files.</para>
+    released in.</para>
 
-    <para>The third format is in the form of a downloaded executable file. Not
-    too many sets are downloaded in this manner; there are too many unknowns
-    to make this an efficient method.</para>
+    <orderedlist>
+      <listitem>
+        <para>The most common is in the <filename>.zip</filename> format and
+        can be unzipped by most computers without having to download any extra
+        software. If you do need software, you can use the same one as
+        suggested for the <filename>.rar</filename> format in point 2.
+        Occasionally, you might find a set that is an executable packaged as a
+        <filename>.zip</filename> for memory reasons. Just unzip it and refer
+        to point 3.</para>
+      </listitem>
 
-    <para>Occasionally, you might find a set that is an executable packaged as
-    a <filename>.zip</filename> for memory reasons. Just unzip it, and run the
-    executable.</para>
+      <listitem>
+        <para>The next most common is the <filename>.rar</filename> format,
+        which requires 3rd party software (e.g. <ulink
+        url="http://www.rarlab.com/"><application>WinRAR</application>
+        (shareware)</ulink> or <ulink
+        url="http://www.7-zip.org/"><application>7-zip</application>
+        (freeware)</ulink>) to unpack. Only a few sets, such as MaxInfinity’s
+        Gothic Wall set, are packaged as <filename>.rar</filename>
+        files.</para>
+      </listitem>
+
+      <listitem>
+        <para>The third format is in the form of a downloaded executable file.
+        Only a few sets are provided in this manner. You just need to run it.
+        In some cases the set gets installed to the wrong directory. Refer to
+        <xref linkend="sect34" />.</para>
+      </listitem>
+    </orderedlist>
 
     <para>The best place to unpack your downloaded <acronym>CS</acronym> sets
-    is to set aside a folder on the desktop to download them to. You can have
-    folders within that folder that contain unopened sets and keep the
-    original downloads if the set becomes corrupt for some reason.</para>
-
-    <para>Do <emphasis>NOT</emphasis> unpack or download your
-    <acronym>CS</acronym> sets into the
+    is to a folder you create for that porpose (e.g. a subfolder in your
+    <acronym>CS</acronym> download folder). Do <emphasis>NOT</emphasis> unpack
+    your <acronym>CS</acronym> sets directly into the
     <filename>&lt;RCT3&nbsp;dir&gt;\Style\Themed</filename> folder as this is
     the leading cause of errors.</para>
 
-    <para>After the <acronym>CS</acronym> set is unpackaged in a designated
-    spot, open the folder with the set’s name. You should see two or more
-    <filename>.ovl</filename> files and a few folders, the number depending on
-    the number of objects in the set. If you only see a folder with the name
-    of the set on it, then copy that folder into your storage spot (if
-    necessary renaming the <emphasis>OUTER</emphasis> folder
-    <emphasis>ONLY</emphasis>).</para>
+    <important>
+      <para>Whatever method/program you use to unpack the
+      <acronym>CS</acronym> set, make sure it preserves the directory
+      structure.</para>
 
-    <para>Check to see if the required files are in there.</para>
+      <para>Very Important: Do <emphasis>NOT</emphasis> rename anything you
+      extracted! If you do, the set will almost certainly not work!</para>
+    </important>
 
-    <para>After this point, check to see if a ReadMe folder was downloaded. If
-    so, <emphasis>READ IT!</emphasis> There are a few sets, such as Disfan1’s
-    table set and Nuclear Fish’s Particle Effects set that have specific
-    installation instructions in them. Not following them can lead to hours of
-    wasted time trying to get the set to work.</para>
+    <para>Before continuing, check to see if a ReadMe is present somewhere in
+    the extracted folders. If so, <emphasis>READ IT!</emphasis> There are a
+    few sets, such as Disfan1’s table set and Nuclear Fish’s Particle Effects
+    set that have specific installation instructions in them. Not following
+    them can lead to hours of wasted time trying to get the set to
+    work.</para>
 
-    <para>Only after all of this work is done place the folder with the
-    necessary files in your
-    <filename>&lt;RCT3&nbsp;dir&gt;\Style\Themed</filename> folder. Simply
-    copy and paste it into there. The set should be installed and accessible
-    when you start up RCT3 next.</para>
+    <para>Now you need to identify the set directory. Look through the folder
+    structure of the set to find the files
+    <filename>style.common.ovl</filename> and
+    <filename>style.unique.ovl</filename>. <emphasis role="bold">The directory
+    that contains both files is the set directory</emphasis>. Normally this
+    directory only contains these two files and one or more subdirectories.
+    Also usually this directory is found directly in the folder you extracted
+    the set to.</para>
+
+    <para>Let's take a look at The_Cook's Cliff Face Set as an example. I
+    assume you extracted it to <filename>C:\RCT3sets\temp</filename>. You'll
+    find the following directory structure (leaving out unimportant stuff
+    before the temp folder):</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>C:\RCT3sets</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>temp</para>
+
+            <itemizedlist>
+              <listitem>
+                <para>Examples</para>
+
+                <itemizedlist>
+                  <listitem>
+                    <para>CliffFace_1sqStraight.dat</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>CliffFace_1sqStraight2.dat</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>CliffFace_2sqCorner.dat</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>...</para>
+                  </listitem>
+                </itemizedlist>
+              </listitem>
+
+              <listitem>
+                <para>Rockface</para>
+
+                <itemizedlist>
+                  <listitem>
+                    <para>r</para>
+
+                    <itemizedlist>
+                      <listitem>
+                        <para>rock_d10.common.ovl</para>
+                      </listitem>
+
+                      <listitem>
+                        <para>rock_d10.unique.ovl</para>
+                      </listitem>
+
+                      <listitem>
+                        <para>rock_d11.common.ovl</para>
+                      </listitem>
+
+                      <listitem>
+                        <para>...</para>
+                      </listitem>
+                    </itemizedlist>
+                  </listitem>
+
+                  <listitem>
+                    <para>style.common.ovl</para>
+                  </listitem>
+
+                  <listitem>
+                    <para>style.unique.ovl</para>
+                  </listitem>
+                </itemizedlist>
+              </listitem>
+
+              <listitem>
+                <para>Readme.txt</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+    </itemizedlist>
+
+    <para>The set directory in this case in the <filename>Rockface</filename>
+    folder. Note that this set is not a perfect example, as it containes a
+    readme file which you should have read and followed the instructions in
+    :-)</para>
+
+    <para>After identifying the set directory, copy or move it to your
+    <filename>&lt;RCT3&nbsp;dir&gt;\Style\Themed</filename> folder.</para>
+
+    <important>
+      <para>Copy or move the directory, not only the contained files!</para>
+    </important>
+
+    <para> The set should be installed and accessible when you start up RCT3
+    next.</para>
   </section>
 
-  <section>
+  <section id="sect3">
     <title>Common Errors</title>
 
-    <section>
+    <section id="sect31">
       <title>Game appears to hang</title>
 
-      <para>On many errors the game appears to hang. This is caused by a
+      <para>On many errors, the game appears to hang. This is caused by a
       normal <application>Windows</application> message hidden behind the
       game's graphic screen. Use <keycombo>
           <keycap function="alt">Alt</keycap>
@@ -113,8 +288,22 @@
       and see the actual error message.</para>
     </section>
 
-    <section>
-      <title>The vaunted <quote>no :siv: for :sid:</quote> error</title>
+    <section id="sect32">
+      <title>The game really hangs</title>
+
+      <para>That means <keycombo>
+          <keycap function="alt">Alt</keycap>
+
+          <keycap function="tab">Tab</keycap>
+        </keycombo> didn't work. This is usually caused by the so-called
+      shadow bug. A few sets have very big <acronym>CS</acronym> items that
+      trigger a bug in RCT3. If you want to use those, you need to turn off
+      shadows in the RCT3 display options (refer to your RCT3
+      handbook).</para>
+    </section>
+
+    <section id="sect33">
+      <title>The vaunted <quote>no :svd: for :sid:</quote> error</title>
 
       <para>This error simply states that there was an incorrect installation.
       The culprit, almost every single time is having an extra folder hiding
@@ -123,7 +312,7 @@
       the set should run.</para>
     </section>
 
-    <section>
+    <section id="sect34">
       <title>The scenery does not appear in game</title>
 
       <para>If the scenery does not appear in game,</para>
@@ -141,8 +330,8 @@
         </listitem>
 
         <listitem>
-          <para>If you had RCT3 runnig when you installed the set, restart it.
-          Sometimes it's possible to install CS when RCT3 is running, but
+          <para>If you had RCT3 running when you installed the set, restart
+          it. Sometimes it's possible to install CS when RCT3 is running, but
           sometimes it doesn't work.</para>
         </listitem>
 
@@ -153,13 +342,23 @@
           created another directory with or without the ® symbol in the
           <filename>Program Files/Atari</filename> folder (as mentioned above
           <application>Gold!</application> and non-US users are particularly
-          vulnerable to this) and the CS got installed in the wrong
-          directory.</para>
+          vulnerable to this) and the <acronym>CS</acronym> got installed in
+          the wrong directory.</para>
         </listitem>
       </itemizedlist>
+
+      <figure>
+        <title>Wrong Directory</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="installation11.jpg" />
+          </imageobject>
+        </mediaobject>
+      </figure>
     </section>
 
-    <section>
+    <section id="sect35">
       <title><quote>You do not have sufficient access rights to
       open…</quote></title>
 
@@ -169,20 +368,154 @@
       for the solution to this problem which usually is a result of incorrect
       installation of the particle effects of the set. (thanks to ckfour for
       the pic :-P)</para>
+
+      <figure>
+        <title>Access Rights Error</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="installation9.jpg" />
+          </imageobject>
+        </mediaobject>
+      </figure>
     </section>
 
-    <section>
+    <section id="sect36">
       <title>You have two copies of the set running in the game, but only one
       folder with the files in your
       <filename>&lt;RCT3&nbsp;dir&gt;\Style\Themed</filename> folder</title>
 
-      <para>This is a simple issue from incorrect installation and an
-      unfinished fix. This problem is a result of the nested folder issue but
-      with a twist; the set was later correctly installed without removing the
-      incorrect folder. Due to the way the game analyzes the
+      <para>This is usually the result of a failed installation you didn't fix
+      completely, namely you didn't (completely) delete the wrong install. The
+      <filename>style.common.ovl</filename> and
+      <filename>style.unique.ovl</filename> files are still present in the
+      wrong folder. Due to the way the game analyzes the
       <filename>.ovl</filename> files, two options are created in the RCT3
-      menu. To fix this problem, just remove the redundant, nested
-      folder.</para>
+      menu. To fix this problem, remove the set completely and reinstall
+      it.</para>
     </section>
+  </section>
+
+  <section id="sect4">
+    <title>Set Specific Problems</title>
+
+    <section id="sect41">
+      <title>Nuclear Fish's Particle Effect Set</title>
+
+      <para>This set requires some particle files placed in a specific folder.
+      The enclosed readme file explains this in detail, read it
+      thoroughly!</para>
+    </section>
+
+    <section id="sect42">
+      <title>Disfan1’s Tables Set</title>
+
+      <para>This set is assembled in a method that does not follow current
+      conventions. Open the unzipped file and copy <emphasis>ALL</emphasis>
+      files to the <filename>&lt;RCT3&nbsp;dir&gt;\Style\Themed</filename>
+      folder to get this to work. This information is also in it's ReadMe
+      file.</para>
+    </section>
+
+    <section id="sect43">
+      <title>MaxInfinity’s DC Wall Set</title>
+
+      <para>This set has been known to generate an error during the loading of
+      RCT3 about an offset. The error message should look like this:</para>
+
+      <figure>
+        <title>Error in DC Wall Set</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="installation14.jpg" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+
+      <para>This error is nothing to worry about; just press Ok and the set
+      and game will load normally.</para>
+    </section>
+  </section>
+
+  <section id="sect5">
+    <title>Acknowledgements</title>
+
+    <section>
+      <title>from Coinich</title>
+
+      <para>I just wanted to thank all of the people who made CS possible
+      here, including Belgabor and JonWil. These people, among many, have
+      explored the horizons of Custom Scenery and have made this all
+      possible.</para>
+
+      <para>Thanks.</para>
+
+      <para>I also wanted to thank all of the people out there who have helped
+      me in the past install CS. It is an often asked question that can get
+      quite tiring to answer, and I thank all who have written similar guides
+      for different sites as I can finally understand the work they did to put
+      such guides on the net.</para>
+    </section>
+
+    <section>
+      <title>from Belgabor</title>
+
+      <para>Thanks to Coinich for writing this tutorial.</para>
+
+      <para>Sorry to Coinich for taking so long to edit it =)</para>
+
+      <para>Also sorry for editing it so much (do you still recognize it?
+      :-p), but I want this to be as clear, concise and thorough as possible,
+      a goal I have hopefully achieved (If not, please recommend changes on
+      the <ulink
+      url="http://www.ataricommunity.com/forums/forumdisplay.php?f=406">Atari
+      Forum</ulink>). I originally said I want to have lots of pictures in
+      this tutorial (which Coinich provided), but editing it I started to
+      think that this was rather more distracting than useful so I left most
+      out, sorry again Coinich =)</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Credits</title>
+
+    <itemizedlist>
+      <listitem>
+        <para>The docbook css used for the html version of this document is
+        based upon the one created by <ulink
+        url="http://www.karakas-online.de">Chris Karakas</ulink>.</para>
+      </listitem>
+
+      <listitem>
+        <para>This CSS stylesheet uses <ulink
+        url="http://www.matterform.com/qbullets/index.php">QBullets</ulink> in
+        links. Thanks to Matterform Media for providing QBullets for free. If
+        you plan to use them on your website, please observe the <ulink
+        url="http://www.matterform.com/qbullets/usage.html">QBullets usage
+        terms</ulink>.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para role="matterform"><ulink
+    url="http://www.matterform.com/"><inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="/images/qb_credit.gif" scale="100" scalefit="0" />
+        </imageobject>
+      </inlinemediaobject></ulink></para>
+
+    <para><ulink url="http://sourceforge.net/"><inlinemediaobject>
+        <imageobject role="html">
+          <imagedata fileref="http://sourceforge.net/sflogo.php?group_id=181524&amp;type=4" />
+        </imageobject>
+
+        <imageobject role="pdf">
+          <imagedata fileref="/images/sflogo.png" />
+        </imageobject>
+
+        <imageobject role="chm">
+          <imagedata fileref="/images/sflogo.png" />
+        </imageobject>
+      </inlinemediaobject></ulink></para>
   </section>
 </article>
