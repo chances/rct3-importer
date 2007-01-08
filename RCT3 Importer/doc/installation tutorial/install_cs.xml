@@ -30,14 +30,14 @@
     <para>but that may differ on international versions or maybe
     <application>RCT3 Gold!</application> or <application>RCT3
     Platinum!</application> (or when you installed it to a custom directory).
-    One thing you might easily miss is that some verisons leave out the
+    One thing you might easily miss is that some versions leave out the
     trademark sign and it looks like this:</para>
 
     <para><filename>C:\Program&nbsp;Files\Atari\RollerCoaster&nbsp;Tycoon&nbsp;3</filename></para>
   </important>
 
   <para>For the less savvy in computer terms, <quote>folder</quote> and
-  <quote>directory</quote> are the same and are used interchangably in this
+  <quote>directory</quote> are the same and are used interchangeably in this
   tutorial.</para>
 
   <section id="sect1">
@@ -144,7 +144,7 @@
     </orderedlist>
 
     <para>The best place to unpack your downloaded <acronym>CS</acronym> sets
-    is to a folder you create for that porpose (e.g. a subfolder in your
+    is to a folder you create for that purpose (e.g. a subfolder in your
     <acronym>CS</acronym> download folder). Do <emphasis>NOT</emphasis> unpack
     your <acronym>CS</acronym> sets directly into the
     <filename>&lt;RCT3&nbsp;dir&gt;\Style\Themed</filename> folder as this is
@@ -212,7 +212,7 @@
               </listitem>
 
               <listitem>
-                <para>Rockface</para>
+                <para><emphasis role="bold">Rockface</emphasis></para>
 
                 <itemizedlist>
                   <listitem>
@@ -257,9 +257,9 @@
     </itemizedlist>
 
     <para>The set directory in this case in the <filename>Rockface</filename>
-    folder. Note that this set is not a perfect example, as it containes a
-    readme file which you should have read and followed the instructions in
-    :-)</para>
+    folder (indicated in <emphasis role="bold">bold</emphasis>). Note that
+    this set is not a perfect example, as it contains a readme file which you
+    should have read and followed the instructions in :-)</para>
 
     <para>After identifying the set directory, copy or move it to your
     <filename>&lt;RCT3&nbsp;dir&gt;\Style\Themed</filename> folder.</para>
@@ -268,7 +268,7 @@
       <para>Copy or move the directory, not only the contained files!</para>
     </important>
 
-    <para> The set should be installed and accessible when you start up RCT3
+    <para>The set should be installed and accessible when you start up RCT3
     next.</para>
   </section>
 
@@ -305,11 +305,21 @@
     <section id="sect33">
       <title>The vaunted <quote>no :svd: for :sid:</quote> error</title>
 
-      <para>This error simply states that there was an incorrect installation.
-      The culprit, almost every single time is having an extra folder hiding
-      the scenery items from being accessed by the game. Simply remove the
-      outer folder (do <emphasis>NOT RENAME THE INNER FOLDER</emphasis>) and
-      the set should run.</para>
+      <para>In almost all cases this error tells you that you made an error
+      installing the set. Reread these instructions thoroughly, delete the
+      wrongly installed files and folder(s) and reinstall the theme. If you
+      followed an enclosed readme, read this tutorial in full to see whether
+      you misunderstood something.</para>
+
+      <para>If you installed a new version of a theme over an older one and
+      this error occurs, delete all versions and reinstall.</para>
+
+      <para>If all of this doesn't help, check (the) forum thread(s) of the
+      set to see if there are known issues. In rare instances the author may
+      have made an error, maybe a fixed version has been posted. If no
+      problems have been posted, check again if you followed all instructions
+      to the word and read every post of the set's release thread. Only if all
+      that failed you should post and ask for help.</para>
     </section>
 
     <section id="sect34">
@@ -318,6 +328,19 @@
       <para>If the scenery does not appear in game,</para>
 
       <itemizedlist>
+        <listitem>
+          <para>Make sure to check in Sandbox mode.</para>
+
+          <para>When playing game scenarios, CS needs to be invented before
+          you can use it.</para>
+
+          <para>Custom scenery will never show in a Custom Scenario. The maker
+          of the scenario needs to have added it to the "scenery to beceome
+          available" or "available Scenery" list when making the scenario.
+          Solution: Open the scenario in the scenario editor and add the new
+          set to the list.</para>
+        </listitem>
+
         <listitem>
           <para>Make sure <emphasis>ALL</emphasis> of the scenery filters are
           enabled.</para>
@@ -356,6 +379,11 @@
           </imageobject>
         </mediaobject>
       </figure>
+
+      <para>If after checking all of that you still can't find the set, search
+      the Atari forums or the place where you downloaded the set for a
+      solution. If you can't find one, look for a set realeted discussion
+      thread and ask in there.</para>
     </section>
 
     <section id="sect35">
@@ -364,10 +392,10 @@
 
       <para>This problem is currently (14.12.2006) exclusive (to my knowledge)
       to Nuclear Fish’s Particle Effects pack. It is a result of improper
-      installation. Read the enclosed ReadMe or his thread on the Atari forums
-      for the solution to this problem which usually is a result of incorrect
-      installation of the particle effects of the set. (thanks to ckfour for
-      the pic :-P)</para>
+      installation of the particle effects. Read the enclosed ReadMe or <ulink
+      url="http://www.ataricommunity.com/forums/showthread.php?t=544122">his
+      thread on the Atari® forums</ulink> for the solution to this problem.
+      (thanks to ckfour for the pic :-P)</para>
 
       <figure>
         <title>Access Rights Error</title>
@@ -402,8 +430,8 @@
     <section id="sect41">
       <title>Nuclear Fish's Particle Effect Set</title>
 
-      <para>This set requires some particle files placed in a specific folder.
-      The enclosed readme file explains this in detail, read it
+      <para>This set requires particle effect files placed in a specific
+      folder. The enclosed readme file explains this in detail, read it
       thoroughly!</para>
     </section>
 
@@ -421,7 +449,7 @@
       <title>MaxInfinity’s DC Wall Set</title>
 
       <para>This set has been known to generate an error during the loading of
-      RCT3 about an offset. The error message should look like this:</para>
+      RCT3 about an offset. The error message looks like this:</para>
 
       <figure>
         <title>Error in DC Wall Set</title>
@@ -433,8 +461,9 @@
         </mediaobject>
       </figure>
 
-      <para>This error is nothing to worry about; just press Ok and the set
-      and game will load normally.</para>
+      <para>This error is nothing to worry about; just press
+      <guibutton>Ok</guibutton> and the set and game will load
+      normally.</para>
     </section>
   </section>
 
@@ -481,6 +510,11 @@
     <title>Credits</title>
 
     <itemizedlist>
+      <listitem>
+        <para>Atari® and Roller Coaster Tycoon 3® are trademarks of Atari Inc.
+        All Rights Reserved.</para>
+      </listitem>
+
       <listitem>
         <para>The docbook css used for the html version of this document is
         based upon the one created by <ulink

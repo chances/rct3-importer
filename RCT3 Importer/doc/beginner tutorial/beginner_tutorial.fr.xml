@@ -1,0 +1,1270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<article class="whitepaper" lang="fr" revision="1.0">
+  <title>Guide d'utilisation du logiciel d'importation d'objets de décor
+  personnalisés pour RCT3 - Niveau débutant</title>
+
+  <articleinfo>
+    <date>7.1.2007</date>
+
+    <revhistory>
+      <revision>
+        <revnumber>1</revnumber>
+
+        <date>7.1.2006</date>
+
+        <author>
+          <surname>YesMyDear</surname>
+        </author>
+
+        <revdescription>
+          <para>Initial version</para>
+        </revdescription>
+      </revision>
+    </revhistory>
+
+    <author>
+      <surname>Belgabor (Version anglaise)</surname>
+    </author>
+
+    <author>
+      <surname>YesMyDear (Traduction de l'anglais)</surname>
+    </author>
+  </articleinfo>
+
+  <tocchap>
+    <tocentry></tocentry>
+  </tocchap>
+
+  <para>Notes de traduction: Pour éviter d’employer des anglicismes à foison,
+  j’ai utilisé les termes techniques français aussi souvent que possible. J’ai
+  aussi ajouté la liste des équivalences anglais-français (voir ci-dessous)
+  pour faciliter la va-et-vient entre le tutoriel de Belgabor et la traduction
+  que je propose. Si certains passages vous paraissent douteux ou maladroits,
+  n’hésitez pas à m’envoyer un message privé (PM).</para>
+
+  <table border="0" colsep="0" frame="none" rowsep="0" width="50%">
+    <title>Liste des équivalences anglais-français</title>
+
+    <tgroup cols="2">
+      <tbody>
+        <row>
+          <entry>3D modeller</entry>
+
+          <entry>logiciel de modélisation 3D</entry>
+        </row>
+
+        <row>
+          <entry>custom scenery object</entry>
+
+          <entry>objet de décor personnalisé</entry>
+        </row>
+
+        <row>
+          <entry>edge</entry>
+
+          <entry>arête</entry>
+        </row>
+
+        <row>
+          <entry>import(ing)</entry>
+
+          <entry>importation</entry>
+        </row>
+
+        <row>
+          <entry>importer</entry>
+
+          <entry>logiciel d'importation</entry>
+        </row>
+
+        <row>
+          <entry>manager</entry>
+
+          <entry>gestionnaire</entry>
+        </row>
+
+        <row>
+          <entry>open source software</entry>
+
+          <entry>logiciel libre</entry>
+        </row>
+
+        <row>
+          <entry>setup</entry>
+
+          <entry>configuration / réglages</entry>
+        </row>
+
+        <row>
+          <entry>UV-mapping</entry>
+
+          <entry>mappage UV</entry>
+        </row>
+
+        <row>
+          <entry>vertex (vertices)</entry>
+
+          <entry>sommet(s)</entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </table>
+
+  <para>Ce tutoriel vous guidera dans les différentes étapes nécessaires pour
+  importer votre premier objet de décor personnalisé dans <application>Roller
+  Coaster Tycoon 3</application> (RCT3). Seules les options et les étapes
+  élémentaires seront développées. Par conséquent, ce tutoriel ne couvre pas
+  la totalité des fonctionnalités offertes par le logiciel
+  d'importation.</para>
+
+  <para><emphasis>Toutes</emphasis> les étapes présentées ci-dessous sont
+  indispensables.</para>
+
+  <para>Les informations fournies dans ce document s'appuient sur la version
+  17fix1 du logiciel d'importation.</para>
+
+  <section id="sect1">
+    <title>Préparation en vue de l'importation</title>
+
+    <para>Cette section présente les étapes à suivre avant d'importer un objet
+    personnalisé.</para>
+
+    <section id="sect11">
+      <title>Préparation initiale</title>
+
+      <para>Aussi évident que cela puisse paraître, il est essentiel de bien
+      organiser son travail. Sur votre disque dur, créez un dossier qui
+      contiendra l'ensemble de vos objets personnalisés. Pour chaque groupe
+      d'objets, créez un sous-dossier. Il est aussi recommandé de créer un
+      sous-dossier pour chaque objet et d'y inclure les fichiers associés (par
+      exemple, les textures).</para>
+    </section>
+
+    <section id="sect12">
+      <title>Création du modèle 3D</title>
+
+      <para>En soi, cette étape n'entre pas dans le cadre de ce tutoriel.
+      Néanmoins, voici quelques informations générales. Téléchargez un
+      logiciel de modélisation 3D approprié et consultez quelques tutoriels
+      pour découvrir son fonctionnement. Voici une liste des logiciels les
+      plus utilisés pour la création d'objets personnalisés pour RCT3:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para><application>3DStudio</application> /
+          <application>3DSmax</application>. Logiciel professionnel très cher.
+          Toutefois, une licence académique pour lycéens et étudiants permet
+          de l'obtenir à un prix plus abordable.</para>
+        </listitem>
+
+        <listitem>
+          <para><application>MilkShape</application>. Logiciel shareware bon
+          marché (25$ soit environ 20€) avec une période d'essai de 30 jours.
+          Pendant longtemps, <application>MilkShape</application> a été
+          l'outil de création d'objets personnalisés le plus utilisé, mais il
+          est de plus en plus concurrencé par</para>
+        </listitem>
+
+        <listitem>
+          <para><application>Blender</application>. Logiciel professionnel
+          libre et gratuit. Son interface utilisateur est assez inhabituelle.
+          Sa prise en main demande donc un peu de patience. Une fois maîtisé,
+          on ne veut en changer pour rien au monde et il devient très vite un
+          outil de création 3D très performant.</para>
+        </listitem>
+
+        <listitem>
+          <para><application>SketchUp</application>. Existe sous deux
+          versions: <application>Google SketchUp</application> (édition
+          gratuite) et <application>SketchUp Pro</application> (édition
+          commerciale avec période d'essai). Il offre l'avantage d'une
+          utilisation très simple et intuitive. Néanmoins, il présente pour le
+          moment deux inconvénients majeurs. Primo, il crée en général un trop
+          grand nombre de faces pour les objets arrondis et il s'avère
+          difficile d'y remédier par la suite. Secundo, il produit parfois des
+          faces et des arêtes superflues qu’il n’est possible de supprimer que
+          dans un autre logiciel de modélisation 3D (pour plus de détails sur
+          les faces, voir ci-dessous). Un script permettant d'exporter
+          directement les fichiers <application>SketchUp</application> en
+          <filename>ASE</filename> est disponible sur la <ulink
+          url="http://belgabor.vodhin.net/software">page Software de
+          Belgabor</ulink>.</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>Pour de plus amples informations et d'autres liens vers des
+      logiciels moins couramment utilisés ainsi que des liens vers des
+      tutoriels spécifiques pour certains logiciels de modélisation, consultez
+      la <ulink url="http://belgabor.vodhin.net/software">page Software de
+      Belgabor</ulink>.</para>
+
+      <para>Pour créer vos modèles 3D, voici quelques indications qu’il est
+      bon de garder à l'esprit:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Votre premier modèle devrait être le plus élémentaire possible
+          afin de vous concentrer d'avantage sur les étapes de l'importation.
+          Vous pouvez par exemple commencer par un simple cube.</para>
+        </listitem>
+
+        <listitem>
+          <para>Créez votre modèle à la taille et dans la position
+          appropriées. Un carré sur la grille de RCT3 équivaut généralement à
+          un carré de 4 unités x 4 unités dans le logiciel de modélisation
+          (les choses sont un peu plus compliquées dans
+          <application>SketchUp</application>). Pour plus d'informations,
+          consultez la <ulink url="http://belgabor.vodhin.net/facts">page
+          Facts &amp; figures de Belgabor</ulink>.</para>
+        </listitem>
+
+        <listitem>
+          <para>Le nombre de faces doit être aussi petit que possible. Une
+          face<indexterm>
+              <primary>face</primary>
+            </indexterm> (aussi appélée <quote>polygone</quote> ou
+          <quote>triangle</quote>) correspond à la plus petite sous-unité
+          prise en charge par le moteur 3D de RCT3. Par conséquent, plus votre
+          modèle possède de faces, plus il faut de temps au moteur 3D pour
+          afficher votre objet, avec un risque de ralentissement du jeu. En
+          règle générale, il faut essayer de ne pas dépasser 500 faces par
+          objet, ou mieux encore, 300. Notez aussi que le moteur 3D du jeu
+          utilise des faces triangulaires tandis que la majorité des logiciels
+          de modélisation peuvent utiliser au minimum des quads (c.à.d. des
+          faces de quatre côtés). Les quads sont convertis en triangles
+          pendant les pocessus d'exportation/conversion, si bien que le nombre
+          réel de faces peut se révéler beaucoup plus élévé que ce qu'indique
+          le logiciel de modélisation.</para>
+
+          <para>Quelques conseils pour conserver un nombre de faces
+          raisonnable:</para>
+
+          <itemizedlist>
+            <listitem>
+              <para>N'ajoutez des surfaces arrondies que si elles sont
+              véritablement utiles. Ce sont elles qui nécessitent le plus
+              grand nombre de faces. En règle générale, un cercle complet ne
+              devrait pas être constitué de plus de 16 sections, sauf en cas
+              de réelle nécessité. Si la partie arrondie de l'objet est très
+              mince, il est possible d'obtenir un résultat tout à fait
+              convenable avec seulement trois sections et à condition que les
+              arêtes soient soudées (voir ci-dessous pour plus d'informations
+              à ce sujet).</para>
+
+              <para>Il en va de même pour les sphères. Si possible, utilisez
+              des icosphères à faible itération. Les logiciels de modélisation
+              permettent aussi de créer des <quote>sphères UV</quote>. Elles
+              nécessitent plus de faces mais elles s'avèrent plus faciles à
+              mapper dans un éditeur UV (d'où leur nom ; plus d'informations
+              ci-dessous). N'ayez recours aux sphères UV que si vous avez
+              l'intention d'y appliquer des textures complexes.</para>
+            </listitem>
+
+            <listitem>
+              <para>Supprimez les faces invisibles qui ne présentent aucun
+              intérêt. Si, lors de la création de votre modèle, des faces
+              invisibles (c.à.d. des faces intérieures) apparaissent,
+              supprimez-les afin de diminuer la charge de travail du moteur
+              3D. Cependant, n'oubliez pas qu'elles peuvent aussi affecter
+              l'éclairage de l'objet si leurs arêtes sont soudées à des faces
+              visibles. Il est donc parfois nécessaire de les conserver (plus
+              de détails ci-dessous).</para>
+            </listitem>
+
+            <listitem>
+              <para>Pensez à utiliser des textures alpha. Il s'agit d'une
+              manipulation de niveau avancé, mais vous devez savoir que leur
+              utilisation est préférable dans certains cas. Si vous désirez
+              créer un objet avec un motif en filigrane (= dont certaines
+              parties sont ajourées et permettent donc de voir au travers,
+              comme par exemple une grille ou tout autre ouvrage de
+              ferronnerie), il est possible qu'il soit plus simple pour vous
+              et pour le moteur 3D de ne pas modéliser le motif mais
+              d'utiliser à la place un surface carrée plane à laquelle sur
+              laquelle est plaquée une texture alpha (avec zones
+              transparentes).</para>
+            </listitem>
+          </itemizedlist>
+        </listitem>
+
+        <listitem>
+          <indexterm>
+            <primary>Weld</primary>
+          </indexterm>
+
+          <indexterm>
+            <primary>Unweld</primary>
+          </indexterm>
+
+          <indexterm>
+            <primary>Souder</primary>
+          </indexterm>
+
+          <indexterm>
+            <primary>Desouder</primary>
+          </indexterm>
+
+          <para>Soudez/Dessoudez votre modèle en fonction de l'effet
+          recherché. Pour utiliser cette fonctionnalité efficacement, il faut
+          d'abord comprendre comment le moteur 3D de RCT3 (et probablement
+          tous les autres moteurs 3D) calcule l'éclairage des objets. Ce
+          calcul est fonction de la différence entre la direction dans
+          laquelle la lumière est émise (par le soleil le jour et par les
+          lampes la nuit) et la direction des normales de votre objet.</para>
+
+          <para>Mais qu'est-ce qu'une normale? Commençons par par une normale
+          de face. On peut se la représenter comme une flèche qui pointe dans
+          la direction opposée à la face avec laquelle elle forme un angle
+          droit. Ainsi, si on la compare à la direction dans laquelle la
+          lumière est émise, on obtient l'angle sous lequel la lumière touche
+          la face et il est alors possible d'assigner une certaine nuance
+          (c.à.d. une ombre) à cette dernière.</para>
+
+          <para>Pour donner aux objets une apparence plus réaliste, le moteur
+          3D utilise les normales des sommets (ou vertex). Ce concept est un
+          peu plus difficile à comprendre. La normale de sommet est une
+          propriété des sommets d'un objet et représente la normale du plan
+          tangent à l'objet qui passe par un sommet. Imaginez par exemple que
+          votre objet est réel et que vous le déposez sur votre bureau en ne
+          le tenant que par un sommet. Dans cette configuration, votre bureau
+          est une représentation (approximative) du plan tangent à ce sommet
+          et la normale du plan pointe verticalement vers le sol. Les normales
+          de sommets sont automatiquement calculées par le logiciel de
+          modélisation. Généralement, elles correspondent à la moyenne des
+          normales de faces de toutes les faces auxquelles le sommet
+          appartient.</para>
+
+          <para>C'est maintenant que le concept de sommet soudé/dessoudé entre
+          en scène. Imaginez le coin d'un cube. Dans le cas général, le
+          logiciel de modélisation crée un sommet soudé, ce qui signifie qu’il
+          est utilisé simultanément par les tois faces adjacentes. Si l'on
+          dessoude un sommet (la démarche dépend du logiciel de modélisation
+          que vous utilisez ; cette fonctionnalité s'appelle souvent
+          <guilabel>Unweld</guilabel> ou <guilabel>Unbind
+          points/vertices</guilabel>) une copie de ce dernier est créée pour
+          chaque face qui l'utilise. Dans l’exemple du cube, le sommet unique
+          (soudé) du coin est remplacé par trois sommets (dessoudés), un pour
+          chaque face. Un dernier effort d'imagination est nécessaire pour
+          éclaircir le concept de normale de sommet. Si le sommet est soudé,
+          sa normale pointe du centre du cube vers l'extérieur et le moteur 3D
+          de RCT3 affiche ce coin comme s'il était arrondi. Si le sommet est
+          dessoudé, chacun des trois sommets possède sa propre normale. Etant
+          donné que chaque sommet n'appartient qu'à une seule face, leurs
+          normales (de sommets) sont identiques aux normales (de faces) de
+          chacune des faces correpondantes. Des schémas sont disponibles dans
+          la section weld/unweld sur la <ulink
+          url="http://belgabor.vodhin.net/facts">page Facts &amp; figures de
+          Belgabor</ulink>. Retenez simplement qu'il faut dessouder les
+          sommets qui sont saillants/pointus et qu'il faut les garder soudés
+          si l'on veut un aspect arrondi.</para>
+
+          <para>Il n'est généralement pas possible de dessouder partiellement
+          les sommets sur certaines arêtes et pas d'autres; l'opération est
+          exhaustive. Toutefois, pour conserver certains sommets de l'objet
+          soudés, il est nécessaire de dessouder l’objet entièrement dans un
+          premier temps, puis de souder les sommets pour lesquels on souhaite
+          obtenir un aspect arrondi. Remarque: une fois de plus, la méthode
+          pour souder dépend du logiciel de modélisation et il n'est pas
+          toujours facile de la trouver (par exemple, dans Blender, il s’agit
+          de <guilabel>Remove Doubles</guilabel>).</para>
+        </listitem>
+
+        <listitem>
+          <para>Il est inutile d'utiliser les matériaux du logiciel de
+          modélisation pour votre objet. RCT3, et par conséquent le logiciel
+          d'importation, gèrent uniquement les textures à mappage UV, alors
+          que la plupart des logiciels de modélisation ont recours à des
+          textures procédurales (générées mathématiquement). Il existe des
+          méthodes qui permettent de transformer une texture procédurale en
+          texture bitmap (sous les noms <guilabel>Texture-baking</guilabel> ou
+          <guilabel>UV-baking</guilabel>) mais le résultat s'avère le plus
+          souvent médiocre.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section id="sect13">
+      <title>Acquisition d'une texture bitmap pour le modèle</title>
+
+      <para>Comme indiqué précédemment, il faut utiliser des textures bitmap
+      pour les objets 3D personnalisés. Autre condition préalable avant
+      l'utilisation de la texture dans le logiciel d'importation: la texture
+      doit former un carré et la longueur de chaque côté doit être une
+      puissance de deux (par exemple, 64x64, 128x128 ou 256x256). La taille de
+      la texture a un impact direct sur le temps de téléchargement de l'objet
+      et la quantité de mémoire nécessaire dans le jeu, ce qui peut entraîner
+      un ralentissement du système. Il est donc préférable d'utiliser des
+      textures de petite taille aussi souvent que possible. A mon avis,
+      256x256 est une taille idéale. Pour des textures riches en détails,
+      512x512 peut s'avérer plus adéquat. Au contraire, si l'objet n'a qu'une
+      couleur unie, une taille de 4x4 suffit (il se peut que 1x1 fonctionne,
+      mais je ne l'ai pas encore testée).</para>
+
+      <para>La première option pour obtenir une texture (certainement la plus
+      difficile) est de la dessiner soi-même dans un éditeur bitmap comme
+      <application>Adobe Photoshop</application> ou <application>The
+      Gimp</application>. Même si vous n'avez pas l'intention de dessiner
+      votre propre texture, il vaut mieux avoir un éditeur bitmap sous la main
+      pour la redimensionner ou la manipuler.</para>
+
+      <para>La deuxième option est de trouver une texture sur internet. Il
+      existe de nombreux sites qui proposent des textures gratuites, et plus
+      encore qui en proposent contre de l'argent. Attention cependant de ne
+      pas violer les lois relatives au copyright. <emphasis>La protection par
+      le copyright est systématique, il n'est donc pas certain qu'elle soit
+      explicitement indiquée.</emphasis> S'il n'est pas écrit noir sur blanc
+      que l'utilisation des images et des textures est gratuite et libre, vous
+      riquez de vous mettre dans l'illégalité. Il faut aussi garder à l'esprit
+      que les logos et les noms de marques peuvent être protégés par le
+      copyright ou les lois relatives aux marques déposées. Mieux vaut ne pas
+      les utiliser. Si toutes ces législations vous ennuient, souvenez-vous
+      que le copyright protège aussi votre travail et que tous les objets
+      personnalisés et les textures que vous créerez ne pourront être hébergés
+      ou modifiés sans votre permission=)</para>
+
+      <para>Troisième et dernière option: vous pouvez utiliser un logiciel de
+      création de textures. <application>Wood Workshop</application> de <ulink
+      url="http://www.spiralgraphics.biz/index.htm">Spiral Graphics</ulink> en
+      est un bon exemple; il s'agit de la version gratuite et compacte du
+      logiciel payant de création de textures
+      <application>Genetica</application>. Sont aussi offerts des packs de
+      textures gratuites que l'on peut visualiser avec le logiciel
+      <application>Genetica Viewer</application>, lui même gratuit. Il existe
+      bien évidemment d'autres logiciels que l’on peut trouver avec Google
+      (n'hésitez pas à me prévenir si vous mettez la main sur des logiciels
+      gratuits intéressants :-P).</para>
+
+      <para>Quelle que soit la méthode que vous utilisez pour obtenir vos
+      textures, il est toujours préférable de s'assurer qu'elles ne présentent
+      aucune couture. Une texture sans couture n'a pas de bord visible
+      lorsqu'elle est utilisée en damier, ce qui offre un double avantage:
+      vous pouvez vous autoriser une certaine marge d'erreur lors du mappage
+      UV et il est possible d'obtenir un modèle d'aspect détaillé avec une
+      texture de petite taille.</para>
+
+      <para>Il est aussi recommandé de créer la texture pour les icônes une
+      fois la texture du modèle terminée. La texture des icônes est une image
+      bitmap qui contiendra les icônes de menu pour votre thème. Les
+      restrictions qui pèsent sur la texture du modèle s'appliquent aussi sur
+      la texture des icônes. Cependant il est recommandé d'utiliser une image
+      au format <filename>PNG</filename> avec transparence de telle sorte que
+      le fond blanc/gris puisse apparaître. La taille standard est 512x512
+      avec des icônes dont la taille est fixée à 64x64. A ce stade du
+      tutoriel, il n'est pas nécessaire de créer les icônes telles qu'elles
+      apparaîtront au final, mais une texture d'icônes, même temporaire, est
+      indispensable. Les icônes seront ensuite indexées en partant du coin
+      supérieur gauche, puis en avançant vers la droite et en descendant d'un
+      rang à chaque fois qu’une ligne est épuisée (c.à.d. à la manière de
+      l'écriture occidentale).</para>
+    </section>
+
+    <section id="sect14">
+      <title>Mappage UV</title>
+
+      <para><indexterm zone="sect14">
+          <primary>Mappage UV</primary>
+        </indexterm>Le mappage UV est utilisé pour
+      <quote>assigner</quote>/appliquer/plaquer une texture (bitmap) sur un
+      modèle et s'effectue avec le logiciel de modélisation 3D. J’ai mis
+      <quote>assigner</quote> entre guillemets parce que le terme est
+      techniquement incorrect. En réalité, chaque sommet du modèle reçoit un
+      groupe de coordonnées supplémentaires (qui s'ajoutent aux coordonnées 3D
+      x/y/z) dans l'espace défini pour les textures. Ces coordonnées sont
+      <quote>u</quote> et <quote>v</quote> (d'où le nom <quote>mappage
+      UV</quote>) ou <quote>s</quote> et <quote>t</quote>. Il existe une
+      différence entre les deux terminologies mais elle ne concerne pas
+      directement la création d'objets personnalisés. Autre point important,
+      ces coordonnées sont relatives, ce qui signifie que 0 (zéro) représente
+      une extrémité de la texture et 1 l'autre extrémité. Ainsi, la taille de
+      la texture qui est utilisée pour le mappage UV peut être différente de
+      celle qui sera utilisée plus tard dans le logiciel d'importation. Seul
+      l'agencement de la texture doit être identique (par exemple, il ne faut
+      pas l'inverser).</para>
+
+      <para>Même si la démarche peut sembler compliquée ou étrange, le mappage
+      UV indique au moteur 3D quelle partie de la texture doit être plaquée
+      sur telle ou telle face de l'objet. Ce qu'il faut retenir des
+      explications ci-dessus peut se résumer ainsi:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Le mappage UV est une propriété du modèle qui est enregistrée
+          dans le fichier du modèle 3D.</para>
+        </listitem>
+
+        <listitem>
+          <para>Il n'est pas obligatoire d'assigner au modèle la même texture
+          dans le logiciel d'importation que celle utilisée pour le mappage
+          UV.</para>
+        </listitem>
+
+        <listitem>
+          <para>Il en va de même pour la taille.</para>
+        </listitem>
+
+        <listitem>
+          <para>(Remarque pour plus tard: il faut toujours appliquer une
+          texture dans le logiciel d'importation, même s'il s'agit de la même
+          qui a été utilisée pour le mappage UV. Le nom de cette dernière
+          <emphasis>n'est pas transmis</emphasis> au logiciel
+          d'importation).</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>Voici une liste de points à retenir pour le mappage UV:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>La méthode exacte dépend du logiciel de modélisation 3D. Il
+          existe généralement des tutoriels spécifiques sur le mappage
+          UV.</para>
+        </listitem>
+
+        <listitem>
+          <para>Selon la complexité du modèle et de la texture, le mappage UV
+          peut s'avérer très long et peut prendre autant de temps sinon plus
+          que la création du modèle.</para>
+        </listitem>
+
+        <listitem>
+          <para>Réalisez le mappage UV avec autant de précision que possible.
+          De petites erreurs peuvent être visibles et dégrader la qualité de
+          l'aspect de votre objet dans le jeu.</para>
+        </listitem>
+
+        <listitem>
+          <para>La texture est appliquée dans l'espace des textures. En
+          d'autres termes, si le mappage commence au-delà du bord de cet
+          espace, il se poursuit sur le côté opposé. Dans ce cas, une couture
+          apparaît si la texture en possède.</para>
+        </listitem>
+
+        <listitem>
+          <para>S’il est nécessaire d’employer plus d'une texture pour un
+          objet, vous pouvez disposer toutes les textures sur une seule
+          texture bitmap (à la manière d’un patchwork) et de faire le mappage
+          UV en conséquence avec cette texture unique. Cette pratique est la
+          plus courante.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section id="sect15">
+      <title>Système de coordonnées</title>
+
+      <para>Il est indispensable de savoir quelque <indexterm>
+          <primary>Système de coordinées</primary>
+        </indexterm>système de coordonnées votre logiciel de modélisation 3D
+      utilise. Pour cela, deux données sont nécessaires: l'axe qui pointe vers
+      le haut et l’orientation générale du système de coordonnées. La première
+      est simple à déterminer. Il suffit de voir quel axe, x, y ou z, pointe
+      vers le haut. La seconde est plus délicate à identifier. Un système de
+      coordonnées peut être orienté droit ou gauche. Voici une méthode simple
+      pour déterminer cette propriété:</para>
+
+      <note>
+        <para>Avec la main droite, tendre le pouce dans la direction de l'axe
+        x et l'index dans celle de l'axe y (dans cette configuration, votre
+        main devient une sorte de <quote>pistolet</quote>). Si vous pouvez
+        tendre le majeur dans la direction de l'axe z sans le déboîter
+        (c’est-à-dire sans le retourner complètement), le système de votre
+        logiciel de modélisation 3D est orienté à droite.</para>
+      </note>
+
+      <para>La plupart des systèmes de coordonnées sont orientés à
+      droite.</para>
+    </section>
+
+    <section id="sect16">
+      <title>Conversion du modèle</title>
+
+      <para><indexterm>
+          <primary>Modèle</primary>
+
+          <secondary>Conversion du</secondary>
+        </indexterm>A l'heure actuelle, le logiciel d'importation prend
+      uniquement en charge les fichiers au format <filename>ASE</filename> ou
+      <filename>MS3D</filename>. Si vous pouvez directement enregistrer ou
+      exporter votre modèle dans un de ces deux formats, passez à la section
+      suivante. Dans le cas contraire, il faut convertir votre modèle en
+      <filename>ASE</filename>. Le logiciel de conversion gratuit par
+      excellence est <ulink
+      url="http://mirex.mypage.sk/index.php?selected=1"><application>Biturn</application></ulink>.
+      Téléchargez-le et convertissez votre modèle au format
+      <filename>ASE</filename> (<application>3DSmax</application> ASCII). Il
+      est déconseillé de convertir au format <filename>MS3D</filename> avec
+      <application>Biturn</application>. Le logiciel est connu pour ses
+      conversions étranges et imprévisibles lorsqu'il s'agit de systèmes de
+      coordonnées au format <filename>MS3D</filename>.</para>
+    </section>
+
+    <section id="sect17">
+      <title>Téléchargement et installation du logiciel d'importation</title>
+
+      <para>Si ce n'est pas déjà fait, téléchargez le logiciel d'importation à
+      partir de la <ulink url="http://rct3.sourceforge.net">page d'accueil sur
+      Sourceforge</ulink>. Il est distribué au format
+      <filename>ZIP</filename>. Il suffit alors de l'extraire vers un dossier
+      de votre choix. Les mises à jours doivent être insérées dans le même
+      dossier car certains paramètres sont enregistrés dans un petit fichier
+      qui s’y trouve. Assurez-vous de toujours remplacer les anciens fichiers
+      par les nouveaux lors de la mise à jour.</para>
+    </section>
+
+    <section id="sect18">
+      <title>Quelques remarques sur les fichiers OVL</title>
+
+      <para>Le format de fichier <filename>OVL</filename> a été conçu par
+      Frontier pour RCT3. Il n'est pas nécessaire de connaître les moindres
+      détails de la structure interne de ces fichiers, mais retenez tout de
+      même les quelques points suivants:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Ne modifiez <emphasis>jamais</emphasis> le nom d'un fichier
+          OVL dans l'Explorateur Windows. Pour le changer, il faut créer le
+          fichier de nouveau (voir <xref linkend="sect224" />).</para>
+        </listitem>
+
+        <listitem>
+          <para>Ne changez <emphasis>jamais</emphasis> le nom du dossier dans
+          lequel vous avez installé le thème. Pour le changer, il est
+          nécessaire de modifier les paramètres correspondants dans le
+          logiciel d'importation et de réinstaller le thème.</para>
+        </listitem>
+
+        <listitem>
+          <para>Si vous changer le nom d'un fichier ou d'un dossier,
+          assurez-vous d'effacer toute version antérieure du thème dans le
+          dossier Style/Themed (voir <xref linkend="sect24" />).</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+  </section>
+
+  <section id="sect2">
+    <title>Importer un objet pour la première fois</title>
+
+    <para>A ce stade du tutoriel, vous devriez avoir installé le logiciel
+    d'importation et préparé tous les fichiers nécessaires (le modèle 3D, la
+    texture bitmap et la texture des icônes).</para>
+
+    <section id="sect21">
+      <title>Configuration initiale</title>
+
+      <para><indexterm>
+          <primary>Fenêtre principale</primary>
+        </indexterm>Après avoir lancé le logiciel d'importation, la fenêtre
+      principale apparaît:</para>
+
+      <figure>
+        <title>Logiciel d'importation d'objets personnalisés pour RCT3,
+        Fenêtre principale</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="main.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+
+      <para>Dans un premier temps, décidez du style (<guilabel>Theme
+      Type</guilabel>) que vous voulez donner à votre groupe (1). Ce choix
+      détermine l'emplacement dans lequel il apparaît quand un joueur filtre
+      les éléments de décor par thème (cf. les boutons dans la partie
+      supérieure des menus de décor). Les quatres derniers styles ne
+      fonctionnent que si le joueur a installé <application>Delires
+      Aquatiques!</application> et <application>Distractions
+      Sauvages!</application>.</para>
+
+      <para>Ensuite, il faut trouver un préfixe (2). Il sera affixé aux noms
+      des <filename>OVL</filename> de décor et au dossier du groupe. Il doit
+      permettre de vous identifier en tant que créateur. Choisissez par
+      conséquent un préfixe identique à votre nom d'utilisateur sur le forum
+      d'Atari, ou du moins une forme abrégée. Il est recommandé d'ajouter à la
+      fin du préfixe une marque de séparation quelconque, comme par exemple un
+      tiret. Il est alors possible d'enregistrer ce préfixe en cliquant sur
+      <menuchoice>
+          <guimenu>File</guimenu>
+
+          <guisubmenu>Save Default Prefix</guisubmenu>
+        </menuchoice> dans la barre de menu. Ainsi, vous n'aurez pas à répéter
+      cette opération pour vos prochains thèmes.</para>
+
+      <important>
+        <para>Vous pouvez choisir de ne pas utiliser de préfixe mais ceci est
+        déconseillé. Les noms des <filename>OVL</filename> de décor doivent
+        être uniques, or si vous n'utilisez pas de préfixe et qu'un autre
+        créateur publie un groupe qui contient un objet qui porte le même nom
+        qu'un des vôtres, un conflit va survenir. L'utilisation d'un préfixe
+        unique permet d'éviter une telle situation (ou du moins la rend très
+        peu probable).</para>
+      </important>
+
+      <para>Entrez maintenant le nom de votre thème (3). Ce nom et le préfixe
+      forment ensemble le nom du dossier qui sera créé dans Style\Themed et
+      dans lequel votre groupe d'objets sera installé. Il n'apparaîtra
+      <emphasis>pas</emphasis> dans le jeu.</para>
+
+      <note>
+        <para>Seuls les caractères ASCII peuvent être utilisés pour le préfixe
+        et le nom du thème. Cette contrainte permet d'éviter les problèmes
+        relatifs aux différentes versions internationales de
+        <application>Windows</application> qui utilisent des tables de
+        caractères spécifiques.</para>
+      </note>
+    </section>
+
+    <section id="sect22">
+      <title>Création d'un <filename>OVL</filename> de décor</title>
+
+      <para><indexterm>
+          <primary>OVL de décor</primary>
+
+          <secondary>Création d'un</secondary>
+        </indexterm>Nous pouvons maintenant commencer la création de notre
+      premier <filename>OVL</filename> de décor. Cliquez sur le bouton
+      <guibutton>Create OVL</guibutton> (7) dans la fenêtre principale pour
+      ouvrir la fenêtre <guilabel>Create OVL</guilabel>:</para>
+
+      <figure>
+        <title>Logiciel d'importation d'objets personnalisés pour RCT3.
+        Fenêtre de création d'OVL</title>
+
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="createscenery.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+
+      <para>Arrêtons-nous quelques instants sur le fonctionnement des listes
+      dans cette fenêtre (et toutes les autres fenêtres qui sont ouvertes à
+      partir de celle-ci). Toutes les listes ont une interface commune. Il
+      existe toutefois quelques listes qui ne possèdent pas certains éléments
+      ou en ont plus, mais dans l'ensemble, elles fonctionnent de manière
+      identique. Par exemple, regardons la liste des Textures (4). Dans sa
+      partie supérieure, on trouve les boutons haut/bas qui permettent de
+      modifier l'ordre des éléments. En-dessous se trouve un ensemble de
+      boutons pour ajouter un nouvel élément (<guibutton>+</guibutton>),
+      éditer un élément (<guibutton>E</guibutton>), le copier
+      (<guibutton>C</guibutton>) ou le supprimer (<guibutton>-</guibutton>).
+      Le bouton aplati <guibutton>C</guibutton> efface toute la liste. Un
+      <mousebutton>double-clique</mousebutton> sur une entrée dans la liste
+      équivaut généralement à un clic sur le bouton d'édition
+      <guibutton>E</guibutton>. De plus, tous les boutons possèdent une petite
+      notice explicative qui apparaît lorsque l'on place la souris au-dessus
+      d'eux pendant quelques instants :-) Au travail!</para>
+
+      <section id="sect221">
+        <title>Ajout de la texture</title>
+
+        <para><indexterm>
+            <primary>Texture du modèle</primary>
+
+            <secondary>Ajout de la</secondary>
+          </indexterm>Il faut d'abord ajouter la texture du modèle. Cliquez
+        sur <guibutton>+</guibutton> dans la liste des
+        <guilabel>Textures</guilabel> (4) pour ouvrir une fenêtre de sélection
+        de fichiers. Sélectionnez le fichier correspondant à votre texture
+        bitmap et cliquez sur <guibutton>Ok</guibutton>. La fenêtre
+        <guilabel>Add Texture</guilabel> apparaît:</para>
+
+        <figure>
+          <title>Logiciel d'importation d'objets personnalisés pour RCT3.
+          Fenêtre Ajout de textures</title>
+
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="texture.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+
+        <para>Les champs <guilabel>Texture Name</guilabel> (a) et
+        <guilabel>Texture Filename</guilabel> (b) devraient alors être remplis
+        avec le nom et le chemin d’accès du fichier que vous venez de
+        sélectionner. Par conséquent, aucune modification n’est nécessaire. Il
+        est toutefois possible de changer le nom de la texture (a). Cliquez
+        sur <guibutton>Ok</guibutton> (c) pour terminer. Si vous obtenez un
+        message d'erreur, il est fort probable que la texture bitmap en soit
+        la cause (consultez <xref linkend="sect13" />). Remédiez au problème
+        et cliquez de nouveau sur <guibutton>Ok</guibutton> (c). Pour modifier
+        le fichier, cliquez sur <guibutton>Open</guibutton> (b) et
+        sélectionnez le fichier adéquat.</para>
+
+        <note>
+          <para>Si vous cliquez sur <guibutton>Cancel</guibutton> dans la
+          fenêtre de sélection des fichiers, la fenêtre <guilabel>Advanced
+          Texture Settings</guilabel> (paramètres avancés) s'ouvre. Ce
+          tutoriel ne couvre pas cette fonctionnalité.</para>
+        </note>
+
+        <para>Après avoir ajouté la texture, cette dernière apparaît dans la
+        liste (4).</para>
+      </section>
+
+      <section id="sect222">
+        <title>Ajout du modèle</title>
+
+        <para><indexterm>
+            <primary>Modèle</primary>
+
+            <secondary>Ajout du</secondary>
+          </indexterm>Retournez dans la fenêtre <guilabel>Create
+        OVL</guilabel> et cliquez sur <guibutton>+</guibutton> à droite de la
+        liste des Modèles (<guilabel>Models</guilabel>) (5). La fenêtre
+        <guilabel>Model Settings</guilabel> (paramètres des modèles)
+        s'ouvre:</para>
+
+        <figure>
+          <title>Logiciel d'importation d'objets personnalisés pour RCT3,
+          Fenêtre de réglage du modèle</title>
+
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="model.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+
+        <para>Cliquez tout d'abord sur <guibutton>...</guibutton> (b) et
+        sélectionnez le fichier de votre modèle. Si vous obtenez une erreur,
+        consultez <xref linkend="sect12" /> et/ou <xref linkend="sect14" />.
+        Avant de poursuivre, jetez un coup d'oeil à la liste des Groupes sur
+        la droite. Si toutes les icônes des entrées apparaissent en rouge
+        foncé (comme celle de la racine (<guilabel>root</guilabel>) (e)), il
+        est probable que vous ayez oublié le mappage UV sur votre modèle
+        (consultez <xref linkend="sect14" />). Le Nom (a) est rempli
+        automatiquement en fonction du nom du fichier contenant le modèle.
+        Vous pouvez le modifier si vous le souhaitez.</para>
+
+        <para>Passons à la configuration de la matrice de transformation du
+        modèle. Cette dernière convertit le système de coordonnées du modèle
+        tel qu'il a été défini par le logiciel de modélisation pour l'adapter
+        au système de coordonnées de RCT3. Utilisez le tableau ci-dessous pour
+        déterminer la matrice dont vous avez besoin:</para>
+
+        <informaltable>
+          <tgroup cols="3">
+            <tbody>
+              <row>
+                <entry>Système de coordonnées</entry>
+
+                <entry>Logiciel de modélisation 3D</entry>
+
+                <entry>Matrice</entry>
+              </row>
+
+              <row>
+                <entry>Orientation gauche, Y pointe vers le haut</entry>
+
+                <entry>Certaines versions de
+                <application>3DStudio</application>/<application>3DSMax</application>
+                </entry>
+
+                <entry>(aucune)</entry>
+              </row>
+
+              <row>
+                <entry>Orientation droite, Z pointe vers le haut</entry>
+
+                <entry>La plupart des logiciels (par exemple,
+                <application>Blender</application>)</entry>
+
+                <entry>Fix Orientation</entry>
+              </row>
+
+              <row>
+                <entry>Orientation droite, Y pointe vers le haut</entry>
+
+                <entry><application>MilkShape</application></entry>
+
+                <entry>MirrorZ <emphasis role="bold">(détection automatique
+                depuis v16fix5)</emphasis></entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+
+        <para>Pour éditer une matrice de transformation et ouvrir l’éditeur de
+        matrices (<guilabel>Matrix Editor</guilabel>), cliquez sur
+        <guibutton>Edit</guibutton> (c). Selon le cas dans lequel vous vous
+        trouvez (cf. tableau ci-dessus), cliquez sur le(s) bouton(s) adéquats.
+        Fermez l'éditeur en cliquant sur <guibutton>Ok</guibutton>. Dans la
+        fenêtre de réglage du modèle (<guilabel>Model Settings</guilabel>),
+        cliquez sur <guibutton>Save Default</guibutton> (d) pour enregistrer
+        vos choix en tant que matrice par défaut. Elle sera automatiquement
+        appliquée à chaque nouveau modèle ajouté, sans qu'il soit de l'éditer
+        de nouveau.</para>
+
+        <para>L'étape suivante consiste à assigner la texture du modèle à
+        votre groupe. Pour votre premier objet, il est conseillé de se limiter
+        à une seule texture. Si vous utilisez
+        <application>Biturn</application> pour convertir votre modèle, un
+        groupe supplémentaire appelé <quote>root</quote> (racine) apparaîtra
+        dans la liste. Ignorez-le.</para>
+
+        <para>Dans la colonne <guilabel>Texture</guilabel>, sélectionnez le
+        groupe (f) auquel vous voulez assigner une texture (son nom devrait
+        être en rouge clair).</para>
+
+        <para>Sélectionnez la texture à partir de la liste déroulante. Si vous
+        souhaitez assigner la même texture à plusieurs groupes,
+        <mousebutton>cliquez</mousebutton> en maintenant la touche <keycap
+        function="control">Ctrl</keycap> enfoncée sur le nom des groupes
+        auxquels vous désirez attribuer les mêmes paramètres, et confirmez à
+        chaque demande.</para>
+
+        <para>Le modèle est maintenant prêt. Fermez la fenêtre des réglages du
+        modèle (<guilabel>Model Settings</guilabel>) en cliquant sur
+        <guibutton>Ok</guibutton> (g).</para>
+      </section>
+
+      <section id="sect223">
+        <title>Réglage des niveaux de détails (LOD)</title>
+
+        <para>Cette étape ne présente aucune difficulté pour votre premier
+        objet. Cliquez simplement sur le bouton <guibutton>A</guibutton> dans
+        la liste des <guilabel>LOD</guilabel> (6) pour ajouter trois niveaux
+        de détails par défaut à votre modèle.</para>
+      </section>
+
+      <section id="sect224">
+        <title>Enregistrement et création</title>
+
+        <para>Tous les réglages sont désormais prêts. Cliquez sur
+        <guiicon>Save As</guiicon> (2) pour enregistrer les réglages de votre
+        objet dans un fichier <filename>SCN</filename>. Cliquez ensuite sur le
+        bouton <guibutton>Create</guibutton> (Créer) (7) qui est désormais
+        activé et sur lequel vous devriez lire <guibutton>Create Scenery
+        OVL</guibutton> si toutes les étapes ont été correctement
+        observées.</para>
+
+        <para>Choisissez un nom de fichier pour enregistrer
+        l'<filename>OVL</filename> en omettant toute extension et en
+        conservant le préfixe. Utilisez uniquement des caractères ASCII. Comme
+        précisé plus haut, si vous décidez de renommer le fichier
+        <filename>OVL</filename>, il faudra répéter cette étape. Attention:
+        l'Explorateur Windows <emphasis>ne permet pas</emphasis> de renommer
+        les fichiers <filename>OVL</filename> correctement. Après quelques
+        secondes, un message de confirmation devrait apparaître (<quote>The
+        OVL was created successfully</quote>). Dans le cas contraire, cela
+        signifie que vous avez oublié une des étapes ci-dessus (ou qu'une de
+        vos manipulations a produit un résultat inattendu).</para>
+
+        <para>Une fois l'<filename>OVL</filename> créé avec succès, cliquez
+        sur <guiicon>Save</guiicon> (1) pour ré-enregistrer votre fichier
+        <filename>SCN</filename> (ce deuxième enregistrement permet de sauver
+        en mémoire le chemin d'accès du fichier <filename>OVL</filename> que
+        vous avez créé, de telle sorte que vous n'aurez plus à l’indiquer par
+        la suite).</para>
+
+        <para>Vous venez de créer votre premier <filename>OVL</filename> de
+        décor. Cliquez sur <guiicon>Exit</guiicon> (3) pour retourner à la
+        fenêtre principale.</para>
+      </section>
+    </section>
+
+    <section id="sect23">
+      <title>Création du thème</title>
+
+      <para>Nous allons maintenant ajouter la texture des icônes, les
+      références des icônes, les chaînes de texte et l'objet de décor.</para>
+
+      <section id="sect231">
+        <title>Ajout de la texture des icônes</title>
+
+        <para>Cliquez sur <guibutton>Icon Textures</guibutton> (6) pour ouvrir
+        la fenêtre <guilabel>Icon Texture Management</guilabel>:</para>
+
+        <figure id="figManager">
+          <title>Logiciel d'importation d'objets personnalisés pour RCT3.
+          Fenêtre du Gestionnaire de textures des icônes</title>
+
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="manager.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+
+        <note>
+          <para>Etant donné que presque toutes les fenêtres de gestion se
+          ressemblent, référez-vous à <xref linkend="figManager" /> pour les
+          autres fenêtres du même type qui seront mentionnées par la
+          suite.</para>
+        </note>
+
+        <para>Cliquez sur le bouton <guibutton>Add</guibutton> (ajouter) pour
+        faire apparaître la fenêtre <guilabel>Icon Texture</guilabel>:</para>
+
+        <figure>
+          <title>Logiciel d'importation d'objets personnalisés pour RCT3.
+          Fenêtre de l'Editeur de textures des icônes</title>
+
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="icontexture.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+
+        <para>Cliquez sur <guibutton>Load Texture</guibutton> (charger une
+        texture) (b) et sélectionnez la texture de vos icônes. De même que
+        pour la texture du modèle, le nom (a) est inséré automatiquement, mais
+        vous êtes libres de le modifier. Cliquez sur <guibutton>Ok</guibutton>
+        (c) et fermez la fenêtre du gestionnaire.</para>
+
+        <note>
+          <para>Il n'y a pas de restriction sur le nombre de textures d'icônes
+          que vous pouvez utiliser. Il est donc possible d'en ajouter par la
+          suite.</para>
+        </note>
+      </section>
+
+      <section id="sect232">
+        <title>Ajout des références des icônes</title>
+
+        <para>Dans la fenêtre principale, cliquez sur le bouton
+        <guibutton>Icon References</guibutton> (9) pour ouvrir le gestionnaire
+        des références d'icônes (<guilabel>Icon Reference Manager</guilabel>).
+        Les références des icônes sont nécessaires pour indiquer à RCT3 la
+        position de chaque icône sur la texture d'icônes. Cliquez simplement
+        sur le bouton <guibutton>Auto</guibutton>. Assurez-vous que votre
+        texture est sélecionnée dans la fenêtre qui apparaît et cliquez sur
+        <guibutton>Ok</guibutton>. Cette opération assigne une référence à
+        chaque icône selon la méthode décrite plus haut (voir <xref
+        linkend="sect13" />). Fermez ensuite la fenêtre du
+        gestionnaire.</para>
+      </section>
+
+      <section id="sect233">
+        <title>Ajout des chaînes de texte</title>
+
+        <para>Les chaînes de texte correspondent au texte des entrées dans les
+        menus du jeu. Ouvrez la fenêtre <guilabel>Text String
+        Manager</guilabel> (8) et cliquez sur
+        <guibutton>Add</guibutton>:</para>
+
+        <figure>
+          <title>Logiciel d'importation d'objets personnalisés. Fenêtre du
+          Gestionnaire des chaînes de texte</title>
+
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="text.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+
+        <para>Tapez le texte que vous souhaitez présenter aux joueurs (b). Il
+        est aussi possible d’entrer un Nom (a), mais si vous laissez ce champ
+        vide, le texte en (b) sera automatiquement copié en (a) à la fermeture
+        de la fenêtre. Tapez ensuite un nom de groupe pour votre thème
+        (sous-menu). Il devrait s'agir d'une combinaison de votre nom de thème
+        et de votre nom d'utilisateur sur les forums d'Atari. Une bonne idée
+        consiste à placer votre nom au début ou à la fin. Personnellement, je
+        préfère la seconde solution (<quote>nom du groupe (votre nom)</quote>)
+        parce que j'ai tendance à retenir le nom du groupe plutôt que le nom
+        de son créateur.</para>
+
+        <note>
+          <para>Il est possible de créer des objets sans les rattacher à un
+          groupe, mais ce n'est pas recommandé. La liste des objets fournis
+          avec les deux extensions est déjà très longue et un nouvel objet
+          isolé risque de passer totalement inaperçu.</para>
+        </note>
+
+        <para>Après avoir tapé le texte de menu pour le groupe, fermez la
+        fenêtre en cliquant sur <guibutton>Ok</guibutton> (c).</para>
+
+        <para>Dans le gestionnaire, ajoutez une autre chaîne de texte pour
+        votre objet. L'opération est identique. Une fois terminée, fermez la
+        fenêtre <guilabel>Text String Manager</guilabel>.</para>
+      </section>
+
+      <section id="sect234">
+        <title>Ajout de l'objet de décor</title>
+
+        <para>Ouvrez la fenêtre <guilabel>Scenery Item Manager</guilabel> en
+        cliquant sur le bouton (5). Cliquez sur <guibutton>Add</guibutton>
+        pour faire apparaître la fenêtre <guilabel>Scenery Item
+        Settings</guilabel>:</para>
+
+        <figure>
+          <title>Logiciel d'importation d'objets personnalisés pour RCT3.
+          Fenêtre de réglage des objets de décor</title>
+
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="scenery.png" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+
+        <para>Cliquez sur <guibutton>Select OVL</guibutton> (a) et
+        sélectionnez le fichier <filename>OVL</filename> que vous avez créé
+        (dans <xref linkend="sect22" />). Puis tapez un emplacement (location)
+        (b) qui correspond au sous-dossier de votre thème dans lequel
+        l'<filename>OVL</filename> sera enregistré lors de l'installation.
+        Tapez <userinput>divers</userinput> si vous ne souhaitez pas lui
+        donner un nom particulier. Lors des prochains ajouts d'objets au
+        groupe, le nom de l'emplacement que vous venez d'entrer apparaîtra
+        dans la liste déroulante. Ce nom étant attribué à un dossier, seuls
+        les caractères ASCII sont autorisés.</para>
+
+        <para>Si vous ne voulez pas utiliser un groupe, il faut le désactiver
+        (Disable) en cochant la case (c). Cette opération n'est toutefois pas
+        recommandée pour les raisons indiquées plus haut. Sinon sélectionnez
+        la référence d'une icône (<guilabel>Icon</guilabel>) (d) et un nom
+        (<guilabel>Name String</guilabel>) (e) pour le Groupe.</para>
+
+        <para>Répétez l'opération pour l'objet de décor
+        (<guilabel>Scenery</guilabel>) en (f) et (g). A la différence des
+        groupes que l'on peut désactiver, les objets de décor doivent
+        obligatoirement posséder une référence d'icône et un nom.</para>
+
+        <para>Indiquez ensuite un prix d'achat (<guilabel>Cost</guilabel>) et
+        un prix de revente (<guilabel>Refund</guilabel>) pour votre objet (j).
+        Paradoxalement, le prix de revente correspond à la somme que vous
+        devrez payer si vous supprimez l'objet. Pour un véritable
+        remboursement (cf. pour percevoir une somme), indiquez une valeur
+        négative. Ces valeurs sont exprimées dans la plus petite unité du
+        système monétaire sélectionné dans l'outil configuration (par exemple,
+        les cent(ime)s pour les dollars et les euros).</para>
+
+        <para>Le type de décor (<guilabel>Scenery Type</guilabel>) (k)
+        détermine le menu et la catégorie dans lesquels l'objet apparaîtra.
+        Pour votre premier objet, sélectionnez <guilabel>Small
+        Scenery</guilabel> (petit élément de décor). Laissez la valeur
+        <guilabel>None</guilabel> (aucun) pour le type de support
+        (<guilabel>Support Type</guilabel>) (l) ainsi que pour les paramètres
+        additionnels (<guilabel>Extra Parameters</guilabel>) (m).</para>
+
+        <para>Tous les paramètres de <guilabel>Position</guilabel> (n)
+        devraient être réglés à <userinput>0</userinput> (zéro) et les deux
+        champs correspondant à la taille en carré (<guilabel>Size in
+        squares</guilabel>) (p) à <userinput>1</userinput>. La taille
+        (<guilabel>Size</guilabel>) (o) correspond à la taille de votre modèle
+        dans votre logiciel de modélisation 3D. Elle est donc exprimée dans
+        les unités de ce dernier. Attention: les valeurs x/y/z sont aussi
+        celles du système de coordonnées du logiciel de modélisation. Ces
+        valeurs ne sont pas essentielles si vous n'avez eu recours à aucune
+        matrice de transformation ou si vous utilisez MilkShape. Par contre,
+        si vous avez sélectionné la matrice "Fix Orientation", il faut
+        intervertir les valeurs de telle sorte que la taille en x dans votre
+        logiciel de modélisation se retrouve dans le champ
+        <guilabel>Z</guilabel>, celle en y dans le champ
+        <guilabel>X</guilabel> et celle en z dans le champ
+        <guilabel>Y</guilabel>.</para>
+
+        <para>Le drapeau de positionnement (<guilabel>Placement
+        Flag</guilabel>) (q) détermine la manière dont le jeu va positionner
+        l'objet en fonction de la position du curseur lors du placement. Pour
+        votre premier objet, sélectionnez <guilabel>Full Tile</guilabel>
+        (unité de grille entière). Pour obtenir plus d'informations sur ce
+        paramètre et la manière dont positionner votre modèle, consultez la
+        <ulink url="http://belgabor.vodhin.net/facts">page Facts &amp; figures
+        de Belgabor</ulink>.</para>
+
+        <para>Nous laissons de côté les <guilabel>Unknowns</guilabel>
+        (paramètres inconnus) (r). Leurs effets sont encore assez mal connus.
+        Choisissez <guilabel>0</guilabel> pour <guilabel>Unknown1</guilabel>
+        et <guilabel>Unknown2</guilabel> et tapez <userinput>0</userinput>
+        (zéro) pour tous les autres <guilabel>Unknown(3-9)</guilabel>. Ignorez
+        les drapeaux (<guilabel>Flags</guilabel>).</para>
+
+        <note>
+          <para>Vous pouvez utiliser le bouton <guibutton>Save SID
+          as</guibutton> (i) pour enregistrer les options de décor
+          (<guilabel>Scenery Options</guilabel>) (à l'exception du prix
+          d'achat (Cost), du prix de revente (Refund) et des types de support
+          (Support Type)), les <guilabel>Unknowns</guilabel> et les
+          <guilabel>Flags</guilabel> dans un fichier et les réutiliser par la
+          suite pour créer plusieurs objets avec les mêmes réglagles. Pour
+          ouvrir ces fichiers, cliquez sur le bouton <guibutton>Open
+          SID</guibutton> (h). Une collection de fichiers SID extraits
+          d'objets inlcus dans le jeu est disponible sur la <ulink
+          url="http://www.sebar.com/jonwil">page de Jonwil</ulink>.</para>
+        </note>
+
+        <para>Cliquez sur <guibutton>Ok</guibutton> (s) pour terminer et
+        fermer la fenêtre. Fermez aussi la fenêtre <guilabel>Scenery Item
+        Management</guilabel>.</para>
+      </section>
+    </section>
+
+    <section id="sect24">
+      <title>Enregistrement et installation du thème</title>
+
+      <para>Dans la fenêtre principale, cliquez sur <menuchoice>
+          <guimenu>File</guimenu>
+
+          <guimenuitem>Save Theme File</guimenuitem>
+        </menuchoice> dans la barre de menu pour enregistrer le fichier de
+      votre thème. Cliquez ensuite sur le bouton
+      <guibutton>Install</guibutton> (4) pour installer le thème. Il est
+      enregistré dans le sous-dossier <filename>PréfixeNomDuThème</filename>
+      qui se trouve lui-même dans le dossier <filename>&lt;RCT3 Installation
+      Directory&gt;\Style\Themed</filename>. Si RCT3 n'est pas installé sur
+      votre disque, il vous sera possible de sélectionner un dossier différent
+      pour l'installation.</para>
+
+      <para>Lancez RCT3 et vérifiez que tout fonctionne correctement.</para>
+
+      <para><emphasis role="bold">Félicitations! Vous venez d'importer votre
+      premier objet personnalisé dans RCT3!</emphasis></para>
+    </section>
+  </section>
+
+  <section>
+    <title>Crédits</title>
+
+    <itemizedlist>
+      <listitem>
+        <para>Atari® and Roller Coaster Tycoon 3® are trademarks of Atari Inc.
+        All Rights Reserved.</para>
+      </listitem>
+
+      <listitem>
+        <para>Le docbook css utilisé pour la version html de ce document est
+        basé sur celui de <ulink url="http://www.karakas-online.de">Chris
+        Karakas</ulink>.</para>
+      </listitem>
+
+      <listitem>
+        <para>Cette feuille de style CSS utilise des <ulink
+        url="http://www.matterform.com/qbullets/index.php">QBullets</ulink>
+        pour les liens. Merci à Matterform Media de fournir les QBullets
+        gratuitement. Si vous avez l'intention d'en utiliser sur votre site
+        web, veuillez respecter les <ulink
+        url="http://www.matterform.com/qbullets/usage.html">termes et
+        conditions qui régissent leur utilisation</ulink>.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para role="matterform"><ulink
+    url="http://www.matterform.com/"><inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="/images/qb_credit.gif" scale="100" scalefit="0" />
+        </imageobject>
+      </inlinemediaobject></ulink></para>
+
+    <para><ulink url="http://sourceforge.net/"><inlinemediaobject>
+        <imageobject role="html">
+          <imagedata fileref="http://sourceforge.net/sflogo.php?group_id=181524&amp;type=4" />
+        </imageobject>
+
+        <imageobject role="pdf">
+          <imagedata fileref="/images/sflogo.png" />
+        </imageobject>
+
+        <imageobject role="chm">
+          <imagedata fileref="/images/sflogo.png" />
+        </imageobject>
+      </inlinemediaobject></ulink></para>
+  </section>
+</article>

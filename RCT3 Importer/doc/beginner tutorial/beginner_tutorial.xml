@@ -49,6 +49,20 @@
           <para>Update for v17</para>
         </revdescription>
       </revision>
+
+      <revision>
+        <revnumber>4</revnumber>
+
+        <date>7.1.2007</date>
+
+        <author>
+          <surname>Belgabor</surname>
+        </author>
+
+        <revdescription>
+          <para>Update for v17fix1</para>
+        </revdescription>
+      </revision>
     </revhistory>
 
     <author>
@@ -61,15 +75,15 @@
   </tocchap>
 
   <para>This tutorial will lead you through the steps required to import your
-  first object into RCT3. Only the options and steps required for a basic
-  import will be explained, do not expect to hear about everything you can do
-  with it.</para>
+  first object into <application>Roller Coaster Tycoon 3</application>®. Only
+  the options and steps required for a basic import will be explained, do not
+  expect to hear about everything you can do with it.</para>
 
   <para>This also means that <emphasis>all of these steps</emphasis> are
   required!</para>
 
   <para>This document applies to the <application>RCT3 Importer</application>
-  Version 17.</para>
+  Version 17fix1.</para>
 
   <section id="sect1">
     <title>Preparing for the import</title>
@@ -83,8 +97,9 @@
       <para>While it may sound trivial, it's an important step to keep things
       organized: Create a directory on your hard disk that will hold your
       custom scenery sets. You should also create a subdirectory within for
-      each set. Within each of those it is recommended to put each CS object
-      along with all belonging files into it's own subdirectory.</para>
+      each set. Within each of those it is recommended to put each Custom
+      Scenery (<acronym>CS</acronym>) object along with all belonging files
+      into it's own subdirectory.</para>
     </section>
 
     <section id="sect12">
@@ -139,7 +154,7 @@
       url="http://belgabor.vodhin.net/software">Belgabor's software
       page</ulink>.</para>
 
-      <para>For creating your models you should keep the following guidelines
+      <para>For creating your models, you should keep the following guidelines
       in mind:</para>
 
       <itemizedlist>
@@ -351,13 +366,13 @@
           <secondary>Creating</secondary>
         </indexterm> at this point. This is a bitmap that will hold menu icons
       for your theme. It has the same restrictions as a model texture, the
-      only thing that is different is that you can (and should) use a png with
-      transparency here, otherwise the alternating white/gray background will
-      not show through. The standard size is 512x512 and usually 64x64 icons
-      are set up. You don't need to create the final icons at this point, but
-      at least a temporary icon texture is needed. Icons are later numbered
-      starting at the top left, going right first and then down (like western
-      writing).</para>
+      only thing that is different is that you can (and should) use a
+      <filename>PNG</filename> with transparency here, otherwise the
+      alternating white/gray background will not show through. The standard
+      size is 512x512 and usually 64x64 icons are set up. You don't need to
+      create the final icons at this point, but at least a temporary icon
+      texture is needed. Icons are later numbered starting at the top left,
+      going right first and then down (like western writing).</para>
     </section>
 
     <section id="sect14">
@@ -481,11 +496,13 @@
       so and skip this section. If not, you need to convert your model to
       <filename>ASE</filename>. The free converter of choice is <ulink
       url="http://mirex.mypage.sk/index.php?selected=1"><application>Biturn</application></ulink>.
-      Get it and convert you model to <filename>ASE</filename> (3ds max ASCII)
-      format. It's not recommended to convert to <filename>MS3D</filename>
-      format as biturn is known to do strange coordinate system conversions
-      when converting from <filename>MS3D</filename>, no one knows what it
-      will do if you convert to <filename>MS3D</filename>.</para>
+      Get it and convert you model to <filename>ASE</filename>
+      (<application>3ds max</application> ASCII) format. It's not recommended
+      to convert to <filename>MS3D</filename> format as
+      <application>Biturn</application> is known to do strange coordinate
+      system conversions when converting from <filename>MS3D</filename>, no
+      one knows what it will do if you convert to
+      <filename>MS3D</filename>.</para>
     </section>
 
     <section id="sect17">
@@ -493,11 +510,11 @@
 
       <para>Maybe you already did this, if not, get the importer form the
       <ulink url="http://rct3.sourceforge.net">home page on
-      sourceforge</ulink>. It is distributed as a zip file, put the contents
-      into a directory of your choice. Updates should go into the same
-      directory as some settings are stored inside a small file in this
-      directory. Always make sure you overwrite all files when you
-      update.</para>
+      sourceforge</ulink>. It is distributed as a <filename>ZIP</filename>
+      file, put the contents into a directory of your choice. Updates should
+      go into the same directory as some settings are stored inside a small
+      file in this directory. Always make sure you overwrite all files when
+      you update.</para>
     </section>
 
     <section id="sect18">
@@ -563,11 +580,11 @@
       installed.</para>
 
       <para>The next thing to decide is the prefix (2). This will be prepended
-      to scenery ovl names and the set directory. It should identify you as
-      the creator, so set it to your screen name or to an abbreviated form of
-      it. You should also end it with a separator of some kind, recommended is
-      a <userinput>-</userinput>. At this point you can also save this prefix,
-      choose <menuchoice>
+      to scenery <filename>OVL</filename> names and the set directory. It
+      should identify you as the creator, so set it to your screen name or to
+      an abbreviated form of it. You should also end it with a separator of
+      some kind, recommended is a <userinput>-</userinput>. At this point you
+      can also save this prefix, choose <menuchoice>
           <guimenu>File</guimenu>
 
           <guisubmenu>Save Default Prefix</guisubmenu>
@@ -576,10 +593,11 @@
 
       <important>
         <para>You can leave the prefix empty, but it is not recommended to do
-        so. Scenery OVL names have to be unique, so if you don't set it and
-        someone else publishes a custom scenery set that contains an object
-        with the same name these will conflict. Using a unique prefix prevents
-        that (or at least makes it rather unlikely).</para>
+        so. Scenery <filename>OVL</filename> names have to be unique, so if
+        you don't set it and someone else publishes a custom scenery set that
+        contains an object with the same name these will conflict. Using a
+        unique prefix prevents that (or at least makes it rather
+        unlikely).</para>
       </important>
 
       <para>Now enter the name for your theme (3). Together with the prefix
@@ -589,13 +607,14 @@
 
       <note>
         <para>You can only use ASCII characters for the prefix and theme name.
-        This is enforced as people with different international Windows
-        versions may have trouble using your theme otherwise.</para>
+        This is enforced as people with different international
+        <application>Windows</application> versions may have trouble using
+        your theme otherwise.</para>
       </note>
     </section>
 
     <section id="sect22">
-      <title>Create a scenery ovl</title>
+      <title>Create a scenery <filename>OVL</filename></title>
 
       <para><indexterm>
           <primary>Scenery OVL</primary>
@@ -669,9 +688,8 @@
 
         <note>
           <para>If you press <guibutton>Cancel</guibutton> in the first file
-          selection window or try to edit the texture later you get the
-          <guilabel>Advanced Texture Settings</guilabel> window. This is not
-          covered here.</para>
+          selection windo,w you get the <guilabel>Advanced Texture
+          Settings</guilabel> window. This is not covered here.</para>
         </note>
 
         <para>After adding the texture it appears in the list (4).</para>
@@ -702,7 +720,7 @@
           </mediaobject>
         </figure>
 
-        <para>First, press the <guibutton>Open</guibutton> button (b) and
+        <para>First, press the <guibutton>...</guibutton> button (b) and
         select your model file. If you get an error, review <xref
         linkend="sect12" /> and/or <xref linkend="sect14" />. Before
         continuing, have a look at the group list on the right. If there are
@@ -777,10 +795,10 @@
         <para><indexterm>
             <primary>Mesh Settings</primary>
           </indexterm><indexterm>
-            <primary>group settings</primary>
-          </indexterm><mousebutton>Click</mousebutton> in the Texture column
-        of the group (f) you want to assign a texture to (It's name currently
-        should be bright red). </para>
+            <primary>Group Settings</primary>
+          </indexterm><mousebutton>Click</mousebutton> in the
+        <guilabel>Texture</guilabel> column of the group (f) you want to
+        assign a texture to (It's name currently should be bright red).</para>
 
         <para>Select the model texture from the drop-down list. If your object
         has more than one group that should get the same settings, <keycombo>
@@ -799,33 +817,36 @@
         <title>Set up Levels of Detail (LODs)</title>
 
         <para>Fortunately for your first object this step is very easy, just
-        press the <guibutton>A</guibutton> button in the LOD list (6). This
-        will add three default levels of detail that use the model you just
-        added.</para>
+        press the <guibutton>A</guibutton> button in the
+        <guilabel>LOD</guilabel> list (6). This will add three default levels
+        of detail that use the model you just added.</para>
       </section>
 
       <section id="sect224">
         <title>Save and Create</title>
 
         <para>Now everything is set up. First, press the <guiicon>Save
-        As</guiicon> button (2) and save the settings for your object to a scn
-        file. Now press the <guibutton>Create</guibutton> button (7) which
-        should now be enabled and say <guibutton>Create Scenery
-        OVL</guibutton> if you did everything correctly.</para>
+        As</guiicon> button (2) and save the settings for your object to a
+        <filename>SCN</filename> file. Now press the
+        <guibutton>Create</guibutton> button (7) which should now be enabled
+        and say <guibutton>Create Scenery OVL</guibutton> if you did
+        everything correctly.</para>
 
-        <para>Select the filename you want to save the ovl to, do not enter
-        any file extension and keep the prefix in the name. You also may only
-        use ASCII characters for it. As already mentioned, if you later decide
-        that you want to rename the ovl file you need to repeat this step,
-        just renaming it in the Windows Explorer will <emphasis>not</emphasis>
-        work. After a short while you should get a message that the ovl was
-        created successfully. If not, you didn't follow the instructions above
-        (or did something unexpected).</para>
+        <para>Select the filename you want to save the
+        <filename>OVL</filename> to, do not enter any file extension and keep
+        the prefix in the name. You also may only use ASCII characters for it.
+        As already mentioned, if you later decide that you want to rename the
+        <filename>OVL</filename> file you need to repeat this step, just
+        renaming it in the Windows Explorer will <emphasis>not</emphasis>
+        work. After a short while you should get a message that the
+        <filename>OVL</filename> was created successfully. If not, you didn't
+        follow the instructions above (or did something unexpected).</para>
 
-        <para>After successfully creating the ovl, press the
-        <guiicon>Save</guiicon> button (1) to save your scn file again (this
-        will store the path of the ovl file you just created so you don't have
-        to enter it again when you need to recreate it).</para>
+        <para>After successfully creating the <filename>OVL</filename>, press
+        the <guiicon>Save</guiicon> button (1) to save your
+        <filename>SCN</filename> file again (this will store the path of the
+        <filename>OVL</filename> file you just created so you don't have to
+        enter it again when you need to recreate it).</para>
 
         <para>You're now finished creating your first scenery ovl. Press the
         <guiicon>Exit</guiicon> button (3) to go back to the main
@@ -962,8 +983,8 @@
             <secondary>Settings</secondary>
           </indexterm>Open the <guilabel>Scenery Item Manager</guilabel>
         window by pressing the respective button (5). After pressing
-        <guibutton>Add</guibutton> you get the Scenery Item Settings
-        window:</para>
+        <guibutton>Add</guibutton> you get the <guilabel>Scenery Item
+        Settings</guilabel> window:</para>
 
         <figure>
           <title>RCT3 Custom Scenery Importer, Scenery Item Settings
@@ -977,9 +998,10 @@
         </figure>
 
         <para>First, press the <guibutton>Select OVL</guibutton> button (a)
-        and select the ovl you created above (<xref linkend="sect22" />). Next
-        enter a location (b). This is the subdirectory of your installed theme
-        the ovl will be placed in. If you can't think of something better, use
+        and select the <filename>OVL</filename> you created above (<xref
+        linkend="sect22" />). Next enter a location (b). This is the
+        subdirectory of your installed theme the <filename>OVL</filename> will
+        be placed in. If you can't think of something better, use
         <userinput>misc</userinput>. When you add more items to your set
         later, you can use the drop-down list to select locations you used
         before. As this translates directly into a directory, only ASCII
@@ -1033,8 +1055,8 @@
         <para>We don't need to go into detail for the
         <guilabel>Unknowns</guilabel> (r), not much is known about them
         anyways. Set <guilabel>Unknown1</guilabel> and
-        <guilabel>Unknown2</guilabel> to <guilabel>unknown1</guilabel> and
-        enter <userinput>0</userinput> (zero) for all others. Leave the flags
+        <guilabel>Unknown2</guilabel> to <guilabel>0</guilabel> and enter
+        <userinput>0</userinput> (zero) for all others. Leave the flags
         alone.</para>
 
         <note>
@@ -1082,6 +1104,11 @@
     <title>Credits</title>
 
     <itemizedlist>
+      <listitem>
+        <para>Atari® and Roller Coaster Tycoon 3® are trademarks of Atari Inc.
+        All Rights Reserved.</para>
+      </listitem>
+
       <listitem>
         <para>The docbook css used for the html version of this document is
         based upon the one created by <ulink
