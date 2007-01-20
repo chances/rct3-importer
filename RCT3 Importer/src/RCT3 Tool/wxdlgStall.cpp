@@ -47,7 +47,7 @@ extern int CurrentStall;
 
 BEGIN_EVENT_TABLE(dlgStall,wxDialog)
 EVT_BUTTON(XRCID("m_btDefault"), dlgStall::OnDefault)
-EVT_CHOICE(XRCID("m_NameString"), dlgStall::OnNameString)
+EVT_CHOICE(XRCID("m_SceneryItem"), dlgStall::OnNameString)
 END_EVENT_TABLE()
 
 dlgStall::dlgStall(wxWindow *parent) {
@@ -117,9 +117,9 @@ void dlgStall::OnDefault(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void dlgStall::OnNameString(wxCommandEvent& WXUNUSED(event)) {
-    int sel = m_NameString->GetSelection();
+    int sel = m_SceneryItem->GetSelection();
     if ((sel != wxNOT_FOUND) && (m_Name->GetValue() == wxT(""))) {
-        m_Name->SetValue(m_NameString->GetStringSelection());
+        m_Name->SetValue(m_SceneryItem->GetStringSelection());
     }
 }
 

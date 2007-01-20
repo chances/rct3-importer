@@ -47,7 +47,7 @@ extern int CurrentAttraction;
 
 BEGIN_EVENT_TABLE(dlgAttract,wxDialog)
 EVT_BUTTON(XRCID("m_btDefault"), dlgAttract::OnDefault)
-EVT_CHOICE(XRCID("m_NameString"), dlgAttract::OnNameString)
+EVT_CHOICE(XRCID("m_SceneryItem"), dlgAttract::OnNameString)
 END_EVENT_TABLE()
 
 dlgAttract::dlgAttract(wxWindow *parent) {
@@ -100,9 +100,9 @@ void dlgAttract::OnDefault(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void dlgAttract::OnNameString(wxCommandEvent& WXUNUSED(event)) {
-    int sel = m_NameString->GetSelection();
+    int sel = m_SceneryItem->GetSelection();
     if ((sel != wxNOT_FOUND) && (m_Name->GetValue() == wxT(""))) {
-        m_Name->SetValue(m_NameString->GetStringSelection());
+        m_Name->SetValue(m_SceneryItem->GetStringSelection());
     }
 }
 
