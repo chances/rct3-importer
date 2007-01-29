@@ -178,8 +178,8 @@
   <section id="s_textureovl">
     <title>Creating and using texture OVLs</title>
 
-    <para id="help">This section is so far unwritten and needs your help. If
-    you want to write it, please apply <ulink
+    <para>This section is so far unwritten and needs your help. If you want to
+    write it, please apply <ulink
     url="http://www.vodhin.net/RCT3Community/e107_plugins/forum/forum_viewtopic.php?1129">here</ulink>
     or <ulink
     url="http://www.ataricommunity.com/forums/showthread.php?t=549880">here</ulink>.</para>
@@ -188,8 +188,8 @@
   <section id="s_lights">
     <title>Creating working lights</title>
 
-    <para id="help">This section is so far unwritten and needs your help. If
-    you want to write it, please apply <ulink
+    <para>This section is so far unwritten and needs your help. If you want to
+    write it, please apply <ulink
     url="http://www.vodhin.net/RCT3Community/e107_plugins/forum/forum_viewtopic.php?1129">here</ulink>
     or <ulink
     url="http://www.ataricommunity.com/forums/showthread.php?t=549880">here</ulink>.</para>
@@ -198,8 +198,8 @@
   <section id="s_particleeffects">
     <title>Creating particle effect points</title>
 
-    <para id="help">This section is so far unwritten and needs your help. If
-    you want to write it, please apply <ulink
+    <para>This section is so far unwritten and needs your help. If you want to
+    write it, please apply <ulink
     url="http://www.vodhin.net/RCT3Community/e107_plugins/forum/forum_viewtopic.php?1129">here</ulink>
     or <ulink
     url="http://www.ataricommunity.com/forums/showthread.php?t=549880">here</ulink>.</para>
@@ -208,8 +208,8 @@
   <section id="s_fireworks">
     <title>Creating firework launchers</title>
 
-    <para id="help">This section is so far unwritten and needs your help. If
-    you want to write it, please apply <ulink
+    <para>This section is so far unwritten and needs your help. If you want to
+    write it, please apply <ulink
     url="http://www.vodhin.net/RCT3Community/e107_plugins/forum/forum_viewtopic.php?1129">here</ulink>
     or <ulink
     url="http://www.ataricommunity.com/forums/showthread.php?t=549880">here</ulink>.</para>
@@ -218,8 +218,8 @@
   <section id="s_benches">
     <title>Creating working benches</title>
 
-    <para id="help">This section is so far unwritten and needs your help. If
-    you want to write it, please apply <ulink
+    <para>This section is so far unwritten and needs your help. If you want to
+    write it, please apply <ulink
     url="http://www.vodhin.net/RCT3Community/e107_plugins/forum/forum_viewtopic.php?1129">here</ulink>
     or <ulink
     url="http://www.ataricommunity.com/forums/showthread.php?t=549880">here</ulink>.</para>
@@ -339,8 +339,8 @@
   <section id="s_stallssas">
     <title>Creating stalls and special attractions</title>
 
-    <para id="help">This section is so far unwritten and needs your help. If
-    you want to write it, please apply <ulink
+    <para>This section is so far unwritten and needs your help. If you want to
+    write it, please apply <ulink
     url="http://www.vodhin.net/RCT3Community/e107_plugins/forum/forum_viewtopic.php?1129">here</ulink>
     or <ulink
     url="http://www.ataricommunity.com/forums/showthread.php?t=549880">here</ulink>.</para>
@@ -434,7 +434,7 @@
 
       <note>
         <para>I've also included a DS in the Mesh Names that I intend to use a
-        double sided texture setting- very helpfull for my worn out little
+        double sided texture setting- very helpful for my worn out little
         brain.</para>
       </note>
 
@@ -553,8 +553,8 @@
   <section id="s_alphatextures">
     <title>Working with transparent textures</title>
 
-    <para id="help">This section is so far unwritten and needs your help. If
-    you want to write it, please apply <ulink
+    <para>This section is so far unwritten and needs your help. If you want to
+    write it, please apply <ulink
     url="http://www.vodhin.net/RCT3Community/e107_plugins/forum/forum_viewtopic.php?1129">here</ulink>
     or <ulink
     url="http://www.ataricommunity.com/forums/showthread.php?t=549880">here</ulink>.</para>
@@ -563,28 +563,297 @@
   <section id="s_recoltextures">
     <title>Creating and using recolorable textures</title>
 
-    <para id="help">This section is so far unwritten and needs your help. If
-    you want to write it, please apply <ulink
+    <para>This section is so far unwritten and needs your help. If you want to
+    write it, please apply <ulink
     url="http://www.vodhin.net/RCT3Community/e107_plugins/forum/forum_viewtopic.php?1129">here</ulink>
     or <ulink
     url="http://www.ataricommunity.com/forums/showthread.php?t=549880">here</ulink>.</para>
   </section>
 
   <section id="s_animtextures">
+    <sectioninfo>
+      <date>29.01.2007</date>
+
+      <author>
+        <surname>Belgabor</surname>
+      </author>
+    </sectioninfo>
+
     <title>Creating and using animated textures</title>
 
-    <para id="help">This section is so far unwritten and needs your help. If
-    you want to write it, please apply <ulink
-    url="http://www.vodhin.net/RCT3Community/e107_plugins/forum/forum_viewtopic.php?1129">here</ulink>
-    or <ulink
-    url="http://www.ataricommunity.com/forums/showthread.php?t=549880">here</ulink>.</para>
+    <para>In this section you'll learn how to create animated textures. Before
+    we start, please remember that animated textures are a completely
+    different concept than animatronics (3D animated scenery,
+    <quote>true</quote> animation). It is currently not possible to create the
+    latter with the importer. Ride events are a special form of animatronics,
+    therefore animated textures <emphasis>cannot</emphasis> be triggered/used
+    by ride events.</para>
+
+    <para>To create an animated texture you need to use the advanced texture
+    edit window. Start by adding a texture to your object as normal but in the
+    appearing file selection window do not select a file and press the
+    <guibutton>Cancel</guibutton> button.</para>
+
+    <note>
+      <para>You can also select a file, press <guibutton>Ok</guibutton> and
+      switch to the advanced texture edit window by pressing the
+      <guibutton>Advanced</guibutton> button. Using this method you can also
+      convert an existing static texture into an animated one.</para>
+
+      <para>For this tutorial though I'll assume that you created a new
+      texture and pressed the <guibutton>Cancel</guibutton> button as
+      described above.</para>
+    </note>
+
+    <para>If you did everything correctly, you'll get the advanced texture
+    edit window. The following screen shot shows you how it will look after
+    creating a simple animated texture:</para>
+
+    <screenshot>
+      <screeninfo>Advanced texture edit window</screeninfo>
+
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="adv_texture.png" />
+        </imageobject>
+      </mediaobject>
+    </screenshot>
+
+    <para>As of now, both lists and the <guilabel>Texture Name</guilabel>
+    <inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="../callouts/01.png" />
+        </imageobject>
+      </inlinemediaobject> should be empty (Of course except for the
+    <quote>(Insert at start)</quote> helper item).</para>
+
+    <para>Before we continue, give your texture a name by entering into
+    <guilabel>Texture Name</guilabel> <inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="../callouts/01.png" />
+        </imageobject>
+      </inlinemediaobject>.</para>
+
+    <section id="s_animtextures_1">
+      <title>Texture frames</title>
+
+      <para>Texture animation is like a movie that plays on your object.
+      Texture frames are the unique still frames this movie consists of.
+      Unique means that if a certain frame should occur multiple times in your
+      final animated texture, you need to add it only once. Repetitions are
+      created in the animation sequence (see <xref
+      linkend="s_animtextures_2" />).</para>
+
+      <para>Now it's time to get to work and add some <guilabel>Texture
+      Frames</guilabel>. Press the respective <guibutton>+</guibutton> button
+      <inlinemediaobject>
+          <imageobject>
+            <imagedata fileref="../callouts/06.png" />
+          </imageobject>
+        </inlinemediaobject> and select the first frame for your animation.
+      You'll get the <guilabel>Edit Texture Frame</guilabel> window, which
+      looks and works like a simpler form of the basic texture edit window.
+      You can also select multiple files instead of just one. This will skip
+      the <guilabel>Edit Texture Frame</guilabel> window and add the frames
+      directly to the list <inlinemediaobject>
+          <imageobject>
+            <imagedata fileref="../callouts/04.png" />
+          </imageobject>
+        </inlinemediaobject>. The list shows the index of a texture frame and
+      the file name (without directory or extension).</para>
+
+      <para>You will note that as soon as you add your second frame, the names
+      will be shown in red. Red means that the respective frame is not used in
+      the animation sequence, which at this point is normal as we haven't
+      created the sequence yet.</para>
+
+      <para>If you want to edit a texture frame, press the
+      <guibutton>E</guibutton> button <inlinemediaobject>
+          <imageobject>
+            <imagedata fileref="../callouts/07.png" />
+          </imageobject>
+        </inlinemediaobject> or double-click on the frame in the list
+      <inlinemediaobject>
+          <imageobject>
+            <imagedata fileref="../callouts/04.png" />
+          </imageobject>
+        </inlinemediaobject>.</para>
+
+      <para>You can also change the order of the texture frames by moving them
+      with the up/down arrows <inlinemediaobject>
+          <imageobject>
+            <imagedata fileref="../callouts/05.png" />
+          </imageobject>
+        </inlinemediaobject>.</para>
+
+      <important>
+        <para>Normally this will not influence your animation, that is only
+        governed by the animation sequence! If you need to (e.g.) flip two
+        frames in the animation, you need to freeze the animation sequence
+        (see <xref linkend="s_animtextures_3_2" />).</para>
+      </important>
+    </section>
+
+    <section id="s_animtextures_2">
+      <title>Animation sequence</title>
+
+      <para>As stated above, the animation sequence defines the order of play
+      of the texture frames. The <guilabel>Animation Sequence</guilabel> list
+      <inlinemediaobject>
+          <imageobject>
+            <imagedata fileref="../callouts/08.png" />
+          </imageobject>
+        </inlinemediaobject> shows the order top to bottom. Each entry in
+      order shows the animation sequence index, how often the frame is
+      repeated, the texture frame name and the texture frame index. Note that
+      you cannot individually change the duration of a frame, you can only do
+      that relatively by repeating it. Also keep in mind that texture
+      animation is cyclic, so after the last entry in the animation sequence
+      it restarts from the first.</para>
+
+      <para>To add texture frames to the animation sequence, select them in
+      the <guilabel>Texture Frames</guilabel> list <inlinemediaobject>
+          <imageobject>
+            <imagedata fileref="../callouts/04.png" />
+          </imageobject>
+        </inlinemediaobject> and press the <guilabel>Animation
+      Sequence</guilabel> <guibutton>+</guibutton> button <inlinemediaobject>
+          <imageobject>
+            <imagedata fileref="../callouts/11.png" />
+          </imageobject>
+        </inlinemediaobject>. You can then reorder the sequence with the
+      up/down arrows <inlinemediaobject>
+          <imageobject>
+            <imagedata fileref="../callouts/09.png" />
+          </imageobject>
+        </inlinemediaobject> and change the repetition count with the
+      left/right arrows <inlinemediaobject>
+          <imageobject>
+            <imagedata fileref="../callouts/10.png" />
+          </imageobject>
+        </inlinemediaobject>. Note that if you add a texture frame directly
+      before or after the same texture frame in the animation sequence, it
+      will also be summed up into the repetition count. The delete button
+      (<guibutton>-</guibutton>) <inlinemediaobject>
+          <imageobject>
+            <imagedata fileref="../callouts/12.png" />
+          </imageobject>
+        </inlinemediaobject> deletes the complete entry in the list.</para>
+
+      <para>The last thing you have to do is to choose the speed of animation.
+      The <guilabel>Animation Framerate</guilabel> <inlinemediaobject>
+          <imageobject>
+            <imagedata fileref="../callouts/03.png" />
+          </imageobject>
+        </inlinemediaobject> lets you set the speed roughly in frames (or
+      rather animation sequence entries / repetition instances) per
+      second.</para>
+
+      <para>Now your animated texture is ready to use. Assignment to a model
+      works exactly like for static textures, there is nothing you have to do
+      differently in any other part of the import process.</para>
+    </section>
+
+    <section id="s_animtextures_3">
+      <title>Advanced topics</title>
+
+      <para>This section explains a few things that are not absolutely
+      necessary to know to create animated textures, but might come in handy,
+      so I recommend to at least have a brief look.</para>
+
+      <section id="s_animtextures_3_1">
+        <title>Preview</title>
+
+        <para>The preview helps you to prevent confusion on animated textures
+        with lots of frames and/or complicated animation sequences. To show
+        (or hide) the preview, press the <guibutton>Preview</guibutton> button
+        <inlinemediaobject>
+            <imageobject>
+              <imagedata fileref="../callouts/02.png" />
+            </imageobject>
+          </inlinemediaobject>. It does not provide you with a preview of the
+        running animation, but shows you the texture frame you selected last
+        in the <guilabel>Texture Frames</guilabel> list <inlinemediaobject>
+            <imageobject>
+              <imagedata fileref="../callouts/04.png" />
+            </imageobject>
+          </inlinemediaobject> or the texture frame referenced by the
+        last-clicked entry in the <guilabel>Animation Sequence</guilabel> list
+        <inlinemediaobject>
+            <imageobject>
+              <imagedata fileref="../callouts/08.png" />
+            </imageobject>
+          </inlinemediaobject>.</para>
+      </section>
+
+      <section id="s_animtextures_3_2">
+        <title>Freezing the animation sequence</title>
+
+        <para>To understand this concept, you have to realize how the
+        animation sequence is stored internally. Normally the editor gives you
+        the impression that the sequence is stored by name (changing the order
+        of texture frames doesn't influence the animation; if you delete a
+        texture frame, all animation sequence entries that reference it are
+        deleted as well). Internally the animation sequence is stored as
+        texture frame indices (the number in parentheses at the end of each
+        entry). If you change the texture frame order you'll note that these
+        numbers change, indicating that the internal representation of the
+        animation sequence changes (keeping the final animation constant).
+        Freezing by pressing the <guibutton>F</guibutton> button
+        <inlinemediaobject>
+            <imageobject>
+              <imagedata fileref="../callouts/11.png" />
+            </imageobject>
+          </inlinemediaobject> will keep the internal representation
+        constant.</para>
+
+        <para>Before you tune out, I'll give you an example :-)</para>
+
+        <para>The example animated texture in the screen shot gives a
+        flip-flop animation from blue over green to red, then back over green
+        to blue. Not let's assume that I want to exchange blue and green in
+        the animation (green-blue-red-blue-green-...). To do that I would
+        switch the position of blue and green at the start of the animation
+        sequence, remove the green frame at the end and add a blue
+        frame.</para>
+
+        <para>Using freezing this can be accomplished quicker. First I freeze
+        the animation sequence, then I switch the order of blue and green in
+        the texture frames list and finally unfreeze the animation sequence -
+        same result. It might not sound a lot quicker in this case, but this
+        is a very simple animation, it can get much quicker in more
+        complicated cases.</para>
+
+        <para>All of this may still sound a bit complicated, so go on an
+        experiment a bit with it, I'm sure you'll get the knack of it
+        soon.</para>
+
+        <para>A few things to keep in mind about freezing:</para>
+
+        <itemizedlist>
+          <listitem>
+            <para>As long as the animation sequence is frozen, you cannot edit
+            it.</para>
+          </listitem>
+
+          <listitem>
+            <para>If you remove a texture frame while the animation sequence
+            is frozen, entries that reference it will be kept and some entries
+            will now indicate that the frame they reference is gone. If you
+            add a new texture frame, these references will become valid again
+            (remember, reference is by index). If you unfreeze the sequence
+            while it still has invalid entries, they will be removed.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+    </section>
   </section>
 
   <section id="s_texturestyles">
     <title>Extensive discussion of texture styles</title>
 
-    <para id="help">This section is so far unwritten and needs your help. If
-    you want to write it, please apply <ulink
+    <para>This section is so far unwritten and needs your help. If you want to
+    write it, please apply <ulink
     url="http://www.vodhin.net/RCT3Community/e107_plugins/forum/forum_viewtopic.php?1129">here</ulink>
     or <ulink
     url="http://www.ataricommunity.com/forums/showthread.php?t=549880">here</ulink>.</para>

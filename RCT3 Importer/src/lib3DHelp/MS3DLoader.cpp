@@ -57,9 +57,19 @@ cMS3DLoader::cMS3DLoader(const char *filename): c3DLoader(filename) {
                 UINT index = i / 3;
                 BOOL add;
 
-                ms3df->GetTriangleAt(group->triangleIndices[index], &face);
+                word i_triangle = group->triangleIndices[index];
+                if (i_triangle >= ms3df->GetNumTriangles()) {
+                    cmesh.m_flag = C3DMESH_INVALID;
+                    continue;
+                }
+                ms3df->GetTriangleAt(i_triangle, &face);
 
-                ms3df->GetVertexAt(face->vertexIndices[0], &vertex);
+                word i_vertex = face->vertexIndices[0];
+                if (i_vertex >= ms3df->GetNumVertices()) {
+                    cmesh.m_flag = C3DMESH_INVALID;
+                    continue;
+                }
+                ms3df->GetVertexAt(i_vertex, &vertex);
                 tv.position.x = vertex->vertex[0];
                 tv.position.y = vertex->vertex[1];
                 tv.position.z = vertex->vertex[2];
@@ -87,7 +97,12 @@ cMS3DLoader::cMS3DLoader(const char *filename): c3DLoader(filename) {
                 cmesh.m_indices.push_back(j);
 
                 // now for the second one
-                ms3df->GetVertexAt(face->vertexIndices[1], &vertex);
+                i_vertex = face->vertexIndices[1];
+                if (i_vertex >= ms3df->GetNumVertices()) {
+                    cmesh.m_flag = C3DMESH_INVALID;
+                    continue;
+                }
+                ms3df->GetVertexAt(i_vertex, &vertex);
                 tv.position.x = vertex->vertex[0];
                 tv.position.y = vertex->vertex[1];
                 tv.position.z = vertex->vertex[2];
@@ -115,7 +130,12 @@ cMS3DLoader::cMS3DLoader(const char *filename): c3DLoader(filename) {
                 cmesh.m_indices.push_back(j);
 
                 // now for the third one
-                ms3df->GetVertexAt(face->vertexIndices[2], &vertex);
+                i_vertex = face->vertexIndices[2];
+                if (i_vertex >= ms3df->GetNumVertices()) {
+                    cmesh.m_flag = C3DMESH_INVALID;
+                    continue;
+                }
+                ms3df->GetVertexAt(i_vertex, &vertex);
                 tv.position.x = vertex->vertex[0];
                 tv.position.y = vertex->vertex[1];
                 tv.position.z = vertex->vertex[2];

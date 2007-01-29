@@ -292,7 +292,7 @@ protected:
         return sel;
     };
 
-    wxColour GetStateColour(wxColour colFg, int state) const {
+    wxColour GetStateColour(wxColour colFg, int WXUNUSED(state)) const {
 /*
         if (state & wxDATAVIEW_CELL_SELECTED) {
             wxColour col;
@@ -409,7 +409,7 @@ public:
     }
 */
 
-    bool LeftClick(wxPoint cursor, wxRect cell, wxDataViewListModel* model, unsigned int col, unsigned int row) {
+    bool LeftClick(wxPoint WXUNUSED(cursor), wxRect WXUNUSED(cell), wxDataViewListModel* model, unsigned int WXUNUSED(col), unsigned int row) {
         bool ret = false;
         if (m_value) {
             if (m_value->valid) {
@@ -834,7 +834,7 @@ public:
         }
         return true;
     }
-    bool Activate( wxRect cell, wxDataViewListModel *model, unsigned int col, unsigned int row ) {
+    bool Activate( wxRect WXUNUSED(cell), wxDataViewListModel *model, unsigned int col, unsigned int row ) {
         if (m_value) {
             if (m_value->valid) {
                 m_value->place++;

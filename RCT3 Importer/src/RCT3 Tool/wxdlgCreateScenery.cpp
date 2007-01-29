@@ -196,7 +196,7 @@ void wxLODListBox::UpdateContents() {
 wxString wxLODListBox::OnGetItem(size_t n) const {
     wxString addon = wxT("");
     if ((m_contents->lods[n].unk2 != 0) || (m_contents->lods[n].unk4!=0) || (m_contents->lods[n].unk14!=0))
-        addon = wxString::Format(wxT(" (%d/%d/%d)"),
+        addon = wxString::Format(wxT(" (%ld/%ld/%ld)"),
             m_contents->lods[n].unk2,
             m_contents->lods[n].unk4,
             m_contents->lods[n].unk14);

@@ -6,7 +6,7 @@ void InitXmlEffect();
 void InitXmlInfo();
 void InitXmlLOD();
 void InitXmlMatrix();
-void InitXmlMesh();
+//void InitXmlMesh();
 void InitXmlModel();
 void InitXmlTexture();
 void InitXmlTextureSimple();
@@ -23,7 +23,7 @@ inline void InitXmlResource() {
     InitXmlInfo();
     InitXmlLOD();
     InitXmlMatrix();
-    InitXmlMesh();
+//    InitXmlMesh();
     InitXmlModel();
     InitXmlTexture();
     InitXmlTextureSimple();

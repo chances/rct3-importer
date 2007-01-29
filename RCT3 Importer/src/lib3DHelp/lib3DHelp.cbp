@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_project_file>
-	<FileVersion major="1" minor="5" />
+	<FileVersion major="1" minor="6" />
 	<Project>
 		<Option title="lib3DHelp" />
 		<Option pch_mode="2" />
-		<Option default_target="" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="" />
 		<Build>
 			<Target title="Debug">
 				<Option output="..\..\lib\lib3DHelpd.a" prefix_auto="0" extension_auto="1" />
@@ -21,6 +19,25 @@
 					<Add option="-g" />
 					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.8" />
 				</Compiler>
+			</Target>
+			<Target title="Profile">
+				<Option output="..\..\lib\lib3DHelpp.a" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="..\..\lib\obj\profile" />
+				<Option external_deps="..\..\lib\libWXHelp.a;" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-Os" />
+					<Add option="-O2" />
+					<Add option="-pg" />
+					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.8" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-pg -lgmon" />
+				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="..\..\lib\lib3DHelp.a" prefix_auto="0" extension_auto="1" />
@@ -41,7 +58,7 @@
 			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="All" targets="Debug;Release;" />
+			<Add alias="All" targets="Debug;Profile;Release;" />
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-Wall" />
@@ -51,116 +68,24 @@
 			<Add directory="..\..\include" />
 			<Add directory="..\libWXHelp" />
 		</Compiler>
-		<Unit filename="3DLoader.cpp">
-			<Option compilerVar="CPP" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="3DLoader.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="3DLoaderTypes.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="ASE3DLoader.cpp">
-			<Option compilerVar="CPP" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="ASE3DLoader.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="MS3DFile.cpp">
-			<Option compilerVar="CPP" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="MS3DFile.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="MS3DLoader.cpp">
-			<Option compilerVar="CPP" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="MS3DLoader.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="RCT3Structs.cpp">
-			<Option compilerVar="CPP" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="RCT3Structs.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="SCNFile.cpp">
-			<Option compilerVar="CPP" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="SCNFile.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="matrix.cpp">
-			<Option compilerVar="CPP" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="matrix.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="rct3log.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="valtexture.cpp">
-			<Option compilerVar="CPP" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="valtexture.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
+		<Unit filename="3DLoader.cpp" />
+		<Unit filename="3DLoader.h" />
+		<Unit filename="3DLoaderTypes.h" />
+		<Unit filename="ASE3DLoader.cpp" />
+		<Unit filename="ASE3DLoader.h" />
+		<Unit filename="MS3DFile.cpp" />
+		<Unit filename="MS3DFile.h" />
+		<Unit filename="MS3DLoader.cpp" />
+		<Unit filename="MS3DLoader.h" />
+		<Unit filename="RCT3Structs.cpp" />
+		<Unit filename="RCT3Structs.h" />
+		<Unit filename="SCNFile.cpp" />
+		<Unit filename="SCNFile.h" />
+		<Unit filename="matrix.cpp" />
+		<Unit filename="matrix.h" />
+		<Unit filename="rct3log.h" />
+		<Unit filename="valtexture.cpp" />
+		<Unit filename="valtexture.h" />
 		<Extensions>
 			<code_completion />
 		</Extensions>

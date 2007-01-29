@@ -431,10 +431,10 @@ void dlgTexture::UpdateControlState() {
 
     count = m_ft.Animation.size();
     sel = m_htlbAnimation->GetSelection();
-    m_spinAnimation->Enable(frozen?false:(count>=2));
+    m_spinAnimation->Enable(frozen?false:((count>=2)&&(sel>0)));
     //m_btAnimationCopy->Enable(frozen?false:(sel>=0));
-    m_spinAnimationCount->Enable(sel>=0);
-    m_btAnimationDel->Enable(frozen?false:(sel>=0));
+    m_spinAnimationCount->Enable(sel>0);
+    m_btAnimationDel->Enable(frozen?false:(sel>0));
     m_toggleAnimationFreeze->Enable(count>=1);
     m_btAnimationClear->Enable(frozen?false:(count>=1));
 
@@ -878,7 +878,7 @@ void dlgTexture::OnAnimationAdd(wxCommandEvent& WXUNUSED(event)) {
 
     unsigned long cookie;
     long frame = m_htlbFrame->GetFirstSelected(cookie);
-    bool lastnotadded;
+    bool lastnotadded = false;
     while (frame != wxNOT_FOUND) {
         if ((sel>0) && (m_ft.Animation[sel-1].frame == frame)) {
             m_ft.Animation[sel-1].count++;

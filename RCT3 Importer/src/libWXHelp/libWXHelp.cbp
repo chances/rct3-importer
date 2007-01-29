@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_project_file>
-	<FileVersion major="1" minor="5" />
+	<FileVersion major="1" minor="6" />
 	<Project>
 		<Option title="libWXHelp" />
 		<Option pch_mode="2" />
-		<Option default_target="" />
 		<Option compiler="gcc" />
 		<Option virtualFolders="filedlg\;wrapper\;validators\;" />
 		<Build>
@@ -20,6 +19,24 @@
 					<Add option="-g" />
 					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.8" />
 				</Compiler>
+			</Target>
+			<Target title="Profile">
+				<Option output="..\..\lib\libWXHelpp.a" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="..\..\lib\obj\profile" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-Os" />
+					<Add option="-O2" />
+					<Add option="-pg" />
+					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.8" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-pg -lgmon" />
+				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="..\..\lib\libWXHelp.a" prefix_auto="0" extension_auto="1" />
@@ -39,7 +56,7 @@
 			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="All" targets="Debug;Release;" />
+			<Add alias="All" targets="Debug;Profile;Release;" />
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-Wall" />
@@ -53,256 +70,90 @@
 			<Add directory="..\..\include" />
 		</Compiler>
 		<Unit filename="auifiledlg.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="filedlg\" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="auifiledlg.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="filedlg\" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="auipicfiledlg.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="filedlg\" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="auipicfiledlg.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="filedlg\" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="choicewrapper.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="wrapper\" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="choicewrapper.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="wrapper\" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="colhtmllbox.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="wrapper\" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="colhtmllbox.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="wrapper\" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="comboboxwrapper.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="wrapper\" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="comboboxwrapper.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="wrapper\" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="comboctrlwrapper.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="wrapper\" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="comboctrlwrapper.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="wrapper\" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
-		<Unit filename="exdataview.cpp">
-			<Option compilerVar="CPP" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="exdataview.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
+		<Unit filename="exdataview.cpp" />
+		<Unit filename="exdataview.h" />
 		<Unit filename="filedlgg.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="filedlg\" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="filedlgg.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="filedlg\" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
-		<Unit filename="fileselectorcombo.cpp">
-			<Option compilerVar="CPP" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="fileselectorcombo.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="htmlentities.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="ilpict.cpp">
-			<Option compilerVar="CPP" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="ilpict.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="logext.cpp">
-			<Option compilerVar="CPP" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="logext.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="popupmessagewin.cpp">
-			<Option compilerVar="CPP" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="popupmessagewin.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
+		<Unit filename="fileselectorcombo.cpp" />
+		<Unit filename="fileselectorcombo.h" />
+		<Unit filename="htmlentities.h" />
+		<Unit filename="ilpict.cpp" />
+		<Unit filename="ilpict.h" />
+		<Unit filename="logext.cpp" />
+		<Unit filename="logext.h" />
+		<Unit filename="popupmessagewin.cpp" />
+		<Unit filename="popupmessagewin.h" />
 		<Unit filename="silence.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="validators\" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="silence.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="validators\" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="valext.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="validators\" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="valext.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="validators\" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="valsimplelist.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="validators\" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="valsimplelist.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="validators\" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
-		<Unit filename="wrappereditevent.cpp">
-			<Option compilerVar="CPP" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="wrappereditevent.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
+		<Unit filename="wrappereditevent.cpp" />
+		<Unit filename="wrappereditevent.h" />
 		<Unit filename="wxInputBox.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="validators\" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="wxInputBox.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="validators\" />
-			<Option target="Debug" />
-			<Option target="Release" />
 		</Unit>
 		<Unit filename="wx_pch.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option target="Release" />
+			<Option target="Profile" />
 		</Unit>
-		<Unit filename="wxdevil.cpp">
-			<Option compilerVar="CPP" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="wxdevil.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
+		<Unit filename="wxdevil.cpp" />
+		<Unit filename="wxdevil.h" />
 		<Extensions>
 			<code_completion />
 		</Extensions>

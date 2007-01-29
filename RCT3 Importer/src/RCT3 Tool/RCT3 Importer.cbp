@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_project_file>
-	<FileVersion major="1" minor="5" />
+	<FileVersion major="1" minor="6" />
 	<Project>
 		<Option title="RCT3 Importer" />
 		<Option pch_mode="2" />
-		<Option default_target="" />
 		<Option compiler="gcc" />
 		<Option virtualFolders="wx\;xrc\;resources\;" />
 		<Build>
@@ -32,6 +31,31 @@
 					<Add library="3DHelp" />
 					<Add library="WXHelp" />
 					<Add library="libASE" />
+					<Add library="wx_msw-2.8" />
+					<Add directory="..\..\bin" />
+				</Linker>
+			</Target>
+			<Target title="Profile DLL">
+				<Option output="..\..\bin\RCT3 Importer Profile.exe" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="..\..\bin" />
+				<Option object_output="..\..\lib\obj\profile dll" />
+				<Option external_deps="..\..\lib\lib3DHelp.a;..\..\bin\libOVL.a;..\..\lib\libWXHelp.a;" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-Os" />
+					<Add option="-O2" />
+					<Add option="-pg" />
+					<Add directory="..\libOVL" />
+					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.8" />
+				</Compiler>
+				<Linker>
+					<Add option="-pg -lgmon" />
+					<Add library="libOVLp" />
+					<Add library="3DHelpp" />
+					<Add library="WXHelpp" />
+					<Add library="libASEp" />
 					<Add library="wx_msw-2.8" />
 					<Add directory="..\..\bin" />
 				</Linker>
@@ -147,764 +171,673 @@
 			<Add directory="..\..\lib" />
 		</Linker>
 		<Unit filename="Tool.cpp">
-			<Option compilerVar="CPP" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="app.rc">
 			<Option compilerVar="CPP" />
-			<Option objectName="app.res" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="bmy.pal">
-			<Option compilerVar="CPP" />
-			<Option link="0" />
+			<Option compile="1" />
 			<Option weight="1" />
 			<Option virtualFolder="resources\" />
 			<Option compiler="gcc" use="1" buildCommand="bin2c -c $file $file.h" />
 			<Option target="Precompile XRC" />
 		</Unit>
 		<Unit filename="bmy.pal.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="resources\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="changelog.txt">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="crystal\crystal.xrc">
-			<Option compilerVar="CPP" />
-			<Option link="0" />
+			<Option compile="1" />
 			<Option weight="10" />
 			<Option virtualFolder="xrc\" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_bitmap_crystal.cpp --function=InitXmlBitmapCrystal $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
 		<Unit filename="global.cpp">
-			<Option compilerVar="CPP" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="global.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="ilhelper.cpp">
-			<Option compilerVar="CPP" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="ilhelper.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="rct3config.cpp">
-			<Option compilerVar="CPP" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="rct3config.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="rct3imp.txt">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="resource.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="resources.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="resources\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="resources.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="resources\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="win_predefine.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wx_pch.h">
-			<Option compilerVar="CPP" />
-			<Option link="0" />
+			<Option compile="1" />
 			<Option weight="0" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxapp.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgAttract.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgAttract.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgAttractMan.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgAttractMan.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgCreateScenery.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgCreateScenery.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgEffect.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgEffect.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgEffectLight.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgEffectLight.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgInfo.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgInfo.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgLOD.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgLOD.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgMatrix.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgMatrix.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgMesh.cpp">
-			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgMesh.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgModel.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgModel.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgStall.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgStall.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgStallMan.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgStallMan.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgTexture.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxdlgTexture.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc\xrc_attract.xrc">
-			<Option compilerVar="CPP" />
-			<Option link="0" />
+			<Option compile="1" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_attract.cpp --function=InitXmlAttract $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
 		<Unit filename="xrc\xrc_attractman.xrc">
-			<Option compilerVar="CPP" />
-			<Option link="0" />
+			<Option compile="1" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_attractman.cpp --function=InitXmlAttractMan $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
 		<Unit filename="xrc\xrc_createscenery.xrc">
-			<Option compilerVar="CPP" />
-			<Option link="0" />
+			<Option compile="1" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_createscenery.cpp --function=InitXmlCreateScenery $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
 		<Unit filename="xrc\xrc_effect.xrc">
-			<Option compilerVar="CPP" />
-			<Option link="0" />
+			<Option compile="1" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_effect.cpp --function=InitXmlEffect $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
 		<Unit filename="xrc\xrc_effectmenu.xrc">
-			<Option compilerVar="CPP" />
-			<Option link="0" />
+			<Option compile="1" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_effectmenu.cpp --function=InitXmlEffectMenu $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
 		<Unit filename="xrc\xrc_info.xrc">
-			<Option compilerVar="CPP" />
-			<Option link="0" />
+			<Option compile="1" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_info.cpp --function=InitXmlInfo $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
 		<Unit filename="xrc\xrc_lod.xrc">
-			<Option compilerVar="CPP" />
-			<Option link="0" />
+			<Option compile="1" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_lod.cpp --function=InitXmlLOD $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
 		<Unit filename="xrc\xrc_matrix.xrc">
-			<Option compilerVar="CPP" />
-			<Option link="0" />
+			<Option compile="1" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_matrix.cpp --function=InitXmlMatrix $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
 		<Unit filename="xrc\xrc_mesh.xrc">
-			<Option compilerVar="CPP" />
-			<Option link="0" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_mesh.cpp --function=InitXmlMesh $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
 		<Unit filename="xrc\xrc_model.xrc">
-			<Option compilerVar="CPP" />
-			<Option link="0" />
+			<Option compile="1" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_model.cpp --function=InitXmlModel $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
 		<Unit filename="xrc\xrc_stall.xrc">
-			<Option compilerVar="CPP" />
-			<Option link="0" />
+			<Option compile="1" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_stall.cpp --function=InitXmlStall $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
 		<Unit filename="xrc\xrc_stallman.xrc">
-			<Option compilerVar="CPP" />
-			<Option link="0" />
+			<Option compile="1" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_stallman.cpp --function=InitXmlStallMan $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
 		<Unit filename="xrc\xrc_texture.xrc">
-			<Option compilerVar="CPP" />
-			<Option link="0" />
+			<Option compile="1" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_texture.cpp --function=InitXmlTexture $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
 		<Unit filename="xrc\xrc_texturesimple.xrc">
-			<Option compilerVar="CPP" />
-			<Option link="0" />
+			<Option compile="1" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_texturesimple.cpp --function=InitXmlTextureSimple $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
 		<Unit filename="xrc\xrcres.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_attract.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_attract.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_attractman.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_attractman.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_bitmap_crystal.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_bitmap_crystal.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_createscenery.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_createscenery.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_effect.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_effect.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_effectmenu.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_effectmenu.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_info.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_info.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_lod.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_lod.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_matrix.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_matrix.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_mesh.cpp">
-			<Option compilerVar="CPP" />
+			<Option compile="0" />
+			<Option link="0" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_mesh.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_model.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_model.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_stall.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_stall.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_stallman.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_stallman.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_texture.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_texture.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_texturesimple.cpp">
-			<Option compilerVar="CPP" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="xrc_texturesimple.h">
-			<Option compilerVar="CPP" />
-			<Option compile="0" />
-			<Option link="0" />
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Profile DLL" />
 		</Unit>
 		<Extensions>
 			<code_completion />
