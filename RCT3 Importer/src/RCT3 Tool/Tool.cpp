@@ -869,7 +869,7 @@ BOOL CALLBACK SIDEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
                         s->position.y = (float) atof(temp);
                         delete temp;
                         temp = new char[poszlen + 1];
-                        GetDlgItemText(hwnd, IDC_XPOS, temp, poszlen + 1);
+                        GetDlgItemText(hwnd, IDC_ZPOS, temp, poszlen + 1);
                         s->position.z = (float) atof(temp);
                         delete temp;
                         temp = new char[sizexlen + 1];

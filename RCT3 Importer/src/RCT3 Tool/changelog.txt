@@ -271,3 +271,7 @@ Version 17 (Belgabor):
 * FIX1: When quick-adding (through the file dialog that comes up when you press add) textures or texture frames, internal alpha channels are automatically detected and activated.
 * FIX1: Advanced Texture Window: Add multiple frames at once to the animation list.
 * FIX1: Advanced Texture Window: Multiple consecutive frames are now summed up in the animation list. Note: The delete button will delete all summed up frames (ie the complete selected entry). There is a new spin control to change the number of repetitions.
+* FIX2: The name of stalls and special attractions is now set to the scenery ovl base name if empty and the corresponding scenery item is selected.
+* FIX2: Tried to make ms3d loading more stable.
+* FIX2: Removed a few inconsistencies in the dis-/enabling of controls in the advanced texture window
+* FIX2: Fixed a bug relating to storing Z position in the Scenery Item Settings
