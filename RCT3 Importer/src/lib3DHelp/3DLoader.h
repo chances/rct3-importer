@@ -26,7 +26,7 @@
 #ifndef _3DLOADER_H_INCLUDED
 #define _3DLOADER_H_INCLUDED
 
-#include "wx_pch.h"
+#include "3Dstring.h"
 
 #include <vector>
 
@@ -38,7 +38,7 @@ class c3DMesh {
 public:
     std::vector<VERTEX> m_vertices;
     std::vector<unsigned long> m_indices;
-    wxString m_name;
+    STRING3D m_name;
     unsigned long m_flag;
 
     c3DMesh():m_name("") {};
@@ -46,18 +46,18 @@ public:
 
 class c3DLoader {
 protected:
-    wxString m_filename;
-    wxString m_name;
+    STRING3D m_filename;
+    STRING3D m_name;
     // Having no meshes signifies an invalid file
     std::vector<c3DMesh> m_meshes;
     // Warnings should only be added by a loader implementation if it
     // recognized the file is of it's type but is otherwise invalid
-    wxArrayString m_warnings;
+    STRINGLIST3D m_warnings;
     // no m_meshes and no m_warnigs signal that the loader did not recognive the file.
 public:
     c3DLoader(const char *filename) : m_meshes(0) {
         m_filename = filename;
-        m_name = wxT("");
+        m_name = STRING3D_EMPTY;
     };
 
     virtual ~c3DLoader() {};
@@ -68,8 +68,8 @@ public:
     virtual bool Failed() {
         return ((m_meshes.size()==0) && (m_warnings.size()==0));
     };
-    virtual wxArrayString GetWarnings() const {return m_warnings;};
-    virtual wxString GetObjectName(unsigned int index) {
+    virtual STRINGLIST3D GetWarnings() const {return m_warnings;};
+    virtual STRING3D GetObjectName(unsigned int index) {
         return (index>=m_meshes.size())?"":m_meshes[index].m_name;
     };
     virtual int GetObjectVertexCount(unsigned int index) {
@@ -92,9 +92,10 @@ public:
         return res;
     };
     virtual bool FetchObject(unsigned int index, unsigned long *vertexcount, VERTEX **vertices, unsigned long *index_count, unsigned long **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform);
+    virtual bool FetchAsAnimObject(unsigned int index, unsigned long bone, unsigned long unk, unsigned long *vertexcount, VERTEX2 **vertices, unsigned long *index_count, unsigned short **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform);
 
     virtual int GetType() {return C3DLOADER_GENERIC;};
-    virtual wxString GetName() {return m_name;};
+    virtual STRING3D GetName() {return m_name;};
     virtual c3DLoaderOrientation GetOrientation() {return ORIENTATION_UNKNOWN;};
 
     static c3DLoader *LoadFile(const char *filename);

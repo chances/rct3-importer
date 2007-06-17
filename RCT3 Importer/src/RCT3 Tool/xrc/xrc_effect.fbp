@@ -1,26 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <wxFormBuilder_Project>
-    <FileVersion major="1" minor="4" />
-    <object class="Project">
+    <FileVersion major="1" minor="6" />
+    <object class="Project" expanded="1">
+        <property name="bitmaps"></property>
+        <property name="class_decoration"></property>
         <property name="code_generation">XRC</property>
+        <property name="encoding">UTF-8</property>
+        <property name="event_generation">connect</property>
         <property name="file">xrc_effect</property>
         <property name="first_id">1000</property>
+        <property name="help_provider">none</property>
+        <property name="icons"></property>
         <property name="internationalize">0</property>
         <property name="name">xrc_effect</property>
+        <property name="namespace"></property>
         <property name="path">.</property>
+        <property name="precompiled_header">wx/wxprec.h</property>
         <property name="relative_path">1</property>
         <property name="use_enum">0</property>
         <property name="use_microsoft_bom">0</property>
-        <property name="user_headers"></property>
-        <object class="Dialog">
+        <object class="Dialog" expanded="1">
             <property name="bg"></property>
             <property name="center"></property>
+            <property name="context_help"></property>
             <property name="enabled">1</property>
             <property name="extra_style"></property>
             <property name="fg"></property>
             <property name="font"></property>
             <property name="hidden">0</property>
             <property name="id">ID_DEFAULT</property>
+            <property name="maximum_size"></property>
             <property name="minimum_size"></property>
             <property name="name">dlgEffect</property>
             <property name="pos"></property>
@@ -31,7 +40,37 @@
             <property name="tooltip"></property>
             <property name="window_extra_style"></property>
             <property name="window_style"></property>
-            <object class="wxFlexGridSizer">
+            <event name="OnActivate"></event>
+            <event name="OnActivateApp"></event>
+            <event name="OnChar"></event>
+            <event name="OnClose"></event>
+            <event name="OnEnterWindow"></event>
+            <event name="OnEraseBackground"></event>
+            <event name="OnHibernate"></event>
+            <event name="OnIconize"></event>
+            <event name="OnIdle"></event>
+            <event name="OnInitDialog"></event>
+            <event name="OnKeyDown"></event>
+            <event name="OnKeyUp"></event>
+            <event name="OnKillFocus"></event>
+            <event name="OnLeaveWindow"></event>
+            <event name="OnLeftDClick"></event>
+            <event name="OnLeftDown"></event>
+            <event name="OnLeftUp"></event>
+            <event name="OnMiddleDClick"></event>
+            <event name="OnMiddleDown"></event>
+            <event name="OnMiddleUp"></event>
+            <event name="OnMotion"></event>
+            <event name="OnMouseEvents"></event>
+            <event name="OnMouseWheel"></event>
+            <event name="OnPaint"></event>
+            <event name="OnRightDClick"></event>
+            <event name="OnRightDown"></event>
+            <event name="OnRightUp"></event>
+            <event name="OnSetFocus"></event>
+            <event name="OnSize"></event>
+            <event name="OnUpdateUI"></event>
+            <object class="wxFlexGridSizer" expanded="1">
                 <property name="cols">1</property>
                 <property name="flexible_direction">wxBOTH</property>
                 <property name="growablecols">0</property>
@@ -40,22 +79,24 @@
                 <property name="minimum_size"></property>
                 <property name="name">fgSizer6</property>
                 <property name="non_flexible_grow_mode"></property>
+                <property name="permission">none</property>
                 <property name="rows">5</property>
                 <property name="vgap">0</property>
-                <object class="sizeritem">
+                <object class="sizeritem" expanded="1">
                     <property name="border">5</property>
                     <property name="flag">wxEXPAND|wxALL</property>
                     <property name="proportion">0</property>
-                    <object class="wxStaticBoxSizer">
+                    <object class="wxStaticBoxSizer" expanded="1">
                         <property name="label">Effect Point Transformation Matrix</property>
                         <property name="minimum_size"></property>
                         <property name="name">sbSizer1</property>
                         <property name="orient">wxVERTICAL</property>
-                        <object class="sizeritem">
+                        <property name="permission">none</property>
+                        <object class="sizeritem" expanded="1">
                             <property name="border">5</property>
                             <property name="flag">wxEXPAND</property>
                             <property name="proportion">1</property>
-                            <object class="wxFlexGridSizer">
+                            <object class="wxFlexGridSizer" expanded="1">
                                 <property name="cols">1</property>
                                 <property name="flexible_direction">wxBOTH</property>
                                 <property name="growablecols">0</property>
@@ -64,31 +105,35 @@
                                 <property name="minimum_size"></property>
                                 <property name="name">fgSizer5</property>
                                 <property name="non_flexible_grow_mode"></property>
+                                <property name="permission">none</property>
                                 <property name="rows">4</property>
                                 <property name="vgap">0</property>
-                                <object class="sizeritem">
+                                <object class="sizeritem" expanded="1">
                                     <property name="border">5</property>
                                     <property name="flag">wxEXPAND|wxALL</property>
                                     <property name="proportion">1</property>
-                                    <object class="wxGridSizer">
+                                    <object class="wxGridSizer" expanded="1">
                                         <property name="cols">4</property>
                                         <property name="hgap">0</property>
                                         <property name="minimum_size"></property>
                                         <property name="name">gSizer1</property>
+                                        <property name="permission">none</property>
                                         <property name="rows">4</property>
                                         <property name="vgap">0</property>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxEXPAND</property>
                                             <property name="proportion">1</property>
-                                            <object class="wxStaticText">
+                                            <object class="wxStaticText" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
                                                 <property name="label">MyLabel</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="minimum_size"></property>
                                                 <property name="name">m_11</property>
                                                 <property name="permission">protected</property>
@@ -99,20 +144,24 @@
                                                 <property name="tooltip"></property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style">wxSTATIC_BORDER</property>
+                                                <property name="wrap">-1</property>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxEXPAND</property>
                                             <property name="proportion">1</property>
-                                            <object class="wxStaticText">
+                                            <object class="wxStaticText" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
                                                 <property name="label">MyLabel</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="minimum_size"></property>
                                                 <property name="name">m_12</property>
                                                 <property name="permission">protected</property>
@@ -123,20 +172,24 @@
                                                 <property name="tooltip"></property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style">wxSTATIC_BORDER</property>
+                                                <property name="wrap">-1</property>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxEXPAND</property>
                                             <property name="proportion">1</property>
-                                            <object class="wxStaticText">
+                                            <object class="wxStaticText" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
                                                 <property name="label">MyLabel</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="minimum_size"></property>
                                                 <property name="name">m_13</property>
                                                 <property name="permission">protected</property>
@@ -147,20 +200,24 @@
                                                 <property name="tooltip"></property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style">wxSTATIC_BORDER</property>
+                                                <property name="wrap">-1</property>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxEXPAND</property>
                                             <property name="proportion">1</property>
-                                            <object class="wxStaticText">
+                                            <object class="wxStaticText" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
                                                 <property name="label">MyLabel</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="minimum_size"></property>
                                                 <property name="name">m_14</property>
                                                 <property name="permission">protected</property>
@@ -171,20 +228,24 @@
                                                 <property name="tooltip"></property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style">wxSTATIC_BORDER</property>
+                                                <property name="wrap">-1</property>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxEXPAND</property>
                                             <property name="proportion">1</property>
-                                            <object class="wxStaticText">
+                                            <object class="wxStaticText" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
                                                 <property name="label">MyLabel</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="minimum_size"></property>
                                                 <property name="name">m_21</property>
                                                 <property name="permission">protected</property>
@@ -195,20 +256,24 @@
                                                 <property name="tooltip"></property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style">wxSTATIC_BORDER</property>
+                                                <property name="wrap">-1</property>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxEXPAND</property>
                                             <property name="proportion">1</property>
-                                            <object class="wxStaticText">
+                                            <object class="wxStaticText" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
                                                 <property name="label">MyLabel</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="minimum_size"></property>
                                                 <property name="name">m_22</property>
                                                 <property name="permission">protected</property>
@@ -219,20 +284,24 @@
                                                 <property name="tooltip"></property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style">wxSTATIC_BORDER</property>
+                                                <property name="wrap">-1</property>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxEXPAND</property>
                                             <property name="proportion">1</property>
-                                            <object class="wxStaticText">
+                                            <object class="wxStaticText" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
                                                 <property name="label">MyLabel</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="minimum_size"></property>
                                                 <property name="name">m_23</property>
                                                 <property name="permission">protected</property>
@@ -243,20 +312,24 @@
                                                 <property name="tooltip"></property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style">wxSTATIC_BORDER</property>
+                                                <property name="wrap">-1</property>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxEXPAND</property>
                                             <property name="proportion">1</property>
-                                            <object class="wxStaticText">
+                                            <object class="wxStaticText" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
                                                 <property name="label">MyLabel</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="minimum_size"></property>
                                                 <property name="name">m_24</property>
                                                 <property name="permission">protected</property>
@@ -267,20 +340,24 @@
                                                 <property name="tooltip"></property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style">wxSTATIC_BORDER</property>
+                                                <property name="wrap">-1</property>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxEXPAND</property>
                                             <property name="proportion">1</property>
-                                            <object class="wxStaticText">
+                                            <object class="wxStaticText" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
                                                 <property name="label">MyLabel</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="minimum_size"></property>
                                                 <property name="name">m_31</property>
                                                 <property name="permission">protected</property>
@@ -291,20 +368,24 @@
                                                 <property name="tooltip"></property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style">wxSTATIC_BORDER</property>
+                                                <property name="wrap">-1</property>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxEXPAND</property>
                                             <property name="proportion">1</property>
-                                            <object class="wxStaticText">
+                                            <object class="wxStaticText" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
                                                 <property name="label">MyLabel</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="minimum_size"></property>
                                                 <property name="name">m_32</property>
                                                 <property name="permission">protected</property>
@@ -315,20 +396,24 @@
                                                 <property name="tooltip"></property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style">wxSTATIC_BORDER</property>
+                                                <property name="wrap">-1</property>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxEXPAND</property>
                                             <property name="proportion">1</property>
-                                            <object class="wxStaticText">
+                                            <object class="wxStaticText" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
                                                 <property name="label">MyLabel</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="minimum_size"></property>
                                                 <property name="name">m_33</property>
                                                 <property name="permission">protected</property>
@@ -339,20 +424,24 @@
                                                 <property name="tooltip"></property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style">wxSTATIC_BORDER</property>
+                                                <property name="wrap">-1</property>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxEXPAND</property>
                                             <property name="proportion">1</property>
-                                            <object class="wxStaticText">
+                                            <object class="wxStaticText" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
                                                 <property name="label">MyLabel</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="minimum_size"></property>
                                                 <property name="name">m_34</property>
                                                 <property name="permission">protected</property>
@@ -363,20 +452,24 @@
                                                 <property name="tooltip"></property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style">wxSTATIC_BORDER</property>
+                                                <property name="wrap">-1</property>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxEXPAND</property>
                                             <property name="proportion">1</property>
-                                            <object class="wxStaticText">
+                                            <object class="wxStaticText" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
                                                 <property name="label">MyLabel</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="minimum_size"></property>
                                                 <property name="name">m_41</property>
                                                 <property name="permission">protected</property>
@@ -387,20 +480,24 @@
                                                 <property name="tooltip"></property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style">wxSTATIC_BORDER</property>
+                                                <property name="wrap">-1</property>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxEXPAND</property>
                                             <property name="proportion">1</property>
-                                            <object class="wxStaticText">
+                                            <object class="wxStaticText" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
                                                 <property name="label">MyLabel</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="minimum_size"></property>
                                                 <property name="name">m_42</property>
                                                 <property name="permission">protected</property>
@@ -411,20 +508,24 @@
                                                 <property name="tooltip"></property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style">wxSTATIC_BORDER</property>
+                                                <property name="wrap">-1</property>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxEXPAND</property>
                                             <property name="proportion">1</property>
-                                            <object class="wxStaticText">
+                                            <object class="wxStaticText" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
                                                 <property name="label">MyLabel</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="minimum_size"></property>
                                                 <property name="name">m_43</property>
                                                 <property name="permission">protected</property>
@@ -435,20 +536,24 @@
                                                 <property name="tooltip"></property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style">wxSTATIC_BORDER</property>
+                                                <property name="wrap">-1</property>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxEXPAND</property>
                                             <property name="proportion">1</property>
-                                            <object class="wxStaticText">
+                                            <object class="wxStaticText" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
                                                 <property name="label">MyLabel</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="minimum_size"></property>
                                                 <property name="name">m_44</property>
                                                 <property name="permission">protected</property>
@@ -459,39 +564,44 @@
                                                 <property name="tooltip"></property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style">wxSTATIC_BORDER</property>
+                                                <property name="wrap">-1</property>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
                                     </object>
                                 </object>
-                                <object class="sizeritem">
+                                <object class="sizeritem" expanded="1">
                                     <property name="border">5</property>
                                     <property name="flag">wxBOTTOM|wxRIGHT|wxLEFT|wxEXPAND</property>
                                     <property name="proportion">0</property>
-                                    <object class="wxChoice">
+                                    <object class="wxChoice" expanded="1">
                                         <property name="bg"></property>
                                         <property name="choices"></property>
+                                        <property name="context_help"></property>
                                         <property name="enabled">1</property>
                                         <property name="fg"></property>
                                         <property name="font"></property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
+                                        <property name="maximum_size"></property>
                                         <property name="minimum_size"></property>
                                         <property name="name">m_choicePoint</property>
                                         <property name="permission">protected</property>
                                         <property name="pos"></property>
-                                        <property name="selection">0</property>
                                         <property name="size"></property>
                                         <property name="subclass"></property>
                                         <property name="tooltip">Select an available one-vertex mesh for effect point position</property>
                                         <property name="window_extra_style"></property>
                                         <property name="window_style"></property>
+                                        <event name="OnChoice"></event>
+                                        <event name="OnUpdateUI"></event>
                                     </object>
                                 </object>
-                                <object class="sizeritem">
+                                <object class="sizeritem" expanded="1">
                                     <property name="border">5</property>
                                     <property name="flag">wxEXPAND</property>
                                     <property name="proportion">1</property>
-                                    <object class="wxFlexGridSizer">
+                                    <object class="wxFlexGridSizer" expanded="1">
                                         <property name="cols">7</property>
                                         <property name="flexible_direction">wxBOTH</property>
                                         <property name="growablecols">1,3,5</property>
@@ -500,20 +610,23 @@
                                         <property name="minimum_size"></property>
                                         <property name="name">fgSizer4</property>
                                         <property name="non_flexible_grow_mode"></property>
+                                        <property name="permission">none</property>
                                         <property name="rows">1</property>
                                         <property name="vgap">0</property>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxALL</property>
                                             <property name="proportion">0</property>
-                                            <object class="wxStaticText">
+                                            <object class="wxStaticText" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
                                                 <property name="label">X</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="minimum_size"></property>
                                                 <property name="name">m_staticText44</property>
                                                 <property name="permission">protected</property>
@@ -524,19 +637,23 @@
                                                 <property name="tooltip"></property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style"></property>
+                                                <property name="wrap">-1</property>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxEXPAND|wxBOTTOM|wxRIGHT</property>
                                             <property name="proportion">1</property>
-                                            <object class="wxTextCtrl">
+                                            <object class="wxTextCtrl" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="maxlength"></property>
                                                 <property name="minimum_size">40,-1</property>
                                                 <property name="name">m_textX</property>
@@ -549,20 +666,27 @@
                                                 <property name="value"></property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style"></property>
+                                                <event name="OnText"></event>
+                                                <event name="OnTextEnter"></event>
+                                                <event name="OnTextMaxLen"></event>
+                                                <event name="OnTextURL"></event>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxALL</property>
                                             <property name="proportion">0</property>
-                                            <object class="wxStaticText">
+                                            <object class="wxStaticText" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
                                                 <property name="label">Y</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="minimum_size"></property>
                                                 <property name="name">m_staticText45</property>
                                                 <property name="permission">protected</property>
@@ -573,19 +697,23 @@
                                                 <property name="tooltip"></property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style"></property>
+                                                <property name="wrap">-1</property>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxBOTTOM|wxRIGHT|wxEXPAND</property>
                                             <property name="proportion">1</property>
-                                            <object class="wxTextCtrl">
+                                            <object class="wxTextCtrl" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="maxlength"></property>
                                                 <property name="minimum_size">40,-1</property>
                                                 <property name="name">m_textY</property>
@@ -598,20 +726,27 @@
                                                 <property name="value"></property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style"></property>
+                                                <event name="OnText"></event>
+                                                <event name="OnTextEnter"></event>
+                                                <event name="OnTextMaxLen"></event>
+                                                <event name="OnTextURL"></event>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxALL</property>
                                             <property name="proportion">0</property>
-                                            <object class="wxStaticText">
+                                            <object class="wxStaticText" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
                                                 <property name="label">Z</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="minimum_size"></property>
                                                 <property name="name">m_staticText46</property>
                                                 <property name="permission">protected</property>
@@ -622,19 +757,23 @@
                                                 <property name="tooltip"></property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style"></property>
+                                                <property name="wrap">-1</property>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxBOTTOM|wxRIGHT|wxEXPAND</property>
                                             <property name="proportion">1</property>
-                                            <object class="wxTextCtrl">
+                                            <object class="wxTextCtrl" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="maxlength"></property>
                                                 <property name="minimum_size">40,-1</property>
                                                 <property name="name">m_textZ</property>
@@ -647,20 +786,27 @@
                                                 <property name="value"></property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style"></property>
+                                                <event name="OnText"></event>
+                                                <event name="OnTextEnter"></event>
+                                                <event name="OnTextMaxLen"></event>
+                                                <event name="OnTextURL"></event>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxBOTTOM|wxRIGHT|wxLEFT</property>
                                             <property name="proportion">0</property>
-                                            <object class="wxButton">
+                                            <object class="wxButton" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
                                                 <property name="label">Pos</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="minimum_size"></property>
                                                 <property name="name">m_btPos</property>
                                                 <property name="permission">protected</property>
@@ -671,37 +817,45 @@
                                                 <property name="tooltip">Set the effect point position.&#x0A;This replaces the matrix stack.&#x0A;This is just a short-cut for the matrix editor, if you need a more complex matrix, use the editor.</property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style"></property>
+                                                <event name="OnButtonClick"></event>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
                                     </object>
                                 </object>
-                                <object class="sizeritem">
+                                <object class="sizeritem" expanded="1">
                                     <property name="border">5</property>
                                     <property name="flag">wxEXPAND</property>
                                     <property name="proportion">1</property>
-                                    <object class="wxBoxSizer">
+                                    <object class="wxBoxSizer" expanded="1">
                                         <property name="minimum_size"></property>
                                         <property name="name">bSizer6</property>
                                         <property name="orient">wxHORIZONTAL</property>
-                                        <object class="spacer">
+                                        <property name="permission">none</property>
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxBOTTOM|wxRIGHT|wxLEFT</property>
-                                            <property name="height">0</property>
                                             <property name="proportion">1</property>
-                                            <property name="width">0</property>
+                                            <object class="spacer" expanded="1">
+                                                <property name="height">0</property>
+                                                <property name="permission">protected</property>
+                                                <property name="width">0</property>
+                                            </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxBOTTOM|wxRIGHT|wxLEFT</property>
                                             <property name="proportion">0</property>
-                                            <object class="wxButton">
+                                            <object class="wxButton" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
                                                 <property name="label">Edit</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="minimum_size"></property>
                                                 <property name="name">m_btEdit</property>
                                                 <property name="permission">protected</property>
@@ -712,20 +866,24 @@
                                                 <property name="tooltip">Edit the effect point matrix.</property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style"></property>
+                                                <event name="OnButtonClick"></event>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="sizeritem">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxBOTTOM|wxRIGHT|wxLEFT</property>
                                             <property name="proportion">0</property>
-                                            <object class="wxButton">
+                                            <object class="wxButton" expanded="1">
                                                 <property name="bg"></property>
+                                                <property name="context_help"></property>
                                                 <property name="enabled">1</property>
                                                 <property name="fg"></property>
                                                 <property name="font"></property>
                                                 <property name="hidden">0</property>
                                                 <property name="id">ID_DEFAULT</property>
                                                 <property name="label">Clear</property>
+                                                <property name="maximum_size"></property>
                                                 <property name="minimum_size"></property>
                                                 <property name="name">m_btClear</property>
                                                 <property name="permission">protected</property>
@@ -736,14 +894,19 @@
                                                 <property name="tooltip">Clear the effect point matrix.</property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_style"></property>
+                                                <event name="OnButtonClick"></event>
+                                                <event name="OnUpdateUI"></event>
                                             </object>
                                         </object>
-                                        <object class="spacer">
+                                        <object class="sizeritem" expanded="1">
                                             <property name="border">5</property>
                                             <property name="flag">wxBOTTOM|wxRIGHT|wxLEFT</property>
-                                            <property name="height">0</property>
                                             <property name="proportion">1</property>
-                                            <property name="width">0</property>
+                                            <object class="spacer" expanded="1">
+                                                <property name="height">0</property>
+                                                <property name="permission">protected</property>
+                                                <property name="width">0</property>
+                                            </object>
                                         </object>
                                     </object>
                                 </object>
@@ -751,18 +914,20 @@
                         </object>
                     </object>
                 </object>
-                <object class="sizeritem">
+                <object class="sizeritem" expanded="1">
                     <property name="border">5</property>
                     <property name="flag">wxALL</property>
                     <property name="proportion">0</property>
-                    <object class="wxStaticText">
+                    <object class="wxStaticText" expanded="1">
                         <property name="bg"></property>
+                        <property name="context_help"></property>
                         <property name="enabled">1</property>
                         <property name="fg"></property>
                         <property name="font"></property>
                         <property name="hidden">0</property>
                         <property name="id">ID_DEFAULT</property>
                         <property name="label">Effect Point Name:</property>
+                        <property name="maximum_size"></property>
                         <property name="minimum_size"></property>
                         <property name="name">m_staticText47</property>
                         <property name="permission">protected</property>
@@ -773,27 +938,32 @@
                         <property name="tooltip"></property>
                         <property name="window_extra_style"></property>
                         <property name="window_style"></property>
+                        <property name="wrap">-1</property>
+                        <event name="OnUpdateUI"></event>
                     </object>
                 </object>
-                <object class="sizeritem">
+                <object class="sizeritem" expanded="1">
                     <property name="border">5</property>
                     <property name="flag">wxEXPAND</property>
                     <property name="proportion">0</property>
-                    <object class="wxBoxSizer">
+                    <object class="wxBoxSizer" expanded="1">
                         <property name="minimum_size"></property>
                         <property name="name">bSizer7</property>
                         <property name="orient">wxHORIZONTAL</property>
-                        <object class="sizeritem">
+                        <property name="permission">none</property>
+                        <object class="sizeritem" expanded="1">
                             <property name="border">5</property>
                             <property name="flag">wxALL|wxEXPAND</property>
                             <property name="proportion">1</property>
-                            <object class="wxTextCtrl">
+                            <object class="wxTextCtrl" expanded="1">
                                 <property name="bg"></property>
+                                <property name="context_help"></property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
                                 <property name="hidden">0</property>
                                 <property name="id">ID_DEFAULT</property>
+                                <property name="maximum_size"></property>
                                 <property name="maxlength"></property>
                                 <property name="minimum_size"></property>
                                 <property name="name">m_textEffectName</property>
@@ -806,45 +976,57 @@
                                 <property name="value"></property>
                                 <property name="window_extra_style"></property>
                                 <property name="window_style"></property>
+                                <event name="OnText"></event>
+                                <event name="OnTextEnter"></event>
+                                <event name="OnTextMaxLen"></event>
+                                <event name="OnTextURL"></event>
+                                <event name="OnUpdateUI"></event>
                             </object>
                         </object>
                     </object>
                 </object>
-                <object class="spacer">
+                <object class="sizeritem" expanded="1">
                     <property name="border">5</property>
                     <property name="flag">wxEXPAND</property>
-                    <property name="height">0</property>
                     <property name="proportion">1</property>
-                    <property name="width">0</property>
+                    <object class="spacer" expanded="1">
+                        <property name="height">0</property>
+                        <property name="permission">protected</property>
+                        <property name="width">0</property>
+                    </object>
                 </object>
-                <object class="sizeritem">
+                <object class="sizeritem" expanded="1">
                     <property name="border">5</property>
                     <property name="flag">wxEXPAND</property>
                     <property name="proportion">0</property>
-                    <object class="wxBoxSizer">
+                    <object class="wxBoxSizer" expanded="1">
                         <property name="minimum_size"></property>
                         <property name="name">bSizer5</property>
                         <property name="orient">wxVERTICAL</property>
-                        <object class="sizeritem">
+                        <property name="permission">none</property>
+                        <object class="sizeritem" expanded="1">
                             <property name="border">5</property>
                             <property name="flag">wxEXPAND</property>
                             <property name="proportion">0</property>
-                            <object class="wxBoxSizer">
+                            <object class="wxBoxSizer" expanded="1">
                                 <property name="minimum_size"></property>
                                 <property name="name">bSizer4</property>
                                 <property name="orient">wxHORIZONTAL</property>
-                                <object class="sizeritem">
+                                <property name="permission">none</property>
+                                <object class="sizeritem" expanded="1">
                                     <property name="border">5</property>
                                     <property name="flag">wxALL</property>
                                     <property name="proportion">0</property>
-                                    <object class="wxButton">
+                                    <object class="wxButton" expanded="1">
                                         <property name="bg"></property>
+                                        <property name="context_help"></property>
                                         <property name="enabled">1</property>
                                         <property name="fg"></property>
                                         <property name="font"></property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
                                         <property name="label">Load</property>
+                                        <property name="maximum_size"></property>
                                         <property name="minimum_size"></property>
                                         <property name="name">m_btLoad</property>
                                         <property name="permission">protected</property>
@@ -855,27 +1037,34 @@
                                         <property name="tooltip">Load an effect point from an other SCN file.</property>
                                         <property name="window_extra_style"></property>
                                         <property name="window_style"></property>
+                                        <event name="OnButtonClick"></event>
+                                        <event name="OnUpdateUI"></event>
                                     </object>
                                 </object>
-                                <object class="spacer">
+                                <object class="sizeritem" expanded="1">
                                     <property name="border">0</property>
                                     <property name="flag">wxALL</property>
-                                    <property name="height">0</property>
                                     <property name="proportion">1</property>
-                                    <property name="width">0</property>
+                                    <object class="spacer" expanded="1">
+                                        <property name="height">0</property>
+                                        <property name="permission">protected</property>
+                                        <property name="width">0</property>
+                                    </object>
                                 </object>
-                                <object class="sizeritem">
+                                <object class="sizeritem" expanded="1">
                                     <property name="border">5</property>
                                     <property name="flag">wxALL</property>
                                     <property name="proportion">0</property>
-                                    <object class="wxButton">
+                                    <object class="wxButton" expanded="1">
                                         <property name="bg"></property>
+                                        <property name="context_help"></property>
                                         <property name="enabled">1</property>
                                         <property name="fg"></property>
                                         <property name="font"></property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
                                         <property name="label">Ok</property>
+                                        <property name="maximum_size"></property>
                                         <property name="minimum_size"></property>
                                         <property name="name">m_btOk</property>
                                         <property name="permission">protected</property>
@@ -886,20 +1075,24 @@
                                         <property name="tooltip"></property>
                                         <property name="window_extra_style"></property>
                                         <property name="window_style"></property>
+                                        <event name="OnButtonClick"></event>
+                                        <event name="OnUpdateUI"></event>
                                     </object>
                                 </object>
-                                <object class="sizeritem">
+                                <object class="sizeritem" expanded="1">
                                     <property name="border">5</property>
                                     <property name="flag">wxALL</property>
                                     <property name="proportion">0</property>
-                                    <object class="wxButton">
+                                    <object class="wxButton" expanded="1">
                                         <property name="bg"></property>
+                                        <property name="context_help"></property>
                                         <property name="enabled">1</property>
                                         <property name="fg"></property>
                                         <property name="font"></property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
                                         <property name="label">Cancel</property>
+                                        <property name="maximum_size"></property>
                                         <property name="minimum_size"></property>
                                         <property name="name">m_btCancel</property>
                                         <property name="permission">protected</property>
@@ -910,14 +1103,19 @@
                                         <property name="tooltip"></property>
                                         <property name="window_extra_style"></property>
                                         <property name="window_style"></property>
+                                        <event name="OnButtonClick"></event>
+                                        <event name="OnUpdateUI"></event>
                                     </object>
                                 </object>
-                                <object class="spacer">
+                                <object class="sizeritem" expanded="1">
                                     <property name="border">0</property>
                                     <property name="flag">wxALL</property>
-                                    <property name="height">0</property>
                                     <property name="proportion">1</property>
-                                    <property name="width">0</property>
+                                    <object class="spacer" expanded="1">
+                                        <property name="height">0</property>
+                                        <property name="permission">protected</property>
+                                        <property name="width">0</property>
+                                    </object>
                                 </object>
                             </object>
                         </object>
@@ -925,15 +1123,17 @@
                 </object>
             </object>
         </object>
-        <object class="Dialog">
+        <object class="Dialog" expanded="1">
             <property name="bg"></property>
             <property name="center"></property>
+            <property name="context_help"></property>
             <property name="enabled">1</property>
             <property name="extra_style"></property>
             <property name="fg"></property>
             <property name="font"></property>
             <property name="hidden">0</property>
             <property name="id">ID_DEFAULT</property>
+            <property name="maximum_size"></property>
             <property name="minimum_size"></property>
             <property name="name">dlgEffectLight</property>
             <property name="pos"></property>
@@ -944,7 +1144,37 @@
             <property name="tooltip"></property>
             <property name="window_extra_style"></property>
             <property name="window_style"></property>
-            <object class="wxFlexGridSizer">
+            <event name="OnActivate"></event>
+            <event name="OnActivateApp"></event>
+            <event name="OnChar"></event>
+            <event name="OnClose"></event>
+            <event name="OnEnterWindow"></event>
+            <event name="OnEraseBackground"></event>
+            <event name="OnHibernate"></event>
+            <event name="OnIconize"></event>
+            <event name="OnIdle"></event>
+            <event name="OnInitDialog"></event>
+            <event name="OnKeyDown"></event>
+            <event name="OnKeyUp"></event>
+            <event name="OnKillFocus"></event>
+            <event name="OnLeaveWindow"></event>
+            <event name="OnLeftDClick"></event>
+            <event name="OnLeftDown"></event>
+            <event name="OnLeftUp"></event>
+            <event name="OnMiddleDClick"></event>
+            <event name="OnMiddleDown"></event>
+            <event name="OnMiddleUp"></event>
+            <event name="OnMotion"></event>
+            <event name="OnMouseEvents"></event>
+            <event name="OnMouseWheel"></event>
+            <event name="OnPaint"></event>
+            <event name="OnRightDClick"></event>
+            <event name="OnRightDown"></event>
+            <event name="OnRightUp"></event>
+            <event name="OnSetFocus"></event>
+            <event name="OnSize"></event>
+            <event name="OnUpdateUI"></event>
+            <object class="wxFlexGridSizer" expanded="1">
                 <property name="cols">1</property>
                 <property name="flexible_direction">wxBOTH</property>
                 <property name="growablecols">0</property>
@@ -953,13 +1183,14 @@
                 <property name="minimum_size"></property>
                 <property name="name">fgSizer7</property>
                 <property name="non_flexible_grow_mode"></property>
+                <property name="permission">none</property>
                 <property name="rows">6</property>
                 <property name="vgap">0</property>
-                <object class="sizeritem">
+                <object class="sizeritem" expanded="1">
                     <property name="border">5</property>
                     <property name="flag">wxEXPAND</property>
                     <property name="proportion">1</property>
-                    <object class="wxFlexGridSizer">
+                    <object class="wxFlexGridSizer" expanded="1">
                         <property name="cols">2</property>
                         <property name="flexible_direction"></property>
                         <property name="growablecols">1</property>
@@ -968,20 +1199,23 @@
                         <property name="minimum_size"></property>
                         <property name="name">fgSizer8</property>
                         <property name="non_flexible_grow_mode"></property>
+                        <property name="permission">none</property>
                         <property name="rows">4</property>
                         <property name="vgap">0</property>
-                        <object class="sizeritem">
+                        <object class="sizeritem" expanded="1">
                             <property name="border">5</property>
                             <property name="flag">wxALIGN_CENTER_VERTICAL|wxALL</property>
                             <property name="proportion">1</property>
-                            <object class="wxStaticText">
+                            <object class="wxStaticText" expanded="1">
                                 <property name="bg"></property>
+                                <property name="context_help"></property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
                                 <property name="hidden">0</property>
                                 <property name="id">ID_DEFAULT</property>
                                 <property name="label">Type:</property>
+                                <property name="maximum_size"></property>
                                 <property name="minimum_size"></property>
                                 <property name="name">m_staticText30</property>
                                 <property name="permission">protected</property>
@@ -992,13 +1226,15 @@
                                 <property name="tooltip"></property>
                                 <property name="window_extra_style"></property>
                                 <property name="window_style"></property>
+                                <property name="wrap">-1</property>
+                                <event name="OnUpdateUI"></event>
                             </object>
                         </object>
-                        <object class="sizeritem">
+                        <object class="sizeritem" expanded="1">
                             <property name="border">5</property>
                             <property name="flag">wxEXPAND</property>
                             <property name="proportion">1</property>
-                            <object class="wxFlexGridSizer">
+                            <object class="wxFlexGridSizer" expanded="1">
                                 <property name="cols">3</property>
                                 <property name="flexible_direction">wxBOTH</property>
                                 <property name="growablecols">0</property>
@@ -1007,45 +1243,51 @@
                                 <property name="minimum_size"></property>
                                 <property name="name">fgSizer9</property>
                                 <property name="non_flexible_grow_mode"></property>
+                                <property name="permission">none</property>
                                 <property name="rows">1</property>
                                 <property name="vgap">0</property>
-                                <object class="sizeritem">
+                                <object class="sizeritem" expanded="1">
                                     <property name="border">5</property>
                                     <property name="flag">wxALL|wxEXPAND</property>
                                     <property name="proportion">1</property>
-                                    <object class="wxChoice">
+                                    <object class="wxChoice" expanded="1">
                                         <property name="bg"></property>
                                         <property name="choices">&apos;Normal&apos; &apos;Simple&apos; &apos;No Bulb&apos;</property>
+                                        <property name="context_help"></property>
                                         <property name="enabled">1</property>
                                         <property name="fg"></property>
                                         <property name="font"></property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
+                                        <property name="maximum_size"></property>
                                         <property name="minimum_size"></property>
                                         <property name="name">m_choiceLightType</property>
                                         <property name="permission">protected</property>
                                         <property name="pos"></property>
-                                        <property name="selection">0</property>
                                         <property name="size"></property>
                                         <property name="subclass"></property>
                                         <property name="tooltip">Select the kind of light effect point you want to generate.&#x0A;The boxes indicated whether the point will actually shed light (shines) or have a visible glow (bulb).</property>
                                         <property name="window_extra_style"></property>
                                         <property name="window_style"></property>
+                                        <event name="OnChoice"></event>
+                                        <event name="OnUpdateUI"></event>
                                     </object>
                                 </object>
-                                <object class="sizeritem">
+                                <object class="sizeritem" expanded="1">
                                     <property name="border">5</property>
                                     <property name="flag">wxALL|wxEXPAND</property>
                                     <property name="proportion">0</property>
-                                    <object class="wxCheckBox">
+                                    <object class="wxCheckBox" expanded="1">
                                         <property name="bg"></property>
                                         <property name="checked">1</property>
+                                        <property name="context_help"></property>
                                         <property name="enabled">0</property>
                                         <property name="fg"></property>
                                         <property name="font"></property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
                                         <property name="label">Shines</property>
+                                        <property name="maximum_size"></property>
                                         <property name="minimum_size"></property>
                                         <property name="name">m_checkShines</property>
                                         <property name="permission">protected</property>
@@ -1056,21 +1298,25 @@
                                         <property name="tooltip"></property>
                                         <property name="window_extra_style"></property>
                                         <property name="window_style"></property>
+                                        <event name="OnCheckBox"></event>
+                                        <event name="OnUpdateUI"></event>
                                     </object>
                                 </object>
-                                <object class="sizeritem">
+                                <object class="sizeritem" expanded="1">
                                     <property name="border">5</property>
                                     <property name="flag">wxALL|wxEXPAND</property>
                                     <property name="proportion">0</property>
-                                    <object class="wxCheckBox">
+                                    <object class="wxCheckBox" expanded="1">
                                         <property name="bg"></property>
                                         <property name="checked">1</property>
+                                        <property name="context_help"></property>
                                         <property name="enabled">0</property>
                                         <property name="fg"></property>
                                         <property name="font"></property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
                                         <property name="label">Bulb</property>
+                                        <property name="maximum_size"></property>
                                         <property name="minimum_size"></property>
                                         <property name="name">m_checkBulb</property>
                                         <property name="permission">protected</property>
@@ -1081,22 +1327,26 @@
                                         <property name="tooltip"></property>
                                         <property name="window_extra_style"></property>
                                         <property name="window_style"></property>
+                                        <event name="OnCheckBox"></event>
+                                        <event name="OnUpdateUI"></event>
                                     </object>
                                 </object>
                             </object>
                         </object>
-                        <object class="sizeritem">
+                        <object class="sizeritem" expanded="1">
                             <property name="border">5</property>
                             <property name="flag">wxALIGN_CENTER_VERTICAL|wxALL</property>
                             <property name="proportion">0</property>
-                            <object class="wxStaticText">
+                            <object class="wxStaticText" expanded="1">
                                 <property name="bg"></property>
+                                <property name="context_help"></property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
                                 <property name="hidden">0</property>
                                 <property name="id">ID_DEFAULT</property>
                                 <property name="label">Option:</property>
+                                <property name="maximum_size"></property>
                                 <property name="minimum_size"></property>
                                 <property name="name">m_staticText31</property>
                                 <property name="permission">protected</property>
@@ -1107,44 +1357,51 @@
                                 <property name="tooltip"></property>
                                 <property name="window_extra_style"></property>
                                 <property name="window_style"></property>
+                                <property name="wrap">-1</property>
+                                <event name="OnUpdateUI"></event>
                             </object>
                         </object>
-                        <object class="sizeritem">
+                        <object class="sizeritem" expanded="1">
                             <property name="border">5</property>
                             <property name="flag">wxALL|wxEXPAND</property>
                             <property name="proportion">1</property>
-                            <object class="wxChoice">
+                            <object class="wxChoice" expanded="1">
                                 <property name="bg"></property>
                                 <property name="choices">&apos;None&apos; &apos;Lamp&apos; &apos;Torch&apos; &apos;Custom Colour 1&apos; &apos;Custom Colour 2&apos; &apos;Custom Colour 3&apos;</property>
+                                <property name="context_help"></property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
                                 <property name="hidden">0</property>
                                 <property name="id">ID_DEFAULT</property>
+                                <property name="maximum_size"></property>
                                 <property name="minimum_size"></property>
                                 <property name="name">m_choiceLightOption</property>
                                 <property name="permission">protected</property>
                                 <property name="pos"></property>
-                                <property name="selection">0</property>
                                 <property name="size"></property>
                                 <property name="subclass"></property>
                                 <property name="tooltip">Select a light effect point option.&#x0A;lamp: It&apos;s not completely clear what this does, but it may relate to how lights interact.&#x0A;torch: Flickering, torch-like light.&#x0A;Custom Colour: Creates a recolorable light. Note: you have to add a mesh with a recolorable texture to make this work.</property>
                                 <property name="window_extra_style"></property>
                                 <property name="window_style"></property>
+                                <event name="OnChoice"></event>
+                                <event name="OnUpdateUI"></event>
                             </object>
                         </object>
-                        <object class="sizeritem">
+                        <object class="sizeritem" expanded="1">
                             <property name="border">5</property>
                             <property name="flag">wxALIGN_CENTER_VERTICAL|wxALL</property>
                             <property name="proportion">0</property>
-                            <object class="wxStaticText">
+                            <object class="wxStaticText" expanded="1">
                                 <property name="bg"></property>
+                                <property name="context_help"></property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
                                 <property name="hidden">0</property>
                                 <property name="id">ID_DEFAULT</property>
                                 <property name="label">Color:</property>
+                                <property name="maximum_size"></property>
                                 <property name="minimum_size"></property>
                                 <property name="name">m_staticText32</property>
                                 <property name="permission">protected</property>
@@ -1155,13 +1412,15 @@
                                 <property name="tooltip"></property>
                                 <property name="window_extra_style"></property>
                                 <property name="window_style"></property>
+                                <property name="wrap">-1</property>
+                                <event name="OnUpdateUI"></event>
                             </object>
                         </object>
-                        <object class="sizeritem">
+                        <object class="sizeritem" expanded="1">
                             <property name="border">5</property>
                             <property name="flag">wxEXPAND</property>
                             <property name="proportion">1</property>
-                            <object class="wxFlexGridSizer">
+                            <object class="wxFlexGridSizer" expanded="1">
                                 <property name="cols">7</property>
                                 <property name="flexible_direction">wxBOTH</property>
                                 <property name="growablecols">1,3,5</property>
@@ -1170,20 +1429,23 @@
                                 <property name="minimum_size"></property>
                                 <property name="name">fgSizer10</property>
                                 <property name="non_flexible_grow_mode"></property>
+                                <property name="permission">none</property>
                                 <property name="rows">1</property>
                                 <property name="vgap">0</property>
-                                <object class="sizeritem">
+                                <object class="sizeritem" expanded="1">
                                     <property name="border">5</property>
                                     <property name="flag">wxALIGN_CENTER_VERTICAL|wxALL</property>
                                     <property name="proportion">0</property>
-                                    <object class="wxStaticText">
+                                    <object class="wxStaticText" expanded="1">
                                         <property name="bg"></property>
+                                        <property name="context_help"></property>
                                         <property name="enabled">1</property>
                                         <property name="fg">255,0,0</property>
                                         <property name="font">Arial,90,92,10</property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
                                         <property name="label">R</property>
+                                        <property name="maximum_size"></property>
                                         <property name="minimum_size"></property>
                                         <property name="name">m_staticText33</property>
                                         <property name="permission">protected</property>
@@ -1194,19 +1456,23 @@
                                         <property name="tooltip"></property>
                                         <property name="window_extra_style"></property>
                                         <property name="window_style"></property>
+                                        <property name="wrap">-1</property>
+                                        <event name="OnUpdateUI"></event>
                                     </object>
                                 </object>
-                                <object class="sizeritem">
+                                <object class="sizeritem" expanded="1">
                                     <property name="border">5</property>
                                     <property name="flag">wxTOP|wxBOTTOM|wxRIGHT|wxEXPAND</property>
                                     <property name="proportion">1</property>
-                                    <object class="wxTextCtrl">
+                                    <object class="wxTextCtrl" expanded="1">
                                         <property name="bg"></property>
+                                        <property name="context_help"></property>
                                         <property name="enabled">1</property>
                                         <property name="fg"></property>
                                         <property name="font"></property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
+                                        <property name="maximum_size"></property>
                                         <property name="maxlength"></property>
                                         <property name="minimum_size">40,-1</property>
                                         <property name="name">m_textLightRed</property>
@@ -1219,20 +1485,27 @@
                                         <property name="value">255</property>
                                         <property name="window_extra_style"></property>
                                         <property name="window_style"></property>
+                                        <event name="OnText"></event>
+                                        <event name="OnTextEnter"></event>
+                                        <event name="OnTextMaxLen"></event>
+                                        <event name="OnTextURL"></event>
+                                        <event name="OnUpdateUI"></event>
                                     </object>
                                 </object>
-                                <object class="sizeritem">
+                                <object class="sizeritem" expanded="1">
                                     <property name="border">5</property>
                                     <property name="flag">wxALIGN_CENTER_VERTICAL|wxALL</property>
                                     <property name="proportion">0</property>
-                                    <object class="wxStaticText">
+                                    <object class="wxStaticText" expanded="1">
                                         <property name="bg"></property>
+                                        <property name="context_help"></property>
                                         <property name="enabled">1</property>
                                         <property name="fg">0,170,0</property>
                                         <property name="font">Arial,90,92,10</property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
                                         <property name="label">G</property>
+                                        <property name="maximum_size"></property>
                                         <property name="minimum_size"></property>
                                         <property name="name">m_staticText34</property>
                                         <property name="permission">protected</property>
@@ -1243,19 +1516,23 @@
                                         <property name="tooltip"></property>
                                         <property name="window_extra_style"></property>
                                         <property name="window_style"></property>
+                                        <property name="wrap">-1</property>
+                                        <event name="OnUpdateUI"></event>
                                     </object>
                                 </object>
-                                <object class="sizeritem">
+                                <object class="sizeritem" expanded="1">
                                     <property name="border">5</property>
                                     <property name="flag">wxTOP|wxBOTTOM|wxRIGHT|wxEXPAND</property>
                                     <property name="proportion">1</property>
-                                    <object class="wxTextCtrl">
+                                    <object class="wxTextCtrl" expanded="1">
                                         <property name="bg"></property>
+                                        <property name="context_help"></property>
                                         <property name="enabled">1</property>
                                         <property name="fg"></property>
                                         <property name="font"></property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
+                                        <property name="maximum_size"></property>
                                         <property name="maxlength"></property>
                                         <property name="minimum_size">40,-1</property>
                                         <property name="name">m_textLightGreen</property>
@@ -1268,20 +1545,27 @@
                                         <property name="value">255</property>
                                         <property name="window_extra_style"></property>
                                         <property name="window_style"></property>
+                                        <event name="OnText"></event>
+                                        <event name="OnTextEnter"></event>
+                                        <event name="OnTextMaxLen"></event>
+                                        <event name="OnTextURL"></event>
+                                        <event name="OnUpdateUI"></event>
                                     </object>
                                 </object>
-                                <object class="sizeritem">
+                                <object class="sizeritem" expanded="1">
                                     <property name="border">5</property>
                                     <property name="flag">wxALIGN_CENTER_VERTICAL|wxALL</property>
                                     <property name="proportion">0</property>
-                                    <object class="wxStaticText">
+                                    <object class="wxStaticText" expanded="1">
                                         <property name="bg"></property>
+                                        <property name="context_help"></property>
                                         <property name="enabled">1</property>
                                         <property name="fg">0,0,255</property>
                                         <property name="font">Arial,90,92,10</property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
                                         <property name="label">B</property>
+                                        <property name="maximum_size"></property>
                                         <property name="minimum_size"></property>
                                         <property name="name">m_staticText341</property>
                                         <property name="permission">protected</property>
@@ -1292,19 +1576,23 @@
                                         <property name="tooltip"></property>
                                         <property name="window_extra_style"></property>
                                         <property name="window_style"></property>
+                                        <property name="wrap">-1</property>
+                                        <event name="OnUpdateUI"></event>
                                     </object>
                                 </object>
-                                <object class="sizeritem">
+                                <object class="sizeritem" expanded="1">
                                     <property name="border">5</property>
                                     <property name="flag">wxALL|wxEXPAND</property>
                                     <property name="proportion">0</property>
-                                    <object class="wxTextCtrl">
+                                    <object class="wxTextCtrl" expanded="1">
                                         <property name="bg"></property>
+                                        <property name="context_help"></property>
                                         <property name="enabled">1</property>
                                         <property name="fg"></property>
                                         <property name="font"></property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
+                                        <property name="maximum_size"></property>
                                         <property name="maxlength"></property>
                                         <property name="minimum_size">40,-1</property>
                                         <property name="name">m_textLightBlue</property>
@@ -1317,40 +1605,42 @@
                                         <property name="value">255</property>
                                         <property name="window_extra_style"></property>
                                         <property name="window_style"></property>
+                                        <event name="OnText"></event>
+                                        <event name="OnTextEnter"></event>
+                                        <event name="OnTextMaxLen"></event>
+                                        <event name="OnTextURL"></event>
+                                        <event name="OnUpdateUI"></event>
                                     </object>
                                 </object>
-                                <object class="sizeritem">
+                                <object class="sizeritem" expanded="1">
                                     <property name="border">5</property>
                                     <property name="flag">wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL|wxALL</property>
                                     <property name="proportion">0</property>
-                                    <object class="wxStdDialogButtonSizer">
-                                        <property name="Apply">0</property>
-                                        <property name="Cancel">0</property>
-                                        <property name="ContextHelp">0</property>
-                                        <property name="Help">0</property>
-                                        <property name="No">0</property>
-                                        <property name="OK">0</property>
-                                        <property name="Save">0</property>
-                                        <property name="Yes">0</property>
-                                        <property name="minimum_size"></property>
+                                    <object class="CustomControl" expanded="1">
+                                        <property name="construction"></property>
+                                        <property name="declaration"></property>
+                                        <property name="include"></property>
                                         <property name="name">m_colourPick</property>
                                         <property name="permission">protected</property>
+                                        <property name="settings"></property>
                                     </object>
                                 </object>
                             </object>
                         </object>
-                        <object class="sizeritem">
+                        <object class="sizeritem" expanded="1">
                             <property name="border">5</property>
                             <property name="flag">wxALIGN_CENTER_VERTICAL|wxALL</property>
                             <property name="proportion">0</property>
-                            <object class="wxStaticText">
+                            <object class="wxStaticText" expanded="1">
                                 <property name="bg"></property>
+                                <property name="context_help"></property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
                                 <property name="hidden">0</property>
                                 <property name="id">ID_DEFAULT</property>
                                 <property name="label">Radius:</property>
+                                <property name="maximum_size"></property>
                                 <property name="minimum_size"></property>
                                 <property name="name">m_staticText38</property>
                                 <property name="permission">protected</property>
@@ -1361,27 +1651,32 @@
                                 <property name="tooltip"></property>
                                 <property name="window_extra_style"></property>
                                 <property name="window_style"></property>
+                                <property name="wrap">-1</property>
+                                <event name="OnUpdateUI"></event>
                             </object>
                         </object>
-                        <object class="sizeritem">
+                        <object class="sizeritem" expanded="1">
                             <property name="border">5</property>
                             <property name="flag">wxEXPAND</property>
                             <property name="proportion">1</property>
-                            <object class="wxBoxSizer">
+                            <object class="wxBoxSizer" expanded="1">
                                 <property name="minimum_size"></property>
                                 <property name="name">bSizer11</property>
                                 <property name="orient">wxHORIZONTAL</property>
-                                <object class="sizeritem">
+                                <property name="permission">none</property>
+                                <object class="sizeritem" expanded="1">
                                     <property name="border">5</property>
                                     <property name="flag">wxALL</property>
                                     <property name="proportion">0</property>
-                                    <object class="wxTextCtrl">
+                                    <object class="wxTextCtrl" expanded="1">
                                         <property name="bg"></property>
+                                        <property name="context_help"></property>
                                         <property name="enabled">1</property>
                                         <property name="fg"></property>
                                         <property name="font"></property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
+                                        <property name="maximum_size"></property>
                                         <property name="maxlength"></property>
                                         <property name="minimum_size">40,-1</property>
                                         <property name="name">m_textLightRadius</property>
@@ -1394,21 +1689,28 @@
                                         <property name="value">10</property>
                                         <property name="window_extra_style"></property>
                                         <property name="window_style"></property>
+                                        <event name="OnText"></event>
+                                        <event name="OnTextEnter"></event>
+                                        <event name="OnTextMaxLen"></event>
+                                        <event name="OnTextURL"></event>
+                                        <event name="OnUpdateUI"></event>
                                     </object>
                                 </object>
-                                <object class="sizeritem">
+                                <object class="sizeritem" expanded="1">
                                     <property name="border">5</property>
                                     <property name="flag">wxALL|wxEXPAND</property>
                                     <property name="proportion">1</property>
-                                    <object class="wxCheckBox">
+                                    <object class="wxCheckBox" expanded="1">
                                         <property name="bg"></property>
                                         <property name="checked">0</property>
+                                        <property name="context_help"></property>
                                         <property name="enabled">1</property>
                                         <property name="fg"></property>
                                         <property name="font"></property>
                                         <property name="hidden">0</property>
                                         <property name="id">ID_DEFAULT</property>
                                         <property name="label">cm</property>
+                                        <property name="maximum_size"></property>
                                         <property name="minimum_size"></property>
                                         <property name="name">m_checkCM</property>
                                         <property name="permission">protected</property>
@@ -1419,30 +1721,37 @@
                                         <property name="tooltip">This option was seen in some game files.&#x0A;The purpose is unknown and in my expriments didn&apos;t work.&#x0A;It&apos;s recommended to be left off.</property>
                                         <property name="window_extra_style"></property>
                                         <property name="window_style"></property>
+                                        <event name="OnCheckBox"></event>
+                                        <event name="OnUpdateUI"></event>
                                     </object>
                                 </object>
                             </object>
                         </object>
                     </object>
                 </object>
-                <object class="spacer">
+                <object class="sizeritem" expanded="1">
                     <property name="border">5</property>
                     <property name="flag"></property>
-                    <property name="height">0</property>
                     <property name="proportion">1</property>
-                    <property name="width">0</property>
+                    <object class="spacer" expanded="1">
+                        <property name="height">0</property>
+                        <property name="permission">protected</property>
+                        <property name="width">0</property>
+                    </object>
                 </object>
-                <object class="sizeritem">
+                <object class="sizeritem" expanded="1">
                     <property name="border">5</property>
                     <property name="flag">wxALL|wxEXPAND</property>
                     <property name="proportion">0</property>
-                    <object class="wxTextCtrl">
+                    <object class="wxTextCtrl" expanded="1">
                         <property name="bg"></property>
+                        <property name="context_help"></property>
                         <property name="enabled">1</property>
                         <property name="fg"></property>
                         <property name="font"></property>
                         <property name="hidden">0</property>
                         <property name="id">ID_DEFAULT</property>
+                        <property name="maximum_size"></property>
                         <property name="maxlength"></property>
                         <property name="minimum_size"></property>
                         <property name="name">m_textPreview</property>
@@ -1455,35 +1764,46 @@
                         <property name="value"></property>
                         <property name="window_extra_style"></property>
                         <property name="window_style">wxSTATIC_BORDER</property>
+                        <event name="OnText"></event>
+                        <event name="OnTextEnter"></event>
+                        <event name="OnTextMaxLen"></event>
+                        <event name="OnTextURL"></event>
+                        <event name="OnUpdateUI"></event>
                     </object>
                 </object>
-                <object class="sizeritem">
+                <object class="sizeritem" expanded="1">
                     <property name="border">5</property>
                     <property name="flag">wxEXPAND</property>
                     <property name="proportion">1</property>
-                    <object class="wxBoxSizer">
+                    <object class="wxBoxSizer" expanded="1">
                         <property name="minimum_size"></property>
                         <property name="name">bSizer4</property>
                         <property name="orient">wxHORIZONTAL</property>
-                        <object class="spacer">
+                        <property name="permission">none</property>
+                        <object class="sizeritem" expanded="1">
                             <property name="border">0</property>
                             <property name="flag">wxALL</property>
-                            <property name="height">0</property>
                             <property name="proportion">1</property>
-                            <property name="width">0</property>
+                            <object class="spacer" expanded="1">
+                                <property name="height">0</property>
+                                <property name="permission">protected</property>
+                                <property name="width">0</property>
+                            </object>
                         </object>
-                        <object class="sizeritem">
+                        <object class="sizeritem" expanded="1">
                             <property name="border">5</property>
                             <property name="flag">wxALL</property>
                             <property name="proportion">0</property>
-                            <object class="wxButton">
+                            <object class="wxButton" expanded="1">
                                 <property name="bg"></property>
+                                <property name="context_help"></property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
                                 <property name="hidden">0</property>
                                 <property name="id">ID_DEFAULT</property>
                                 <property name="label">Ok</property>
+                                <property name="maximum_size"></property>
                                 <property name="minimum_size"></property>
                                 <property name="name">m_btOk</property>
                                 <property name="permission">protected</property>
@@ -1494,20 +1814,24 @@
                                 <property name="tooltip"></property>
                                 <property name="window_extra_style"></property>
                                 <property name="window_style"></property>
+                                <event name="OnButtonClick"></event>
+                                <event name="OnUpdateUI"></event>
                             </object>
                         </object>
-                        <object class="sizeritem">
+                        <object class="sizeritem" expanded="1">
                             <property name="border">5</property>
                             <property name="flag">wxALL</property>
                             <property name="proportion">0</property>
-                            <object class="wxButton">
+                            <object class="wxButton" expanded="1">
                                 <property name="bg"></property>
+                                <property name="context_help"></property>
                                 <property name="enabled">1</property>
                                 <property name="fg"></property>
                                 <property name="font"></property>
                                 <property name="hidden">0</property>
                                 <property name="id">ID_DEFAULT</property>
                                 <property name="label">Cancel</property>
+                                <property name="maximum_size"></property>
                                 <property name="minimum_size"></property>
                                 <property name="name">m_btCancel</property>
                                 <property name="permission">protected</property>
@@ -1518,14 +1842,19 @@
                                 <property name="tooltip"></property>
                                 <property name="window_extra_style"></property>
                                 <property name="window_style"></property>
+                                <event name="OnButtonClick"></event>
+                                <event name="OnUpdateUI"></event>
                             </object>
                         </object>
-                        <object class="spacer">
+                        <object class="sizeritem" expanded="1">
                             <property name="border">0</property>
                             <property name="flag">wxALL</property>
-                            <property name="height">0</property>
                             <property name="proportion">1</property>
-                            <property name="width">0</property>
+                            <object class="spacer" expanded="1">
+                                <property name="height">0</property>
+                                <property name="permission">protected</property>
+                                <property name="width">0</property>
+                            </object>
                         </object>
                     </object>
                 </object>

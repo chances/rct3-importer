@@ -64,10 +64,10 @@
 												<object class="wxBoxSizer">
 													<orient>wxVERTICAL</orient>
 													<object class="spacer">
-														<size>0,0</size>
 														<option>1</option>
 														<flag></flag>
 														<border>5</border>
+														<size>0,0</size>
 													</object>
 													<object class="sizeritem">
 														<option>0</option>
@@ -115,10 +115,10 @@
 														</object>
 													</object>
 													<object class="spacer">
-														<size>0,0</size>
 														<option>1</option>
 														<flag></flag>
 														<border>5</border>
+														<size>0,0</size>
 													</object>
 													<object class="sizeritem">
 														<option>0</option>
@@ -360,7 +360,6 @@
 												<object class="wxChoice" name="m_choiceTranslationPoint">
 													<tooltip>Select an available one-vertex mesh for translation</tooltip>
 													<content />
-													<selection>0</selection>
 												</object>
 											</object>
 											<object class="sizeritem">
@@ -481,10 +480,10 @@
 												</object>
 											</object>
 											<object class="spacer">
-												<size>0,0</size>
 												<option>0</option>
 												<flag>wxTOP|wxBOTTOM|wxLEFT</flag>
 												<border>5</border>
+												<size>0,0</size>
 											</object>
 											<object class="sizeritem">
 												<option>1</option>
@@ -728,10 +727,10 @@
 						</object>
 					</object>
 					<object class="spacer">
-						<size>0,0</size>
 						<option>1</option>
 						<flag>wxALL</flag>
 						<border>0</border>
+						<size>0,0</size>
 					</object>
 					<object class="sizeritem">
 						<option>0</option>
@@ -752,10 +751,10 @@
 						</object>
 					</object>
 					<object class="spacer">
-						<size>0,0</size>
 						<option>1</option>
 						<flag>wxALL</flag>
 						<border>0</border>
+						<size>0,0</size>
 					</object>
 				</object>
 			</object>

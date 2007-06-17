@@ -66,7 +66,7 @@ const long tbClearCache = ::wxNewId();
 ////////////////////////////////////////////////////////////////////////
 
 wxSceneryListBox::wxSceneryListBox(wxWindow *parent, cSCNFile *content):
-        wxColourHtmlListBox(parent, wxID_ANY, wxDefaultPosition, wxSize(-1, 300), wxSUNKEN_BORDER) {
+        wxColourHtmlListBox(parent, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), wxSUNKEN_BORDER) {
     m_contents = content;
 }
 

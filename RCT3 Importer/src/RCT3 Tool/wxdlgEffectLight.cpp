@@ -49,6 +49,9 @@ dlgEffectLight::dlgEffectLight(wxWindow *parent) {
 
     InitWidgetsFromXRC((wxWindow *)parent);
 
+    m_choiceLightOption->SetSelection(0);
+    m_choiceLightType->SetSelection(0);
+
     m_colourPick = new wxColourPickerCtrl(this, XRCID("m_colourPick"), *wxWHITE);
     m_colourPick->SetToolTip(_("Select light colour."));
     wxXmlResource::Get()->AttachUnknownControl(wxT("m_colourPick"), m_colourPick, this);

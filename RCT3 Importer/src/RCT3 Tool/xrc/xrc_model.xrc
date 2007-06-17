@@ -97,10 +97,10 @@
 								</object>
 							</object>
 							<object class="spacer">
-								<size>0,0</size>
 								<option>1</option>
 								<flag>wxEXPAND</flag>
 								<border>5</border>
+								<size>0,0</size>
 							</object>
 							<object class="sizeritem">
 								<option>0</option>
@@ -115,10 +115,10 @@
 								</object>
 							</object>
 							<object class="spacer">
-								<size>0,0</size>
 								<option>1</option>
 								<flag></flag>
 								<border>5</border>
+								<size>0,0</size>
 							</object>
 							<object class="sizeritem">
 								<option>0</option>
@@ -292,10 +292,10 @@
 				</object>
 			</object>
 			<object class="spacer">
-				<size>0,0</size>
 				<option>1</option>
 				<flag></flag>
 				<border>5</border>
+				<size>0,0</size>
 			</object>
 		</object>
 	</object>
@@ -305,7 +305,7 @@
 			<orient>wxHORIZONTAL</orient>
 			<object class="sizeritem">
 				<option>1</option>
-				<flag>wxTOP|wxBOTTOM|wxLEFT|wxEXPAND</flag>
+				<flag>wxALL|wxEXPAND</flag>
 				<border>5</border>
 				<object class="unknown" name="m_htlbEffect" />
 			</object>
@@ -321,10 +321,10 @@
 					<growablecols></growablecols>
 					<growablerows>0,5</growablerows>
 					<object class="spacer">
-						<size>0,0</size>
 						<option>1</option>
 						<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
 						<border>5</border>
+						<size>0,0</size>
 					</object>
 					<object class="sizeritem">
 						<option>0</option>
@@ -384,10 +384,10 @@
 						</object>
 					</object>
 					<object class="spacer">
-						<size>0,0</size>
 						<option>1</option>
 						<flag>wxRIGHT|wxLEFT</flag>
 						<border>5</border>
+						<size>0,0</size>
 					</object>
 					<object class="sizeritem">
 						<option>0</option>
@@ -442,10 +442,10 @@
 						</object>
 					</object>
 					<object class="spacer">
-						<size>0,0</size>
 						<option>1</option>
 						<flag>wxRIGHT|wxLEFT</flag>
 						<border>0</border>
+						<size>0,0</size>
 					</object>
 					<object class="sizeritem">
 						<option>0</option>
@@ -466,10 +466,10 @@
 						</object>
 					</object>
 					<object class="spacer">
-						<size>0,0</size>
 						<option>1</option>
 						<flag>wxRIGHT|wxLEFT</flag>
 						<border>0</border>
+						<size>0,0</size>
 					</object>
 				</object>
 			</object>

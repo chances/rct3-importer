@@ -50,7 +50,7 @@
 											<growablecols>0</growablecols>
 											<growablerows>0</growablerows>
 											<object class="sizeritem">
-												<option>1</option>
+												<option>0</option>
 												<flag>wxALL|wxEXPAND</flag>
 												<border>5</border>
 												<object class="unknown" name="m_htlbTexture" />
@@ -67,10 +67,10 @@
 													<growablecols></growablecols>
 													<growablerows>0,6</growablerows>
 													<object class="spacer">
-														<size>0,0</size>
 														<option>1</option>
 														<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
 														<border>5</border>
+														<size>0,0</size>
 													</object>
 													<object class="sizeritem">
 														<option>0</option>
@@ -130,10 +130,10 @@
 														</object>
 													</object>
 													<object class="spacer">
-														<size>0,0</size>
 														<option>1</option>
 														<flag>wxRIGHT|wxLEFT</flag>
 														<border>5</border>
+														<size>0,0</size>
 													</object>
 													<object class="sizeritem">
 														<option>0</option>
@@ -173,7 +173,7 @@
 											<growablecols>0</growablecols>
 											<growablerows>0</growablerows>
 											<object class="sizeritem">
-												<option>1</option>
+												<option>0</option>
 												<flag>wxALL|wxEXPAND</flag>
 												<border>5</border>
 												<object class="unknown" name="m_htlbModel" />
@@ -190,10 +190,10 @@
 													<growablecols></growablecols>
 													<growablerows>0,6</growablerows>
 													<object class="spacer">
-														<size>0,0</size>
 														<option>1</option>
 														<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
 														<border>5</border>
+														<size>0,0</size>
 													</object>
 													<object class="sizeritem">
 														<option>0</option>
@@ -253,10 +253,10 @@
 														</object>
 													</object>
 													<object class="spacer">
-														<size>0,0</size>
 														<option>1</option>
 														<flag>wxRIGHT|wxLEFT</flag>
 														<border>5</border>
+														<size>0,0</size>
 													</object>
 													<object class="sizeritem">
 														<option>0</option>
@@ -296,7 +296,7 @@
 											<growablecols>0</growablecols>
 											<growablerows>0</growablerows>
 											<object class="sizeritem">
-												<option>1</option>
+												<option>0</option>
 												<flag>wxALL|wxEXPAND</flag>
 												<border>5</border>
 												<object class="unknown" name="m_htlbLOD" />
@@ -313,10 +313,10 @@
 													<growablecols></growablecols>
 													<growablerows>0,5</growablerows>
 													<object class="spacer">
-														<size>0,0</size>
 														<option>1</option>
 														<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
 														<border>5</border>
+														<size>0,0</size>
 													</object>
 													<object class="sizeritem">
 														<option>0</option>
@@ -367,10 +367,10 @@
 														</object>
 													</object>
 													<object class="spacer">
-														<size>0,0</size>
 														<option>1</option>
 														<flag>wxRIGHT|wxLEFT</flag>
 														<border>5</border>
+														<size>0,0</size>
 													</object>
 													<object class="sizeritem">
 														<option>0</option>
@@ -478,7 +478,6 @@
 																<item>Soaked!</item>
 																<item>Wild!</item>
 															</content>
-															<selection>0</selection>
 														</object>
 													</object>
 												</object>
@@ -795,7 +794,7 @@
 											<growablecols>0</growablecols>
 											<growablerows>0</growablerows>
 											<object class="sizeritem">
-												<option>1</option>
+												<option>0</option>
 												<flag>wxALL|wxEXPAND</flag>
 												<border>5</border>
 												<object class="unknown" name="m_htlbReferences" />

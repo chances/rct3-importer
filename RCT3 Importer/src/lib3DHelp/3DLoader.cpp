@@ -56,6 +56,33 @@ bool c3DLoader::FetchObject(unsigned int index, unsigned long *vertexcount, VERT
     return true;
 }
 
+bool c3DLoader::FetchAsAnimObject(unsigned int index, unsigned long bone, unsigned long unk, unsigned long *vertexcount, VERTEX2 **vertices, unsigned long *index_count, unsigned short **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform) {
+    int i;
+    if (m_meshes.size() <= 0)
+        return false;
+    *vertexcount = m_meshes[index].m_vertices.size();
+    *index_count = m_meshes[index].m_indices.size();
+    *vertices = new VERTEX2[*vertexcount];
+    D3DMATRIX normaltransform;
+    if (transform)
+        normaltransform = matrixNormalTransform(*transform);
+    for (i = 0; i < *vertexcount; i++) {
+        if (transform)
+            (*vertices)[i] = vertex2vertex2(matrixApply(m_meshes[index].m_vertices[i], *transform, normaltransform), bone, unk);
+        else
+            (*vertices)[i] = vertex2vertex2(m_meshes[index].m_vertices[i], bone, unk);
+        boundsContain(&((*vertices)[i]).position, bbox_min, bbox_max);
+    }
+    *indices = new unsigned short[*index_count];
+    bool do_mirror = (transform)?(matrixCalcDeterminant(transform)<0.0):false;
+    for (i = 0; i < *index_count; i+=3) {
+        (*indices)[i] = m_meshes[index].m_indices[i+((do_mirror)?1:0)];
+        (*indices)[i+1] = m_meshes[index].m_indices[i+((do_mirror)?0:1)];
+        (*indices)[i+2] = m_meshes[index].m_indices[i+2];
+    }
+    return true;
+}
+
 c3DLoader *c3DLoader::LoadFile(const char *filename) {
     c3DLoader *res;
 

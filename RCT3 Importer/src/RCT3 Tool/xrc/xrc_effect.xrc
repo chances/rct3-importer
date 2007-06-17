@@ -190,7 +190,6 @@
 								<object class="wxChoice" name="m_choicePoint">
 									<tooltip>Select an available one-vertex mesh for effect point position</tooltip>
 									<content />
-									<selection>0</selection>
 								</object>
 							</object>
 							<object class="sizeritem">
@@ -278,10 +277,10 @@
 								<object class="wxBoxSizer">
 									<orient>wxHORIZONTAL</orient>
 									<object class="spacer">
-										<size>0,0</size>
 										<option>1</option>
 										<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
 										<border>5</border>
+										<size>0,0</size>
 									</object>
 									<object class="sizeritem">
 										<option>0</option>
@@ -306,10 +305,10 @@
 										</object>
 									</object>
 									<object class="spacer">
-										<size>0,0</size>
 										<option>1</option>
 										<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
 										<border>5</border>
+										<size>0,0</size>
 									</object>
 								</object>
 							</object>
@@ -343,10 +342,10 @@
 				</object>
 			</object>
 			<object class="spacer">
-				<size>0,0</size>
 				<option>1</option>
 				<flag>wxEXPAND</flag>
 				<border>5</border>
+				<size>0,0</size>
 			</object>
 			<object class="sizeritem">
 				<option>0</option>
@@ -372,10 +371,10 @@
 								</object>
 							</object>
 							<object class="spacer">
-								<size>0,0</size>
 								<option>1</option>
 								<flag>wxALL</flag>
 								<border>0</border>
+								<size>0,0</size>
 							</object>
 							<object class="sizeritem">
 								<option>0</option>
@@ -396,10 +395,10 @@
 								</object>
 							</object>
 							<object class="spacer">
-								<size>0,0</size>
 								<option>1</option>
 								<flag>wxALL</flag>
 								<border>0</border>
+								<size>0,0</size>
 							</object>
 						</object>
 					</object>
@@ -458,7 +457,6 @@
 										<item>Simple</item>
 										<item>No Bulb</item>
 									</content>
-									<selection>0</selection>
 								</object>
 							</object>
 							<object class="sizeritem">
@@ -505,7 +503,6 @@
 								<item>Custom Colour 2</item>
 								<item>Custom Colour 3</item>
 							</content>
-							<selection>0</selection>
 						</object>
 					</object>
 					<object class="sizeritem">
@@ -655,10 +652,10 @@
 				</object>
 			</object>
 			<object class="spacer">
-				<size>0,0</size>
 				<option>1</option>
 				<flag></flag>
 				<border>5</border>
+				<size>0,0</size>
 			</object>
 			<object class="sizeritem">
 				<option>0</option>
@@ -677,10 +674,10 @@
 				<object class="wxBoxSizer">
 					<orient>wxHORIZONTAL</orient>
 					<object class="spacer">
-						<size>0,0</size>
 						<option>1</option>
 						<flag>wxALL</flag>
 						<border>0</border>
+						<size>0,0</size>
 					</object>
 					<object class="sizeritem">
 						<option>0</option>
@@ -701,10 +698,10 @@
 						</object>
 					</object>
 					<object class="spacer">
-						<size>0,0</size>
 						<option>1</option>
 						<flag>wxALL</flag>
 						<border>0</border>
+						<size>0,0</size>
 					</object>
 				</object>
 			</object>

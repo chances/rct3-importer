@@ -2,6 +2,7 @@
 <resource xmlns="http://www.wxwindows.org/wxxrc" version="2.3.0.1">
 	<object class="wxDialog" name="dlgTextureSimple">
 		<style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
+		<exstyle>wxWS_EX_VALIDATE_RECURSIVELY</exstyle>
 		<title>Edit Texture</title>
 		<centered>1</centered>
 		<object class="wxFlexGridSizer">
@@ -76,7 +77,6 @@
 						<item>Use internal alpha channel</item>
 						<item>Use external alpha channel from file:</item>
 					</content>
-					<selection>0</selection>
 				</object>
 			</object>
 			<object class="sizeritem">
@@ -128,14 +128,13 @@
 						<item>Two Colors</item>
 						<item>Three Colors</item>
 					</content>
-					<selection>0</selection>
 				</object>
 			</object>
 			<object class="spacer">
-				<size>0,0</size>
 				<option>1</option>
 				<flag></flag>
 				<border>5</border>
+				<size>0,0</size>
 			</object>
 			<object class="sizeritem">
 				<option>1</option>
@@ -155,10 +154,10 @@
 						</object>
 					</object>
 					<object class="spacer">
-						<size>0,0</size>
 						<option>1</option>
 						<flag>wxALL</flag>
 						<border>5</border>
+						<size>0,0</size>
 					</object>
 					<object class="sizeritem">
 						<option>0</option>
@@ -179,10 +178,10 @@
 						</object>
 					</object>
 					<object class="spacer">
-						<size>0,0</size>
 						<option>1</option>
 						<flag>wxALL</flag>
 						<border>5</border>
+						<size>0,0</size>
 					</object>
 				</object>
 			</object>

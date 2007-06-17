@@ -2,6 +2,7 @@
 <resource xmlns="http://www.wxwindows.org/wxxrc" version="2.3.0.1">
 	<object class="wxDialog" name="dlgTexture">
 		<style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
+		<exstyle>wxWS_EX_VALIDATE_RECURSIVELY</exstyle>
 		<title>Edit Texture (Advanced)</title>
 		<centered>1</centered>
 		<object class="wxFlexGridSizer">
@@ -145,7 +146,7 @@
 								<orient>wxVERTICAL</orient>
 								<object class="sizeritem">
 									<option>1</option>
-									<flag>wxALIGN_CENTER|wxALL|wxEXPAND|wxSHAPED</flag>
+									<flag>wxALL|wxEXPAND</flag>
 									<border>5</border>
 									<object class="unknown" name="m_ilpictPreview" />
 								</object>
@@ -177,10 +178,10 @@
 									<growablecols></growablecols>
 									<growablerows>0,6</growablerows>
 									<object class="spacer">
-										<size>0,0</size>
 										<option>1</option>
 										<flag>wxBOTTOM|wxRIGHT</flag>
 										<border>5</border>
+										<size>0,0</size>
 									</object>
 									<object class="sizeritem">
 										<option>0</option>
@@ -240,10 +241,10 @@
 										</object>
 									</object>
 									<object class="spacer">
-										<size>0,0</size>
 										<option>1</option>
 										<flag>wxRIGHT</flag>
 										<border>5</border>
+										<size>0,0</size>
 									</object>
 									<object class="sizeritem">
 										<option>0</option>
@@ -287,10 +288,10 @@
 									<growablecols></growablecols>
 									<growablerows>0,5</growablerows>
 									<object class="spacer">
-										<size>0,0</size>
 										<option>1</option>
 										<flag>wxBOTTOM|wxRIGHT</flag>
 										<border>5</border>
+										<size>0,0</size>
 									</object>
 									<object class="sizeritem">
 										<option>0</option>
@@ -337,10 +338,10 @@
 										</object>
 									</object>
 									<object class="spacer">
-										<size>0,0</size>
 										<option>1</option>
 										<flag>wxRIGHT</flag>
 										<border>5</border>
+										<size>0,0</size>
 									</object>
 									<object class="sizeritem">
 										<option>0</option>
@@ -391,10 +392,10 @@
 						</object>
 					</object>
 					<object class="spacer">
-						<size>0,0</size>
 						<option>1</option>
 						<flag>wxALL</flag>
 						<border>5</border>
+						<size>0,0</size>
 					</object>
 					<object class="sizeritem">
 						<option>0</option>
@@ -415,10 +416,10 @@
 						</object>
 					</object>
 					<object class="spacer">
-						<size>0,0</size>
 						<option>1</option>
 						<flag>wxALL</flag>
 						<border>5</border>
+						<size>0,0</size>
 					</object>
 				</object>
 			</object>
@@ -426,6 +427,7 @@
 	</object>
 	<object class="wxDialog" name="dlgTextureFrame">
 		<style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
+		<exstyle>wxWS_EX_VALIDATE_RECURSIVELY</exstyle>
 		<title>Edit Texture Frame</title>
 		<centered>1</centered>
 		<object class="wxFlexGridSizer">
@@ -482,7 +484,6 @@
 						<item>Use internal alpha channel</item>
 						<item>Use external alpha channel from file:</item>
 					</content>
-					<selection>0</selection>
 				</object>
 			</object>
 			<object class="sizeritem">
@@ -541,10 +542,10 @@
 				</object>
 			</object>
 			<object class="spacer">
-				<size>0,0</size>
 				<option>1</option>
 				<flag></flag>
 				<border>5</border>
+				<size>0,0</size>
 			</object>
 			<object class="sizeritem">
 				<option>1</option>
@@ -564,10 +565,10 @@
 						</object>
 					</object>
 					<object class="spacer">
-						<size>0,0</size>
 						<option>1</option>
 						<flag>wxALL</flag>
 						<border>5</border>
+						<size>0,0</size>
 					</object>
 					<object class="sizeritem">
 						<option>0</option>
@@ -588,10 +589,10 @@
 						</object>
 					</object>
 					<object class="spacer">
-						<size>0,0</size>
 						<option>1</option>
 						<flag>wxALL</flag>
 						<border>5</border>
+						<size>0,0</size>
 					</object>
 				</object>
 			</object>

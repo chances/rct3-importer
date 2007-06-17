@@ -167,6 +167,7 @@ protected:
     void OnFrameClear(wxCommandEvent& event);
 
     void OnAnimationListUpdate(wxCommandEvent& event);
+    void OnAnimationListSetCount(wxCommandEvent& event);
     void OnAnimationUp(wxSpinEvent& event);
     void OnAnimationDown(wxSpinEvent& event);
     void OnAnimationCountUp(wxSpinEvent& event);

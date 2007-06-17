@@ -34,6 +34,7 @@
 
 #include <math.h>
 
+#include <wx/numdlg.h>
 #include <wx/valtext.h>
 #include <wx/valgen.h>
 
@@ -56,7 +57,7 @@
 ////////////////////////////////////////////////////////////////////////
 
 wxTextureEditListBox::wxTextureEditListBox(wxWindow *parent, cFlexiTexture *content, int style):
-        wxColourHtmlListBox(parent, wxID_ANY, wxDefaultPosition, wxSize(-1, 300), style | wxSUNKEN_BORDER) {
+        wxColourHtmlListBox(parent, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), style | wxSUNKEN_BORDER) {
     m_contents = content;
 }
 
@@ -344,6 +345,7 @@ EVT_BUTTON(XRCID("m_btFrameDel"), dlgTexture::OnFrameDel)
 EVT_BUTTON(XRCID("m_btFrameClear"), dlgTexture::OnFrameClear)
 // Animation Controls
 EVT_LISTBOX(XRCID("m_htlbAnimation"), dlgTexture::OnAnimationListUpdate)
+EVT_LISTBOX_DCLICK(XRCID("m_htlbAnimation"), dlgTexture::OnAnimationListSetCount)
 EVT_SPIN_UP(XRCID("m_spinAnimation"), dlgTexture::OnAnimationUp)
 EVT_SPIN_DOWN(XRCID("m_spinAnimation"), dlgTexture::OnAnimationDown)
 EVT_SPIN_UP(XRCID("m_spinAnimationCount"), dlgTexture::OnAnimationCountUp)
@@ -837,6 +839,18 @@ void dlgTexture::AnimationPreview() {
 
 void dlgTexture::OnAnimationListUpdate(wxCommandEvent& WXUNUSED(event)) {
     AnimationPreview();
+}
+
+void dlgTexture::OnAnimationListSetCount(wxCommandEvent& WXUNUSED(event)) {
+    int sel = m_htlbAnimation->GetSelection();
+    if (sel < 1)
+        return;
+    long newcount = ::wxGetNumberFromUser(wxEmptyString, _("Enter number of repetitions"), _("Frame Count"), m_ft.Animation[sel-1].count, 1, LONG_MAX, this);
+    if (newcount >= 1) {
+        m_ft.Animation[sel-1].count = newcount;
+        m_htlbAnimation->UpdateContents();
+        m_htlbAnimation->SetSelection(sel);
+    }
 }
 
 void dlgTexture::OnAnimationUp(wxSpinEvent& WXUNUSED(event)) {

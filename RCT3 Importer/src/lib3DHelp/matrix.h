@@ -37,6 +37,17 @@ D3DVECTOR vectorNormalize(const float x, const float y, const float z);
 inline D3DVECTOR vectorNormalize(const D3DVECTOR v) {
     return vectorNormalize(v.x, v.y, v.z);
 }
+inline VERTEX2 vertex2vertex2(VERTEX v, unsigned long bone, unsigned long unk) {
+    VERTEX2 ret;
+    ret.position = v.position;
+    ret.normal = v.normal;
+    ret.Bone = bone;
+    ret.unk = unk;
+    ret.color = v.color;
+    ret.tu = v.tu;
+    ret.tv = v.tv;
+    return ret;
+}
 
 D3DMATRIX matrixGetUnity();
 D3DMATRIX matrixGetFixOrientation(c3DLoaderOrientation orient = ORIENTATION_RIGHT_ZUP);
