@@ -56,9 +56,42 @@
 					<Add option="-s" />
 				</Linker>
 			</Target>
+			<Target title="Debug STD">
+				<Option output="..\..\lib\lib3DHelpds.a" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="..\..\lib\obj\debugs" />
+				<Option external_deps="..\..\lib\libWXHelpd.a;" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add option="-DSTD_ONLY" />
+					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.8" />
+				</Compiler>
+			</Target>
+			<Target title="Release STD">
+				<Option output="..\..\lib\lib3DHelps.a" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="..\..\lib\obj\releases" />
+				<Option external_deps="..\..\lib\libWXHelp.a;" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-Os" />
+					<Add option="-O2" />
+					<Add option="-DSTD_ONLY" />
+					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.8" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="All" targets="Debug;Profile;Release;" />
+			<Add alias="All" targets="Debug;Profile;Release;Debug STD;Release STD;" />
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-Wall" />
@@ -71,23 +104,49 @@
 		<Unit filename="3DLoader.cpp" />
 		<Unit filename="3DLoader.h" />
 		<Unit filename="3DLoaderTypes.h" />
+		<Unit filename="3Dstring.h" />
 		<Unit filename="ASE3DLoader.cpp" />
 		<Unit filename="ASE3DLoader.h" />
 		<Unit filename="MS3DFile.cpp" />
 		<Unit filename="MS3DFile.h" />
 		<Unit filename="MS3DLoader.cpp" />
 		<Unit filename="MS3DLoader.h" />
-		<Unit filename="RCT3Structs.cpp" />
-		<Unit filename="RCT3Structs.h" />
-		<Unit filename="SCNFile.cpp" />
-		<Unit filename="SCNFile.h" />
+		<Unit filename="RCT3Structs.cpp">
+			<Option target="Debug" />
+			<Option target="Profile" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="RCT3Structs.h">
+			<Option target="Debug" />
+			<Option target="Profile" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="SCNFile.cpp">
+			<Option target="Debug" />
+			<Option target="Profile" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="SCNFile.h">
+			<Option target="Debug" />
+			<Option target="Profile" />
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="matrix.cpp" />
 		<Unit filename="matrix.h" />
 		<Unit filename="rct3log.h" />
-		<Unit filename="valtexture.cpp" />
-		<Unit filename="valtexture.h" />
+		<Unit filename="valtexture.cpp">
+			<Option target="Debug" />
+			<Option target="Profile" />
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="valtexture.h">
+			<Option target="Debug" />
+			<Option target="Profile" />
+			<Option target="Release" />
+		</Unit>
 		<Extensions>
 			<code_completion />
+			<envvars />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

@@ -439,24 +439,6 @@
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
 		</Unit>
-		<Unit filename="wxdlgMesh.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-			<Option virtualFolder="wx\" />
-			<Option target="Release DLL" />
-			<Option target="Debug DLL" />
-			<Option target="Release" />
-			<Option target="Debug" />
-			<Option target="Profile DLL" />
-		</Unit>
-		<Unit filename="wxdlgMesh.h">
-			<Option virtualFolder="wx\" />
-			<Option target="Release DLL" />
-			<Option target="Debug DLL" />
-			<Option target="Release" />
-			<Option target="Debug" />
-			<Option target="Profile DLL" />
-		</Unit>
 		<Unit filename="wxdlgModel.cpp">
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
@@ -559,10 +541,6 @@
 		<Unit filename="xrc\xrc_matrix.xrc">
 			<Option compile="1" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_matrix.cpp --function=InitXmlMatrix $file" />
-			<Option target="Precompile XRC" />
-		</Unit>
-		<Unit filename="xrc\xrc_mesh.xrc">
-			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_mesh.cpp --function=InitXmlMesh $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
 		<Unit filename="xrc\xrc_model.xrc">
@@ -741,24 +719,6 @@
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
 		</Unit>
-		<Unit filename="xrc_mesh.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-			<Option virtualFolder="xrc\" />
-			<Option target="Release DLL" />
-			<Option target="Debug DLL" />
-			<Option target="Release" />
-			<Option target="Debug" />
-			<Option target="Profile DLL" />
-		</Unit>
-		<Unit filename="xrc_mesh.h">
-			<Option virtualFolder="xrc\" />
-			<Option target="Release DLL" />
-			<Option target="Debug DLL" />
-			<Option target="Release" />
-			<Option target="Debug" />
-			<Option target="Profile DLL" />
-		</Unit>
 		<Unit filename="xrc_model.cpp">
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
@@ -841,6 +801,7 @@
 		</Unit>
 		<Extensions>
 			<code_completion />
+			<envvars />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>
