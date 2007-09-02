@@ -85,7 +85,7 @@ IMPLEMENT_APP_NO_MAIN(ToolApp)
 //  Globals (???)
 //
 //////////////////////////////////
-#define TITLE_VERSION "RCT3 Object Importer (v17fix2)"
+#define TITLE_VERSION "RCT3 Object Importer (v17fix3)"
 
 
 
@@ -129,7 +129,7 @@ std::vector<cText>::iterator TextStringsIterator;
 std::vector < Icon * >::iterator IconsIterator;
 std::vector < IconTexture * >::iterator IconTexturesIterator;
 std::vector < Scenery * >::iterator SceneryItemsIterator;
-char *stdstyle = "Style\\Themed\\";
+const char *stdstyle = "Style\\Themed\\";
 char themefile[MAX_PATH]="";
 
 //unsigned long local_log2(unsigned long y);
@@ -574,17 +574,28 @@ BOOL CALLBACK SIDEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
         SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "None");
         SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Guest Injection Point");
         SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Litter Bin");
-        SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Bench");
+        SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Bench (2)");
         SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Park Entrance");
         SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Queue Line Entertainer");
         SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Ride Event");
         SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Sign");
         SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Visa Point");
         SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Waterable");
-        SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Path Fountain");
+        SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Path Fountain (F)");
         SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Loudspeaker");
         SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Passport Post");
         SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Water Cannon");
+        SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Pool, Diving Board (1)");
+        SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Pool, Ladder");
+        SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Pool, Underwater Light (L)");
+        SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Pool, Pool Lamp (L)");
+        SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Pool, Shower (3A)");
+        SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Pool, Small Ramp");
+        SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Pool, Big Ramp");
+        SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Pool, Sun Loungers (2)");
+        SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Pool, Lifeguard");
+        SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Pool, Wave Machine (A)");
+        SendDlgItemMessage(hwnd, IDC_PARAMS, CB_ADDSTRING, 0, (WPARAM) "Lifeguard Chair (1)");
         if (SceneryItems.size() > 0) {
             for (SceneryItemsIterator = SceneryItems.begin();
                     SceneryItemsIterator != SceneryItems.end(); SceneryItemsIterator++) {
@@ -1729,8 +1740,17 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
         SendDlgItemMessage(hwnd, IDC_THEME, LB_ADDSTRING, 0, (LPARAM) "$Paradise Island");
         SendDlgItemMessage(hwnd, IDC_THEME, LB_ADDSTRING, 0, (LPARAM) "#Safari");
         SendDlgItemMessage(hwnd, IDC_THEME, LB_ADDSTRING, 0, (LPARAM) "#Prehistoric");
+        SendDlgItemMessage(hwnd, IDC_THEME, LB_ADDSTRING, 0, (LPARAM) "None");
         SetDlgItemText(hwnd, IDC_NOTES,
-                       "Notes about RCT3 Soaked! and RCT3 Wild! expansion packs\r\nItems marked with a # will only work with the Wild! addon.\r\nItems marked with a $ will only work with the Soaked! addon.\r\nAll features assume the most recent patch is installed (either the\r\nnew Soaked! patch or the RCT3 Patch 3) as this adds features\r\n(such as billboards in Soaked! and normal RCT3 and tunnels and\r\nspeakers in normal RCT3) not otherwise available.");
+                       "Notes about RCT3 Soaked! and RCT3 Wild! expansion packs\r\n"
+                       "Items marked with a # will only work with the Wild! addon.\r\n"
+                       "Items marked with a $ will only work with the Soaked! addon.\r\n"
+                       "All features assume the most recent patch is installed (either the\r\n"
+                       "new Soaked! patch or the RCT3 Patch 3) as this adds features\r\n"
+                       "(such as billboards in Soaked! and normal RCT3 and tunnels and\r\n"
+                       "speakers in normal RCT3) not otherwise available.\r\n"
+                       "If you set Theme Type to 'None', the user cannot filter the set,\r\n"
+                       "it will always appear on the list." );
         strcpy(themefile, "");
         SetDlgItemText(hwnd, IDC_THEMEPREFIX, g_config->m_prefix.c_str());
         break;
@@ -2951,6 +2971,8 @@ bool InstallTheme(HWND hwnd) {
 //    wxFileName test2 = test1;
 
     styleval = SendDlgItemMessage(hwnd, IDC_THEME, LB_GETCURSEL, 0, 0);
+    if (styleval > 8)
+        styleval = 255;
     len = MAX_PATH;
 /*
         GetWindowTextLength(GetDlgItem(hwnd, IDC_THEMENAME)) +
@@ -3093,7 +3115,7 @@ bool InstallTheme(HWND hwnd) {
         strcpy(strings, sfname.c_str());
         strings += strlen(sfname.c_str()) + 1;
         sLocation += "\\";
-        sLocation += sfname;
+        sLocation += sfname.c_str();
 
         stemp = sLocation + ".common.ovl";
         CopyFile(ovlfile, stemp.c_str(), FALSE);

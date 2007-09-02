@@ -1,0 +1,1759 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<resource xmlns="http://www.wxwindows.org/wxxrc" version="2.3.0.1">
+	<object class="wxDialog" name="dlgScenerySettings">
+		<style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
+		<title>Edit Scenery Settings</title>
+		<object class="wxFlexGridSizer">
+			<rows>2</rows>
+			<cols>1</cols>
+			<vgap>0</vgap>
+			<hgap>0</hgap>
+			<growablecols>0</growablecols>
+			<growablerows>0</growablerows>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND | wxALL</flag>
+				<border>5</border>
+				<object class="wxNotebook" name="m_nbSettings">
+					<object class="notebookpage">
+						<label>Basic</label>
+						<selected>0</selected>
+						<object class="wxPanel" name="m_panBasic">
+							<style>wxTAB_TRAVERSAL</style>
+							<object class="wxBoxSizer">
+								<orient>wxVERTICAL</orient>
+								<object class="sizeritem">
+									<option>1</option>
+									<flag>wxEXPAND</flag>
+									<border>5</border>
+									<object class="wxFlexGridSizer">
+										<rows>4</rows>
+										<cols>1</cols>
+										<vgap>0</vgap>
+										<hgap>0</hgap>
+										<growablecols>0</growablecols>
+										<growablerows></growablerows>
+										<object class="sizeritem">
+											<option>1</option>
+											<flag>wxEXPAND</flag>
+											<border>5</border>
+											<object class="wxBoxSizer">
+												<orient>wxHORIZONTAL</orient>
+												<object class="sizeritem">
+													<option>1</option>
+													<flag>wxALIGN_CENTER_VERTICAL</flag>
+													<border>5</border>
+													<object class="wxFlexGridSizer">
+														<rows>2</rows>
+														<cols>2</cols>
+														<vgap>0</vgap>
+														<hgap>0</hgap>
+														<growablecols>1</growablecols>
+														<growablerows></growablerows>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+															<border>5</border>
+															<object class="wxStaticText" name="m_staticText1">
+																<label>OVL Name</label>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>1</option>
+															<flag>wxALL|wxEXPAND</flag>
+															<border>5</border>
+															<object class="wxTextCtrl" name="m_textOVLName">
+																<tooltip>OVL file name</tooltip>
+																<value></value>
+																<maxlength>0</maxlength>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxRIGHT|wxLEFT</flag>
+															<border>5</border>
+															<object class="wxStaticText" name="m_staticText2">
+																<tooltip>Location within the teme</tooltip>
+																<label>Location</label>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>1</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxEXPAND</flag>
+															<border>5</border>
+															<object class="wxComboBox" name="m_comboLocation">
+																<tooltip>Location within the theme</tooltip>
+																<value></value>
+																<content />
+															</object>
+														</object>
+													</object>
+												</object>
+												<object class="sizeritem">
+													<option>0</option>
+													<flag></flag>
+													<border>5</border>
+													<object class="wxStaticBoxSizer">
+														<orient>wxVERTICAL</orient>
+														<label>SID</label>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag></flag>
+															<border>5</border>
+															<object class="wxButton" name="m_btSIDOpen">
+																<label>Open</label>
+																<default>0</default>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag></flag>
+															<border>5</border>
+															<object class="wxButton" name="m_btSIDSave">
+																<label>Save</label>
+																<default>0</default>
+															</object>
+														</object>
+													</object>
+												</object>
+											</object>
+										</object>
+										<object class="sizeritem">
+											<option>1</option>
+											<flag>wxEXPAND</flag>
+											<border>5</border>
+											<object class="wxStaticBoxSizer">
+												<orient>wxHORIZONTAL</orient>
+												<label>Group</label>
+												<object class="sizeritem">
+													<option>1</option>
+													<flag>wxEXPAND</flag>
+													<border>5</border>
+													<object class="wxFlexGridSizer">
+														<rows>1</rows>
+														<cols>2</cols>
+														<vgap>0</vgap>
+														<hgap>0</hgap>
+														<growablecols>1</growablecols>
+														<growablerows></growablerows>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+															<border>5</border>
+															<object class="wxStaticText" name="m_staticText3">
+																<label>Icon</label>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>1</option>
+															<flag>wxALL|wxEXPAND</flag>
+															<border>5</border>
+															<object class="wxChoice" name="m_choiceGroupIcon">
+																<content />
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+															<border>5</border>
+															<object class="wxStaticText" name="m_staticText4">
+																<label>Name String</label>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>1</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxEXPAND</flag>
+															<border>5</border>
+															<object class="wxChoice" name="m_choiceGroupName">
+																<content />
+															</object>
+														</object>
+													</object>
+												</object>
+												<object class="sizeritem">
+													<option>0</option>
+													<flag>wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND|wxFIXED_MINSIZE|wxSHAPED</flag>
+													<border>5</border>
+													<object class="" name="m_ilpictGroupIcon" />
+												</object>
+											</object>
+										</object>
+										<object class="sizeritem">
+											<option>1</option>
+											<flag>wxEXPAND</flag>
+											<border>5</border>
+											<object class="wxStaticBoxSizer">
+												<orient>wxHORIZONTAL</orient>
+												<label>Scenery Item</label>
+												<object class="sizeritem">
+													<option>1</option>
+													<flag>wxEXPAND</flag>
+													<border>5</border>
+													<object class="wxFlexGridSizer">
+														<rows>1</rows>
+														<cols>2</cols>
+														<vgap>0</vgap>
+														<hgap>0</hgap>
+														<growablecols>1</growablecols>
+														<growablerows></growablerows>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+															<border>5</border>
+															<object class="wxStaticText" name="m_staticText31">
+																<label>Icon</label>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>1</option>
+															<flag>wxALL|wxEXPAND</flag>
+															<border>5</border>
+															<object class="wxChoice" name="m_choiceSceneryIcon">
+																<content />
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+															<border>5</border>
+															<object class="wxStaticText" name="m_staticText41">
+																<label>Name String</label>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>1</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxEXPAND</flag>
+															<border>5</border>
+															<object class="wxChoice" name="m_choiceSceneryName">
+																<content />
+															</object>
+														</object>
+													</object>
+												</object>
+												<object class="sizeritem">
+													<option>0</option>
+													<flag>wxALIGN_CENTER_VERTICAL|wxALL|wxEXPAND|wxFIXED_MINSIZE|wxSHAPED</flag>
+													<border>5</border>
+													<object class="" name="m_ilpictSceneryIcon" />
+												</object>
+											</object>
+										</object>
+										<object class="sizeritem">
+											<option>1</option>
+											<flag>wxEXPAND</flag>
+											<border>5</border>
+											<object class="wxFlexGridSizer">
+												<rows>4</rows>
+												<cols>2</cols>
+												<vgap>0</vgap>
+												<hgap>0</hgap>
+												<growablecols>1</growablecols>
+												<growablerows></growablerows>
+												<object class="sizeritem">
+													<option>0</option>
+													<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+													<border>5</border>
+													<object class="wxStaticText" name="m_staticText9">
+														<label>Scenery Type</label>
+													</object>
+												</object>
+												<object class="sizeritem">
+													<option>1</option>
+													<flag>wxALL|wxEXPAND</flag>
+													<border>5</border>
+													<object class="wxChoice" name="m_choiceSceneryType">
+														<content>
+															<item>Tree</item>
+															<item>Plant</item>
+															<item>Shrub</item>
+															<item>Flowers</item>
+															<item>Fence</item>
+															<item>Wall Misc</item>
+															<item>Path Lamp</item>
+															<item>Small Scenery</item>
+															<item>Medium Scenery</item>
+															<item>Large Scenery</item>
+															<item>Animatronic Scenery</item>
+															<item>Misc Scenery</item>
+															<item>Support Middle</item>
+															<item>Support Top</item>
+															<item>Support Bottom</item>
+															<item>Support Bottom Extra</item>
+															<item>Support Girder</item>
+															<item>Support Cap</item>
+															<item>Ride Track</item>
+															<item>Path</item>
+															<item>Park Entrance</item>
+															<item>Litter</item>
+															<item>Guest Injection</item>
+															<item>Ride</item>
+															<item>Ride Entrance</item>
+															<item>Ride Exit</item>
+															<item>Keep Clear Fence</item>
+															<item>Stall</item>
+															<item>Ride Event</item>
+															<item>Firework</item>
+															<item>Litter Bin</item>
+															<item>Bench</item>
+															<item>Sign</item>
+															<item>Photo Point</item>
+															<item>Wall Straight</item>
+															<item>Wall Roof</item>
+															<item>Wall Corner</item>
+															<item>Water Cannon (not used)</item>
+															<item>Pool Piece</item>
+															<item>Pool Extra</item>
+															<item>Changing Room</item>
+															<item>Laser Dome</item>
+															<item>Water Jet</item>
+															<item>Terrain Piece</item>
+															<item>Particle Effect</item>
+															<item>Animal Fence</item>
+															<item>Animal Misc</item>
+														</content>
+													</object>
+												</object>
+												<object class="sizeritem">
+													<option>0</option>
+													<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+													<border>5</border>
+													<object class="wxStaticText" name="m_staticText10">
+														<label>Placement Type</label>
+													</object>
+												</object>
+												<object class="sizeritem">
+													<option>1</option>
+													<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxEXPAND</flag>
+													<border>5</border>
+													<object class="wxChoice" name="m_choicePlacementType">
+														<content>
+															<item>Full Tile</item>
+															<item>Path Edge (Inner)</item>
+															<item>Path Edge (Outer)</item>
+															<item>Wall</item>
+															<item>1/4 Tile</item>
+															<item>1/2 Tile</item>
+															<item>Path Center</item>
+															<item>Corner</item>
+															<item>Path Edge (Join)</item>
+														</content>
+													</object>
+												</object>
+												<object class="sizeritem">
+													<option>0</option>
+													<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+													<border>5</border>
+													<object class="wxStaticText" name="m_staticText11">
+														<label>Size</label>
+													</object>
+												</object>
+												<object class="sizeritem">
+													<option>1</option>
+													<flag>wxEXPAND</flag>
+													<border>5</border>
+													<object class="wxBoxSizer">
+														<orient>wxHORIZONTAL</orient>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+															<border>5</border>
+															<object class="wxStaticText" name="m_staticText12">
+																<label>X</label>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>1</option>
+															<flag>wxEXPAND|wxBOTTOM|wxRIGHT</flag>
+															<border>5</border>
+															<object class="wxTextCtrl" name="m_textSizeX">
+																<size>50,-1</size>
+																<value></value>
+																<maxlength>0</maxlength>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+															<border>5</border>
+															<object class="wxStaticText" name="m_staticText13">
+																<label>Y</label>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>1</option>
+															<flag>wxBOTTOM|wxRIGHT|wxEXPAND</flag>
+															<border>5</border>
+															<object class="wxTextCtrl" name="m_textSizeY">
+																<size>50,-1</size>
+																<value></value>
+																<maxlength>0</maxlength>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxRIGHT|wxLEFT</flag>
+															<border>5</border>
+															<object class="wxStaticText" name="m_staticText14">
+																<label>Z</label>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>1</option>
+															<flag>wxBOTTOM|wxRIGHT|wxEXPAND</flag>
+															<border>5</border>
+															<object class="wxTextCtrl" name="m_textSizeZ">
+																<size>50,-1</size>
+																<value></value>
+																<maxlength>0</maxlength>
+															</object>
+														</object>
+													</object>
+												</object>
+												<object class="sizeritem">
+													<option>0</option>
+													<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+													<border>5</border>
+													<object class="wxStaticText" name="m_staticText15">
+														<label>Size in squares</label>
+													</object>
+												</object>
+												<object class="sizeritem">
+													<option>1</option>
+													<flag>wxEXPAND</flag>
+													<border>5</border>
+													<object class="wxBoxSizer">
+														<orient>wxHORIZONTAL</orient>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+															<border>5</border>
+															<object class="wxStaticText" name="m_staticText16">
+																<tooltip>Was &quot;size in squares x&quot; in older versions</tooltip>
+																<label>Length</label>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>1</option>
+															<flag>wxBOTTOM|wxRIGHT</flag>
+															<border>5</border>
+															<object class="wxTextCtrl" name="m_textSISX">
+																<size>40,-1</size>
+																<tooltip>Corresponds to size X</tooltip>
+																<value></value>
+																<maxlength>0</maxlength>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+															<border>5</border>
+															<object class="wxStaticText" name="m_staticText17">
+																<tooltip>Was &quot;size in squares y&quot; in older versions</tooltip>
+																<label>Width</label>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>1</option>
+															<flag>wxBOTTOM|wxRIGHT</flag>
+															<border>5</border>
+															<object class="wxTextCtrl" name="m_textSISY">
+																<size>40,-1</size>
+																<tooltip>Corresponds to size Z</tooltip>
+																<value></value>
+																<maxlength>0</maxlength>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT</flag>
+															<border>5</border>
+															<object class="wxButton" name="m_btSISAuto">
+																<style>wxBU_EXACTFIT|wxNO_BORDER</style>
+																<tooltip>Calculate automatically from size above (divide by 4 and round down).\nLength from X, width from Z.</tooltip>
+																<label>Auto</label>
+																<default>0</default>
+															</object>
+														</object>
+													</object>
+												</object>
+											</object>
+										</object>
+										<object class="sizeritem">
+											<option>1</option>
+											<flag>wxEXPAND</flag>
+											<border>5</border>
+											<object class="wxBoxSizer">
+												<orient>wxHORIZONTAL</orient>
+												<object class="sizeritem">
+													<option>0</option>
+													<flag>wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxRIGHT|wxLEFT</flag>
+													<border>5</border>
+													<object class="wxStaticText" name="m_staticText18">
+														<label>Cost</label>
+													</object>
+												</object>
+												<object class="sizeritem">
+													<option>1</option>
+													<flag>wxBOTTOM|wxRIGHT|wxEXPAND</flag>
+													<border>5</border>
+													<object class="wxTextCtrl" name="m_textCost">
+														<value></value>
+														<maxlength>0</maxlength>
+													</object>
+												</object>
+												<object class="sizeritem">
+													<option>0</option>
+													<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+													<border>5</border>
+													<object class="wxStaticText" name="m_staticText19">
+														<label>Refund</label>
+													</object>
+												</object>
+												<object class="sizeritem">
+													<option>1</option>
+													<flag>wxEXPAND|wxBOTTOM|wxRIGHT</flag>
+													<border>5</border>
+													<object class="wxTextCtrl" name="m_textRefund">
+														<value></value>
+														<maxlength>0</maxlength>
+													</object>
+												</object>
+											</object>
+										</object>
+									</object>
+								</object>
+							</object>
+						</object>
+					</object>
+					<object class="notebookpage">
+						<label>Advanced</label>
+						<selected>0</selected>
+						<object class="wxPanel" name="m_panAdvanced">
+							<style>wxTAB_TRAVERSAL</style>
+							<object class="wxBoxSizer">
+								<orient>wxVERTICAL</orient>
+								<object class="sizeritem">
+									<option>1</option>
+									<flag>wxEXPAND</flag>
+									<border>5</border>
+									<object class="wxFlexGridSizer">
+										<rows>2</rows>
+										<cols>1</cols>
+										<vgap>0</vgap>
+										<hgap>0</hgap>
+										<growablecols>0</growablecols>
+										<growablerows></growablerows>
+										<object class="sizeritem">
+											<option>1</option>
+											<flag>wxEXPAND</flag>
+											<border>5</border>
+											<object class="wxFlexGridSizer">
+												<rows>3</rows>
+												<cols>2</cols>
+												<vgap>0</vgap>
+												<hgap>0</hgap>
+												<growablecols>1</growablecols>
+												<growablerows></growablerows>
+												<object class="sizeritem">
+													<option>0</option>
+													<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+													<border>5</border>
+													<object class="wxStaticText" name="m_staticText91">
+														<label>Supports Type</label>
+													</object>
+												</object>
+												<object class="sizeritem">
+													<option>1</option>
+													<flag>wxALL|wxEXPAND</flag>
+													<border>5</border>
+													<object class="wxChoice" name="m_choiceSceneryType1">
+														<content>
+															<item>None</item>
+															<item>Adventure</item>
+															<item>Crazy Golf</item>
+															<item>Crazy Golf Holes</item>
+															<item>Girder</item>
+															<item>Ornate</item>
+															<item>Asphalt</item>
+															<item>Crazy</item>
+															<item>Dirt</item>
+															<item>Leafy</item>
+															<item>Marble</item>
+															<item>Tarmac</item>
+															<item>Queue Set 1</item>
+															<item>Roman Pillar</item>
+															<item>Scaffolding</item>
+															<item>Space</item>
+															<item>Spooky</item>
+															<item>Steel</item>
+															<item>TS1</item>
+															<item>TS2</item>
+															<item>TS3</item>
+															<item>TS4</item>
+															<item>TS5</item>
+															<item>Wild West</item>
+															<item>Aquarium</item>
+															<item>Aquarium Corner</item>
+															<item>Pool</item>
+															<item>Pool Path</item>
+															<item>Pool Small</item>
+															<item>Stand</item>
+															<item>Underwater</item>
+															<item>TS1A</item>
+															<item>TS6</item>
+															<item>TS7</item>
+															<item>TS8</item>
+														</content>
+													</object>
+												</object>
+												<object class="sizeritem">
+													<option>0</option>
+													<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+													<border>5</border>
+													<object class="wxStaticText" name="m_staticText101">
+														<label>Extra Parameters</label>
+													</object>
+												</object>
+												<object class="sizeritem">
+													<option>1</option>
+													<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxEXPAND</flag>
+													<border>5</border>
+													<object class="wxChoice" name="m_choicePlacementType1">
+														<content>
+															<item>None</item>
+															<item>Guest Injection Point</item>
+															<item>Litter Bin</item>
+															<item>Bench</item>
+															<item>Park Entrance</item>
+															<item>Queue Line Entertainer</item>
+															<item>Ride Event</item>
+															<item>Sign</item>
+															<item>Visa Point</item>
+															<item>Waterable</item>
+															<item>Path Fountain</item>
+															<item>Loudspeaker</item>
+															<item>Passport Post</item>
+															<item>Water Cannon</item>
+														</content>
+													</object>
+												</object>
+												<object class="sizeritem">
+													<option>0</option>
+													<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+													<border>5</border>
+													<object class="wxStaticText" name="m_staticText111">
+														<label>Position</label>
+													</object>
+												</object>
+												<object class="sizeritem">
+													<option>1</option>
+													<flag>wxEXPAND</flag>
+													<border>5</border>
+													<object class="wxBoxSizer">
+														<orient>wxHORIZONTAL</orient>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+															<border>5</border>
+															<object class="wxStaticText" name="m_staticText121">
+																<label>X</label>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>1</option>
+															<flag>wxEXPAND|wxBOTTOM|wxRIGHT</flag>
+															<border>5</border>
+															<object class="wxTextCtrl" name="m_textPosX">
+																<size>50,-1</size>
+																<value></value>
+																<maxlength>0</maxlength>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+															<border>5</border>
+															<object class="wxStaticText" name="m_staticText131">
+																<label>Y</label>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>1</option>
+															<flag>wxBOTTOM|wxRIGHT|wxEXPAND</flag>
+															<border>5</border>
+															<object class="wxTextCtrl" name="m_textPosY">
+																<size>50,-1</size>
+																<value></value>
+																<maxlength>0</maxlength>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxRIGHT|wxLEFT</flag>
+															<border>5</border>
+															<object class="wxStaticText" name="m_staticText141">
+																<label>Z</label>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>1</option>
+															<flag>wxBOTTOM|wxRIGHT|wxEXPAND</flag>
+															<border>5</border>
+															<object class="wxTextCtrl" name="m_textPosZ">
+																<size>50,-1</size>
+																<value></value>
+																<maxlength>0</maxlength>
+															</object>
+														</object>
+													</object>
+												</object>
+											</object>
+										</object>
+										<object class="sizeritem">
+											<option>1</option>
+											<flag>wxEXPAND</flag>
+											<border>5</border>
+											<object class="wxBoxSizer">
+												<orient>wxHORIZONTAL</orient>
+												<object class="sizeritem">
+													<option>2</option>
+													<flag>wxEXPAND</flag>
+													<border>5</border>
+													<object class="wxStaticBoxSizer">
+														<orient>wxVERTICAL</orient>
+														<label>Default Color Choices</label>
+														<object class="sizeritem">
+															<option>1</option>
+															<flag>wxEXPAND</flag>
+															<border>5</border>
+															<object class="wxFlexGridSizer">
+																<rows>3</rows>
+																<cols>2</cols>
+																<vgap>0</vgap>
+																<hgap>0</hgap>
+																<growablecols>1</growablecols>
+																<growablerows></growablerows>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																	<border>5</border>
+																	<object class="wxStaticText" name="m_staticText55">
+																		<tooltip>Unknown 3</tooltip>
+																		<label>Color 1</label>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>1</option>
+																	<flag>wxEXPAND|wxTOP|wxBOTTOM|wxRIGHT</flag>
+																	<border>5</border>
+																	<object class="wxChoice" name="m_choiceColor1">
+																		<tooltip>Default color for the first custom color choice.</tooltip>
+																		<content />
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxRIGHT|wxLEFT</flag>
+																	<border>5</border>
+																	<object class="wxStaticText" name="m_staticText56">
+																		<tooltip>Unknown 4</tooltip>
+																		<label>Color 2</label>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>1</option>
+																	<flag>wxBOTTOM|wxRIGHT|wxEXPAND</flag>
+																	<border>5</border>
+																	<object class="wxChoice" name="m_choiceColor2">
+																		<tooltip>Default color for the second custom color choice.</tooltip>
+																		<content />
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+																	<border>5</border>
+																	<object class="wxStaticText" name="m_staticText57">
+																		<tooltip>Unknown 5</tooltip>
+																		<label>Color 3</label>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>1</option>
+																	<flag>wxBOTTOM|wxRIGHT|wxEXPAND</flag>
+																	<border>5</border>
+																	<object class="wxChoice" name="m_choiceColor3">
+																		<tooltip>Default color for the third custom color choice.</tooltip>
+																		<content />
+																	</object>
+																</object>
+															</object>
+														</object>
+													</object>
+												</object>
+												<object class="sizeritem">
+													<option>1</option>
+													<flag>wxEXPAND|wxLEFT</flag>
+													<border>5</border>
+													<object class="wxStaticBoxSizer">
+														<orient>wxVERTICAL</orient>
+														<label>Unknowns</label>
+														<object class="sizeritem">
+															<option>1</option>
+															<flag>wxEXPAND</flag>
+															<border>5</border>
+															<object class="wxFlexGridSizer">
+																<rows>3</rows>
+																<cols>2</cols>
+																<vgap>0</vgap>
+																<hgap>0</hgap>
+																<growablecols>1</growablecols>
+																<growablerows></growablerows>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																	<border>5</border>
+																	<object class="wxStaticText" name="m_staticText58">
+																		<label>Unknown 2</label>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>1</option>
+																	<flag>wxEXPAND|wxTOP|wxBOTTOM|wxRIGHT</flag>
+																	<border>5</border>
+																	<object class="wxTextCtrl" name="m_textUnknown2">
+																		<size>50,-1</size>
+																		<value></value>
+																		<maxlength>0</maxlength>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+																	<border>5</border>
+																	<object class="wxStaticText" name="m_staticText59">
+																		<label>Unknown 6</label>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>1</option>
+																	<flag>wxBOTTOM|wxRIGHT|wxEXPAND</flag>
+																	<border>5</border>
+																	<object class="wxTextCtrl" name="m_textUnknown6">
+																		<size>50,-1</size>
+																		<value></value>
+																		<maxlength>0</maxlength>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+																	<border>5</border>
+																	<object class="wxStaticText" name="m_staticText60">
+																		<label>Unknown 9</label>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>1</option>
+																	<flag>wxBOTTOM|wxRIGHT|wxEXPAND</flag>
+																	<border>5</border>
+																	<object class="wxTextCtrl" name="m_textUnknown9">
+																		<size>50,-1</size>
+																		<value></value>
+																		<maxlength>0</maxlength>
+																	</object>
+																</object>
+															</object>
+														</object>
+													</object>
+												</object>
+											</object>
+										</object>
+										<object class="sizeritem">
+											<option>1</option>
+											<flag>wxEXPAND</flag>
+											<border>5</border>
+											<object class="wxBoxSizer">
+												<orient>wxHORIZONTAL</orient>
+												<object class="sizeritem">
+													<option>1</option>
+													<flag>wxEXPAND|wxTOP</flag>
+													<border>5</border>
+													<object class="wxStaticBoxSizer">
+														<orient>wxVERTICAL</orient>
+														<label>Collision Box</label>
+														<object class="sizeritem">
+															<option>1</option>
+															<flag>wxEXPAND</flag>
+															<border>5</border>
+															<object class="wxFlexGridSizer">
+																<rows>3</rows>
+																<cols>2</cols>
+																<vgap>0</vgap>
+																<hgap>0</hgap>
+																<growablecols>1</growablecols>
+																<growablerows></growablerows>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+																	<border>5</border>
+																	<object class="wxStaticText" name="m_staticText61">
+																		<tooltip>Unknown 1</tooltip>
+																		<label>Height 1</label>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>1</option>
+																	<flag>wxEXPAND</flag>
+																	<border>5</border>
+																	<object class="wxBoxSizer">
+																		<orient>wxHORIZONTAL</orient>
+																		<object class="sizeritem">
+																			<option>1</option>
+																			<flag>wxEXPAND|wxTOP|wxBOTTOM|wxRIGHT</flag>
+																			<border>5</border>
+																			<object class="wxTextCtrl" name="m_textUnknown1">
+																				<tooltip>Usually the item&apos;s height in rounded modeller units or 0 (disabled).\nIf disabled, the game calculates exact collision using the item&apos;s 3D model data.</tooltip>
+																				<value></value>
+																				<maxlength>0</maxlength>
+																			</object>
+																		</object>
+																		<object class="sizeritem">
+																			<option>0</option>
+																			<flag>wxTOP|wxBOTTOM|wxRIGHT|wxALIGN_CENTER_VERTICAL</flag>
+																			<border>5</border>
+																			<object class="wxCheckBox" name="m_cbDisableUk1">
+																				<label>Disable</label>
+																				<checked>0</checked>
+																			</object>
+																		</object>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxALIGN_CENTER_VERTICAL|wxBOTTOM|wxRIGHT|wxLEFT</flag>
+																	<border>5</border>
+																	<object class="wxStaticText" name="m_staticText62">
+																		<tooltip>Unknown 7</tooltip>
+																		<label>Height 2</label>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>1</option>
+																	<flag>wxBOTTOM|wxRIGHT|wxEXPAND</flag>
+																	<border>5</border>
+																	<object class="wxTextCtrl" name="m_textUnknown7">
+																		<tooltip>Usually the item&apos;s height in rounded modeller units, sometimes less. Equal to Height 1 if that&apos;s not disabled.</tooltip>
+																		<value></value>
+																		<maxlength>0</maxlength>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+																	<border>5</border>
+																	<object class="wxStaticText" name="m_staticText63">
+																		<tooltip>Unknown 8</tooltip>
+																		<label>Height 3</label>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>1</option>
+																	<flag>wxEXPAND</flag>
+																	<border>5</border>
+																	<object class="wxBoxSizer">
+																		<orient>wxHORIZONTAL</orient>
+																		<object class="sizeritem">
+																			<option>1</option>
+																			<flag>wxBOTTOM|wxRIGHT|wxEXPAND</flag>
+																			<border>5</border>
+																			<object class="wxTextCtrl" name="m_textUnknown8">
+																				<tooltip>Either disabled (4294967295) or 2^(Height 2)-1.</tooltip>
+																				<value></value>
+																				<maxlength>0</maxlength>
+																			</object>
+																		</object>
+																		<object class="sizeritem">
+																			<option>0</option>
+																			<flag>wxBOTTOM|wxRIGHT|wxALIGN_CENTER_VERTICAL</flag>
+																			<border>5</border>
+																			<object class="wxCheckBox" name="m_cbDisableUk8">
+																				<label>Disable</label>
+																				<checked>0</checked>
+																			</object>
+																		</object>
+																	</object>
+																</object>
+															</object>
+														</object>
+														<object class="sizeritem">
+															<option>0</option>
+															<flag>wxALIGN_CENTER_HORIZONTAL|wxBOTTOM|wxRIGHT|wxLEFT</flag>
+															<border>5</border>
+															<object class="wxButton" name="m_btCBAuto">
+																<tooltip>Automatically calculate collision box values from y size (height) on the Basic page.</tooltip>
+																<label>Auto</label>
+																<default>0</default>
+															</object>
+														</object>
+													</object>
+												</object>
+												<object class="sizeritem">
+													<option>0</option>
+													<flag>wxTOP|wxLEFT</flag>
+													<border>5</border>
+													<object class="wxStaticBoxSizer">
+														<orient>wxVERTICAL</orient>
+														<label>Flags</label>
+														<object class="sizeritem">
+															<option>1</option>
+															<flag>wxEXPAND</flag>
+															<border>5</border>
+															<object class="wxFlexGridSizer">
+																<rows>8</rows>
+																<cols>9</cols>
+																<vgap>0</vgap>
+																<hgap>0</hgap>
+																<growablecols>0</growablecols>
+																<growablerows></growablerows>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxALIGN_RIGHT|wxTOP|wxRIGHT|wxLEFT</flag>
+																	<border>5</border>
+																	<object class="wxStaticText" name="m_staticText38">
+																		<label>1</label>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxTOP|wxLEFT</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag1">
+																		<tooltip>Flag 1</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxTOP</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag2">
+																		<tooltip>Flag 2</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxTOP</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag3">
+																		<tooltip>Flag 3</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxTOP</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag4">
+																		<tooltip>Flag 4</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxTOP</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag5">
+																		<tooltip>Flag 5\nIf set, object is deleted when altering the ground.</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxTOP</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag6">
+																		<tooltip>Flag 6\nIf set, object doesn&apos;t move with the terrain (Flag 33 unset) or terrain cannot be modified under it (Flag 33 set).</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxTOP</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag7">
+																		<tooltip>Flag 7</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxTOP|wxRIGHT</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag8">
+																		<tooltip>Flag 8</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL|wxRIGHT|wxLEFT</flag>
+																	<border>5</border>
+																	<object class="wxStaticText" name="m_staticText48">
+																		<label>9</label>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxLEFT</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag9">
+																		<tooltip>Flag 9\nIf set with Flag 33, the object blocks supports (i.e. they stop above).</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag10">
+																		<tooltip>Flag 10</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag11">
+																		<tooltip>Flag 11</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag12">
+																		<tooltip>Flag 12</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag13">
+																		<tooltip>Flag 13\nObject skews with slope (like fences do).</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag14">
+																		<tooltip>Flag 14\nObject moves up/down smoothly, it doesn&apos;t jump in set increments.</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag15">
+																		<tooltip>Flag 15</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxRIGHT</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag16">
+																		<tooltip>Flag 16</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxRIGHT|wxLEFT|wxALIGN_RIGHT</flag>
+																	<border>5</border>
+																	<object class="wxStaticText" name="m_staticText49">
+																		<label>17</label>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxLEFT</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag17">
+																		<tooltip>Flag 17</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag18">
+																		<tooltip>Flag 18</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag19">
+																		<tooltip>Flag 19</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag20">
+																		<tooltip>Flag 20</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag21">
+																		<tooltip>Flag 21</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag22">
+																		<tooltip>Flag 22</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag23">
+																		<tooltip>Flag 23</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxRIGHT</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag24">
+																		<tooltip>Flag 24</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxRIGHT|wxLEFT|wxALIGN_RIGHT</flag>
+																	<border>5</border>
+																	<object class="wxStaticText" name="m_staticText50">
+																		<label>25</label>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxLEFT</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag25">
+																		<tooltip>Flag 25</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag26">
+																		<tooltip>Flag 26\nPlaces the object among the billboards.</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag27">
+																		<tooltip>Flag 27</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag28">
+																		<tooltip>Flag 28</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag29">
+																		<tooltip>Flag 29</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag30">
+																		<tooltip>Flag 30</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag31">
+																		<tooltip>Flag 31</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxRIGHT</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag32">
+																		<tooltip>Flag 32</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxRIGHT|wxLEFT|wxALIGN_RIGHT</flag>
+																	<border>5</border>
+																	<object class="wxStaticText" name="m_staticText51">
+																		<label>33</label>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxLEFT</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag33">
+																		<tooltip>Flag 33\nIf unset, object is invisible to the game (no collision checks).</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag34">
+																		<tooltip>Flag 34\nIf set, the object removes path supports.\nIt may be necessary to set (all?) unknowns to 0 for this to work.</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag35">
+																		<tooltip>Flag 35</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag36">
+																		<tooltip>Flag 36</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag37">
+																		<tooltip>Flag 37</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag38">
+																		<tooltip>Flag 38</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag39">
+																		<tooltip>Flag 39</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxRIGHT</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag40">
+																		<tooltip>Flag 40</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxRIGHT|wxLEFT|wxALIGN_RIGHT</flag>
+																	<border>5</border>
+																	<object class="wxStaticText" name="m_staticText52">
+																		<label>41</label>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxLEFT</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag41">
+																		<tooltip>Flag 41</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag42">
+																		<tooltip>Flag 42</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag43">
+																		<tooltip>Flag 43</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag44">
+																		<tooltip>Flag 44</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag45">
+																		<tooltip>Flag 45</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag46">
+																		<tooltip>Flag 46</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag47">
+																		<tooltip>Flag 47</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxRIGHT</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag48">
+																		<tooltip>Flag 48</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxALIGN_RIGHT|wxRIGHT|wxLEFT</flag>
+																	<border>5</border>
+																	<object class="wxStaticText" name="m_staticText53">
+																		<label>49</label>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxLEFT</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag49">
+																		<tooltip>Flag 49</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag50">
+																		<tooltip>Flag 50</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag51">
+																		<tooltip>Flag 51</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag52">
+																		<tooltip>Flag 52</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag53">
+																		<tooltip>Flag 53</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag54">
+																		<tooltip>Flag 54</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag></flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag55">
+																		<tooltip>Flag 55</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxRIGHT</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag56">
+																		<tooltip>Flag 56</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxALIGN_RIGHT|wxBOTTOM|wxRIGHT|wxLEFT</flag>
+																	<border>5</border>
+																	<object class="wxStaticText" name="m_staticText54">
+																		<label>57</label>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxBOTTOM|wxLEFT</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag57">
+																		<tooltip>Flag 57</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxBOTTOM</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag58">
+																		<tooltip>Flag 58</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxBOTTOM</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag59">
+																		<tooltip>Flag 59</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxBOTTOM</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag60">
+																		<tooltip>Flag 60</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxBOTTOM</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag61">
+																		<tooltip>Flag 61</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxBOTTOM</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag62">
+																		<tooltip>Flag 62</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxBOTTOM</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag63">
+																		<tooltip>Flag 63</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+																<object class="sizeritem">
+																	<option>0</option>
+																	<flag>wxBOTTOM|wxRIGHT</flag>
+																	<border>5</border>
+																	<object class="wxCheckBox" name="m_cbFlag64">
+																		<tooltip>Flag 64</tooltip>
+																		<label></label>
+																		<checked>0</checked>
+																	</object>
+																</object>
+															</object>
+														</object>
+													</object>
+												</object>
+											</object>
+										</object>
+									</object>
+								</object>
+							</object>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND|wxBOTTOM|wxRIGHT|wxLEFT</flag>
+				<border>5</border>
+				<object class="wxStdDialogButtonSizer">
+					<object class="button">
+						<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="wxID_OK">
+							<label>&amp;OK</label>
+						</object>
+					</object>
+					<object class="button">
+						<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="wxID_CANCEL">
+							<label>&amp;Cancel</label>
+						</object>
+					</object>
+				</object>
+			</object>
+		</object>
+	</object>
+</resource>

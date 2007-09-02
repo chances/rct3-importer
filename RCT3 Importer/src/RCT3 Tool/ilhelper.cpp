@@ -39,33 +39,33 @@
 #include "resource.h"
 #include "ilhelper.h"
 
-char *il_bgr = "BGR";
-char *il_bgra = "BGRA";
-char *il_colour_index = "Colour Index";
-char *il_luminance = "Luminance";
-char *il_luminance_alpha = "Luminance Alpha";
-char *il_rgb = "RGB";
-char *il_rgba = "RGBA";
-char *il_byte = "Byte";
-char *il_unsigned_byte = "Unsigned Byte";
-char *il_short = "Short";
-char *il_unsigned_short = "Unsigned Short";
-char *il_int = "Int";
-char *il_unsigned_int = "Unsigned Int";
-char *il_float = "Float";
-char *il_double = "Double";
-char *il_pal_none = "None";
-char *il_pal_rgb24 = "RGB24";
-char *il_pal_rgb32 = "RGB32";
-char *il_pal_rgba32 = "RGBA32";
-char *il_pal_bgr24 = "BGR24";
-char *il_pal_bgr32 = "BGR32";
-char *il_pal_bgra32 = "BGRA32";
-char *il_origin_lower_left = "Lower Left";
-char *il_origin_upper_left = "Upper Left";
-char *il_unknown = "Unknown";
+const char *il_bgr = "BGR";
+const char *il_bgra = "BGRA";
+const char *il_colour_index = "Colour Index";
+const char *il_luminance = "Luminance";
+const char *il_luminance_alpha = "Luminance Alpha";
+const char *il_rgb = "RGB";
+const char *il_rgba = "RGBA";
+const char *il_byte = "Byte";
+const char *il_unsigned_byte = "Unsigned Byte";
+const char *il_short = "Short";
+const char *il_unsigned_short = "Unsigned Short";
+const char *il_int = "Int";
+const char *il_unsigned_int = "Unsigned Int";
+const char *il_float = "Float";
+const char *il_double = "Double";
+const char *il_pal_none = "None";
+const char *il_pal_rgb24 = "RGB24";
+const char *il_pal_rgb32 = "RGB32";
+const char *il_pal_rgba32 = "RGBA32";
+const char *il_pal_bgr24 = "BGR24";
+const char *il_pal_bgr32 = "BGR32";
+const char *il_pal_bgra32 = "BGRA32";
+const char *il_origin_lower_left = "Lower Left";
+const char *il_origin_upper_left = "Upper Left";
+const char *il_unknown = "Unknown";
 
-char *getILString(ILenum x) {
+const char *getILString(ILenum x) {
     switch (x) {
     case IL_COLOUR_INDEX:
         return il_colour_index;

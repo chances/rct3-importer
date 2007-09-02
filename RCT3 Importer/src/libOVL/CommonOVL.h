@@ -13,7 +13,7 @@
 
 #include "Common.h"
 
-#define LIBOVL_VERSION 1
+#define LIBOVL_VERSION 2
 
 struct OvlHeader {
 	unsigned long magic;

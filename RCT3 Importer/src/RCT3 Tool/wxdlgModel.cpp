@@ -49,7 +49,6 @@
 #include "wxdlgCreateScenery.h"
 #include "wxdlgEffect.h"
 #include "wxdlgMatrix.h"
-#include "wxdlgMesh.h"
 
 ////////////////////////////////////////////////////////////////////////
 //

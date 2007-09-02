@@ -1223,14 +1223,14 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
     bool filenameok = false;
     int diaret = wxID_OK;
 
+    TransferDataFromWindow();
+
     cSCNFile work = m_SCN;
     wxFileName sfile;
     wxFileDialog *dialog = NULL;
 
     wxLogGuiExt *logex = new wxLogGuiExt(&cont);
     wxLog *old = wxLog::SetActiveTarget(logex);
-
-    TransferDataFromWindow();
 
     /////////////////////////////////////////////////////
     // Sanity Checks & fix the work copy for processing

@@ -28,6 +28,7 @@
 
 #include <vector>
 #include "vertex.h"
+#include "boneanim.h"
 #include "3DLoaderTypes.h"
 
 float Deg2Rad(float deg);
@@ -50,7 +51,8 @@ inline VERTEX2 vertex2vertex2(VERTEX v, unsigned long bone, unsigned long unk) {
 }
 
 D3DMATRIX matrixGetUnity();
-D3DMATRIX matrixGetFixOrientation(c3DLoaderOrientation orient = ORIENTATION_RIGHT_ZUP);
+D3DMATRIX matrixGetFixOrientation(const c3DLoaderOrientation orient = ORIENTATION_RIGHT_ZUP);
+void txyzFixOrientation(txyz& src, const c3DLoaderOrientation& orient);
 D3DMATRIX matrixGetTranslation(float x, float y, float z);
 D3DMATRIX matrixGetTranslation(D3DVECTOR v);
 D3DMATRIX matrixGetScale(float x, float y, float z);

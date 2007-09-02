@@ -236,7 +236,7 @@ bool cModel::Sync() {
 
     // Didn't work. Yay! -.-
     // Special case: Nothing worked, but we have the same number of meshes/objects
-    if (obj->GetObjectCount() == meshstructs.size() == msinfile) {
+    if ((obj->GetObjectCount() == meshstructs.size()) && (obj->GetObjectCount() == msinfile)) {
         error.push_back(_("The model file contents changed completely.\nAs the number of meshes stayed constant, the settings were transferred in order.\nYou should prabably check if everything is allright."));
         for (unsigned int i = 0; i < obj->GetObjectCount(); i++) {
             meshstructs[i].Name = obj->GetObjectName(i);

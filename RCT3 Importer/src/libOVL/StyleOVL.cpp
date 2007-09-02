@@ -8,6 +8,8 @@
 	version. See the file COPYING for more details.
 */
 
+//#define WRITE_SCENERYITEMEXTRA
+
 #include "Common.h"
 #include "CommonOVL.h"
 #include "StyleOVL.h"
@@ -23,8 +25,139 @@ extern std::queue<unsigned long *> relocations;
 extern std::queue<unsigned long> fixups;
 extern std::vector <libOVL_Resource *> ResourceItems;
 std::vector <Scenery *> SceneryItems;
+/*
+const char *stdstrings =  "StyleIndex:int\0GUIIcon:txs\0"
+                    "GuestInjectionPoint\0"
+                    "LitterBin\0 Capacity 4.0\0"
+                    "ParkBench\0"
+                    "ParkEntrance\0"
+                    "QueueLineEntertainer\0"
+                    "RideEvent\0"
+                    "Sign\0 EnableNoEntry\0"
+                    "VistaPoint\0"
+                    "Waterable\0 Capacity 300.0\0"
+                    "adventure\0crazygolf\0crazygolfholes\0girder\0ornate\0pathasphalt\0pathcrazy\0pathdirt\0pathleafy\0marble\0pathtarmac\0flatqueueset1\0romanpillar\0scaffolding\0space\0spooky\0steel\0ts1\0ts2\0ts3\0ts4\0ts5\0flatwildwest\0"
+                    "\0"
+                    "MapColourBlue:flt\0MapColourRed:flt\0MapColorGreen:flt\0"
+                    "PathFountain\0"
+                    "LoudSpeaker\0"
+                    "PassportPost\0"
+                    "WaterCannon\0"
+                    "aquarium\0aquariumcorner\0defaultpool\0defaultpoolpath\0defaultpoolsmall\0sand\0pathunderwater\0ts1a\0ts6\0ts7\0ts8";
+*/
+#define STDSTRINGS_SIZE 81
+const char *stdstrings =
+                    "StyleIndex:int\0" // 15
+                    "GUIIcon:txs\0" // 12
+                    "\0" // 1
+                    "MapColourBlue:flt\0" // 18
+                    "MapColourRed:flt\0" // 17
+                    "MapColorGreen:flt\0"; // 18 /// 81
+/*
+                    "GuestInjectionPoint\0"
+                    "LitterBin\0 Capacity 4.0\0"
+                    "ParkBench\0"
+                    "ParkEntrance\0"
+                    "QueueLineEntertainer\0"
+                    "RideEvent\0"
+                    "Sign\0 EnableNoEntry\0"
+                    "VistaPoint\0"
+                    "Waterable\0 Capacity 300.0\0"
+                    "adventure\0crazygolf\0crazygolfholes\0girder\0ornate\0pathasphalt\0pathcrazy\0pathdirt\0pathleafy\0marble\0pathtarmac\0flatqueueset1\0romanpillar\0scaffolding\0space\0spooky\0steel\0ts1\0ts2\0ts3\0ts4\0ts5\0flatwildwest\0"
+                    "PathFountain\0"
+                    "LoudSpeaker\0"
+                    "PassportPost\0"
+                    "WaterCannon\0"
+                    "aquarium\0aquariumcorner\0defaultpool\0defaultpoolpath\0defaultpoolsmall\0sand\0pathunderwater\0ts1a\0ts6\0ts7\0ts8";
+*/
 
-char *stdstrings = "StyleIndex:int\0GUIIcon:txs\0GuestInjectionPoint\0LitterBin\0 Capacity 4.0\0ParkBench\0ParkEntrance\0QueueLineEntertainer\0RideEvent\0Sign\0 EnableNoEntry\0VistaPoint\0Waterable\0 Capacity 300.0\0adventure\0crazygolf\0crazygolfholes\0girder\0ornate\0pathasphalt\0pathcrazy\0pathdirt\0pathleafy\0marble\0pathtarmac\0flatqueueset1\0romanpillar\0scaffolding\0space\0spooky\0steel\0ts1\0ts2\0ts3\0ts4\0ts5\0flatwildwest\0\0MapColourBlue:flt\0MapColourRed:flt\0MapColorGreen:flt\0PathFountain\0LoudSpeaker\0PassportPost\0WaterCannon\0aquarium\0aquariumcorner\0defaultpool\0defaultpoolpath\0defaultpoolsmall\0sand\0pathunderwater\0ts1a\0ts6\0ts7\0ts8";
+typedef struct
+{
+    const char* type;
+    const char* parameter;
+} extra_struct;
+
+typedef struct
+{
+    bool used;
+    char* type;         // These will point to the correct position in the string list
+    char* parameter;
+} extra_use_struct;
+
+#define EXTRA_COUNT 25
+const extra_struct def_extras[EXTRA_COUNT] = {
+    {NULL, NULL},
+    {"GuestInjectionPoint", NULL},
+    {"LitterBin", " Capacity 4.0"},
+    {"ParkBench", NULL},
+    {"ParkEntrance", NULL},
+    {"QueueLineEntertainer", NULL},
+    {"RideEvent", NULL},
+    {"Sign", " EnableNoEntry"},
+    {"VistaPoint", NULL},
+    {"Waterable", " Capacity 300.0"},
+    {"PathFountain", NULL},
+    {"LoudSpeaker", NULL},
+    {"PassportPost", NULL},
+    {"WaterCannon", NULL},
+    {"PoolExtra", " Side CentralWater OppositeWater DivingBoard"}, // Divisg Board
+    {"PoolExtra", " Side UnderWaterWall Ladder"}, // Ladder
+    {"PoolExtra", " Light UnderWaterWall"}, // Light
+    {"PoolExtra", " Light CentralSolid"}, // Pool Lamp
+    {"PoolExtra", " CentralSolid WholeTile Shower"}, // Shower
+    {"PoolExtra", " Side HeightStep 1"}, // Small Ramp
+    {"PoolExtra", " Side CentralSolid WholeTile HeightStep 2"}, // Big Ramp
+    {"PoolExtra", " CentralSolid WholeTile SunLounger"}, // Sun Loungers
+    {"PoolExtra", " LifeGuard CentralSolid"}, // Lifeguard
+    {"PoolExtra", " WaveMachine UnderWaterWall"}, // Wave Machine
+    {"LifeguardChair", NULL} // Lifeguard
+};
+
+typedef struct
+{
+    bool used;
+    char* supports;
+} supports_use_struct;
+
+#define SUPPORTS_COUNT 35
+const char* def_supports[SUPPORTS_COUNT] = {
+    NULL,
+    "adventure",
+    "crazygolf",
+    "crazygolfholes",
+    "girder",
+    "ornate",
+    "pathasphalt",
+    "pathcrazy",
+    "pathdirt",
+    "pathleafy",
+    "marble",
+    "pathtarmac",
+    "flatqueueset1",
+    "romanpillar",
+    "scaffolding",
+    "space",
+    "spooky",
+    "steel",
+    "ts1",
+    "ts2",
+    "ts3",
+    "ts4",
+    "ts5",
+    "flatwildwest",
+    "aquarium",
+    "aquariumcorner",
+    "defaultpool",
+    "defaultpoolpath",
+    "defaultpoolsmall",
+    "sand",
+    "pathunderwater",
+    "ts1a",
+    "ts6",
+    "ts7",
+    "ts8"
+};
+
 
 void clearStyleOVLData();
 unsigned long* styleval;
@@ -82,9 +215,9 @@ unsigned long SymbolRefPos;
 unsigned char *stringtable;
 char *strings;
 char *GUIIcon;
-char *extra[14];
-char *extraparams[14];
-char *supports[35];
+//char *extra[14];
+//char *extraparams[14];
+//char *supports[35];
 LoaderStruct *loaders;
 SymbolStruct *symbols;
 SymbolRefStruct *symrefs;
@@ -96,7 +229,7 @@ void AddStringSize2(const char *string)
 {
     stringtablesize += strlen(string)+1;
 }
-char *AddSymbol(char *SymbolName,char *Type)
+char *AddSymbol(const char *SymbolName, const char *Type)
 {
     char *strx = strings;
    	strcpy(strings,SymbolName);
@@ -106,7 +239,7 @@ char *AddSymbol(char *SymbolName,char *Type)
 	strings++;
 	return strx;
 }
-char *AddString(char *String)
+char *AddString(const char *String)
 {
     char *strx = strings;
    	strcpy(strings,String);
@@ -114,7 +247,7 @@ char *AddString(char *String)
 	strings++;
 	return strx;
 }
-char *FindString(char *name,char *type)
+char *FindString(const char *name, const char *type)
 {
     int x;
     if (name)
@@ -138,7 +271,7 @@ char *FindString(char *name,char *type)
 	}
 	return 0;
 }
-void AddLoader(unsigned long *data,int loadertype,int SymbolsToResolve,char *SymbolName,char *Type,bool HasExtraData)
+void AddLoader(unsigned long *data,int loadertype,int SymbolsToResolve, const char *SymbolName, const char *Type,bool HasExtraData)
 {
     loaders[LoaderPos].data = data;
     loaders[LoaderPos].LoaderType = loadertype;
@@ -164,7 +297,7 @@ void AddLoader2(unsigned long *data,int type,int SymbolsToResolve,bool HasExtraD
 	relocations.push((unsigned long *)&loaders[LoaderPos].Sym);
     LoaderPos++;
 }
-void AddRef(unsigned long *reference,char *SymbolName)
+void AddRef(unsigned long *reference, char *SymbolName)
 {
     symrefs[SymbolRefPos].ldr = &loaders[LoaderPos-1];
     symrefs[SymbolRefPos].Symbol = SymbolName;
@@ -174,7 +307,7 @@ void AddRef(unsigned long *reference,char *SymbolName)
 	relocations.push((unsigned long *)&symrefs[SymbolRefPos].Symbol);
 	SymbolRefPos++;
 }
-void AddRef2(unsigned long *reference,char *SymbolName,char *Type)
+void AddRef2(unsigned long *reference, const char *SymbolName, const char *Type)
 {
     AddRef(reference,AddSymbol(SymbolName,Type));
 }
@@ -184,10 +317,17 @@ LIBOVL_API bool saveStyleOVL()
     loadercount = 0;
     symbolcount = 0;
     symbolrefcount = 0;
-	stringtablesize = 590;
+//	stringtablesize = 590;
+	stringtablesize = STDSTRINGS_SIZE;
     LoaderPos = 0;
     SymbolPos = 0;
     SymbolRefPos = 0;
+
+    extra_use_struct use_extra[EXTRA_COUNT];
+    memset(&use_extra, 0, EXTRA_COUNT*sizeof(extra_use_struct));
+    supports_use_struct use_supports[SUPPORTS_COUNT];
+    memset(&use_supports, 0, SUPPORTS_COUNT*sizeof(supports_use_struct));
+
 	unsigned long textstringsize = TextString::ComputeSize();
 	unsigned long flicsize = Texture::ComputeSizeFlic();
 	unsigned long texturesize = Texture::ComputeSize();
@@ -226,17 +366,35 @@ LIBOVL_API bool saveStyleOVL()
 			symbolrefcount++;
 		}
 		sidsize += sizeof(SceneryItem);
+#ifdef WRITE_SCENERYITEMEXTRA
+		sidsize += sizeof(SceneryItemExtra);
+#endif
 		sidsize += sizeof(SceneryItemData);
 		sidsize += 8;
 		if (SceneryItems[i]->extra != 0)
 		{
 			sidsize += sizeof(SceneryParams);
+			if (!use_extra[SceneryItems[i]->extra].used) {
+                use_extra[SceneryItems[i]->extra].used = true;
+                AddStringSize2(def_extras[SceneryItems[i]->extra].type);
+                if (def_extras[SceneryItems[i]->extra].parameter) {
+                    AddStringSize2(def_extras[SceneryItems[i]->extra].parameter);
+                }
+			}
+		}
+		if (SceneryItems[i]->supportstype != 0)
+		{
+			if (!use_supports[SceneryItems[i]->supportstype].used) {
+                use_supports[SceneryItems[i]->supportstype].used = true;
+                AddStringSize2(def_supports[SceneryItems[i]->supportstype]);
+			}
 		}
 	}
 	unsigned long stallsize = StallData::ComputeSize();
 	unsigned long stallitemsize = StallData::ComputeItemSize();
 	unsigned long attractionsize = AttractionData::ComputeSize();
 	stringtable = new unsigned char[stringtablesize];
+	memset(stringtable, 0, stringtablesize);
 	symbols = new SymbolStruct[symbolcount];
 	loaders = new LoaderStruct[loadercount];
 	symrefs = new SymbolRefStruct[symbolrefcount];
@@ -389,9 +547,39 @@ LIBOVL_API bool saveStyleOVL()
 	OpenFiles[OVL_UNIQUE].Types[8].size = 0;
 
 	strings = (char *)stringtable;
-	memcpy(strings,stdstrings,590);
+	memcpy(strings,stdstrings,STDSTRINGS_SIZE);
 	char *StyleIndex = strings;
 	GUIIcon = StyleIndex+(strlen(StyleIndex)+1);
+	char *nullstring = GUIIcon+(strlen(GUIIcon)+1);
+	char *mapblue = nullstring+1;
+	char *mapred = mapblue+strlen(mapblue)+1;
+	char *mapgreen = mapred+strlen(mapred)+1;
+	strings = mapgreen+strlen(mapgreen)+1;
+	use_extra[0].type = nullstring;
+	use_extra[0].parameter = nullstring;
+	for(unsigned long i = 1; i < EXTRA_COUNT; i++) {
+	    if (use_extra[i].used) {
+	        use_extra[i].type = strings;
+            strcpy(strings, def_extras[i].type);
+            strings += strlen(def_extras[i].type)+1;
+            if (def_extras[i].parameter) {
+                use_extra[i].parameter = strings;
+                strcpy(strings, def_extras[i].parameter);
+                strings += strlen(def_extras[i].parameter)+1;
+            } else {
+                use_extra[i].parameter = nullstring;
+            }
+	    }
+	}
+	use_supports[0].supports = nullstring;
+	for(unsigned long i = 1; i < SUPPORTS_COUNT; i++) {
+	    if (use_supports[i].used) {
+	        use_supports[i].supports = strings;
+	        strcpy(strings, def_supports[i]);
+	        strings += strlen(def_supports[i])+1;
+	    }
+	}
+/*
 	char *mapblue;
 	char *mapgreen;
 	char *mapred;
@@ -463,6 +651,7 @@ LIBOVL_API bool saveStyleOVL()
 	supports[33] = supports[32]+strlen(supports[32])+1;
 	supports[34] = supports[33]+strlen(supports[33])+1;
 	strings = supports[34]+strlen(supports[34])+1;
+*/
 	symbols[SymbolPos].Symbol = StyleIndex;
 	symbols[SymbolPos].data = (unsigned long *)styleval;
 	symbols[SymbolPos].IsPointer = 0;
@@ -509,6 +698,10 @@ LIBOVL_API bool saveStyleOVL()
 		strchr(fname,'.')[0] = 0;
 		SceneryItem *s = (SceneryItem *)sids;
 		sids += sizeof(SceneryItem);
+#ifdef WRITE_SCENERYITEMEXTRA
+		SceneryItemExtra *sext = (SceneryItemExtra *)sids;
+		sids += sizeof(SceneryItemExtra);
+#endif
 		SceneryItemData *s2 = (SceneryItemData *)sids;
 		sids += sizeof(SceneryItemData);
 		long *s3 = (long *)sids;
@@ -567,6 +760,9 @@ LIBOVL_API bool saveStyleOVL()
 		s->unkf31 = sc->flag31;
 		s->unkf32 = sc->flag32;
 		s->size = sc->sizeflag;
+#ifdef WRITE_SCENERYITEMEXTRA
+		s->size |= 0xFFFF0000; // Activate extra;
+#endif
 		s->unk4 = sc->unk4;
 		s->xsquares = sc->sizex;
 		s->ysquares = sc->sizey;
@@ -596,7 +792,7 @@ LIBOVL_API bool saveStyleOVL()
 			s->unk17 = 5;
 		}
 		s->type = sc->type;
-		s->supports = supports[sc->supportstype];
+		s->supports = use_supports[sc->supportstype].supports;
 		relocations.push((unsigned long *)&s->supports);
 		s->svdcount = 1;
 		s->svd = svd;
@@ -611,8 +807,8 @@ LIBOVL_API bool saveStyleOVL()
 			s->params = s4;
 			relocations.push((unsigned long *)&s->params);
 			s->count = 1;
-			s4->type = extra[sc->extra];
-			s4->params = extraparams[sc->extra];
+			s4->type = use_extra[sc->extra].type;
+			s4->params = use_extra[sc->extra].parameter;
 			relocations.push((unsigned long *)&s4->type);
 			relocations.push((unsigned long *)&s4->params);
 		}
@@ -654,6 +850,12 @@ LIBOVL_API bool saveStyleOVL()
 		s->unk46 = 0;
 		s->unk47 = 0;
 		s->unk48 = 0;
+#ifdef WRITE_SCENERYITEMEXTRA
+		sext->SoundsUnk = 0;
+		sext->unk2 = 0;
+		sext->AddonPack = 0;
+		sext->GenericAddon = 0;
+#endif
 		s2->unkf33 = sc->flag33;
 		s2->unkf34 = sc->flag34;
 		s2->unkf35 = sc->flag35;
@@ -767,12 +969,12 @@ LIBOVL_API bool saveStyleOVL()
     Texture::WriteFileHeader(f);
     GUISkin::WriteFileHeader(f);
 	unsigned short len1;
-	char *str1;
+	const char *str1;
 	unsigned short len2;
-	char *str2;
+	const char *str2;
 	unsigned long type;
 	unsigned short len3;
-	char *str3;
+	const char *str3;
 	len1 = 4;
 	str1 = "RCT3";
 	len2 = 0xB;

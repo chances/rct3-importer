@@ -64,10 +64,10 @@ D3DMATRIX matrixGetFixOrientation(c3DLoaderOrientation orient) {
         case ORIENTATION_RIGHT_XUP: { // Whatever...            | s-x m-y a-z
             D3DMATRIX m;
             memset(&m, 0, sizeof(m));
-            m._12 = 1.0;
-            m._23 = -1.0;
-            m._31 = 1.0;
-            m._44 = 1.0;
+            m._12 = 1.0;                //  0.0  1.0  0.0  0.0
+            m._23 = -1.0;               //  0.0  0.0 -1.0  0.0
+            m._31 = 1.0;                //  1.0  0.0  0.0  0.0
+            m._44 = 1.0;                //  0.0  0.0  0.0  1.0
             return m;
         }
         case ORIENTATION_RIGHT_YUP: // MirrorZ                  | s-y m-z a-x
@@ -75,33 +75,73 @@ D3DMATRIX matrixGetFixOrientation(c3DLoaderOrientation orient) {
         case ORIENTATION_RIGHT_ZUP: { // MirrorZ, -90 X, -90 Y  | s-z m-x a-y
             D3DMATRIX m;
             memset(&m, 0, sizeof(m));
-            m._13 = -1.0;
-            m._21 = 1.0;
-            m._32 = 1.0;
-            m._44 = 1.0;
+            m._13 = -1.0;               //  0.0  0.0 -1.0  0.0
+            m._21 = 1.0;                //  1.0  0.0  0.0  0.0
+            m._32 = 1.0;                //  0.0  1.0  0.0  0.0
+            m._44 = 1.0;                //  0.0  0.0  0.0  1.0
             return m;
         }
         case ORIENTATION_LEFT_XUP: { // Whatever...              | s-x m--y a-z
             D3DMATRIX m;
             memset(&m, 0, sizeof(m));
-            m._12 = 1.0;
-            m._23 = 1.0;
-            m._31 = 1.0;
-            m._44 = 1.0;
+            m._12 = 1.0;                //  0.0  1.0  0.0  0.0
+            m._23 = 1.0;                //  0.0  0.0  1.0  0.0
+            m._31 = 1.0;                //  1.0  0.0  0.0  0.0
+            m._44 = 1.0;                //  0.0  0.0  0.0  1.0
             return m;
         }
         // case ORIENTATION_LEFT_YUP: // Fall through to default | s-y m--z a-x
         case ORIENTATION_LEFT_ZUP: { // Whatever...              | s-z m--x a-y
             D3DMATRIX m;
             memset(&m, 0, sizeof(m));
-            m._13 = 1.0;
-            m._21 = 1.0;
-            m._32 = 1.0;
-            m._44 = 1.0;
+            m._13 = 1.0;                //  0.0  0.0  1.0  0.0
+            m._21 = 1.0;                //  1.0  0.0  0.0  0.0
+            m._32 = 1.0;                //  0.0  1.0  0.0  0.0
+            m._44 = 1.0;                //  0.0  0.0  0.0  1.0
             return m;
         }
         default:
             return matrixGetUnity();
+    }
+}
+
+void txyzFixOrientation(txyz& src, const c3DLoaderOrientation& orient) {
+    switch (orient) {
+        case ORIENTATION_RIGHT_XUP: {
+            float t = -src.Y;
+            src.Y = src.X;
+            src.X = src.Z;
+            src.Z = t;
+            break;
+        }
+        case ORIENTATION_RIGHT_YUP: {
+            src.Z = -src.Z;
+            break;
+        }
+        case ORIENTATION_RIGHT_ZUP: {
+            float t = -src.X;
+            src.X = src.Y;
+            src.Y = src.Z;
+            src.Z = t;
+            break;
+        }
+        case ORIENTATION_LEFT_XUP: {
+            float t = src.X;
+            src.X = src.Z;
+            src.Z = src.Y;
+            src.Y = t;
+            break;
+        }
+        // case ORIENTATION_LEFT_YUP: // Fall through to default
+        case ORIENTATION_LEFT_ZUP: {
+            float t = src.X;
+            src.X = src.Y;
+            src.Y = src.Z;
+            src.Z = t;
+            break;
+        }
+        default:
+            break;
     }
 }
 

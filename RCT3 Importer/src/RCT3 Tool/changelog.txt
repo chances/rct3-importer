@@ -275,3 +275,7 @@ Version 17 (Belgabor):
 * FIX2: Tried to make ms3d loading more stable.
 * FIX2: Removed a few inconsistencies in the dis-/enabling of controls in the advanced texture window
 * FIX2: Fixed a bug relating to storing Z position in the Scenery Item Settings
+* FIX3: Fixed bug that caused scenery visual options to be wrongly written in some circumstances (reported for the no shadows flag).
+* FIX3: Added 'None' to theme types. The set will be always visible, no matter which types are filtered (like in the cathegory changer).
+* FIX3: Added Extra Parameters for pool items. Ramps don't seem to work and the Life Guard can currently not be done fully (requires two extra parameters, which the importer cannot do).
+* FIX3: Replaced Unknowns 3-5 with Def.Color 1-3

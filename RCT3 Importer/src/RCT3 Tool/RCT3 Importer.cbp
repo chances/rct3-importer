@@ -23,7 +23,7 @@
 					<Add option="-Os" />
 					<Add option="-O2" />
 					<Add directory="..\libOVL" />
-					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.8" />
+					<Add directory="$(#wx.ansireleasestatic)" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -150,6 +150,7 @@
 			<Add option="-DHAVE_W32API_H" />
 			<Add option="-DIL_STATIC_LIB" />
 			<Add option="-D_WIN32" />
+			<Add directory="$(#wx.include)" />
 			<Add directory="..\lib3DHelp" />
 			<Add directory="..\..\include" />
 			<Add directory="..\libWXHelp" />
@@ -548,6 +549,11 @@
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_model.cpp --function=InitXmlModel $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
+		<Unit filename="xrc\xrc_scenerysettings.xrc">
+			<Option compile="1" />
+			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_scenerysettings.cpp --function=InitXmlScenerySettings $file" />
+			<Option target="Precompile XRC" />
+		</Unit>
 		<Unit filename="xrc\xrc_stall.xrc">
 			<Option compile="1" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_stall.cpp --function=InitXmlStall $file" />
@@ -735,6 +741,24 @@
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
 		</Unit>
+		<Unit filename="xrc_scenerysettings.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+			<Option virtualFolder="xrc\" />
+			<Option target="Release DLL" />
+			<Option target="Profile DLL" />
+			<Option target="Debug DLL" />
+			<Option target="Release" />
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="xrc_scenerysettings.h">
+			<Option virtualFolder="xrc\" />
+			<Option target="Release DLL" />
+			<Option target="Profile DLL" />
+			<Option target="Debug DLL" />
+			<Option target="Release" />
+			<Option target="Debug" />
+		</Unit>
 		<Unit filename="xrc_stall.cpp">
 			<Option virtualFolder="xrc\" />
 			<Option target="Release DLL" />
@@ -802,6 +826,7 @@
 		<Extensions>
 			<code_completion />
 			<envvars />
+			<debugger />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

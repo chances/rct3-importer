@@ -97,6 +97,8 @@
 			<Add option="-Wall" />
 			<Add option="-fno-strict-aliasing" />
 			<Add option="-DIL_STATIC_LIB" />
+			<Add directory="$(#wx.include)" />
+			<Add directory="$(#wx.ansireleasestatic)" />
 			<Add directory="..\libASE-1.0" />
 			<Add directory="..\..\include" />
 			<Add directory="..\libWXHelp" />
