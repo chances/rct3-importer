@@ -63,6 +63,20 @@
           <para>Update for v17fix1</para>
         </revdescription>
       </revision>
+
+      <revision>
+        <revnumber>5</revnumber>
+
+        <date>31.10.2007</date>
+
+        <author>
+          <surname>Belgabor</surname>
+        </author>
+
+        <revdescription>
+          <para>Update for v17fix3</para>
+        </revdescription>
+      </revision>
     </revhistory>
 
     <author>
@@ -70,9 +84,7 @@
     </author>
   </articleinfo>
 
-  <tocchap>
-    <tocentry></tocentry>
-  </tocchap>
+  <para>Coypright (C) 2007 Belgabor, some rights reserved (see below).</para>
 
   <para>This tutorial will lead you through the steps required to import your
   first object into <application>Roller Coaster Tycoon 3</application>®. Only
@@ -83,7 +95,7 @@
   required!</para>
 
   <para>This document applies to the <application>RCT3 Importer</application>
-  Version 17fix1.</para>
+  Version 17fix3.</para>
 
   <section id="sect1">
     <title>Preparing for the import</title>
@@ -288,6 +300,11 @@
           have welded. Note: How to weld depends again on your modeller, it
           can be a bit hard to find (for example it is called <guilabel>Remove
           Doubles</guilabel> in <application>Blender</application>).</para>
+
+          <para>Recent versions of <application>Blender</application> have the
+          EdgeSplit modifier which makes this very easy. Refer to <ulink
+          url="http://belgabor.vodhin.net/blender">Belgabor's Blender
+          Mini-Tutorials</ulink> for an explanation.</para>
         </listitem>
 
         <listitem>
@@ -634,6 +651,11 @@
         </mediaobject>
       </figure>
 
+      <note>
+        <para>The current importer version uses different icons in the
+        toolbar, but the order is the same.</para>
+      </note>
+
       <para>Before continuing with the creation process let's take a look at
       how lists work in this window (and windows you open form it). All lists
       have a common interface. Some specific lists may lack certain elements
@@ -684,7 +706,7 @@
         wrong with your texture bitmap (review <xref linkend="sect13" />). Fix
         the problem and press <guibutton>Ok</guibutton> (c) again. If you need
         to change the file, press the <guibutton>Open</guibutton> button in
-        (6) and select the correct one.</para>
+        (b) and select the correct one.</para>
 
         <note>
           <para>If you press <guibutton>Cancel</guibutton> in the first file
@@ -1062,7 +1084,8 @@
         <note>
           <para>You can use the <guibutton>Save SID as</guibutton> button (i)
           to save the <guilabel>Scenery Options</guilabel> (with the exception
-          of Cost, Refund and Supports Type), <guilabel>Unknowns</guilabel>
+          of <guilabel>Cost</guilabel>, <guilabel>Refund</guilabel> and
+          <guilabel>Supports Type</guilabel>), <guilabel>Unknowns</guilabel>
           and <guilabel>Flags</guilabel> to a file for later reference (e.g.
           when you want to create several items with the same settings). You
           can open these files with the <guibutton>Open SID</guibutton> button
@@ -1104,6 +1127,18 @@
     <title>Credits</title>
 
     <itemizedlist>
+      <listitem>
+        <para><ulink
+        url="http://creativecommons.org/licenses/by-nc-nd/3.0/"><inlinemediaobject>
+            <imageobject>
+              <imagedata fileref="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"
+                         scale="100" scalefit="0" />
+            </imageobject>
+          </inlinemediaobject></ulink>This work is licensed under a <ulink
+        url="http://creativecommons.org/licenses/by-nc-nd/3.0/">Creative
+        Commons Attribution-NonCommercial-NoDerivs 3.0 License</ulink>.</para>
+      </listitem>
+
       <listitem>
         <para>Atari® and Roller Coaster Tycoon 3® are trademarks of Atari Inc.
         All Rights Reserved.</para>

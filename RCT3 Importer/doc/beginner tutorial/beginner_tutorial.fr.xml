@@ -25,17 +25,20 @@
     </revhistory>
 
     <author>
-      <surname>Belgabor (Version anglaise)</surname>
+      <surname>Belgabor</surname>
+
+      <contrib>(Version anglaise)</contrib>
     </author>
 
     <author>
-      <surname>YesMyDear (Traduction de l'anglais)</surname>
+      <surname>YesMyDear</surname>
+
+      <contrib>(Traduction de l'anglais)</contrib>
     </author>
   </articleinfo>
 
-  <tocchap>
-    <tocentry></tocentry>
-  </tocchap>
+  <para>Coypright (C) 2007 YesMyDear et Belgabor, quelques droits réservés (cf
+  ci-dessous).</para>
 
   <para>Notes de traduction: Pour éviter d’employer des anglicismes à foison,
   j’ai utilisé les termes techniques français aussi souvent que possible. J’ai
@@ -862,8 +865,7 @@
                 <entry>Orientation gauche, Y pointe vers le haut</entry>
 
                 <entry>Certaines versions de
-                <application>3DStudio</application>/<application>3DSMax</application>
-                </entry>
+                <application>3DStudio</application>/<application>3DSMax</application></entry>
 
                 <entry>(aucune)</entry>
               </row>
@@ -1225,8 +1227,21 @@
 
     <itemizedlist>
       <listitem>
-        <para>Atari® and Roller Coaster Tycoon 3® are trademarks of Atari Inc.
-        All Rights Reserved.</para>
+        <para><ulink
+        url="http://creativecommons.org/licenses/by-nc-nd/3.0/"><inlinemediaobject>
+            <imageobject>
+              <imagedata fileref="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"
+                         scale="100" scalefit="0" />
+            </imageobject>
+          </inlinemediaobject></ulink>Ce document est protecté par une <ulink
+        url="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.fr">Creative
+        Commons Paternité-PasD'UtilisationCommerciale-PasDeModification 3.0
+        licence</ulink>.</para>
+      </listitem>
+
+      <listitem>
+        <para>Atari® et Roller Coaster Tycoon 3® sont marques deposées de
+        Atari Inc. Tous droites réservés.</para>
       </listitem>
 
       <listitem>
