@@ -2,7 +2,7 @@
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
 "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
 <article class="whitepaper" lang="de" revision="1.0">
-  <title>Beginner's Tutorial for the RCT3 Custom Scenery Importer</title>
+  <title>Anfänger-Tutorial für den RCT3 Custom Scenery Importer</title>
 
   <articleinfo>
     <date>12.11.2006</date>
@@ -96,7 +96,7 @@
     </author>
   </articleinfo>
 
-  <para>Coypright (C) 2007 errt und Belgabor, einige Rechte vorbehalten (siehe
+  <para>Copyright (C) 2007 errt und Belgabor, einige Rechte vorbehalten (siehe
   unten).</para>
 
   <para>Dieses Tutorial wird Dich durch die Schritte zum Importieren Deines
@@ -114,14 +114,14 @@
   <section id="sect1">
     <title>Vorbereitung für das Importieren</title>
 
-    <para>Dieser Abschnitt wird Dir zeigen, was du tun musst, bevor du den
+    <para>Dieser Abschnitt wird Dir zeigen, was Du tun musst, bevor Du den
     Importer startest.</para>
 
     <section id="sect11">
       <title>Der Anfang</title>
 
       <para>Auch wenn dies unbedeutend erscheint, ist es ein wichtiger Schritt
-      um alles organisiert zu halten: Erstelle Dir einen Ordner für deine
+      um alles organisiert zu halten: Erstelle Dir einen Ordner für Deine
       Sets. Für jedes einzelne Set solltest Du Dir einen Unterordner
       erstellen. Es empfiehlt sich, dort jedes Custom Scenery
       (<acronym>CS</acronym>) Objekt zusammen mit allen zugehörigen Dateien in
@@ -140,7 +140,7 @@
         <listitem>
           <para><application>3DStudio</application> /
           <application>3DSmax</application>. Sehr teurer und professioneller
-          3D Modeller. Du kannst ihn Dir vielleicht leisten, wenn du eine
+          3D Modeller. Du kannst ihn Dir vielleicht leisten, wenn Du eine
           Schülerlizenz bekommst.</para>
         </listitem>
 
@@ -153,8 +153,8 @@
         <listitem>
           <para><application>Blender</application>. Ein freier Open Source
           Modeller. Das Interface ist gewöhnungsbedürftig, deshalb benötigt es
-          ein wenig Geduld, bis man damit umgehen kann. Wenn du dich damit
-          vertraut gemacht hast, wirst du es nichtmehr missen wollen und es
+          ein wenig Geduld, bis man damit umgehen kann. Wenn Du dich damit
+          vertraut gemacht hast, wirst Du es nichtmehr missen wollen und es
           wird zum kraftvollen Werkzeug.</para>
         </listitem>
 
@@ -164,11 +164,12 @@
           und <application>SketchUp Pro</application> (kommerziell, Demo
           verfügbar). Sehr einfach und intuitiv. Es sieht aber so aus, als
           würde es zu viele Faces bei runden Objekten erzeugen, die später
-          schwer loszuwerden sind. Ein anderer Nachteil ist, dass SketchUp
-          manchmal überflüssige Faces und Edges erzeugt, <application>die in
-          einem anderen Modeller</application> bereinigt werden müssen (mehr
-          über Faces später). Ein Skript um aus SketchUp direkt
-          <filename>ASE</filename> Dateien zu exportieren kann man auf <ulink
+          schwer loszuwerden sind. Ein anderer Nachteil ist, dass
+          <application>SketchUp</application> manchmal überflüssige Faces und
+          Edges erzeugt, die in einem anderen Modeller bereinigt werden müssen
+          (mehr über Faces später). Ein Skript um aus
+          <application>SketchUp</application> direkt <filename>ASE</filename>
+          Dateien zu exportieren kann man auf <ulink
           url="http://belgabor.vodhin.net/software">Belgabor's software
           page</ulink> finden.</para>
         </listitem>
@@ -179,17 +180,17 @@
       url="http://belgabor.vodhin.net/software">Belgabor's software
       page</ulink>.</para>
 
-      <para>Beim Erstellen der Objekte solltest du folgende Richtlinien
+      <para>Beim Erstellen der Objekte solltest Du folgende Richtlinien
       beachten:</para>
 
       <itemizedlist>
         <listitem>
-          <para>Halte dein erstes Objekt einfach, um dich an das Importieren
+          <para>Halte Dein erstes Objekt einfach, um dich an das Importieren
           zu gewöhnen. Ein einfacher Würfel reicht als Beispiel aus.</para>
         </listitem>
 
         <listitem>
-          <para>Erstelle dein Objekt in der richtigen Größe und positioniere
+          <para>Erstelle Dein Objekt in der richtigen Größe und positioniere
           is richtig. Ein RCT3 Feld ist normalerweise 4x4 Einheiten in deinem
           Modeller (für SketchUp bei metrischem System 4m*4m). Weitere
           Informationen auf <ulink
@@ -203,7 +204,7 @@
             </indexterm> (auch <quote>poly</quote>, <quote>tri</quote> oder
           <quote>triangle</quote> genannt) ist die kleinste Oberflächeneinheit
           eines Modells und diese Einheit bedeutet <quote>Arbeit</quote> für
-          die 3D-Engine von RCT3. Das heißt, je mehr Faces dein Modell hat,
+          die 3D-Engine von RCT3. Das heißt, je mehr Faces Dein Modell hat,
           umso länger braucht die Engine um das Objekt darzustellen, was zu
           Problemen führen kann. Als Regel sollte man unter 500 Faces bleiben,
           besser unter 300. Beachte, dass RCT3 Dreiecke verwendet, während die
@@ -219,8 +220,8 @@
               <para>Mache Dinge nur so rund wie unbedingt nötig. Runde Teile
               benötigen normalerweiße die meisten Faces. Generell sollte ein
               voller Kreis ohne guten Grund nicht mehr als 16 Segmente haben.
-              Falls der Teil des Modells sehr flach ist, kannst du auch mit
-              nur 3 Segmenten ein gutes Ergebnis erzielen, wenn du weldest
+              Falls der Teil des Modells sehr flach ist, kannst Du auch mit
+              nur 3 Segmenten ein gutes Ergebnis erzielen, wenn Du weldest
               (mehr dazu später).</para>
 
               <para>Dasselbe gilt für Kugeln. Wenn möglich verwende Icospheren
@@ -228,7 +229,7 @@
               Modeller können auch sogenannte UV-Spheren. Diese benötigen mehr
               Faces, sind aber leichter zu UV-mappen (daher der Name. Mehr
               über UV-Mapping später), deshalb verwende diese, wenn Du eine
-              komplizierte Textur für dein Objekt hast.</para>
+              komplizierte Textur für Dein Objekt hast.</para>
             </listitem>
 
             <listitem>
@@ -247,7 +248,7 @@
               Möglichkeit bewusst sein. Wenn Du ein Objekt mit einer
               filigranen durchsichtigen Struktur versehen willst (ein Zaun
               oder Gitter beispielsweise), ist es einfacher für Dich und die
-              Engine, wenn du die Struktur nicht modellierst, sondern eine
+              Engine, wenn Du die Struktur nicht modellierst, sondern eine
               Fläche (plane) mit einer durchsichtigen (alpha) Textur
               belegst.</para>
             </listitem>
@@ -263,11 +264,6 @@
             <primary>Unweld</primary>
           </indexterm>
 
-          <note>
-            <para>Das englische Verb <quote>to weld</quote> bedeutet
-            verschmelzen oder verschweißen.</para>
-          </note>
-
           <para>Wahlweise kannst Du Dein Modell welden oder unwelden. Um
           dieses Thema zu verstehen, musst Du zuerst verstehen, wie die RCT3
           3D-Engine (und wahrscheinlich alle anderen 3D-Engines auch) die
@@ -275,8 +271,13 @@
           Richtung des Lichteinfalls (in RCT3 die Sonne am Tag und Lampen
           nachts) und die Richtung der Normalen des Objekts verwendet.</para>
 
-          <para>Vielleicht fragst du dich jetzt, was eine Normale ist. Fangen
-          wir mit einer Face-Normalen an. Du kannst sie dir als einen Pfeil
+          <note>
+            <para>Das englische Verb <quote>to weld</quote> bedeutet
+            verschmelzen oder verschweißen.</para>
+          </note>
+
+          <para>Vielleicht fragst Du dich jetzt, was eine Normale ist. Fangen
+          wir mit einer Face-Normalen an. Du kannst sie Dir als einen Pfeil
           vorstellen, der senkrecht vom Face wegzeigt, so kann durch den
           Vergleich mit dem Lichteinfall der Winkel berechnet werden unter dem
           die Fläche beleuchtet wird und damit richtig beschattet
@@ -296,9 +297,9 @@
           Faces.</para>
 
           <para>Hier kommt das Konzept von welden und unwelden ins Spiel.
-          Stell dir die Ecke eines Würfels vor. Normalerweise erstellt der
+          Stell Dir die Ecke eines Würfels vor. Normalerweise erstellt der
           Modeller sie welded. Das bedeutet, dass die Ecke nur eine Vertex
-          ist, die von drei Faces genutzt wird. Wenn du diese Vertex unweldest
+          ist, die von drei Faces genutzt wird. Wenn Du diese Vertex unweldest
           (Wie das geht hängt vom Modeller ab, Suche nach
           <guilabel>Unweld</guilabel> oder <guilabel>Unbind
           points/vertices</guilabel>) wird eine Kopie davon für jedes
@@ -320,7 +321,7 @@
           <para>Normalerweise kann man keine Ecken einzeln unwelden, sondern
           nur das Objekt als ganzes. Wenn Du einige Ecken welded lassen
           willst, musst Du das Objekt erst unwelden und danach die Vertices
-          der Ecken, die du welded haben willst, wieder welden. Wie das geht
+          der Ecken, die Du welded haben willst, wieder welden. Wie das geht
           hängt wieder vom Modeller ab, es kann ein wenig kompliziert zu
           finden sein (in Blender heißt es zum Beispiel <guilabel>Remove
           Doubles</guilabel>).</para>
@@ -354,7 +355,7 @@
 
           <secondary>Requirements</secondary>
         </indexterm>Wie oben angesprochen musst Du Bitmap-Texturen für Dein
-      3D-Objekt verwenden. Eine weitere Voraussetzung für die Textur, die du
+      3D-Objekt verwenden. Eine weitere Voraussetzung für die Textur, die Du
       im Importer verwendest, ist, dass sie quadratisch sein muss, wobei
       Breite und Höhe eine Potenz von zwei sein müssen (zum Beispiel 64x64,
       128x128 oder 256x256). Beachte, dass diese Größe einen Effekt auf die
@@ -399,7 +400,7 @@
       frei) an. Es gibt auch andere Textur Software, google einfach danach
       (und schreib mir, wenn Du eine gute kostenlose findest :-P ).</para>
 
-      <para>Wie auch immer du an deine Textur kommst, es wäre gut, wenn sie
+      <para>Wie auch immer Du an Deine Textur kommst, es wäre gut, wenn sie
       nahtlos wäre. Eine nahtlos Textur ist eine Textur, die keinen sichtbaren
       Rand hat, wenn man sie mehrfach nebeneinanderlegt (Schachbrettmuster).
       Das erlaubt Dir ein wenig Schlamperei beim UV-Mapping oder hilft, ein
@@ -410,7 +411,7 @@
 
           <secondary>Creating</secondary>
         </indexterm>. Das ist eine Bitmap, die die Menü-Icons für Dein Set
-      enthält. Sie hat dieselben Einschränkungen wie die Textur, nur dass du
+      enthält. Sie hat dieselben Einschränkungen wie die Textur, nur dass Du
       ein <filename>PNG</filename> mit Transparenz verwenden kannst (und
       solltest), sonst scheint der wechselnd weiß/graue Hintergrund nicht
       durch. Die Standardgröße ist 512x512 und normalerweise mit 64x64 großen
@@ -434,7 +435,7 @@
       <quote>u</quote> und <quote>v</quote> (daher UV-Mapping) oder
       <quote>s</quote> und <quote>t</quote>. Es gibt zwischen diesen beiden
       Benennungen einen Unterschied, aber für das Erstellen von Custom Scenery
-      braucht dieser dich nicht zu interessieren. Außerdem solltest du wissen,
+      braucht dieser dich nicht zu interessieren. Außerdem solltest Du wissen,
       dass diese Koordinaten relativ sind. Das bedeutet 0 stellt ein Ende der
       Textur da und 1 das andere, so dass die Größe der Textur beim UV-Mapping
       sich von der, die Du später im Importer benutzt unterscheiden kann, nur
@@ -468,7 +469,7 @@
       </itemizedlist>
 
       <para>Wie oben beim Erstellen des Objektes, eine Liste von Dingen, die
-      du über UV-Mapping wissen solltest:</para>
+      Du über UV-Mapping wissen solltest:</para>
 
       <itemizedlist>
         <listitem>
@@ -496,8 +497,8 @@
         </listitem>
 
         <listitem>
-          <para>Wenn Du mehr als eine Grundtextur für dein Modell benötigst,
-          kannst du sie alle in eine Textur-Bitmap packen und die Teile deines
+          <para>Wenn Du mehr als eine Grundtextur für Dein Modell benötigst,
+          kannst Du sie alle in eine Textur-Bitmap packen und die Teile deines
           Modells so mappen, dass sie den richtigen Teil der Textur verwenden.
           Das ist gängige Praxis.</para>
         </listitem>
@@ -507,12 +508,12 @@
     <section id="sect15">
       <title>Das Koordinatensystem</title>
 
-      <para>Solange Du noch im 3D Modeller bist, solltest du herausfinden,
+      <para>Solange Du noch im 3D Modeller bist, solltest Du herausfinden,
       welches <indexterm>
           <primary>Coordinate systems</primary>
         </indexterm>Koordinatensystem dieser verwendet. Wir benötigen zwei
       Eigenschaften: Welche Achse nach oben zeigt und ihre sogenannte
-      Händigkeit. Das erste ist einfach, du musst nur schauen, ob die X-, Y-
+      Händigkeit. Das erste ist einfach, Du musst nur schauen, ob die X-, Y-
       oder Z-Achse nach oben zeigt. Das zweite ist etwas kniffeliger. Ein
       Koordinatensystem kann links- oder rechtshändig sein. So ermittelt man
       die Händigkeit:</para>
@@ -521,13 +522,13 @@
         <para>Zeige mit deinem rechten Daumen in der Richtung der X-Achse und
         mit dem Zeigefinger in die der Y-Achse (wie eine
         <quote>Spielzeugpistolen</quote>- oder <quote>Fünf Bier für die Männer
-        vom Sägewerk</quote>-Geste). Wenn du jetzt mit dem Mittelfinger in
+        vom Sägewerk</quote>-Geste). Wenn Du jetzt mit dem Mittelfinger in
         Richtung der Z-Achse zeigen kannst, ohne dich selbst zu verletzen
-        (oder den Finger zu überdehnen, wenn du flexibel genug bist :-) ), ist
+        (oder den Finger zu überdehnen, wenn Du flexibel genug bist :-) ), ist
         es ein rechtshändiges Koordinatensystem.</para>
       </note>
 
-      <para>In den meisten Fällen bekommst du ein rechtshändiges
+      <para>In den meisten Fällen bekommst Du ein rechtshändiges
       Koordinatensystem.</para>
     </section>
 
@@ -545,7 +546,7 @@
       Modell in eine <filename>ASE</filename>-Datei konvertieren. Der
       Konverter der Wahl ist der kostenlose <ulink
       url="http://mirex.mypage.sk/index.php?selected=1"><application>Biturn</application></ulink>.
-      Lade ihn Dir herrunter und konvertiere dein Modell zum
+      Lade ihn Dir herrunter und konvertiere Dein Modell zum
       <filename>ASE</filename> (<application>3ds max</application> ASCII)
       Format. Es wird nicht empfohlen, ins <filename>MS3D</filename> Format zu
       konvertieren, da <application>Biturn</application> eine seltsame
@@ -577,8 +578,8 @@
       <itemizedlist>
         <listitem>
           <para>Du <emphasis>darfst niemals</emphasis> den Namen einer
-          <filename>OVL</filename> Datei ändern. Wenn du den Namen ändern
-          willst, musst du sie neu erstellen (siehe <xref
+          <filename>OVL</filename> Datei ändern. Wenn Du den Namen ändern
+          willst, musst Du sie neu erstellen (siehe <xref
           linkend="sect224" />).</para>
         </listitem>
 
@@ -599,7 +600,7 @@
   </section>
 
   <section id="sect2">
-    <title>Importiere dein erstes Objekt</title>
+    <title>Importiere Dein erstes Objekt</title>
 
     <para>An diesem Punkt solltest Du den Importer installiert und alle
     notwendigen Dateien (Modell, Bitmap-Textur und Icon-Bitmap) bereitgestellt
@@ -623,7 +624,7 @@
         </mediaobject>
       </figure>
 
-      <para>Das erste, was Du entscheiden musst, ist das Thema, dass du deinem
+      <para>Das erste, was Du entscheiden musst, ist das Thema, dass Du deinem
       Set geben willst (1). Das beeinflusst, wann es angezeigt wird, wenn man
       nach dem Thema filtert (die Buttons oben im Szenerie-Menü). Beachte,
       dass die Themen mit den Zeichen nur funktionieren, wenn der Nutzer
@@ -650,7 +651,7 @@
         es zumindest sehr unwahrscheinlich).</para>
       </important>
 
-      <para>Gib jetzt einen Namen für dein Set ein (3). Zusammen mit dem
+      <para>Gib jetzt einen Namen für Dein Set ein (3). Zusammen mit dem
       Prefix ergibt er den Namen des Ordners in Style\Themed, in den Dein Set
       installiert wird. Er wird <emphasis>nicht</emphasis> im Spiel
       angezeigt.</para>
@@ -695,16 +696,16 @@
       von hier öffnet). Alle Listen haben ein gemeinsames Interface. Einige
       spezielle Listen mögen ein paar Teile mehr oder weniger haben, aber im
       Grunde genommen arbeiten sie alle gleich. Als Beispiel schauen wir uns
-      die Textur-Liste (4) an. Ganz oben findest du zwei Pfeile, mit denen du
+      die Textur-Liste (4) an. Ganz oben findest Du zwei Pfeile, mit denen Du
       die Reihenfolge der Einträge ändern kannst. Darunter ist eine Gruppe von
-      Buttons, mit denen du Einträge zufügen (<guibutton>+</guibutton>),
+      Buttons, mit denen Du Einträge zufügen (<guibutton>+</guibutton>),
       bearbeiten (<guibutton>E</guibutton>), verdoppeln
       (<guibutton>C</guibutton>) oder löschen (<guibutton>-</guibutton>)
       kannst. Der flache <guibutton>C</guibutton> Button löscht die ganze
       Liste. <mousebutton>Doppelklicken</mousebutton> auf einen Eintrag tut
       normalerweise dasselbe wie das Drücken des <guibutton>E</guibutton>
       Bearbeiten Buttons. Keine Angst, alle Button zeigen eine kurze Erklärung
-      an, wenn du eine kurze Zeit mit dem Mauszeiger darüberfährst :-)</para>
+      an, wenn Du eine kurze Zeit mit dem Mauszeiger darüberfährst :-)</para>
 
       <para>Jetzt können wir anfangen.</para>
 
@@ -715,11 +716,11 @@
             <primary>Model Texture</primary>
 
             <secondary>Adding</secondary>
-          </indexterm>Zuerst musst du deine Modell-Textur hinzufügen, drücke
+          </indexterm>Zuerst musst Du Deine Modell-Textur hinzufügen, drücke
         also den Hinzufügen Button (<guibutton>+</guibutton>) in der
         Textur-Liste (4). Das öffnet ein Datei-Auswahlfenster, also wähle
-        deine Bitmap-Textur und drücke <guibutton>Ok</guibutton>. Dann kommst
-        du zum <guilabel>Add Texture</guilabel> Fenster:</para>
+        Deine Bitmap-Textur und drücke <guibutton>Ok</guibutton>. Dann kommst
+        Du zum <guilabel>Add Texture</guilabel> Fenster:</para>
 
         <figure>
           <title>RCT3 Custom Scenery Importer, Add Texture Fenster</title>
@@ -745,7 +746,7 @@
 
         <note>
           <para>Wenn Du bei ersten Dateiwählen <guibutton>Cancel</guibutton>
-          drückst, kommst du zum <guilabel>Advanced Texture
+          drückst, kommst Du zum <guilabel>Advanced Texture
           Settings</guilabel> Fenster. Dieses wird hier nicht behandelt</para>
         </note>
 
@@ -818,8 +819,9 @@
               <row>
                 <entry>Rechtshändig, Z-oben</entry>
 
-                <entry>Die meisten 3d Modeller (z.B. <application>Blender,
-                SketchUp</application>)</entry>
+                <entry>Die meisten 3d Modeller (z.B.
+                <application>Blender</application>,
+                <application>SketchUp</application>)</entry>
 
                 <entry>Fix Orientation</entry>
               </row>
@@ -840,14 +842,14 @@
         <guibutton>Edit</guibutton> Button (c) um den <guilabel>Matrix
         Editor</guilabel> zu öffnen und drücke den entsprechenden Button aus
         der Tabelle. Schließe den Editor mit dem <guibutton>Ok</guibutton>
-        Button. Zurück im Model Settings Fenster kannst du jetzt den
+        Button. Zurück im Model Settings Fenster kannst Du jetzt den
         <guibutton>Save Default</guibutton> Button (d) drücken. Die verwendete
         Transformations Matrix wird dann auf jedes Modell angewendet und Du
         musst diesen Schritt nicht mehr wiederholen.</para>
 
         <para>Der nächste Schritt ist, die Textur der Gruppe zuzuweisen. Für
         Dein erstes Objekt solltest Du eigentlich nur eine Gruppe haben. Wenn
-        du <application>Biturn</application> zum Konvertieren verwendet hast,
+        Du <application>Biturn</application> zum Konvertieren verwendet hast,
         gibt es eine zusätzliche Gruppe <quote>root</quote> (e), ignoriere
         sie.</para>
 
@@ -865,7 +867,7 @@
             <keycap function="control">Strg</keycap>
 
             <mousebutton>Klicke</mousebutton>
-          </keycombo> auf den Namen der Gruppe, deren Einstellungen du
+          </keycombo> auf den Namen der Gruppe, deren Einstellungen Du
         kopieren möchtest und bestätige das..</para>
 
         <para>Wir sind jetzt fertig mit den Modell-Einstellungen, also
@@ -892,7 +894,7 @@
         müsste und <guibutton>Create Scenery OVL</guibutton> anzeigen sollte,
         wenn Du alles richtig gemacht hast.</para>
 
-        <para>Wähle den Dateinamen für deine <filename>OVL</filename>, trage
+        <para>Wähle den Dateinamen für Deine <filename>OVL</filename>, trage
         keine Dateiendung ein und behalte das Prefix. Du kannst nur ASCII
         Zeichen dafür verwenden. Wie bereits erwähnt, falls Du die
         <filename>OVL</filename> Datei später umbenennen willst, musst Du
@@ -903,7 +905,7 @@
         unerwartetes getan).</para>
 
         <para>Nach dem erstellen der <filename>OVL</filename>, drücke den
-        <guiicon>Save</guiicon> Button (1) um deine <filename>SCN</filename>
+        <guiicon>Save</guiicon> Button (1) um Deine <filename>SCN</filename>
         Datei nochmal zu speichern (das speichert den Pfad der
         <filename>OVL</filename> Datei, damit Du ihn nicht jedesmal neu wählen
         musst).</para>
@@ -962,14 +964,14 @@
         </figure>
 
         <para>Drücke den <guibutton>Load Texture</guibutton> Button (b) und
-        wähle deine Icon-Textur aus. Wie bei der Modell-Textur wird der Name
-        (a) automatisch ausgefüllt, aber du kannst ihn ändern, falls du
-        willst. Drücke <guibutton>Ok</guibutton> (c) wenn du fertig bist und
+        wähle Deine Icon-Textur aus. Wie bei der Modell-Textur wird der Name
+        (a) automatisch ausgefüllt, aber Du kannst ihn ändern, falls Du
+        willst. Drücke <guibutton>Ok</guibutton> (c) wenn Du fertig bist und
         schließe das Management-Fenster.</para>
 
         <note>
           <para>Wie das Management-Fenster zeigt, bist Du nicht auf eine
-          Icon-Texur beschränkt. Wenn du also ein sehr großes Set erstellen
+          Icon-Texur beschränkt. Wenn Du also ein sehr großes Set erstellen
           willst, kannst Du später weitere zufügen.</para>
         </note>
       </section>
@@ -982,7 +984,7 @@
         Manager</guilabel> zu gelangen. Icon-Referenzen werden benötigt, um
         RCT3 zu sagen, wo auf der Icon-Textur die einzelnen Icons sitzen. Wir
         werden den einfachen Weg wählen, also drücke einfach den
-        <guibutton>Auto</guibutton> Button, lass deine Icon-Textur ausgewählt
+        <guibutton>Auto</guibutton> Button, lass Deine Icon-Textur ausgewählt
         und drücke <guibutton>Ok</guibutton>. Das fügt alle Icon-Referenzen
         wie oben erwähnt hinzu (<xref linkend="sect13" />). Schließe jetzt das
         Management-Fenster.</para>
@@ -1010,10 +1012,10 @@
           </mediaobject>
         </figure>
 
-        <para>Das einzige, was Du hier eingeben musst, ist der Text, den du
+        <para>Das einzige, was Du hier eingeben musst, ist der Text, den Du
         dem User zeigen willst (b). Du kannst auch einen Namen (a) eingeben,
         aber wenn Du das Feld leer lässt, wird der Text kopiert. Gib einen
-        Gruppen (Submenü) Namen für dein Set ein, vielleicht den Setnamen und
+        Gruppen (Submenü) Namen für Dein Set ein, vielleicht den Setnamen und
         deinen Nicknamen in irgendeiner Kombination. Eine gute Idee ist es,
         den Nicknamen vor (<quote>xyz's abc Set</quote>) oder hinter
         (<quote>abc Set (xyz)</quote>) zu setzen. Ich persönlich bevorzuge
@@ -1031,7 +1033,7 @@
         <para>Nach der Eingabe des Gruppennamen, schließe das Fenster mit
         <guibutton>Ok</guibutton> (c).</para>
 
-        <para>Zurück im Manager fügst Du noch einen Text-String für dein
+        <para>Zurück im Manager fügst Du noch einen Text-String für Dein
         Objekt zu. Der Ablauf ist derselbe. Wenn Du fertig bist, schließe das
         <guilabel>Text String Manager</guilabel> Fenster.</para>
       </section>
@@ -1069,7 +1071,7 @@
         verwendete Namen auszuwählen. Da dies direkt in den Ordnernamen
         übersetzt wird, sind nur ASCII Zeichen erlaubt.</para>
 
-        <para>Wenn Du keine Gruppe erstellen willst, musst du die Check Box
+        <para>Wenn Du keine Gruppe erstellen willst, musst Du die Check Box
         (c) abhaken, aber wie schon gesagt, ist das nicht zu empfehlen.
         Ansonsten wähle eine <guilabel>Icon</guilabel>-Referenz (d) und einen
         <guilabel>Name String</guilabel> (e) für die
@@ -1083,12 +1085,12 @@
         (<guilabel>Cost</guilabel>) und die Rückerstattung
         (<guilabel>Refund</guilabel>) (j). Eigentlich ist das letztere falsch
         benannt, es sind die Kosten für das Entfernen des Objektes. Soll also
-        etwas erstattet werden, musst du einen negativen Wert eintragen. Die
+        etwas erstattet werden, musst Du einen negativen Wert eintragen. Die
         Werte werden in der kleinsten Einheit der eingestellten Währung
         angezeigt (z.B. Cent für Dollar oder Euros).</para>
 
         <para>Der <guilabel>Scenery Type</guilabel> (k) stell ein, in welchem
-        Menü und welcher Kategorie ein Objekt erscheint. Für dein erstes
+        Menü und welcher Kategorie ein Objekt erscheint. Für Dein erstes
         Objekt wähle <guilabel>Small Scenery</guilabel>. Lasse den
         <guilabel>Support Type</guilabel> (l) auf <guilabel>None</guilabel>
         und stelle <guilabel>Extra Parameters</guilabel> (m) ebenfalls auf
@@ -1100,15 +1102,15 @@
         <guilabel>Size</guilabel> (o) sollte auf die Größe deines Modells in
         Modeller-Einheiten eingestellt werden. Bedenke, dass x/y/z sich hier
         auf das Koordinatensystem des Spiels beziehen. Das ist unwichtig, wenn
-        du keine Transformationsmatrix brauchst oder MilkShape benutzt. Wenn
-        du die <guilabel>Fix Orientation</guilabel> Matrix benutzt hast, musst
-        du die Werte eines <quote>nach oben schieben</quote>, also die Größe
+        Du keine Transformationsmatrix brauchst oder MilkShape benutzt. Wenn
+        Du die <guilabel>Fix Orientation</guilabel> Matrix benutzt hast, musst
+        Du die Werte eines <quote>nach oben schieben</quote>, also die Größe
         in x-Richtung im Modeller kommt nach <guilabel>Z</guilabel>, y nach
         <guilabel>X</guilabel> und z in <guilabel>Y</guilabel>.</para>
 
         <para>Das <guilabel>Placement Flag</guilabel> (q) bestimmt, wo das
         Objekt plaziert wird in Abhängigkeit davon, wohin der Spieler klickt.
-        Für dein erstes Objekt, wähle <guilabel>Full Tile</guilabel>. Wenn Du
+        Für Dein erstes Objekt, wähle <guilabel>Full Tile</guilabel>. Wenn Du
         mehr über die Placement Flags und darüber, wie Du Deine Modelle
         richtig für sie positionierst, wissen willst, siehe <ulink
         url="http://belgabor.vodhin.net/facts">Belgabor's facts &amp; figures
@@ -1126,7 +1128,7 @@
           von <guilabel>Cost</guilabel>, <guilabel>Refund</guilabel> und
           <guilabel>Supports Type</guilabel>), <guilabel>Unknowns</guilabel>
           und <guilabel>Flags</guilabel> in eine Datei für spätere
-          Wiederverwendung (z.B. wenn du mehrere Objekte mit gleichen
+          Wiederverwendung (z.B. wenn Du mehrere Objekte mit gleichen
           Einstellungen importieren willst) zu speichern. Du kannst diese
           Dateien mit dem <guibutton>Open SID</guibutton> Button (h) öffnen.
           Es gibt auch eine Bibliothek mit SID-Dateien aus dem Spiel auf
@@ -1147,20 +1149,20 @@
           <guimenu>File</guimenu>
 
           <guimenuitem>Save Theme File</guimenuitem>
-        </menuchoice> aus dem Menü des Hauptfensters um deine Set-Datei zu
+        </menuchoice> aus dem Menü des Hauptfensters um Deine Set-Datei zu
       speichern. Drücke dann den <guibutton>Install</guibutton> Button (4), um
       das Set zu installieren. Es wird nach <filename
-      class="directory">&lt;RCT3 Installation
-      Directory&gt;\Style\Themed</filename> in einen Unterordner namens
-      <filename class="directory">PrefixThemename</filename> gespeichert. Wenn
-      du RCT3 nicht installiert hast, kannst du dir statt <filename
-      class="directory">&lt;RCT3 Installation
-      Directory&gt;\Style\Themed</filename> ein anderes Verzeichnis
-      heraussuchen.</para>
+      class="directory">&lt;RCT3
+      Installationsvereichnis&gt;\Style\Themed</filename> in einen Unterordner
+      namens <filename class="directory">PrefixThemenname</filename>
+      gespeichert. Wenn Du RCT3 nicht installiert hast, kannst Du Dir statt
+      <filename class="directory">&lt;RCT3
+      Installationsvereichnis&gt;\Style\Themed</filename> ein anderes
+      Verzeichnis heraussuchen.</para>
 
       <para>Starte jetzt RCT3 und teste, ob alles funktioniert hat.</para>
 
-      <para><emphasis role="bold">Gratulation, du hast dein erstes RCT3 Custom
+      <para><emphasis role="bold">Gratulation, Du hast Dein erstes RCT3 Custom
       Scenery Objekt importiert =)</emphasis></para>
     </section>
   </section>
