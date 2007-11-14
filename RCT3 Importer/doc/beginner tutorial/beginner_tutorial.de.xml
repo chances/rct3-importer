@@ -81,6 +81,28 @@
           <para>Erste deutsche Version, entspricht V5</para>
         </revdescription>
       </revision>
+
+      <revision>
+        <revnumber>2</revnumber>
+
+        <date>14.11.2007</date>
+
+        <author>
+          <surname>errt</surname>
+        </author>
+
+        <author>
+          <surname>BigBurger</surname>
+        </author>
+
+        <author>
+          <surname>Belgabor</surname>
+        </author>
+
+        <revdescription>
+          <para>Letzte Korrektur vor der Veröffentlichung</para>
+        </revdescription>
+      </revision>
     </revhistory>
 
     <author>
@@ -94,16 +116,22 @@
 
       <contrib>(Deutsche Übersetzung)</contrib>
     </author>
+
+    <author>
+      <surname>BigBurger</surname>
+
+      <contrib>(Korrekturlesen)</contrib>
+    </author>
   </articleinfo>
 
-  <para>Copyright (C) 2007 errt und Belgabor, einige Rechte vorbehalten (siehe
-  unten).</para>
+  <para>Copyright (C) 2007 errt, BigBurger und Belgabor, einige Rechte
+  vorbehalten (siehe unten).</para>
 
   <para>Dieses Tutorial wird Dich durch die Schritte zum Importieren Deines
   ersten Objektes für <application>Roller Coaster Tycoon 3</application>®
-  führen. Es werden nur die Möglichkeiten und Schritte für einen einfaches
+  führen. Es werden nur die Möglichkeiten und Schritte für ein einfaches
   Objekt gezeigt, erwarte keine Erklärungen darüber, was sonst noch möglich
-  ist..</para>
+  ist.</para>
 
   <para>Das bedeutet aber auch, dass <emphasis>all diese Schritte</emphasis>
   benötigt werden!</para>
@@ -120,9 +148,9 @@
     <section id="sect11">
       <title>Der Anfang</title>
 
-      <para>Auch wenn dies unbedeutend erscheint, ist es ein wichtiger Schritt
-      um alles organisiert zu halten: Erstelle Dir einen Ordner für Deine
-      Sets. Für jedes einzelne Set solltest Du Dir einen Unterordner
+      <para>Auch wenn dies unbedeutend erscheint: Erstelle Dir einen Ordner
+      für Deine Sets, das ist ein wichtiger Schritt, um alles organisiert zu
+      halten. Für jedes einzelne Set solltest Du Dir einen Unterordner
       erstellen. Es empfiehlt sich, dort jedes Custom Scenery
       (<acronym>CS</acronym>) Objekt zusammen mit allen zugehörigen Dateien in
       einen eigenen Unterordner zu legen.</para>
@@ -218,18 +246,18 @@
           <itemizedlist>
             <listitem>
               <para>Mache Dinge nur so rund wie unbedingt nötig. Runde Teile
-              benötigen normalerweiße die meisten Faces. Generell sollte ein
+              benötigen normalerweise die meisten Faces. Generell sollte ein
               voller Kreis ohne guten Grund nicht mehr als 16 Segmente haben.
-              Falls der Teil des Modells sehr flach ist, kannst Du auch mit
+              Falls der Teil des Modells sehr klein ist, kannst Du auch mit
               nur 3 Segmenten ein gutes Ergebnis erzielen, wenn Du weldest
               (mehr dazu später).</para>
 
-              <para>Dasselbe gilt für Kugeln. Wenn möglich verwende Icospheren
+              <para>Dasselbe gilt für Kugeln. Wenn möglich verwende Icosphären
               (Kugeln, die sich aus Dreiecken statt Vierecken zusammensetzen).
-              Modeller können auch sogenannte UV-Spheren. Diese benötigen mehr
-              Faces, sind aber leichter zu UV-mappen (daher der Name. Mehr
-              über UV-Mapping später), deshalb verwende diese, wenn Du eine
-              komplizierte Textur für Dein Objekt hast.</para>
+              Modeller können auch sogenannte UV-Sphären erstellen. Diese
+              benötigen mehr Faces, sind aber leichter zu UV-mappen (daher der
+              Name. Mehr über UV-Mapping später), deshalb verwende diese, wenn
+              Du eine komplizierte Textur für Dein Objekt hast.</para>
             </listitem>
 
             <listitem>
@@ -283,18 +311,18 @@
           die Fläche beleuchtet wird und damit richtig beschattet
           werden.</para>
 
-          <para>Um Dinge realistischer aussehen zu lassen, verwendet 3D-Engine
-          stattdessen Eck- (vertex) Normalen. Diese sind etwas schwerer zu
-          verstehen. Die Vertex-Normale ist eine Eigenschaft der Ecken des
-          Objekts und repräsentiert die Normale der tangierenden Fläche des
-          Objekts an dieser Ecke. Um zu verstehen, was das bedeutet, stell Dir
-          Dein Objekt in der Realität vor und "stelle" es auf deinen
-          Schreibtisch, so dass nur eine Ecke den Tisch berührt. Das macht
-          Deinen Tisch (grob) zur tangierenden Fläche dieser Ecke, also würde
-          die Normale in dieser Position zum Boden zeigen. Vertex-Normalen
-          werden vom 3D-Modeller automatisch berechnet, normalerweise als
-          Mittel der Face-Normalen aller an der Ecke angrenzenden
-          Faces.</para>
+          <para>Um Dinge realistischer aussehen zu lassen, verwendet die
+          3D-Engine stattdessen Eck- (vertex) Normalen. Diese sind etwas
+          schwerer zu verstehen. Die Vertex-Normale ist eine Eigenschaft der
+          Ecken des Objekts und repräsentiert die Normale der tangierenden
+          Fläche des Objekts an dieser Ecke. Um zu verstehen, was das
+          bedeutet, stell Dir Dein Objekt in der Realität vor und "stelle" es
+          auf deinen Schreibtisch, so dass nur eine Ecke den Tisch berührt.
+          Das macht Deinen Tisch (grob) zur tangierenden Fläche dieser Ecke,
+          also würde die Normale in dieser Position zum Boden zeigen.
+          Vertex-Normalen werden vom 3D-Modeller automatisch berechnet,
+          normalerweise als Mittel der Face-Normalen aller an der Ecke
+          angrenzenden Faces.</para>
 
           <para>Hier kommt das Konzept von welden und unwelden ins Spiel.
           Stell Dir die Ecke eines Würfels vor. Normalerweise erstellt der
@@ -314,7 +342,7 @@
           Face-Normale. Im weld/unweld-Bereich von <ulink
           url="http://belgabor.vodhin.net/facts">Belgabor's facts &amp;
           figures page</ulink> findest Du ein paar Bilder darüber. Die
-          Botschaft des ganzen ist, dass Du Ecken unwelden musst, wenn sie
+          Botschaft des Ganzen ist, dass Du Ecken unwelden musst, wenn sie
           eckig aussehen sollen, und sie welded lassen, wenn sie gerundet
           aussehen sollen.</para>
 
@@ -366,8 +394,8 @@
       sogar eine 4x4 Textur (vielleicht reicht sogar 1x1, aber das habe ich
       noch nicht getestet).</para>
 
-      <para>Die erste (und schwerste) Möglichkeit eine Bitmap-Textur zu
-      bekommen ist, sie selbst mit einem Bitmap-Editor wie <application>Adobe
+      <para>Die erste (und schwerste) Möglichkeit, eine Bitmap-Textur zu
+      bekommen, ist, sie selbst mit einem Bitmap-Editor wie <application>Adobe
       Photoshop</application> oder <application>The Gimp</application> zu
       zeichnen. Selbst wenn Du sie nicht selbst zeichnen willst, könnte es gut
       sein, einen Bitmap-Editor für Größenanpassungen oder Veränderungen zu
@@ -380,11 +408,11 @@
       Copyright-geschützt ist, das Copyright gilt automatisch!</emphasis> Wenn
       also eine Seite nicht explizit erlaubt, ihre Bilder oder Texturen frei
       zu nutzen, <emphasis>darfst Du das nicht</emphasis>. Bedenke auch, dass
-      Symbole oder Markennamen Copyrights oder Trademarks unterliegen, deshalb
-      verwende sie besser nicht. Wenn dich das ärgert, bedenke, dass es auch
-      Dich schützt. Welche <acronym>CS</acronym> auch immer Du erstellst,
-      niemand darf es hosten oder Modelle oder Texturen daraus klauen ohne
-      Deine Erlaubnis =)</para>
+      Symbole oder Markennamen Copyrights oder Trademarks unterliegen,
+      verwende sie deshalb besser nicht. Wenn dich das ärgert, bedenke, dass
+      es auch Dich schützt. Welche <acronym>CS</acronym> auch immer Du
+      erstellst, niemand darf sie ohne Deine Erlaubnis hosten oder Modelle
+      oder Texturen daraus klauen =)</para>
 
       <para><indexterm>
           <primary>Model Texture</primary>
@@ -396,9 +424,10 @@
       url="http://www.spiralgraphics.biz/index.htm">Spiral Graphics</ulink>,
       das eine abgespeckte Version ihres kommerziellen Textur-Programms,
       <application>Genetica</application>. Außerdem bieten sie freie
-      Textur-Packs für ihren <application>Genetica Viewer</application> (auch
-      frei) an. Es gibt auch andere Textur Software, google einfach danach
-      (und schreib mir, wenn Du eine gute kostenlose findest :-P ).</para>
+      Textur-Packs für ihren <application>Genetica Viewer</application>
+      (ebenfalls kostenlos) an. Es gibt auch andere Textur Software, google
+      einfach danach (und schreib mir, wenn Du eine gute kostenlose findest
+      :-P ).</para>
 
       <para>Wie auch immer Du an Deine Textur kommst, es wäre gut, wenn sie
       nahtlos wäre. Eine nahtlos Textur ist eine Textur, die keinen sichtbaren
@@ -437,9 +466,10 @@
       Benennungen einen Unterschied, aber für das Erstellen von Custom Scenery
       braucht dieser dich nicht zu interessieren. Außerdem solltest Du wissen,
       dass diese Koordinaten relativ sind. Das bedeutet 0 stellt ein Ende der
-      Textur da und 1 das andere, so dass die Größe der Textur beim UV-Mapping
-      sich von der, die Du später im Importer benutzt unterscheiden kann, nur
-      das Layout muss stimmen (z.B. darfst Du sie nicht spiegeln).</para>
+      Textur dar und 1 das andere, so dass die Größe der Textur beim
+      UV-Mapping sich von der, die Du später im Importer benutzt unterscheiden
+      kann, nur das Layout muss stimmen (z.B. darfst Du sie nicht
+      spiegeln).</para>
 
       <para>Auch wenn das kompliziert oder seltsam klingt, es erklärt einfach
       dem Modell (und später der 3D-Engine), welcher Teil der Textur für
@@ -570,7 +600,7 @@
     <section id="sect18">
       <title>Ein paar Anmerkungen zu OVL Dateien</title>
 
-      <para>Das <filename>OVL</filename> Dateformat wurde von Frontier für
+      <para>Das <filename>OVL</filename> Dateiformat wurde von Frontier für
       <application>RCT3</application> erfunden. Du musst nichts über ihre
       Struktur wissen, aber es gibt ein paar Dinge, die Du wissen
       musst:</para>
@@ -665,13 +695,13 @@
     </section>
 
     <section id="sect22">
-      <title>Erstellen einer Szenerie <filename>OVL</filename></title>
+      <title>Erstellen einer Scenery <filename>OVL</filename></title>
 
       <para><indexterm>
           <primary>Scenery OVL</primary>
 
           <secondary>Creating</secondary>
-        </indexterm>Jetzt ist es Zeit, die erste Szenerie OVL zu erstellen.
+        </indexterm>Jetzt ist es Zeit, die erste Scenery OVL zu erstellen.
       Drücke also den <guibutton>Create OVL</guibutton> Button (7) im
       Hauptfenster. Dieser öffnet das <guilabel>Create OVL</guilabel>
       Fenster:</para>
@@ -745,9 +775,10 @@
         korrekte.</para>
 
         <note>
-          <para>Wenn Du bei ersten Dateiwählen <guibutton>Cancel</guibutton>
+          <para>Wenn Du beim ersten Dateiwählen <guibutton>Cancel</guibutton>
           drückst, kommst Du zum <guilabel>Advanced Texture
-          Settings</guilabel> Fenster. Dieses wird hier nicht behandelt</para>
+          Settings</guilabel> Fenster. Dieses wird hier nicht
+          behandelt.</para>
         </note>
 
         <para>Nach dem Hinzufügen erscheint die Textur in der Liste
@@ -904,13 +935,13 @@
         nicht, bist Du den Anweisungen nicht gefolgt (oder hast etwas
         unerwartetes getan).</para>
 
-        <para>Nach dem erstellen der <filename>OVL</filename>, drücke den
-        <guiicon>Save</guiicon> Button (1) um Deine <filename>SCN</filename>
+        <para>Nach dem Erstellen der <filename>OVL</filename>, drücke den
+        <guiicon>Save</guiicon> Button (1), um Deine <filename>SCN</filename>
         Datei nochmal zu speichern (das speichert den Pfad der
         <filename>OVL</filename> Datei, damit Du ihn nicht jedesmal neu wählen
         musst).</para>
 
-        <para>Jetzt bist Du fertig mit dem Erstellen deiner ersten Szenerie
+        <para>Jetzt bist Du fertig mit dem Erstellen deiner ersten Scenery
         OVL. Drücke den <guiicon>Exit</guiicon> Button (3) um zum Hauptfenster
         zurückzukommen.</para>
       </section>
@@ -977,10 +1008,10 @@
       </section>
 
       <section id="sect232">
-        <title>Icon-Referenzen zufügen</title>
+        <title>Icon-Referenzen hinzufügen</title>
 
         <para>Zurück im Hauptfenster, drücke den <guibutton>Icon
-        References</guibutton> Button (9) um zum <guilabel>Icon Reference
+        References</guibutton> Button (9), um zum <guilabel>Icon Reference
         Manager</guilabel> zu gelangen. Icon-Referenzen werden benötigt, um
         RCT3 zu sagen, wo auf der Icon-Textur die einzelnen Icons sitzen. Wir
         werden den einfachen Weg wählen, also drücke einfach den
@@ -991,7 +1022,7 @@
       </section>
 
       <section id="sect233">
-        <title>Text-Strings zufügen</title>
+        <title>Text-Strings hinzufügen</title>
 
         <para><indexterm>
             <primary>Text Strings</primary>
@@ -999,7 +1030,7 @@
             <secondary>Settings</secondary>
           </indexterm>Text-Strings repräsentieren die Menü-Texteinträge, die
         der Spieler im Spiel sieht. Öffne das <guilabel>Text String
-        Manager</guilabel> Fenster (8) und und drücke den
+        Manager</guilabel> Fenster (8) und drücke den
         <guibutton>Add</guibutton> Button:</para>
 
         <figure>
@@ -1077,9 +1108,9 @@
         <guilabel>Name String</guilabel> (e) für die
         <guilabel>Gruppe</guilabel>.</para>
 
-        <para>Du musst immer ein <guilabel>Icon</guilabel> und einen
-        <guilabel>Name String</guilabel> für Dein
-        <guilabel>Scenerie</guilabel> Objekt in (f) und (g) wählen.</para>
+        <para>Du musst immer einen <guilabel>Icon</guilabel> und einen
+        <guilabel>Name String</guilabel> für Dein <guilabel>Scenery</guilabel>
+        Objekt in (f) und (g) wählen.</para>
 
         <para>Dann wähle, wieviel das Objekt kostet
         (<guilabel>Cost</guilabel>) und die Rückerstattung
