@@ -28,7 +28,7 @@ struct BoneShape2 {
 };
 struct BoneStruct {
 	char *BoneName;
-	unsigned long BoneNumber;
+	unsigned long ParentBoneNumber;
 };
 struct BoneShape1 {
 	D3DVECTOR BoundingBox1;
