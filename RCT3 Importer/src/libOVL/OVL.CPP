@@ -615,7 +615,7 @@ LIBOVL_API void SaveSceneryOvl() {
             fprintf(f,"relocations: %x: &bsh->BonePositions2\n",&bsh->BonePositions2);
 #endif
             for (unsigned long j = 0;j < BoneShapes[i]->BoneCount;j++) {
-                bsh->Bones[j].BoneNumber = BoneShapes[i]->Bones[j].BoneNumber;
+                bsh->Bones[j].ParentBoneNumber = BoneShapes[i]->Bones[j].ParentBoneNumber;
                 bsh->Bones[j].BoneName = (char *)TempBoneShape;
                 strcpy((char *)TempBoneShape,BoneShapes[i]->Bones[j].BoneName);
                 TempBoneShape += strlen(BoneShapes[i]->Bones[j].BoneName) + 1;
@@ -627,7 +627,7 @@ LIBOVL_API void SaveSceneryOvl() {
                 }
                 relocations.push((unsigned long *)&bsh->Bones[j].BoneName);
 #ifdef DUMP_RELOCATIONS
-                fprintf(f,"relocations: %x: &bsh->Bones[j].BoneName\n",&bsh->Bones[j].BoneName);
+                fprintf(f,"relocations: %x: &bsh->Bones[j].BoneName %s\n",&bsh->Bones[j].BoneName, &bsh->Bones[j].BoneName);
 #endif
                 memcpy(&bsh->BonePositions1[j],&BoneShapes[i]->BonePositions1[j],sizeof(D3DMATRIX));
                 memcpy(&bsh->BonePositions2[j],&BoneShapes[i]->BonePositions2[j],sizeof(D3DMATRIX));
@@ -718,7 +718,7 @@ LIBOVL_API void SaveSceneryOvl() {
             }
             relocations.push((unsigned long *)&ban->Bones[j].Name);
 #ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &bab->Rotate\n",&ban->Bones[j].Name);
+            fprintf(f,"relocations: %x: &bab->Name\n",&ban->Bones[j].Name);
 #endif
         }
 
