@@ -15,8 +15,11 @@
 #include "wx/wxprec.h"
 #include "wx/defs.h"
 
+#include <wx/filesys.h>
+#include <wx/mstream.h>
+
 #include "ilpict.h"
-#include "wxdevil.h"
+#include "wxgmagick.h"
 
 IMPLEMENT_DYNAMIC_CLASS(wxILPicture, wxControl)
 
@@ -83,6 +86,8 @@ void wxILPicture::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 
     wxPaintDC dc( this );
     PrepareDC( dc );
+    dc.SetBackground(wxBrush(m_backgroundColour));
+    dc.Clear();
 
     if (m_valid) {
         wxSize sz = GetSize();
@@ -113,7 +118,15 @@ void wxILPicture::OnPaint(wxPaintEvent& WXUNUSED(event)) {
 
         if ( Align & wxALIGN_CENTER_VERTICAL ) pos.y = (sz.y-bmpsz.y)/2;
         else if ( Align & wxALIGN_BOTTOM ) pos.y = sz.y-bmpsz.y;
-        wxBitmap Bitmap(GetImage(bmpsz.GetWidth(), bmpsz.GetHeight()));
+        wxImage tmp = GetImage(bmpsz.GetWidth(), bmpsz.GetHeight());
+#ifdef __WXDEBUG__
+        if (tmp.HasAlpha())
+            wxLogDebug(wxT("Trace, wxILPicture::OnPaint Transparent"));
+        else
+            wxLogDebug(wxT("Trace, wxILPicture::OnPaint Opaque"));
+#endif
+        tmp.ConvertAlphaToMask(128);
+        wxBitmap Bitmap(tmp);
 /*
         if ( Scale ) {
             if ( LastScaleX != sx || LastScaleY != sy ) {
@@ -200,6 +213,51 @@ void wxILPicture::FromFile(const wxString& filename) {
            m_valid = iluFlipImage();
         ilBindImage(old);
     } else {
+        m_valid = false;
+    }
+    if (!m_valid) {
+        ilDeleteImage(m_ilimage);
+        m_ilimage = ilGenImage();
+        m_width = 0;
+        m_height = 0;
+    }
+}
+
+void wxILPicture::LoadFromFileSystem(const wxString& filename, const ILenum type) {
+    wxFileSystem fs;
+    wxFSFile* file = fs.OpenFile(filename, wxFS_READ);
+    if (file) {
+        wxInputStream* filestream = file->GetStream();
+        filestream->SeekI(0, wxFromEnd);
+        int len = filestream->TellI();
+        char* buf = new char[len];
+        filestream->SeekI(0);
+        wxMemoryOutputStream* buffer = new wxMemoryOutputStream(buf, len);
+        buffer->Write(*filestream);
+        {
+            wxMutexLocker lock (wxILMutex);
+            ILuint old = ilGetInteger(IL_ACTIVE_IMAGE);
+            ilBindImage(m_ilimage);
+            //m_valid = ilLoadImage(filename.mb_str(wxConvFile));
+            m_valid = ilLoadL(type, buf, len);
+            m_width = ilGetInteger(IL_IMAGE_WIDTH);
+            m_height = ilGetInteger(IL_IMAGE_HEIGHT);
+            if (m_valid && (ilGetInteger(IL_IMAGE_ORIGIN) == IL_ORIGIN_LOWER_LEFT))
+               m_valid = iluFlipImage();
+            ilBindImage(old);
+        }
+#ifdef __WXDEBUG__
+        if (m_valid) {
+            wxLogDebug(wxT("Trace, wxILPicture::LoadFromFileSystem, valid, length %d, %dx%d"), len, m_width, m_height);
+        } else {
+            wxLogDebug(wxT("Trace, wxILPicture::LoadFromFileSystem, invalid, length %d, %dx%d"), len, m_width, m_height);
+        }
+#endif
+        delete buffer;
+        delete[] buf;
+        delete filestream;
+    } else {
+        wxLogDebug(wxT("Trace, wxILPicture::LoadFromFileSystem, invalid"));
         m_valid = false;
     }
     if (!m_valid) {

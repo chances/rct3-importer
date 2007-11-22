@@ -43,15 +43,20 @@
 #include "RCT3Structs.h"
 #include "SCNFile.h"
 
-#include "wxdevil.h"
+#include "wxgmagick.h"
+#include "gximage.h"
+#include "confhelp.h"
 
-#include <IL/il.h>
-#include <IL/ilu.h>
+//#include <IL/il.h>
+//#include <IL/ilu.h>
+//#include <Magick++.h>
 
 #include <wx/wx.h>
 #include <wx/app.h>
 #include <wx/xrc/xmlres.h>
 //#include <wx/filename.h>
+#include <wx/fileconf.h>
+#include <wx/tooltip.h>
 
 #include <float.h>
 #include <commdlg.h>
@@ -1752,7 +1757,7 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
                        "If you set Theme Type to 'None', the user cannot filter the set,\r\n"
                        "it will always appear on the list." );
         strcpy(themefile, "");
-        SetDlgItemText(hwnd, IDC_THEMEPREFIX, g_config->m_prefix.c_str());
+        SetDlgItemText(hwnd, IDC_THEMEPREFIX, READ_APP_PREFIX());
         break;
     case WM_CLOSE:
         if (save == true) {
@@ -1831,16 +1836,16 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
             Stalls.clear();
             Attractions.clear();
             strcpy(themefile, "");
-            SetDlgItemText(hwnd, IDC_THEMEPREFIX, g_config->m_prefix.c_str());
+            SetDlgItemText(hwnd, IDC_THEMEPREFIX, READ_APP_PREFIX());
         }
             break;
         case IDM_SAVE_DEFAULT_PREFIX: {
                 unsigned long namelen = GetWindowTextLength(GetDlgItem(hwnd, IDC_THEMEPREFIX));
                 char *tmp = new char[namelen+1];
                 GetDlgItemText(hwnd, IDC_THEMEPREFIX, tmp, namelen+1);
-                g_config->m_prefix = tmp;
+                WRITE_APP_PREFIX(tmp);
                 delete[] tmp;
-                if (!g_config->Save())
+                if (!wxcFlush())
                     MessageBox(hwnd, "Saving default prefix failed.", "Error", MB_OK);
             }
             break;
@@ -2744,12 +2749,16 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam)
             unsigned long styleval, len;
             styleval = SendDlgItemMessage(hwnd, IDC_THEME, LB_GETCURSEL, 0, 0);
             len = GetWindowTextLength(GetDlgItem(hwnd, IDC_THEMENAME));
-            if ((SceneryItems.size() == 0) || (styleval == -1)
+            if (SceneryItems.size() == 0) {
+                if (::wxMessageBox(_("You did not add any scenery items. Aretesting you sure you want to install?"), _("Warning"), wxYES_NO|wxNO_DEFAULT|wxICON_WARNING) == wxNO)
+                    break;
+            }
+            if (/*(SceneryItems.size() == 0) ||*/ (styleval == -1)
                     || (len == 0)) {
-                if (SceneryItems.size() == 0)
+                /*if (SceneryItems.size() == 0)
                     MessageBox(hwnd, "Unable to save because of missing data.\nNo scenery items.",
                                "Error", MB_OK);
-                else if (styleval == -1)
+                else*/ if (styleval == -1)
                     MessageBox(hwnd,
                                "Unable to save because of missing data.\nNo theme type selected.",
                                "Error", MB_OK);
@@ -2836,14 +2845,18 @@ bool ToolApp::OnInit()
     g_appdir = dir;
     g_appdir += "\\";
     delete[] dir;
+    wxConfig::Set(new wxFileConfig(wxT("RCT3 Importer"), wxT("Freeware"), g_appdir+wxT("RCT3 Importer.conf"), wxT(""), wxCONFIG_USE_LOCAL_FILE));
 
-    g_config = new RCT3Config(g_appdir);
-    g_config->Load();
-
+//    g_config = new RCT3Config(g_appdir);
+//    g_config->Load();
+/*
     if (g_config->m_workdir != wxT(""))
         g_workdir.AssignDir(g_config->m_workdir);
     else
         g_workdir.AssignDir(g_appdir);
+*/
+    g_workdir.AssignDir(READ_APP_WORKDIR());
+    wxToolTip::Enable(READ_APP_TOOLTIPS());
 
     CoInitializeEx(NULL, COINIT_APARTMENTTHREADED); // We need this for directory selection
 
@@ -2852,6 +2865,8 @@ bool ToolApp::OnInit()
 //    HRSRC hp = FindResourceA(hInst, MAKEINTRESOURCE(IDR_PALETTE_BMY), "PALETTE");
 //    HGLOBAL hp2 = LoadResource(hInst, hp);
 //    void *hp3 = LockResource(hp2);
+
+/*
     char tmprgb[3] = "\0\0";	// Last 0 is the 0-terminator =)
     {
         wxMutexLocker lock(wxILMutex);
@@ -2860,23 +2875,35 @@ bool ToolApp::OnInit()
         ilTexImage(1, 1, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, &tmprgb);
         ilConvertImage(IL_COLOUR_INDEX, IL_UNSIGNED_BYTE);
         ilConvertPal(IL_PAL_RGB24);
-//        memcpy(ilGetPalette(), hp3, 256 * 3);
         memcpy(ilGetPalette(), GetResource_BMYPal(), 256 * 3);
         ilConvertPal(IL_PAL_BGR32);
         memcpy(&g_recolpalette_bmy, ilGetPalette(), 256 * 4);
         ilDeleteImage(tmp);
     }
+*/
+
     // Red/Green/Blue Palette
     ZeroMemory(&g_recolpalette_rgb, sizeof(g_recolpalette_rgb));
     int i;
-    g_recolpalette_bmy[0].rgbReserved = 0;
+//    g_recolpalette_bmy[0].rgbReserved = 0;
     for (i = 1; i <= 85; i++) {
         g_recolpalette_rgb[i].rgbRed = ((86 - i) * 255) / 85;
         g_recolpalette_rgb[i + 85].rgbGreen = ((86 - i) * 255) / 85;
         g_recolpalette_rgb[i + 170].rgbBlue = ((86 - i) * 255) / 85;
-        g_recolpalette_bmy[i].rgbReserved = 0;
-        g_recolpalette_bmy[i+85].rgbReserved = 0;
-        g_recolpalette_bmy[i+170].rgbReserved = 0;
+//        g_recolpalette_bmy[i].rgbReserved = 0;
+//        g_recolpalette_bmy[i+85].rgbReserved = 0;
+//        g_recolpalette_bmy[i+170].rgbReserved = 0;
+/*
+        g_recolpalette_bmy[i].rgbRed = g_recolpalette_bmy[43].rgbRed;
+        g_recolpalette_bmy[i].rgbGreen = g_recolpalette_bmy[43].rgbGreen;
+        g_recolpalette_bmy[i].rgbBlue = g_recolpalette_bmy[43].rgbBlue;
+        g_recolpalette_bmy[i + 85].rgbRed = g_recolpalette_bmy[43 + 85].rgbRed;
+        g_recolpalette_bmy[i + 85].rgbGreen = g_recolpalette_bmy[43 + 85].rgbGreen;
+        g_recolpalette_bmy[i + 85].rgbBlue = g_recolpalette_bmy[43 + 85].rgbBlue;
+        g_recolpalette_bmy[i + 170].rgbRed = g_recolpalette_bmy[43 + 170].rgbRed;
+        g_recolpalette_bmy[i + 170].rgbGreen = g_recolpalette_bmy[43 + 170].rgbGreen;
+        g_recolpalette_bmy[i + 170].rgbBlue = g_recolpalette_bmy[43 + 170].rgbBlue;
+*/
     }
     /*
        char tmptxt[256];
@@ -2888,28 +2915,32 @@ bool ToolApp::OnInit()
 }
 
 int ToolApp::OnRun() {
-
+#ifdef DEBUG
+    wxLogWindow win(NULL, wxT("Debug Log"), true, false);
+#endif
     DialogBox(hInst, MAKEINTRESOURCE(IDD_MAIN), NULL, (DLGPROC) MainDlgProc);
-    g_config->m_workdir = g_workdir.GetPath();
-    g_config->Save();
-    delete g_config;
+    WRITE_APP_WORKDIR(g_workdir.GetPath());
+    wxcFlush();
+    //delete g_config;
+    c3DLoader::ClearCache();
+    wxGXImage::ClearCache();
 
     return 0;
 
 }
-
+/*
 RCT3Config* ToolApp::GetConfig() {
     return g_config;
 }
-
+*/
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 
-#ifdef DEBUG
+#ifdef PUBLICDEBUG
     LoadLibrary("exchndl.dll");
 #endif
 
-    ilInit();
-    iluInit();
+//    ilInit();
+//    iluInit();
     hInst = hInstance;
 
     return wxEntry(hInstance, hPrevInstance, lpCmdLine, nCmdShow);
@@ -3039,9 +3070,9 @@ bool InstallTheme(HWND hwnd) {
     sFileName += wxT("style.common.ovl");
 
 #ifndef LIBOVL_STATIC
-    CreateStyleOvl(const_cast<char *> (sFileName.c_str()), styleval);
+    CreateStyleOvl(const_cast<char *> (sFileName.fn_str()), styleval);
 #else
-    styleovl::CreateStyleOvl(sFileName.c_str(), styleval);
+    styleovl::CreateStyleOvl(sFileName.fn_str(), styleval);
 #endif
     for (i = 0; i < cTextStrings.size(); i++) {
 // FIXME (tobi#1#): Make textstring give-over sane
@@ -3183,6 +3214,38 @@ bool InstallTheme(HWND hwnd) {
 }
 
 bool ReadIconTexture(HWND hwnd, IconTexture * t) {
+#if 1
+    try {
+        wxGXImage img(t->filename, false);
+
+        int width = img.GetWidth();
+        int height = img.GetHeight();
+        if (width != height) {
+            throw Magick::Exception("Icon texture is not square");
+        }
+        if ((1 << local_log2(width)) != width) {
+            throw Magick::Exception("Icon texture's width/height is not a power of 2");
+        }
+        img.flip();
+        img.dxtCompressionMethod(squish::kColourIterativeClusterFit | squish::kWeightColourByAlpha);
+        int datasize = img.GetDxtBufferSize(wxDXT3);
+        data = new unsigned char[datasize];
+        img.DxtCompress(data, wxDXT3);
+        t->fh.Format = 0x13;
+        t->fh.Height = height;
+        t->fh.Width = width;
+        t->fh.Mipcount = 0;
+        t->fmh.Pitch = width * 4;
+        t->fmh.Blocks = datasize / t->fmh.Pitch;
+        t->fmh.MHeight = height;
+        t->fmh.MWidth = width;
+        t->data = data;
+    } catch (Magick::Exception e) {
+        MessageBox(hwnd, e.what(), "Error", MB_OK);
+        return false;
+    }
+    return true;
+#else
     ILuint tex;
     ILenum Error;
 
@@ -3222,6 +3285,14 @@ bool ReadIconTexture(HWND hwnd, IconTexture * t) {
             ilDeleteImages(1, &tex);
             return false;
         }
+
+#ifdef __WXDEBUG__
+    int ofs = (width * height) / 3;
+    ofs *= 4;
+    data = ilGetData();
+    wxLogDebug(wxT("Trace, ReadIconTexture %hhx %hhx %hhx %hhx"), data[ofs+0], data[ofs+1], data[ofs+2], data[ofs+3]);
+#endif
+
     int datasize = ilGetDXTCData(NULL, 0, IL_DXT3);
     data = new unsigned char[datasize];
     ilGetDXTCData(data, datasize, IL_DXT3);
@@ -3237,4 +3308,5 @@ bool ReadIconTexture(HWND hwnd, IconTexture * t) {
 
     ilDeleteImages(1, &tex);
     return true;
+#endif
 }

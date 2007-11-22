@@ -13,7 +13,9 @@
 
 #include "silence.h"
 
+const
 #include "inputbox_ok.xpm"
+const
 #include "inputbox_error.xpm"
 
 IMPLEMENT_DYNAMIC_CLASS(wxInputBox, wxControl);

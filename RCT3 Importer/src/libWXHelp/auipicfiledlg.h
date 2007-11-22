@@ -15,8 +15,8 @@
 #include "wx_pch.h"
 
 #include "auifiledlg.h"
-#include "ilpict.h"
-
+#include "gxpict.h"
+/*
 class wxPicPanel: public wxPanel {
 public:
     wxPicPanel(): wxPanel() {Create();};
@@ -27,11 +27,11 @@ private:
     void OnPaint(wxPaintEvent &event);
     void OnSize(wxSizeEvent &event);
 
-    wxILPicture *m_pic;
+    wxGXPicture *m_pic;
 
     DECLARE_EVENT_TABLE()
 };
-
+*/
 class wxAUIPicFileDialog: public wxAUIFileDialog {
 public:
     wxAUIPicFileDialog() : wxAUIFileDialog() {};
@@ -61,7 +61,7 @@ protected:
 
 private:
     wxPanel *m_Preview;
-    wxILPicture *m_pic;
+    wxGXPicture *m_pic;
     wxStaticText *m_picFileName;
     wxStaticText *m_picDetails;
 

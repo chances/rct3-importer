@@ -40,19 +40,24 @@
 #include <IL/ilu.h>
 
 #include "auipicfiledlg.h"
+#include "confhelp.h"
 #include "htmlentities.h"
+#include "lib3Dconfig.h"
 #include "logext.h"
 #include "matrix.h"
 #include "popupmessagewin.h"
 #include "rct3log.h"
+#include "texcheck.h"
 #include "valext.h"
-#include "wxdevil.h"
+#include "wxgmagick.h"
 
 #include "OVL.H"
 
 #include "wxapp.h"
+#include "wxdlgAnimation.h"
 #include "wxdlgLOD.h"
 #include "wxdlgModel.h"
+#include "wxdlgSave.h"
 #include "wxdlgTexture.h"
 
 const long idToolBar = ::wxNewId();
@@ -65,10 +70,16 @@ const long tbClearCache = ::wxNewId();
 //
 ////////////////////////////////////////////////////////////////////////
 
-wxSceneryListBox::wxSceneryListBox(wxWindow *parent, cSCNFile *content):
+class wxSceneryListBox : public wxColourHtmlListBox {
+public:
+    wxSceneryListBox(wxWindow *parent, cSCNFile *contents):
         wxColourHtmlListBox(parent, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), wxSUNKEN_BORDER) {
-    m_contents = content;
-}
+            m_contents = contents;
+    }
+    virtual void UpdateContents() = 0;
+protected:
+    cSCNFile* m_contents;
+};
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -76,132 +87,59 @@ wxSceneryListBox::wxSceneryListBox(wxWindow *parent, cSCNFile *content):
 //
 ////////////////////////////////////////////////////////////////////////
 
-wxTextureListBox::wxTextureListBox(wxWindow *parent, cSCNFile *content):
-        wxSceneryListBox(parent, content) {
-    UpdateContents();
-    SetSelection(0);
-}
-
-void wxTextureListBox::UpdateContents() {
-    SetItemCount(m_contents->flexitextures.size() + ::wxGetApp().g_texturecache.size());
-    if (GetSelection() >= m_contents->flexitextures.size())
-        SetSelection(wxNOT_FOUND);
-    RefreshAll();
-}
-
-wxString wxTextureListBox::OnGetItem(size_t n) const {
-    if (n < m_contents->flexitextures.size()) {
-        wxString addon = wxT("");
-        for (cFlexiTextureFrameIterator it = m_contents->flexitextures[n].Frames.begin(); it != m_contents->flexitextures[n].Frames.end(); it++) {
-            if (it->AlphaSource != CFTF_ALPHA_NONE) {
-                addon += _("Alpha");
-                break;
+class wxTextureListBox : public wxSceneryListBox {
+public:
+    wxTextureListBox(wxWindow *parent, cSCNFile *contents): wxSceneryListBox(parent, contents) {
+        UpdateContents();
+        SetSelection(0);
+    }
+    virtual void UpdateContents() {
+        SetItemCount(m_contents->flexitextures.size() + ::wxGetApp().g_texturecache.size());
+        if (GetSelection() >= m_contents->flexitextures.size())
+            SetSelection(wxNOT_FOUND);
+        RefreshAll();
+    }
+protected:
+    virtual wxString OnGetItem(size_t n) const {
+        if (n < m_contents->flexitextures.size()) {
+            wxString addon = wxT("");
+            for (cFlexiTextureFrame::iterator it = m_contents->flexitextures[n].Frames.begin(); it != m_contents->flexitextures[n].Frames.end(); it++) {
+                if (it->alphasource() != CFTF_ALPHA_NONE) {
+                    addon += _("Alpha");
+                    break;
+                }
             }
-        }
-        if (m_contents->flexitextures[n].Recolorable) {
-            addon += (addon != wxT(""))?wxT(", "):wxT("");
-            addon += _("Recolorable");
-        }
-        if (m_contents->flexitextures[n].FPS > 0) {
-             addon += (addon != wxT(""))?wxT(", "):wxT("");
-             addon += _("Animated");
-        }
-        if (addon != wxT(""))
-            return wxT("<font size='2'>")+wxEncodeHtmlEntities(m_contents->flexitextures[n].Name)
-                +wxT("<br>&nbsp;&nbsp;(")+addon+wxT(")")
-                +wxT("</font>");
-        else
-            return wxT("<font size='2'>")+wxEncodeHtmlEntities(m_contents->flexitextures[n].Name)+wxT("</font>");
-    } else if (n < (m_contents->flexitextures.size() + ::wxGetApp().g_texturecache.size())) {
-        wxString s = wxT("");
-        int i = n-m_contents->flexitextures.size();
-        for(std::list<wxString>::iterator it = ::wxGetApp().g_texturecache.begin(); it != ::wxGetApp().g_texturecache.end(); it++) {
-            if (!i) {
-                s = *it;
-                break;
+            if (m_contents->flexitextures[n].Recolorable) {
+                addon += (addon != wxT(""))?wxT(", "):wxT("");
+                addon += _("Recolorable");
             }
-            i--;
-        }
-        return wxT("<font size='2' color='#808080'>")+wxEncodeHtmlEntities(s)+wxT("</font>");
-    } else {
-            return wxT("Internal Error");
-    }
-}
-
-////////////////////////////////////////////////////////////////////////
-//
-//  wxModelListBox
-//
-////////////////////////////////////////////////////////////////////////
-
-wxModelListBox::wxModelListBox(wxWindow *parent, cSCNFile *content):
-        wxSceneryListBox(parent, content) {
-    UpdateContents();
-    SetSelection(0);
-}
-
-void wxModelListBox::UpdateContents() {
-    SetItemCount(m_contents->models.size());
-    if (GetSelection() >= m_contents->models.size())
-        SetSelection(wxNOT_FOUND);
-    RefreshAll();
-}
-
-wxString wxModelListBox::OnGetItem(size_t n) const {
-    wxString ret = wxT("<font size='2'>");
-    if (m_contents->models[n].fatal_error) {
-        ret += wxT("<font color='#FF3C3C'>");
-    } else if (m_contents->models[n].error.size()) {
-        ret += wxT("<font color='#FFCC00'>");
-    }
-    ret += wxEncodeHtmlEntities(m_contents->models[n].name);
-    if ((m_contents->models[n].fatal_error) || (m_contents->models[n].error.size())) {
-        ret += wxT("</font>");
-    }
-    unsigned long mesh_enabled = 0;
-    unsigned long mesh_faces = 0;
-    for(cMeshStructIterator it = m_contents->models[n].meshstructs.begin(); it != m_contents->models[n].meshstructs.end(); it++) {
-        if (!it->disabled) {
-            mesh_enabled++;
-            mesh_faces += it->faces;
+            if (m_contents->flexitextures[n].FPS > 0) {
+                 addon += (addon != wxT(""))?wxT(", "):wxT("");
+                 addon += _("Animated");
+            }
+            if (addon != wxT(""))
+                return wxT("<font size='2'>")+wxEncodeHtmlEntities(m_contents->flexitextures[n].Name)
+                    +HTML_INSET_START+addon+HTML_INSET_END
+                    +wxT("</font>");
+            else
+                return wxT("<font size='2'>")+wxEncodeHtmlEntities(m_contents->flexitextures[n].Name)+wxT("</font>");
+        } else if (n < (m_contents->flexitextures.size() + ::wxGetApp().g_texturecache.size())) {
+            wxString s = wxT("");
+            int i = n-m_contents->flexitextures.size();
+            for(std::list<wxString>::iterator it = ::wxGetApp().g_texturecache.begin(); it != ::wxGetApp().g_texturecache.end(); it++) {
+                if (!i) {
+                    s = *it;
+                    break;
+                }
+                i--;
+            }
+            return wxT("<font size='2' color='#808080'>")+wxEncodeHtmlEntities(s)+wxT("</font>");
+        } else {
+                return wxT("Internal Error");
         }
     }
-    ret += wxString::Format(wxT("<br>&nbsp;&nbsp;(%ld/%d meshes"), mesh_enabled, m_contents->models[n].meshstructs.size());
-    if (mesh_faces)
-        ret += wxString::Format(wxT(", %ld faces"), mesh_faces);
-    if (m_contents->models[n].effectpoints.size())
-        ret += wxString::Format(wxT(", %d effect points"), m_contents->models[n].effectpoints.size());
-    return ret + wxT(")</font>");
-}
+};
 
-////////////////////////////////////////////////////////////////////////
-//
-//  wxLODListBox
-//
-////////////////////////////////////////////////////////////////////////
-
-wxLODListBox::wxLODListBox(wxWindow *parent, cSCNFile *content):
-        wxSceneryListBox(parent, content) {
-    UpdateContents();
-    SetSelection(0);
-}
-
-void wxLODListBox::UpdateContents() {
-    SetItemCount(m_contents->lods.size());
-    if (GetSelection() >= m_contents->lods.size())
-        SetSelection(wxNOT_FOUND);
-    RefreshAll();
-}
-
-wxString wxLODListBox::OnGetItem(size_t n) const {
-    wxString addon = wxT("");
-    if ((m_contents->lods[n].unk2 != 0) || (m_contents->lods[n].unk4!=0) || (m_contents->lods[n].unk14!=0))
-        addon = wxString::Format(wxT(" (%ld/%ld/%ld)"),
-            m_contents->lods[n].unk2,
-            m_contents->lods[n].unk4,
-            m_contents->lods[n].unk14);
-    return wxT("<font size='2'>")+wxString::Format(wxT("%.1f"), m_contents->lods[n].distance) + addon + wxT("<br>&nbsp;&nbsp;") + wxEncodeHtmlEntities(m_contents->lods[n].modelname)+wxT("</font>");
-}
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -209,22 +147,236 @@ wxString wxLODListBox::OnGetItem(size_t n) const {
 //
 ////////////////////////////////////////////////////////////////////////
 
-wxReferenceListBox::wxReferenceListBox(wxWindow *parent, cSCNFile *content):
-        wxSceneryListBox(parent, content) {
-    UpdateContents();
-    SetSelection(0);
-}
+class wxReferenceListBox : public wxSceneryListBox {
+public:
+    wxReferenceListBox(wxWindow *parent, cSCNFile *contents): wxSceneryListBox(parent, contents) {
+        UpdateContents();
+        SetSelection(0);
+    }
+    virtual void UpdateContents() {
+        SetItemCount(m_contents->references.size());
+        if (GetSelection() >= m_contents->references.size())
+            SetSelection(wxNOT_FOUND);
+        RefreshAll();
+    }
+protected:
+    virtual wxString OnGetItem(size_t n) const {
+        return wxT("<font size='2'>")+wxEncodeHtmlEntities(m_contents->references[n])+wxT("</font>");
+    }
+};
 
-void wxReferenceListBox::UpdateContents() {
-    SetItemCount(m_contents->references.size());
-    if (GetSelection() >= m_contents->references.size())
-        SetSelection(wxNOT_FOUND);
-    RefreshAll();
-}
 
-wxString wxReferenceListBox::OnGetItem(size_t n) const {
-    return wxT("<font size='2'>")+wxEncodeHtmlEntities(m_contents->references[n])+wxT("</font>");
-}
+////////////////////////////////////////////////////////////////////////
+//
+//  wxModelListBox
+//
+////////////////////////////////////////////////////////////////////////
+
+class wxModelListBox : public wxSceneryListBox {
+public:
+    wxModelListBox(wxWindow *parent, cSCNFile *contents): wxSceneryListBox(parent, contents) {
+        UpdateContents();
+        SetSelection(0);
+    }
+    virtual void UpdateContents() {
+        SetItemCount(m_contents->models.size());
+        if (GetSelection() >= m_contents->models.size())
+            SetSelection(wxNOT_FOUND);
+        RefreshAll();
+    }
+
+protected:
+    virtual wxString OnGetItem(size_t n) const {
+        wxString ret = wxT("<font size='2'>");
+        if (m_contents->models[n].fatal_error) {
+            ret += wxT("<font color='#FF3C3C'>");
+        } else if (m_contents->models[n].error.size()) {
+            ret += wxT("<font color='#FFCC00'>");
+        }
+        ret += wxEncodeHtmlEntities(m_contents->models[n].name);
+        if ((m_contents->models[n].fatal_error) || (m_contents->models[n].error.size())) {
+            ret += wxT("</font>");
+        }
+        unsigned long mesh_enabled = 0;
+        unsigned long mesh_faces = 0;
+        for(cMeshStruct::iterator it = m_contents->models[n].meshstructs.begin(); it != m_contents->models[n].meshstructs.end(); it++) {
+            if (!it->disabled) {
+                mesh_enabled++;
+                mesh_faces += it->faces;
+            }
+        }
+        ret += HTML_INSET_START;
+        ret += wxString::Format(_("%ld/%d groups"), mesh_enabled, m_contents->models[n].meshstructs.size());
+        if (mesh_faces >= 1200)
+            ret += wxString::Format(wxT(", <font color='#FF0000'>%ld faces</font>"), mesh_faces);
+        else if (mesh_faces >= 600)
+            ret += wxString::Format(wxT(", <font color='#DDDD00'>%ld faces</font>"), mesh_faces);
+        else if (mesh_faces >= 300)
+            ret += wxString::Format(wxT(", %ld faces"), mesh_faces);
+        else if (mesh_faces)
+            ret += wxString::Format(wxT(", <font color='#66CC00'>%ld faces</font>"), mesh_faces);
+
+        int ep = m_contents->models[n].effectpoints.size();
+        if (ep == 1)
+            ret += wxT("<br>1 effect point");
+        else if (ep)
+            ret += wxString::Format(wxT("<br>%d effect points"), m_contents->models[n].effectpoints.size());
+        if (mesh_faces > 3000)
+            ret += wxT("</td><td width=16 valign=top><img width=16 height=16 align=center src='memory:XRC_resource/xrc_bitmap_crystal.cpp$icons_no_16x16.png'>");
+        return ret + HTML_INSET_END + wxT("</font>");
+    }
+};
+
+
+////////////////////////////////////////////////////////////////////////
+//
+//  wxAnimatedModelListBox
+//
+////////////////////////////////////////////////////////////////////////
+
+class wxAnimatedModelListBox : public wxSceneryListBox {
+public:
+    wxAnimatedModelListBox(wxWindow *parent, cSCNFile *contents): wxSceneryListBox(parent, contents) {
+        UpdateContents();
+        SetSelection(0);
+    }
+    virtual void UpdateContents() {
+        SetItemCount(m_contents->animatedmodels.size());
+        if (GetSelection() >= m_contents->animatedmodels.size())
+            SetSelection(wxNOT_FOUND);
+        RefreshAll();
+    }
+protected:
+    virtual wxString OnGetItem(size_t n) const {
+        wxString ret = wxT("<font size='2'>");
+        if (m_contents->animatedmodels[n].fatal_error) {
+            ret += wxT("<font color='#FF3C3C'>");
+        } else if (m_contents->animatedmodels[n].error.size()) {
+            ret += wxT("<font color='#FFCC00'>");
+        }
+        ret += wxEncodeHtmlEntities(m_contents->animatedmodels[n].name);
+        if ((m_contents->animatedmodels[n].fatal_error) || (m_contents->animatedmodels[n].error.size())) {
+            ret += wxT("</font>");
+        }
+        unsigned long mesh_enabled = 0;
+        unsigned long mesh_faces = 0;
+        for(cMeshStruct::iterator it = m_contents->animatedmodels[n].meshstructs.begin(); it != m_contents->animatedmodels[n].meshstructs.end(); it++) {
+            if (!it->disabled) {
+                mesh_enabled++;
+                mesh_faces += it->faces;
+            }
+        }
+
+        ret += HTML_INSET_START;
+        ret += wxString::Format(_("%ld/%d groups"), mesh_enabled, m_contents->animatedmodels[n].meshstructs.size());
+        if (mesh_faces >= 1200)
+            ret += wxString::Format(wxT(", <font color='#FF0000'>%ld faces</font>"), mesh_faces);
+        else if (mesh_faces >= 600)
+            ret += wxString::Format(wxT(", <font color='#DDDD00'>%ld faces</font>"), mesh_faces);
+        else if (mesh_faces >= 300)
+            ret += wxString::Format(wxT(", %ld faces"), mesh_faces);
+        else if (mesh_faces)
+            ret += wxString::Format(wxT(", <font color='#66CC00'>%ld faces</font>"), mesh_faces);
+
+        int bn = m_contents->animatedmodels[n].modelbones.size();
+        if (bn == 1)
+            ret += wxT("<br>1 bone");
+        else if (bn)
+            ret += wxString::Format(wxT(", %d bones"), m_contents->animatedmodels[n].modelbones.size());
+        if (mesh_faces > 3000)
+            ret += wxT("</td><td width=16 valign=top><img width=16 height=16 align=center src='memory:XRC_resource/xrc_bitmap_crystal.cpp$icons_no_16x16.png'>");
+        return ret + HTML_INSET_END + wxT("</font>");
+    }
+};
+
+
+////////////////////////////////////////////////////////////////////////
+//
+//  wxLODListBox
+//
+////////////////////////////////////////////////////////////////////////
+
+class wxLODListBox : public wxSceneryListBox {
+public:
+    wxLODListBox(wxWindow *parent, cSCNFile *contents): wxSceneryListBox(parent, contents) {
+        UpdateContents();
+        SetSelection(0);
+    }
+    virtual void UpdateContents() {
+        SetItemCount(m_contents->lods.size());
+        if (GetSelection() >= m_contents->lods.size())
+            SetSelection(wxNOT_FOUND);
+        RefreshAll();
+    }
+protected:
+    virtual wxString OnGetItem(size_t n) const {
+        wxString addon = wxT("");
+        if ((m_contents->lods[n].unk2 != 0) || (m_contents->lods[n].unk4!=0) || (m_contents->lods[n].unk14!=0))
+            addon = wxString::Format(wxT(" (%ld/%ld/%ld)"),
+                m_contents->lods[n].unk2,
+                m_contents->lods[n].unk4,
+                m_contents->lods[n].unk14);
+        wxString sub = HTML_INSET_START + wxEncodeHtmlEntities(m_contents->lods[n].modelname);
+        if (m_contents->lods[n].animations.size()) {
+            sub += wxT("<ul>");
+            for (cStringIterator it = m_contents->lods[n].animations.begin(); it != m_contents->lods[n].animations.end(); it++) {
+                sub += wxT("<li>") + *it + wxT("</li>");
+            }
+            sub += wxT("</ul>");
+        }
+        sub += wxT("</td><td width=16 valign=top><img width=16 height=16 align=center src='memory:XRC_resource/xrc_bitmap_crystal.cpp$icons_");
+        if (m_contents->lods[n].animated)
+            sub += wxT("aim_online");
+        else
+            sub += wxT("folder_home");
+        sub += wxT("_16x16.png'>");
+        sub += HTML_INSET_END;
+        return wxT("<font size='2'>")+wxString::Format(wxT("%.1f"), m_contents->lods[n].distance) + addon + sub +wxT("</font>");
+    }
+};
+
+
+////////////////////////////////////////////////////////////////////////
+//
+//  wxAnimationListBox
+//
+////////////////////////////////////////////////////////////////////////
+
+class wxAnimationsListBox : public wxSceneryListBox {
+public:
+    wxAnimationsListBox(wxWindow *parent, cSCNFile *contents): wxSceneryListBox(parent, contents) {
+        UpdateContents();
+        SetSelection(0);
+    }
+    virtual void UpdateContents() {
+        SetItemCount(m_contents->animations.size());
+        if (GetSelection() >= m_contents->animations.size())
+            SetSelection(wxNOT_FOUND);
+        RefreshAll();
+    }
+protected:
+    virtual wxString OnGetItem(size_t n) const {
+        wxString ret = wxT("<font size='2'>");
+        ret += wxEncodeHtmlEntities(m_contents->animations[n].name);
+        float length = 0.0;
+        for(cBoneAnimation::iterator it = m_contents->animations[n].boneanimations.begin(); it != m_contents->animations[n].boneanimations.end(); it++) {
+            for(cTXYZ::iterator iter = it->translations.begin(); iter != it->translations.end(); iter++) {
+                if (iter->v.Time > length)
+                    length = iter->v.Time;
+            }
+            for(cTXYZ::iterator iter = it->rotations.begin(); iter != it->rotations.end(); iter++) {
+                if (iter->v.Time > length)
+                    length = iter->v.Time;
+            }
+        }
+        ret += HTML_INSET_START;
+        ret += wxString::Format(wxT("%2f s long, %d bone(s)"), length, m_contents->animations[n].boneanimations.size());
+        return ret + HTML_INSET_END + wxT("</font>");
+    }
+};
+
+
+
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -240,9 +392,11 @@ EVT_INIT_DIALOG(dlgCreateScenery::OnInitDialog)
 EVT_CHECKBOX(XRCID("m_checkShowUnknown"), dlgCreateScenery::OnShowUnknowns)
 // Update Control En-/Disabeling when the listboxes are clicked
 EVT_LISTBOX(XRCID("m_htlbTexture"), dlgCreateScenery::OnControlUpdate)
-EVT_LISTBOX(XRCID("m_htlbModel"), dlgCreateScenery::OnControlUpdate)
-EVT_LISTBOX(XRCID("m_htlbLOD"), dlgCreateScenery::OnControlUpdate)
 EVT_LISTBOX(XRCID("m_htlbReferences"), dlgCreateScenery::OnControlUpdate)
+EVT_LISTBOX(XRCID("m_htlbModel"), dlgCreateScenery::OnControlUpdate)
+EVT_LISTBOX(XRCID("m_htlbAModel"), dlgCreateScenery::OnControlUpdate)
+EVT_LISTBOX(XRCID("m_htlbLOD"), dlgCreateScenery::OnControlUpdate)
+EVT_LISTBOX(XRCID("m_htlbAnimation"), dlgCreateScenery::OnControlUpdate)
 // Texture Controls
 EVT_SPIN_UP(XRCID("m_spinTexture"), dlgCreateScenery::OnTextureUp)
 EVT_SPIN_DOWN(XRCID("m_spinTexture"), dlgCreateScenery::OnTextureDown)
@@ -252,6 +406,10 @@ EVT_LISTBOX_DCLICK(XRCID("m_htlbTexture"), dlgCreateScenery::OnTextureEdit)
 EVT_BUTTON(XRCID("m_btTextureCopy"), dlgCreateScenery::OnTextureCopy)
 EVT_BUTTON(XRCID("m_btTextureDel"), dlgCreateScenery::OnTextureDel)
 EVT_BUTTON(XRCID("m_btTextureClear"), dlgCreateScenery::OnTextureClear)
+// Reference Controls
+EVT_BUTTON(XRCID("m_btReferenceAdd"), dlgCreateScenery::OnReferenceAdd)
+EVT_BUTTON(XRCID("m_btReferenceDel"), dlgCreateScenery::OnReferenceDel)
+EVT_BUTTON(XRCID("m_btReferenceClear"), dlgCreateScenery::OnReferenceClear)
 // Model Controls
 EVT_SPIN_UP(XRCID("m_spinModel"), dlgCreateScenery::OnModelUp)
 EVT_SPIN_DOWN(XRCID("m_spinModel"), dlgCreateScenery::OnModelDown)
@@ -259,8 +417,19 @@ EVT_BUTTON(XRCID("m_btModelAdd"), dlgCreateScenery::OnModelAdd)
 EVT_BUTTON(XRCID("m_btModelEdit"), dlgCreateScenery::OnModelEdit)
 EVT_LISTBOX_DCLICK(XRCID("m_htlbModel"), dlgCreateScenery::OnModelEdit)
 EVT_BUTTON(XRCID("m_btModelCopy"), dlgCreateScenery::OnModelCopy)
+EVT_BUTTON(XRCID("m_btModelConvert"), dlgCreateScenery::OnModelConvert)
 EVT_BUTTON(XRCID("m_btModelDel"), dlgCreateScenery::OnModelDel)
 EVT_BUTTON(XRCID("m_btModelClear"), dlgCreateScenery::OnModelClear)
+// Animated Model Controls
+EVT_SPIN_UP(XRCID("m_spinAModel"), dlgCreateScenery::OnAModelUp)
+EVT_SPIN_DOWN(XRCID("m_spinAModel"), dlgCreateScenery::OnAModelDown)
+EVT_BUTTON(XRCID("m_btAModelAdd"), dlgCreateScenery::OnAModelAdd)
+EVT_BUTTON(XRCID("m_btAModelEdit"), dlgCreateScenery::OnAModelEdit)
+EVT_LISTBOX_DCLICK(XRCID("m_htlbAModel"), dlgCreateScenery::OnAModelEdit)
+EVT_BUTTON(XRCID("m_btAModelCopy"), dlgCreateScenery::OnAModelCopy)
+EVT_BUTTON(XRCID("m_btAModelConvert"), dlgCreateScenery::OnAModelConvert)
+EVT_BUTTON(XRCID("m_btAModelDel"), dlgCreateScenery::OnAModelDel)
+EVT_BUTTON(XRCID("m_btAModelClear"), dlgCreateScenery::OnAModelClear)
 // LOD Controls
 EVT_BUTTON(XRCID("m_btLODAdd"), dlgCreateScenery::OnLODAdd)
 EVT_BUTTON(XRCID("m_btLODEdit"), dlgCreateScenery::OnLODEdit)
@@ -287,11 +456,18 @@ EVT_TEXT(XRCID("m_textUnknown8"), dlgCreateScenery::OnMakeDirty)
 EVT_TEXT(XRCID("m_textUnknown9"), dlgCreateScenery::OnMakeDirty)
 EVT_TEXT(XRCID("m_textUnknown10"), dlgCreateScenery::OnMakeDirty)
 EVT_TEXT(XRCID("m_textUnknown11"), dlgCreateScenery::OnMakeDirty)
-// Reference Controls
-EVT_BUTTON(XRCID("m_btReferenceAdd"), dlgCreateScenery::OnReferenceAdd)
-EVT_BUTTON(XRCID("m_btReferenceDel"), dlgCreateScenery::OnReferenceDel)
-EVT_BUTTON(XRCID("m_btReferenceClear"), dlgCreateScenery::OnReferenceClear)
+// Animation Controls
+EVT_SPIN_UP(XRCID("m_spinAnimation"), dlgCreateScenery::OnAnimationUp)
+EVT_SPIN_DOWN(XRCID("m_spinAnimation"), dlgCreateScenery::OnAnimationDown)
+EVT_BUTTON(XRCID("m_btAnimationAdd"), dlgCreateScenery::OnAnimationAdd)
+EVT_BUTTON(XRCID("m_btAnimationEdit"), dlgCreateScenery::OnAnimationEdit)
+EVT_LISTBOX_DCLICK(XRCID("m_htlbAnimation"), dlgCreateScenery::OnAnimationEdit)
+EVT_BUTTON(XRCID("m_btAnimationCopy"), dlgCreateScenery::OnAnimationCopy)
+EVT_BUTTON(XRCID("m_btAnimationDel"), dlgCreateScenery::OnAnimationDel)
+EVT_BUTTON(XRCID("m_btAnimationAddToLod"), dlgCreateScenery::OnAnimationAddToLod)
+EVT_BUTTON(XRCID("m_btAnimationClear"), dlgCreateScenery::OnAnimationClear)
 
+EVT_BUTTON(XRCID("m_btCheck"), dlgCreateScenery::OnCheck)
 EVT_BUTTON(XRCID("m_btCreate"), dlgCreateScenery::OnCreate)
 
 END_EVENT_TABLE()
@@ -315,18 +491,57 @@ dlgCreateScenery::dlgCreateScenery(wxWindow *parent) {
     m_tbCS->AddTool(wxID_CANCEL, _("Exit"), wxXmlResource::Get()->LoadBitmap("exit_16x16"), _("Leave Create Scenery OVL window"));
     m_tbCS->Realize();
     m_tbCS->EnableTool(wxID_SAVE, false);
-
     GetSizer()->Insert(0, m_tbCS, wxSizerFlags().Expand().Border(wxTOP));
-    m_htlbTexture = new wxTextureListBox(this, &m_SCN);
+
+    m_htlbTexture = new wxTextureListBox(m_panTextures, &m_SCN);
     m_htlbTexture->SetToolTip(_("Texture list\nTextures from the texture chache are shown in grey."));
-    wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbTexture"), m_htlbTexture, this);
-    m_htlbModel = new wxModelListBox(this, &m_SCN);
-    m_htlbModel->SetToolTip(_("Model list\nOrange: Warnings occured during loading the model form the scenery file.\nRed: An error occured during loading the model form the scenery file. Usually the model file was not found."));
-    wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbModel"), m_htlbModel, this);
+    wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbTexture"), m_htlbTexture, m_panTextures);
+    m_htlbReferences = new wxReferenceListBox(m_panReferences, &m_SCN);
+    wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbReferences"), m_htlbReferences, m_panReferences);
+
+    m_htlbModel = new wxModelListBox(m_panSModel, &m_SCN);
+    m_htlbModel->SetToolTip(_("Static model list\nOrange: Warnings occured during loading the model form the scenery file.\nRed: An error occured during loading the model form the scenery file. Usually the model file was not found."));
+    wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbModel"), m_htlbModel, m_panSModel);
+    m_htlbAModel = new wxAnimatedModelListBox(m_panAModel, &m_SCN);
+    m_htlbAModel->SetToolTip(_("Animated model list\nOrange: Warnings occured during loading the model form the scenery file.\nRed: An error occured during loading the model form the scenery file. Usually the model file was not found."));
+    wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbAModel"), m_htlbAModel, m_panAModel);
+
     m_htlbLOD = new wxLODListBox(this, &m_SCN);
     wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbLOD"), m_htlbLOD, this);
-    m_htlbReferences = new wxReferenceListBox(this, &m_SCN);
-    wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbReferences"), m_htlbReferences, this);
+
+    wxTextCtrl *t_text = XRCCTRL(*this,"m_textPath",wxTextCtrl);
+/*
+    wxFileDialog *filedlg = new wxFileDialog(
+                               this,
+                               _("Select OVL Save File"),
+                               wxEmptyString,
+                               wxEmptyString,
+                               _("Scenery OVL File (*.common.ovl)|*.common.ovl"),
+                               wxFD_CHANGE_DIR,
+                               wxDefaultPosition,
+                               wxSize(600,400)
+                           );
+*/
+    wxDirDialog *dirdlg = new wxDirDialog(
+                               this,
+                               _("Select OVL Save Directory"),
+                               wxEmptyString,
+                               wxDD_CHANGE_DIR | wxDD_DIR_MUST_EXIST | wxDD_NEW_DIR_BUTTON,
+                               wxDefaultPosition,
+                               wxDefaultSize
+                           );
+
+    m_textPath = new wxFileSelectorCombo<wxDirDialog>(this, dirdlg, &::wxGetApp().g_workdir, XRCID("m_textPath"),
+                                         wxEmptyString, wxDefaultPosition, wxDefaultSize, 0/*wxCB_READONLY*/);
+    m_textPath->GetTextCtrl()->SetEditable(false);
+    t_text->GetContainingSizer()->Replace(t_text, m_textPath);
+    t_text->Destroy();
+
+    m_textName->SetValidator(wxExtendedValidator(&m_SCN.name));
+    m_textPath->SetValidator(wxExtendedValidator(&m_SCN.ovlpath));
+
+    m_htlbAnimation = new wxAnimationsListBox(this, &m_SCN);
+    wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbAnimation"), m_htlbAnimation, this);
 
     m_textSway->SetValidator(wxExtendedValidator(&m_SCN.sivsettings.sway, 2));
     m_textBrightness->SetValidator(wxExtendedValidator(&m_SCN.sivsettings.brightness, 2));
@@ -342,6 +557,10 @@ dlgCreateScenery::dlgCreateScenery(wxWindow *parent) {
     Fit();
     Layout();
     GetSizer()->SetSizeHints(this);
+    m_panTextures->GetSizer()->Layout();
+    m_panReferences->GetSizer()->Layout();
+    m_panSModel->GetSizer()->Layout();
+    m_panAModel->GetSizer()->Layout();
 
     UpdateAll();
 
@@ -349,8 +568,8 @@ dlgCreateScenery::dlgCreateScenery(wxWindow *parent) {
 }
 
 wxString dlgCreateScenery::GetOVLPath() {
-    if (m_SCN.ovlname.GetFullPath() != wxT(""))
-        return m_SCN.ovlname.GetFullPath() + wxT(".common.ovl");
+    if (m_SCN.ovlpath.GetPath() != wxT(""))
+        return m_SCN.ovlpath.GetPathWithSep() + m_SCN.name + wxT(".common.ovl");
     else
         return wxEmptyString;
 }
@@ -363,16 +582,37 @@ void dlgCreateScenery::UpdateControlState() {
     m_btTextureCopy->Enable((sel>=0) && (sel<count));
     m_btTextureDel->Enable((sel>=0) && (sel<count));
     m_btTextureClear->Enable(count>=1);
+    m_nbTexRef->SetPageText(0, wxString::Format("Textures (%d)", count));
+
+    count = m_SCN.references.size();
+    sel = m_htlbReferences->GetSelection();
+    m_btReferenceDel->Enable(sel>=0);
+    m_btReferenceClear->Enable(count>=1);
+    m_nbTexRef->SetPageText(1, wxString::Format("References (%d)", count));
 
     count = m_SCN.models.size();
     sel = m_htlbModel->GetSelection();
     m_spinModel->Enable(count>=2);
     m_btModelEdit->Enable(sel>=0);
     m_btModelCopy->Enable(sel>=0);
+    m_btModelConvert->Enable(sel>=0);
     m_btModelDel->Enable(sel>=0);
     m_btModelClear->Enable(count>=1);
     m_btLODAdd->Enable(count>=1);
-    m_btLODAuto->Enable(count==1);
+    m_btLODAuto->Enable(((count==1) || (m_SCN.animatedmodels.size()==1)) && !((count==1) && (m_SCN.animatedmodels.size()==1)));
+    m_nbModels->SetPageText(0, wxString::Format("Static Models (%d)", count));
+
+    count = m_SCN.animatedmodels.size();
+    sel = m_htlbAModel->GetSelection();
+    m_spinAModel->Enable(count>=2);
+    m_btAModelEdit->Enable(sel>=0);
+    m_btAModelCopy->Enable(sel>=0);
+    m_btAModelConvert->Enable(sel>=0);
+    m_btAModelDel->Enable(sel>=0);
+    m_btAModelClear->Enable(count>=1);
+    if (count>=1)
+        m_btLODAdd->Enable(true);
+    m_nbModels->SetPageText(1, wxString::Format("Animated Models (%d)", count));
 
     count = m_SCN.lods.size();
     sel = m_htlbLOD->GetSelection();
@@ -381,10 +621,22 @@ void dlgCreateScenery::UpdateControlState() {
     m_btLODDel->Enable(sel>=0);
     m_btLODClear->Enable(count>=1);
 
-    count = m_SCN.references.size();
-    sel = m_htlbReferences->GetSelection();
-    m_btReferenceDel->Enable(sel>=0);
-    m_btReferenceClear->Enable(count>=1);
+    count = m_SCN.animations.size();
+    sel = m_htlbAnimation->GetSelection();
+    m_spinAnimation->Enable(count>=2);
+    m_btAnimationEdit->Enable((sel>=0) && (sel<count));
+    m_btAnimationCopy->Enable((sel>=0) && (sel<count));
+    m_btAnimationDel->Enable((sel>=0) && (sel<count));
+    m_btAnimationClear->Enable(count>=1);
+    bool en = false;
+    if (sel >= 0) {
+        int l = m_htlbLOD->GetSelection();
+        if (l >= 0) {
+            if (m_SCN.lods[l].animated)
+                en = true;
+        }
+    }
+    m_btAnimationAddToLod->Enable(en);
 
     m_btCreate->Enable(m_SCN.flexitextures.size() || (m_SCN.models.size() && m_SCN.lods.size()));
     if (m_SCN.models.size())
@@ -395,8 +647,8 @@ void dlgCreateScenery::UpdateControlState() {
     wxString title = _("Create OVL");
     if (m_SCN.filename != wxT(""))
         title += wxT(" - ") + m_SCN.filename.GetFullName();
-    if (m_SCN.ovlname != wxT(""))
-        title += wxT(" (") + m_SCN.ovlname.GetFullName() + wxT(")");
+    if (m_SCN.name != wxT(""))
+        title += wxT(" (") + m_SCN.name + wxT(")");
     SetLabel(title);
 }
 
@@ -451,15 +703,76 @@ void dlgCreateScenery::MakeDirty(bool dirty) {
 // didn't change or should be overwritten
 void dlgCreateScenery::UpdateAll() {
     m_htlbTexture->UpdateContents();
-    m_htlbModel->UpdateContents();
-    m_htlbLOD->UpdateContents();
     m_htlbReferences->UpdateContents();
+    m_htlbModel->UpdateContents();
+    m_htlbAModel->UpdateContents();
+    m_htlbLOD->UpdateContents();
+    m_htlbAnimation->UpdateContents();
 
     TransferDataToWindow();
 
     m_textReference->ChangeValue(m_defaultRef);
 
     UpdateControlState();
+}
+
+bool dlgCreateScenery::Save(bool as) {
+    if (!as) {
+        if (m_SCN.filename == wxT("")) {
+            // Shouldn't happen, but you never know...
+            // Happens in OnClose
+            // fall through
+        } else {
+            TransferDataFromWindow();
+            if (m_SCN.version < 5) {
+                if (::wxMessageBox(_("You are going to overwrite a old version scenery file.\nYou will not be able to open it with older importer versions anymore.\nDo you want to continue?"), _("Warning"), wxYES_NO|wxICON_WARNING|wxNO_DEFAULT, this) == wxNO) {
+                    return false;
+                }
+            }
+            if (!m_SCN.Save()) {
+                ::wxMessageBox(_("Saving scenery file failed. You will be asked for a new file name now."), _("Error"), wxOK|wxICON_ERROR, this);
+                // fall through
+            } else {
+                MakeDirty(false);
+                UpdateControlState();
+                return true;
+            }
+        }
+    }
+    ////////////////////////////
+    // Save Scenery As
+    TransferDataFromWindow();
+    wxFileDialog *dialog = new wxFileDialog(
+                               this,
+                               _T("Save Scenery File"),
+                               wxEmptyString,
+                               wxEmptyString,
+                               _T("Scenery Files (*.scn)|*.scn"),
+                               wxFD_SAVE|wxFD_OVERWRITE_PROMPT|wxFD_CHANGE_DIR,
+                               wxDefaultPosition,
+                               wxSize(600,400)
+                           );
+    if (m_SCN.filename != wxT("")) {
+        dialog->SetFilename(m_SCN.filename.GetFullName());
+        dialog->SetDirectory(m_SCN.filename.GetPath());
+    } else
+        dialog->SetDirectory(::wxGetApp().g_workdir.GetPath());
+    if (dialog->ShowModal() == wxID_OK) {
+        ::wxGetApp().g_workdir.AssignDir(wxFileName(dialog->GetPath()).GetPath());
+        m_SCN.filename = dialog->GetPath();
+        if (!m_SCN.Save()) {
+            ::wxMessageBox(_("Error saving SCN file."), _("Error"), wxOK | wxICON_ERROR, this);
+        } else {
+            MakeDirty(false);
+            UpdateControlState();
+        }
+    } else {
+        dialog->Destroy();
+        return false;
+    }
+
+    dialog->Destroy();
+    return true;
 }
 
 void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
@@ -484,10 +797,10 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
         }
         wxFileDialog *dialog = new wxFileDialog(
                                    this,
-                                   _T("Open Scenery File"),
+                                   _("Open Scenery File"),
                                    wxEmptyString,
                                    wxEmptyString,
-                                   _T("Scenery Files (*.scn)|*.scn"),
+                                   _("Scenery Files (*.scn, *.xml)|*.scn;*.xml"),
                                    wxFD_FILE_MUST_EXIST|wxFD_CHANGE_DIR,
                                    wxDefaultPosition,
                                    wxSize(600,400)
@@ -500,16 +813,34 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
         if (dialog->ShowModal() == wxID_OK) {
             ::wxGetApp().g_workdir.AssignDir(wxFileName(dialog->GetPath()).GetPath());
             m_SCN.filename = dialog->GetPath();
-            if (!m_SCN.Load()) {
-                if (m_SCN.error != CSCNFILE_NO_ERROR) {
-                    if (m_SCN.error == CSCNFILE_ERROR_VERSION)
-                        ::wxMessageBox(_("Error loading SCN file.\nIncompatible file version."), _("Error"), wxOK | wxICON_ERROR, this);
-                    else
-                        ::wxMessageBox(_("Error loading SCN file."), _("Error"), wxOK | wxICON_ERROR, this);
-                } else {
-                    // Errors in the models
-                    ::wxMessageBox(_("There were warings or errors loading the model files.\nThey will be shown to you when you open the respective model settings."), _("Warning"), wxOK | wxICON_WARNING, this);
+            try {
+                if (!m_SCN.Load()) {
+                    if (m_SCN.error != CSCNFILE_NO_ERROR) {
+                        if (m_SCN.error == CSCNFILE_ERROR_VERSION)
+                            ::wxMessageBox(_("Error loading SCN file.\nIncompatible file version."), _("Error"), wxOK | wxICON_ERROR, this);
+                        else if (m_SCN.error == CSCNFILE_ERROR_VERSION_XML)
+                            ::wxMessageBox(_("The xml scenery file was created with a newer importer version.\nThere might be some errors, so check whether everything is alright."), _("Warning"), wxOK | wxICON_WARNING, this);
+                        else if (m_SCN.error == CSCNFILE_ERROR_WRONG_ROOT)
+                            ::wxMessageBox(_("Error loading XML scenery file.\nThe file doesn't seem to be a valid scenery xml.\nProbably you tried to load an xml file made for a different purpose."), _("Error"), wxOK | wxICON_ERROR, this);
+                        else
+                            ::wxMessageBox(_("Error loading SCN file."), _("Error"), wxOK | wxICON_ERROR, this);
+                    } else {
+                        // Errors in the models
+                        ::wxMessageBox(_("There were warings or errors loading the model files.\nThey will be shown to you when you open the respective model settings."), _("Warning"), wxOK | wxICON_WARNING, this);
+                    }
                 }
+                if (m_SCN.references.size() && (!m_SCN.flexitextures.size())) {
+                    m_nbTexRef->ChangeSelection(1);
+                } else if (!m_SCN.references.size()) {
+                    m_nbTexRef->ChangeSelection(0);
+                }
+                if (m_SCN.animatedmodels.size() && (!m_SCN.models.size())) {
+                    m_nbModels->ChangeSelection(1);
+                } else if (!m_SCN.animatedmodels.size()) {
+                    m_nbModels->ChangeSelection(0);
+                }
+            } catch (RCT3Exception& e) {
+                ::wxMessageBox(_("Error loading scenery file.\n") + e.wxwhat(), _("Error"), wxOK | wxICON_ERROR, this);
             }
             TransferDataToWindow();
             UpdateAll();
@@ -522,56 +853,58 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
     ////////////////////////////
     // Save Scenery
     if (id == wxID_SAVE) {
-        if (m_SCN.filename == wxT("")) {
-            // Shouldn't happen, but you never know...
-            id = wxID_SAVEAS;
-        } else {
-            TransferDataFromWindow();
-            if (m_SCN.version < 5) {
-                if (::wxMessageBox(_("You are going to overwrite a old version scenery file.\nYou will not be able to open it with older importer versions anymore.\nDo you want to continue?"), _("Warning"), wxYES_NO|wxICON_WARNING|wxNO_DEFAULT, this) == wxNO) {
-                    return;
-                }
-            }
-            if (!m_SCN.Save()) {
-                ::wxMessageBox(_("Saving scenery file failed. You will be asked for a new file name now."), _("Error"), wxOK|wxICON_ERROR, this);
-                id = wxID_SAVEAS;
-            } else {
-                MakeDirty(false);
-                UpdateControlState();
-            }
-        }
+        Save();
+//        if (m_SCN.filename == wxT("")) {
+//            // Shouldn't happen, but you never know...
+//            id = wxID_SAVEAS;
+//        } else {
+//            TransferDataFromWindow();
+//            if (m_SCN.version < 5) {
+//                if (::wxMessageBox(_("You are going to overwrite a old version scenery file.\nYou will not be able to open it with older importer versions anymore.\nDo you want to continue?"), _("Warning"), wxYES_NO|wxICON_WARNING|wxNO_DEFAULT, this) == wxNO) {
+//                    return;
+//                }
+//            }
+//            if (!m_SCN.Save()) {
+//                ::wxMessageBox(_("Saving scenery file failed. You will be asked for a new file name now."), _("Error"), wxOK|wxICON_ERROR, this);
+//                id = wxID_SAVEAS;
+//            } else {
+//                MakeDirty(false);
+//                UpdateControlState();
+//            }
+//        }
     }
     ////////////////////////////
     // Save Scenery As
     if (id == wxID_SAVEAS) {
-        TransferDataFromWindow();
-        wxFileDialog *dialog = new wxFileDialog(
-                                   this,
-                                   _T("Save Scenery File"),
-                                   wxEmptyString,
-                                   wxEmptyString,
-                                   _T("Scenery Files (*.scn)|*.scn"),
-                                   wxFD_SAVE|wxFD_OVERWRITE_PROMPT|wxFD_CHANGE_DIR,
-                                   wxDefaultPosition,
-                                   wxSize(600,400)
-                               );
-        if (m_SCN.filename != wxT("")) {
-            dialog->SetFilename(m_SCN.filename.GetFullName());
-            dialog->SetDirectory(m_SCN.filename.GetPath());
-        } else
-            dialog->SetDirectory(::wxGetApp().g_workdir.GetPath());
-        if (dialog->ShowModal() == wxID_OK) {
-            ::wxGetApp().g_workdir.AssignDir(wxFileName(dialog->GetPath()).GetPath());
-            m_SCN.filename = dialog->GetPath();
-            if (!m_SCN.Save()) {
-                ::wxMessageBox(_("Error saving SCN file."), _("Error"), wxOK | wxICON_ERROR, this);
-            } else {
-                MakeDirty(false);
-                UpdateControlState();
-            }
-        }
-
-        dialog->Destroy();
+        Save(true);
+//        TransferDataFromWindow();
+//        wxFileDialog *dialog = new wxFileDialog(
+//                                   this,
+//                                   _T("Save Scenery File"),
+//                                   wxEmptyString,
+//                                   wxEmptyString,
+//                                   _T("Scenery Files (*.scn)|*.scn"),
+//                                   wxFD_SAVE|wxFD_OVERWRITE_PROMPT|wxFD_CHANGE_DIR,
+//                                   wxDefaultPosition,
+//                                   wxSize(600,400)
+//                               );
+//        if (m_SCN.filename != wxT("")) {
+//            dialog->SetFilename(m_SCN.filename.GetFullName());
+//            dialog->SetDirectory(m_SCN.filename.GetPath());
+//        } else
+//            dialog->SetDirectory(::wxGetApp().g_workdir.GetPath());
+//        if (dialog->ShowModal() == wxID_OK) {
+//            ::wxGetApp().g_workdir.AssignDir(wxFileName(dialog->GetPath()).GetPath());
+//            m_SCN.filename = dialog->GetPath();
+//            if (!m_SCN.Save()) {
+//                ::wxMessageBox(_("Error saving SCN file."), _("Error"), wxOK | wxICON_ERROR, this);
+//            } else {
+//                MakeDirty(false);
+//                UpdateControlState();
+//            }
+//        }
+//
+//        dialog->Destroy();
     }
     /////////////////////////////////
     // Load texture ovl into cache
@@ -605,7 +938,7 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
                     }
                 }
                 int oldcount = ::wxGetApp().g_texturecache.size();
-                for (cFlexiTextureIterator ms = texscn->flexitextures.begin(); ms != texscn->flexitextures.end(); ms++) {
+                for (cFlexiTexture::iterator ms = texscn->flexitextures.begin(); ms != texscn->flexitextures.end(); ms++) {
                     ::wxGetApp().g_texturecache.push_back(ms->Name);
                 }
                 ::wxGetApp().g_texturecache.sort();
@@ -663,11 +996,26 @@ void dlgCreateScenery::OnClose(wxCloseEvent& event) {
         EndModal(0);
         return;
     }
+    dlgSave* dlg = new dlgSave(_("Unsaved changes in your current scenery file.\nWhat do you want to do?"), _("Unsaved Changes"), this);
+    switch (dlg->ShowModal()) {
+        case wxID_NO:
+            EndModal(0);
+            break;
+        case wxID_SAVE:
+            if (Save())
+                EndModal(0);
+            // Fall through if cancelled
+        case wxID_CANCEL:
+        default:
+            event.Veto();
+    }
+/*
     if (::wxMessageBox(_("Unsaved changes in your current scenery file.\nDo you want to continue?"), _("Question"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this)==wxNO) {
         event.Veto();
     } else {
         EndModal(0);
     }
+*/
 }
 
 void dlgCreateScenery::OnInitDialog(wxInitDialogEvent& WXUNUSED(event)) {
@@ -763,17 +1111,18 @@ void dlgCreateScenery::OnTextureAdd(wxCommandEvent& WXUNUSED(event)) {
             for (wxArrayString::iterator it = t_paths.begin(); it != t_paths.end(); it++) {
                 cFlexiTexture ftx;
                 cFlexiTextureFrame ftxf;
-                if (!getBitmapInfo(it->fn_str(), info)) {
+                try {
+                    checkRCT3Texture(*it);
+                } catch (RCT3TextureException) {
                     continue;
                 }
 
-                if ((info.Width != info.Height) || ((1 << local_log2(info.Width)) != info.Width)) {
-                    continue;
+                ftxf.texture(*it);
+                {
+                    wxGXImage img(*it);
+                    if (img.HasAlpha())
+                        ftxf.alphasource(CFTF_ALPHA_INTERNAL);
                 }
-
-                ftxf.Texture = *it;
-                if (ilInfoHasAlpha(info))
-                    ftxf.AlphaSource = CFTF_ALPHA_INTERNAL;
                 ftx.Frames.push_back(ftxf);
                 ftx.Name = wxFileName(*it).GetName();
                 m_SCN.flexitextures.push_back(ftx);
@@ -887,6 +1236,47 @@ void dlgCreateScenery::OnTextureClear(wxCommandEvent& WXUNUSED(event)) {
 
 ////////////////////////////////////////////////////////////////////////
 //
+//  dlgCreateScenery, References
+//
+////////////////////////////////////////////////////////////////////////
+
+void dlgCreateScenery::OnReferenceAdd(wxCommandEvent& WXUNUSED(event)) {
+    m_SCN.references.push_back(m_textReference->GetValue());
+    MakeDirty();
+    m_htlbReferences->UpdateContents();
+    m_htlbReferences->SetSelection(m_SCN.references.size()-1);
+    UpdateControlState();
+}
+
+void dlgCreateScenery::OnReferenceDel(wxCommandEvent& WXUNUSED(event)) {
+    int sel = m_htlbReferences->GetSelection();
+    if (sel<0)
+        return;
+    m_textReference->ChangeValue(m_SCN.references[sel]);
+    m_SCN.references.erase(m_SCN.references.begin() + sel);
+
+    MakeDirty();
+    m_htlbReferences->UpdateContents();
+    m_htlbReferences->SetSelection(sel-1);
+    UpdateControlState();
+}
+
+void dlgCreateScenery::OnReferenceClear(wxCommandEvent& WXUNUSED(event)) {
+    if (m_SCN.references.size()) {
+        if (::wxMessageBox(_("Do you really want to delete all references?"), _("Question"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this)==wxNO)
+            return;
+    }
+
+    m_SCN.references.clear();
+
+    MakeDirty();
+    m_htlbReferences->UpdateContents();
+    m_htlbReferences->SetSelection(-1);
+    UpdateControlState();
+}
+
+////////////////////////////////////////////////////////////////////////
+//
 //  dlgCreateScenery, Models
 //
 ////////////////////////////////////////////////////////////////////////
@@ -922,7 +1312,7 @@ void dlgCreateScenery::OnModelDown(wxSpinEvent& WXUNUSED(event)) {
 
 void dlgCreateScenery::OnModelAdd(wxCommandEvent& WXUNUSED(event)) {
     dlgModel *dialog = new dlgModel(this);
-    dialog->SetModel(cModel(::wxGetApp().GetConfig()->m_def_matrix));
+    dialog->SetModel(cModel(READ_APP_MATRIX(), READ_RCT3_ORIENTATION()));
     if (dialog->ShowModal() == wxID_OK) {
         m_SCN.models.push_back(dialog->GetModel());
         MakeDirty();
@@ -950,7 +1340,7 @@ void dlgCreateScenery::OnModelEdit(wxCommandEvent& WXUNUSED(event)) {
     if (dialog->ShowModal() == wxID_OK) {
         cModel mod = dialog->GetModel();
         if (mod.name != m_SCN.models[sel].name) {
-            for (cLODIterator it = m_SCN.lods.begin(); it != m_SCN.lods.end(); it++) {
+            for (cLOD::iterator it = m_SCN.lods.begin(); it != m_SCN.lods.end(); it++) {
                 if (it->modelname == m_SCN.models[sel].name)
                     it->modelname = mod.name;
             }
@@ -976,6 +1366,36 @@ void dlgCreateScenery::OnModelCopy(wxCommandEvent& WXUNUSED(event)) {
     MakeDirty();
     m_htlbModel->UpdateContents();
     m_htlbModel->SetSelection(sel+1);
+    UpdateControlState();
+}
+
+void dlgCreateScenery::OnModelConvert(wxCommandEvent& WXUNUSED(event)) {
+    int sel = m_htlbModel->GetSelection();
+    if (sel<0)
+        return;
+
+    cAnimatedModel ft = cAnimatedModel(m_SCN.models[sel]);
+    wxString orgname = ft.name;
+    m_SCN.models.erase(m_SCN.models.begin() + sel);
+    for (cAnimatedModel::iterator it = m_SCN.animatedmodels.begin(); it != m_SCN.animatedmodels.end(); ++it) {
+        if (it->name = ft.name) {
+            ft.name += _(", Converted");
+            break;
+        }
+    }
+    for (cLOD::iterator it = m_SCN.lods.begin(); it != m_SCN.lods.end(); ++it) {
+        if (it->modelname == orgname) {
+            it->modelname = ft.name;
+            it->animated = true;
+        }
+    }
+    m_SCN.animatedmodels.push_back(ft);
+
+    MakeDirty();
+    m_htlbModel->UpdateContents();
+    m_htlbModel->SetSelection(sel-1);
+    m_htlbAModel->UpdateContents();
+    m_htlbLOD->UpdateContents();
     UpdateControlState();
 }
 
@@ -1008,12 +1428,179 @@ void dlgCreateScenery::OnModelClear(wxCommandEvent& WXUNUSED(event)) {
 
 ////////////////////////////////////////////////////////////////////////
 //
+//  dlgCreateScenery, Animated Models
+//
+////////////////////////////////////////////////////////////////////////
+
+void dlgCreateScenery::OnAModelUp(wxSpinEvent& WXUNUSED(event)) {
+    int sel = m_htlbAModel->GetSelection();
+    if (sel < 1)
+        return;
+    cAnimatedModel ft = m_SCN.animatedmodels[sel];
+    m_SCN.animatedmodels.erase(m_SCN.animatedmodels.begin() + sel);
+    m_SCN.animatedmodels.insert(m_SCN.animatedmodels.begin() + sel - 1, ft);
+
+    MakeDirty();
+    m_htlbAModel->UpdateContents();
+    m_htlbAModel->SetSelection(sel-1);
+    UpdateControlState();
+}
+
+void dlgCreateScenery::OnAModelDown(wxSpinEvent& WXUNUSED(event)) {
+    int count = m_SCN.animatedmodels.size();
+    int sel = m_htlbAModel->GetSelection();
+    if ((count-sel) <= 1)
+        return;
+    cAnimatedModel ft = m_SCN.animatedmodels[sel];
+    m_SCN.animatedmodels.erase(m_SCN.animatedmodels.begin() + sel);
+    m_SCN.animatedmodels.insert(m_SCN.animatedmodels.begin() + sel + 1, ft);
+
+    MakeDirty();
+    m_htlbAModel->UpdateContents();
+    m_htlbAModel->SetSelection(sel+1);
+    UpdateControlState();
+}
+
+void dlgCreateScenery::OnAModelAdd(wxCommandEvent& WXUNUSED(event)) {
+    dlgModel *dialog = new dlgModel(this, true);
+    dialog->SetAnimatedModel(cAnimatedModel(READ_APP_MATRIX(), READ_RCT3_ORIENTATION()));
+    if (dialog->ShowModal() == wxID_OK) {
+        m_SCN.animatedmodels.push_back(dialog->GetAnimatedModel());
+        MakeDirty();
+        m_htlbAModel->UpdateContents();
+        m_htlbAModel->SetSelection(m_SCN.animatedmodels.size()-1);
+        UpdateControlState();
+    }
+    dialog->Destroy();
+}
+
+void dlgCreateScenery::OnAModelEdit(wxCommandEvent& WXUNUSED(event)) {
+    int sel = m_htlbAModel->GetSelection();
+    if (sel < 0)
+        return;
+    dlgModel *dialog = new dlgModel(this, true);
+    if (m_SCN.animatedmodels[sel].error.size()) {
+        wxString errtext = m_SCN.animatedmodels[sel].error[0];
+        while (m_SCN.animatedmodels[sel].error.erase(m_SCN.animatedmodels[sel].error.begin()) != m_SCN.animatedmodels[sel].error.end()) {
+            errtext += wxT("\n\n") + m_SCN.animatedmodels[sel].error[0];
+        }
+        ::wxMessageBox(errtext, wxString(m_SCN.animatedmodels[sel].fatal_error?_("Error"):_("Warning")) + _(" during model file loading"), wxOK | (m_SCN.animatedmodels[sel].fatal_error?wxICON_ERROR:wxICON_WARNING), this);
+        m_SCN.animatedmodels[sel].error.clear();
+    }
+    dialog->SetAnimatedModel(m_SCN.animatedmodels[sel]);
+    if (dialog->ShowModal() == wxID_OK) {
+        cAnimatedModel mod = dialog->GetAnimatedModel();
+        if (mod.name != m_SCN.animatedmodels[sel].name) {
+            for (cLOD::iterator it = m_SCN.lods.begin(); it != m_SCN.lods.end(); it++) {
+                if (it->modelname == m_SCN.animatedmodels[sel].name)
+                    it->modelname = mod.name;
+            }
+        }
+        m_SCN.animatedmodels[sel] = mod;
+        MakeDirty();
+        m_htlbAModel->UpdateContents();
+        m_htlbLOD->UpdateContents();
+        UpdateControlState();
+    }
+    dialog->Destroy();
+}
+
+void dlgCreateScenery::OnAModelCopy(wxCommandEvent& WXUNUSED(event)) {
+    int sel = m_htlbAModel->GetSelection();
+    if (sel<0)
+        return;
+
+    cAnimatedModel ft = m_SCN.animatedmodels[sel];
+    ft.name += _(" Copy");
+    m_SCN.animatedmodels.insert(m_SCN.animatedmodels.begin() + sel + 1, ft);
+
+    MakeDirty();
+    m_htlbAModel->UpdateContents();
+    m_htlbAModel->SetSelection(sel+1);
+    UpdateControlState();
+}
+
+void dlgCreateScenery::OnAModelConvert(wxCommandEvent& WXUNUSED(event)) {
+    int sel = m_htlbAModel->GetSelection();
+    if (sel<0)
+        return;
+
+    bool infolost = false;
+    for (cModelBone::iterator it = m_SCN.animatedmodels[sel].modelbones.begin(); it != m_SCN.animatedmodels[sel].modelbones.end(); it++) {
+        if ((it->usepos2) || (it->parent != wxT("")) || (it->meshes.size())) {
+            infolost = true;
+            break;
+        }
+    }
+    if (infolost) {
+        if (::wxMessageBox(_("During the conversion all additional information of the animated model will be lost (Bone <-> Group assignment, bone parent and position 2 settings).\nDo you want to continue?"), _("Question"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this)==wxNO)
+            return;
+    }
+
+    cModel ft = cModel(m_SCN.animatedmodels[sel]);
+    wxString orgname = ft.name;
+    m_SCN.animatedmodels.erase(m_SCN.animatedmodels.begin() + sel);
+    for (cModel::iterator it = m_SCN.models.begin(); it != m_SCN.models.end(); it++) {
+        if (it->name = ft.name) {
+            ft.name += _(", Converted");
+            break;
+        }
+    }
+    for (cLOD::iterator it = m_SCN.lods.begin(); it != m_SCN.lods.end(); ++it) {
+        if (it->modelname == orgname) {
+            it->modelname = ft.name;
+            it->animated = true;
+        }
+    }
+    m_SCN.models.push_back(ft);
+
+    MakeDirty();
+    m_htlbAModel->UpdateContents();
+    m_htlbAModel->SetSelection(sel-1);
+    m_htlbModel->UpdateContents();
+    m_htlbLOD->UpdateContents();
+    UpdateControlState();
+}
+
+void dlgCreateScenery::OnAModelDel(wxCommandEvent& WXUNUSED(event)) {
+    int sel = m_htlbAModel->GetSelection();
+    if (sel<0)
+        return;
+
+    m_SCN.animatedmodels.erase(m_SCN.animatedmodels.begin() + sel);
+
+    MakeDirty();
+    m_htlbAModel->UpdateContents();
+    m_htlbAModel->SetSelection(sel-1);
+    UpdateControlState();
+}
+
+void dlgCreateScenery::OnAModelClear(wxCommandEvent& WXUNUSED(event)) {
+    if (m_SCN.animatedmodels.size()) {
+        if (::wxMessageBox(_("Do you really want to delete all animated model entries?"), _("Question"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this)==wxNO)
+            return;
+    }
+
+    m_SCN.animatedmodels.clear();
+
+    MakeDirty();
+    m_htlbAModel->UpdateContents();
+    m_htlbAModel->SetSelection(-1);
+    UpdateControlState();
+}
+
+////////////////////////////////////////////////////////////////////////
+//
 //  dlgCreateScenery, LODs
 //
 ////////////////////////////////////////////////////////////////////////
 
 void dlgCreateScenery::OnLODAdd(wxCommandEvent& WXUNUSED(event)) {
-    dlgLOD *dialog = new dlgLOD(m_SCN.models, this);
+    if (!m_SCN.CheckForModelNameDuplicates()) {
+        ::wxMessageBox(_("There are duplicate model names. A model name must be unique, no matter whether it's animated or not"), _("Error"), wxOK|wxICON_ERROR, this);
+        return;
+    }
+    dlgLOD *dialog = new dlgLOD(&m_SCN.models, &m_SCN.animatedmodels, this);
     int sel = m_htlbModel->GetSelection();
     if (sel >= 0) {
         cLOD lod;
@@ -1024,7 +1611,7 @@ void dlgCreateScenery::OnLODAdd(wxCommandEvent& WXUNUSED(event)) {
         cLOD nl = dialog->GetLOD();
         bool atend = true;
         int sel = 0;
-        for (cLODIterator it = m_SCN.lods.begin(); it != m_SCN.lods.end(); it++) {
+        for (cLOD::iterator it = m_SCN.lods.begin(); it != m_SCN.lods.end(); it++) {
             if (nl.distance < it->distance) {
                 atend = false;
                 m_SCN.lods.insert(it, nl);
@@ -1043,17 +1630,21 @@ void dlgCreateScenery::OnLODAdd(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void dlgCreateScenery::OnLODEdit(wxCommandEvent& WXUNUSED(event)) {
+    if (!m_SCN.CheckForModelNameDuplicates()) {
+        ::wxMessageBox(_("There are duplicate model names. A model name must be unique, no matter whether it's animated or not"), _("Error"), wxOK|wxICON_ERROR, this);
+        return;
+    }
     int sel = m_htlbLOD->GetSelection();
     if (sel < 0)
         return;
-    dlgLOD *dialog = new dlgLOD(m_SCN.models, this);
+    dlgLOD *dialog = new dlgLOD(&m_SCN.models, &m_SCN.animatedmodels, this);
     dialog->SetLOD(m_SCN.lods[sel]);
     if (dialog->ShowModal() == wxID_OK) {
         m_SCN.lods.erase(m_SCN.lods.begin() + sel);
         cLOD nl = dialog->GetLOD();
         bool atend = true;
         sel = 0;
-        for (cLODIterator it = m_SCN.lods.begin(); it != m_SCN.lods.end(); it++) {
+        for (cLOD::iterator it = m_SCN.lods.begin(); it != m_SCN.lods.end(); it++) {
             if (nl.distance < it->distance) {
                 atend = false;
                 m_SCN.lods.insert(it, nl);
@@ -1138,47 +1729,6 @@ void dlgCreateScenery::OnLODClear(wxCommandEvent& WXUNUSED(event)) {
 
 ////////////////////////////////////////////////////////////////////////
 //
-//  dlgCreateScenery, LODs
-//
-////////////////////////////////////////////////////////////////////////
-
-void dlgCreateScenery::OnReferenceAdd(wxCommandEvent& WXUNUSED(event)) {
-    m_SCN.references.push_back(m_textReference->GetValue());
-    MakeDirty();
-    m_htlbReferences->UpdateContents();
-    m_htlbReferences->SetSelection(m_SCN.references.size()-1);
-    UpdateControlState();
-}
-
-void dlgCreateScenery::OnReferenceDel(wxCommandEvent& WXUNUSED(event)) {
-    int sel = m_htlbReferences->GetSelection();
-    if (sel<0)
-        return;
-    m_textReference->ChangeValue(m_SCN.references[sel]);
-    m_SCN.references.erase(m_SCN.references.begin() + sel);
-
-    MakeDirty();
-    m_htlbReferences->UpdateContents();
-    m_htlbReferences->SetSelection(sel-1);
-    UpdateControlState();
-}
-
-void dlgCreateScenery::OnReferenceClear(wxCommandEvent& WXUNUSED(event)) {
-    if (m_SCN.references.size()) {
-        if (::wxMessageBox(_("Do you really want to delete all references?"), _("Question"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this)==wxNO)
-            return;
-    }
-
-    m_SCN.references.clear();
-
-    MakeDirty();
-    m_htlbReferences->UpdateContents();
-    m_htlbReferences->SetSelection(-1);
-    UpdateControlState();
-}
-
-////////////////////////////////////////////////////////////////////////
-//
 //  dlgCreateScenery, Visual Options
 //
 ////////////////////////////////////////////////////////////////////////
@@ -1201,11 +1751,168 @@ void dlgCreateScenery::OnVisualSwayingTree(wxCommandEvent& WXUNUSED(event)) {
 
 ////////////////////////////////////////////////////////////////////////
 //
+//  dlgCreateScenery, Animations
+//
+////////////////////////////////////////////////////////////////////////
+
+void dlgCreateScenery::OnAnimationUp(wxSpinEvent& WXUNUSED(event)) {
+    int sel = m_htlbAnimation->GetSelection();
+    if (sel < 1)
+        return;
+    cAnimation ft = m_SCN.animations[sel];
+    m_SCN.animations.erase(m_SCN.animations.begin() + sel);
+    m_SCN.animations.insert(m_SCN.animations.begin() + sel - 1, ft);
+
+    MakeDirty();
+    m_htlbAnimation->UpdateContents();
+    m_htlbAnimation->SetSelection(sel-1);
+    UpdateControlState();
+}
+
+void dlgCreateScenery::OnAnimationDown(wxSpinEvent& WXUNUSED(event)) {
+    int count = m_SCN.animations.size();
+    int sel = m_htlbAnimation->GetSelection();
+    if ((count-sel) <= 1)
+        return;
+    cAnimation ft = m_SCN.animations[sel];
+    m_SCN.animations.erase(m_SCN.animations.begin() + sel);
+    m_SCN.animations.insert(m_SCN.animations.begin() + sel + 1, ft);
+
+    MakeDirty();
+    m_htlbAnimation->UpdateContents();
+    m_htlbAnimation->SetSelection(sel+1);
+    UpdateControlState();
+}
+
+void dlgCreateScenery::OnAnimationAdd(wxCommandEvent& WXUNUSED(event)) {
+    dlgAnimation *dialog = new dlgAnimation(this);
+    dialog->SetAnimation(cAnimation(READ_RCT3_ORIENTATION()));
+    if (dialog->ShowModal() == wxID_OK) {
+        m_SCN.animations.push_back(dialog->GetAnimation());
+        MakeDirty();
+        m_htlbAnimation->UpdateContents();
+        m_htlbAnimation->SetSelection(m_SCN.animations.size()-1);
+        UpdateControlState();
+    }
+    dialog->Destroy();
+}
+
+void dlgCreateScenery::OnAnimationEdit(wxCommandEvent& WXUNUSED(event)) {
+    int sel = m_htlbAnimation->GetSelection();
+    if (sel < 0)
+        return;
+    dlgAnimation *dialog = new dlgAnimation(this);
+    dialog->SetAnimation(m_SCN.animations[sel]);
+    if (dialog->ShowModal() == wxID_OK) {
+        cAnimation mod = dialog->GetAnimation();
+        if (mod.name != m_SCN.animations[sel].name) {
+            for (cLOD::iterator it = m_SCN.lods.begin(); it != m_SCN.lods.end(); it++) {
+                for (cStringIterator st = it->animations.begin(); st != it->animations.end(); st++) {
+                    if ((*st) == m_SCN.animations[sel].name)
+                        (*st) = mod.name;
+                }
+            }
+        }
+        m_SCN.animations[sel] = mod;
+        MakeDirty();
+        m_htlbAnimation->UpdateContents();
+        m_htlbLOD->UpdateContents();
+        UpdateControlState();
+    }
+    dialog->Destroy();
+}
+
+void dlgCreateScenery::OnAnimationCopy(wxCommandEvent& WXUNUSED(event)) {
+    int sel = m_htlbAnimation->GetSelection();
+    if (sel<0)
+        return;
+
+    cAnimation ft = m_SCN.animations[sel];
+    ft.name += _(" Copy");
+    m_SCN.animations.insert(m_SCN.animations.begin() + sel + 1, ft);
+
+    MakeDirty();
+    m_htlbAnimation->UpdateContents();
+    m_htlbAnimation->SetSelection(sel+1);
+    UpdateControlState();
+}
+
+void dlgCreateScenery::OnAnimationDel(wxCommandEvent& WXUNUSED(event)) {
+    int sel = m_htlbAnimation->GetSelection();
+    if (sel<0)
+        return;
+
+    m_SCN.animations.erase(m_SCN.animations.begin() + sel);
+
+    MakeDirty();
+    m_htlbAnimation->UpdateContents();
+    m_htlbAnimation->SetSelection(sel-1);
+    UpdateControlState();
+}
+
+void dlgCreateScenery::OnAnimationAddToLod(wxCommandEvent& WXUNUSED(event)) {
+// TODO (tobi#1#): OnAnimationAddToLod
+    int lod = m_htlbLOD->GetSelection();
+    int ani = m_htlbAnimation->GetSelection();
+    if ((ani < 0) or (lod < 0))
+        return;
+
+    cLOD* plod = &m_SCN.lods[lod];
+    if (!plod->animated)
+        return;
+
+    cAnimation* pani = &m_SCN.animations[ani];
+    if (plod->animations.Index(pani->name) == wxNOT_FOUND) {
+        plod->animations.Add(pani->name);
+        m_htlbLOD->UpdateContents();
+    }
+}
+
+void dlgCreateScenery::OnAnimationClear(wxCommandEvent& WXUNUSED(event)) {
+    if (m_SCN.animations.size()) {
+        if (::wxMessageBox(_("Do you really want to delete all animations?"), _("Question"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this)==wxNO)
+            return;
+    }
+
+    m_SCN.animations.clear();
+
+    MakeDirty();
+    m_htlbAnimation->UpdateContents();
+    m_htlbAnimation->SetSelection(-1);
+    UpdateControlState();
+}
+
+////////////////////////////////////////////////////////////////////////
+//
 //  dlgCreateScenery, Create Scenery
 //
 ////////////////////////////////////////////////////////////////////////
 
 WX_DECLARE_STRING_HASH_MAP(char *, ovlNameLookup);
+
+void dlgCreateScenery::OnCheck(wxCommandEvent& WXUNUSED(event)) {
+    bool all_ok = true;
+    bool cont = true;
+    //wxLogGuiExt *logex = new wxLogGuiExt(NULL);
+    wxLogGui *logex = new wxLogGui();
+    wxLog *old = wxLog::SetActiveTarget(logex);
+
+    try {
+        all_ok = m_SCN.Check();
+    } catch (RCT3Exception& e) {
+        wxLogError(e.what());
+        all_ok = false;
+    } catch (std::exception& e) {
+        wxLogError(_("Unknown exception during check: %s"), e.what());
+        all_ok = false;
+    }
+    if (all_ok)
+        wxLogMessage(_("All data seems to be ok."));
+    wxLog::FlushActive();
+
+    wxLog::SetActiveTarget(old);
+    delete logex;
+}
 
 void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
     bool textureovl = false;
@@ -1225,13 +1932,32 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
 
     TransferDataFromWindow();
 
-    cSCNFile work = m_SCN;
+    //cSCNFile work = m_SCN;
     wxFileName sfile;
     wxFileDialog *dialog = NULL;
 
+// If debugging, use the log window
+#ifndef __WXDEBUG__
     wxLogGuiExt *logex = new wxLogGuiExt(&cont);
     wxLog *old = wxLog::SetActiveTarget(logex);
+#endif
 
+    try {
+        warning = !m_SCN.Check();
+    } catch (RCT3Exception& e) {
+        wxLogError(e.what());
+    } catch (std::exception& e) {
+        wxLogError(_("Unknown exception during check: %s"), e.what());
+        error = true;
+    }
+    wxLog::FlushActive();
+#ifdef __WXDEBUG
+    if (warning) {
+        cont = ::wxMessageBox(wxT("There were warnings. Do you want to continue?"), wxT("Warning"), wxYES_NO | wxICON_WARNING, this) == wxYES;
+    }
+#endif
+
+/*
     /////////////////////////////////////////////////////
     // Sanity Checks & fix the work copy for processing
     {
@@ -1258,7 +1984,7 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
 
             if (!error) {
                 cModelMap modnames;
-                for (cModelIterator i_mod = work.models.begin(); i_mod != work.models.end(); i_mod++) {
+                for (cModel::iterator i_mod = work.models.begin(); i_mod != work.models.end(); i_mod++) {
                     // Note: at this stage we issue only warnings. Errors occur when a LOD references
                     //   a broken model
                     if (!(i_mod->file.IsOk() && i_mod->file.FileExists())) {
@@ -1276,7 +2002,7 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                         continue;
                     }
                     delete object;
-                    for (cMeshStructIterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
+                    for (cMeshStruct::iterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
                         if ((!i_mesh->disabled) && (!i_mesh->valid)) {
                             i_mesh->disabled = true;
                             warning = true;
@@ -1295,7 +2021,7 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                 }
 
                 // Now check the LODs
-                for (cLODIterator i_lod = work.lods.begin(); i_lod != work.lods.end(); i_lod++) {
+                for (cLOD::iterator i_lod = work.lods.begin(); i_lod != work.lods.end(); i_lod++) {
                     cModel *mod = modnames[i_lod->modelname];
                     if (!mod) {
                         error = true;
@@ -1313,9 +2039,9 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
 
             // Last add warnings about unused models and remember texture names for used ones
             if (!error) {
-                for (cModelIterator i_mod = work.models.begin(); i_mod != work.models.end(); i_mod++) {
+                for (cModel::iterator i_mod = work.models.begin(); i_mod != work.models.end(); i_mod++) {
                     if (i_mod->used) {
-                        for (cMeshStructIterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
+                        for (cMeshStruct::iterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
                             if (!i_mesh->disabled) {
                                 usedtextures.Add(i_mesh->FTX);
                                 meshes++;
@@ -1331,7 +2057,7 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
 
         // Check the textures
         if (!error) {
-            for (cFlexiTextureIterator i_ftx = work.flexitextures.begin(); i_ftx != work.flexitextures.end(); i_ftx++) {
+            for (cFlexiTexture::iterator i_ftx = work.flexitextures.begin(); i_ftx != work.flexitextures.end(); i_ftx++) {
                 if ((!textureovl) && (usedtextures.Index(i_ftx->Name) == wxNOT_FOUND)) {
                     // We're not writing a texture ovl and the texture is unused
                     i_ftx->used = false;
@@ -1353,7 +2079,7 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
 
                 // The validators should make these checks unnecessary, but better safe than sorry
                 // For performance reasons we leave size checks for later.
-                for (cFlexiTextureFrameIterator i_ftxfr = i_ftx->Frames.begin(); i_ftxfr != i_ftx->Frames.end(); i_ftxfr++) {
+                for (cFlexiTextureFrame::iterator i_ftxfr = i_ftx->Frames.begin(); i_ftxfr != i_ftx->Frames.end(); i_ftxfr++) {
                     if (!(i_ftxfr->Texture.IsOk() && i_ftxfr->Texture.FileExists())) {
                         error = true;
                         wxLogError(_("Texture '%s': Texture file '%s' not found."), i_ftx->Name.c_str(), i_ftxfr->Texture.GetName().c_str());
@@ -1400,7 +2126,7 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                         // Great -.-
                         i_ftx->Frames.erase(i_ftx->Frames.begin() + i);
                         // Fix animation
-                        for (cFlexiTextureAnimIterator i_anim = i_ftx->Animation.begin(); i_anim != i_ftx->Animation.end(); i_anim++) {
+                        for (cFlexiTextureAnim::iterator i_anim = i_ftx->Animation.begin(); i_anim != i_ftx->Animation.end(); i_anim++) {
                             if (i_anim->frame > i)
                                 i_anim->frame -= 1;
                         }
@@ -1419,10 +2145,10 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
         // Show warnings & errors
         wxLog::FlushActive();
     }
-
+*/
     if (!cont)
         goto deinitlogger;
-
+#if 0
     if (work.ovlname == wxT("")) {
         if (!textureovl) {
             if (work.filename != wxT(""))
@@ -1529,7 +2255,7 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
 
             // Add StaticShapes
             progress.Update(progress_count, _("Adding Models..."));
-            for (cModelIterator i_mod = work.models.begin(); i_mod != work.models.end(); i_mod++) {
+            for (cModel::iterator i_mod = work.models.begin(); i_mod != work.models.end(); i_mod++) {
                 if (!i_mod->used)
                     continue;
                 char *name = strdup(i_mod->name.c_str());
@@ -1540,7 +2266,7 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                 ss1store.push_back(sh);
 
                 int mesh_count = 0;
-                for (cMeshStructIterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
+                for (cMeshStruct::iterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
                     if (!i_mesh->disabled)
                         mesh_count++;
                 }
@@ -1578,10 +2304,10 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                     sh->EffectName = new char *[sh->EffectCount];
                     sh->EffectPosition = new D3DMATRIX[sh->EffectCount];
                     for (e = 0; e < i_mod->effectpoints.size(); e++) {
-                        sh->EffectName[e] = strdup(i_mod->effectpoints[e].Name.c_str());
+                        sh->EffectName[e] = strdup(i_mod->effectpoints[e].name.c_str());
 
                         if (do_transform) {
-                            std::vector<D3DMATRIX> tempstack = i_mod->effectpoints[e].Transform;
+                            std::vector<D3DMATRIX> tempstack = i_mod->effectpoints[e].transforms;
                             // to correctely apply the model transformation matrix to effect points we have to
                             // transform in-game objects into modeler-space first by applying the inverse
                             // of the model transformation matrix
@@ -1592,7 +2318,7 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                             tempstack.push_back(transformMatrix);
                             sh->EffectPosition[e] = matrixMultiply(tempstack);
                         } else {
-                            D3DMATRIX me = matrixMultiply(i_mod->effectpoints[e].Transform);
+                            D3DMATRIX me = matrixMultiply(i_mod->effectpoints[e].transforms);
                             sh->EffectPosition[e] = me;
                         }
                     }
@@ -1612,10 +2338,10 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                 unsigned long CurrentMesh = 0;
                 unsigned long CurrentObj = 0;
                 D3DVECTOR temp_min, temp_max;
-                D3DVECTOR glass_min, glass_max;
-                boundsInit(&glass_min, &glass_max);
-                bool has_unknown = false;
-                for (cMeshStructIterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
+                //D3DVECTOR glass_min, glass_max;
+                //boundsInit(&glass_min, &glass_max);
+                //bool has_unknown = false;
+                for (cMeshStruct::iterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
                     if (i_mesh->disabled == false) {
                         progress.Update(++progress_count);
                         StaticShape2 *sh2 = new StaticShape2;
@@ -1628,15 +2354,27 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                         sh2->unk4 =i_mesh->unknown;
 
                         boundsInit(&temp_min, &temp_max);
-                        object->FetchObject(CurrentObj, &sh2->VertexCount, &sh2->Vertexes, &sh2->IndexCount,
-                                            &sh2->Triangles, &temp_min, &temp_max,
-                                            const_cast<D3DMATRIX *> ((do_transform)?(&transformMatrix):NULL));
+//                        if (i_mesh->place != SS2_PLACE_UNKNOWN) {
+                            object->FetchObject(CurrentObj, &sh2->VertexCount, &sh2->Vertexes, &sh2->IndexCount,
+                                                &sh2->Triangles, &temp_min, &temp_max,
+                                                const_cast<D3DMATRIX *> ((do_transform)?(&transformMatrix):NULL));
+/*                        } else {
+                            D3DVECTOR up;
+                            up.x = -1.0;
+                            up.y = 0.0;
+                            up.z = -0.000000131179;
+                            object->FetchObject(CurrentObj, &sh2->VertexCount, &sh2->Vertexes, &sh2->IndexCount,
+                                                &sh2->Triangles, &temp_min, &temp_max,
+                                                const_cast<D3DMATRIX *> ((do_transform)?(&transformMatrix):NULL),
+                                                &up);
+                        }*/
                         boundsContain(&temp_min, &temp_max, &sh->BoundingBox1, &sh->BoundingBox2);
+                        /*
                         if (i_mesh->place == SS2_PLACE_UNKNOWN) {
                             boundsContain(&temp_min, &temp_max, &glass_min, &glass_max);
                             has_unknown = true;
                         }
-
+                        */
                         CurrentMesh++;
                     }
                     CurrentObj++;
@@ -1664,7 +2402,7 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                 meshcountstore.push_back(mesh_count);
 
                 CurrentObj = 0;
-                for (cMeshStructIterator ms = i_mod->meshstructs.begin();
+                for (cMeshStruct::iterator ms = i_mod->meshstructs.begin();
                         ms != i_mod->meshstructs.end(); ms++) {
                     if (ms->disabled == false) {
                         ftx[CurrentObj] = strdup(ms->FTX.c_str());
@@ -1743,7 +2481,7 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
 
         // Add Textures
         progress.Update(progress_count, _("Adding Textures..."));
-        for (cFlexiTextureIterator i_ftx = work.flexitextures.begin(); i_ftx != work.flexitextures.end(); i_ftx++) {
+        for (cFlexiTexture::iterator i_ftx = work.flexitextures.begin(); i_ftx != work.flexitextures.end(); i_ftx++) {
             if (!i_ftx->used)
                 continue;
 
@@ -1762,11 +2500,11 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
 
             // Handle Animation
             fti->offsetCount = 0;
-            for(cFlexiTextureAnimIterator i_anim = i_ftx->Animation.begin(); i_anim != i_ftx->Animation.end(); i_anim++)
+            for(cFlexiTextureAnim::iterator i_anim = i_ftx->Animation.begin(); i_anim != i_ftx->Animation.end(); i_anim++)
                 fti->offsetCount += i_anim->count;
             fti->offset1 = new unsigned long[fti->offsetCount];
             unsigned long x = 0;
-            for(cFlexiTextureAnimIterator i_anim = i_ftx->Animation.begin(); i_anim != i_ftx->Animation.end(); i_anim++) {
+            for(cFlexiTextureAnim::iterator i_anim = i_ftx->Animation.begin(); i_anim != i_ftx->Animation.end(); i_anim++) {
                 for (unsigned long i = 0; i < i_anim->count; i++) {
                     fti->offset1[x] = i_anim->frame;
                     x++;
@@ -1788,7 +2526,7 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
 
             // Now loop through the frames
             unsigned int m = 0;
-            for (cFlexiTextureFrameIterator i_ftxfr = i_ftx->Frames.begin(); i_ftxfr != i_ftx->Frames.end(); i_ftxfr++) {
+            for (cFlexiTextureFrame::iterator i_ftxfr = i_ftx->Frames.begin(); i_ftxfr != i_ftx->Frames.end(); i_ftxfr++) {
                 ilBindImage(tex[0]);
 
                 unsigned char *alphadata = 0;
@@ -2050,6 +2788,8 @@ scenerycleanup:
         }
     }
     dialog->Destroy();
+#endif
+
 deinitlogger:
     if (was_going) {
         if (error) {
@@ -2063,6 +2803,8 @@ deinitlogger:
             popup->Popup();
         }
     }
+#ifndef __WXDEBUG__
     wxLog::SetActiveTarget(old);
     delete logex;
+#endif
 }

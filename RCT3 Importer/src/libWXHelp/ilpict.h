@@ -169,6 +169,8 @@ public:
         return m_valid;
     }
 
+    void LoadFromFileSystem(const wxString& filename, const ILenum type);
+
 protected:
     ILuint m_ilimage;
     wxString m_filename;

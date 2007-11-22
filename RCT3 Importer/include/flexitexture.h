@@ -30,7 +30,7 @@ struct FlexiTextureInfoStruct
 	unsigned long scale;
 	unsigned long width;
 	unsigned long height;
-	unsigned long unk1;
+	unsigned long fps;         // Animation Speed, approx. frames per second
 	unsigned long Recolorable; //1 = first color recolorable, 2 = second color recolorable, 4 = third color recolorable, combination of them = multiple colors recolorable
 	unsigned long offsetCount;
 	unsigned long *offset1;

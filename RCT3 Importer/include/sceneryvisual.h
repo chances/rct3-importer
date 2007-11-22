@@ -15,6 +15,10 @@
 #include "boneshape.h"
 #include "staticshape.h"
 
+#define SVDLOD_MESHTYPE_STATIC     0
+#define SVDLOD_MESHTYPE_ANIMATED   3
+#define SVDLOD_MESHTYPE_BILLBOARD  4
+
 struct SceneryItemVisualLOD
 {
 	unsigned long MeshType; //seems to be flag for what type of mesh this is, 0 = StaticShape, 3 = BoneShape, 4 = Billboard

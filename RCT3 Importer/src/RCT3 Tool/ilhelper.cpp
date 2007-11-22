@@ -28,10 +28,9 @@
 #include "win_predefine.h"
 #include "wx_pch.h"
 
-#include <IL/il.h>
-#include <IL/ilu.h>
+#include <Magick++.h>
 
-#include "wxdevil.h"
+//#include "wxgmagick.h"
 
 #include "wxdlgInfo.h"
 
@@ -39,124 +38,105 @@
 #include "resource.h"
 #include "ilhelper.h"
 
-const char *il_bgr = "BGR";
-const char *il_bgra = "BGRA";
-const char *il_colour_index = "Colour Index";
-const char *il_luminance = "Luminance";
-const char *il_luminance_alpha = "Luminance Alpha";
-const char *il_rgb = "RGB";
-const char *il_rgba = "RGBA";
-const char *il_byte = "Byte";
-const char *il_unsigned_byte = "Unsigned Byte";
-const char *il_short = "Short";
-const char *il_unsigned_short = "Unsigned Short";
-const char *il_int = "Int";
-const char *il_unsigned_int = "Unsigned Int";
-const char *il_float = "Float";
-const char *il_double = "Double";
-const char *il_pal_none = "None";
-const char *il_pal_rgb24 = "RGB24";
-const char *il_pal_rgb32 = "RGB32";
-const char *il_pal_rgba32 = "RGBA32";
-const char *il_pal_bgr24 = "BGR24";
-const char *il_pal_bgr32 = "BGR32";
-const char *il_pal_bgra32 = "BGRA32";
-const char *il_origin_lower_left = "Lower Left";
-const char *il_origin_upper_left = "Upper Left";
-const char *il_unknown = "Unknown";
-
-const char *getILString(ILenum x) {
-    switch (x) {
-    case IL_COLOUR_INDEX:
-        return il_colour_index;
-    case IL_RGB:
-        return il_rgb;
-    case IL_RGBA:
-        return il_rgba;
-    case IL_BGR:
-        return il_bgr;
-    case IL_BGRA:
-        return il_bgra;
-    case IL_LUMINANCE:
-        return il_luminance;
-    case IL_LUMINANCE_ALPHA:
-        return il_luminance_alpha;
-    case IL_BYTE:
-        return il_byte;
-    case IL_UNSIGNED_BYTE:
-        return il_unsigned_byte;
-    case IL_SHORT:
-        return il_short;
-    case IL_UNSIGNED_SHORT:
-        return il_unsigned_short;
-    case IL_INT:
-        return il_int;
-    case IL_UNSIGNED_INT:
-        return il_unsigned_int;
-    case IL_FLOAT:
-        return il_float;
-    case IL_DOUBLE:
-        return il_double;
-    case IL_PAL_NONE:
-        return il_pal_none;
-    case IL_PAL_RGB24:
-        return il_pal_rgb24;
-    case IL_PAL_RGB32:
-        return il_pal_rgb32;
-    case IL_PAL_RGBA32:
-        return il_pal_rgba32;
-    case IL_PAL_BGR24:
-        return il_pal_bgr24;
-    case IL_PAL_BGR32:
-        return il_pal_bgr32;
-    case IL_PAL_BGRA32:
-        return il_pal_bgra32;
-    case IL_ORIGIN_LOWER_LEFT:
-        return il_origin_lower_left;
-    case IL_ORIGIN_UPPER_LEFT:
-        return il_origin_upper_left;
-    default:
-        return il_unknown;
+wxString getGXTypeString(Magick::ImageType type) {
+    switch (type) {
+        case Magick::UndefinedType:
+            return _("Unset value");
+        case Magick::BilevelType:
+            return _("Monochrome image");
+        case Magick::GrayscaleType:
+            return _("Grayscale image");
+        case Magick::GrayscaleMatteType:
+            return _("Grayscale image with opacity (alpha)");
+        case Magick::PaletteType:
+            return _("Indexed color (palette) image");
+        case Magick::PaletteMatteType:
+            return _("Indexed color (palette) image with opacity (alpha)");
+        case Magick::TrueColorType:
+            return _("Truecolor image");
+        case Magick::TrueColorMatteType:
+            return _("Truecolor image with opacity (alpha)");
+        case Magick::ColorSeparationType:
+            return _("Cyan/Yellow/Magenta/Black (CYMK) image");
+        default:
+            return _("Unknown value");
     }
 }
 
+wxString getGXColorspaceString(Magick::ColorspaceType type) {
+    switch (type) {
+        case Magick::UndefinedColorspace:
+            return _("Unset value");
+        case Magick::RGBColorspace:
+            return _("RGB");
+        case Magick::GRAYColorspace:
+            return _("Grayscale colorspace");
+        case Magick::TransparentColorspace:
+            return _("Transparent. The Transparent color space behaves uniquely in that it preserves the matte channel of the image if it exists.");
+        case Magick::OHTAColorspace:
+            return _("OHTA");
+        case Magick::XYZColorspace:
+            return _("XYZ");
+        case Magick::YCbCrColorspace:
+            return _("YCbCr");
+        case Magick::YCCColorspace:
+            return _("YCC");
+        case Magick::YIQColorspace:
+            return _("YIQ");
+        case Magick::YPbPrColorspace:
+            return _("YPbPr");
+        case Magick::YUVColorspace:
+            return _("YUV. Y-signal, U-signal, and V-signal colorspace. YUV is most widely used to encode color for use in television transmission.");
+        case Magick::CMYKColorspace:
+            return _("CMYK. Cyan-Magenta-Yellow-Black colorspace. CYMK is a subtractive color system used by printers and photographers for the rendering of colors with ink or emulsion, normally on a white surface.");
+        case Magick::sRGBColorspace:
+            return _("sRGB");
+        default:
+            return _("Unknown value");
+     }
+}
+
 void showBitmapInfo(wxWindow *parent, const char *filename) {
-    ILuint bmp;
-    ILenum Error;
     wxString res;
 
     res.Printf("File: %s\n", filename);
-    {
-        wxMutexLocker lock(wxILMutex);
-        ILuint old = ilGetInteger(IL_ACTIVE_IMAGE);
-        bmp = ilGenImage();
-        ilBindImage(bmp);
-
-        if (!ilLoadImage(filename)) {
-            res += wxString::Format("File open error. devIL messages:\n");
-            while ((Error = ilGetError())) {
-                res += wxString::Format("  %s\n", iluErrorString(Error));
-            }
-        } else {
-            ILinfo inf;
-            iluGetImageInfo(&inf);
-            res += wxString::Format("Size: %dx%d\n", inf.Width, inf.Height);
-            res += wxString::Format("Origin: %s\n", getILString(inf.Origin));
-            res += wxString::Format("Format: %s\n", getILString(inf.Format));
-            res += wxString::Format("Type: %s\n", getILString(inf.Type));
-            res += wxString::Format("Bits per Pixel: %d\n", ilGetInteger(IL_IMAGE_BITS_PER_PIXEL));
-            res += wxString::Format("Colours: %d\n", iluColoursUsed());
-            res += wxString::Format("Palette Type: %s\n", getILString(inf.PalType));
-            res += wxString::Format("Palette Bytes per Pixel: %d\n", ilGetInteger(IL_PALETTE_BPP));
-            res += wxString::Format("Palette Colours: %d\n", ilGetInteger(IL_PALETTE_NUM_COLS));
+    try {
+        Magick::Image img(filename);
+        img.colorMapSize(256);
+        res += wxString::Format(_("Size: %dx%d\n"), img.columns(), img.rows());
+        res += wxString::Format(_("Format: %s (%s)\n"), img.magick().c_str(), img.format().c_str());
+        res += _("Image Type: ") + getGXTypeString(img.type()) + wxT("\n");
+        res += _("Colorspace: ") + getGXColorspaceString(img.colorSpace()) + wxT("\n");
+        res += wxString::Format(_("Colors: %d\n"), img.totalColors());
+        res += _("Palette Colorspace: ") + getGXColorspaceString(img.quantizeColorSpace()) + wxT("\n");
+        res += wxString::Format(_("Palette Colors: %d\n"), img.quantizeColors());
+        res += _("Assigned Palatte Colors: ");
+        try {
+            res += wxString::Format(_("%d\n"), img.colorMapSize());
+        } catch (Magick::Exception e) {
+            res += _("(No Palette)\n");
         }
-        ilDeleteImage(bmp);
-        ilBindImage(old);
+/*
+        std::list<Magick::CoderInfo> coderList;
+        Magick::coderInfoList( &coderList,           // Reference to output list
+                     Magick::CoderInfo::AnyMatch, // Match readable formats
+                     Magick::CoderInfo::TrueMatch,  // Don't care about writable formats
+                     Magick::CoderInfo::AnyMatch); // Don't care about multi-frame support
+        std::list<Magick::CoderInfo>::iterator entry = coderList.begin();
+        while( entry != coderList.end() )
+        {
+            res += wxString(entry->name()) + wxT(": (") + wxString(entry->description()) + wxT(")\n");
+            entry ++;
+        }
+*/
+    } catch (Magick::Exception e) {
+        res += _("File open error. Message:\n");
+        res += e.what();
     }
 
     dlgInfo *dlg = new dlgInfo(parent);
     dlg->SetText(res);
     dlg->ShowModal();
-
+    dlg->Destroy();
 }
 

@@ -39,7 +39,7 @@
 
 #include "colhtmllbox.h"
 #include "fileselectorcombo.h"
-#include "ilpict.h"
+#include "gxpict.h"
 #include "RCT3Structs.h"
 #include "wxInputBox.h"
 
@@ -77,8 +77,8 @@ protected:
     wxButton* m_btOk;
     wxButton* m_btCancel;
 
-    wxFileSelectorCombo* m_textTextureFile;
-    wxFileSelectorCombo* m_textAlphaFile;
+    wxFileSelectorCombo<wxFileDialogBase>* m_textTextureFile;
+    wxFileSelectorCombo<wxFileDialogBase>* m_textAlphaFile;
     wxInputBox *m_ibTextureFile;
     wxInputBox *m_ibAlphaFile;
 
@@ -91,7 +91,9 @@ protected:
     void OnLoad(wxCommandEvent& event);
 
 private:
-    cFlexiTextureFrame m_frame;
+    //cFlexiTextureFrame m_frame;
+    sFlexiTextureFrame m_frame;
+
     unsigned int m_size;
 
     void InitWidgetsFromXRC(wxWindow *parent) {
@@ -148,7 +150,7 @@ protected:
 
     wxFrameListBox* m_htlbFrame;
     wxAnimationListBox* m_htlbAnimation;
-    wxILPicture* m_ilpictPreview;
+    wxGXPicture* m_gxpictPreview;
 
     void UpdatePreview();
     void FramePreview();
@@ -244,8 +246,8 @@ protected:
     wxButton* m_btOk;
     wxButton* m_btCancel;
 
-    wxFileSelectorCombo* m_textTextureFile;
-    wxFileSelectorCombo* m_textAlphaFile;
+    wxFileSelectorCombo<wxFileDialogBase>* m_textTextureFile;
+    wxFileSelectorCombo<wxFileDialogBase>* m_textAlphaFile;
     wxInputBox *m_ibTextureFile;
     wxInputBox *m_ibAlphaFile;
 
@@ -259,7 +261,7 @@ protected:
 
 private:
     cFlexiTexture m_ft;
-    cFlexiTextureFrame m_frame;
+    sFlexiTextureFrame m_frame;
     int m_recol;
 
     void InitWidgetsFromXRC(wxWindow *parent) {

@@ -43,12 +43,12 @@ class ToolApp : public wxApp
 	public:
         std::list<wxString> g_texturecache;
         wxFileName g_workdir;
-        RGBQUAD g_recolpalette_bmy[256];
+//        RGBQUAD g_recolpalette_bmy[256];
         RGBQUAD g_recolpalette_rgb[256];
 
 		virtual bool OnInit();
 		virtual int OnRun();
-		RCT3Config* GetConfig();
+		//RCT3Config* GetConfig();
 };
 
 DECLARE_APP(ToolApp)

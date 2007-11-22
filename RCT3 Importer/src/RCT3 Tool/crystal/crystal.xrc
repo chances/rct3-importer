@@ -2,6 +2,7 @@
 <resource version="2.3.0.1">
 
 <object class="wxBitmap" name="admin_icon_16x16">icons/admin_icon_16x16.png</object>
+<object class="wxBitmap" name="aim_online_16x16">icons/aim_online_16x16.png</object>
 <object class="wxBitmap" name="bookmark_16x16">icons/bookmark_16x16.png</object>
 <object class="wxBitmap" name="documentinfo_16x16">icons/documentinfo_16x16.png</object>
 <object class="wxBitmap" name="edit_add_16x16">icons/edit_add_16x16.png</object>
@@ -11,7 +12,9 @@
 <object class="wxBitmap" name="fileopen_16x16">icons/fileopen_16x16.png</object>
 <object class="wxBitmap" name="filesave_16x16">icons/filesave_16x16.png</object>
 <object class="wxBitmap" name="filesaveas_16x16">icons/filesaveas_16x16.png</object>
+<object class="wxBitmap" name="folder_home_16x16">icons/folder_home_16x16.png</object>
 <object class="wxBitmap" name="greenled_16x16">icons/greenled_16x16.png</object>
+<object class="wxBitmap" name="no_16x16">icons/no_16x16.png</object>
 <object class="wxBitmap" name="redled_16x16">icons/redled_16x16.png</object>
 <object class="wxBitmap" name="virus_detected_16x16">icons/virus_detected_16x16.png</object>
 <object class="wxBitmap" name="virus_detected_2_16x16">icons/virus_detected_2_16x16.png</object>
@@ -19,7 +22,6 @@
 <!--
 <object class="wxBitmap" name="jabber_online_16x16">icons/jabber_online_16x16.png</object>
 <object class="wxBitmap" name="yahoo_busy_16x16">icons/yahoo_busy_16x16.png</object>
-<object class="wxBitmap" name="no_16x16">icons/no_16x16.png</object>
 <object class="wxBitmap" name="ok_16x16">icons/ok_16x16.png</object>
 -->
 </resource>

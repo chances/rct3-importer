@@ -101,6 +101,7 @@ public:
                    const wxString& caption,
                    long style,
                    bool show_save,
+                   bool info_only,
                    bool allow_cont);
     virtual ~wxExtLogDialog();
 
@@ -193,12 +194,11 @@ void wxLogGuiExt::Flush() {
     // showing right now: nested modal dialogs make for really bad UI!
     Suspend();
 
-
     if ( repeatCount > 0 )
         m_aMessages[nMsgCount-1] += wxString::Format(wxT(" (%s)"), m_aMessages[nMsgCount-2].c_str());
     wxExtLogDialog dlg(NULL,
                        m_aMessages, m_aSeverity, m_aTimes,
-                       title, style, m_allowSave, ((!m_bErrors) || m_continueError));
+                       title, style, m_allowSave, !m_continue, ((!m_bErrors) || m_continueError));
 
     // clear the message list before showing the dialog because while it's
     // shown some new messages may appear
@@ -223,6 +223,7 @@ wxExtLogDialog::wxExtLogDialog(wxWindow *parent,
                                  const wxString& caption,
                                  long style,
                                  bool show_save,
+                                 bool info_only,
                                  bool allow_cont)
            : wxDialog(parent, wxID_ANY, caption,
                       wxDefaultPosition, wxDefaultSize,
@@ -266,11 +267,18 @@ wxExtLogDialog::wxExtLogDialog(wxWindow *parent,
     wxBoxSizer *sizerButtons = new wxBoxSizer(wxVERTICAL);
     wxBoxSizer *sizerAll = new wxBoxSizer(wxHORIZONTAL);
 
-    wxButton *btnOk = new wxButton(this, wxID_OK, _("Continue"));
-    btnOk->Enable(allow_cont);
-    sizerButtons->Add(btnOk, 0, wxCENTRE|wxBOTTOM, 5);
-    wxButton *btnCancel = new wxButton(this, wxID_CANCEL);
-    sizerButtons->Add(btnCancel, 0, wxCENTRE|wxBOTTOM, 5);
+    wxButton *btnOk;
+    wxButton *btnCancel = NULL;
+    if (info_only) {
+        btnOk = new wxButton(this, wxID_OK);
+        sizerButtons->Add(btnOk, 0, wxCENTRE|wxBOTTOM, 5);
+    } else {
+        btnOk = new wxButton(this, wxID_OK, _("Continue"));
+        btnOk->Enable(allow_cont);
+        sizerButtons->Add(btnOk, 0, wxCENTRE|wxBOTTOM, 5);
+        btnCancel = new wxButton(this, wxID_CANCEL);
+        sizerButtons->Add(btnCancel, 0, wxCENTRE|wxBOTTOM, 5);
+    }
     if (m_messages.size()>1) {
         m_btnDetails = new wxButton(this, wxID_MORE, ms_details + EXPAND_SUFFIX);
         sizerButtons->Add(m_btnDetails, 0, wxCENTRE | wxTOP, 4);
@@ -301,7 +309,7 @@ wxExtLogDialog::wxExtLogDialog(wxWindow *parent,
     sizerAll->Add(CreateTextSizer(message), 1, wxALIGN_CENTRE_VERTICAL | wxLEFT | wxRIGHT, 10);
     sizerAll->Add(sizerButtons, 0, (wxALIGN_RIGHT | wxLEFT), 10);
 
-    sizerTop->Add(sizerAll, 0, wxALL | wxEXPAND, 10);
+    sizerTop->Add(sizerAll, 0, wxALL | wxEXPAND | wxALIGN_CENTER_VERTICAL, 10);
 
     SetSizer(sizerTop);
 
@@ -319,7 +327,7 @@ wxExtLogDialog::wxExtLogDialog(wxWindow *parent,
     m_maxHeight = size.y;
     SetSizeHints(size.x, size.y, m_maxWidth, m_maxHeight);
 
-    if (allow_cont)
+    if (allow_cont || info_only)
         btnOk->SetFocus();
     else
         btnCancel->SetFocus();

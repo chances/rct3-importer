@@ -30,6 +30,8 @@
 #include <string>
 #include <stdio.h>
 
+#include <wx/tooltip.h>
+
 #include "matrix.h"
 
 #include "rct3config.h"
@@ -38,12 +40,16 @@ RCT3Config::RCT3Config() {
     m_configfile = wxT("RCT3 Importer.cfg");
     m_prefix = "";
     m_def_matrix = matrixGetUnity();
+    m_def_orient = ORIENTATION_LEFT_YUP;
+    m_tooltips = true;
 }
 
 RCT3Config::RCT3Config(wxString appdir) {
     m_configfile = appdir + wxT("RCT3 Importer.cfg");
     m_prefix = "";
     m_def_matrix = matrixGetUnity();
+    m_def_orient = ORIENTATION_LEFT_YUP;
+    m_tooltips = true;
 }
 
 bool RCT3Config::Save() {
@@ -78,6 +84,9 @@ bool RCT3Config::Save() {
     len = m_workdir.length()+1;
     fwrite(&len, sizeof(len), 1, f);
     fwrite(m_workdir.c_str(), 1, len, f);
+    unsigned long ori = m_def_orient;
+    fwrite(&ori, sizeof(ori), 1, f);
+    fwrite(&m_tooltips, sizeof(m_tooltips), 1, f);
 
     fclose(f);
     return true;
@@ -121,6 +130,15 @@ void RCT3Config::Load() {
         fread(tmp, 1, len, f);
         m_workdir = tmp;
         delete[] tmp;
+    }
+    if (version > 2) {
+        unsigned long ori;
+        fread(&ori, sizeof(ori), 1, f);
+        m_def_orient = static_cast<c3DLoaderOrientation>(ori);
+    }
+    if (version > 3) {
+        fread(&m_tooltips, sizeof(m_tooltips), 1, f);
+        wxToolTip::Enable(m_tooltips);
     }
 
     fclose(f);

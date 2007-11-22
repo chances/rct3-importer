@@ -36,9 +36,13 @@
 #include <wx/renderer.h>
 #include <wx/valgen.h>
 
+//#include <ssg.h>
+
 #include "choicewrapper.h"
 #include "comboboxwrapper.h"
+#include "confhelp.h"
 #include "htmlentities.h"
+#include "lib3Dconfig.h"
 #include "matrix.h"
 #include "SCNFile.h"
 #include "valext.h"
@@ -48,6 +52,7 @@
 #include "wxapp.h"
 #include "wxdlgCreateScenery.h"
 #include "wxdlgEffect.h"
+//#include "wxdlgInfo.h"
 #include "wxdlgMatrix.h"
 
 ////////////////////////////////////////////////////////////////////////
@@ -83,7 +88,7 @@ unsigned int wxMeshListModel::GetNumberOfRows() {
 }
 
 unsigned int wxMeshListModel::GetNumberOfCols() {
-    return 7;
+    return 8;
 }
 
 wxString wxMeshListModel::GetColType( unsigned int col ) {
@@ -93,6 +98,7 @@ wxString wxMeshListModel::GetColType( unsigned int col ) {
         case 4:
         case 5:
         case 6:
+        case 7:
             return wxT("long");
         default:
             return wxT("string");
@@ -121,6 +127,9 @@ void wxMeshListModel::GetValue( wxVariant &variant, unsigned int col, unsigned i
                 variant = (void *) &m_content->meshstructs[row];
                 break;
             case 6:
+                variant = (void *) &m_content->meshstructs[row];
+                break;
+            case 7:
                 variant = (void *) &m_content->meshstructs[row];
                 break;
             default:
@@ -240,6 +249,9 @@ bool wxMeshListModel::SetValue( wxVariant &variant, unsigned int col, unsigned i
                     m_content->meshstructs[row].unknown = 1;
                 else
                     m_content->meshstructs[row].unknown = 3;
+                break;
+            case 7:
+                m_content->meshstructs[row].fudgenormals = variant.GetLong();
                 break;
         }
     }
@@ -564,7 +576,6 @@ public:
     void OnMouseClick(wxMouseEvent& WXUNUSED(event))
     {
         m_value = m_itemHere;
-        // TODO: Send event
         Dismiss();
     }
 
@@ -999,6 +1010,70 @@ private:
 
 ////////////////////////////////////////////////////////////////////////
 //
+//  wxMeshListFudgeRenderer
+//
+////////////////////////////////////////////////////////////////////////
+
+class wxMeshListFudgeRenderer: public wxGetSelRenderer
+{
+public:
+    wxMeshListFudgeRenderer(dlgModel* dialog, wxSize& max):wxGetSelRenderer( dialog, wxT("string"), wxDATAVIEW_CELL_ACTIVATABLE ) {
+        m_max = max;
+        m_value = 0;
+        if (wxMeshListFudgeRenderer::m_styles.size()==0) {
+			wxMeshListFudgeRenderer::m_styles.Add(_("Leave alone"));
+			wxMeshListFudgeRenderer::m_styles.Add(_("+X"));
+			wxMeshListFudgeRenderer::m_styles.Add(_("+Y"));
+			wxMeshListFudgeRenderer::m_styles.Add(_("+Z"));
+			wxMeshListFudgeRenderer::m_styles.Add(_("-X"));
+			wxMeshListFudgeRenderer::m_styles.Add(_("-Y"));
+			wxMeshListFudgeRenderer::m_styles.Add(_("-Z"));
+			wxMeshListFudgeRenderer::m_styles.Add(_("Straight Rim"));
+        }
+    }
+    bool SetValue( const wxVariant &value ) {
+        m_value = (cMeshStruct *) value.GetVoidPtr();
+        return true;
+    }
+    bool Render( wxRect rect, wxDC *dc, int state ) {
+        if (m_value) {
+            if (m_value->valid) {
+                wxString s = wxMeshListFudgeRenderer::m_styles[m_value->fudgenormals];
+                wxDCClipper clip(*dc, rect);
+                wxCoord w, h;
+                dc->GetTextExtent(s, &w, &h);
+                wxCoord top = (rect.height - h) / 2;
+                if (m_value->disabled) {
+                    dc->SetTextForeground(GetStateColour(wxColor(wxT("#808080")), state));
+                } else {
+                    dc->SetTextForeground(GetStateColour(wxColor(wxT("#000000")), state));
+                }
+                dc->DrawText( s, rect.x+5, rect.y + top );
+            }
+        }
+        return true;
+    }
+    bool Activate( wxRect cell, wxDataViewListModel *model, unsigned int col, unsigned int row ) {
+        if (m_value) {
+            if (m_value->valid) {
+                wxChoice* combo = new wxChoice();
+                wxChoiceWrapper* popup = new wxChoiceWrapper(GetOwner()->GetOwner()->GetChildren()[0], (long) m_value->fudgenormals, model, combo, &wxMeshListFudgeRenderer::m_styles, col, row, cell, wxALIGN_RIGHT);
+            }
+        }
+        return true;
+    }
+    wxSize GetSize() {
+        return m_max;
+    }
+private:
+    static wxArrayString m_styles;
+    wxSize m_max;
+};
+
+wxArrayString wxMeshListFudgeRenderer::m_styles;
+
+////////////////////////////////////////////////////////////////////////
+//
 //  wxMeshListBox
 //
 ////////////////////////////////////////////////////////////////////////
@@ -1038,6 +1113,9 @@ wxString wxMeshListBox::OnGetItem(size_t n) const {
 //
 ////////////////////////////////////////////////////////////////////////
 
+wxEffectListBox::wxEffectListBox(wxWindow *parent):
+        wxHtmlListBox(parent, wxID_ANY, wxDefaultPosition, wxSize(-1,150), wxSUNKEN_BORDER) {}
+
 wxEffectListBox::wxEffectListBox(wxWindow *parent, cModel *content):
         wxHtmlListBox(parent, wxID_ANY, wxDefaultPosition, wxSize(-1,150), wxSUNKEN_BORDER) {
     m_contents = content;
@@ -1051,7 +1129,42 @@ void wxEffectListBox::UpdateContents() {
 }
 
 wxString wxEffectListBox::OnGetItem(size_t n) const {
-    return wxT("<font size='2'>")+wxEncodeHtmlEntities(m_contents->effectpoints[n].Name)+wxT("</font>");
+    return wxT("<font size='2'>")+wxEncodeHtmlEntities(m_contents->effectpoints[n].name)+wxT("</font>");
+}
+
+
+////////////////////////////////////////////////////////////////////////
+//
+//  wxBoneListBox
+//
+////////////////////////////////////////////////////////////////////////
+
+wxBoneListBox::wxBoneListBox(wxWindow *parent, cModel *content):
+        wxEffectListBox(parent) {
+    m_contents = dynamic_cast<cAnimatedModel*>(content);
+    UpdateContents();
+    SetSelection(0);
+}
+
+void wxBoneListBox::UpdateContents() {
+    SetItemCount(m_contents->modelbones.size());
+    RefreshAll();
+}
+
+wxString wxBoneListBox::OnGetItem(size_t n) const {
+    wxString addon = wxT("");
+    if (m_contents->modelbones[n].parent != wxT(""))
+        addon += wxT("<br>&nbsp;&nbsp;") + wxString::Format(_("child of %s"), m_contents->modelbones[n].parent.c_str());
+    if (m_contents->modelbones[n].meshes.size()) {
+        addon += wxT("<br>&nbsp;&nbsp;");
+        addon += _("applied to:");
+        addon += wxT("<ol>");
+        for (cStringIterator it = m_contents->modelbones[n].meshes.begin(); it != m_contents->modelbones[n].meshes.end(); it++) {
+            addon += wxT("<li>")+*it+wxT("</li>");
+        }
+        addon += wxT("</ol>");
+    }
+    return wxT("<font size='2'>")+wxEncodeHtmlEntities(m_contents->modelbones[n].name)+addon+wxT("</font>");
 }
 
 
@@ -1080,11 +1193,12 @@ EVT_BUTTON(XRCID("m_btMatrixEdit"), dlgModel::OnMatrixEdit)
 EVT_BUTTON(XRCID("m_btMatrixSave"), dlgModel::OnMatrixSave)
 EVT_BUTTON(XRCID("m_btMatrixClear"), dlgModel::OnMatrixClear)
 
-EVT_LISTBOX(ID_htlbMesh, dlgModel::OnControlUpdate)
-EVT_LISTBOX_DCLICK(ID_htlbMesh, dlgModel::OnMeshEdit)
-EVT_BUTTON(XRCID("m_btEditMesh"), dlgModel::OnMeshEdit)
+//EVT_LISTBOX(ID_htlbMesh, dlgModel::OnControlUpdate)
+//EVT_LISTBOX_DCLICK(ID_htlbMesh, dlgModel::OnMeshEdit)
+//EVT_BUTTON(XRCID("m_btEditMesh"), dlgModel::OnMeshEdit)
 
 EVT_LISTBOX(XRCID("m_htlbEffect"), dlgModel::OnControlUpdate)
+/*
 EVT_SPIN_UP(XRCID("m_spinEffect"), dlgModel::OnEffectUp)
 EVT_SPIN_DOWN(XRCID("m_spinEffect"), dlgModel::OnEffectDown)
 EVT_BUTTON(XRCID("m_btEffectAdd"), dlgModel::OnEffectAdd)
@@ -1094,12 +1208,18 @@ EVT_BUTTON(XRCID("m_btEffectCopy"), dlgModel::OnEffectCopy)
 EVT_BUTTON(XRCID("m_btEffectDel"), dlgModel::OnEffectDel)
 EVT_BUTTON(XRCID("m_btEffectAuto"), dlgModel::OnEffectAuto)
 EVT_BUTTON(XRCID("m_btEffectClear"), dlgModel::OnEffectClear)
+*/
 
 EVT_BUTTON(XRCID("m_btLoad"), dlgModel::OnLoad)
 END_EVENT_TABLE()
 
-dlgModel::dlgModel(wxWindow *parent) {
+dlgModel::dlgModel(wxWindow *parent, bool animated):m_model(NULL), m_animated(animated) {
     m_hookhandler = NULL;
+
+    if (m_animated)
+        m_model = &m_amodel;
+    else
+        m_model = &m_smodel;
 
     m_mgr.SetManagedWindow(this);
 
@@ -1111,7 +1231,7 @@ dlgModel::dlgModel(wxWindow *parent) {
 
     dlgCreateScenery *dlg = dynamic_cast<dlgCreateScenery *> (parent);
     if (dlg) {
-        for(cFlexiTextureIterator it = dlg->m_SCN.flexitextures.begin(); it != dlg->m_SCN.flexitextures.end(); it++) {
+        for(cFlexiTexture::iterator it = dlg->m_SCN.flexitextures.begin(); it != dlg->m_SCN.flexitextures.end(); it++) {
             m_textures.push_back(it->Name);
         }
     }
@@ -1136,14 +1256,15 @@ dlgModel::dlgModel(wxWindow *parent) {
                                wxSize(600,400)
                            );
 
-    m_textModelFile = new wxFileSelectorCombo(m_panModel, filedlg, &::wxGetApp().g_workdir, XRCID("m_textModelFile"),
+    m_textModelFile = new wxFileSelectorCombo<wxFileDialog>(m_panModel, filedlg, &::wxGetApp().g_workdir, XRCID("m_textModelFile"),
                                                 wxEmptyString, wxDefaultPosition, wxDefaultSize, 0/*wxCB_READONLY*/);
     m_textModelFile->GetTextCtrl()->SetEditable(false);
     t_text->GetContainingSizer()->Replace(t_text, m_textModelFile);
     t_text->Destroy();
 
-    m_textModelName->SetValidator(wxExtendedValidator(&m_model.name, false));
-    m_textModelFile->SetValidator(wxExtendedValidator(&m_model.file, false, true));
+    m_textModelName->SetValidator(wxExtendedValidator(&m_model->name, false));
+    m_textModelFile->SetValidator(wxExtendedValidator(&m_model->file, false, true));
+    m_choiceCoordinateSystem->SetValidator(wxGenericValidator(reinterpret_cast<int*>(&m_model->usedorientation)));
 
     wxInputBox *t_ibModelName = new wxInputBox(m_panModel, wxID_ANY);
     t_ibModelName->SetEditor(m_textModelName);
@@ -1162,8 +1283,33 @@ dlgModel::dlgModel(wxWindow *parent) {
     m_panEffect = new wxPanel();
     InitEffectFromXRC(m_panEffect);
 
-    m_htlbEffect = new wxEffectListBox(m_panEffect, &m_model);
-    m_htlbEffect->SetToolTip(_("List of the effect points"));
+    if (m_animated) {
+        SetTitle(_("Edit animated model settings"));
+        m_htlbEffect = new wxBoneListBox(m_panEffect, m_model);
+        m_htlbEffect->SetToolTip(_("List of the bones"));
+        Connect(XRCID("m_spinEffect"), wxEVT_SCROLL_LINEUP, wxSpinEventHandler(dlgModel::OnBoneUp));
+        Connect(XRCID("m_spinEffect"), wxEVT_SCROLL_LINEDOWN, wxSpinEventHandler(dlgModel::OnBoneDown));
+        Connect(XRCID("m_btEffectAdd"), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(dlgModel::OnBoneAdd));
+        Connect(XRCID("m_btEffectEdit"), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(dlgModel::OnBoneEdit));
+        Connect(XRCID("m_htlbEffect"), wxEVT_COMMAND_LISTBOX_DOUBLECLICKED, wxCommandEventHandler(dlgModel::OnBoneEdit));
+        Connect(XRCID("m_btEffectCopy"), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(dlgModel::OnBoneCopy));
+        Connect(XRCID("m_btEffectDel"), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(dlgModel::OnBoneDel));
+        Connect(XRCID("m_btEffectAuto"), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(dlgModel::OnBoneAuto));
+        Connect(XRCID("m_btEffectClear"), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(dlgModel::OnBoneClear));
+    } else {
+        SetTitle(_("Edit static model settings"));
+        m_htlbEffect = new wxEffectListBox(m_panEffect, m_model);
+        m_htlbEffect->SetToolTip(_("List of the effect points"));
+        Connect(XRCID("m_spinEffect"), wxEVT_SCROLL_LINEUP, wxSpinEventHandler(dlgModel::OnEffectUp));
+        Connect(XRCID("m_spinEffect"), wxEVT_SCROLL_LINEDOWN, wxSpinEventHandler(dlgModel::OnEffectDown));
+        Connect(XRCID("m_btEffectAdd"), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(dlgModel::OnEffectAdd));
+        Connect(XRCID("m_btEffectEdit"), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(dlgModel::OnEffectEdit));
+        Connect(XRCID("m_htlbEffect"), wxEVT_COMMAND_LISTBOX_DOUBLECLICKED, wxCommandEventHandler(dlgModel::OnEffectEdit));
+        Connect(XRCID("m_btEffectCopy"), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(dlgModel::OnEffectCopy));
+        Connect(XRCID("m_btEffectDel"), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(dlgModel::OnEffectDel));
+        Connect(XRCID("m_btEffectAuto"), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(dlgModel::OnEffectAuto));
+        Connect(XRCID("m_btEffectClear"), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(dlgModel::OnEffectClear));
+    }
     wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbEffect"), m_htlbEffect, m_panEffect);
 /*
     m_panEffect->Fit();
@@ -1177,19 +1323,24 @@ dlgModel::dlgModel(wxWindow *parent) {
     wxPanel* t_panBoth = new wxPanel(this);
     m_panModel->Reparent(t_panBoth);
     m_panEffect->Reparent(t_panBoth);
-    wxBoxSizer* bsiz = new wxBoxSizer(wxVERTICAL);
+    wxBoxSizer* bsiz = new wxBoxSizer(wxHORIZONTAL);
     wxStaticBoxSizer* sbtop = new wxStaticBoxSizer(wxVERTICAL, t_panBoth, _("Model"));
     sbtop->Add(m_panModel, wxSizerFlags().Expand().Proportion(1));
-    wxStaticBoxSizer* sbbot = new wxStaticBoxSizer(wxVERTICAL, t_panBoth, _("Effect Points"));
+    wxStaticBoxSizer* sbbot;
+    if (m_animated) {
+        sbbot = new wxStaticBoxSizer(wxVERTICAL, t_panBoth, _("Bones"));
+    } else {
+        sbbot = new wxStaticBoxSizer(wxVERTICAL, t_panBoth, _("Effect Points"));
+    }
     sbbot->Add(m_panEffect, wxSizerFlags().Expand().Proportion(1));
-    bsiz->Add(sbtop, wxSizerFlags().Expand().Proportion(0).Border(wxLEFT|wxTOP,5));
-    bsiz->Add(sbbot, wxSizerFlags().Expand().Proportion(1).Border(wxLEFT|wxTOP,5));
+    bsiz->Add(sbtop, wxSizerFlags().Expand().Proportion(0).Border(wxLEFT|wxTOP|wxBOTTOM,5));
+    bsiz->Add(sbbot, wxSizerFlags().Expand().Proportion(1).Border(wxLEFT|wxRIGHT|wxTOP|wxBOTTOM,5));
     t_panBoth->SetSizer(bsiz);
     t_panBoth->Fit();
     t_panBoth->Layout();
     bsiz->SetSizeHints(t_panBoth);
 
-    m_mgr.AddPane(t_panBoth, wxAuiPaneInfo().Name(wxT("both")).Left().CaptionVisible(false).PaneBorder(false).
+    m_mgr.AddPane(t_panBoth, wxAuiPaneInfo().Name(wxT("both")).Top().CaptionVisible(false).PaneBorder(false).
                                               MinSize(t_panBoth->GetSize()).CloseButton(false));
 
 
@@ -1198,7 +1349,7 @@ dlgModel::dlgModel(wxWindow *parent) {
     m_panMeshes = new wxPanel(this);
     wxBoxSizer* siz = new wxBoxSizer(wxVERTICAL);
 
-    m_modelMesh = new wxMeshListModel(&m_model);
+    m_modelMesh = new wxMeshListModel(m_model);
     m_dataviewMesh = new wxExDataViewCtrl(m_panMeshes, wxID_ANY);
     m_dataviewMesh->AssociateModel(m_modelMesh);
 
@@ -1244,17 +1395,30 @@ dlgModel::dlgModel(wxWindow *parent) {
 }
 
 dlgModel::~dlgModel() {
+//    if (m_model)
+//        delete m_model;
     m_mgr.UnInit();
 }
 
-void dlgModel::SetModel(const cModel& model) {
-    m_model = model;
-    while (m_model.fatal_error) {
+void dlgModel::CheckModel() {
+//    if (m_model)
+//        delete m_model;
+//    if (dynamic_cast<cAnimatedModel*>(model)) {
+//        m_model = new cAnimatedModel();
+//        cAnimatedModel* t = dynamic_cast<cAnimatedModel*>(model);
+//        *m_model = *t;
+//    } else {
+//        m_model = new cModel();
+//        *m_model = *model;
+//    }
+    cModel smodel = m_smodel;
+    cAnimatedModel amodel = m_amodel;
+    while (m_model->fatal_error) {
         if (::wxMessageBox(_("The model file could not be found or read, please select a new one.\nIf you press 'Cancel', all model related data (file name and mesh settings) will be cleared."), _("Error loading model file"), wxOK|wxCANCEL|wxICON_ERROR) == wxCANCEL) {
             // User requested delete
-            m_model.fatal_error = false;
-            m_model.file = wxT("");
-            m_model.meshstructs.clear();
+            m_model->fatal_error = false;
+            m_model->file = wxT("");
+            m_model->meshstructs.clear();
             break;
         }
         wxFileDialog *dialog = new wxFileDialog(
@@ -1267,29 +1431,37 @@ void dlgModel::SetModel(const cModel& model) {
                                    wxDefaultPosition,
                                    wxSize(600,400)
                                );
-        if (m_model.file != wxT("")) {
-            dialog->SetDirectory(m_model.file.GetPath());
-            dialog->SetFilename(m_model.file.GetFullName());
+        if (m_model->file != wxT("")) {
+            dialog->SetDirectory(m_model->file.GetPath());
+            dialog->SetFilename(m_model->file.GetFullName());
         } else
             dialog->SetDirectory(::wxGetApp().g_workdir.GetPath());
         if (dialog->ShowModal() == wxID_OK) {
             ::wxGetApp().g_workdir.AssignDir(wxFileName(dialog->GetPath()).GetPath());
-            m_model.Sync(dialog->GetPath());
-            if (m_model.fatal_error) {
+            m_model->Sync(dialog->GetPath());
+            if (m_model->fatal_error) {
                 // Load error
-                m_model = model;
+                if (m_animated) {
+                    m_amodel = amodel;
+                } else {
+                    m_smodel = smodel;
+                }
                 continue;
             }
-            if (m_model.error.size()) {
-                wxString errtext = m_model.error[0];
-                while (m_model.error.erase(m_model.error.begin()) != m_model.error.end()) {
-                    errtext += wxT("\n\n") + m_model.error[0];
+            if (m_model->error.size()) {
+                wxString errtext = m_model->error[0];
+                while (m_model->error.erase(m_model->error.begin()) != m_model->error.end()) {
+                    errtext += wxT("\n\n") + m_model->error[0];
                 }
                 if (::wxMessageBox(_("The following warnings were encountered while loading the model file:\n") + errtext + _("\n\nDo you want to select a different one?"), _("Warning during model file loading"), wxYES_NO | wxNO_DEFAULT | wxICON_WARNING) == wxYES) {
                     // Select a different one, restore the model
-                    m_model = model;
+                    if (m_animated) {
+                        m_amodel = amodel;
+                    } else {
+                        m_smodel = smodel;
+                    }
                 } else {
-                    m_model.error.clear();
+                    m_model->error.clear();
                 }
             }
         }
@@ -1298,8 +1470,8 @@ void dlgModel::SetModel(const cModel& model) {
 };
 
 void dlgModel::FetchOneVertexMeshes(wxArrayString& names, std::vector<D3DVECTOR>& points) {
-    for (cMeshStructIterator ms = m_model.meshstructs.begin();
-            ms != m_model.meshstructs.end(); ms++) {
+    for (cMeshStruct::iterator ms = m_model->meshstructs.begin();
+            ms != m_model->meshstructs.end(); ms++) {
         if (ms->effectpoint) {
             names.push_back(ms->Name);
             points.push_back(ms->effectpoint_vert);
@@ -1308,13 +1480,15 @@ void dlgModel::FetchOneVertexMeshes(wxArrayString& names, std::vector<D3DVECTOR>
 }
 
 void dlgModel::ShowTransform(int pr) {
-    D3DMATRIX m = matrixMultiply(m_model.transforms);
+    D3DMATRIX m = matrixMultiply(m_model->transforms);
     for (int i=0; i<4; i++)
         for (int j=0; j<4; j++)
             m_Matrix[i][j]->SetLabel(wxString::Format("%.*f", pr, m.m[i][j]));
 }
 
 void dlgModel::UpdateAll() {
+    if (!m_model)
+        return;
     ShowTransform();
     //m_htlbMesh->UpdateContents();
     m_modelMesh->Cleared();
@@ -1359,18 +1533,20 @@ void dlgModel::UpdateAll() {
     wxSize maxflags(w,h);
     dc.GetTextExtent(_("Single Sided (3, Uk2)"), &w, &h);
     wxSize maxunk(w,h);
-    for(int i = 0; i < m_model.meshstructs.size(); i++) {
-        dc.GetTextExtent(m_model.meshstructs[i].Name, &w, &h);
+    dc.GetTextExtent(_("Leave alone"), &w, &h);
+    wxSize maxfudge(w,h);
+    for(int i = 0; i < m_model->meshstructs.size(); i++) {
+        dc.GetTextExtent(m_model->meshstructs[i].Name, &w, &h);
         if (w > maxname.GetWidth())
             maxname.SetWidth(w);
         if (h > maxname.GetHeight())
             maxname.SetHeight(h);
-        dc.GetTextExtent(m_model.meshstructs[i].FTX, &w, &h);
+        dc.GetTextExtent(m_model->meshstructs[i].FTX, &w, &h);
         if (w > maxftx.GetWidth())
             maxftx.SetWidth(w);
         if (h > maxftx.GetHeight())
             maxftx.SetHeight(h);
-        dc.GetTextExtent(m_model.meshstructs[i].TXS, &w, &h);
+        dc.GetTextExtent(m_model->meshstructs[i].TXS, &w, &h);
         if (w > maxtxs.GetWidth())
             maxtxs.SetWidth(w);
         if (h > maxtxs.GetHeight())
@@ -1389,6 +1565,7 @@ void dlgModel::UpdateAll() {
     //m_dataviewMesh->AppendTextColumn(_("Flags"), 5);
     m_dataviewMesh->AppendColumn(new wxDataViewColumn(_("Faces"), new wxMeshListUnknownRenderer(this, maxunk), 6, maxunk.GetWidth()));
     //m_dataviewMesh->AppendTextColumn(_("Unknown"), 6);
+    m_dataviewMesh->AppendColumn(new wxDataViewColumn(_("Normals"), new wxMeshListFudgeRenderer(this, maxfudge), 7, maxfudge.GetWidth()));
     m_dataviewMesh->GetChildren()[0]->Connect(wxEVT_KEY_UP, wxKeyEventHandler(dlgModel::OnChar));
 
     m_dataviewMesh->Refresh();
@@ -1405,7 +1582,14 @@ void dlgModel::UpdateAll() {
 }
 
 void dlgModel::UpdateControlState() {
-    int count = m_model.effectpoints.size();
+    if (!m_model)
+        return;
+    int count = 0;
+    if (m_animated) {
+        count = dynamic_cast<cAnimatedModel*>(m_model)->modelbones.size();
+    } else {
+        count = m_model->effectpoints.size();
+    }
     int sel = m_htlbEffect->GetSelection();
     m_spinEffect->Enable(count>=2);
     m_btEffectEdit->Enable(sel>=0);
@@ -1415,8 +1599,8 @@ void dlgModel::UpdateControlState() {
 
 //    m_btEditMesh->Enable(m_htlbMesh->GetSelection()>=0);
     bool haspoints = false;
-    for (cMeshStructIterator ms = m_model.meshstructs.begin();
-            ms != m_model.meshstructs.end(); ms++) {
+    for (cMeshStruct::iterator ms = m_model->meshstructs.begin();
+            ms != m_model->meshstructs.end(); ms++) {
         if (ms->effectpoint) {
             haspoints = true;
             break;
@@ -1428,11 +1612,23 @@ void dlgModel::UpdateControlState() {
 
 void dlgModel::OnModelOpen(wxCommandEvent& event) {
     ::wxGetApp().g_workdir.AssignDir(wxFileName(event.GetString()).GetPath());
-    wxFileName oldfile = m_model.file;
+    wxFileName oldfile = m_model->file;
     TransferDataFromWindow();
-    if (m_model.Load(event.GetString())) {
+    if (m_model->Load(event.GetString())) {
+        if (m_model->fileorientation != ORIENTATION_UNKNOWN) {
+            if (m_model->fileorientation != m_model->usedorientation) {
+                if (READ_RCT3_ORIENTATION() == ORIENTATION_UNKNOWN) {
+                    m_model->usedorientation = m_model->fileorientation;
+                } else {
+                    if (::wxMessageBox(_("The model file you just opened suggests a model orientation different from your current one.\nDo you want to replace the current one with the one suggested in the file?"), _("Question"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this) == wxYES) {
+                        m_model->usedorientation = m_model->fileorientation;
+                    }
+                }
+            }
+        }
         TransferDataToWindow();
         UpdateAll();
+/*
         if (m_model.orientation != ORIENTATION_UNKNOWN) {
             if (matrixIsEqual(matrixMultiply(m_model.transforms), matrixGetUnity())) {
                 // No transform matrix, set the right one.
@@ -1452,9 +1648,10 @@ void dlgModel::OnModelOpen(wxCommandEvent& event) {
                 }
             }
         }
+*/
     } else {
-        ::wxMessageBox(m_model.error[0], _("Error"), wxOK | wxICON_ERROR, this);
-        m_model.file = oldfile;
+        ::wxMessageBox(m_model->error[0], _("Error"), wxOK | wxICON_ERROR, this);
+        m_model->file = oldfile;
     }
 }
 
@@ -1520,78 +1717,31 @@ bool dlgModel::ProcessEvent(wxEvent& event) {
 
 void dlgModel::OnMatrixEdit(wxCommandEvent& WXUNUSED(event)) {
     dlgMatrix *dialog = new dlgMatrix(this);
-    dialog->SetStack(m_model.transforms, m_model.transformnames);
+    dialog->SetStack(m_model->transforms, m_model->transformnames);
     if (dialog->ShowModal() == wxID_OK) {
-        m_model.transforms = dialog->GetMatrices();
-        m_model.transformnames = dialog->GetMatrixNames();
+        m_model->transforms = dialog->GetMatrices();
+        m_model->transformnames = dialog->GetMatrixNames();
         ShowTransform();
     }
     dialog->Destroy();
 }
 
 void dlgModel::OnMatrixSave(wxCommandEvent& WXUNUSED(event)) {
-    ::wxGetApp().GetConfig()->m_def_matrix = matrixMultiply(m_model.transforms);
-    ::wxGetApp().GetConfig()->Save();
+    WRITE_APP_MATRIX(matrixMultiply(m_model->transforms));
+    wxcFlush();
 }
 
 void dlgModel::OnMatrixClear(wxCommandEvent& WXUNUSED(event)) {
-    if (m_model.transforms.size()) {
+    if (m_model->transforms.size()) {
         if (::wxMessageBox(_("Do you really want to delete all matrix entries?"), _("Question"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this)==wxNO)
             return;
     }
 
-    m_model.transforms.clear();
-    m_model.transformnames.clear();
+    m_model->transforms.clear();
+    m_model->transformnames.clear();
     ShowTransform();
 }
 
-////////////////////////////////////////////////////////////////////////
-//
-//  dlgModel, Meshes
-//
-////////////////////////////////////////////////////////////////////////
-
-void dlgModel::OnMeshEdit(wxCommandEvent& WXUNUSED(event)) {
-/*    int sel = m_htlbMesh->GetSelection();
-    if (sel < 0)
-        return;
-
-    if (!m_model.meshstructs[sel].valid) {
-        ::wxMessageBox(_("The mesh you tried to edit is invalid. Possible reasons are:\n- It contains no faces.\n- It lacks a uv-mapping."), _("Error"), wxOK | wxICON_ERROR, this);
-        return;
-    }
-
-    if (::wxGetKeyState(WXK_SHIFT)) {
-        // Doubleclick on the list
-        for (unsigned int i = 0; i < m_model.meshstructs.size(); i++) {
-            if (i == sel)
-                m_model.meshstructs[i].disabled = false;
-            else
-                m_model.meshstructs[i].disabled = true;
-        }
-        m_htlbMesh->UpdateContents();
-        m_htlbMesh->ScrollToLine(sel);
-        return;
-    }
-
-
-    dlgMesh *dialog = new dlgMesh(this);
-    dialog->SetMeshStruct(m_model.meshstructs[sel]);
-    if (dialog->ShowModal() == wxID_OK) {
-        if (dialog->GetApplyAll()) {
-            cMeshStruct mstr = dialog->GetMeshStruct();
-            for (cMeshStructIterator ms = m_model.meshstructs.begin(); ms != m_model.meshstructs.end(); ms++) {
-                if (ms->valid)
-                ms->CopySettingsFrom(mstr);
-            }
-        } else {
-            m_model.meshstructs[sel] = dialog->GetMeshStruct();
-        }
-        m_htlbMesh->UpdateContents();
-        m_htlbMesh->ScrollToLine(sel);
-    }
-    dialog->Destroy();*/
-}
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -1603,9 +1753,9 @@ void dlgModel::OnEffectUp(wxSpinEvent& WXUNUSED(event)) {
     int sel = m_htlbEffect->GetSelection();
     if (sel < 1)
         return;
-    cEffectPoint ft = m_model.effectpoints[sel];
-    m_model.effectpoints.erase(m_model.effectpoints.begin() + sel);
-    m_model.effectpoints.insert(m_model.effectpoints.begin() + sel - 1, ft);
+    cEffectPoint ft = m_model->effectpoints[sel];
+    m_model->effectpoints.erase(m_model->effectpoints.begin() + sel);
+    m_model->effectpoints.insert(m_model->effectpoints.begin() + sel - 1, ft);
 
     m_htlbEffect->UpdateContents();
     m_htlbEffect->SetSelection(sel-1);
@@ -1613,13 +1763,13 @@ void dlgModel::OnEffectUp(wxSpinEvent& WXUNUSED(event)) {
 }
 
 void dlgModel::OnEffectDown(wxSpinEvent& WXUNUSED(event)) {
-    int count = m_model.effectpoints.size();
+    int count = m_model->effectpoints.size();
     int sel = m_htlbEffect->GetSelection();
     if ((count-sel) <= 1)
         return;
-    cEffectPoint ft = m_model.effectpoints[sel];
-    m_model.effectpoints.erase(m_model.effectpoints.begin() + sel);
-    m_model.effectpoints.insert(m_model.effectpoints.begin() + sel + 1, ft);
+    cEffectPoint ft = m_model->effectpoints[sel];
+    m_model->effectpoints.erase(m_model->effectpoints.begin() + sel);
+    m_model->effectpoints.insert(m_model->effectpoints.begin() + sel + 1, ft);
 
     m_htlbEffect->UpdateContents();
     m_htlbEffect->SetSelection(sel+1);
@@ -1629,9 +1779,9 @@ void dlgModel::OnEffectDown(wxSpinEvent& WXUNUSED(event)) {
 void dlgModel::OnEffectAdd(wxCommandEvent& WXUNUSED(event)) {
     dlgEffect *dialog = new dlgEffect(this);
     if (dialog->ShowModal() == wxID_OK) {
-        m_model.effectpoints.push_back(dialog->GetEffect());
+        m_model->effectpoints.push_back(dialog->GetEffect());
         m_htlbEffect->UpdateContents();
-        m_htlbEffect->SetSelection(m_model.effectpoints.size()-1);
+        m_htlbEffect->SetSelection(m_model->effectpoints.size()-1);
         UpdateControlState();
     }
     dialog->Destroy();
@@ -1642,9 +1792,9 @@ void dlgModel::OnEffectEdit(wxCommandEvent& WXUNUSED(event)) {
     if (sel < 0)
         return;
     dlgEffect *dialog = new dlgEffect(this);
-    dialog->SetEffect(m_model.effectpoints[sel]);
+    dialog->SetEffect(m_model->effectpoints[sel]);
     if (dialog->ShowModal() == wxID_OK) {
-        m_model.effectpoints[sel] = dialog->GetEffect();
+        m_model->effectpoints[sel] = dialog->GetEffect();
         m_htlbEffect->UpdateContents();
         UpdateControlState();
     }
@@ -1654,9 +1804,9 @@ void dlgModel::OnEffectEdit(wxCommandEvent& WXUNUSED(event)) {
 void dlgModel::OnEffectCopy(wxCommandEvent& WXUNUSED(event)) {
     int sel = m_htlbEffect->GetSelection();
 
-    cEffectPoint ft = m_model.effectpoints[sel];
-    ft.Name += _(" Copy");
-    m_model.effectpoints.insert(m_model.effectpoints.begin() + sel + 1, ft);
+    cEffectPoint ft = m_model->effectpoints[sel];
+    ft.name += _(" Copy");
+    m_model->effectpoints.insert(m_model->effectpoints.begin() + sel + 1, ft);
 
     m_htlbEffect->UpdateContents();
     m_htlbEffect->SetSelection(sel+1);
@@ -1665,7 +1815,7 @@ void dlgModel::OnEffectCopy(wxCommandEvent& WXUNUSED(event)) {
 
 void dlgModel::OnEffectDel(wxCommandEvent& WXUNUSED(event)) {
     int sel = m_htlbEffect->GetSelection();
-    m_model.effectpoints.erase(m_model.effectpoints.begin() + sel);
+    m_model->effectpoints.erase(m_model->effectpoints.begin() + sel);
 
     m_htlbEffect->UpdateContents();
     m_htlbEffect->SetSelection(sel-1);
@@ -1673,22 +1823,22 @@ void dlgModel::OnEffectDel(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void dlgModel::OnEffectAuto(wxCommandEvent& WXUNUSED(event)) {
-    if (m_model.effectpoints.size()) {
+    if (m_model->effectpoints.size()) {
         if (::wxMessageBox(_("Do you want to delete all current effect point entries before automatically creating new ones?"), _("Question"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this)==wxYES) {
-            m_model.effectpoints.clear();
+            m_model->effectpoints.clear();
         }
     }
 
-    for (cMeshStructIterator ms = m_model.meshstructs.begin();
-            ms != m_model.meshstructs.end(); ms++) {
+    for (cMeshStruct::iterator ms = m_model->meshstructs.begin();
+            ms != m_model->meshstructs.end(); ms++) {
         if (ms->effectpoint) {
             cEffectPoint t;
 
-            t.Name = ms->Name;
-            t.Transform.push_back(matrixGetTranslation(ms->effectpoint_vert));
+            t.name = ms->Name;
+            t.transforms.push_back(matrixGetTranslation(ms->effectpoint_vert));
             wxString nam = _("Auto-generated form mesh '")+ms->Name+wxT("'");
-            t.TransformNames.push_back(nam);
-            m_model.effectpoints.push_back(t);
+            t.transformnames.push_back(nam);
+            m_model->effectpoints.push_back(t);
         }
     }
 
@@ -1698,25 +1848,241 @@ void dlgModel::OnEffectAuto(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void dlgModel::OnEffectClear(wxCommandEvent& WXUNUSED(event)) {
-    if (m_model.effectpoints.size()) {
+    if (m_model->effectpoints.size()) {
         if (::wxMessageBox(_("Do you really want to delete all effect point entries?"), _("Question"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this)==wxNO)
             return;
     }
 
-    m_model.effectpoints.clear();
+    m_model->effectpoints.clear();
 
     m_htlbEffect->UpdateContents();
     m_htlbEffect->SetSelection(-1);
     UpdateControlState();
 }
 
+
+////////////////////////////////////////////////////////////////////////
+//
+//  dlgModel, Bones
+//
+////////////////////////////////////////////////////////////////////////
+
+void dlgModel::OnBoneUp(wxSpinEvent& WXUNUSED(event)) {
+    cAnimatedModel* amodel = dynamic_cast<cAnimatedModel*>(m_model);
+    int sel = m_htlbEffect->GetSelection();
+    if (sel < 1)
+        return;
+    cModelBone ft = amodel->modelbones[sel];
+    amodel->modelbones.erase(amodel->modelbones.begin() + sel);
+    amodel->modelbones.insert(amodel->modelbones.begin() + sel - 1, ft);
+
+    m_htlbEffect->UpdateContents();
+    m_htlbEffect->SetSelection(sel-1);
+    UpdateControlState();
+}
+
+void dlgModel::OnBoneDown(wxSpinEvent& WXUNUSED(event)) {
+    cAnimatedModel* amodel = dynamic_cast<cAnimatedModel*>(m_model);
+    int count = amodel->modelbones.size();
+    int sel = m_htlbEffect->GetSelection();
+    if ((count-sel) <= 1)
+        return;
+    cModelBone ft = amodel->modelbones[sel];
+    amodel->modelbones.erase(amodel->modelbones.begin() + sel);
+    amodel->modelbones.insert(amodel->modelbones.begin() + sel + 1, ft);
+
+    m_htlbEffect->UpdateContents();
+    m_htlbEffect->SetSelection(sel+1);
+    UpdateControlState();
+}
+
+void dlgModel::OnBoneAdd(wxCommandEvent& WXUNUSED(event)) {
+    dlgBone *dialog = new dlgBone(this);
+    if (dialog->ShowModal() == wxID_OK) {
+        cAnimatedModel* amodel = dynamic_cast<cAnimatedModel*>(m_model);
+        amodel->modelbones.push_back(dialog->GetBone());
+        m_htlbEffect->UpdateContents();
+        m_htlbEffect->SetSelection(amodel->modelbones.size()-1);
+        UpdateControlState();
+    }
+    dialog->Destroy();
+}
+
+void dlgModel::OnBoneEdit(wxCommandEvent& WXUNUSED(event)) {
+    cAnimatedModel* amodel = dynamic_cast<cAnimatedModel*>(m_model);
+    int sel = m_htlbEffect->GetSelection();
+    if (sel < 0)
+        return;
+    dlgBone *dialog = new dlgBone(this);
+    dialog->SetBone(amodel->modelbones[sel]);
+    if (dialog->ShowModal() == wxID_OK) {
+        amodel->modelbones[sel] = dialog->GetBone();
+        m_htlbEffect->UpdateContents();
+        UpdateControlState();
+    }
+    dialog->Destroy();
+}
+
+void dlgModel::OnBoneCopy(wxCommandEvent& WXUNUSED(event)) {
+    cAnimatedModel* amodel = dynamic_cast<cAnimatedModel*>(m_model);
+    int sel = m_htlbEffect->GetSelection();
+
+    cModelBone ft = amodel->modelbones[sel];
+    ft.name += _(" Copy");
+    amodel->modelbones.insert(amodel->modelbones.begin() + sel + 1, ft);
+
+    m_htlbEffect->UpdateContents();
+    m_htlbEffect->SetSelection(sel+1);
+    UpdateControlState();
+}
+
+void dlgModel::OnBoneDel(wxCommandEvent& WXUNUSED(event)) {
+    cAnimatedModel* amodel = dynamic_cast<cAnimatedModel*>(m_model);
+    int sel = m_htlbEffect->GetSelection();
+    amodel->modelbones.erase(amodel->modelbones.begin() + sel);
+
+    m_htlbEffect->UpdateContents();
+    m_htlbEffect->SetSelection(sel-1);
+    UpdateControlState();
+}
+
+void dlgModel::OnBoneAuto(wxCommandEvent& WXUNUSED(event)) {
+    cAnimatedModel* amodel = dynamic_cast<cAnimatedModel*>(m_model);
+    if (amodel->modelbones.size()) {
+        if (::wxMessageBox(_("Do you want to delete all current effect point entries before automatically creating new ones?"), _("Question"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this)==wxYES) {
+            amodel->modelbones.clear();
+        }
+    }
+
+    for (cMeshStruct::iterator ms = m_model->meshstructs.begin();
+            ms != m_model->meshstructs.end(); ms++) {
+        if (ms->effectpoint) {
+            cModelBone t;
+
+            t.name = ms->Name;
+            t.parent = wxT("");
+            t.usepos2 = false;
+            t.positions1.push_back(matrixGetTranslation(ms->effectpoint_vert));
+            wxString nam = _("Auto-generated form mesh '")+ms->Name+wxT("'");
+            t.position1names.push_back(nam);
+            amodel->modelbones.push_back(t);
+        }
+    }
+
+    m_htlbEffect->UpdateContents();
+    m_htlbEffect->SetSelection(-1);
+    UpdateControlState();
+}
+
+void dlgModel::OnBoneClear(wxCommandEvent& WXUNUSED(event)) {
+    cAnimatedModel* amodel = dynamic_cast<cAnimatedModel*>(m_model);
+    if (amodel->modelbones.size()) {
+        if (::wxMessageBox(_("Do you really want to delete all bone entries?"), _("Question"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this)==wxNO)
+            return;
+    }
+
+    amodel->modelbones.clear();
+
+    m_htlbEffect->UpdateContents();
+    m_htlbEffect->SetSelection(-1);
+    UpdateControlState();
+}
+
+
 ////////////////////////////////////////////////////////////////////////
 //
 //  dlgModel, Load
 //
 ////////////////////////////////////////////////////////////////////////
+/*
+wxString doEntity(wxString inset, ssgEntity* en) {
+    wxString ret = inset + en->getTypeName();
+    ssgBranch* br = dynamic_cast<ssgBranch*>(en);
+    if (br) {
+        ret +=  wxString::Format(wxT("(%d)"), br->getNumKids()) + wxT("\n");
+        for (int i = 0; i < br->getNumKids(); ++i) {
+            ret += doEntity(inset+wxT("  "), br->getKid(i));
+        }
+    } else {
+        ssgLeaf* le = dynamic_cast<ssgLeaf*>(en);
+        if (le) {
+            ret +=  wxString::Format(wxT("(%d)"), le->getNumVertices());
+        }
+        ret += wxT("\n");
+    }
+    return ret;
+}
 
+class debugLoaderOptions: public ssgLoaderOptions
+{
+public:
+  debugLoaderOptions ():ssgLoaderOptions() {};
+
+  virtual void makeModelPath ( char* path, const char *fname ) const {
+    wxLogDebug(wxT("debugLoaderOptions::makeModelPath( \"%s\", \"%s\" )"), path, fname);
+    ssgLoaderOptions::makeModelPath ( path, fname );
+  }
+  virtual void makeTexturePath ( char* path, const char *fname ) const {
+    wxLogDebug(wxT("debugLoaderOptions::makeTexturePath( \"%s\", \"%s\" )"), path, fname);
+    ssgLoaderOptions::makeTexturePath ( path, fname );
+  }
+
+  virtual ssgLeaf* createLeaf ( ssgLeaf* leaf, const char* parent_name ) {
+    wxLogDebug(wxT("debugLoaderOptions::createLeaf( %08u, \"%s\" )"), leaf, parent_name);
+    return ssgLoaderOptions::createLeaf ( leaf, parent_name ) ;
+  }
+  virtual ssgTexture* createTexture ( char* tfname,
+			      int wrapu  = TRUE, int wrapv = TRUE,
+			      int mipmap = TRUE ) {
+    wxLogDebug(wxT("debugLoaderOptions::createTexture( \"%s\", %d, %d, %d )"), tfname, wrapu, wrapv, mipmap);
+    return ssgLoaderOptions::createTexture (tfname, wrapu, wrapv, mipmap) ;
+  }
+  virtual ssgTransform* createTransform ( ssgTransform* tr,
+      ssgTransformArray* ta ) const {
+    wxLogDebug(wxT("debugLoaderOptions::createLeaf( %08u, %08u )"), tr, ta);
+    return ssgLoaderOptions::createTransform ( tr, ta );
+  }
+  virtual ssgSelector* createSelector ( ssgSelector* s ) const {
+    wxLogDebug(wxT("debugLoaderOptions::createSelector( %08u )"), s);
+    return ssgLoaderOptions::createSelector ( s );
+  }
+  virtual ssgBranch* createBranch ( char* text ) const {
+    wxLogDebug(wxT("debugLoaderOptions::createBranch( \"%s\" )"), text);
+    return ssgLoaderOptions::createBranch ( text );
+  }
+  virtual ssgState* createState ( char* tfname ) const {
+    wxLogDebug(wxT("debugLoaderOptions::createState( \"%s\" )"), tfname);
+    return ssgLoaderOptions::createState ( tfname ) ;
+  }
+  virtual ssgSimpleState* createSimpleState ( char* tfname ) const {
+    wxLogDebug(wxT("debugLoaderOptions::createSimpleState( \"%s\" )"), tfname);
+    return ssgLoaderOptions::createSimpleState ( tfname ) ;
+  }
+
+  virtual void endLoad ()
+  {
+    wxLogDebug(wxT("debugLoaderOptions::endLoad()"));
+    ssgLoaderOptions::endLoad ();
+  }
+
+} ;
+
+void plibErrorCallback ( enum ulSeverity severity, char* msg ) {
+    switch (severity) {
+        case UL_DEBUG:
+            wxLogDebug(msg);
+            break;
+        case UL_WARNING:
+            wxLogWarning(msg);
+            break;
+        case UL_FATAL:
+        case UL_MAX_SEVERITY:
+            wxLogError(msg);
+    }
+}
+*/
 void dlgModel::OnLoad(wxCommandEvent& WXUNUSED(event)) {
+// TODO (tobi#1#): Load animated models
     wxFileDialog *dialog = new wxFileDialog(
                                      this,
                                      _T("Open Scenery File (Load model)"),
@@ -1739,7 +2105,7 @@ void dlgModel::OnLoad(wxCommandEvent& WXUNUSED(event)) {
                 return;
             }
             wxArrayString choices;
-            for (cModelIterator ms = texscn->models.begin(); ms != texscn->models.end(); ms++) {
+            for (cModel::iterator ms = texscn->models.begin(); ms != texscn->models.end(); ms++) {
                 choices.Add(ms->name);
             }
             if (choices.size() > 0) {

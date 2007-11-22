@@ -1,16 +1,16 @@
 /////////////////////////////////////////////////////////////////////////////
-// Name:        wxdevil.h
+// Name:        wxgmagick.h
 // Purpose:     Mutex to make devIL thread safe & related helper functions
 // Author:      Tobias Minich
 // Modified by:
-// Created:     Oct 28 2006
+// Created:     Nov 13 2007
 // RCS-ID:
-// Copyright:   (c) 2006 Tobias Minich
+// Copyright:   (c) 2007 Tobias Minich
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
-#ifndef WXDEVIL_H_INCLUDED
-#define WXDEVIL_H_INCLUDED
+#ifndef WXGMAGICK_H_INCLUDED
+#define WXGMAGICK_H_INCLUDED
 
 #include "wx_pch.h"
 
@@ -20,7 +20,8 @@
 extern wxMutex wxILMutex;
 
 wxSize getBitmapSize(const char *filename);
-bool getBitmapInfo(const char *filename, ILinfo& info);
-bool ilInfoHasAlpha(const ILinfo& info);
+
+//bool getBitmapInfo(const char *filename, ILinfo& info);
+//bool ilInfoHasAlpha(const ILinfo& info);
 
 #endif // WXDEVIL_H_INCLUDED

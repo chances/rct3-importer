@@ -1,5 +1,40 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <resource xmlns="http://www.wxwindows.org/wxxrc" version="2.3.0.1">
+    <object class="wxMenu" name="menu_quickeffect1">
+      <label>_Quick-assign Matrix 1</label>
+      <style>wxMENU_TEAROFF</style>
+      <object class="wxMenuItem" name="menu_quickeffect_pos1">
+        <label>_Enter position...</label>
+      </object>
+      <object class="wxMenu" name="menu_quickeffect_ovm1">
+        <label>From one-_vertex mesh...</label>
+      </object>
+      <object class="wxMenuItem" name="menu_quickeffect_this1">
+        <label>From _this object...</label>
+      </object>
+      <object class="wxMenuItem" name="menu_quickeffect_load1">
+        <label>From _other file...</label>
+      </object>
+    </object>
+    <object class="wxMenu" name="menu_quickeffect2">
+      <label>_Quick-assign Matrix 1</label>
+      <style>wxMENU_TEAROFF</style>
+      <object class="wxMenuItem" name="menu_quickeffect_pos2">
+        <label>_Enter position...</label>
+      </object>
+      <object class="wxMenu" name="menu_quickeffect_ovm2">
+        <label>From one-_vertex mesh...</label>
+      </object>
+      <object class="wxMenuItem" name="menu_quickeffect_pos12">
+        <label>From _position 1</label>
+      </object>
+      <object class="wxMenuItem" name="menu_quickeffect_this2">
+        <label>From _this object...</label>
+      </object>
+      <object class="wxMenuItem" name="menu_quickeffect_load2">
+        <label>From _other file...</label>
+      </object>
+    </object>
     <object class="wxMenu" name="menu_effect">
       <label>_Effect Points</label>
       <style>wxMENU_TEAROFF</style>
@@ -7,6 +42,21 @@
         <label>_Light</label>
           <object class="wxMenuItem" name="menu_effect_light_start">
             <label>_Start</label>
+          </object>
+          <object class="wxMenuItem" name="menu_effect_light_colour">
+            <label>_Colour</label>
+          </object>
+          <object class="wxMenu" name="menu_effect_light_end">
+            <label>_End</label>
+            <object class="wxMenuItem" name="menu_effect_light_end_normal">
+              <label>(_Normal)</label>
+            </object>
+            <object class="wxMenuItem" name="menu_effect_light_end_simple">
+              <label>_Simple</label>
+            </object>
+            <object class="wxMenuItem" name="menu_effect_light_end_nb">
+              <label>No _Bulb</label>
+            </object>
           </object>
       </object>
       <object class="wxMenu" name="menu_effect_particle">

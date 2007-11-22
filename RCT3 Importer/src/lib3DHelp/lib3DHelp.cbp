@@ -7,7 +7,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="..\..\lib\lib3DHelpd.a" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\lib3DHelpd" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="..\..\lib\obj\debug" />
 				<Option external_deps="..\..\lib\libWXHelpd.a;" />
@@ -17,11 +17,12 @@
 				<Compiler>
 					<Add option="-Wall" />
 					<Add option="-g" />
-					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.8" />
+					<Add option="-D__WXDEBUG__" />
+					<Add directory="$(#wx.ansidebugstatic)" />
 				</Compiler>
 			</Target>
 			<Target title="Profile">
-				<Option output="..\..\lib\lib3DHelpp.a" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\lib3DHelpp" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="..\..\lib\obj\profile" />
 				<Option external_deps="..\..\lib\libWXHelp.a;" />
@@ -40,7 +41,7 @@
 				</Linker>
 			</Target>
 			<Target title="Release">
-				<Option output="..\..\lib\lib3DHelp.a" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\lib3DHelp" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="..\..\lib\obj\release" />
 				<Option external_deps="..\..\lib\libWXHelp.a;" />
@@ -50,14 +51,14 @@
 				<Compiler>
 					<Add option="-Os" />
 					<Add option="-O2" />
-					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.8" />
+					<Add directory="$(#wx.ansireleasestatic)" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 				</Linker>
 			</Target>
 			<Target title="Debug STD">
-				<Option output="..\..\lib\lib3DHelpds.a" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\lib3DHelpds" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="..\..\lib\obj\debugs" />
 				<Option external_deps="..\..\lib\libWXHelpd.a;" />
@@ -68,11 +69,11 @@
 					<Add option="-Wall" />
 					<Add option="-g" />
 					<Add option="-DSTD_ONLY" />
-					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.8" />
+					<Add directory="$(#wx.ansidebugstatic)" />
 				</Compiler>
 			</Target>
 			<Target title="Release STD">
-				<Option output="..\..\lib\lib3DHelps.a" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\lib3DHelps" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="..\..\lib\obj\releases" />
 				<Option external_deps="..\..\lib\libWXHelp.a;" />
@@ -83,11 +84,27 @@
 					<Add option="-Os" />
 					<Add option="-O2" />
 					<Add option="-DSTD_ONLY" />
-					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.8" />
+					<Add directory="$(#wx.ansireleasestatic)" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 				</Linker>
+			</Target>
+			<Target title="Show Macros (Debug)">
+				<Option output="..\..\lib\lib3DHelpd" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="..\..\lib\obj\debug" />
+				<Option external_deps="..\..\lib\libWXHelpd.a;" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add option="--save-temps" />
+					<Add option="-D__WXDEBUG__" />
+					<Add directory="$(#wx.ansidebugstatic)" />
+				</Compiler>
 			</Target>
 		</Build>
 		<VirtualTargets>
@@ -97,11 +114,13 @@
 			<Add option="-Wall" />
 			<Add option="-fno-strict-aliasing" />
 			<Add option="-DIL_STATIC_LIB" />
+			<Add option="-DUSE_SQUISH" />
+			<Add option="-DCACHE_GXIMAGE" />
 			<Add directory="$(#wx.include)" />
-			<Add directory="$(#wx.ansireleasestatic)" />
 			<Add directory="..\libASE-1.0" />
 			<Add directory="..\..\include" />
 			<Add directory="..\libWXHelp" />
+			<Add directory="$(#mingw.include)\GraphicsMagick" />
 		</Compiler>
 		<Unit filename="3DLoader.cpp" />
 		<Unit filename="3DLoader.h" />
@@ -113,42 +132,80 @@
 		<Unit filename="MS3DFile.h" />
 		<Unit filename="MS3DLoader.cpp" />
 		<Unit filename="MS3DLoader.h" />
+		<Unit filename="RCT3Exception.cpp">
+			<Option target="Debug" />
+			<Option target="Profile" />
+			<Option target="Release" />
+			<Option target="Show Macros (Debug)" />
+		</Unit>
+		<Unit filename="RCT3Exception.h">
+			<Option target="Debug" />
+			<Option target="Profile" />
+			<Option target="Release" />
+			<Option target="Show Macros (Debug)" />
+		</Unit>
+		<Unit filename="RCT3Macros.h" />
 		<Unit filename="RCT3Structs.cpp">
 			<Option target="Debug" />
 			<Option target="Profile" />
 			<Option target="Release" />
+			<Option target="Show Macros (Debug)" />
 		</Unit>
 		<Unit filename="RCT3Structs.h">
 			<Option target="Debug" />
 			<Option target="Profile" />
 			<Option target="Release" />
+			<Option target="Show Macros (Debug)" />
 		</Unit>
 		<Unit filename="SCNFile.cpp">
 			<Option target="Debug" />
 			<Option target="Profile" />
 			<Option target="Release" />
+			<Option target="Show Macros (Debug)" />
 		</Unit>
 		<Unit filename="SCNFile.h">
 			<Option target="Debug" />
 			<Option target="Profile" />
 			<Option target="Release" />
+			<Option target="Show Macros (Debug)" />
+		</Unit>
+		<Unit filename="lib3Dconfig.h">
+			<Option target="Debug" />
+			<Option target="Profile" />
+			<Option target="Release" />
+			<Option target="Show Macros (Debug)" />
 		</Unit>
 		<Unit filename="matrix.cpp" />
 		<Unit filename="matrix.h" />
 		<Unit filename="rct3log.h" />
+		<Unit filename="texcheck.cpp">
+			<Option target="Debug" />
+			<Option target="Profile" />
+			<Option target="Release" />
+			<Option target="Show Macros (Debug)" />
+		</Unit>
+		<Unit filename="texcheck.h">
+			<Option target="Debug" />
+			<Option target="Profile" />
+			<Option target="Release" />
+			<Option target="Show Macros (Debug)" />
+		</Unit>
 		<Unit filename="valtexture.cpp">
 			<Option target="Debug" />
 			<Option target="Profile" />
 			<Option target="Release" />
+			<Option target="Show Macros (Debug)" />
 		</Unit>
 		<Unit filename="valtexture.h">
 			<Option target="Debug" />
 			<Option target="Profile" />
 			<Option target="Release" />
+			<Option target="Show Macros (Debug)" />
 		</Unit>
 		<Extensions>
 			<code_completion />
 			<envvars />
+			<debugger />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

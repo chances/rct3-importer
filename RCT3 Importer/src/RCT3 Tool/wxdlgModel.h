@@ -42,7 +42,7 @@
 #include "RCT3Structs.h"
 
 class wxMeshListModel;
-
+/*
 class wxMeshListBox : public wxColourHtmlListBox {
 public:
     wxMeshListBox(wxWindow *parent, cModel *contents);
@@ -52,21 +52,34 @@ private:
 protected:
     virtual wxString OnGetItem(size_t n) const;
 };
-
+*/
 class wxEffectListBox : public wxHtmlListBox {
 public:
+    wxEffectListBox(wxWindow *parent);
     wxEffectListBox(wxWindow *parent, cModel *contents);
-    void UpdateContents();
+    virtual void UpdateContents();
 private:
     cModel* m_contents;
 protected:
     virtual wxString OnGetItem(size_t n) const;
 };
 
+class wxBoneListBox : public wxEffectListBox {
+public:
+    wxBoneListBox(wxWindow *parent, cModel *contents);
+    virtual void UpdateContents();
+private:
+    cAnimatedModel* m_contents;
+protected:
+    virtual wxString OnGetItem(size_t n) const;
+};
 
+class dlgBone;
 class dlgModel : public wxDialog {
+    friend class dlgBone;
 protected:
     wxTextCtrl* m_textModelName;
+    wxChoice* m_choiceCoordinateSystem;
     wxButton* m_btMatrixEdit;
     wxButton* m_btMatrixSave;
     wxButton* m_btMatrixClear;
@@ -82,7 +95,7 @@ protected:
     wxButton* m_btOk;
     wxButton* m_btCancel;
 
-    wxFileSelectorCombo* m_textModelFile;
+    wxFileSelectorCombo<wxFileDialog>* m_textModelFile;
 
     wxPanel* m_panModel;
     wxPanel* m_panEffect;
@@ -106,7 +119,7 @@ protected:
     void OnMatrixSave(wxCommandEvent& event);
     void OnMatrixClear(wxCommandEvent& event);
 
-    void OnMeshEdit(wxCommandEvent& event);
+    //void OnMeshEdit(wxCommandEvent& event);
 
     void OnEffectUp(wxSpinEvent& event);
     void OnEffectDown(wxSpinEvent& event);
@@ -117,6 +130,15 @@ protected:
     void OnEffectAuto(wxCommandEvent& event);
     void OnEffectClear(wxCommandEvent& event);
 
+    void OnBoneUp(wxSpinEvent& event);
+    void OnBoneDown(wxSpinEvent& event);
+    void OnBoneAdd(wxCommandEvent& event);
+    void OnBoneEdit(wxCommandEvent& event);
+    void OnBoneCopy(wxCommandEvent& event);
+    void OnBoneDel(wxCommandEvent& event);
+    void OnBoneAuto(wxCommandEvent& event);
+    void OnBoneClear(wxCommandEvent& event);
+
     void OnLoad(wxCommandEvent& event);
 
     void ShowTransform(int pr = 4);
@@ -126,7 +148,10 @@ protected:
     virtual bool ProcessEvent(wxEvent& event);
 
 private:
-    cModel m_model;
+    cModel m_smodel;
+    cAnimatedModel m_amodel;
+    cModel* m_model;
+    bool m_animated;
     wxArrayString m_textures;
     wxAuiManager m_mgr;
     wxEvtHandler* m_hookhandler;
@@ -169,6 +194,7 @@ private:
     void InitModelFromXRC(wxWindow *parent) {
         wxXmlResource::Get()->LoadObject(parent,this,_T("panModelModel"), _T("wxPanel"));
         m_textModelName = XRCCTRL(*parent,"m_textModelName",wxTextCtrl);
+        m_choiceCoordinateSystem = XRCCTRL(*this,"m_choiceCoordinateSystem",wxChoice);
         m_btMatrixEdit = XRCCTRL(*parent,"m_btMatrixEdit",wxButton);
         m_btMatrixSave = XRCCTRL(*parent,"m_btMatrixSave",wxButton);
         m_btMatrixClear = XRCCTRL(*parent,"m_btMatrixClear",wxButton);
@@ -210,12 +236,23 @@ private:
 public:
     bool m_Editing;
 
-    dlgModel(wxWindow *parent=NULL);
+    dlgModel(wxWindow *parent=NULL, bool animated = false);
     virtual ~dlgModel();
 
-    void SetModel(const cModel& model);
-    cModel GetModel() const {
-        return m_model;
+    void CheckModel();
+    void SetModel(const cModel& model) {
+        m_smodel = model;
+        CheckModel();
+    };
+    void SetAnimatedModel(const cAnimatedModel& model) {
+        m_amodel = model;
+        CheckModel();
+    };
+    cModel const GetModel() const {
+        return m_smodel;
+    };
+    cAnimatedModel GetAnimatedModel() const {
+        return m_amodel;
     };
     void FetchOneVertexMeshes(wxArrayString& names, std::vector<D3DVECTOR>& points);
 };

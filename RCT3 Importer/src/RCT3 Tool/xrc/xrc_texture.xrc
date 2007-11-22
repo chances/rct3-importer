@@ -148,7 +148,7 @@
 									<option>1</option>
 									<flag>wxALL|wxEXPAND</flag>
 									<border>5</border>
-									<object class="unknown" name="m_ilpictPreview" />
+									<object class="unknown" name="m_gxpictPreview" />
 								</object>
 							</object>
 						</object>

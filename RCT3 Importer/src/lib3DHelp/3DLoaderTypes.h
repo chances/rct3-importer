@@ -33,8 +33,8 @@
 #define C3DMESH_INVALID         0
 #define C3DMESH_VALID           1
 
-enum c3DLoaderOrientation {
-    ORIENTATION_UNKNOWN,
+enum {
+    ORIENTATION_UNKNOWN = 0L,
     ORIENTATION_RIGHT_XUP,
     ORIENTATION_RIGHT_YUP,
     ORIENTATION_RIGHT_ZUP,
@@ -42,5 +42,7 @@ enum c3DLoaderOrientation {
     ORIENTATION_LEFT_YUP,
     ORIENTATION_LEFT_ZUP
 };
+
+typedef unsigned int c3DLoaderOrientation;
 
 #endif // 3DLOADERTYPES_H_INCLUDED

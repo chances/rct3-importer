@@ -11,6 +11,18 @@
 #include "Common.h"
 #include "CommonOVL.h"
 #include "OVL.h"
+
+#include <list>
+#include <map>
+
+#define DUMP_RELOCATIONS
+
+#ifdef DUMP_RELOCATIONS
+#define DUMP_RELOCATION( ... ) fprintf( __VA_ARGS__ )
+#else
+#define DUMP_RELOCATION( ... )
+#endif
+
 FILE *f;
 extern unsigned long CurrentFile;
 extern OvlFile OpenFiles[2];
@@ -192,6 +204,110 @@ LIBOVL_API void AddReference(char *reference) {
 
 ////////////////////////////////////////////////////////////////////////////////
 //
+//  ovlStringTable class
+//  Used
+//
+////////////////////////////////////////////////////////////////////////////////
+
+class ovlStringTable {
+public:
+    static const char* SVD;
+    static const char* FTX;
+    static const char* TXS;
+    static const char* SHS;
+    static const char* BSH;
+    static const char* BAN;
+private:
+    std::list<std::string> m_strings;
+    std::map<std::string, char*> m_ptrmap;
+    int m_size;
+    char* m_table;
+
+    char* FindRawString(const std::string& findit) const {
+        std::map<std::string, char*>::const_iterator fst = m_ptrmap.find(findit);
+        if (fst == m_ptrmap.end()) {
+            DUMP_RELOCATION(f, "Find '%s' failed\n", findit.c_str());
+            return NULL;
+        }
+        DUMP_RELOCATION(f, "Find '%s': %s (%x/%x)\n", findit.c_str(), fst->second, fst->second, m_table);
+        return fst->second;
+    }
+#ifdef DUMP_RELOCATIONS
+    FILE *f;
+#endif
+public:
+#ifdef DUMP_RELOCATIONS
+    ovlStringTable(FILE* fi) {
+        m_size = 0;
+        m_table = NULL;
+        f = fi;
+    }
+#else
+    ovlStringTable() {
+        m_size = 0;
+        m_table = NULL;
+    }
+#endif
+    ~ovlStringTable() {
+        if (m_table)
+            delete[] m_table;
+    }
+
+    void AddString(const char *lstring) {
+        std::string st = lstring;
+        m_strings.push_back(st);
+        DUMP_RELOCATION(f, "Add String '%s'\n", lstring);
+    }
+    void AddSymbolString(const char *lstring, const char *lextension) {
+        std::string st = lstring;
+        st += ':';
+        st += lextension;
+        m_strings.push_back(st);
+        DUMP_RELOCATION(f, "Add Symbol String '%s':'%s'\n", lstring, lextension);
+    }
+    char* Make() {
+        char* tempstr;
+        if (m_table)
+            return m_table;
+        m_strings.sort();
+        m_strings.unique();
+        for (std::list<std::string>::iterator it = m_strings.begin(); it != m_strings.end(); ++it) {
+            m_size += it->length() + 1;
+        }
+        m_table = new char[m_size];
+        tempstr = m_table;
+        for (std::list<std::string>::iterator it = m_strings.begin(); it != m_strings.end(); ++it) {
+            strcpy(tempstr, it->c_str());
+            m_ptrmap[*it] = tempstr;
+            tempstr += it->length() + 1;
+        }
+        return m_table;
+    }
+    char* FindString(const char *lstring) const {
+        std::string st = lstring;
+        return FindRawString(st);
+    }
+    char* FindSymbolString(const char *lstring, const char *lextension) const {
+        std::string st = lstring;
+        st += ':';
+        st += lextension;
+        return FindRawString(st);
+    }
+    int GetSize() const {
+        return m_size;
+    }
+
+};
+
+const char* ovlStringTable::SVD = "svd";
+const char* ovlStringTable::FTX = "ftx";
+const char* ovlStringTable::TXS = "txs";
+const char* ovlStringTable::SHS = "shs";
+const char* ovlStringTable::BSH = "bsh";
+const char* ovlStringTable::BAN = "ban";
+
+////////////////////////////////////////////////////////////////////////////////
+//
 //  SaveSceneryOvl
 //  Used
 //
@@ -202,7 +318,12 @@ LIBOVL_API void SaveSceneryOvl() {
     f = fopen("relocation.log","w");
 #endif
     CurrentFile = OVL_UNIQUE;
-    unsigned long StringTableSize = 0;
+//    unsigned long StringTableSize = 0;
+#ifdef DUMP_RELOCATIONS
+    ovlStringTable stringtable(f);
+#else
+    ovlStringTable stringtable;
+#endif
     unsigned long SVDSize = 0;
     unsigned long StaticShapeSize = 0;
     unsigned long BoneShapeSize = 0;
@@ -216,7 +337,8 @@ LIBOVL_API void SaveSceneryOvl() {
 
     if (SVD) {
         SVDSize += sizeof(SceneryItemVisual);
-        StringTableSize += strlen(SVDName) + 5;
+//        StringTableSize += strlen(SVDName) + 5;
+        stringtable.AddSymbolString(SVDName, ovlStringTable::SVD);
         SymbolCount++;
         LoaderCount++;
         for (i = 0;i < SVD->LODCount;i++) {
@@ -225,15 +347,18 @@ LIBOVL_API void SaveSceneryOvl() {
             SVDSize += 8*SVD->LODMeshes[i]->AnimationCount;
             if (SHSNames) {
                 SymbolRefCount++;
-                StringTableSize += strlen(SHSNames[i]) + 1;
+//                StringTableSize += strlen(SHSNames[i]) + 1;
+                stringtable.AddString(SHSNames[i]);
             }
             if (BSHNames) {
                 SymbolRefCount++;
-                StringTableSize += strlen(BSHNames[i]) + 1;
+//                StringTableSize += strlen(BSHNames[i]) + 1;
+                stringtable.AddString(BSHNames[i]);
             }
             if (BANNames) {
                 SymbolRefCount++;
-                StringTableSize += strlen(BANNames[i]) + 1;
+                //StringTableSize += strlen(BANNames[i]) + 1;
+                stringtable.AddString(BANNames[i]);
             }
         }
     }
@@ -258,11 +383,13 @@ LIBOVL_API void SaveSceneryOvl() {
 
         if (!SVD) {
 //            SymbolRefCount++;
-            StringTableSize += strlen(FlexiTextureNames[i])+5;
+//            StringTableSize += strlen(FlexiTextureNames[i])+5;
+              stringtable.AddSymbolString(FlexiTextureNames[i], ovlStringTable::FTX);
         }
     }
     for (i = 0;i < StaticShapes.size();i++) {
-        StringTableSize += strlen(StaticShapeNames[i])+5;
+//        StringTableSize += strlen(StaticShapeNames[i])+5;
+        stringtable.AddSymbolString(StaticShapeNames[i], ovlStringTable::SHS);
         StaticShapeSize += sizeof(StaticShape1);
         LoaderCount++;
         SymbolCount++;
@@ -271,8 +398,10 @@ LIBOVL_API void SaveSceneryOvl() {
             StaticShapeSize += sizeof(StaticShape2) + (obj->VertexCount * sizeof(VERTEX)) + (obj->IndexCount * 4) + 4;
             SymbolRefCount++;
             SymbolRefCount++;
-            StringTableSize += strlen(StaticShapeFTXNames[i][j])+5;
-            StringTableSize += strlen(StaticShapeTXSNames[i][j])+5;
+//            StringTableSize += strlen(StaticShapeFTXNames[i][j])+5;
+            stringtable.AddSymbolString(StaticShapeFTXNames[i][j], ovlStringTable::FTX);
+//            StringTableSize += strlen(StaticShapeTXSNames[i][j])+5;
+            stringtable.AddSymbolString(StaticShapeTXSNames[i][j], ovlStringTable::TXS);
         }
         for (j = 0;j < StaticShapes[i]->EffectCount;j++) {
             StaticShapeSize += 4;
@@ -288,7 +417,8 @@ LIBOVL_API void SaveSceneryOvl() {
     //      increment symbol and loader by 2, for the bsh and ban files.
     //      determine bsh and ban size, from relevant mesh and index information.
     for (i = 0;i < BoneShapes.size();i++) {
-        StringTableSize += strlen(BoneShapeNames[i])+5;
+//        StringTableSize += strlen(BoneShapeNames[i])+5;
+        stringtable.AddSymbolString(BoneShapeNames[i], ovlStringTable::BSH);
         BoneShapeSize += sizeof(BoneShape1);
         LoaderCount++;
         SymbolCount++;
@@ -297,39 +427,45 @@ LIBOVL_API void SaveSceneryOvl() {
             BoneShapeSize += sizeof(BoneShape2) + (obj->VertexCount * sizeof(VERTEX2)) + (obj->IndexCount * 4) + 4;
             SymbolRefCount++;
             SymbolRefCount++;
-            StringTableSize += strlen(BoneShapeFTXNames[i][j])+5;
-            StringTableSize += strlen(BoneShapeTXSNames[i][j])+5;
+//            StringTableSize += strlen(BoneShapeFTXNames[i][j])+5;
+            stringtable.AddSymbolString(BoneShapeFTXNames[i][j], ovlStringTable::FTX);
+//            StringTableSize += strlen(BoneShapeTXSNames[i][j])+5;
+            stringtable.AddSymbolString(BoneShapeTXSNames[i][j], ovlStringTable::TXS);
         }
         for (j = 0;j < BoneShapes[i]->BoneCount;j++) {
-            BoneShapeSize += 4;
+//            BoneShapeSize += 4;  // No need, name pointer is part of BoneStruct
             BoneShapeSize += 2*sizeof(D3DMATRIX);
             BoneShapeSize += sizeof(BoneStruct);
-            unsigned long x = strlen(BoneShapes[i]->Bones[j].BoneName) + 1;
-            while (x % 4 != 0) {
-                x++;
-            }
-            BoneShapeSize += x;
+            stringtable.AddString(BoneShapes[i]->Bones[j].BoneName);
+//            unsigned long x = strlen(BoneShapes[i]->Bones[j].BoneName) + 1;
+//            while (x % 4 != 0) {
+//                x++;
+//            }
+//            BoneShapeSize += x;
         }
     }
 
     for (i = 0;i < BoneAnims.size();i++) {
-        StringTableSize += strlen(BoneAnimNames[i])+5;
+//        StringTableSize += strlen(BoneAnimNames[i])+5;
+        stringtable.AddSymbolString(BoneAnimNames[i], ovlStringTable::BAN);
         BoneAnimSize += sizeof(BoneAnim);
         LoaderCount++;
         SymbolCount++;
         for (j = 0;j < BoneAnims[i]->BoneCount;j++) {
             BoneAnimBone *obj = &BoneAnims[i]->Bones[j];
             BoneAnimSize += sizeof(BoneAnimBone) + ((obj->TranslateCount+obj->RotateCount) * sizeof(txyz)) + 4;
+            stringtable.AddString(BoneAnims[i]->Bones[j].Name);
 
-            unsigned long x = strlen(BoneAnims[i]->Bones[j].Name) + 1;
-            while (x % 4 != 0) {
-                x++;
-            }
-            BoneAnimSize += x;
+//            unsigned long x = strlen(BoneAnims[i]->Bones[j].Name) + 1;
+//            while (x % 4 != 0) {
+//                x++;
+//            }
+//            BoneAnimSize += x;
         }
     }
-    char *StringTable = new char[StringTableSize];
-    char *TempStringTable = StringTable;
+//    char *StringTable = new char[StringTableSize];
+//    char *TempStringTable = StringTable;
+    stringtable.Make();
     unsigned char *SVDx = new unsigned char[SVDSize];
     unsigned char *TempSVD = SVDx;
     unsigned char *StaticShape = new unsigned char[StaticShapeSize];
@@ -350,36 +486,31 @@ LIBOVL_API void SaveSceneryOvl() {
     SymbolRefStruct *TempRef = Ref;
     // Iterate over the static shapes
     for (i = 0;i < StaticShapes.size();i++) {
-        strcpy(TempStringTable,StaticShapeNames[i]);
-        char *shsname = TempStringTable;
-        TempStringTable += strlen(StaticShapeNames[i]);
-        strcpy(TempStringTable,":shs");
-        TempStringTable += 5;
+//        strcpy(TempStringTable,StaticShapeNames[i]);
+//        char *shsname = TempStringTable;
+//        TempStringTable += strlen(StaticShapeNames[i]);
+//        strcpy(TempStringTable,":shs");
+//        TempStringTable += 5;
+        char *shsname = stringtable.FindSymbolString(StaticShapeNames[i], ovlStringTable::SHS);
         StaticShape1 *shs = (StaticShape1 *)TempStaticShape;
         memcpy(shs,StaticShapes[i],sizeof(StaticShape1));
         TempStaticShape += sizeof(StaticShape1);
         shs->sh = (StaticShape2 **)TempStaticShape;
         relocations.push((unsigned long *)&shs->sh);
-#ifdef DUMP_RELOCATIONS
-        fprintf(f,"relocations: %x: &shs->sh\n",&shs->sh);
-#endif
+        DUMP_RELOCATION(f,"relocations: %x: &shs->sh\n",&shs->sh);
         TempStaticShape += shs->MeshCount * 4;
         TempSym->data = (unsigned long *)shs;
         TempSym->IsPointer = true;
         TempSym->Symbol = shsname;
         TempLdr->data = (unsigned long *)shs;
         relocations.push((unsigned long *)&TempLdr->data);
-#ifdef DUMP_RELOCATIONS
-        fprintf(f,"relocations: %x: &TempLdr->data\n",&TempLdr->data);
-#endif
+        DUMP_RELOCATION(f,"relocations: %x: &TempLdr->data\n",&TempLdr->data);
         TempLdr->HasExtraData = false;
         // This will vary dependent upon the types within the ovl
         TempLdr->LoaderType = 2;
         TempLdr->Sym = TempSym;
         relocations.push((unsigned long *)&TempLdr->Sym);
-#ifdef DUMP_RELOCATIONS
-        fprintf(f,"relocations: %x: &TempLdr->Sym\n",&TempLdr->Sym);
-#endif
+        DUMP_RELOCATION(f,"relocations: %x: &TempLdr->Sym\n",&TempLdr->Sym);
         TempLdr->SymbolsToResolve = 0;
         for (unsigned long j = 0;j < StaticShapes[i]->MeshCount;j++) {
             StaticShape2 *obj = StaticShapes[i]->sh[j];
@@ -388,65 +519,50 @@ LIBOVL_API void SaveSceneryOvl() {
             memcpy(sh2,obj,sizeof(StaticShape2));
             shs->sh[j] = sh2;
             relocations.push((unsigned long *)&shs->sh[j]);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &shs->sh[j]\n",&shs->sh[j]);
-#endif
+            DUMP_RELOCATION(f,"relocations: %x: &shs->sh[j]\n",&shs->sh[j]);
             sh2->Vertexes = (VERTEX *)TempStaticShape;
             memcpy(sh2->Vertexes,obj->Vertexes,obj->VertexCount*sizeof(VERTEX));
             relocations.push((unsigned long *)&sh2->Vertexes);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &sh2->Vertexes\n",&sh2->Vertexes);
-#endif
+            DUMP_RELOCATION(f,"relocations: %x: &sh2->Vertexes\n",&sh2->Vertexes);
             TempStaticShape += obj->VertexCount*sizeof(VERTEX);
             sh2->Triangles = (unsigned long *)TempStaticShape;
             memcpy(sh2->Triangles,obj->Triangles,obj->IndexCount*4);
             TempStaticShape += obj->IndexCount*4;
             relocations.push((unsigned long *)&sh2->Triangles);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &sh2->Triangles\n",&sh2->Triangles);
-#endif
+            DUMP_RELOCATION(f,"relocations: %x: &sh2->Triangles\n",&sh2->Triangles);
+
             TempLdr->SymbolsToResolve += 2;
             TempRef->ldr = TempLdr;
             relocations.push((unsigned long *)&TempRef->ldr);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &TempRef->ldr, StaticShape:ftx\n",&TempRef->ldr);
-#endif
+            DUMP_RELOCATION(f,"relocations: %x: &TempRef->ldr, StaticShape:ftx\n",&TempRef->ldr);
             TempRef->reference = (unsigned long *)&sh2->fts;
             relocations.push((unsigned long *)&TempRef->reference);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &TempRef->reference, StaticShape:ftx\n",&TempRef->reference);
-#endif
-            char *FTX = TempStringTable;
-            strcpy(TempStringTable,StaticShapeFTXNames[i][j]);
-            TempStringTable += strlen(StaticShapeFTXNames[i][j]);
-            strcpy(TempStringTable,":ftx");
-            TempStringTable += 5;
+            DUMP_RELOCATION(f,"relocations: %x: &TempRef->reference, StaticShape:ftx\n",&TempRef->reference);
+//            char *FTX = TempStringTable;
+//            strcpy(TempStringTable,StaticShapeFTXNames[i][j]);
+//            TempStringTable += strlen(StaticShapeFTXNames[i][j]);
+//            strcpy(TempStringTable,":ftx");
+//            TempStringTable += 5;
+            char *FTX = stringtable.FindSymbolString(StaticShapeFTXNames[i][j], ovlStringTable::FTX);
             TempRef->Symbol = FTX;
             relocations.push((unsigned long *)&TempRef->Symbol);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &TempRef->Symbol, StaticShape:ftx\n",&TempRef->Symbol);
-#endif
+            DUMP_RELOCATION(f,"relocations: %x: &TempRef->Symbol, StaticShape:ftx\n",&TempRef->Symbol);
             TempRef++;
             TempRef->ldr = TempLdr;
             relocations.push((unsigned long *)&TempRef->ldr);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &TempRef->ldr, StaticShape:txs\n",&TempRef->ldr);
-#endif
+            DUMP_RELOCATION(f,"relocations: %x: &TempRef->ldr, StaticShape:txs\n",&TempRef->ldr);
             TempRef->reference = (unsigned long *)&sh2->TextureData;
             relocations.push((unsigned long *)&TempRef->reference);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &TempRef->reference, StaticShape:txs\n",&TempRef->reference);
-#endif
-            char *TXS = TempStringTable;
-            strcpy(TempStringTable,StaticShapeTXSNames[i][j]);
-            TempStringTable += strlen(StaticShapeTXSNames[i][j]);
-            strcpy(TempStringTable,":txs");
-            TempStringTable += 5;
+            DUMP_RELOCATION(f,"relocations: %x: &TempRef->reference, StaticShape:txs\n",&TempRef->reference);
+//            char *TXS = TempStringTable;
+//            strcpy(TempStringTable,StaticShapeTXSNames[i][j]);
+//            TempStringTable += strlen(StaticShapeTXSNames[i][j]);
+//            strcpy(TempStringTable,":txs");
+//            TempStringTable += 5;
+            char *TXS = stringtable.FindSymbolString(StaticShapeTXSNames[i][j], ovlStringTable::TXS);
             TempRef->Symbol = TXS;
             relocations.push((unsigned long *)&TempRef->Symbol);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &TempRef->Symbol, StaticShape:txs\n",&TempRef->Symbol);
-#endif
+            DUMP_RELOCATION(f,"relocations: %x: &TempRef->Symbol, StaticShape:txs\n",&TempRef->Symbol);
             TempRef++;
         }
         if (StaticShapes[i]->EffectCount != 0) {
@@ -456,13 +572,9 @@ LIBOVL_API void SaveSceneryOvl() {
             shs->EffectCount = StaticShapes[i]->EffectCount;
             TempStaticShape += (StaticShapes[i]->EffectCount * 4);
             relocations.push((unsigned long *)&shs->EffectName);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &shs->EffectName\n",&shs->EffectName);
-#endif
+            DUMP_RELOCATION(f,"relocations: %x: &shs->EffectName\n",&shs->EffectName);
             relocations.push((unsigned long *)&shs->EffectPosition);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &shs->EffectPosition\n",&shs->EffectPosition);
-#endif
+            DUMP_RELOCATION(f,"relocations: %x: &shs->EffectPosition\n",&shs->EffectPosition);
             for (unsigned long j = 0;j < StaticShapes[i]->EffectCount;j++) {
                 shs->EffectName[j] = (char *)TempStaticShape;
                 strcpy((char *)TempStaticShape,StaticShapes[i]->EffectName[j]);
@@ -474,9 +586,7 @@ LIBOVL_API void SaveSceneryOvl() {
                     x++;
                 }
                 relocations.push((unsigned long *)&shs->EffectName[j]);
-#ifdef DUMP_RELOCATIONS
-                fprintf(f,"relocations: %x: &shs->EffectName[j]\n",&shs->EffectName[j]);
-#endif
+                DUMP_RELOCATION(f,"relocations: %x: &shs->EffectName[j]\n",&shs->EffectName[j]);
                 memcpy(&shs->EffectPosition[j],&StaticShapes[i]->EffectPosition[j],sizeof(D3DMATRIX));
             }
         } else {
@@ -487,41 +597,35 @@ LIBOVL_API void SaveSceneryOvl() {
         TempSym++;
         TempLdr++;
     }
-#ifdef DUMP_RELOCATIONS
-    fprintf(f,"StaticShapeLimits %x, %x\n",TempStaticShape,StaticShape+StaticShapeSize);
-#endif
+    DUMP_RELOCATION(f,"StaticShapeLimits %x, %x\n",TempStaticShape,StaticShape+StaticShapeSize);
+
     // Iterate over the bone shapes
     for (i = 0;i < BoneShapes.size();i++) {
-        strcpy(TempStringTable,BoneShapeNames[i]);
-        char *bshname = TempStringTable;
-        TempStringTable += strlen(BoneShapeNames[i]);
-        strcpy(TempStringTable,":bsh");
-        TempStringTable += 5;
+//        strcpy(TempStringTable,BoneShapeNames[i]);
+//        char *bshname = TempStringTable;
+//        TempStringTable += strlen(BoneShapeNames[i]);
+//        strcpy(TempStringTable,":bsh");
+//        TempStringTable += 5;
+        char *bshname = stringtable.FindSymbolString(BoneShapeNames[i], ovlStringTable::BSH);
         BoneShape1 *bsh = (BoneShape1 *)TempBoneShape;
         memcpy(bsh,BoneShapes[i],sizeof(BoneShape1));
         TempBoneShape += sizeof(BoneShape1);
         bsh->sh = (BoneShape2 **)TempBoneShape;
         relocations.push((unsigned long *)&bsh->sh);
-#ifdef DUMP_RELOCATIONS
-        fprintf(f,"relocations: %x: &bsh->sh\n",&bsh->sh);
-#endif
+        DUMP_RELOCATION(f,"relocations: %x: &bsh->sh\n",&bsh->sh);
         TempBoneShape += bsh->MeshCount * 4;
         TempSym->data = (unsigned long *)bsh;
         TempSym->IsPointer = true;
         TempSym->Symbol = bshname;
         TempLdr->data = (unsigned long *)bsh;
         relocations.push((unsigned long *)&TempLdr->data);
-#ifdef DUMP_RELOCATIONS
-        fprintf(f,"relocations: %x: &TempLdr->data\n",&TempLdr->data);
-#endif
+        DUMP_RELOCATION(f,"relocations: %x: &TempLdr->data\n",&TempLdr->data);
         TempLdr->HasExtraData = false;
         // This will vary dependent upon the types within the ovl
         TempLdr->LoaderType = 3;
         TempLdr->Sym = TempSym;
         relocations.push((unsigned long *)&TempLdr->Sym);
-#ifdef DUMP_RELOCATIONS
-        fprintf(f,"relocations: %x: &TempLdr->Sym\n",&TempLdr->Sym);
-#endif
+        DUMP_RELOCATION(f,"relocations: %x: &TempLdr->Sym\n",&TempLdr->Sym);
         TempLdr->SymbolsToResolve = 0;
         for (unsigned long j = 0;j < BoneShapes[i]->MeshCount;j++) {
             BoneShape2 *obj = BoneShapes[i]->sh[j];
@@ -530,65 +634,49 @@ LIBOVL_API void SaveSceneryOvl() {
             memcpy(sh2,obj,sizeof(BoneShape2));
             bsh->sh[j] = sh2;
             relocations.push((unsigned long *)&bsh->sh[j]);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &bsh->sh[j]\n",&bsh->sh[j]);
-#endif
+            DUMP_RELOCATION(f,"relocations: %x: &bsh->sh[j]\n",&bsh->sh[j]);
             sh2->Vertexes = (VERTEX2 *)TempBoneShape;
             memcpy(sh2->Vertexes,obj->Vertexes,obj->VertexCount*sizeof(VERTEX2));
             relocations.push((unsigned long *)&sh2->Vertexes);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &sh2->Vertexes\n",&sh2->Vertexes);
-#endif
+            DUMP_RELOCATION(f,"relocations: %x: &sh2->Vertexes\n",&sh2->Vertexes);
             TempBoneShape += obj->VertexCount*sizeof(VERTEX2);
             sh2->Triangles = (unsigned short *)TempBoneShape;
             memcpy(sh2->Triangles,obj->Triangles,obj->IndexCount*2);
             TempBoneShape += obj->IndexCount*2;
             relocations.push((unsigned long *)&sh2->Triangles);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &sh2->Triangles\n",&sh2->Triangles);
-#endif
+            DUMP_RELOCATION(f,"relocations: %x: &sh2->Triangles\n",&sh2->Triangles);
             TempLdr->SymbolsToResolve += 2;
             TempRef->ldr = TempLdr;
             relocations.push((unsigned long *)&TempRef->ldr);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &TempRef->ldr, BoneShape:ftx\n",&TempRef->ldr);
-#endif
+            DUMP_RELOCATION(f,"relocations: %x: &TempRef->ldr, BoneShape:ftx\n",&TempRef->ldr);
             TempRef->reference = (unsigned long *)&sh2->fts;
             relocations.push((unsigned long *)&TempRef->reference);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &TempRef->reference, BoneShape:ftx\n",&TempRef->reference);
-#endif
-            char *FTX = TempStringTable;
-            strcpy(TempStringTable,BoneShapeFTXNames[i][j]);
-            TempStringTable += strlen(BoneShapeFTXNames[i][j]);
-            strcpy(TempStringTable,":ftx");
-            TempStringTable += 5;
+            DUMP_RELOCATION(f,"relocations: %x: &TempRef->reference, BoneShape:ftx\n",&TempRef->reference);
+//            char *FTX = TempStringTable;
+//            strcpy(TempStringTable,BoneShapeFTXNames[i][j]);
+//            TempStringTable += strlen(BoneShapeFTXNames[i][j]);
+//            strcpy(TempStringTable,":ftx");
+//            TempStringTable += 5;
+            char *FTX = stringtable.FindSymbolString(BoneShapeFTXNames[i][j], ovlStringTable::FTX);
             TempRef->Symbol = FTX;
             relocations.push((unsigned long *)&TempRef->Symbol);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &TempRef->Symbol, BoneShape:ftx\n",&TempRef->Symbol);
-#endif
+            DUMP_RELOCATION(f,"relocations: %x: &TempRef->Symbol, BoneShape:ftx\n",&TempRef->Symbol);
             TempRef++;
             TempRef->ldr = TempLdr;
             relocations.push((unsigned long *)&TempRef->ldr);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &TempRef->ldr, BoneShape:txs\n",&TempRef->ldr);
-#endif
+            DUMP_RELOCATION(f,"relocations: %x: &TempRef->ldr, BoneShape:txs\n",&TempRef->ldr);
             TempRef->reference = (unsigned long *)&sh2->TextureData;
             relocations.push((unsigned long *)&TempRef->reference);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &TempRef->reference, BoneShape:txs\n",&TempRef->reference);
-#endif
-            char *TXS = TempStringTable;
-            strcpy(TempStringTable,BoneShapeTXSNames[i][j]);
-            TempStringTable += strlen(BoneShapeTXSNames[i][j]);
-            strcpy(TempStringTable,":txs");
-            TempStringTable += 5;
+            DUMP_RELOCATION(f,"relocations: %x: &TempRef->reference, BoneShape:txs\n",&TempRef->reference);
+//            char *TXS = TempStringTable;
+//            strcpy(TempStringTable,BoneShapeTXSNames[i][j]);
+//            TempStringTable += strlen(BoneShapeTXSNames[i][j]);
+//            strcpy(TempStringTable,":txs");
+//            TempStringTable += 5;
+            char *TXS = stringtable.FindSymbolString(BoneShapeTXSNames[i][j], ovlStringTable::TXS);
             TempRef->Symbol = TXS;
             relocations.push((unsigned long *)&TempRef->Symbol);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &TempRef->Symbol, BoneShape:txs\n",&TempRef->Symbol);
-#endif
+            DUMP_RELOCATION(f,"relocations: %x: &TempRef->Symbol, BoneShape:txs\n",&TempRef->Symbol);
             TempRef++;
         }
         if (BoneShapes[i]->BoneCount != 0) {
@@ -597,38 +685,34 @@ LIBOVL_API void SaveSceneryOvl() {
             // Copy the array of D3DMATRIX's into position as BonePositions2
             bsh->Bones = (BoneStruct *)TempBoneShape;
             TempBoneShape += (BoneShapes[i]->BoneCount * sizeof(BoneStruct));
+            relocations.push((unsigned long *)&bsh->Bones);
+            DUMP_RELOCATION(f,"relocations: %x: &bsh->Bones\n",&bsh->Bones);
+            bsh->BoneCount = BoneShapes[i]->BoneCount;
+
             bsh->BonePositions1 = (D3DMATRIX *)TempBoneShape;
             TempBoneShape += (BoneShapes[i]->BoneCount * sizeof(D3DMATRIX));
+            relocations.push((unsigned long *)&bsh->BonePositions1);
+            DUMP_RELOCATION(f,"relocations: %x: &bsh->BonePositions1\n",&bsh->BonePositions1);
+
             bsh->BonePositions2 = (D3DMATRIX *)TempBoneShape;
             TempBoneShape += (BoneShapes[i]->BoneCount * sizeof(D3DMATRIX));
-            bsh->BoneCount = BoneShapes[i]->BoneCount;
-            relocations.push((unsigned long *)&bsh->Bones);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &bsh->Bones\n",&bsh->Bones);
-#endif
-            relocations.push((unsigned long *)&bsh->BonePositions1);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &bsh->BonePositions1\n",&bsh->BonePositions1);
-#endif
             relocations.push((unsigned long *)&bsh->BonePositions2);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &bsh->BonePositions2\n",&bsh->BonePositions2);
-#endif
+            DUMP_RELOCATION(f,"relocations: %x: &bsh->BonePositions2\n",&bsh->BonePositions2);
+
             for (unsigned long j = 0;j < BoneShapes[i]->BoneCount;j++) {
                 bsh->Bones[j].ParentBoneNumber = BoneShapes[i]->Bones[j].ParentBoneNumber;
-                bsh->Bones[j].BoneName = (char *)TempBoneShape;
-                strcpy((char *)TempBoneShape,BoneShapes[i]->Bones[j].BoneName);
-                TempBoneShape += strlen(BoneShapes[i]->Bones[j].BoneName) + 1;
-                unsigned long x = strlen(BoneShapes[i]->Bones[j].BoneName) + 1;
-                while (x % 4 != 0) {
-                    *TempBoneShape = 0;
-                    TempBoneShape++;
-                    x++;
-                }
+                bsh->Bones[j].BoneName = stringtable.FindString(BoneShapes[i]->Bones[j].BoneName);
+//                bsh->Bones[j].BoneName = (char *)TempBoneShape;
+//                strcpy((char *)TempBoneShape,BoneShapes[i]->Bones[j].BoneName);
+//                TempBoneShape += strlen(BoneShapes[i]->Bones[j].BoneName) + 1;
+//                unsigned long x = strlen(BoneShapes[i]->Bones[j].BoneName) + 1;
+//                while (x % 4 != 0) {
+//                    *TempBoneShape = 0;
+//                    TempBoneShape++;
+//                    x++;
+//                }
                 relocations.push((unsigned long *)&bsh->Bones[j].BoneName);
-#ifdef DUMP_RELOCATIONS
-                fprintf(f,"relocations: %x: &bsh->Bones[j].BoneName %s\n",&bsh->Bones[j].BoneName, &bsh->Bones[j].BoneName);
-#endif
+                DUMP_RELOCATION(f,"relocations: %x: &bsh->Bones[j].BoneName %s\n",&bsh->Bones[j].BoneName, bsh->Bones[j].BoneName);
                 memcpy(&bsh->BonePositions1[j],&BoneShapes[i]->BonePositions1[j],sizeof(D3DMATRIX));
                 memcpy(&bsh->BonePositions2[j],&BoneShapes[i]->BonePositions2[j],sizeof(D3DMATRIX));
             }
@@ -641,42 +725,36 @@ LIBOVL_API void SaveSceneryOvl() {
         TempSym++;
         TempLdr++;
     }
-#ifdef DUMP_RELOCATIONS
-    fprintf(f,"BoneShapeLimits %x, %x\n",TempBoneShape,BoneShape+BoneShapeSize);
-#endif
+    DUMP_RELOCATION(f,"BoneShapeLimits %x, %x\n",TempBoneShape,BoneShape+BoneShapeSize);
 
     // Iterate over the bone anims
     for (i = 0;i < BoneAnims.size();i++) {
-        strcpy(TempStringTable,BoneAnimNames[i]);
-        char *banname = TempStringTable;
-        TempStringTable += strlen(BoneAnimNames[i]);
-        strcpy(TempStringTable,":ban");
-        TempStringTable += 5;
-        struct BoneAnim *ban = (struct BoneAnim *)TempBoneAnim;
-        memcpy(ban,BoneAnims[i],sizeof(struct BoneAnim));
-        TempBoneAnim += sizeof(struct BoneAnim);
+//        strcpy(TempStringTable,BoneAnimNames[i]);
+//        char *banname = TempStringTable;
+//        TempStringTable += strlen(BoneAnimNames[i]);
+//        strcpy(TempStringTable,":ban");
+//        TempStringTable += 5;
+        char *banname = stringtable.FindSymbolString(BoneAnimNames[i], ovlStringTable::BAN);
+
+        BoneAnim *ban = (BoneAnim *)TempBoneAnim;
+        memcpy(ban,BoneAnims[i],sizeof(BoneAnim));
+        TempBoneAnim += sizeof(BoneAnim);
         ban->Bones = (BoneAnimBone *)TempBoneAnim;
         relocations.push((unsigned long *)&ban->Bones);
-#ifdef DUMP_RELOCATIONS
-        fprintf(f,"relocations: %x: &ban->Bones\n",&ban->Bones);
-#endif
-        TempBoneAnim += ban->BoneCount * sizeof(struct BoneAnimBone);
+        DUMP_RELOCATION(f,"relocations: %x: &ban->Bones\n",&ban->Bones);
+        TempBoneAnim += ban->BoneCount * sizeof(BoneAnimBone);
         TempSym->data = (unsigned long *)ban;
         TempSym->IsPointer = true;
         TempSym->Symbol = banname;
         TempLdr->data = (unsigned long *)ban;
         relocations.push((unsigned long *)&TempLdr->data);
-#ifdef DUMP_RELOCATIONS
-        fprintf(f,"relocations: %x: &TempLdr->data\n",&TempLdr->data);
-#endif
+        DUMP_RELOCATION(f,"relocations: %x: &TempLdr->data\n",&TempLdr->data);
         TempLdr->HasExtraData = false;
         // This will vary dependent upon the types within the ovl
         TempLdr->LoaderType = 2;
         TempLdr->Sym = TempSym;
         relocations.push((unsigned long *)&TempLdr->Sym);
-#ifdef DUMP_RELOCATIONS
-        fprintf(f,"relocations: %x: &TempLdr->Sym\n",&TempLdr->Sym);
-#endif
+        DUMP_RELOCATION(f,"relocations: %x: &TempLdr->Sym\n",&TempLdr->Sym);
         TempLdr->SymbolsToResolve = 0;
         for (unsigned long j = 0;j < BoneAnims[i]->BoneCount;j++) {
             BoneAnimBone *obj = &BoneAnims[i]->Bones[j];
@@ -687,9 +765,7 @@ LIBOVL_API void SaveSceneryOvl() {
                 bab->Translate = (txyz *)TempBoneAnim;
                 memcpy(bab->Translate,obj->Translate,obj->TranslateCount*sizeof(txyz));
                 relocations.push((unsigned long *)&bab->Translate);
-#ifdef DUMP_RELOCATIONS
-                fprintf(f,"relocations: %x: &bab->Translate\n",&bab->Translate);
-#endif
+                DUMP_RELOCATION(f,"relocations: %x: &bab->Translate\n",&bab->Translate);
                 TempBoneAnim += obj->TranslateCount*sizeof(txyz);
             } else {
                 bab->Translate = 0;
@@ -699,85 +775,164 @@ LIBOVL_API void SaveSceneryOvl() {
                 bab->Rotate = (txyz *)TempBoneAnim;
                 memcpy(bab->Rotate,obj->Rotate,obj->RotateCount*sizeof(txyz));
                 relocations.push((unsigned long *)&bab->Rotate);
-#ifdef DUMP_RELOCATIONS
-                fprintf(f,"relocations: %x: &bab->Rotate\n",&bab->Rotate);
-#endif
+                DUMP_RELOCATION(f,"relocations: %x: &bab->Rotate\n",&bab->Rotate);
                 TempBoneAnim += obj->RotateCount*sizeof(txyz);
             } else {
                 bab->Rotate = 0;
             }
             // Copy name
-            bab->Name = (char *)TempBoneAnim;
-            strcpy((char *)TempBoneAnim,BoneAnims[i]->Bones[j].Name);
-            TempBoneAnim += strlen(BoneShapes[i]->Bones[j].BoneName) + 1;
-            unsigned long x = strlen(BoneShapes[i]->Bones[j].BoneName) + 1;
-            while (x % 4 != 0) {
-                *TempBoneAnim = 0;
-                TempBoneAnim++;
-                x++;
-            }
-            relocations.push((unsigned long *)&ban->Bones[j].Name);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &bab->Name\n",&ban->Bones[j].Name);
-#endif
+            bab->Name = stringtable.FindString(BoneAnims[i]->Bones[j].Name);
+//            bab->Name = (char *)TempBoneAnim;
+//            strcpy((char *)TempBoneAnim,BoneAnims[i]->Bones[j].Name);
+//            TempBoneAnim += strlen(BoneShapes[i]->Bones[j].BoneName) + 1;
+//            unsigned long x = strlen(BoneShapes[i]->Bones[j].BoneName) + 1;
+//            while (x % 4 != 0) {
+//                *TempBoneAnim = 0;
+//                TempBoneAnim++;
+//                x++;
+//            }
+            relocations.push((unsigned long *)&bab->Name);
+            DUMP_RELOCATION(f,"relocations: %x: &bab->Name\n",&bab->Name);
         }
 
         TempSym++;
         TempLdr++;
     }
-#ifdef DUMP_RELOCATIONS
-    fprintf(f,"BoneAnimLimits %x, %x\n",TempBoneAnim,BoneAnimx+BoneAnimSize);
-#endif
+    DUMP_RELOCATION(f,"BoneAnimLimits %x, %x\n",TempBoneAnim,BoneAnimx+BoneAnimSize);
 
     if (SVD) {
-        strcpy(TempStringTable,SVDName);
-        char *svdname = TempStringTable;
-        TempStringTable += strlen(SVDName);
-        strcpy(TempStringTable,":svd");
-        TempStringTable += 5;
+//        strcpy(TempStringTable,SVDName);
+//        char *svdname = TempStringTable;
+//        TempStringTable += strlen(SVDName);
+//        strcpy(TempStringTable,":svd");
+//        TempStringTable += 5;
+        char *svdname = stringtable.FindSymbolString(SVDName, ovlStringTable::SVD);
         SceneryItemVisual *sv = (SceneryItemVisual *)TempSVD;
         memcpy(sv,SVD,sizeof(SceneryItemVisual));
         TempSVD += sizeof(SceneryItemVisual);
         sv->LODMeshes = (SceneryItemVisualLOD **)TempSVD;
         relocations.push((unsigned long *)&sv->LODMeshes);
-#ifdef DUMP_RELOCATIONS
-        fprintf(f,"relocations: %x: &sv->LODMeshes\n",&sv->LODMeshes);
-#endif
+        DUMP_RELOCATION(f,"relocations: %x: &sv->LODMeshes\n",&sv->LODMeshes);
         TempSVD += sv->LODCount * 4;
         TempSym->data = (unsigned long *)sv;
         TempSym->IsPointer = true;
         TempSym->Symbol = svdname;
         TempLdr->data = (unsigned long *)sv;
         relocations.push((unsigned long *)&TempLdr->data);
-#ifdef DUMP_RELOCATIONS
-        fprintf(f,"relocations: %x: &TempLdr->data\n",&TempLdr->data);
-#endif
+        DUMP_RELOCATION(f,"relocations: %x: &TempLdr->data\n",&TempLdr->data);
         TempLdr->HasExtraData = false;
         TempLdr->LoaderType = 1;
         TempLdr->Sym = TempSym;
         relocations.push((unsigned long *)&TempLdr->Sym);
-#ifdef DUMP_RELOCATIONS
-        fprintf(f,"relocations: %x: &TempLdr->Sym\n",&TempLdr->Sym);
-#endif
+        DUMP_RELOCATION(f,"relocations: %x: &TempLdr->Sym\n",&TempLdr->Sym);
         TempLdr->SymbolsToResolve = 0;
 
+        int count_shs = 0;
+        int count_bsh = 0;
+        int count_ban = 0;
+
         for (unsigned long i = 0;i < SVD->LODCount;i++) {
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"SVD->LODMeshes[%i]\n",i);
-#endif
+            DUMP_RELOCATION(f,"SVD->LODMeshes[%i]\n",i);
 
             // Allocate the LOD once, then check the Names arrays to see what member data needs to be filled in or referenced.
-            char *lodname = NULL;
+            //char *lodname = NULL;
             SceneryItemVisualLOD *LOD = (SceneryItemVisualLOD *)TempSVD;
             TempSVD += sizeof(SceneryItemVisualLOD);
             memcpy(LOD,SVD->LODMeshes[i],sizeof(SceneryItemVisualLOD));
             sv->LODMeshes[i] = LOD;
             relocations.push((unsigned long *)&sv->LODMeshes[i]);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &sv->LODMeshes[i]\n",&sv->LODMeshes[i]);
-#endif
+            DUMP_RELOCATION(f,"relocations: %x: &sv->LODMeshes[i]\n",&sv->LODMeshes[i]);
 
+            if ((LOD->MeshType == SVDLOD_MESHTYPE_STATIC) && SHSNames) {
+                char* st = stringtable.FindSymbolString(SHSNames[count_shs], ovlStringTable::SHS);
+                DUMP_RELOCATION(f,"SYMBOL: %s:\n",st);
+
+                TempRef->Symbol = st;
+                relocations.push((unsigned long *)&TempRef->Symbol);
+                DUMP_RELOCATION(f,"relocations: %x: &TempRef->Symbol, LOD shs\n",&TempRef->Symbol);
+
+                TempRef->ldr = TempLdr;
+                TempLdr->SymbolsToResolve++;
+                relocations.push((unsigned long *)&TempRef->ldr);
+                DUMP_RELOCATION(f,"relocations: %x: &TempRef->ldr, LOD shs\n",&TempRef->ldr);
+
+                TempRef->reference = (unsigned long *)&LOD->StaticShape;
+                relocations.push((unsigned long *)&TempRef->reference);
+                DUMP_RELOCATION(f,"relocations: %x: &TempRef->reference, LOD shs\n",&TempRef->reference);
+                TempRef++;
+
+                LOD->LODName = stringtable.FindString(SHSNames[count_shs]);
+                relocations.push((unsigned long *)&LOD->LODName);
+                DUMP_RELOCATION(f,"relocations: %x: &LOD->LODName\n",&LOD->LODName);
+
+                count_shs++;
+            } else if ((LOD->MeshType == SVDLOD_MESHTYPE_ANIMATED) && BSHNames) {
+                char* st = stringtable.FindSymbolString(BSHNames[count_bsh], ovlStringTable::BSH);
+                DUMP_RELOCATION(f,"SYMBOL: %s:\n",st);
+
+                TempRef->Symbol = st;
+                relocations.push((unsigned long *)&TempRef->Symbol);
+                DUMP_RELOCATION(f,"relocations: %x: &TempRef->Symbol, LOD bsh\n",&TempRef->Symbol);
+                TempRef->ldr = TempLdr;
+                TempLdr->SymbolsToResolve++;
+                relocations.push((unsigned long *)&TempRef->ldr);
+                DUMP_RELOCATION(f,"relocations: %x: &TempRef->ldr, LOD bsh\n",&TempRef->ldr);
+                TempRef->reference = (unsigned long *)&LOD->BoneShape;
+                relocations.push((unsigned long *)&TempRef->reference);
+                DUMP_RELOCATION(f,"relocations: %x: &TempRef->reference, LOD bsh\n",&TempRef->reference);
+                TempRef++;
+
+                LOD->LODName = stringtable.FindString(BSHNames[count_bsh]);
+                relocations.push((unsigned long *)&LOD->LODName);
+                DUMP_RELOCATION(f,"relocations: %x: &LOD->LODName\n",&LOD->LODName);
+
+                count_bsh++;
+
+                if (BANNames && LOD->AnimationCount) {
+                    // Allocate space for the animation array pointers
+                    LOD->AnimationArray = (BoneAnim ***)TempSVD;
+                    TempSVD += 4*LOD->AnimationCount;
+                    relocations.push((unsigned long *)&LOD->AnimationArray);
+                    DUMP_RELOCATION(f,"AnimationCount %i\n",LOD->AnimationCount);
+
+                    for (unsigned int j = 0;j<LOD->AnimationCount;j++) {
+                        LOD->AnimationArray[j] = (BoneAnim **)TempSVD;
+                        TempSVD += 4;
+                        relocations.push((unsigned long *)&LOD->AnimationArray[j]);
+                        DUMP_RELOCATION(f,"relocations: %x: &LOD->AnimationArray[j]\n",&LOD->AnimationArray[j]);
+
+
+                        char* st = stringtable.FindSymbolString(BANNames[count_ban], ovlStringTable::BAN);
+                        DUMP_RELOCATION(f,"SYMBOL: %s:\n",st);
+
+                        TempRef->Symbol = st;
+                        relocations.push((unsigned long *)&TempRef->Symbol);
+                        DUMP_RELOCATION(f,"relocations: %x: &TempRef->Symbol, LOD ban\n",&TempRef->Symbol);
+
+                        TempRef->ldr = TempLdr;
+                        TempLdr->SymbolsToResolve++;
+                        relocations.push((unsigned long *)&TempRef->ldr);
+                        DUMP_RELOCATION(f,"relocations: %x: &TempRef->ldr, LOD ban\n",&TempRef->ldr);
+
+                        // Note; this is deliberately the location pointed to by LOD->AnimationArray[j]
+                        TempRef->reference = (unsigned long *)LOD->AnimationArray[j];
+                        relocations.push((unsigned long *)&TempRef->reference);
+                        DUMP_RELOCATION(f,"relocations: %x: &TempRef->reference, LOD ban\n",&TempRef->reference);
+                        TempRef++;
+
+                        count_ban++;
+                    }
+
+                }
+
+            } else {
+                DUMP_RELOCATION(f,"ERROR: Wrong meshtype for LOD\n");
+            }
+
+#if 0
+// Mostly ridiculous crap
             if (SHSNames) {
+/*
                 unsigned long namel = strlen(SHSNames[i]);
                 for (char *st = (char *)StringTable;st < TempStringTable;st++) {
                     if (memcmp(SHSNames[i],st,namel) == 0) {
@@ -785,6 +940,8 @@ LIBOVL_API void SaveSceneryOvl() {
                         fprintf(f,"found %s %i\n",st, namel);
 #endif
                         if (memcmp(st+namel,":shs",4) == 0) {
+*/
+                            char* st = stringtable.FindSymbolString(SHSNames[i], ovlStringTable::SHS);
 #ifdef DUMP_RELOCATIONS
                             fprintf(f,"SYMBOL: %s:\n",st);
 #endif
@@ -807,20 +964,23 @@ LIBOVL_API void SaveSceneryOvl() {
                             TempRef++;
 
                             if (!lodname) {
-                                lodname = TempStringTable;
-                                strcpy(lodname,SHSNames[i]);
-                                TempStringTable += strlen(SHSNames[i]);
-                                TempStringTable++;
-                                LOD->LODName = lodname;
+//                                lodname = TempStringTable;
+//                                strcpy(lodname,SHSNames[i]);
+//                                TempStringTable += strlen(SHSNames[i]);
+//                                TempStringTable++;
+//                                LOD->LODName = lodname;
+                                LOD->LODName = stringtable.FindString(SHSNames[i]);
                                 relocations.push((unsigned long *)&LOD->LODName);
 #ifdef DUMP_RELOCATIONS
                                 fprintf(f,"relocations: %x: &LOD->LODName\n",&LOD->LODName);
 #endif
                             }
+/*
                             break;
                         }
                     }
                 }
+*/
             }
 
             if (BSHNames) {
@@ -932,18 +1092,19 @@ LIBOVL_API void SaveSceneryOvl() {
                     }
                 }
             }
+#endif // Ridiculous crap
         }	// LODMesh loop
 
         TempSym++;
         TempLdr++;
     } else {
         // Add the Texture Names if we write a texture ovl
-        for (i = 0;i < FlexiTextures.size();i++) {
-            strcpy(TempStringTable,FlexiTextureNames[i]);
-            TempStringTable += strlen(FlexiTextureNames[i]);
-            strcpy(TempStringTable,":ftx");
-            TempStringTable += 5;
-        }
+//        for (i = 0;i < FlexiTextures.size();i++) {
+//            strcpy(TempStringTable,FlexiTextureNames[i]);
+//            TempStringTable += strlen(FlexiTextureNames[i]);
+//            strcpy(TempStringTable,":ftx");
+//            TempStringTable += 5;
+//        }
     }
     for (i = 0;i < FlexiTextures.size();i++) {
         // FlexiTextureInfoStruct
@@ -958,9 +1119,7 @@ LIBOVL_API void SaveSceneryOvl() {
         TempFlexiTexture += 4*FlexiTextures[i]->offsetCount;
         ftis->offset1 = ofs1;
         relocations.push((unsigned long *)&ftis->offset1);
-#ifdef DUMP_RELOCATIONS
-        fprintf(f,"relocations: %x: &ftis->offset1\n",&ftis->offset1);
-#endif
+        DUMP_RELOCATION(f,"relocations: %x: &ftis->offset1\n",&ftis->offset1);
 
         // FlexiTextureStructs
         FlexiTextureStruct *fs = (FlexiTextureStruct *)TempFlexiTexture;
@@ -968,25 +1127,19 @@ LIBOVL_API void SaveSceneryOvl() {
         memcpy(fs,FlexiTextures[i]->fts2,sizeof(FlexiTextureStruct)*FlexiTextures[i]->fts2Count);
         ftis->fts2 = fs;
         relocations.push((unsigned long *)&ftis->fts2);
-#ifdef DUMP_RELOCATIONS
-        fprintf(f,"relocations: %x: &ftis->fts2\n",&ftis->fts2);
-#endif
+        DUMP_RELOCATION(f,"relocations: %x: &ftis->fts2\n",&ftis->fts2);
         for(unsigned long m = 0; m < FlexiTextures[i]->fts2Count; m++) {
             // Palette
             fs[m].palette = TempFlexiTexture;
             relocations.push((unsigned long *)&fs[m].palette);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &fs[%ld].palette\n",&fs[m].palette, m);
-#endif
+            DUMP_RELOCATION(f,"relocations: %x: &fs[%ld].palette\n",&fs[m].palette, m);
             TempFlexiTexture += 256*sizeof(RGBQUAD);
             memcpy(fs[m].palette,FlexiTextures[i]->fts2[m].palette,256*sizeof(RGBQUAD));
 
             // Texture
             fs[m].texture = TempFlexiTexture;
             relocations.push((unsigned long *)&fs[m].texture);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocations: %x: &fs[%ld].texture\n",&fs[m].texture, m);
-#endif
+            DUMP_RELOCATION(f,"relocations: %x: &fs[%ld].texture\n",&fs[m].texture, m);
             unsigned char *t = FlexiTextures[i]->fts2[m].texture;
             unsigned long w = FlexiTextures[i]->fts2[m].width;
             unsigned long h = FlexiTextures[i]->fts2[m].height;
@@ -995,39 +1148,36 @@ LIBOVL_API void SaveSceneryOvl() {
             if (FlexiTextures[i]->fts2[m].alpha != 0) {
                 fs[m].alpha = TempFlexiTexture;
                 relocations.push((unsigned long *)&fs[m].alpha);
-#ifdef DUMP_RELOCATIONS
-                fprintf(f,"relocations: %x: &fs[%ld].alpha\n",&fs[m].alpha, m);
-#endif
+                DUMP_RELOCATION(f,"relocations: %x: &fs[%ld].alpha\n",&fs[m].alpha, m);
                 memcpy(fs[m].alpha,FlexiTextures[i]->fts2[m].alpha,FlexiTextures[i]->fts2[m].width*FlexiTextures[i]->fts2[m].height);
                 TempFlexiTexture += FlexiTextures[i]->fts2[m].width*FlexiTextures[i]->fts2[m].height;
             }
         }
 
         // Name & Symbols
-        unsigned long namel = strlen(FlexiTextureNames[i]);
-        for (char *st = (char *)StringTable;st < TempStringTable;st++) {
-            char *x = FlexiTextureNames[i];
-            if (memcmp(x,st,namel) == 0) {
-                if (memcmp(st+namel,":ftx",4) == 0) {
-                    TempSym->Symbol = st;
-                    break;
-                }
-            }
-        }
+//        unsigned long namel = strlen(FlexiTextureNames[i]);
+//        for (char *st = (char *)StringTable;st < TempStringTable;st++) {
+//            char *x = FlexiTextureNames[i];
+//            if (memcmp(x,st,namel) == 0) {
+//                if (memcmp(st+namel,":ftx",4) == 0) {
+//                    TempSym->Symbol = st;
+//                    break;
+//                }
+//            }
+//        }
+        TempSym->Symbol = stringtable.FindSymbolString(FlexiTextureNames[i], ovlStringTable::FTX);
         TempSym->data = (unsigned long *)ftis;
         TempSym->IsPointer = true;
         TempLdr->data = (unsigned long *)ftis;
         relocations.push((unsigned long *)&TempLdr->data);
-#ifdef DUMP_RELOCATIONS
-        fprintf(f,"relocations: %x: &TempLdr->data\n",&TempLdr->data);
-#endif
+        DUMP_RELOCATION(f,"relocations: %x: &TempLdr->data\n",&TempLdr->data);
+
         TempLdr->HasExtraData = false;
         TempLdr->LoaderType = 0;
         TempLdr->Sym = TempSym;
         relocations.push((unsigned long *)&TempLdr->Sym);
-#ifdef DUMP_RELOCATIONS
-        fprintf(f,"relocations: %x: &TempLdr->Sym\n",&TempLdr->Sym);
-#endif
+        DUMP_RELOCATION(f,"relocations: %x: &TempLdr->Sym\n",&TempLdr->Sym);
+
         TempLdr->SymbolsToResolve = 0;
         TempSym++;
         TempLdr++;
@@ -1038,13 +1188,9 @@ LIBOVL_API void SaveSceneryOvl() {
     qsort(syms2,SymbolCount,sizeof(SymbolStruct),compare);
     for (i = 0;i < SymbolCount;i++) {
         relocations.push((unsigned long *)&(syms2[i].Symbol));
-#ifdef DUMP_RELOCATIONS
-        fprintf(f,"relocations: %x: &(syms2[i].Symbol)\n",&(syms2[i].Symbol));
-#endif
+        DUMP_RELOCATION(f,"relocations: %x: &(syms2[i].Symbol)\n",&(syms2[i].Symbol));
         relocations.push((unsigned long *)&(syms2[i].data));
-#ifdef DUMP_RELOCATIONS
-        fprintf(f,"relocations: %x: &(syms2[i].data)\n",&(syms2[i].data));
-#endif
+        DUMP_RELOCATION(f,"relocations: %x: &(syms2[i].data)\n",&(syms2[i].data));
     }
     LoaderStruct *ldrs2 = (LoaderStruct *)Ldr;
     for (i = 0;i < LoaderCount;i++) {
@@ -1059,9 +1205,9 @@ LIBOVL_API void SaveSceneryOvl() {
     OpenFiles[CurrentFile].Types[0].dataptr = Type0Files;
     OpenFiles[CurrentFile].Types[0].reloffset = 0;
     OpenFiles[CurrentFile].Types[0].size = 0;
-    Type0Files[0].size = StringTableSize;
+    Type0Files[0].size = stringtable.GetSize();
     Type0Files[0].reloffset = 0;
-    Type0Files[0].data =(unsigned long *)StringTable;
+    Type0Files[0].data =(unsigned long *)stringtable.Make();
     Type0Files[0].unk = 0;
     OpenFiles[CurrentFile].Types[1].reloffset = Type0Files[0].size + Type0Files[0].reloffset;
     int fcount = 4;
@@ -1128,10 +1274,13 @@ LIBOVL_API void SaveSceneryOvl() {
         Type2Files[fidx].unk = 0;
         fidx++;
     }
-    if (SVD)
-        OpenFiles[CurrentFile].Types[2].count = 6;
-    else
-        OpenFiles[CurrentFile].Types[2].count = 4;
+
+//    if (SVD)
+//        OpenFiles[CurrentFile].Types[2].count = 6;
+//    else
+//        OpenFiles[CurrentFile].Types[2].count = 4;
+    OpenFiles[CurrentFile].Types[2].count = fidx;
+
     OpenFiles[CurrentFile].Types[2].dataptr = Type2Files;
     OpenFiles[CurrentFile].Types[2].size = 0;
     for (unsigned long i = 0;i < OpenFiles[CurrentFile].Types[2].count;i++) {
@@ -1155,9 +1304,7 @@ LIBOVL_API void SaveSceneryOvl() {
             }
             *relocation = fixup;
             unsigned long fixup2 = DoRelocationForSaving(relocation);
-#ifdef DUMP_RELOCATIONS
-            fprintf(f,"relocation %x, reloc %x, fixup %x, fixup2 %x\n",relocation,reloc,fixup,fixup2);
-#endif
+            DUMP_RELOCATION(f,"relocation %x, reloc %x, fixup %x, fixup2 %x\n",relocation,reloc,fixup,fixup2);
             fixups.push(fixup2);
         }
     }
@@ -1184,12 +1331,12 @@ LIBOVL_API void SaveSceneryOvl() {
 
     h2.unk = 0;
     unsigned short len1 = 4;
-    char *str1 = "FGDK";
+    const char *str1 = "FGDK";
     unsigned short len2 = 0xC;
-    char *str2 = "FlexiTexture";
+    const char *str2 = "FlexiTexture";
     unsigned long type = 1;
     unsigned short len3 = 3;
-    char *str3 = "ftx";
+    const char *str3 = "ftx";
 
 #ifdef DUMP_RELOCATIONS
     // Close the log file
@@ -1407,6 +1554,7 @@ LIBOVL_API void SaveSceneryOvl() {
     fclose(f);
 }
 
+/*
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -1440,7 +1588,6 @@ LIBOVL_API unsigned long CreateOvl(char *filename,char *InternalName) {
     return 0;
 }
 //Filename - .common.ovl
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -2188,3 +2335,5 @@ LIBOVL_API void DeleteOVLInfo_FlexiTextures() {
 
     FlexiTextureItems.clear();
 }
+*/
+

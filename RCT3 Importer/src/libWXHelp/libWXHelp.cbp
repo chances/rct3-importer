@@ -8,7 +8,7 @@
 		<Option virtualFolders="filedlg\;wrapper\;validators\;" />
 		<Build>
 			<Target title="Debug">
-				<Option output="..\..\lib\libWXHelpd.a" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\libWXHelpd" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="..\..\lib\obj\debug" />
 				<Option type="2" />
@@ -17,11 +17,12 @@
 				<Compiler>
 					<Add option="-Wall" />
 					<Add option="-g" />
-					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.8" />
+					<Add option="-D__WXDEBUG__" />
+					<Add directory="$(#wx.ansidebugstatic)" />
 				</Compiler>
 			</Target>
 			<Target title="Profile">
-				<Option output="..\..\lib\libWXHelpp.a" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\libWXHelpp" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="..\..\lib\obj\profile" />
 				<Option type="2" />
@@ -39,7 +40,7 @@
 				</Linker>
 			</Target>
 			<Target title="Release">
-				<Option output="..\..\lib\libWXHelp.a" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\libWXHelp" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="..\..\lib\obj\release" />
 				<Option type="2" />
@@ -66,10 +67,12 @@
 			<Add option="-fexceptions" />
 			<Add option="-fno-strict-aliasing" />
 			<Add option="-DIL_STATIC_LIB" />
+			<Add option="-DUSE_SQUISH" />
+			<Add option="-DCACHE_GXIMAGE" />
 			<Add directory="$(#wx.include)" />
-			<Add directory="$(#wx.ansireleasestatic)" />
 			<Add directory="..\libASE-1.0" />
 			<Add directory="..\..\include" />
+			<Add directory="$(#mingw.include)\GraphicsMagick" />
 		</Compiler>
 		<Unit filename="auifiledlg.cpp">
 			<Option virtualFolder="filedlg\" />
@@ -107,6 +110,8 @@
 		<Unit filename="comboctrlwrapper.h">
 			<Option virtualFolder="wrapper\" />
 		</Unit>
+		<Unit filename="confhelp.cpp" />
+		<Unit filename="confhelp.h" />
 		<Unit filename="exdataview.cpp" />
 		<Unit filename="exdataview.h" />
 		<Unit filename="filedlgg.cpp">
@@ -117,6 +122,10 @@
 		</Unit>
 		<Unit filename="fileselectorcombo.cpp" />
 		<Unit filename="fileselectorcombo.h" />
+		<Unit filename="gximage.cpp" />
+		<Unit filename="gximage.h" />
+		<Unit filename="gxpict.cpp" />
+		<Unit filename="gxpict.h" />
 		<Unit filename="htmlentities.h" />
 		<Unit filename="ilpict.cpp" />
 		<Unit filename="ilpict.h" />
@@ -154,11 +163,12 @@
 			<Option target="Release" />
 			<Option target="Profile" />
 		</Unit>
-		<Unit filename="wxdevil.cpp" />
-		<Unit filename="wxdevil.h" />
+		<Unit filename="wxgmagick.cpp" />
+		<Unit filename="wxgmagick.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />
+			<debugger />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

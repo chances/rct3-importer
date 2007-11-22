@@ -760,4 +760,227 @@
 			</object>
 		</object>
 	</object>
+	<object class="wxDialog" name="dlgLoadMatrix">
+		<style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
+		<title>Load Matrix</title>
+		<object class="wxBoxSizer">
+			<orient>wxVERTICAL</orient>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxALL|wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxTreeCtrl" name="m_treeMatrix">
+					<style>wxTR_DEFAULT_STYLE|wxTR_HAS_BUTTONS|wxTR_HIDE_ROOT|wxTR_LINES_AT_ROOT|wxTR_SINGLE</style>
+					<size>200,200</size>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxEXPAND | wxALL</flag>
+				<border>5</border>
+				<object class="wxPanel" name="m_panel2">
+					<style>wxRAISED_BORDER|wxTAB_TRAVERSAL</style>
+					<object class="wxGridSizer">
+						<rows>4</rows>
+						<cols>4</cols>
+						<vgap>0</vgap>
+						<hgap>0</hgap>
+						<object class="sizeritem">
+							<option>1</option>
+							<flag>wxEXPAND</flag>
+							<border>5</border>
+							<object class="wxStaticText" name="m_11">
+								<style>wxST_NO_AUTORESIZE|wxSTATIC_BORDER</style>
+								<label>MyLabel</label>
+							</object>
+						</object>
+						<object class="sizeritem">
+							<option>1</option>
+							<flag>wxEXPAND</flag>
+							<border>5</border>
+							<object class="wxStaticText" name="m_12">
+								<style>wxST_NO_AUTORESIZE|wxSTATIC_BORDER</style>
+								<label>MyLabel</label>
+							</object>
+						</object>
+						<object class="sizeritem">
+							<option>1</option>
+							<flag>wxEXPAND</flag>
+							<border>5</border>
+							<object class="wxStaticText" name="m_13">
+								<style>wxST_NO_AUTORESIZE|wxSTATIC_BORDER</style>
+								<label>MyLabel</label>
+							</object>
+						</object>
+						<object class="sizeritem">
+							<option>1</option>
+							<flag>wxEXPAND</flag>
+							<border>5</border>
+							<object class="wxStaticText" name="m_14">
+								<style>wxST_NO_AUTORESIZE|wxSTATIC_BORDER</style>
+								<label>MyLabel</label>
+							</object>
+						</object>
+						<object class="sizeritem">
+							<option>1</option>
+							<flag>wxEXPAND</flag>
+							<border>5</border>
+							<object class="wxStaticText" name="m_21">
+								<style>wxST_NO_AUTORESIZE|wxSTATIC_BORDER</style>
+								<label>MyLabel</label>
+							</object>
+						</object>
+						<object class="sizeritem">
+							<option>1</option>
+							<flag>wxEXPAND</flag>
+							<border>5</border>
+							<object class="wxStaticText" name="m_22">
+								<style>wxST_NO_AUTORESIZE|wxSTATIC_BORDER</style>
+								<label>MyLabel</label>
+							</object>
+						</object>
+						<object class="sizeritem">
+							<option>1</option>
+							<flag>wxEXPAND</flag>
+							<border>5</border>
+							<object class="wxStaticText" name="m_23">
+								<style>wxST_NO_AUTORESIZE|wxSTATIC_BORDER</style>
+								<label>MyLabel</label>
+							</object>
+						</object>
+						<object class="sizeritem">
+							<option>1</option>
+							<flag>wxEXPAND</flag>
+							<border>5</border>
+							<object class="wxStaticText" name="m_24">
+								<style>wxST_NO_AUTORESIZE|wxSTATIC_BORDER</style>
+								<label>MyLabel</label>
+							</object>
+						</object>
+						<object class="sizeritem">
+							<option>1</option>
+							<flag>wxEXPAND</flag>
+							<border>5</border>
+							<object class="wxStaticText" name="m_31">
+								<style>wxST_NO_AUTORESIZE|wxSTATIC_BORDER</style>
+								<label>MyLabel</label>
+							</object>
+						</object>
+						<object class="sizeritem">
+							<option>1</option>
+							<flag>wxEXPAND</flag>
+							<border>5</border>
+							<object class="wxStaticText" name="m_32">
+								<style>wxST_NO_AUTORESIZE|wxSTATIC_BORDER</style>
+								<label>MyLabel</label>
+							</object>
+						</object>
+						<object class="sizeritem">
+							<option>1</option>
+							<flag>wxEXPAND</flag>
+							<border>5</border>
+							<object class="wxStaticText" name="m_33">
+								<style>wxST_NO_AUTORESIZE|wxSTATIC_BORDER</style>
+								<label>MyLabel</label>
+							</object>
+						</object>
+						<object class="sizeritem">
+							<option>1</option>
+							<flag>wxEXPAND</flag>
+							<border>5</border>
+							<object class="wxStaticText" name="m_34">
+								<style>wxST_NO_AUTORESIZE|wxSTATIC_BORDER</style>
+								<label>MyLabel</label>
+							</object>
+						</object>
+						<object class="sizeritem">
+							<option>1</option>
+							<flag>wxEXPAND</flag>
+							<border>5</border>
+							<object class="wxStaticText" name="m_41">
+								<style>wxST_NO_AUTORESIZE|wxSTATIC_BORDER</style>
+								<label>MyLabel</label>
+							</object>
+						</object>
+						<object class="sizeritem">
+							<option>1</option>
+							<flag>wxEXPAND</flag>
+							<border>5</border>
+							<object class="wxStaticText" name="m_42">
+								<style>wxST_NO_AUTORESIZE|wxSTATIC_BORDER</style>
+								<label>MyLabel</label>
+							</object>
+						</object>
+						<object class="sizeritem">
+							<option>1</option>
+							<flag>wxEXPAND</flag>
+							<border>5</border>
+							<object class="wxStaticText" name="m_43">
+								<style>wxST_NO_AUTORESIZE|wxSTATIC_BORDER</style>
+								<label>MyLabel</label>
+							</object>
+						</object>
+						<object class="sizeritem">
+							<option>1</option>
+							<flag>wxEXPAND</flag>
+							<border>5</border>
+							<object class="wxStaticText" name="m_44">
+								<style>wxST_NO_AUTORESIZE|wxSTATIC_BORDER</style>
+								<label>MyLabel</label>
+							</object>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxALL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText24">
+							<label>Load as</label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>1</option>
+						<flag>wxEXPAND|wxTOP|wxBOTTOM|wxRIGHT</flag>
+						<border>5</border>
+						<object class="wxChoice" name="m_choiceMatrix">
+							<tooltip>Load the selected stack comlpetely or multiplied as a single matrix.</tooltip>
+							<content>
+								<item>single matrix</item>
+								<item>complete stack</item>
+							</content>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
+				<flag>wxALIGN_CENTER_HORIZONTAL|wxBOTTOM</flag>
+				<border>5</border>
+				<object class="wxStdDialogButtonSizer">
+					<object class="button">
+						<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="wxID_OK">
+							<label>&amp;OK</label>
+						</object>
+					</object>
+					<object class="button">
+						<flag>wxALIGN_CENTER_HORIZONTAL|wxALL</flag>
+						<border>5</border>
+						<object class="wxButton" name="wxID_CANCEL">
+							<label>&amp;Cancel</label>
+						</object>
+					</object>
+				</object>
+			</object>
+		</object>
+	</object>
 </resource>

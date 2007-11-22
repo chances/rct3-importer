@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="libOVLng" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Release">
+				<Option output="..\..\lib\libOVLng.a" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="" />
+				<Option object_output="..\..\lib\obj\release" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-Os" />
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+			<Target title="Debug">
+				<Option output="..\..\lib\libOVLngd.a" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="" />
+				<Option object_output="..\..\lib\obj\debug" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-pg" />
+					<Add option="-g" />
+				</Compiler>
+				<Linker>
+					<Add option="-pg -lgmon" />
+				</Linker>
+			</Target>
+		</Build>
+		<VirtualTargets>
+			<Add alias="All" targets="Release;Debug;" />
+		</VirtualTargets>
+		<Compiler>
+			<Add option="-fno-strict-aliasing" />
+			<Add directory="..\..\include" />
+			<Add directory="..\lib3DHelp" />
+		</Compiler>
+		<Linker>
+			<Add option="--no-export-all-symbols --add-stdcall-alias" />
+		</Linker>
+		<Unit filename="..\..\include\boneanim.h" />
+		<Unit filename="..\..\include\boneshape.h" />
+		<Unit filename="..\..\include\flexitexture.h" />
+		<Unit filename="..\..\include\guiicon.h" />
+		<Unit filename="..\..\include\icontexture.h" />
+		<Unit filename="..\..\include\ovlstructs.h" />
+		<Unit filename="..\..\include\path.h" />
+		<Unit filename="..\..\include\scenery.h" />
+		<Unit filename="..\..\include\sceneryvisual.h" />
+		<Unit filename="..\..\include\stall.h" />
+		<Unit filename="..\..\include\staticshape.h" />
+		<Unit filename="..\..\include\terraintype.h" />
+		<Unit filename="..\..\include\vertex.h" />
+		<Unit filename="LodSymRefManager.cpp" />
+		<Unit filename="LodSymRefManager.h" />
+		<Unit filename="ManagerFTX.cpp" />
+		<Unit filename="ManagerFTX.h" />
+		<Unit filename="ManagerOVL.cpp" />
+		<Unit filename="ManagerOVL.h" />
+		<Unit filename="ManagerSHS.cpp" />
+		<Unit filename="ManagerSHS.h" />
+		<Unit filename="OVLDebug.cpp" />
+		<Unit filename="OVLDebug.h" />
+		<Unit filename="OVLException.cpp" />
+		<Unit filename="OVLException.h" />
+		<Unit filename="OVLng.cpp" />
+		<Unit filename="OVLng.h" />
+		<Unit filename="RelocationManager.cpp" />
+		<Unit filename="RelocationManager.h" />
+		<Unit filename="StringTable.cpp" />
+		<Unit filename="StringTable.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

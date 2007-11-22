@@ -16,6 +16,13 @@
 wxColour wxColourHtmlListBox::GetSelectedTextColour(const wxColour& colFg) const {
     if (colFg == *wxBLACK)
         return *wxWHITE;
-    return wxColour(((int) colFg.Red() + 255) / 2, ((int) colFg.Green() + 255) / 2, ((int) colFg.Blue() + 255) / 2);
+    wxColour bg = GetSelectionBackground();
+    if ((((int) bg.Red() + (int) bg.Green() + (int) bg.Blue()) / 3) > 128) {
+        // Light Bg
+        return wxColour(colFg.Red() / 2, colFg.Green() / 2, colFg.Blue() / 2);
+    } else {
+        // Dark Bg
+        return wxColour(((int) colFg.Red() + 255) / 2, ((int) colFg.Green() + 255) / 2, ((int) colFg.Blue() + 255) / 2);
+    }
 }
 

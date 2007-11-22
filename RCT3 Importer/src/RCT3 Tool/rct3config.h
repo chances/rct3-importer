@@ -31,9 +31,24 @@
 #include "win_predefine.h"
 #include "wx_pch.h"
 
+#include "3DLoaderTypes.h"
+
 #include <string>
 
-#define RCT3CONFIG_VERSION      2
+#define READ_APP_WORKDIR()     wxcRead<wxString>(wxT("App/WorkDirectory"), g_appdir)
+#define WRITE_APP_WORKDIR(v)   wxcWrite<wxString>(wxT("App/WorkDirectory"), v)
+
+#define READ_APP_MATRIX()     wxcRead<D3DMATRIX>(wxT("App/Matrix"), matrixGetUnity())
+#define WRITE_APP_MATRIX(v)   wxcWrite<D3DMATRIX>(wxT("App/Matrix"), v)
+
+#define READ_APP_PREFIX()     wxcRead<wxString>(wxT("App/Prefix"), wxT(""))
+#define WRITE_APP_PREFIX(v)   wxcWrite<wxString>(wxT("App/Prefix"), v)
+
+#define READ_APP_TOOLTIPS()     wxcRead<bool>(wxT("App/Tooltips"), true)
+#define WRITE_APP_TOOLTIPS(v)   wxcWrite<bool>(wxT("App/Tooltips"), v)
+
+/*
+#define RCT3CONFIG_VERSION      4
 
 class RCT3Config {
 public:
@@ -41,6 +56,8 @@ public:
     wxString m_prefix;
     D3DMATRIX m_def_matrix;
     wxString m_workdir;
+    c3DLoaderOrientation m_def_orient;
+    bool m_tooltips;
 
     RCT3Config();
     RCT3Config(wxString appdir);
@@ -48,5 +65,5 @@ public:
     void Load();
     bool Save();
 };
-
+*/
 #endif // CONFIG_H_INCLUDED

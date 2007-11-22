@@ -43,6 +43,7 @@ protected:
     wxCheckBox* m_checkShines;
     wxCheckBox* m_checkBulb;
     wxChoice* m_choiceLightOption;
+    wxChoice* m_choiceColour;
     wxTextCtrl* m_textLightRed;
     wxTextCtrl* m_textLightGreen;
     wxTextCtrl* m_textLightBlue;
@@ -55,6 +56,7 @@ protected:
     wxColourPickerCtrl* m_colourPick;
     bool m_doUpdate;
     unsigned int m_offset;
+    bool m_colour;
 
     void OnColourPick(wxColourPickerEvent& event);
     void OnColourEdit(wxCommandEvent& event);
@@ -68,6 +70,7 @@ private:
         m_checkShines = XRCCTRL(*this,"m_checkShines",wxCheckBox);
         m_checkBulb = XRCCTRL(*this,"m_checkBulb",wxCheckBox);
         m_choiceLightOption = XRCCTRL(*this,"m_choiceLightOption",wxChoice);
+        m_choiceColour = XRCCTRL(*this,"m_choiceColour",wxChoice);
         m_textLightRed = XRCCTRL(*this,"m_textLightRed",wxTextCtrl);
         m_textLightGreen = XRCCTRL(*this,"m_textLightGreen",wxTextCtrl);
         m_textLightBlue = XRCCTRL(*this,"m_textLightBlue",wxTextCtrl);
@@ -80,7 +83,7 @@ private:
 
     DECLARE_EVENT_TABLE()
 public:
-    dlgEffectLight(wxWindow *parent=NULL);
+    dlgEffectLight(wxWindow *parent=NULL, bool colour=false);
     wxString GetLight() {return m_textPreview->GetValue();};
     unsigned int GetOffset() const {return m_offset;};
 };

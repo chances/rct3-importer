@@ -44,6 +44,6 @@ extern HINSTANCE hInst;
 //extern RGBQUAD recolpalette_bmy[256];
 //extern RGBQUAD recolpalette_rgb[256];
 extern wxString g_appdir;
-extern RCT3Config *g_config;
+//extern RCT3Config *g_config;
 
 #endif // GLOBAL_H_INCLUDED

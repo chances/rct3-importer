@@ -27,36 +27,82 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "SCNFile.h"
-#include "matrix.h"
-//#include "3DLoader.h"
+
 #include <sstream>
 #include <stdio.h>
 
+#include "gximage.h"
+#include "matrix.h"
+#include "RCT3Exception.h"
+#include "texcheck.h"
 
-bool cSCNFile::Load() {
+bool cSCNFile::CheckForModelNameDuplicates() {
+    for (cModel::iterator moda = models.begin(); moda != models.end(); moda++) {
+        // Internal dups
+        for (cModel::iterator modi = models.begin(); modi != models.end(); modi++) {
+            // Skip same
+            if (modi == moda)
+                continue;
+            if (modi->name == moda->name) {
+                return false;
+            }
+        }
 
-    ovlname = wxT("");
+        // Animated dups
+        for (cAnimatedModel::iterator amod = animatedmodels.begin(); amod != animatedmodels.end(); amod++) {
+            if (moda->name == amod->name) {
+                return false;
+            }
+        }
+    }
+    // Animated internal dups
+    for (cAnimatedModel::iterator amoda = animatedmodels.begin(); amoda != animatedmodels.end(); amoda++) {
+        for (cAnimatedModel::iterator amodi = animatedmodels.begin(); amodi != animatedmodels.end(); amodi++) {
+            // Skip same
+            if (amodi == amoda)
+                continue;
+            if (amodi->name == amoda->name) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+void cSCNFile::Init() {
+    ovlpath = wxT("");
+    name = wxT("");
     flexitextures.clear();
     models.clear();
+    animatedmodels.clear();
     lods.clear();
+    animations.clear();
     references.clear();
     sivsettings = cSIVSettings();
 
     error = CSCNFILE_NO_ERROR;
+}
+
+bool cSCNFile::Load() {
+    Init();
 
     if (filename == "") {
-        error = CSCNFILE_ERROR_FILENAME;
-        return false;
+        throw RCT3Exception(_("No scenery file name given."));
     }
 
     FILE *f = fopen(filename.GetFullPath().fn_str(), "rb");
     if (!f) {
-        error = CSCNFILE_ERROR_FILENAME;
-        return false;
+        throw RCT3Exception(_("Failed to open scenery file."));
     }
 
     unsigned long objlen;
     fread(&objlen, sizeof(objlen), 1, f);
+
+    // Check for XML file
+    if (objlen == CSCNFILE_XMLFILE) {
+        fclose(f);
+        return LoadXML();
+    }
 
     // Check for old file format and call legacy loading function
     if (objlen < ((unsigned long) -1))
@@ -66,17 +112,15 @@ bool cSCNFile::Load() {
     char scnmagic[8];
     fread(&scnmagic, 8, 1, f);
     if (strncmp(CSCNFILE_MAGIC, scnmagic, 7) != 0) {
-        error = CSCNFILE_ERROR_WRONG_MAGIC;
         fclose(f);
-        return false;
+        throw RCT3Exception(_("Invalid scenery file."));
     }
 
     // Read version
     fread(&version, sizeof(long), 1, f);
     if (version > VERSION_CSCNFILE) {
-        error = CSCNFILE_ERROR_VERSION;
         fclose(f);
-        return false;
+        throw RCT3Exception(_("Scenery file version not supported."));
     }
 
     // Read ovl name
@@ -85,13 +129,15 @@ bool cSCNFile::Load() {
     if (count) {
         char *tmp = new char[count];
         fread(tmp, count, 1, f);
-        ovlname = wxString(tmp);
+        wxFileName ovlname = wxString(tmp);
         if (strlen(tmp)) {
             if (!ovlname.IsAbsolute()) {
                 ovlname.MakeAbsolute(filename.GetPath());
             }
         }
         delete[] tmp;
+        ovlpath = ovlname.GetPathWithSep();
+        name = ovlname.GetName();
     }
 
     // Read sivsettings
@@ -143,7 +189,7 @@ void cSCNFile::LoadTextures(FILE *f) {
             unsigned long l;
             fread(&l, sizeof(unsigned long), 1, f);
             if (i && (l == old_anim)) {
-                ft.Animation[x].count++;
+                ft.Animation[x].count(ft.Animation[x].count()+1);
             } else {
                 cFlexiTextureAnim an(l);
                 ft.Animation.push_back(an);
@@ -158,17 +204,17 @@ void cSCNFile::LoadTextures(FILE *f) {
         for(unsigned long i = 0; i < frame_count; i++) {
             cFlexiTextureFrame ftfr;
 
-            fread(&ftfr.Recolorable, sizeof(ftfr.Recolorable), 1, f);
+            ftfr.recolorable_read(f);
 
             unsigned long texturelen = 0;
             fread(&texturelen, sizeof(texturelen), 1, f);
             if (texturelen) {
                 tmp = new char[texturelen];
                 fread(tmp, texturelen, 1, f);
-                ftfr.Texture = wxString(tmp);
+                ftfr.texture(wxString(tmp));
                 if (strlen(tmp)) {
-                    if (!ftfr.Texture.IsAbsolute()) {
-                        ftfr.Texture.MakeAbsolute(filename.GetPath());
+                    if (!ftfr.texture().IsAbsolute()) {
+                        ftfr.texture_nc().MakeAbsolute(filename.GetPath());
                     }
                 }
                 delete[] tmp;
@@ -179,22 +225,22 @@ void cSCNFile::LoadTextures(FILE *f) {
             if (alphalen) {
                 tmp = new char[alphalen];
                 fread(tmp, alphalen, 1, f);
-                ftfr.Alpha = wxString(tmp);
+                ftfr.alpha(wxString(tmp));
                 if (strlen(tmp)) {
-                    if (!ftfr.Alpha.IsAbsolute()) {
-                        ftfr.Alpha.MakeAbsolute(filename.GetPath());
+                    if (!ftfr.alpha().IsAbsolute()) {
+                        ftfr.alpha_nc().MakeAbsolute(filename.GetPath());
                     }
                 }
                 delete[] tmp;
             }
             if (version >= 5) {
-                fread(&ftfr.AlphaCutoff, sizeof(ftfr.AlphaCutoff), 1, f);
-                fread(&ftfr.AlphaSource, sizeof(ftfr.AlphaSource), 1, f);
+                ftfr.alphacutoff_read(f);
+                ftfr.alphasource_read(f);
             } else {
-                if (ftfr.Alpha != wxT(""))
-                    ftfr.AlphaSource = CFTF_ALPHA_EXTERNAL;
+                if (ftfr.alpha() != wxT(""))
+                    ftfr.alphasource(CFTF_ALPHA_EXTERNAL);
                 else
-                    ftfr.AlphaSource = CFTF_ALPHA_NONE;
+                    ftfr.alphasource(CFTF_ALPHA_NONE);
             }
             ft.Frames.push_back(ftfr);
         }
@@ -334,7 +380,7 @@ bool cSCNFile::LoadModels(FILE *f) {
             if (count) {
                 tmp = new char[count];
                 fread(tmp, count, 1, f);
-                e.Name = tmp;
+                e.name = tmp;
                 delete[] tmp;
             }
 
@@ -350,10 +396,10 @@ bool cSCNFile::LoadModels(FILE *f) {
                 if (count) {
                     tmp = new char[count];
                     fread(tmp, count, 1, f);
-                    e.TransformNames.push_back(wxString(tmp));
+                    e.transformnames.push_back(wxString(tmp));
                     delete[] tmp;
                 } else {
-                    e.TransformNames.push_back(_("<empty name>"));
+                    e.transformnames.push_back(_("<empty name>"));
                 }
 
                 // Matrix
@@ -374,7 +420,7 @@ bool cSCNFile::LoadModels(FILE *f) {
                 fread(&m._43, sizeof(m._43), 1, f);
                 fread(&m._44, sizeof(m._44), 1, f);
 
-                e.Transform.push_back(m);
+                e.transforms.push_back(m);
             }
             mod.effectpoints.push_back(e);
         }
@@ -504,33 +550,33 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
             ft.Name = wxT("");
 
         cFlexiTextureFrame ftfr;
-        ftfr.Recolorable = ft.Recolorable;
+        ftfr.recolorable(ft.Recolorable);
         unsigned long texturelen;
         fread(&texturelen, sizeof(texturelen), 1, f);
         if (texturelen) {
             tmp = new char[texturelen];
             fread(tmp, texturelen, 1, f);
-            ftfr.Texture = tmp;
+            ftfr.texture(wxString(tmp));
             delete[] tmp;
         } else
-            ftfr.Texture = wxT("");
+            ftfr.texture(wxString(wxT("")));
 
         unsigned long alphalen;
         fread(&alphalen, sizeof(alphalen), 1, f);
         if (alphalen) {
             tmp = new char[alphalen];
             fread(tmp, alphalen, 1, f);
-            ftfr.Alpha = tmp;
+            ftfr.alpha(wxString(tmp));
             delete[] tmp;
         } else
-            ftfr.Alpha = wxT("");
+            ftfr.alpha(wxString(wxT("")));
 
-        if (ftfr.Alpha != wxT(""))
-            ftfr.AlphaSource = CFTF_ALPHA_EXTERNAL;
+        if (ftfr.alpha() != wxT(""))
+            ftfr.alphasource(CFTF_ALPHA_EXTERNAL);
         else
-            ftfr.AlphaSource = CFTF_ALPHA_NONE;
+            ftfr.alphasource(CFTF_ALPHA_NONE);
 
-        if ((ftfr.Texture != wxT("")) || (ftfr.Alpha != wxT("")))
+        if ((ftfr.texture() != wxT("")) || (ftfr.alpha() != wxT("")))
             ft.Frames.push_back(ftfr);
 
         flexitextures.push_back(ft);
@@ -562,10 +608,10 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
         if (namelen) {
             tmp = new char[namelen];
             fread(tmp, namelen, 1, f);
-            e.Name = tmp;
+            e.name = tmp;
             delete[] tmp;
         } else
-            e.Name = "";
+            e.name = "";
 
         D3DMATRIX m;
         fread(&m._11, sizeof(m._11), 1, f);
@@ -584,8 +630,8 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
         fread(&m._42, sizeof(m._42), 1, f);
         fread(&m._43, sizeof(m._43), 1, f);
         fread(&m._44, sizeof(m._44), 1, f);
-        e.Transform.push_back(m);
-        e.TransformNames.push_back("Custom Matrix (old scn)");
+        e.transforms.push_back(m);
+        e.transformnames.push_back("Custom Matrix (old scn)");
 
         models[0].effectpoints.push_back(e);
     }
@@ -680,10 +726,10 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
                 if (namelen) {
                     tmp = new char[namelen];
                     fread(tmp, namelen, 1, f);
-                    e.Name = tmp;
+                    e.name = tmp;
                     delete[] tmp;
                 } else
-                    e.Name = "";
+                    e.name = "";
 
                 fread(&matrices, sizeof(matrices), 1, f);
                 for (unsigned long j = 0; j < matrices; j++) {
@@ -698,7 +744,7 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
                         delete[] tmp;
                     } else
                         nam = "";
-                    e.TransformNames.push_back(nam);
+                    e.transformnames.push_back(nam);
 
                     fread(&m._11, sizeof(m._11), 1, f);
                     fread(&m._12, sizeof(m._12), 1, f);
@@ -716,7 +762,7 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
                     fread(&m._42, sizeof(m._42), 1, f);
                     fread(&m._43, sizeof(m._43), 1, f);
                     fread(&m._44, sizeof(m._44), 1, f);
-                    e.Transform.push_back(m);
+                    e.transforms.push_back(m);
                 }
 
                 models[0].effectpoints.push_back(e);
@@ -913,21 +959,21 @@ void cSCNFile::SaveTextures(FILE *f) {
         fwrite(&ft.FPS, sizeof(ft.FPS), 1, f);
 
         unsigned long anim_count = 0;
-        for(cFlexiTextureAnimIterator it = ft.Animation.begin(); it != ft.Animation.end(); it++) {
-            anim_count += it->count;
+        for(cFlexiTextureAnim::iterator it = ft.Animation.begin(); it != ft.Animation.end(); it++) {
+            anim_count += it->count();
         }
         fwrite(&anim_count, sizeof(anim_count), 1, f);
         for(unsigned long j = 0; j < ft.Animation.size(); j++) {
-            for(unsigned long k = 0; k < ft.Animation[j].count; k++)
-                fwrite(&ft.Animation[j].frame, sizeof(unsigned long), 1, f);
+            for(unsigned long k = 0; k < ft.Animation[j].count(); k++)
+                fwrite(&ft.Animation[j].frame(), sizeof(unsigned long), 1, f);
         }
 
         unsigned long frame_count = ft.Frames.size();
         fwrite(&frame_count, sizeof(frame_count), 1, f);
-        for(cFlexiTextureFrameIterator it = ft.Frames.begin(); it != ft.Frames.end(); it++) {
-            fwrite(&it->Recolorable, sizeof(it->Recolorable), 1, f);
+        for(cFlexiTextureFrame::iterator it = ft.Frames.begin(); it != ft.Frames.end(); it++) {
+            it->recolorable_write(f);
 
-            temp = it->Texture;
+            temp = it->texture();
             if (temp != wxT("")) {
                 if (save_relative_paths)
                     temp.MakeRelativeTo(filename.GetPath());
@@ -938,7 +984,7 @@ void cSCNFile::SaveTextures(FILE *f) {
                 fwrite(temp.GetFullPath().fn_str(), texturelen, 1, f);
             }
 
-            temp = it->Alpha;
+            temp = it->alpha();
             if (temp != wxT("")) {
                 if (save_relative_paths)
                     temp.MakeRelativeTo(filename.GetPath());
@@ -949,8 +995,8 @@ void cSCNFile::SaveTextures(FILE *f) {
                 fwrite(temp.GetFullPath().fn_str(), alphalen, 1, f);
             }
 
-            fwrite(&it->AlphaCutoff, sizeof(it->AlphaCutoff), 1, f);
-            fwrite(&it->AlphaSource, sizeof(it->AlphaSource), 1, f);
+            it->alphacutoff_write(f);
+            it->alphasource_write(f);
         }
     }
 }
@@ -1049,23 +1095,23 @@ void cSCNFile::SaveModels(FILE *f) {
             cEffectPoint e = mod->effectpoints[i];
 
             // Name
-            unsigned long namelen = e.Name.length()+1;
+            unsigned long namelen = e.name.length()+1;
             fwrite(&namelen, sizeof(namelen), 1, f);
             if (namelen) {
-                fwrite(e.Name.c_str(), namelen, 1, f);
+                fwrite(e.name.c_str(), namelen, 1, f);
             }
 
             // Matrices
-            matrices = e.Transform.size();
+            matrices = e.transforms.size();
             fwrite(&matrices, sizeof(matrices), 1, f);
             for (unsigned long j = 0; j < matrices; j++) {
-                D3DMATRIX m = e.Transform[j];
+                D3DMATRIX m = e.transforms[j];
 
                 // Name
-                namelen = e.TransformNames[j].length()+1;
+                namelen = e.transformnames[j].length()+1;
                 fwrite(&namelen, sizeof(namelen), 1, f);
                 if (namelen) {
-                    fwrite(e.TransformNames[j].c_str(), namelen, 1, f);
+                    fwrite(e.transformnames[j].c_str(), namelen, 1, f);
                 }
 
                 // Matrix
@@ -1151,7 +1197,8 @@ bool cSCNFile::Save() {
     fwrite(&version, sizeof(long), 1, f);
 
     // Write ovl name
-    wxFileName temp = ovlname;
+    wxFileName temp = ovlpath;
+    temp.SetName(name);
     if (save_relative_paths)
         temp.MakeRelativeTo(filename.GetPath());
     unsigned long count = temp.GetFullPath().length()+1;
@@ -1177,6 +1224,9 @@ bool cSCNFile::Save() {
     SaveReferences(f);
 
     fclose(f);
+
+    SaveXML();
+
     return true;
 
     /*
@@ -1363,4 +1413,469 @@ bool cSCNFile::Save() {
         fclose(f);
         return true;
     */
+}
+
+void cSCNFile::SaveXML() {
+    wxString xmlfile = filename.GetFullPath();
+    xmlfile += wxT(".xml");
+    wxXmlDocument doc;
+    doc.SetFileEncoding(wxT("UTF-8"));
+    doc.SetRoot(GetNode(filename.GetPath()));
+    doc.Save(xmlfile, 2);
+}
+
+bool cSCNFile::LoadXML() {
+    wxString temp;
+
+    wxXmlDocument doc;
+    if (!doc.Load(filename.GetFullPath()))
+        throw RCT3Exception(wxString::Format(_("Error loading xml file '%s'."), filename.GetFullPath().fn_str()));
+
+    // start processing the XML file
+    wxXmlNode* root = doc.GetRoot();
+    if (root->GetName() != RCT3XML_CSCNFILE) {
+        throw RCT3Exception(wxString::Format(_("Error loading xml file '%s'. Wrong root tag. Probably you tried to load a xml file made for a different purpose."), filename.GetFullPath().fn_str()));
+    }
+
+    wxString path = filename.GetPath();
+
+    return FromNode(root, path, 0);
+}
+
+#define COMPILER_BSH wxT("bsh")
+#define COMPILER_BAN wxT("ban")
+#define COMPILER_FTX wxT("ftx")
+#define COMPILER_FIX wxT("fix")
+#define COMPILER_REFERENCE wxT("reference")
+
+bool cSCNFile::FromCompilerXml(wxXmlNode* node, const wxString& path) {
+    wxXmlNode *child = node->GetChildren();
+    c3DLoaderOrientation ori = ORIENTATION_UNKNOWN;
+    bool ret = true;
+
+    while (child) {
+
+        if (child->GetName() == COMPILER_BSH) {
+            cAnimatedModel nmodel;
+            if (!nmodel.FromCompilerXml(child, path))
+                ret = false;
+            animatedmodels.push_back(nmodel);
+        } else if (child->GetName() == COMPILER_BAN) {
+            cAnimation anim;
+            if (!anim.FromCompilerXml(child, path))
+                ret = false;
+            animations.push_back(anim);
+        } else if (child->GetName() == COMPILER_FTX) {
+            cFlexiTexture ftx;
+            if (!ftx.FromCompilerXml(child, path))
+                ret = false;
+            flexitextures.push_back(ftx);
+        } else if (child->GetName() == COMPILER_FIX) {
+            if (ori != ORIENTATION_UNKNOWN) {
+                throw RCT3Exception(_("Second fix tag found."));
+            }
+            wxString hand = node->GetPropVal(wxT("handedness"), wxT("left"));
+            hand.MakeLower();
+            wxString up = node->GetPropVal(wxT("up"), wxT("y"));
+            up.MakeLower();
+            if (hand == wxT("left")) {
+                if (up == wxT("x")) {
+                    ori = ORIENTATION_LEFT_XUP;
+                } else if (up == wxT("y")) {
+                    ori = ORIENTATION_LEFT_YUP;
+                } else if (up == wxT("z")) {
+                    ori = ORIENTATION_LEFT_ZUP;
+                } else {
+                    throw RCT3Exception(wxString::Format(_("Unknown value '%s' for up attribute in fix tag."), up.c_str()));
+                }
+            } else if (hand == wxT("right")) {
+                if (up == wxT("x")) {
+                    ori = ORIENTATION_RIGHT_XUP;
+                } else if (up == wxT("y")) {
+                    ori = ORIENTATION_RIGHT_YUP;
+                } else if (up == wxT("z")) {
+                    ori = ORIENTATION_RIGHT_ZUP;
+                } else {
+                    throw RCT3Exception(wxString::Format(_("Unknown value '%s' for up attribute in fix tag."), up.c_str()));
+                }
+            } else {
+                throw RCT3Exception(wxString::Format(_("Unknown value '%s' for handedness attribute in fix tag."), hand.c_str()));
+            }
+        } else if (child->GetName() == COMPILER_REFERENCE) {
+            wxString ref = child->GetPropVal(wxT("path"), wxT(""));
+            if (ref.IsEmpty())
+                throw RCT3Exception(_("REFERENCE tag misses path attribute."));
+            references.Add(ref);
+        } else if COMPILER_WRONGTAG(child) {
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ovl tag."), child->GetName().c_str()));
+        }
+
+        child = child->GetNext();
+    }
+
+    if (ori == ORIENTATION_UNKNOWN)
+        ori = ORIENTATION_LEFT_YUP;
+
+    for (cAnimatedModel::iterator it = animatedmodels.begin(); it != animatedmodels.end(); ++it)
+        it->usedorientation = ori;
+    for (cAnimation::iterator it = animations.begin(); it != animations.end(); ++it)
+        it->usedorientation = ori;
+
+    if (animatedmodels.size()) {
+        cLOD lod;
+        lod.animated = true;
+        lod.modelname = animatedmodels[0].name;
+        lod.distance = 4000;
+        if (animations.size()) {
+            lod.animations.Add(animations[0].name);
+        }
+        lods.push_back(lod);
+    }
+
+    return ret;
+}
+
+#define CSCNFILE_READVECTOR(vec, itype, itag, tag) \
+    } else if (child->GetName() == tag) { \
+        wxXmlNode* subchild = child->GetChildren(); \
+        while (subchild) { \
+            if (subchild->GetName() == itag) { \
+                itype item; \
+                if (!item.FromNode(subchild, path, version)) \
+                    ret = false; \
+                vec.push_back(item); \
+            } \
+            subchild = subchild->GetNext(); \
+        }
+
+bool cSCNFile::FromNode(wxXmlNode* node, const wxString& path, unsigned long version) {
+    bool ret = true;
+    wxString temp;
+    if (!node)
+        return false;
+    if (!node->GetName().IsSameAs(RCT3XML_CSCNFILE))
+        return false;
+
+    name = node->GetPropVal(wxT("name"), wxT(""));
+
+    // Read ovl file
+    ovlpath = node->GetPropVal(wxT("file"), wxT(""));
+    if (!ovlpath.GetFullPath().IsSameAs(wxT(""))) {
+        if (!ovlpath.IsAbsolute()) {
+            ovlpath.MakeAbsolute(path);
+        }
+    }
+
+    // Read version
+    if (node->GetPropVal(wxT("version"), &temp)) {
+        if (!temp.ToULong(&version)) {
+            version = VERSION_CSCNFILE_FIRSTXML;
+            ret = false;
+        }
+    } else {
+        version = VERSION_CSCNFILE_FIRSTXML;
+        // OVLCompiler XML
+        return FromCompilerXml(node, path);
+    }
+
+    this->version = version;
+
+    if (version > VERSION_CSCNFILE) {
+        error |= CSCNFILE_ERROR_VERSION_XML;
+        ret = false;
+    }
+
+
+    wxXmlNode *child = node->GetChildren();
+    while (child) {
+
+        if (child->GetName() == RCT3XML_CSIVSETTINGS) {
+            if (!sivsettings.FromNode(child, path, version))
+                ret = false;
+        CSCNFILE_READVECTOR(flexitextures, cFlexiTexture, RCT3XML_CFLEXITEXTURE, RCT3XML_CSCNFILE_FLEXITEXTURES)
+        CSCNFILE_READVECTOR(models, cModel, RCT3XML_CMODEL, RCT3XML_CSCNFILE_MODELS)
+        CSCNFILE_READVECTOR(animatedmodels, cAnimatedModel, RCT3XML_CANIMATEDMODEL, RCT3XML_CSCNFILE_ANIMATEDMODELS)
+        CSCNFILE_READVECTOR(animations, cAnimation, RCT3XML_CANIMATION, RCT3XML_CSCNFILE_ANIMATIONS)
+        CSCNFILE_READVECTOR(lods, cLOD, RCT3XML_CLOD, RCT3XML_CSCNFILE_LODS)
+        }
+
+        child = child->GetNext();
+    }
+    return ret;
+}
+
+//    parent = new wxXmlNode(node, wxXML_ELEMENT_NODE, tag);
+//        newchild->SetParent(parent);
+
+#define CSCNFILE_WRITEVECTOR(vec, iter, tag) \
+    parent = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, tag); \
+    for (iter it = vec.begin(); it != vec.end(); it++) { \
+        wxXmlNode* newchild = it->GetNode(path); \
+        if (lastchild) \
+            lastchild->SetNext(newchild); \
+        else \
+            parent->SetChildren(newchild); \
+        lastchild = newchild; \
+    } \
+    lastparent->SetNext(parent); \
+    lastparent = parent; \
+    lastchild = NULL;
+
+wxXmlNode* cSCNFile::GetNode(const wxString& path) {
+    wxXmlNode* node = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, RCT3XML_CSCNFILE);
+    wxXmlNode* lastchild = NULL;
+    wxXmlNode* lastparent = NULL;
+
+    node->AddProperty(wxT("name"), name);
+    wxFileName temp = ovlpath;
+    temp.MakeRelativeTo(path);
+    node->AddProperty(wxT("file"), temp.GetFullPath());
+    node->AddProperty(wxT("version"), wxString::Format("%lu", version));
+
+    lastparent = sivsettings.GetNode(path);
+    //lastparent->SetParent(node);
+    node->SetChildren(lastparent);
+
+    wxXmlNode* parent;
+
+    CSCNFILE_WRITEVECTOR(flexitextures, cFlexiTexture::iterator, RCT3XML_CSCNFILE_FLEXITEXTURES)
+    CSCNFILE_WRITEVECTOR(models, cModel::iterator, RCT3XML_CSCNFILE_MODELS)
+    CSCNFILE_WRITEVECTOR(animatedmodels, cAnimatedModel::iterator, RCT3XML_CSCNFILE_ANIMATEDMODELS)
+    CSCNFILE_WRITEVECTOR(animations, cAnimation::iterator, RCT3XML_CSCNFILE_ANIMATIONS)
+    CSCNFILE_WRITEVECTOR(lods, cLOD::iterator, RCT3XML_CSCNFILE_LODS)
+
+    //parent = new wxXmlNode(node, wxXML_ELEMENT_NODE, RCT3XML_CSCNFILE_REFERENCES);
+    parent = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, RCT3XML_CSCNFILE_REFERENCES);
+    for (cStringIterator it = references.begin(); it != references.end(); it++) {
+        //wxXmlNode* newchild = new wxXmlNode(parent, wxXML_ELEMENT_NODE, RCT3XML_REFERENCE);
+        wxXmlNode* newchild = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, RCT3XML_REFERENCE);
+        newchild->AddProperty(wxT("path"), *it);
+        if (lastchild)
+            lastchild->SetNext(newchild);
+        else
+            parent->SetChildren(newchild);
+        lastchild = newchild;
+    }
+    lastparent->SetNext(parent);
+
+    return node;
+}
+
+bool cSCNFile::Check() {
+    bool warning = false;
+    CleanWork();
+
+    if (name.IsEmpty()) {
+        throw RCT3Exception(_("OVL Name not set."));
+    }
+
+    m_work = new cSCNFile(*this);
+
+
+    /////////////////////////////////////////////////////
+    // Sanity Checks & fix the work copy for processing
+    {
+        wxSortedArrayString usedtextures;
+        wxSortedArrayString presentbones;
+        if ((!m_work->models.size()) && (!m_work->animatedmodels.size()) && (!m_work->lods.size()) && (!m_work->animations.size())) {
+            m_textureovl = true;
+        } else {
+            // Sanity check for model related stuff
+
+            // Check for LODs
+            if (!m_work->lods.size()) {
+                throw RCT3Exception(_("You didn't set any levels of detail!"));
+            }
+
+            // Check the models
+            if ((!m_work->models.size()) && (!m_work->animatedmodels.size())) {
+                throw RCT3Exception(_("You didn't add any models!"));
+            }
+
+            // Check for duplicate names
+            if (!CheckForModelNameDuplicates()) {
+                throw RCT3Exception(_("You have a duplicate model name. Model names have to be unique, even between static and animated models."));
+            }
+
+            cModelMap modnames;
+            for (cModel::iterator i_mod = m_work->models.begin(); i_mod != m_work->models.end(); ++i_mod) {
+                // Note: at this stage we issue only warnings. Errors occur when a LOD references
+                //   a broken model
+                i_mod->Check(modnames);
+            }
+            cAnimatedModelMap amodnames;
+            for (cAnimatedModel::iterator i_mod = m_work->animatedmodels.begin(); i_mod != m_work->animatedmodels.end(); ++i_mod) {
+                // Note: at this stage we issue only warnings. Errors occur when a LOD references
+                //   a broken model
+                i_mod->Check(amodnames);
+            }
+
+            // Now check the LODs
+            for (cLOD::iterator i_lod = m_work->lods.begin(); i_lod != m_work->lods.end(); i_lod++) {
+                cModel *mod = modnames[i_lod->modelname];
+                cAnimatedModel *amod = amodnames[i_lod->modelname];
+                if (mod) {
+                    if (mod->fatal_error) {
+                        throw RCT3Exception(wxString::Format(_("Level of Detail '%s' (%.1f): Error in corresponding model."), i_lod->modelname.c_str(), i_lod->distance));
+                    }
+                    mod->used = true;
+                    if (i_lod->animated) {
+                        i_lod->animated = false;
+                        i_lod->animations.clear();
+                        warning = true;
+                        wxLogWarning(_("Level of Detail '%s' (%.1f): Static model was marked as animated."), i_lod->modelname.c_str(), i_lod->distance);
+                    }
+                } else if (amod) {
+                    if (amod->fatal_error) {
+                        throw RCT3Exception(wxString::Format(_("Level of Detail '%s' (%.1f): Error in corresponding animated model."), i_lod->modelname.c_str(), i_lod->distance));
+                    }
+                    amod->used = true;
+                    if (!i_lod->animated) {
+                        i_lod->animated = true;
+                        warning = true;
+                        wxLogWarning(_("Level of Detail '%s' (%.1f): Animated model was marked as static."), i_lod->modelname.c_str(), i_lod->distance);
+                    }
+                    if (!i_lod->animations.size()) {
+                        warning = true;
+                        wxLogWarning(_("Level of Detail '%s' (%.1f): Animated model used but no animations assigned."), i_lod->modelname.c_str(), i_lod->distance);
+                    }
+                } else {
+                    throw RCT3Exception(wxString::Format(_("Level of Detail '%s' (%.1f): Corresponding model missing."), i_lod->modelname.c_str(), i_lod->distance));
+                }
+            }
+
+            // Last add warnings about unused models and remember texture names and bones for used ones
+            for (cModel::iterator i_mod = m_work->models.begin(); i_mod != m_work->models.end(); ++i_mod) {
+                if (i_mod->used) {
+                    for (cMeshStruct::iterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); ++i_mesh) {
+                        if (!i_mesh->disabled) {
+                            usedtextures.Add(i_mesh->FTX);
+                            m_meshes++;
+                        }
+                    }
+                } else {
+                    warning = true;
+                    wxLogWarning(_("Model '%s': Unused. It will not be written to the ovl file."), i_mod->name.c_str());
+                }
+            }
+            for (cAnimatedModel::iterator i_mod = m_work->animatedmodels.begin(); i_mod != m_work->animatedmodels.end(); ++i_mod) {
+                if (i_mod->used) {
+                    for (cMeshStruct::iterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); ++i_mesh) {
+                        if (!i_mesh->disabled) {
+                            usedtextures.Add(i_mesh->FTX);
+                            m_meshes++;
+                        }
+                    }
+                    for (cModelBone::iterator i_bone = i_mod->modelbones.begin(); i_bone != i_mod->modelbones.end(); ++i_bone) {
+                        presentbones.Add(i_bone->name);
+                    }
+                } else {
+                    warning = true;
+                    wxLogWarning(_("Animated model '%s': Unused. It will not be written to the ovl file."), i_mod->name.c_str());
+                }
+            }
+        }
+
+        // Check the textures
+        for (cFlexiTexture::iterator i_ftx = m_work->flexitextures.begin(); i_ftx != m_work->flexitextures.end(); i_ftx++) {
+            if ((!m_textureovl) && (usedtextures.Index(i_ftx->Name) == wxNOT_FOUND)) {
+                // We're not writing a texture ovl and the texture is unused
+                i_ftx->used = false;
+                warning = true;
+                wxLogWarning(_("Texture '%s': Unused. It will not be written to the ovl file."), i_ftx->Name.c_str());
+                continue;
+            } else {
+                // Either used or a texture ovl
+                i_ftx->used = true;
+                m_textures++;
+            }
+
+            i_ftx->Check();
+
+//            if (!i_ftx->Frames.size()) {
+//                // No texture frames added.
+//                throw RCT3Exception(wxString::Format(_("Texture '%s': No texture frames defined."), i_ftx->Name.c_str()));
+//            }
+//
+//            // The validators should make these checks unnecessary, but better safe than sorry
+//            for (cFlexiTextureFrame::iterator i_ftxfr = i_ftx->Frames.begin(); i_ftxfr != i_ftx->Frames.end(); i_ftxfr++) {
+//                try {
+//                    checkRCT3Texture(i_ftxfr->texture().GetFullPath());
+//                } catch (RCT3TextureException& e) {
+//                    throw RCT3Exception(wxString::Format(_("Texture '%s', file '%s': %s"), i_ftx->Name.c_str(), i_ftxfr->texture().GetFullPath().fn_str(), e.what()));
+//                }
+//
+//                if (i_ftxfr->alphasource() == CFTF_ALPHA_EXTERNAL) {
+//                    try {
+//                        checkRCT3Texture(i_ftxfr->alpha().GetFullPath());
+//                    } catch (RCT3TextureException& e) {
+//                        i_ftxfr->alphasource(CFTF_ALPHA_NONE);
+//                        warning = true;
+//                        wxLogWarning(_("Texture '%s', file '%s': Problem with alpha channel file. Alpha deactivated. (Problem was %s)"), i_ftx->Name.c_str(), i_ftxfr->alpha().GetFullPath().fn_str(), e.what());
+//                    }
+//                } else if (i_ftxfr->alphasource() == CFTF_ALPHA_INTERNAL) {
+//                    wxGXImage img(i_ftxfr->texture().GetFullPath());
+//                    if (!img.HasAlpha()) {
+//                        i_ftxfr->alphasource(CFTF_ALPHA_NONE);
+//                        warning = true;
+//                        wxLogWarning(_("Texture '%s', file '%s': No alpha channel in file. Alpha deactivated."), i_ftx->Name.c_str(), i_ftxfr->texture().GetFullPath().fn_str());
+//                    }
+//                }
+//
+//                // Make sure recolorable flag matches
+//                i_ftxfr->recolorable(i_ftx->Recolorable);
+//                // Init for next step
+//                i_ftxfr->used = false;
+//            }
+//
+//            // Check the animation
+//            if (i_ftx->Animation.size()) {
+//                for (unsigned long i = 0; i < i_ftx->Animation.size(); i++) {
+//                    if (i_ftx->Animation[i].frame() >= i_ftx->Frames.size()) {
+//                        // Illegal reference
+//                        throw RCT3Exception(wxString::Format(_("Texture '%s': Animation step %d references non-existing frame."), i_ftx->Name.c_str(), i+1));
+//                    }
+//                    i_ftx->Frames[i_ftx->Animation[i].frame()].used = true;
+//                }
+//            } else {
+//                // We need to add one refering to the first frame
+//                cFlexiTextureAnim an(0);
+//                i_ftx->Animation.push_back(an);
+//                i_ftx->Frames[0].used = true;
+//            }
+//
+//
+//            // Now we go through the frames again and fix unreferenced ones
+//            // Doing this inverse to make removing easier
+//            for (long i = i_ftx->Frames.size() - 1; i >=0 ; i--) {
+//                if (!i_ftx->Frames[i].used) {
+//                    // Great -.-
+//                    i_ftx->Frames.erase(i_ftx->Frames.begin() + i);
+//                    // Fix animation
+//                    for (cFlexiTextureAnim::iterator i_anim = i_ftx->Animation.begin(); i_anim != i_ftx->Animation.end(); i_anim++) {
+//                        if (i_anim->frame() > i)
+//                            i_anim->frame(i_anim->frame() - 1);
+//                    }
+//                    warning = true;
+//                    wxLogWarning(_("Texture '%s', frame %d: Unused. It will not be written to the ovl file."), i_ftx->Name.c_str(), i);
+//                }
+//            }
+//
+//            // Zero FPS if there is only one animation step
+//            if (i_ftx->Animation.size()<=1) {
+//                i_ftx->FPS = 0;
+//            }
+        }
+
+    }
+    return !warning;
+}
+
+void cSCNFile::CleanWork() {
+    if (m_work)
+        delete m_work;
+    m_work = NULL;
+    m_textureovl = false;
+    m_meshes = 0;
+    m_textures = 0;
 }

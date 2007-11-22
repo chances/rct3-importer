@@ -40,17 +40,20 @@ EVT_TEXT(XRCID("m_textLightBlue"), dlgEffectLight::OnColourEdit)
 EVT_TEXT(XRCID("m_textLightRadius"), dlgEffectLight::OnColourEdit)
 EVT_CHOICE(XRCID("m_choiceLightType"), dlgEffectLight::OnColourEdit)
 EVT_CHOICE(XRCID("m_choiceLightOption"), dlgEffectLight::OnColourEdit)
+EVT_CHOICE(XRCID("m_choiceColour"), dlgEffectLight::OnColourEdit)
 EVT_CHECKBOX(XRCID("m_checkCM"), dlgEffectLight::OnColourEdit)
 END_EVENT_TABLE()
 
-dlgEffectLight::dlgEffectLight(wxWindow *parent) {
+dlgEffectLight::dlgEffectLight(wxWindow *parent, bool colour) {
     m_doUpdate = false;
     m_offset = 0;
+    m_colour = colour;
 
     InitWidgetsFromXRC((wxWindow *)parent);
 
-    m_choiceLightOption->SetSelection(0);
     m_choiceLightType->SetSelection(0);
+    m_choiceLightOption->SetSelection(0);
+    m_choiceColour->SetSelection(0);
 
     m_colourPick = new wxColourPickerCtrl(this, XRCID("m_colourPick"), *wxWHITE);
     m_colourPick->SetToolTip(_("Select light colour."));
@@ -65,6 +68,13 @@ dlgEffectLight::dlgEffectLight(wxWindow *parent) {
 
     m_doUpdate = true;
     UpdateLight();
+
+    if (m_colour) {
+        m_choiceLightOption->Enable(false);
+        m_textLightRadius->Enable(false);
+        m_checkCM->Enable(false);
+    }
+
 }
 
 void dlgEffectLight::OnColourPick(wxColourPickerEvent& event) {
@@ -93,6 +103,13 @@ void dlgEffectLight::UpdateLight() {
         m_colourPick->SetColour(col);
         int type = m_choiceLightType->GetSelection();
         int option = m_choiceLightOption->GetSelection();
+        int ccolour = m_choiceColour->GetSelection();
+        m_textLightBlue->Enable(ccolour==0);
+        m_textLightRed->Enable(ccolour==0);
+        m_textLightGreen->Enable(ccolour==0);
+        m_colourPick->Enable(ccolour==0);
+        m_textLightRadius->Enable(ccolour==0);
+        m_checkCM->Enable(ccolour==0);
         wxString light = wxT("");
         switch (type) {
             case 1:
@@ -113,32 +130,56 @@ void dlgEffectLight::UpdateLight() {
                 m_offset = 0;
                 break;
         }
-        light += "lightstart01_";
+        light += wxT("light");
+        if (m_colour)
+            light += wxT("colour");
+        else
+            light += wxT("start");
+        light += wxT("01");
         switch (option) {
             case 1:
-                light += wxT("lamp_");
+                light += wxT("_lamp");
                 break;
             case 2:
-                light += wxT("torch_");
+                light += wxT("_torch");
                 break;
             case 3:
-                light += wxT("flexi0_");
+                light += wxT("_prehistoriclamp");
                 break;
             case 4:
-                light += wxT("flexi1_");
+                light += wxT("_safarilamp");
                 break;
             case 5:
-                light += wxT("flexi2_");
+                light += wxT("_lamp_big");
+                break;
+            case 6:
+                light += wxT("_lamp_top");
+                break;
+            case 7:
+                light += wxT("_main");
                 break;
         }
-        if (option < 3) {
-            light += wxString::Format(wxT("r%dg%db%d_"), col.Red(), col.Green(), col.Blue());
+        switch (ccolour) {
+            case 0:
+                light += wxString::Format(wxT("_r%dg%db%d"), col.Red(), col.Green(), col.Blue());
+                break;
+            case 1:
+                light += wxT("_flexi0");
+                break;
+            case 2:
+                light += wxT("_flexi1");
+                break;
+            case 3:
+                light += wxT("_flexi2");
+                break;
         }
-        if (!m_textLightRadius->GetValue().ToULong(&r))
-            r = 0;
-        light += wxString::Format(wxT("radius%ld"), r);
-        if (m_checkCM->IsChecked())
-            light += wxT("cm");
+        if ((!m_colour) && (ccolour < 4)) {
+            if (!m_textLightRadius->GetValue().ToULong(&r))
+                r = 0;
+            light += wxString::Format(wxT("_radius%ld"), r);
+            if (m_checkCM->IsChecked())
+                light += wxT("cm");
+        }
         m_textPreview->SetValue(light);
     }
 }

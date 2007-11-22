@@ -2,7 +2,7 @@
 <resource xmlns="http://www.wxwindows.org/wxxrc" version="2.3.0.1">
 	<object class="wxDialog" name="dlgModel">
 		<style>wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER</style>
-		<size>620,420</size>
+		<size>700,500</size>
 		<title>Edit Model Settings</title>
 		<centered>1</centered>
 	</object>
@@ -75,6 +75,50 @@
 				<option>1</option>
 				<flag>wxEXPAND</flag>
 				<border>5</border>
+				<object class="wxBoxSizer">
+					<orient>wxHORIZONTAL</orient>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxStaticText" name="m_staticText19">
+							<label>Coordinate System:</label>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>1</option>
+						<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxEXPAND|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxChoice" name="m_choiceCoordinateSystem">
+							<content>
+								<item>Default</item>
+								<item>Right-Handed, X-Up</item>
+								<item>Right-Handed, Y-Up</item>
+								<item>Right-Handed, Z-Up</item>
+								<item>Left-Handed, X-Up</item>
+								<item>Left-Handed, Y-Up</item>
+								<item>Left-Handed, Z-Up</item>
+							</content>
+						</object>
+					</object>
+					<object class="sizeritem">
+						<option>0</option>
+						<flag>wxBOTTOM|wxRIGHT|wxALIGN_CENTER_VERTICAL</flag>
+						<border>5</border>
+						<object class="wxButton" name="m_btCoordinateSystem">
+							<style>wxBU_EXACTFIT</style>
+							<size>20,20</size>
+							<tooltip>Set from model file</tooltip>
+							<label>F</label>
+							<default>0</default>
+						</object>
+					</object>
+				</object>
+			</object>
+			<object class="sizeritem">
+				<option>1</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
 				<object class="wxStaticBoxSizer">
 					<orient>wxHORIZONTAL</orient>
 					<label>Transformation Matrix</label>
@@ -84,6 +128,12 @@
 						<border>5</border>
 						<object class="wxBoxSizer">
 							<orient>wxVERTICAL</orient>
+							<object class="spacer">
+								<option>1</option>
+								<flag>wxEXPAND</flag>
+								<border>5</border>
+								<size>0,0</size>
+							</object>
 							<object class="sizeritem">
 								<option>0</option>
 								<flag>wxBOTTOM|wxEXPAND</flag>
@@ -132,6 +182,12 @@
 									<default>0</default>
 								</object>
 							</object>
+							<object class="spacer">
+								<option>1</option>
+								<flag>wxEXPAND</flag>
+								<border>5</border>
+								<size>0,0</size>
+							</object>
 						</object>
 					</object>
 					<object class="sizeritem">
@@ -141,14 +197,15 @@
 						<object class="wxGridSizer">
 							<rows>4</rows>
 							<cols>4</cols>
-							<vgap>0</vgap>
-							<hgap>0</hgap>
+							<vgap>5</vgap>
+							<hgap>5</hgap>
 							<object class="sizeritem">
 								<option>1</option>
 								<flag>wxEXPAND</flag>
 								<border>5</border>
 								<object class="wxStaticText" name="m_11">
 									<style>wxST_NO_AUTORESIZE|wxSTATIC_BORDER</style>
+									<size>50,-1</size>
 									<label>MyLabel</label>
 								</object>
 							</object>

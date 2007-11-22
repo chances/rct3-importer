@@ -279,3 +279,12 @@ Version 17 (Belgabor):
 * FIX3: Added 'None' to theme types. The set will be always visible, no matter which types are filtered (like in the cathegory changer).
 * FIX3: Added Extra Parameters for pool items. Ramps don't seem to work and the Life Guard can currently not be done fully (requires two extra parameters, which the importer cannot do).
 * FIX3: Replaced Unknowns 3-5 with Def.Color 1-3
+
+Todos:
+// NOTE (tobi#1#): Test other texture styles for billboards
+// NOTE (tobi#1#): Load model settings as overlay
+// NOTE (tobi#1#): Load matrices from files
+// NOTE (tobi#9#): Wizard
+// NOTE (tobi#1#): Make tooltips optional
+// NOTE (tobi#1#): Colors for face count
+// NOTE (tobi#1#): Pester people with > 3000 faces

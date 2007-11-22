@@ -44,7 +44,15 @@ public:
     c3DMesh():m_name("") {};
 };
 
+#ifndef STD_ONLY
+#include <wx/hashmap.h>
+class c3DLoaderCacheEntry;
+WX_DECLARE_STRING_HASH_MAP(c3DLoaderCacheEntry*, c3DLoaderCache);
+#endif
 class c3DLoader {
+#ifndef STD_ONLY
+friend class c3DLoaderCacheEntry;
+#endif
 protected:
     STRING3D m_filename;
     STRING3D m_name;
@@ -53,11 +61,22 @@ protected:
     // Warnings should only be added by a loader implementation if it
     // recognized the file is of it's type but is otherwise invalid
     STRINGLIST3D m_warnings;
-    // no m_meshes and no m_warnigs signal that the loader did not recognive the file.
+    // no m_meshes and no m_warnigs signal that the loader did not recognize the file.
+#ifndef STD_ONLY
+    static c3DLoaderCache g_cache;
+#endif
 public:
     c3DLoader(const char *filename) : m_meshes(0) {
         m_filename = filename;
         m_name = STRING3D_EMPTY;
+    };
+    c3DLoader(c3DLoader* original) {
+        if (original) {
+            m_filename = original->m_filename;
+            m_name = original->m_name;
+            m_meshes = original->m_meshes;
+            m_warnings = original->m_warnings;
+        }
     };
 
     virtual ~c3DLoader() {};
@@ -91,14 +110,19 @@ public:
         }
         return res;
     };
-    virtual bool FetchObject(unsigned int index, unsigned long *vertexcount, VERTEX **vertices, unsigned long *index_count, unsigned long **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform);
-    virtual bool FetchAsAnimObject(unsigned int index, unsigned long bone, unsigned long unk, unsigned long *vertexcount, VERTEX2 **vertices, unsigned long *index_count, unsigned short **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform);
+    virtual bool FetchObject(unsigned int index, unsigned long *vertexcount, VERTEX **vertices, unsigned long *index_count, unsigned long **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal = NULL);
+    virtual bool FetchAsAnimObject(unsigned int index, unsigned long bone, unsigned long unk, unsigned long *vertexcount, VERTEX2 **vertices, unsigned long *index_count, unsigned short **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal = NULL);
 
     virtual int GetType() {return C3DLOADER_GENERIC;};
     virtual STRING3D GetName() {return m_name;};
     virtual c3DLoaderOrientation GetOrientation() {return ORIENTATION_UNKNOWN;};
 
+    static int FlattenNormals(const unsigned long vertexcount, VERTEX *vertices, const D3DVECTOR& bbox_min, const D3DVECTOR& bbox_max);
+    static int FlattenNormals(const unsigned long vertexcount, VERTEX2 *vertices, const D3DVECTOR& bbox_min, const D3DVECTOR& bbox_max);
     static c3DLoader *LoadFile(const char *filename);
+#ifndef STD_ONLY
+    static void ClearCache();
+#endif
 };
 
 #endif // 3DLOADER_H_INCLUDED

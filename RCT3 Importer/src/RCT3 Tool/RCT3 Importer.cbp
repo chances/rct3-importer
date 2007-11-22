@@ -4,6 +4,7 @@
 	<Project>
 		<Option title="RCT3 Importer" />
 		<Option pch_mode="2" />
+		<Option default_target="Debug DLL" />
 		<Option compiler="gcc" />
 		<Option virtualFolders="wx\;xrc\;resources\;" />
 		<Build>
@@ -73,15 +74,16 @@
 					<Add option="-Wall" />
 					<Add option="-g" />
 					<Add option="-DDEBUG" />
+					<Add option="-D__WXDEBUG__" />
 					<Add directory="..\libOVL" />
-					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.8" />
+					<Add directory="$(#wx.ansidebugstatic)" />
 				</Compiler>
 				<Linker>
 					<Add library="libOVLd" />
 					<Add library="3DHelpd" />
 					<Add library="WXHelpd" />
 					<Add library="libASE" />
-					<Add library="wx_msw-2.8" />
+					<Add library="wx_mswd-2.8" />
 					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
@@ -150,14 +152,18 @@
 			<Add option="-DHAVE_W32API_H" />
 			<Add option="-DIL_STATIC_LIB" />
 			<Add option="-D_WIN32" />
+			<Add option="-DUSE_SQUISH" />
+			<Add option="-DCACHE_GXIMAGE" />
 			<Add directory="$(#wx.include)" />
 			<Add directory="..\lib3DHelp" />
 			<Add directory="..\..\include" />
 			<Add directory="..\libWXHelp" />
+			<Add directory="$(#mingw.include)\GraphicsMagick" />
+			<Add directory="$(#mingw.include)\plib" />
 		</Compiler>
 		<Linker>
-			<Add library="IL" />
-			<Add library="ILU" />
+			<Add library="GraphicsMagick++" />
+			<Add library="GraphicsMagick" />
 			<Add library="png" />
 			<Add library="tiff" />
 			<Add library="jpeg" />
@@ -169,14 +175,16 @@
 			<Add library="uuid" />
 			<Add library="comctl32" />
 			<Add library="expat" />
+			<Add library="squish" />
 			<Add directory="..\..\lib" />
 		</Linker>
 		<Unit filename="Tool.cpp">
+			<Option weight="100" />
 			<Option target="Release DLL" />
+			<Option target="Profile DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
-			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="app.rc">
 			<Option compilerVar="CPP" />
@@ -244,11 +252,13 @@
 			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="rct3config.cpp">
+			<Option compile="0" />
+			<Option link="0" />
 			<Option target="Release DLL" />
+			<Option target="Profile DLL" />
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
-			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="rct3config.h">
 			<Option target="Release DLL" />
@@ -299,10 +309,9 @@
 			<Option weight="0" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
-			<Option target="Debug DLL" />
+			<Option target="Profile DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
-			<Option target="Profile DLL" />
 		</Unit>
 		<Unit filename="wxapp.h">
 			<Option virtualFolder="wx\" />
@@ -311,6 +320,22 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+		</Unit>
+		<Unit filename="wxdlgAnimation.cpp">
+			<Option virtualFolder="wx\" />
+			<Option target="Release DLL" />
+			<Option target="Profile DLL" />
+			<Option target="Debug DLL" />
+			<Option target="Release" />
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="wxdlgAnimation.h">
+			<Option virtualFolder="wx\" />
+			<Option target="Release DLL" />
+			<Option target="Profile DLL" />
+			<Option target="Debug DLL" />
+			<Option target="Release" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="wxdlgAttract.cpp">
 			<Option virtualFolder="wx\" />
@@ -440,6 +465,22 @@
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
 		</Unit>
+		<Unit filename="wxdlgMatrixLoad.cpp">
+			<Option virtualFolder="wx\" />
+			<Option target="Release DLL" />
+			<Option target="Profile DLL" />
+			<Option target="Debug DLL" />
+			<Option target="Release" />
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="wxdlgMatrixLoad.h">
+			<Option virtualFolder="wx\" />
+			<Option target="Release DLL" />
+			<Option target="Profile DLL" />
+			<Option target="Debug DLL" />
+			<Option target="Release" />
+			<Option target="Debug" />
+		</Unit>
 		<Unit filename="wxdlgModel.cpp">
 			<Option virtualFolder="wx\" />
 			<Option target="Release DLL" />
@@ -455,6 +496,20 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+		</Unit>
+		<Unit filename="wxdlgSave.cpp">
+			<Option target="Release DLL" />
+			<Option target="Profile DLL" />
+			<Option target="Debug DLL" />
+			<Option target="Release" />
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="wxdlgSave.h">
+			<Option target="Release DLL" />
+			<Option target="Profile DLL" />
+			<Option target="Debug DLL" />
+			<Option target="Release" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="wxdlgStall.cpp">
 			<Option virtualFolder="wx\" />
@@ -504,6 +559,11 @@
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
 		</Unit>
+		<Unit filename="xrc\xrc_animation.xrc">
+			<Option compile="1" />
+			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_animation.cpp --function=InitXmlAnimation $file" />
+			<Option target="Precompile XRC" />
+		</Unit>
 		<Unit filename="xrc\xrc_attract.xrc">
 			<Option compile="1" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_attract.cpp --function=InitXmlAttract $file" />
@@ -544,6 +604,11 @@
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_matrix.cpp --function=InitXmlMatrix $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
+		<Unit filename="xrc\xrc_misc.xrc">
+			<Option compile="1" />
+			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_misc.cpp --function=InitXmlMisc $file" />
+			<Option target="Precompile XRC" />
+		</Unit>
 		<Unit filename="xrc\xrc_model.xrc">
 			<Option compile="1" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_model.cpp --function=InitXmlModel $file" />
@@ -580,6 +645,22 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+		</Unit>
+		<Unit filename="xrc_animation.cpp">
+			<Option virtualFolder="xrc\" />
+			<Option target="Release DLL" />
+			<Option target="Profile DLL" />
+			<Option target="Debug DLL" />
+			<Option target="Release" />
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="xrc_animation.h">
+			<Option virtualFolder="xrc\" />
+			<Option target="Release DLL" />
+			<Option target="Profile DLL" />
+			<Option target="Debug DLL" />
+			<Option target="Release" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="xrc_attract.cpp">
 			<Option virtualFolder="xrc\" />
@@ -724,6 +805,22 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+		</Unit>
+		<Unit filename="xrc_misc.cpp">
+			<Option virtualFolder="xrc\" />
+			<Option target="Release DLL" />
+			<Option target="Profile DLL" />
+			<Option target="Debug DLL" />
+			<Option target="Release" />
+			<Option target="Debug" />
+		</Unit>
+		<Unit filename="xrc_misc.h">
+			<Option virtualFolder="xrc\" />
+			<Option target="Release DLL" />
+			<Option target="Profile DLL" />
+			<Option target="Debug DLL" />
+			<Option target="Release" />
+			<Option target="Debug" />
 		</Unit>
 		<Unit filename="xrc_model.cpp">
 			<Option virtualFolder="xrc\" />

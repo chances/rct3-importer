@@ -38,6 +38,8 @@
 #include "matrix.h"
 #include "SCNFile.h"
 
+#include "confhelp.h"
+
 #include "wxdlgModel.h"
 
 ////////////////////////////////////////////////////////////////////////
@@ -472,7 +474,7 @@ void dlgMatrix::OnSpecialUnity(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void dlgMatrix::OnSpecialDefault(wxCommandEvent& WXUNUSED(event)) {
-    AddMatrix(_("Default Matrix"), ::wxGetApp().GetConfig()->m_def_matrix);
+    AddMatrix(_("Default Matrix"), READ_APP_MATRIX());
 }
 
 void dlgMatrix::OnSpecialFix(wxCommandEvent& WXUNUSED(event)) {
@@ -522,15 +524,15 @@ void dlgMatrix::OnSpecialLoad(wxCommandEvent& WXUNUSED(event)) {
                         matchoices.push_back(texscn->models[j].transforms[i]);
                     }
                 }
-                for (cEffectPointIterator ep = texscn->models[j].effectpoints.begin(); ep != texscn->models[j].effectpoints.end(); ep++) {
-                    if (ep->Transform.size()!=0) {
-                        if ((ep->Transform.size()>1) && (!matrixIsEqual(matrixMultiply(ep->Transform), matrixGetUnity()))) {
-                            choices.Add(texscn->models[j].name + wxT(", ") + ep->Name + _(" Transforms, combined"));
-                            matchoices.push_back(matrixMultiply(ep->Transform));
+                for (cEffectPoint::iterator ep = texscn->models[j].effectpoints.begin(); ep != texscn->models[j].effectpoints.end(); ep++) {
+                    if (ep->transforms.size()!=0) {
+                        if ((ep->transforms.size()>1) && (!matrixIsEqual(matrixMultiply(ep->transforms), matrixGetUnity()))) {
+                            choices.Add(texscn->models[j].name + wxT(", ") + ep->name + _(" Transforms, combined"));
+                            matchoices.push_back(matrixMultiply(ep->transforms));
                         }
-                        for (i = 0; i < ep->Transform.size(); i++) {
-                            choices.Add(texscn->models[j].name + wxT(", ") + ep->Name+_(" Transforms -> ")+ep->TransformNames[i]);
-                            matchoices.push_back(ep->Transform[i]);
+                        for (i = 0; i < ep->transforms.size(); i++) {
+                            choices.Add(texscn->models[j].name + wxT(", ") + ep->name+_(" Transforms -> ")+ep->transformnames[i]);
+                            matchoices.push_back(ep->transforms[i]);
                         }
                     }
                 }
@@ -596,11 +598,11 @@ void dlgMatrix::OnLoad(wxCommandEvent& WXUNUSED(event)) {
                     matchoices.push_back(texscn->models[j].transforms);
                     matnames.push_back(texscn->models[j].transformnames);
                 }
-                for (cEffectPointIterator ep = texscn->models[j].effectpoints.begin(); ep != texscn->models[j].effectpoints.end(); ep++) {
-                    if (ep->Transform.size()!=0) {
-                        choices.push_back(texscn->models[j].name + wxT(", ") + ep->Name);
-                        matchoices.push_back(ep->Transform);
-                        matnames.push_back(ep->TransformNames);
+                for (cEffectPoint::iterator ep = texscn->models[j].effectpoints.begin(); ep != texscn->models[j].effectpoints.end(); ep++) {
+                    if (ep->transforms.size()!=0) {
+                        choices.push_back(texscn->models[j].name + wxT(", ") + ep->name);
+                        matchoices.push_back(ep->transforms);
+                        matnames.push_back(ep->transformnames);
                     }
                 }
             }

@@ -42,9 +42,10 @@
 #include "htmlentities.h"
 #include "rct3log.h"
 #include "SCNFile.h"
+#include "texcheck.h"
 #include "valext.h"
 #include "valtexture.h"
-#include "wxdevil.h"
+#include "wxgmagick.h"
 
 #include "ilhelper.h"
 
@@ -83,18 +84,18 @@ wxString wxFrameListBox::OnGetItem(size_t n) const {
     wxString color = wxT("");
     if (m_contents->Frames.size()>1) {
         color = wxT(" color='#FF3C3C'");
-        for (cFlexiTextureAnimIterator i_anim = m_contents->Animation.begin(); i_anim != m_contents->Animation.end(); i_anim++) {
-            if (i_anim->frame == n) {
+        for (cFlexiTextureAnim::iterator i_anim = m_contents->Animation.begin(); i_anim != m_contents->Animation.end(); i_anim++) {
+            if (i_anim->frame() == n) {
                 color = wxT("");
                 break;
             }
         }
     }
     wxString alpha = wxT("");
-    if (m_contents->Frames[n].AlphaSource != CFTF_ALPHA_NONE)
+    if (m_contents->Frames[n].alphasource() != CFTF_ALPHA_NONE)
         alpha = _(" (Alpha)");
     return wxString::Format(wxT("<font size='2'%s>"), color.c_str()) +
-           wxEncodeHtmlEntities(wxString::Format(wxT("%0*d: %s"), rel, n+1, m_contents->Frames[n].Texture.GetName().c_str()))+
+           wxEncodeHtmlEntities(wxString::Format(wxT("%0*d: %s"), rel, n+1, m_contents->Frames[n].texture().GetName().c_str()))+
            alpha+wxT("</font>");
 }
 
@@ -121,12 +122,12 @@ wxString wxAnimationListBox::OnGetItem(size_t n) const {
     } else {
         int rel = (int) log10(m_contents->Animation.size());
         wxString res;
-        if (m_contents->Animation[n-1].frame >= m_contents->Frames.size()) {
+        if (m_contents->Animation[n-1].frame() >= m_contents->Frames.size()) {
             res = _("<unavailable>");
         } else {
-            res = m_contents->Frames[m_contents->Animation[n-1].frame].Texture.GetName();
+            res = m_contents->Frames[m_contents->Animation[n-1].frame()].texture().GetName();
         }
-        return wxT("<font size='2'>")+wxEncodeHtmlEntities(wxString::Format(wxT("%0*d: %ldx %s (%ld)"), rel, n, m_contents->Animation[n-1].count, res.c_str(), m_contents->Animation[n-1].frame+1))+wxT("</font>");
+        return wxT("<font size='2'>")+wxEncodeHtmlEntities(wxString::Format(wxT("%0*d: %ldx %s (%ld)"), rel, n, m_contents->Animation[n-1].count(), res.c_str(), m_contents->Animation[n-1].frame()+1))+wxT("</font>");
     }
 }
 
@@ -163,7 +164,7 @@ dlgTextureFrame::dlgTextureFrame(wxWindow *parent) {
                                      wxSize(600,400)
                                  );
 
-    m_textTextureFile = new wxFileSelectorCombo(this, auidlg, &::wxGetApp().g_workdir, XRCID("m_textTextureFile"));
+    m_textTextureFile = new wxFileSelectorCombo<wxFileDialogBase>(this, auidlg, &::wxGetApp().g_workdir, XRCID("m_textTextureFile"));
     t_text->GetContainingSizer()->Replace(t_text, m_textTextureFile);
     t_text->Destroy();
     t_text = XRCCTRL(*this,"m_textAlphaFile",wxTextCtrl);
@@ -179,7 +180,7 @@ dlgTextureFrame::dlgTextureFrame(wxWindow *parent) {
                                      wxSize(600,400)
                                  );
 
-    m_textAlphaFile = new wxFileSelectorCombo(this, auidlg, &::wxGetApp().g_workdir, XRCID("m_textAlphaFile"));
+    m_textAlphaFile = new wxFileSelectorCombo<wxFileDialogBase>(this, auidlg, &::wxGetApp().g_workdir, XRCID("m_textAlphaFile"));
     t_text->GetContainingSizer()->Replace(t_text, m_textAlphaFile);
     t_text->Destroy();
 
@@ -206,7 +207,7 @@ dlgTextureFrame::dlgTextureFrame(wxWindow *parent) {
 }
 
 void dlgTextureFrame::SetFlexiTextureFrame(const cFlexiTextureFrame& val, unsigned int force_size) {
-    m_frame = val;
+    m_frame = val.raw();
     m_size = force_size;
     TransferDataToWindow();
     wxCommandEvent e;
@@ -215,7 +216,7 @@ void dlgTextureFrame::SetFlexiTextureFrame(const cFlexiTextureFrame& val, unsign
 }
 
 cFlexiTextureFrame dlgTextureFrame::GetFlexiTextureFrame() {
-    return m_frame;
+    return cFlexiTextureFrame(m_frame);
 }
 
 bool dlgTextureFrame::Validate() {
@@ -306,9 +307,9 @@ void dlgTextureFrame::OnLoad(wxCommandEvent& WXUNUSED(event)) {
             }
             wxArrayString choices;
             std::vector<cFlexiTextureFrame> framechoices;
-            for (cFlexiTextureIterator ms = texscn->flexitextures.begin(); ms != texscn->flexitextures.end(); ms++) {
-                for (cFlexiTextureFrameIterator it = ms->Frames.begin(); it != ms->Frames.end(); it++) {
-                    choices.Add(ms->Name + wxT(", ") + it->Texture.GetName());
+            for (cFlexiTexture::iterator ms = texscn->flexitextures.begin(); ms != texscn->flexitextures.end(); ms++) {
+                for (cFlexiTextureFrame::iterator it = ms->Frames.begin(); it != ms->Frames.end(); it++) {
+                    choices.Add(ms->Name + wxT(", ") + it->texture().GetName());
                     framechoices.push_back(*it);
                 }
             }
@@ -368,11 +369,11 @@ dlgTexture::dlgTexture(wxWindow *parent) {
     m_htlbFrame = new wxFrameListBox(this, &m_ft);
     m_htlbFrame->SetToolTip(_("List of texture frames.\nUnused frames are shown in red. These will not be written to the ovl."));
     wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbFrame"), m_htlbFrame, this);
-    m_ilpictPreview = new wxILPicture(this, wxID_ANY, wxT(""));
-    m_ilpictPreview->SetBackgroundColour(*wxWHITE);
-    m_ilpictPreview->SetScale(wxILSCALE_UNIFORM);
-    m_ilpictPreview->SetAlignment(wxALIGN_CENTER);
-    wxXmlResource::Get()->AttachUnknownControl(wxT("m_ilpictPreview"), m_ilpictPreview, this);
+    m_gxpictPreview = new wxGXPicture(this, wxID_ANY, wxT(""));
+    m_gxpictPreview->SetBackgroundColour(*wxWHITE);
+    m_gxpictPreview->SetScale(wxGXSCALE_UNIFORM);
+    m_gxpictPreview->SetAlignment(wxALIGN_CENTER);
+    wxXmlResource::Get()->AttachUnknownControl(wxT("m_gxpictPreview"), m_gxpictPreview, this);
 
     m_textTextureName->SetValidator(wxExtendedValidator(&m_ft.Name, false));
     m_textFramerate->SetValidator(wxExtendedValidator(&m_ft.FPS));
@@ -391,7 +392,7 @@ dlgTexture::dlgTexture(wxWindow *parent) {
 void dlgTexture::SetFlexiTexture(const cFlexiTexture& val) {
     m_ft = val;
     if (val.Frames.size()) {
-        wxSize s = getBitmapSize(val.Frames[0].Texture.GetFullPath().fn_str());
+        wxSize s = getBitmapSize(val.Frames[0].texture().GetFullPath().fn_str());
         if (s.GetWidth() > 0)
             m_size = s.GetWidth();
         else
@@ -446,13 +447,13 @@ void dlgTexture::UpdateControlState() {
 
 void dlgTexture::UpdatePreview() {
     if (m_togglePreview->GetValue()) {
-        m_ilpictPreview->SetFileName(m_previewFile);
+        m_gxpictPreview->SetFileName(m_previewFile);
         int sel = m_htlbFrame->GetSelection();
         if (sel >= 0) {
-            m_ilpictPreview->UseAlpha(m_ft.Frames[sel].AlphaSource == CFTF_ALPHA_INTERNAL);
+            m_gxpictPreview->UseAlpha(m_ft.Frames[sel].alphasource() == CFTF_ALPHA_INTERNAL);
         }
 
-        m_ilpictPreview->Refresh();
+        m_gxpictPreview->Refresh();
     }
 }
 
@@ -479,7 +480,7 @@ void dlgTexture::OnLoad(wxCommandEvent& WXUNUSED(event)) {
                 return;
             }
             wxArrayString choices;
-            for (cFlexiTextureIterator ms = texscn->flexitextures.begin(); ms != texscn->flexitextures.end(); ms++) {
+            for (cFlexiTexture::iterator ms = texscn->flexitextures.begin(); ms != texscn->flexitextures.end(); ms++) {
                 choices.Add(ms->Name);
             }
             if (choices.size() > 0) {
@@ -534,7 +535,7 @@ void dlgTexture::FramePreview() {
 
     int sel = m_htlbFrame->GetSelection();
     if (sel >= 0) {
-        m_previewFile = m_ft.Frames[sel].Texture.GetFullPath();
+        m_previewFile = m_ft.Frames[sel].texture().GetFullPath();
     } else {
         m_previewFile = wxT("");
     }
@@ -554,11 +555,11 @@ void dlgTexture::OnFrameUp(wxSpinEvent& WXUNUSED(event)) {
     m_ft.Frames.insert(m_ft.Frames.begin() + sel - 1, ft);
 
     if (!m_toggleAnimationFreeze->GetValue()) {
-        for (cFlexiTextureAnimIterator i_anim = m_ft.Animation.begin(); i_anim != m_ft.Animation.end(); i_anim++) {
-            if (i_anim->frame == sel)
-                i_anim->frame -= 1;
-            else if (i_anim->frame == sel-1)
-                i_anim->frame += 1;
+        for (cFlexiTextureAnim::iterator i_anim = m_ft.Animation.begin(); i_anim != m_ft.Animation.end(); i_anim++) {
+            if (i_anim->frame() == sel)
+                i_anim->frame(i_anim->frame() - 1);
+            else if (i_anim->frame() == sel-1)
+                i_anim->frame(i_anim->frame() + 1);
         }
     }
 
@@ -579,11 +580,11 @@ void dlgTexture::OnFrameDown(wxSpinEvent& WXUNUSED(event)) {
     m_ft.Frames.insert(m_ft.Frames.begin() + sel + 1, ft);
 
     if (!m_toggleAnimationFreeze->GetValue()) {
-        for (cFlexiTextureAnimIterator i_anim = m_ft.Animation.begin(); i_anim != m_ft.Animation.end(); i_anim++) {
-            if (i_anim->frame == sel)
-                i_anim->frame += 1;
-            else if (i_anim->frame == sel+1)
-                i_anim->frame -= 1;
+        for (cFlexiTextureAnim::iterator i_anim = m_ft.Animation.begin(); i_anim != m_ft.Animation.end(); i_anim++) {
+            if (i_anim->frame() == sel)
+                i_anim->frame(i_anim->frame() + 1);
+            else if (i_anim->frame() == sel+1)
+                i_anim->frame(i_anim->frame() - 1);
         }
     }
 
@@ -617,10 +618,10 @@ void dlgTexture::OnFrameAdd(wxCommandEvent& WXUNUSED(event)) {
         ILinfo info;
         if (t_paths.GetCount() == 1) {
             cFlexiTextureFrame ftxf;
-            getBitmapInfo(t_paths[0].fn_str(), info);
-            ftxf.Texture = t_paths[0];
-            if (ilInfoHasAlpha(info))
-                ftxf.AlphaSource = CFTF_ALPHA_INTERNAL;
+            //getBitmapInfo(t_paths[0].fn_str(), info);
+            ftxf.texture(t_paths[0]);
+            if (wxGXImage(t_paths[0]).HasAlpha())
+                ftxf.alphasource(CFTF_ALPHA_INTERNAL);
 
             dlgTextureFrame *dialog = new dlgTextureFrame(this);
             dialog->SetFlexiTextureFrame(ftxf, m_size);
@@ -628,11 +629,11 @@ void dlgTexture::OnFrameAdd(wxCommandEvent& WXUNUSED(event)) {
                 cFlexiTextureFrame fr = dialog->GetFlexiTextureFrame();
                 m_ft.Frames.push_back(fr);
                 if (m_size == 0) {
-                    wxSize s = getBitmapSize(fr.Texture.GetFullPath().fn_str());
+                    wxSize s = getBitmapSize(fr.texture().GetFullPath().fn_str());
                     m_size = s.GetWidth();
                 }
                 if (m_textTextureName->GetValue() == wxT("")) {
-                    m_textTextureName->SetValue(fr.Texture.GetName());
+                    m_textTextureName->SetValue(fr.texture().GetName());
                 }
 
                 m_htlbFrame->UpdateContents();
@@ -645,24 +646,27 @@ void dlgTexture::OnFrameAdd(wxCommandEvent& WXUNUSED(event)) {
             int succeeded = 0;
             for (wxArrayString::iterator it = t_paths.begin(); it != t_paths.end(); it++) {
                 cFlexiTextureFrame fr;
-                if (!getBitmapInfo(it->fn_str(), info))
-                    continue;
+                wxGXImage img;
 
-                if ((info.Width != info.Height) || ((1 << local_log2(info.Width)) != info.Width))
+                try {
+                    checkRCT3Texture(*it);
+                    img.FromFile(*it);
+                    if ((m_size != 0) && (m_size != img.GetWidth()))
+                        continue;
+                } catch (RCT3TextureException) {
                     continue;
+                }
 
-                if ((m_size != 0) && (m_size != info.Width))
-                    continue;
 
-                fr.Texture = *it;
-                if (ilInfoHasAlpha(info))
-                    fr.AlphaSource = CFTF_ALPHA_INTERNAL;
+                fr.texture(*it);
+                if (img.HasAlpha())
+                    fr.alphasource(CFTF_ALPHA_INTERNAL);
                 m_ft.Frames.push_back(fr);
                 if (m_size == 0) {
                     m_size = info.Width;
                 }
                 if (m_textTextureName->GetValue() == wxT("")) {
-                    m_textTextureName->SetValue(fr.Texture.GetName());
+                    m_textTextureName->SetValue(fr.texture().GetName());
                 }
                 succeeded++;
             }
@@ -683,11 +687,11 @@ void dlgTexture::OnFrameAdd(wxCommandEvent& WXUNUSED(event)) {
             cFlexiTextureFrame fr = dialog->GetFlexiTextureFrame();
             m_ft.Frames.push_back(fr);
             if (m_size == 0) {
-                wxSize s = getBitmapSize(fr.Texture.GetFullPath().fn_str());
+                wxSize s = getBitmapSize(fr.texture().GetFullPath().fn_str());
                 m_size = s.GetWidth();
             }
             if (m_textTextureName->GetValue() == wxT("")) {
-                m_textTextureName->SetValue(fr.Texture.GetName());
+                m_textTextureName->SetValue(fr.texture().GetName());
             }
 
             m_htlbFrame->UpdateContents();
@@ -715,7 +719,7 @@ void dlgTexture::OnFrameEdit(wxCommandEvent& WXUNUSED(event)) {
     if (dialog->ShowModal() == wxID_OK) {
         m_ft.Frames[sel] = dialog->GetFlexiTextureFrame();
         if (m_ft.Frames.size() == 1) {
-            wxSize s = getBitmapSize(dialog->GetFlexiTextureFrame().Texture.GetFullPath().fn_str());
+            wxSize s = getBitmapSize(dialog->GetFlexiTextureFrame().texture().GetFullPath().fn_str());
             m_size = s.GetWidth();
         }
 
@@ -735,9 +739,9 @@ void dlgTexture::OnFrameCopy(wxCommandEvent& WXUNUSED(event)) {
     m_ft.Frames.insert(m_ft.Frames.begin() + sel + 1, m_ft.Frames[sel]);
 
     if (!m_toggleAnimationFreeze->GetValue()) {
-        for (cFlexiTextureAnimIterator i_anim = m_ft.Animation.begin(); i_anim != m_ft.Animation.end(); i_anim++) {
-            if (i_anim->frame > sel)
-                i_anim->frame += 1;
+        for (cFlexiTextureAnim::iterator i_anim = m_ft.Animation.begin(); i_anim != m_ft.Animation.end(); i_anim++) {
+            if (i_anim->frame() > sel)
+                i_anim->frame(i_anim->frame() + 1);
         }
     }
 
@@ -760,9 +764,9 @@ void dlgTexture::OnFrameDel(wxCommandEvent& WXUNUSED(event)) {
         m_ft.Frames.erase(m_ft.Frames.begin() + sel);
         if (!m_toggleAnimationFreeze->GetValue()) {
             for(long i = m_ft.Animation.size()-1; i >=0; i--) {
-                if (m_ft.Animation[i].frame > sel)
-                    m_ft.Animation[i].frame--;
-                else if (m_ft.Animation[i].frame == sel)
+                if (m_ft.Animation[i].frame() > sel)
+                    m_ft.Animation[i].frame(m_ft.Animation[i].frame() - 1);
+                else if (m_ft.Animation[i].frame() == sel)
                     m_ft.Animation.erase(m_ft.Animation.begin() + i);
             }
         }
@@ -772,9 +776,9 @@ void dlgTexture::OnFrameDel(wxCommandEvent& WXUNUSED(event)) {
                 m_ft.Frames.erase(m_ft.Frames.begin() + run);
                 if (!m_toggleAnimationFreeze->GetValue()) {
                     for(long i = m_ft.Animation.size()-1; i >=0; i--) {
-                        if (m_ft.Animation[i].frame > run)
-                            m_ft.Animation[i].frame--;
-                        else if (m_ft.Animation[i].frame == run)
+                        if (m_ft.Animation[i].frame() > run)
+                            m_ft.Animation[i].frame(m_ft.Animation[i].frame() - 1);
+                        else if (m_ft.Animation[i].frame() == run)
                             m_ft.Animation.erase(m_ft.Animation.begin() + i);
                     }
                 }
@@ -826,9 +830,9 @@ void dlgTexture::AnimationPreview() {
 
     int sel = m_htlbAnimation->GetSelection();
     if (sel >= 1) {
-        int fr = m_ft.Animation[sel-1].frame;
+        int fr = m_ft.Animation[sel-1].frame();
         if (fr < m_ft.Frames.size())
-            m_previewFile = m_ft.Frames[fr].Texture.GetFullPath();
+            m_previewFile = m_ft.Frames[fr].texture().GetFullPath();
         else
             m_previewFile = wxT("");
     } else {
@@ -845,9 +849,9 @@ void dlgTexture::OnAnimationListSetCount(wxCommandEvent& WXUNUSED(event)) {
     int sel = m_htlbAnimation->GetSelection();
     if (sel < 1)
         return;
-    long newcount = ::wxGetNumberFromUser(wxEmptyString, _("Enter number of repetitions"), _("Frame Count"), m_ft.Animation[sel-1].count, 1, LONG_MAX, this);
+    long newcount = ::wxGetNumberFromUser(wxEmptyString, _("Enter number of repetitions"), _("Frame Count"), m_ft.Animation[sel-1].count(), 1, LONG_MAX, this);
     if (newcount >= 1) {
-        m_ft.Animation[sel-1].count = newcount;
+        m_ft.Animation[sel-1].count(newcount);
         m_htlbAnimation->UpdateContents();
         m_htlbAnimation->SetSelection(sel);
     }
@@ -894,8 +898,8 @@ void dlgTexture::OnAnimationAdd(wxCommandEvent& WXUNUSED(event)) {
     long frame = m_htlbFrame->GetFirstSelected(cookie);
     bool lastnotadded = false;
     while (frame != wxNOT_FOUND) {
-        if ((sel>0) && (m_ft.Animation[sel-1].frame == frame)) {
-            m_ft.Animation[sel-1].count++;
+        if ((sel>0) && (m_ft.Animation[sel-1].frame() == frame)) {
+            m_ft.Animation[sel-1].count(m_ft.Animation[sel-1].count() + 1);
             lastnotadded = true;
         } else {
             cFlexiTextureAnim an(frame);
@@ -908,8 +912,8 @@ void dlgTexture::OnAnimationAdd(wxCommandEvent& WXUNUSED(event)) {
     if (!lastnotadded)
         sel--;
     if (sel+1 < m_ft.Animation.size()) {
-        if (m_ft.Animation[sel].frame == m_ft.Animation[sel+1].frame) {
-            m_ft.Animation[sel].count += m_ft.Animation[sel+1].count;
+        if (m_ft.Animation[sel].frame() == m_ft.Animation[sel+1].frame()) {
+            m_ft.Animation[sel].count(m_ft.Animation[sel].count() + m_ft.Animation[sel+1].count());
             m_ft.Animation.erase(m_ft.Animation.begin() + sel + 1);
         }
     }
@@ -927,7 +931,7 @@ void dlgTexture::OnAnimationCountUp(wxSpinEvent& WXUNUSED(event)) {
     if (sel<1)
         return;
 
-    m_ft.Animation[sel-1].count++;
+    m_ft.Animation[sel-1].count(m_ft.Animation[sel-1].count() + 1);
 
     m_htlbAnimation->UpdateContents();
     m_htlbAnimation->SetSelection(sel);
@@ -940,10 +944,10 @@ void dlgTexture::OnAnimationCountDown(wxSpinEvent& WXUNUSED(event)) {
     if (sel<1)
         return;
 
-    if (m_ft.Animation[sel-1].count == 1)
+    if (m_ft.Animation[sel-1].count() == 1)
         return;
 
-    m_ft.Animation[sel-1].count--;
+    m_ft.Animation[sel-1].count(m_ft.Animation[sel-1].count() - 1);
 
     m_htlbAnimation->UpdateContents();
     m_htlbAnimation->SetSelection(sel);
@@ -968,7 +972,7 @@ void dlgTexture::OnAnimationDel(wxCommandEvent& WXUNUSED(event)) {
 void dlgTexture::OnAnimationFreeze(wxCommandEvent& WXUNUSED(event)) {
     if (!m_toggleAnimationFreeze->GetValue()) {
         for(long i = m_ft.Animation.size()-1; i >=0; i--) {
-            if (m_ft.Animation[i].frame >= m_ft.Frames.size())
+            if (m_ft.Animation[i].frame() >= m_ft.Frames.size())
                 m_ft.Animation.erase(m_ft.Animation.begin() + i);
         }
 
@@ -1030,7 +1034,7 @@ dlgTextureSimple::dlgTextureSimple(wxWindow *parent) {
                                      wxSize(600,400)
                                  );
 
-    m_textTextureFile = new wxFileSelectorCombo(this, auidlg, &::wxGetApp().g_workdir, XRCID("m_textTextureFile"));
+    m_textTextureFile = new wxFileSelectorCombo<wxFileDialogBase>(this, auidlg, &::wxGetApp().g_workdir, XRCID("m_textTextureFile"));
     t_text->GetContainingSizer()->Replace(t_text, m_textTextureFile);
     t_text->Destroy();
     t_text = XRCCTRL(*this,"m_textAlphaFile",wxTextCtrl);
@@ -1046,7 +1050,7 @@ dlgTextureSimple::dlgTextureSimple(wxWindow *parent) {
                                      wxSize(600,400)
                                  );
 
-    m_textAlphaFile = new wxFileSelectorCombo(this, auidlg, &::wxGetApp().g_workdir, XRCID("m_textAlphaFile"));
+    m_textAlphaFile = new wxFileSelectorCombo<wxFileDialogBase>(this, auidlg, &::wxGetApp().g_workdir, XRCID("m_textAlphaFile"));
     t_text->GetContainingSizer()->Replace(t_text, m_textAlphaFile);
     t_text->Destroy();
 
@@ -1088,7 +1092,7 @@ cFlexiTexture dlgTextureSimple::GetFlexiTexture() {
         break;
     }
     m_frame.Recolorable = ret.Recolorable;
-    ret.Frames.push_back(m_frame);
+    ret.Frames.push_back(cFlexiTextureFrame(m_frame));
     return ret;
 }
 
@@ -1096,17 +1100,16 @@ void dlgTextureSimple::SetTextureName(const wxString& val) {
     m_frame.Texture = val;
     m_ft.Name = wxFileName(val).GetName();
 
-    ILinfo info;
-    if (getBitmapInfo(val.fn_str(), info)) {
-        if (ilInfoHasAlpha(info))
+    try {
+        if (wxGXImage(val).HasAlpha())
             m_frame.AlphaSource = CFTF_ALPHA_INTERNAL;
-    }
+    } catch (Magick::Exception) {}
 
 };
 
 void dlgTextureSimple::SetFlexiTexture(const cFlexiTexture& val) {
     m_ft = val;
-    m_frame = val.Frames[0];
+    m_frame = val.Frames[0].raw();
     m_ft.Frames.clear();
     m_ft.Animation.clear();
     m_ft.FPS = 0;
@@ -1133,9 +1136,18 @@ bool dlgTextureSimple::Validate() {
 
     switch (sel) {
         case CFTF_ALPHA_INTERNAL: {
-            ILinfo inf;
-            getBitmapInfo(m_textTextureFile->GetValue().fn_str(), inf);
-
+            //ILinfo inf;
+            //getBitmapInfo(m_textTextureFile->GetValue().fn_str(), inf);
+            try {
+                wxGXImage img(m_textTextureFile->GetValue());
+                if (!img.HasAlpha()) {
+                    ::wxMessageBox(_("You selected to use an internal alpha channel but the selected file doesn't have one."), _("Validation conflict"), wxICON_ERROR | wxOK, this);
+                    return false;
+                }
+            } catch (Magick::Exception& e) {
+                ::wxMessageBox(wxString::Format(_("Error checking texture: %s"), e.what()), _("Validation conflict"), wxICON_ERROR | wxOK, this);
+                return false;
+            }
         }
         break;
         case CFTF_ALPHA_EXTERNAL: {

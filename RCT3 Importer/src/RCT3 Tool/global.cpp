@@ -34,4 +34,4 @@
 
 HINSTANCE hInst;
 wxString g_appdir;
-RCT3Config *g_config;
+//RCT3Config *g_config;

@@ -13,16 +13,16 @@
 
 #include "auipicfiledlg.h"
 
-#include "wxdevil.h"
-
+#include "wxgmagick.h"
+/*
 BEGIN_EVENT_TABLE(wxPicPanel, wxPanel)
     EVT_PAINT(wxPicPanel::OnPaint)
     EVT_SIZE(wxPicPanel::OnSize)
 END_EVENT_TABLE()
 
 void wxPicPanel::Create() {
-    m_pic = new wxILPicture(this, 0, wxNullBitmap, wxDefaultPosition, wxSize(64,64), wxSIMPLE_BORDER);
-    m_pic->SetScale(wxILSCALE_UNIFORM);
+    m_pic = new wxGXPicture(this, 0, wxNullBitmap, wxDefaultPosition, wxSize(64,64), wxSIMPLE_BORDER);
+    m_pic->SetScale(wxGXSCALE_UNIFORM);
     m_pic->SetBackgroundColour(*wxWHITE);
     SetSizeHints(wxSize(70,70));
 }
@@ -42,7 +42,7 @@ void wxPicPanel::OnSize(wxSizeEvent &event) {
     else
         m_pic->SetSize((w-h)/2, 0, h, h);
 }
-
+*/
 IMPLEMENT_DYNAMIC_CLASS(wxAUIPicFileDialog, wxAUIFileDialog)
 
 bool wxAUIPicFileDialog::Create( wxWindow *parent,
@@ -98,9 +98,13 @@ void wxAUIPicFileDialog::CreateAUIPanes() {
     m_Preview = new wxPanel(this);
     //m_PicPanel = new wxPicPanel(m_Preview);
     wxBoxSizer *bs = new wxBoxSizer(wxVERTICAL);
-    m_pic = new wxILPicture(m_Preview, wxID_ANY, wxNullBitmap, wxDefaultPosition, wxSize(64,64), wxSIMPLE_BORDER);
+    m_pic = new wxGXPicture(m_Preview, wxID_ANY, wxNullBitmap,
+#ifdef CACHE_GXIMAGE
+                            false,
+#endif
+                            wxDefaultPosition, wxSize(64,64), wxSIMPLE_BORDER);
     m_pic->SetBackgroundColour(*wxWHITE);
-    m_pic->SetScale(wxILSCALE_UNIFORM);
+    m_pic->SetScale(wxGXSCALE_UNIFORM);
     m_pic->SetAlignment(wxALIGN_CENTER);
     bs->Add(m_pic, 1, wxALL | wxSHAPED | wxALIGN_CENTER, 5);
 

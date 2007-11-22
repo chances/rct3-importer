@@ -34,12 +34,17 @@
 #include "wx_pch.h"
 
 #include <wx/xrc/xmlres.h>
+#include <wx/spinbutt.h>
 
 #include "RCT3Structs.h"
+#include "gxpict.h"
+
+class wxLODAnimationListBox;
 
 class dlgLOD : public wxDialog {
 protected:
     wxChoice* m_choiceModel;
+    wxGXPicture* m_gxpictAni;
     wxTextCtrl* m_textDistance;
     wxButton* m_btDist40;
     wxButton* m_btDist100;
@@ -52,6 +57,16 @@ protected:
     wxButton* m_btOk;
     wxButton* m_btCancel;
 
+    wxLODAnimationListBox* m_htlbAnimations;
+    wxSpinButton* m_spinAnim;
+    wxButton* m_btAnimAdd;
+    wxButton* m_btAnimDel;
+    wxButton* m_btAnimClear;
+
+    void UpdateAll();
+    void UpdateControlState();
+
+    void OnModelChange(wxCommandEvent& event);
     void OnShowUnknowns(wxCommandEvent& event);
     void OnDist40(wxCommandEvent& event);
     void OnDist100(wxCommandEvent& event);
@@ -59,6 +74,8 @@ protected:
 
 private:
     cLOD m_lod;
+    cModel::vec* m_models;
+    cAnimatedModel::vec* m_animatedmodels;
 
     void InitWidgetsFromXRC(wxWindow *parent) {
         wxXmlResource::Get()->LoadObject(this,parent,_T("dlgLOD"), _T("wxDialog"));
@@ -74,12 +91,20 @@ private:
         m_textUnknown14 = XRCCTRL(*this,"m_textUnknown14",wxTextCtrl);
         m_btOk = XRCCTRL(*this,"m_btOk",wxButton);
         m_btCancel = XRCCTRL(*this,"m_btCancel",wxButton);
+        m_spinAnim = XRCCTRL(*this,"m_spinAnim",wxSpinButton);
+        m_btAnimAdd = XRCCTRL(*this,"m_btAnimAdd",wxButton);
+        m_btAnimDel = XRCCTRL(*this,"m_btAnimDel",wxButton);
+        m_btAnimClear = XRCCTRL(*this,"m_btAnimClear",wxButton);
     }
 
     DECLARE_EVENT_TABLE()
 public:
-    dlgLOD(const std::vector<cModel>& mods, wxWindow *parent=NULL);
-    void SetLOD(const cLOD& lod) {m_lod = lod;};
+    dlgLOD(cModel::vec* mods, cAnimatedModel::vec* amods, wxWindow *parent=NULL);
+    void SetLOD(const cLOD& lod) {
+        m_lod = lod;
+        TransferDataToWindow();
+        UpdateAll();
+    };
     cLOD GetLOD() const {return m_lod;};
 };
 

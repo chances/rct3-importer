@@ -32,6 +32,7 @@
 #include "3DLoaderTypes.h"
 
 float Deg2Rad(float deg);
+float Rad2Deg(float rad);
 
 D3DVECTOR vectorInvert(const D3DVECTOR v);
 D3DVECTOR vectorNormalize(const float x, const float y, const float z);

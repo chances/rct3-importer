@@ -32,6 +32,10 @@ float Deg2Rad(float deg) {
     return deg * M_PI / 180.0;
 }
 
+float Rad2Deg(float rad) {
+    return rad * 180.0 / M_PI;
+}
+
 D3DVECTOR vectorInvert(const D3DVECTOR v) {
     D3DVECTOR r;
     r.x = -v.x;

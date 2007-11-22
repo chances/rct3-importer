@@ -24,12 +24,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "wx_pch.h"
-
+/*
 #include <IL/il.h>
 #include <IL/ilu.h>
-
+*/
 #include "valtexture.h"
-#include "wxdevil.h"
+//#include "wxgmagick.h"
+#include "gximage.h"
 #include "rct3log.h"
 
 IMPLEMENT_DYNAMIC_CLASS(wxTextureValidator, wxExtendedValidator)
@@ -83,8 +84,9 @@ bool wxTextureValidator::Validate(wxWindow *parent) {
     wxString errormsg;
 //    ILenum Error;
 
-    ILinfo inf;
-    bool valid_file = getBitmapInfo(val.fn_str(), inf);
+//    ILinfo inf;
+    wxGXImage img(val);
+    bool valid_file = img.Ok();
 /*
     wxMutexLocker lock (wxILMutex);
     ILuint img = ilGenImage();
@@ -105,22 +107,22 @@ bool wxTextureValidator::Validate(wxWindow *parent) {
         int width = ilGetInteger(IL_IMAGE_WIDTH);
         int height = ilGetInteger(IL_IMAGE_HEIGHT);
 */
-        if (inf.Width != inf.Height) {
+        if (img.GetWidth() != img.GetHeight()) {
             ok = false;
             errormsg = _("Texture '%s' is not square, ");
-            errormsg += wxString::Format(_("it has %dx%d pixels."), inf.Width, inf.Height);
-        } else if ((1 << local_log2(inf.Width)) != inf.Width) {
+            errormsg += wxString::Format(_("it has %dx%d pixels."), img.GetWidth(), img.GetHeight());
+        } else if ((1 << local_log2(img.GetWidth())) != img.GetHeight()) {
             ok = false;
             errormsg = _("The width/height of texture '%s' is not a power of 2.");
         } else {
             if (m_forceSize) {
-                if ((*m_forceSize > 0) && (*m_forceSize != inf.Width)) {
+                if ((*m_forceSize > 0) && (*m_forceSize != img.GetWidth())) {
                     ok = false;
-                    errormsg = _("The width/height of texture '%s' has to be ") + wxString::Format("%d", *m_forceSize) + wxT(".");
+                    errormsg = _("The width/height of texture '%s' has to be ") + wxString::Format(wxT("%d"), *m_forceSize) + wxT(".");
                 }
             }
             if (ok && m_alphaNecessary) {
-                if (!ilInfoHasAlpha(inf)) {
+                if (!img.HasAlpha()) {
                     ok = false;
                     errormsg = _("Texture '%s' requires an alpha channel.");
                 }
