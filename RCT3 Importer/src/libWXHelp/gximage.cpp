@@ -19,6 +19,10 @@
 
 #include "gximage.h"
 
+#ifndef RGBQUAD
+#include <windows.h>
+#endif
+
 Magick::Image* LoadImageFromFileSystem(const wxFSFile* file) {
     Magick::Image* ret = NULL;
     if (file) {
@@ -212,7 +216,7 @@ wxGXImageCache wxGXImage::g_cache;
 /*
  * wxGXImage
  */
-
+#if wxUSE_IMAGE
 wxImage wxGXImage::GetImage(int nw, int nh) {
     wxImage img(wxNullImage);
     if (m_valid) {
@@ -281,6 +285,7 @@ void wxGXImage::FromImage(const wxImage& image) {
         m_image = Magick::Image();
     }
 }
+#endif //wxUSE_IMAGE
 
 void wxGXImage::FromFile(const wxString& filename) {
     if (wxFileExists(filename)) {
@@ -403,6 +408,73 @@ void wxGXImage::FromFileSystem(const wxString& filename) {
         //delete[] buf;
         delete filestream;
 */
+}
+
+void wxGXImage::GetAlpha(unsigned char* data) const {
+    if (m_image.matte()) {
+        const_cast<Magick::Image*>(&m_image)->write(0, 0, m_image.columns(), m_image.rows(), "A", Magick::CharPixel, data);
+        for (unsigned int i = 0; i < m_image.columns()*m_image.rows(); ++i)
+            data[i] = 255 - data[i];
+    } else {
+        memset(data, 0, m_image.columns()*m_image.rows());
+    }
+}
+
+void wxGXImage::GetGrayscale(unsigned char* data) const {
+    Magick::Image temp = m_image;
+    temp.type(Magick::GrayscaleType);
+    const Magick::PixelPacket* src = temp.getConstPixels(0, 0, m_image.columns(), m_image.rows());
+
+    for (unsigned int r = 0; r < m_image.columns() * m_image.rows(); ++r) {
+        data[r] = src[r].red;
+    }
+}
+
+void wxGXImage::GetAs8bit(unsigned char* data, unsigned char* palette) const {
+    Magick::Image temp = m_image;
+    RGBQUAD* pal = reinterpret_cast<RGBQUAD*>(palette);
+
+    if (temp.matte())
+        temp.matte(false);
+
+    if (temp.type() != Magick::PaletteType) {
+        temp.quantizeColors(256);
+        temp.quantizeDither(false);
+        temp.type(Magick::PaletteType);
+    }
+
+    for (unsigned int i = 0; i < temp.colorMapSize(); ++i) {
+        Magick::Color col = temp.colorMap(i);
+        pal[i].rgbRed = col.redQuantum();
+        pal[i].rgbGreen = col.greenQuantum();
+        pal[i].rgbBlue = col.blueQuantum();
+    }
+
+    temp.getConstPixels(0, 0, temp.columns(), temp.rows());
+    const Magick::IndexPacket* indices = temp.getConstIndexes();
+    memcpy(data, indices, temp.columns() * temp.rows());
+}
+
+void wxGXImage::GetAs8bitForced(unsigned char* data, unsigned char* palette, bool special) const {
+    RGBQUAD* pal = reinterpret_cast<RGBQUAD*>(palette);
+    const Magick::PixelPacket* src = m_image.getConstPixels(0, 0, m_image.columns(), m_image.rows());
+
+    unsigned int paldist, palmax;
+    int r, d1, d2, d3;
+    unsigned int p;
+    for (r = 0; r < m_image.columns() * m_image.rows(); ++r) {
+        palmax = UINT_MAX;
+        for (p = (special)?1:0; p < 256; p++) {
+            d1 = static_cast<int>(src[r].red) - static_cast<int>(pal[p].rgbRed);
+            d2 = static_cast<int>(src[r].green) - static_cast<int>(pal[p].rgbGreen);
+            d3 = static_cast<int>(src[r].blue) - static_cast<int>(pal[p].rgbBlue);
+            paldist = d1 * d1 + d2 * d2 + d3 * d3;
+            if (paldist < palmax) {
+                palmax = paldist;
+                data[r] = p;
+            }
+        }
+    }
 }
 
 #ifdef USE_SQUISH

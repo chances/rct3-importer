@@ -20,7 +20,7 @@ struct BoneShape2 {
 	unsigned long *TextureData; //is 0 in disk files
 	unsigned long PlaceTexturing; //0 = dont see texturing on things when being placed, 1 = see texturing on things when being placed
 	unsigned long textureflags; //always 0
-	unsigned long unk4; //seen values of 3 or 1 for this, 3 is more common
+	unsigned long sides; //seen values of 3 or 1 for this, 3 is more common
 	unsigned long VertexCount;
 	unsigned long IndexCount;
 	VERTEX2 *Vertexes;

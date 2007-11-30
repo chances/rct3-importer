@@ -38,6 +38,9 @@
 using namespace std;
 
 class ovlOVLManager {
+public:
+    static const char* LOADER;
+    static const unsigned long TYPE;
 protected:
     unsigned long m_size;
     unsigned char* m_data;
@@ -53,12 +56,20 @@ public:
     virtual void Init(ovlLodSymRefManager* lsrman, ovlRelocationManager* relman, ovlStringTable* stable);
 
     virtual unsigned char* Make() = 0;
+    virtual void WriteLoader(FILE* f);
 
     virtual const unsigned long GetSize() const;
     virtual unsigned char* GetData();
+    virtual const char* Loader() const {
+        return LOADER;
+    };
+    virtual const char* Name() const = 0;
     virtual const char* Tag() const = 0;
+    virtual const unsigned long Type() const {
+        return TYPE;
+    };
 
-    static ovlOVLManager* MakeManager(const char* tag);
+    //static ovlOVLManager* MakeManager(const char* tag);
 };
 
 #endif

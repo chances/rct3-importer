@@ -72,9 +72,9 @@ unsigned long ovlRelocationManager::DoRelocationForSaving(unsigned long *reloc) 
 
 void ovlRelocationManager::Make() {
     while (m_relocations.empty() == false) {
-        unsigned long *relocation = m_relocations.front();
+        unsigned long* relocation = m_relocations.front();
         m_relocations.pop();
-        unsigned long *reloc = *(unsigned long **)relocation;
+        unsigned long* reloc = *(unsigned long **)relocation; // This is the pointer that needs fixing
         if (reloc != 0) {
             unsigned long fixup = DoRelocationForSaving(reloc);
             if (fixup == 0xFFFFFFFF) {
@@ -82,8 +82,18 @@ void ovlRelocationManager::Make() {
             }
             *relocation = fixup;
             unsigned long fixup2 = DoRelocationForSaving(relocation);
-            DUMP_RELOCATION(f,"relocation %x, reloc %x, fixup %x, fixup2 %x\n",relocation,reloc,fixup,fixup2);
+            DUMP_LOG("Resolve relocated ptr %08lx @ %08lx, fixup %08lx, fixup2 %08lx",DPTR(reloc),DPTR(relocation),fixup,fixup2);
             m_fixups.push(fixup2);
         }
+    }
+}
+
+void ovlRelocationManager::WriteFixups(FILE* f) {
+    unsigned long size = m_fixups.size();
+    fwrite(&size, sizeof(unsigned long), 1, f);
+    while (m_fixups.empty() == false) {
+        unsigned long c_fixup = m_fixups.front();
+        m_fixups.pop();
+        fwrite(&c_fixup, sizeof(unsigned long), 1, f);
     }
 }

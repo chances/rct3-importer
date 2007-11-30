@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 // New OVL creation library
-// Manager class for FTX structures
+// Manager class for BSH structures
 // Copyright (C) 2007 Tobias Minch
 //
 // This program is free software; you can redistribute it and/or
@@ -26,47 +26,54 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef MANAGERFTX_H_INCLUDED
-#define MANAGERFTX_H_INCLUDED
+#ifndef MANAGERBSH_H_INCLUDED
+#define MANAGERBSH_H_INCLUDED
 
+#include <map>
 #include <string>
 #include <vector>
 
-#include "flexitexture.h"
+#include "boneshape.h"
 #include "ManagerOVL.h"
 
 using namespace std;
 
-class ovlFTXManager: public ovlOVLManager {
+class ovlBSHManager: public ovlOVLManager {
 public:
-    static const char* LOADER;
     static const char* NAME;
     static const char* TAG;
 private:
-    vector<FlexiTextureInfoStruct*> m_ftxlist;
-    vector<string> m_ftxnames;
+    vector<BoneShape1*> m_modellist;
+    vector<string> m_modelnames;
+    map<BoneShape2*, string> m_ftxmap;
+    map<BoneShape2*, string> m_txsmap;
 
-    FlexiTextureInfoStruct* m_cftis;
-    FlexiTextureStruct* m_cfts;
-    long m_ftscount;
+    BoneShape1* m_cmodel;
+    unsigned long m_nmesh;
+    long m_meshcount;
+    unsigned long m_nbone;
+    long m_bonecount;
+    bool m_rootadded;
 public:
-    ovlFTXManager(): ovlOVLManager() {
-        m_cftis = NULL;
-        m_cfts = NULL;
-        m_ftscount = 0;
+    ovlBSHManager(): ovlOVLManager() {
+        m_cmodel = NULL;
+        m_nmesh = 0;
+        m_nbone = 0;
+        m_meshcount = 0;
+        m_bonecount = 0;
+        m_rootadded = false;
     };
-    virtual ~ovlFTXManager();
+    virtual ~ovlBSHManager();
 
-    void AddTexture(const char* name, unsigned long dimension, unsigned long fps, unsigned long recol,
-                    unsigned long animationcount, unsigned long* animation, unsigned long framecount);
-    void AddTextureFrame(unsigned long dimension, unsigned long recol,
-                         unsigned char* palette, unsigned char* texture, unsigned char* alpha);
+    void AddModel(const char* name, unsigned long meshes, unsigned long bones);
+    void SetBoundingBox(const D3DVECTOR& bbox1, const D3DVECTOR& bbox2);
+    void AddBone(const char* name, unsigned long parent, const D3DMATRIX& pos1, const D3DMATRIX& pos2, bool isroot = false);
+    void AddRootBone();
+    void AddMesh(const char* ftx, const char* txs, unsigned long place, unsigned long flags, unsigned long sides,
+                 unsigned long vertexcount, VERTEX2* vertices, unsigned long indexcount, unsigned short* indices);
 
     virtual unsigned char* Make();
 
-    virtual const char* Loader() const {
-        return LOADER;
-    };
     virtual const char* Name() const {
         return NAME;
     };
@@ -75,10 +82,5 @@ public:
     };
 };
 
-// "Fake" class for consistent access to file tags
-class ovlTXSManager: public ovlOVLManager {
-public:
-    static const char* TAG;
-};
 
 #endif

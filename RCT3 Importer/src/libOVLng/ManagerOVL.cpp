@@ -32,6 +32,9 @@
 
 using namespace std;
 
+const char* ovlOVLManager::LOADER = "RCT3";
+const unsigned long ovlOVLManager::TYPE = 1;
+
 ovlOVLManager::ovlOVLManager() {
     m_data = NULL;
     m_size = 0;
@@ -51,9 +54,38 @@ ovlOVLManager::~ovlOVLManager() {
         delete[] m_data;
 }
 
+void ovlOVLManager::WriteLoader(FILE* f) {
+    if (!f)
+        throw EOvl("ovlOVLManager("+string(Tag())+")::WriteLoader called with no file");
+
+    unsigned short len = strlen(Loader());
+    fwrite(&len, 2, 1, f);
+    fwrite(Loader(), len, 1, f);
+
+    len = strlen(Name());
+    fwrite(&len, 2, 1, f);
+    fwrite(Name(), len, 1, f);
+
+    unsigned long type = Type();
+    fwrite(&type, 4, 1, f);
+
+    len = strlen(Tag());
+    fwrite(&len, 2, 1, f);
+    fwrite(Tag(), len, 1, f);
+}
+
+unsigned char* ovlOVLManager::Make() {
+    // No checking, this is done by derived objects
+    m_data = new unsigned char[m_size];
+    memset(m_data, 0, m_size);
+    return m_data;
+}
+
 void ovlOVLManager::Check(const string& err) {
     if ((!m_lsrman) || (!m_relman) || (!m_stable))
-        throw EOvl("ovlOVLManager("+string(Tag())+")::Check failed in "+err);
+        throw EOvl("ovlOVLManager("+string(Tag())+")::Check failed due to one of the managers being unavailable in "+err);
+    if (m_data)
+        throw EOvl("ovlOVLManager("+string(Tag())+")::Check failed as Make was already called in "+err);
 }
 
 unsigned char* ovlOVLManager::GetData() {
@@ -66,6 +98,8 @@ const unsigned long ovlOVLManager::GetSize() const {
     return m_size;
 }
 
+/*
 ovlOVLManager* ovlOVLManager::MakeManager(const char* tag) {
     return NULL;
 }
+*/

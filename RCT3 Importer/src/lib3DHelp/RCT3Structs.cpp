@@ -25,6 +25,8 @@
 
 #include "RCT3Structs.h"
 
+#include "confhelp.h"
+#include "lib3Dconfig.h"
 #include "matrix.h"
 #include "RCT3Exception.h"
 #include "texcheck.h"
@@ -168,6 +170,12 @@ txyz& operator= (txyz& t, cTXYZ& v) {
 }
 */
 
+txyz cTXYZ::GetFixed(c3DLoaderOrientation ori) {
+    txyz r = v;
+    txyzFixOrientation(r, ori);
+    return r;
+}
+
 ///////////////////////////////////////////////////////////////
 //
 // cMeshStruct
@@ -199,6 +207,7 @@ void cMeshStruct::CopySettingsFrom(const cMeshStruct& from) {
     fudgenormals = from.fudgenormals;
 
     bone = from.bone;
+    bonename = from.bonename;
 }
 
 bool cMeshStruct::FromCompilerXml(wxXmlNode* node, const wxString& path) {
@@ -217,7 +226,10 @@ bool cMeshStruct::FromCompilerXml(wxXmlNode* node, const wxString& path) {
     wxString temp;
     if (node->GetPropVal(wxT("bone"), &temp)) {
         if (!temp.ToULong(&t)) {
-            throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Bad bone value '%s'."), Name.c_str(), temp.c_str()));
+            // Improvement
+            bonename = temp;
+            bone = 0xFFFFFFFF;
+            //throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Bad bone value '%s'."), Name.c_str(), temp.c_str()));
         } else {
             bone = t;
         }
@@ -525,6 +537,15 @@ bool cFlexiTexture::Check() {
         throw RCT3Exception(wxString::Format(_("Texture '%s': No texture frames defined."), Name.c_str()));
     }
 
+    if ((FPS == 0) && ((Frames.size()>1) || (Animation.size()>1))) {
+        // Non-animated Animation
+        if (READ_RCT3_EXPERTMODE()) {
+            wxLogWarning(_("Texture '%s': Animation defined but FPS is 0."), Name.c_str());
+        } else {
+            throw RCT3Exception(wxString::Format(_("Texture '%s': Animation defined but FPS is 0."), Name.c_str()));
+        }
+    }
+
     // The validators should make these checks unnecessary, but better safe than sorry
     for (cFlexiTextureFrame::iterator i_ftxfr = Frames.begin(); i_ftxfr != Frames.end(); ++i_ftxfr) {
         if (!i_ftxfr->Check(this))
@@ -581,21 +602,33 @@ bool cFlexiTexture::Check() {
     // Doing this inverse to make removing easier
     for (long i = Frames.size() - 1; i >=0 ; i--) {
         if (!Frames[i].used) {
-            // Great -.-
-            Frames.erase(Frames.begin() + i);
-            // Fix animation
-            for (cFlexiTextureAnim::iterator i_anim = Animation.begin(); i_anim != Animation.end(); ++i_anim) {
-                if (i_anim->frame() > i)
-                    i_anim->frame(i_anim->frame() - 1);
+            if (READ_RCT3_EXPERTMODE()) {
+                ret = false;
+                wxLogWarning(_("Texture '%s', frame %d: Unused."), Name.c_str(), i);
+            } else {
+                // Great -.-
+                Frames.erase(Frames.begin() + i);
+                // Fix animation
+                for (cFlexiTextureAnim::iterator i_anim = Animation.begin(); i_anim != Animation.end(); ++i_anim) {
+                    if (i_anim->frame() > i)
+                        i_anim->frame(i_anim->frame() - 1);
+                }
+                ret = false;
+                wxLogWarning(_("Texture '%s', frame %d: Unused. It will not be written to the ovl file."), Name.c_str(), i);
             }
-            ret = false;
-            wxLogWarning(_("Texture '%s', frame %d: Unused. It will not be written to the ovl file."), Name.c_str(), i);
         }
     }
 
     // Zero FPS if there is only one animation step
     if (Animation.size()<=1) {
-        FPS = 0;
+        if (READ_RCT3_EXPERTMODE()) {
+            if (FPS) {
+                ret = false;
+                wxLogWarning(_("Texture '%s': FPS > 0, but no animation defined."), Name.c_str());
+            }
+        } else {
+            FPS = 0;
+        }
     }
 
     return true;
@@ -701,6 +734,22 @@ wxXmlNode* cFlexiTexture::GetNode(const wxString& path) {
         lastchild = newchild;
     }
     return node;
+}
+
+RGBQUAD cFlexiTexture::g_rgbPalette[256];
+bool cFlexiTexture::g_rgbPaletteCreated = false;
+
+RGBQUAD* cFlexiTexture::GetRGBPalette() {
+    if (!g_rgbPaletteCreated) {
+        ZeroMemory(&g_rgbPalette, sizeof(g_rgbPalette));
+        for (int i = 1; i <= 85; i++) {
+            g_rgbPalette[i].rgbRed = ((86 - i) * 255) / 85;
+            g_rgbPalette[i + 85].rgbGreen = ((86 - i) * 255) / 85;
+            g_rgbPalette[i + 170].rgbBlue = ((86 - i) * 255) / 85;
+        }
+        g_rgbPaletteCreated = true;
+    }
+    return reinterpret_cast<RGBQUAD*>(&g_rgbPalette);
 }
 
 
@@ -831,7 +880,7 @@ bool cModel::Load() {
 
     if (!obj) {
         fatal_error = true;
-        error.Add(_("Couldn't load file. Wrong format or file not found."));
+        error.Add(wxString::Format(_("Couldn't load file '%s'. Wrong format or file not found."), file.GetFullPath().fn_str()));
         return false;
     }
 
@@ -1045,7 +1094,15 @@ fixupsinglevertexmeshes:
 }
 
 bool cModel::CheckMeshes(bool animated) {
+    wxLogDebug(wxT("Trace, cModel::CheckMeshes '%s', %d"), name.c_str(), animated);
     bool warning = false;
+
+    // Fix up orientaton
+    if (usedorientation == ORIENTATION_UNKNOWN)
+        usedorientation = fileorientation;
+    if (usedorientation == ORIENTATION_UNKNOWN)
+        usedorientation = ORIENTATION_LEFT_YUP;
+
     if (!(file.IsOk() && file.FileExists())) {
         fatal_error = true;
         wxLogWarning(_("Model '%s': Model file not found."), name.c_str());
@@ -1097,6 +1154,7 @@ bool cModel::CheckMeshes(bool animated) {
 }
 
 bool cModel::Check(cModelMap& modnames) {
+    wxLogDebug(wxT("Trace, cModel::Check '%s'"), name.c_str());
     if (fatal_error)
         return false;
 
@@ -1381,6 +1439,7 @@ cAnimatedModel::cAnimatedModel(const cModel& model) {
 }
 
 bool cAnimatedModel::Check(cAnimatedModelMap& amodnames) {
+    wxLogDebug(wxT("Trace, cAnimatedModel::Check '%s'"), name.c_str());
     if (fatal_error)
         return false;
 
@@ -1401,6 +1460,7 @@ bool cAnimatedModel::Check(cAnimatedModelMap& amodnames) {
     } else {
         // check for duplicates and assign parents
         for (unsigned int i = 0; i < modelbones.size(); ++i) {
+            wxLogDebug(wxT("Trace, cAnimatedModel::Check bone %s, %d"), modelbones[i].name.c_str(), modelbones[i].meshes.size());
             if (modelbones[i].name == modelbones[i].parent) {
                 throw RCT3Exception(wxString::Format(_("Animated Model '%s': Bone '%s' is it's own parent."), name.c_str(), modelbones[i].name.c_str()));
             }
@@ -1420,12 +1480,12 @@ bool cAnimatedModel::Check(cAnimatedModelMap& amodnames) {
             }
 
             // Assign meshes
-            for (cStringIterator i_st = modelbones[i].meshes.begin(); i_st != modelbones[i].meshes.begin(); ++i_st) {
+            for (cStringIterator i_st = modelbones[i].meshes.begin(); i_st != modelbones[i].meshes.end(); ++i_st) {
                 cMeshStructMap::iterator a_ms = meshmap.find(*i_st);
                 if (a_ms == meshmap.end()) {
                     throw RCT3Exception(wxString::Format(_("Animated Model '%s': Mesh '%s' was assigned to bone '%s' but is disabled, invalid or not there."), name.c_str(), i_st->c_str(), modelbones[i].name.c_str()));
                 }
-                if (a_ms->second->bone != -1) {
+                if (a_ms->second->bone != 0) {
                     warning = true;
                     wxLogWarning(_("Animated Model '%s': Group '%s' was assigned twice. It will stay assigned to bone '%s'."), name.c_str(), i_st->c_str(), modelbones[a_ms->second->bone-1].name.c_str());
                     continue;
@@ -1434,6 +1494,10 @@ bool cAnimatedModel::Check(cAnimatedModelMap& amodnames) {
                     wxLogDebug(_("Animated Model '%s': Group '%s' was assigned to bone '%s'."), name.c_str(), i_st->c_str(), modelbones[i].name.c_str());
                 }
             }
+
+            // Set pos2
+            if (!modelbones[i].usepos2)
+                modelbones[i].positions2 = modelbones[i].positions1;
         }
     }
 
@@ -1511,7 +1575,8 @@ bool cAnimatedModel::FromCompilerXml(wxXmlNode* node, const wxString& path) {
         unsigned long t;
         wxString temp;
         if (!it->parent.ToULong(&t)) {
-            throw RCT3Exception(wxString::Format(_("Bone '%s': Bad parent value '%s'."), it->name.c_str(), it->parent.c_str()));
+            // Assume that parent is given as string. Discrepancies will be found in Check
+            //throw RCT3Exception(wxString::Format(_("Bone '%s': Bad parent value '%s'."), it->name.c_str(), it->parent.c_str()));
         } else {
             if (t > modelbones.size())
                 throw RCT3Exception(wxString::Format(_("Bone '%s': Bad parent value '%s'."), it->name.c_str(), it->parent.c_str()));
@@ -1520,9 +1585,22 @@ bool cAnimatedModel::FromCompilerXml(wxXmlNode* node, const wxString& path) {
     }
     for (cMeshStruct::iterator it = meshstructs.begin(); it != meshstructs.end(); ++it) {
         if (it->bone > 0) {
-            if (it->bone > modelbones.size())
-                throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s' assigned to unknown bone."), it->Name.c_str()));
-            modelbones[it->bone - 1].meshes.Add(it->Name);
+            if (it->bone == 0xFFFFFFFF) {
+                bool found = false;
+                for (cModelBone::iterator itb = modelbones.begin(); itb != modelbones.end(); ++itb) {
+                    if (itb->name == it->bonename) {
+                        itb->meshes.Add(it->Name);
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s' assigned to unknown bone '%s'."), it->Name.c_str(), it->bonename.c_str()));
+            } else {
+                if (it->bone > modelbones.size())
+                    throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s' assigned to unknown bone."), it->Name.c_str()));
+                modelbones[it->bone - 1].meshes.Add(it->Name);
+            }
             it->bone = 0;
         }
     }
@@ -1678,6 +1756,50 @@ wxXmlNode* cBoneAnimation::GetNode(const wxString& path) {
 // cAnimation
 //
 ///////////////////////////////////////////////////////////////
+
+bool cAnimation::Check(const wxSortedArrayString& presentbones) {
+    bool ret = true;
+
+    // Remove bad bones
+    for (int i = boneanimations.size() - 1; i >= 0; --i) {
+        if (presentbones.Index(boneanimations[i].name) == wxNOT_FOUND) {
+            ret = false;
+            if (READ_RCT3_EXPERTMODE()) {
+                wxLogWarning(_("Animation '%s': Bone '%s' is not present in any animated model."), name.c_str(), boneanimations[i].name.c_str());
+            } else {
+                wxLogWarning(_("Animation '%s': Bone '%s' is not present in any animated model and was removed."), name.c_str(), boneanimations[i].name.c_str());
+                boneanimations.erase(boneanimations.begin() + i);
+            }
+        }
+    }
+
+    // Find total time and check order
+    totaltime = 0.0;
+    float lasttime;
+    for (cBoneAnimation::iterator i_anim = boneanimations.begin(); i_anim != boneanimations.end(); ++i_anim) {
+        lasttime = -1.0;
+        for (cTXYZ::iterator i_txyz = i_anim->translations.begin(); i_txyz != i_anim->translations.end(); ++i_txyz) {
+            if (i_txyz->v.Time < 0.0)
+                throw RCT3Exception(wxString::Format(_("Animation '%s': Bone '%s' has transformation with time below 0."), name.c_str(), i_anim->name.c_str()));
+            if (i_txyz->v.Time <= lasttime)
+                throw RCT3Exception(wxString::Format(_("Animation '%s': Bone '%s' has transformation with duplicate or out-of-order time."), name.c_str(), i_anim->name.c_str()));
+            if (i_txyz->v.Time > totaltime)
+                totaltime = i_txyz->v.Time;
+            lasttime = i_txyz->v.Time;
+        }
+        lasttime = -1.0;
+        for (cTXYZ::iterator i_txyz = i_anim->rotations.begin(); i_txyz != i_anim->rotations.end(); ++i_txyz) {
+            if (i_txyz->v.Time < 0.0)
+                throw RCT3Exception(wxString::Format(_("Animation '%s': Bone '%s' has rotation with time below 0."), name.c_str(), i_anim->name.c_str()));
+            if (i_txyz->v.Time <= lasttime)
+                throw RCT3Exception(wxString::Format(_("Animation '%s': Bone '%s' has rotation with duplicate or out-of-order time."), name.c_str(), i_anim->name.c_str()));
+            if (i_txyz->v.Time > totaltime)
+                totaltime = i_txyz->v.Time;
+            lasttime = i_txyz->v.Time;
+        }
+    }
+    return ret;
+}
 
 bool cAnimation::FromCompilerXml(wxXmlNode* node, const wxString& path) {
     bool ret = true;

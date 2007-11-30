@@ -1,0 +1,310 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+// New OVL creation library
+// Manager class for SVD structures
+// Copyright (C) 2007 Tobias Minch
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+//
+// Written by
+//   Tobias Minich - belgabor@gmx.de
+//
+// Based on libOVL by Jonathan Wilson
+//
+///////////////////////////////////////////////////////////////////////////////
+
+
+#include "ManagerSVD.h"
+
+#include "ManagerBAN.h"
+#include "ManagerBSH.h"
+#include "ManagerSHS.h"
+#include "OVLDebug.h"
+#include "OVLException.h"
+
+const char* ovlSVDManager::NAME = "SceneryItemVisual";
+const char* ovlSVDManager::TAG = "svd";
+
+ovlSVDManager::~ovlSVDManager() {
+    for (unsigned long i = 0; i < m_svdlist.size(); ++i) {
+        for (unsigned long s = 0; s < m_svdlist[i]->LODCount; ++s) {
+            delete[] m_svdlist[i]->LODMeshes[s]->LODName;
+            delete m_svdlist[i]->LODMeshes[s];
+        }
+        delete[] m_svdlist[i]->LODMeshes;
+        delete m_svdlist[i];
+    }
+}
+
+void ovlSVDManager::AddSVD(const char* name, unsigned long lods, unsigned long flags, float sway, float brightness, float scale) {
+    DUMP_LOG("Trace: ovlSVDManager::AddSVD(name:'%s', lods:%ld, flags:%ld, sway:%f, blightness:%f, scale:%f)", name, lods, flags, sway, brightness, scale);
+    Check("ovlSVDManager::AddSVD");
+    if (m_lodcount)
+        throw EOvl("ovlSVDManager::AddSVD called but last svd misses lods");
+    if (m_animcount)
+        throw EOvl("ovlSVDManager::AddSVD called but last lod misses animations");
+
+    SceneryItemVisual* c_svd = new SceneryItemVisual;
+    c_svd->sivflags = flags;
+    c_svd->sway = sway;
+    c_svd->brightness = brightness;
+    c_svd->unk4 = 1.0;
+    c_svd->scale = scale;
+    c_svd->LODCount = lods;
+    c_svd->LODMeshes = new SceneryItemVisualLOD*[c_svd->LODCount];
+    c_svd->unk6 = 0;
+    c_svd->unk7 = 0;
+    c_svd->unk8 = 0;
+    c_svd->unk9 = 0;
+    c_svd->unk10 = 0;
+    c_svd->unk11 = 0;
+
+    // SceneryItemVisual
+    m_size += sizeof(SceneryItemVisual);
+    // SceneryItemVisualLOD pointers
+    m_size += c_svd->LODCount * sizeof(SceneryItemVisualLOD*);
+
+    m_svdlist.push_back(c_svd);
+    m_lsrman->AddLoader();
+    m_lsrman->AddSymbol();
+    m_svdnames.push_back(string(name));
+    m_stable->AddSymbolString(name, Tag());
+
+    m_csvd = c_svd;
+    m_nlod = 0;
+    m_lodcount = c_svd->LODCount;
+    m_animcount = 0;
+}
+
+void ovlSVDManager::SetSVDUnknowns(float unk4, unsigned long unk6, unsigned long unk7, unsigned long unk8, unsigned long unk9, unsigned long unk10, unsigned long unk11) {
+    DUMP_LOG("Trace: ovlSVDManager::SetSVDUnknowns(%f %ld %ld %ld %ld %ld %ld)", unk4, unk6, unk7, unk8, unk9, unk10, unk11);
+    Check("ovlSVDManager::SetSVDUnknowns");
+    if (!m_csvd)
+        throw EOvl("ovlSVDManager::SetSVDUnknowns called but there is no svd pointer");
+
+    m_csvd->unk4 = unk4;
+    m_csvd->unk6 = unk6;
+    m_csvd->unk7 = unk7;
+    m_csvd->unk8 = unk8;
+    m_csvd->unk9 = unk9;
+    m_csvd->unk10 = unk10;
+    m_csvd->unk11 = unk11;
+}
+
+void ovlSVDManager::AddStaticLOD(const char* name, const char* modelname, float distance, unsigned long unk2, unsigned long unk4, unsigned long unk14) {
+    DUMP_LOG("Trace: ovlSVDManager::AddStaticLOD(name:'%s', modelname:'%s', distance:%f, unk2:%ld, Unk4:%ld, unk14:%ld)", name, modelname, distance, unk2, unk4, unk14);
+    Check("ovlSVDManager::AddStaticLOD");
+    if (!m_lodcount)
+        throw EOvl("ovlSVDManager::AddStaticLOD called but there are no lods left");
+    if (m_animcount)
+        throw EOvl("ovlSVDManager::AddStaticLOD called but last lod misses animations");
+    if (!m_csvd)
+        throw EOvl("ovlSVDManager::AddStaticLOD called but there is no svd pointer");
+
+    SceneryItemVisualLOD* c_lod = new SceneryItemVisualLOD;
+    m_csvd->LODMeshes[m_nlod] = c_lod;
+
+    c_lod->MeshType = SVDLOD_MESHTYPE_STATIC;
+    c_lod->LODName = new char[strlen(name)+1];
+    strcpy(c_lod->LODName, name);
+    c_lod->StaticShape = 0;
+    c_lod->unk2 = unk2;
+    c_lod->BoneShape = 0;
+    c_lod->unk4 = unk4;
+    c_lod->fts = 0;
+    c_lod->TextureData = 0;
+    c_lod->unk7 = 1.0;
+    c_lod->unk8 = 1.0;
+    c_lod->unk9 = 0;
+    c_lod->unk10 = 1.0;
+    c_lod->unk11 = 0;
+    c_lod->unk12 = 1.0;
+    c_lod->distance = distance;
+    c_lod->AnimationCount = 0;
+    c_lod->unk14 = unk14;
+    c_lod->AnimationArray = 0;
+
+    // SceneryItemVisualLOD
+    m_size += sizeof(SceneryItemVisualLOD);
+
+    m_stable->AddString(name);
+    m_modelmap[c_lod] = string(modelname);
+    m_stable->AddSymbolString(modelname, ovlSHSManager::TAG);
+    m_lsrman->AddSymRef();
+
+    m_nlod++;
+    m_lodcount--;
+}
+
+void ovlSVDManager::OpenAnimatedLOD(const char* name, const char* modelname, unsigned long animations, float distance, unsigned long unk2, unsigned long unk4, unsigned long unk14) {
+    DUMP_LOG("Trace: ovlSVDManager::OpenAnimatedLOD(name:'%s', modelname:'%s', animations:%ld, distance:%f, unk2:%ld, Unk4:%ld, unk14:%ld)", name, modelname, animations, distance, unk2, unk4, unk14);
+    Check("ovlSVDManager::OpenAnimatedLOD");
+    if (!m_lodcount)
+        throw EOvl("ovlSVDManager::OpenAnimatedLOD called but there are no lods left");
+    if (m_animcount)
+        throw EOvl("ovlSVDManager::OpenAnimatedLOD called but last lod misses animations");
+    if (!m_csvd)
+        throw EOvl("ovlSVDManager::OpenAnimatedLOD called but there is no svd pointer");
+
+    SceneryItemVisualLOD* c_lod = new SceneryItemVisualLOD;
+    m_csvd->LODMeshes[m_nlod] = c_lod;
+
+    c_lod->MeshType = SVDLOD_MESHTYPE_ANIMATED;
+    c_lod->LODName = new char[strlen(name)+1];
+    strcpy(c_lod->LODName, name);
+    c_lod->StaticShape = 0;
+    c_lod->unk2 = unk2;
+    c_lod->BoneShape = 0;
+    c_lod->unk4 = unk4;
+    c_lod->fts = 0;
+    c_lod->TextureData = 0;
+    c_lod->unk7 = 1.0;
+    c_lod->unk8 = 1.0;
+    c_lod->unk9 = 0;
+    c_lod->unk10 = 1.0;
+    c_lod->unk11 = 0;
+    c_lod->unk12 = 1.0;
+    c_lod->distance = distance;
+    c_lod->AnimationCount = animations;
+    c_lod->unk14 = unk14;
+    c_lod->AnimationArray = NULL; // No need to allocate a list of useless pointers here
+
+    // SceneryItemVisualLOD
+    m_size += sizeof(SceneryItemVisualLOD);
+
+    // Pointers
+    m_size += c_lod->AnimationCount * sizeof(BoneAnim**);
+
+    m_stable->AddString(name);
+    m_modelmap[c_lod] = string(modelname);
+    m_stable->AddSymbolString(modelname, ovlBSHManager::TAG);
+    m_lsrman->AddSymRef();
+
+    m_animcount = c_lod->AnimationCount;
+}
+
+void ovlSVDManager::CloseAnimatedLOD() {
+    DUMP_LOG("Trace: ovlSVDManager::CloseAnimatedLOD()");
+    Check("ovlSVDManager::CloseAnimatedLOD");
+    if (m_animcount)
+        throw EOvl("ovlSVDManager::CloseAnimatedLOD called but last lod misses animations");
+
+    m_nlod++;
+    m_lodcount--;
+}
+
+void ovlSVDManager::AddAnimation(const char* name) {
+    DUMP_LOG("Trace: ovlSVDManager::AddAnimation(name:'%s')", name);
+    Check("ovlSVDManager::AddAnimation");
+    if (!m_animcount)
+        throw EOvl("ovlSVDManager::AddAnimation called but no animations left");
+    if (!m_csvd)
+        throw EOvl("ovlSVDManager::AddAnimation called but there is no svd pointer");
+
+    // No direct assignment
+
+    // Pointer
+    m_size += 4;
+
+    m_animationmap[m_csvd->LODMeshes[m_nlod]].push_back(string(name));
+    m_stable->AddSymbolString(name, ovlBANManager::TAG);
+    m_lsrman->AddSymRef();
+
+    m_animcount--;
+}
+
+unsigned char* ovlSVDManager::Make() {
+    DUMP_LOG("Trace: ovlSVDManager::Make()");
+    Check("ovlSVDManager::Make");
+    if (m_lodcount)
+        throw EOvl("ovlSVDManager::Make called but last svd misses lods");
+    if (m_animcount)
+        throw EOvl("ovlSVDManager::Make called but last lod misses animations");
+
+    ovlOVLManager::Make();
+    unsigned char* c_data = m_data;
+
+    for (unsigned long i = 0; i < m_svdlist.size(); ++i) {
+        // Data Transfer, SceneryItemVisual
+        SceneryItemVisual* c_svd = reinterpret_cast<SceneryItemVisual*>(c_data);
+        c_data += sizeof(SceneryItemVisual);
+        memcpy(c_svd, m_svdlist[i], sizeof(SceneryItemVisual));
+
+        // Assign space for LOD pointers
+        c_svd->LODMeshes = reinterpret_cast<SceneryItemVisualLOD**>(c_data);
+        c_data += c_svd->LODCount * sizeof(SceneryItemVisualLOD*);
+        m_relman->AddRelocation((unsigned long *)&c_svd->LODMeshes);
+        DUMP_RELOCATION("ovlSVDManager::Make, LodMeshes pointers", c_svd->LODMeshes);
+
+        // Symbol and Loader
+        SymbolStruct* c_symbol = m_lsrman->MakeSymbol(m_stable->FindSymbolString(m_svdnames[i].c_str(), Tag()), reinterpret_cast<unsigned long*>(c_svd), true);
+        m_lsrman->OpenLoader(TAG, reinterpret_cast<unsigned long*>(c_svd), false, c_symbol);
+
+        for (unsigned long s = 0; s < m_svdlist[i]->LODCount; ++s) {
+            // Data Transfer, LOD
+            c_svd->LODMeshes[s] = reinterpret_cast<SceneryItemVisualLOD*>(c_data);
+            c_data += sizeof(SceneryItemVisualLOD);
+            memcpy(c_svd->LODMeshes[s], m_svdlist[i]->LODMeshes[s], sizeof(SceneryItemVisualLOD));
+            m_relman->AddRelocation((unsigned long*)&c_svd->LODMeshes[s]);
+            DUMP_RELOCATION("ovlSVDManager::Make, LodMesh", c_svd->LODMeshes[s]);
+
+            // LodName
+            c_svd->LODMeshes[s]->LODName = m_stable->FindString(m_svdlist[i]->LODMeshes[s]->LODName);
+            m_relman->AddRelocation((unsigned long*)&c_svd->LODMeshes[s]->LODName);
+            DUMP_RELOCATION_STR("ovlSVDManager::Make, LodName", c_svd->LODMeshes[s]->LODName);
+
+            // LOD type specific stuff
+            switch (c_svd->LODMeshes[s]->MeshType) {
+                case SVDLOD_MESHTYPE_STATIC: {
+                        // Symbol reference for shs name
+                        m_lsrman->MakeSymRef(m_stable->FindSymbolString(m_modelmap[m_svdlist[i]->LODMeshes[s]].c_str(), ovlSHSManager::TAG),
+                                             reinterpret_cast<unsigned long*>(&c_svd->LODMeshes[s]->StaticShape));
+                    }
+                    break;
+                case SVDLOD_MESHTYPE_ANIMATED: {
+                        // Symbol reference for bsh name
+                        m_lsrman->MakeSymRef(m_stable->FindSymbolString(m_modelmap[m_svdlist[i]->LODMeshes[s]].c_str(), ovlBSHManager::TAG),
+                                             reinterpret_cast<unsigned long*>(&c_svd->LODMeshes[s]->BoneShape));
+
+                        // Animations
+                        if (c_svd->LODMeshes[s]->AnimationCount) {
+                            // Allocate space for the pointers
+                            c_svd->LODMeshes[s]->AnimationArray = reinterpret_cast<BoneAnim***>(c_data);
+                            c_data += c_svd->LODMeshes[s]->AnimationCount * sizeof(BoneAnim**);
+                            m_relman->AddRelocation((unsigned long *)&c_svd->LODMeshes[s]->AnimationArray);
+                            DUMP_RELOCATION("ovlSVDManager::Make, AnimationArray pointers", c_svd->LODMeshes[s]->AnimationArray);
+
+                            for (unsigned long a = 0; a < m_svdlist[i]->LODMeshes[s]->AnimationCount; ++a) {
+                                // Allocate space for animation pointer
+                                c_svd->LODMeshes[s]->AnimationArray[a] = reinterpret_cast<BoneAnim**>(c_data);
+                                c_data += sizeof(BoneAnim*);
+                                m_relman->AddRelocation((unsigned long *)&c_svd->LODMeshes[s]->AnimationArray[a]);
+                                DUMP_RELOCATION("ovlSVDManager::Make, AnimationArray", c_svd->LODMeshes[s]->AnimationArray[a]);
+
+                                // Symbol reference for ban name
+                                m_lsrman->MakeSymRef(m_stable->FindSymbolString(m_animationmap[m_svdlist[i]->LODMeshes[s]][a].c_str(), ovlBANManager::TAG),
+                                                     reinterpret_cast<unsigned long*>(c_svd->LODMeshes[s]->AnimationArray[a]));
+                            }
+                        }
+                    }
+                    break;
+            }
+        }
+
+        m_lsrman->CloseLoader();
+    }
+
+    return m_data;
+}

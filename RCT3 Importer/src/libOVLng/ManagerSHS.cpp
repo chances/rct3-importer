@@ -29,8 +29,10 @@
 #include "ManagerSHS.h"
 
 #include "ManagerFTX.h"
+#include "OVLDebug.h"
 #include "OVLException.h"
 
+const char* ovlSHSManager::NAME = "StaticShape";
 const char* ovlSHSManager::TAG = "shs";
 
 ovlSHSManager::~ovlSHSManager() {
@@ -89,7 +91,9 @@ void ovlSHSManager::AddModel(const char* name, unsigned long meshes, unsigned lo
 
     m_cmodel = c_shs;
     m_nmesh = 0;
+    m_meshcount = c_shs->MeshCount;
     m_neffect = 0;
+    m_effectcount = c_shs->EffectCount;
 }
 
 void ovlSHSManager::SetBoundingBox(const D3DVECTOR& bbox1, const D3DVECTOR& bbox2) {
@@ -98,7 +102,7 @@ void ovlSHSManager::SetBoundingBox(const D3DVECTOR& bbox1, const D3DVECTOR& bbox
         throw EOvl("ovlSHSManager::SetBoundingBox called but no model pointer");
 
     m_cmodel->BoundingBox1 = bbox1;
-    m_cmodel->BoundingBox2 = bbox1;
+    m_cmodel->BoundingBox2 = bbox2;
 }
 
 void ovlSHSManager::AddEffectPoint(const char* name, const D3DMATRIX& matrix) {
@@ -169,12 +173,12 @@ void ovlSHSManager::AddMesh(const char* ftx, const char* txs, unsigned long plac
 
 unsigned char* ovlSHSManager::Make() {
     Check("ovlSHSManager::Make");
-    if (!m_meshcount)
-        throw EOvl("ovlSHSManager::Make called but no meshes left");
-    if (!m_effectcount)
-        throw EOvl("ovlSHSManager::Make called but no effect points left");
+    if (m_meshcount)
+        throw EOvl("ovlSHSManager::Make called but there are unassigned meshes left");
+    if (m_effectcount)
+        throw EOvl("ovlSHSManager::Make called but there are unassigned effect points left");
 
-    m_data = new unsigned char[m_size];
+    ovlOVLManager::Make();
     unsigned char* c_data = m_data;
 
     for (unsigned long i = 0; i < m_modellist.size(); ++i) {
@@ -187,10 +191,11 @@ unsigned char* ovlSHSManager::Make() {
         c_model->sh = reinterpret_cast<StaticShape2**>(c_data);
         c_data += c_model->MeshCount * 4;
         m_relman->AddRelocation((unsigned long *)&c_model->sh);
+        DUMP_RELOCATION("ovlSHSManager::Make, StaticShape2 pointers", c_model->sh);
 
         // Symbol and Loader
         SymbolStruct* c_symbol = m_lsrman->MakeSymbol(m_stable->FindSymbolString(m_modelnames[i].c_str(), Tag()), reinterpret_cast<unsigned long*>(c_model), true);
-        m_lsrman->OpenLoader(2, reinterpret_cast<unsigned long*>(c_model), false, c_symbol);
+        m_lsrman->OpenLoader(TAG, reinterpret_cast<unsigned long*>(c_model), false, c_symbol);
 
         for (unsigned long s = 0; s < m_modellist[i]->MeshCount; ++s) {
             // Data transfer, StaticShape2
@@ -199,18 +204,21 @@ unsigned char* ovlSHSManager::Make() {
             memcpy(c_mesh, m_modellist[i]->sh[s], sizeof(StaticShape2));
             c_model->sh[s] = c_mesh;
             m_relman->AddRelocation((unsigned long *)&c_model->sh[s]);
+            DUMP_RELOCATION("ovlSHSManager::Make, StaticShape2", c_model->sh[s]);
 
             // Data transfer, vertices
             c_mesh->Vertexes = reinterpret_cast<VERTEX*>(c_data);
             c_data += c_mesh->VertexCount * sizeof(VERTEX);
             memcpy(c_mesh->Vertexes, m_modellist[i]->sh[s]->Vertexes, c_mesh->VertexCount * sizeof(VERTEX));
             m_relman->AddRelocation((unsigned long *)&c_mesh->Vertexes);
+            DUMP_RELOCATION("ovlSHSManager::Make, Vertexes", c_mesh->Vertexes);
 
             // Data transfer, indices
             c_mesh->Triangles = reinterpret_cast<unsigned long*>(c_data);
-            c_data += c_mesh->IndexCount * sizeof(unsigned long*);
-            memcpy(c_mesh->Triangles, m_modellist[i]->sh[s]->Triangles, c_mesh->IndexCount * sizeof(unsigned long*));
+            c_data += c_mesh->IndexCount * sizeof(unsigned long);
+            memcpy(c_mesh->Triangles, m_modellist[i]->sh[s]->Triangles, c_mesh->IndexCount * sizeof(unsigned long));
             m_relman->AddRelocation((unsigned long *)&c_mesh->Triangles);
+            DUMP_RELOCATION("ovlSHSManager::Make, Triangles", c_mesh->Triangles);
 
             // Symbol references
             m_lsrman->MakeSymRef(m_stable->FindSymbolString(m_ftxmap[m_modellist[i]->sh[s]].c_str(), ovlFTXManager::TAG), reinterpret_cast<unsigned long*>(&c_mesh->fts));
@@ -223,11 +231,13 @@ unsigned char* ovlSHSManager::Make() {
             c_data += c_model->EffectCount * sizeof(D3DMATRIX);
             memcpy(c_model->EffectPosition, m_modellist[i]->EffectPosition, c_model->EffectCount * sizeof(D3DMATRIX));
             m_relman->AddRelocation((unsigned long *)&c_model->EffectPosition);
+            DUMP_RELOCATION("ovlSHSManager::Make, Effect Positions", c_model->EffectPosition);
 
             // Assign space for name pointers
             c_model->EffectName = reinterpret_cast<char**>(c_data);
             c_data += c_model->EffectCount * sizeof(char*);
             m_relman->AddRelocation((unsigned long *)&c_model->EffectName);
+            DUMP_RELOCATION("ovlSHSManager::Make, Effect Names", c_model->EffectName);
 
             for (unsigned long s = 0; s < c_model->EffectCount; ++s) {
                 // Data transfer, padded effect name
@@ -235,6 +245,7 @@ unsigned char* ovlSHSManager::Make() {
                 strcpy(reinterpret_cast<char*>(c_data), m_modellist[i]->EffectName[s]);
                 c_data += strlen(m_modellist[i]->EffectName[s]) + 1;
                 m_relman->AddRelocation((unsigned long *)&c_model->EffectName[s]);
+                DUMP_RELOCATION("ovlSHSManager::Make, Effect Name", c_model->EffectName[s]);
 
                 // Padding
                 unsigned long x = strlen(m_modellist[i]->EffectName[s]) + 1;

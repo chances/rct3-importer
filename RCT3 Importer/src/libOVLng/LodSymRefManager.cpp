@@ -73,7 +73,7 @@ void ovlLodSymRefManager::Assign() {
     m_usymrefcount = 0;
 }
 
-void ovlLodSymRefManager::Make() {
+void ovlLodSymRefManager::Make(const map<string, unsigned long>& loadernumbers) {
     if (m_made)
         throw EOvl("ovlLodSymRefManager::Make called twice");
     if (!m_relman)
@@ -86,21 +86,31 @@ void ovlLodSymRefManager::Make() {
         throw EOvl("ovlLodSymRefManager::Make called with unassigned symbol(s)");
     if (m_usymrefcount < m_symrefcount)
         throw EOvl("ovlLodSymRefManager::Make called with unassigned symbol reference(s)");
+    if (m_loadercount != m_loadernames.size())
+        throw EOvl("ovlLodSymRefManager::Make: Inconsistency between loadercount and size of loadername array");
 
     SymbolStruct *syms2 = (SymbolStruct *)m_symbols;
     qsort(syms2, m_symbolcount, sizeof(SymbolStruct), comparesymbols);
     for (int i = 0; i < m_symbolcount; i++) {
         m_relman->AddRelocation((unsigned long *)&(syms2[i].Symbol));
+        DUMP_RELOCATION_STR("ovlLodSymRefManager::Make, Symbol", syms2[i].Symbol);
         m_relman->AddRelocation((unsigned long *)&(syms2[i].data));
+        DUMP_RELOCATION("ovlLodSymRefManager::Make, Data", syms2[i].data);
     }
     LoaderStruct *ldrs2 = (LoaderStruct *)m_loaders;
     for (int i = 0; i < m_loadercount; i++) {
+        map<string, unsigned long>::const_iterator ld = loadernumbers.find(m_loadernames[i]);
+        if (ld == loadernumbers.end())
+            throw EOvl("ovlLodSymRefManager::Make: Loader not registered: "+m_loadernames[i]);
+        ldrs2[i].LoaderType = ld->second;
+
         for (int j = 0; j < m_symbolcount; j++) {
             if (ldrs2[i].data == syms2[j].data) {
                 ldrs2[i].Sym = &syms2[j];
             }
         }
     }
+    m_made = true;
 }
 
 void ovlLodSymRefManager::AddLoader() {
@@ -109,7 +119,8 @@ void ovlLodSymRefManager::AddLoader() {
     m_loadercount++;
 }
 
-LoaderStruct* ovlLodSymRefManager::OpenLoader(unsigned long type, unsigned long *data, bool hasextradata, SymbolStruct *sym) {
+LoaderStruct* ovlLodSymRefManager::OpenLoader(const char* type, unsigned long *data, bool hasextradata, SymbolStruct *sym) {
+    DUMP_LOG("Trace: ovlLodSymRefManager::OpenLoader('%s', %08lx, %d, %08lx)", type, DPTR(data), hasextradata, DPTR(sym));
     if (!m_loaders)
         throw EOvl("ovlLodSymRefManager::OpenLoader called before assignment");
     if (!m_relman)
@@ -119,13 +130,18 @@ LoaderStruct* ovlLodSymRefManager::OpenLoader(unsigned long type, unsigned long 
     if (m_loaderopen)
         throw EOvl("ovlLodSymRefManager::OpenLoader called with open loader");
 
-    m_cloader->LoaderType = type;
+    m_cloader->LoaderType = 0; // Init to 0, fill out later
     m_cloader->data = data;
     m_relman->AddRelocation((unsigned long *)&m_cloader->data);
+    DUMP_RELOCATION("ovlLodSymRefManager::OpenLoader, Data", m_cloader->data);
     m_cloader->HasExtraData = hasextradata;
     m_cloader->Sym = sym;
     m_relman->AddRelocation((unsigned long *)&m_cloader->Sym);
+    DUMP_RELOCATION("ovlLodSymRefManager::OpenLoader, Sym", m_cloader->Sym);
     m_cloader->SymbolsToResolve = 0;
+
+    string t = type;
+    m_loadernames.push_back(t);
 
     m_loaderopen = true;
 
@@ -196,12 +212,15 @@ SymbolRefStruct* ovlLodSymRefManager::MakeSymRef(char* symbol, unsigned long *re
 
     m_csymref->Symbol = symbol;
     m_relman->AddRelocation((unsigned long *)&m_csymref->Symbol);
+    DUMP_RELOCATION_STR("ovlLodSymRefManager::MakeSymRef, Symbol", m_csymref->Symbol);
 
     m_csymref->reference = ref;
     m_relman->AddRelocation((unsigned long *)&m_csymref->reference);
+    DUMP_RELOCATION("ovlLodSymRefManager::MakeSymRef, Reference", m_csymref->reference);
 
     m_csymref->ldr = m_cloader;
     m_relman->AddRelocation((unsigned long *)&m_csymref->ldr);
+    DUMP_RELOCATION("ovlLodSymRefManager::MakeSymRef, Loader", m_csymref->ldr);
     m_cloader->SymbolsToResolve++;
 
     m_usymrefcount++;

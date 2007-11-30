@@ -467,6 +467,8 @@ EVT_BUTTON(XRCID("m_btAnimationDel"), dlgCreateScenery::OnAnimationDel)
 EVT_BUTTON(XRCID("m_btAnimationAddToLod"), dlgCreateScenery::OnAnimationAddToLod)
 EVT_BUTTON(XRCID("m_btAnimationClear"), dlgCreateScenery::OnAnimationClear)
 
+EVT_TEXT(XRCID("m_textName"), dlgCreateScenery::OnMakeDirty)
+EVT_COMBOBOX(XRCID("m_textPath"), dlgCreateScenery::OnMakeDirty)
 EVT_BUTTON(XRCID("m_btCheck"), dlgCreateScenery::OnCheck)
 EVT_BUTTON(XRCID("m_btCreate"), dlgCreateScenery::OnCreate)
 
@@ -639,16 +641,20 @@ void dlgCreateScenery::UpdateControlState() {
     m_btAnimationAddToLod->Enable(en);
 
     m_btCreate->Enable(m_SCN.flexitextures.size() || (m_SCN.models.size() && m_SCN.lods.size()));
+    /*
     if (m_SCN.models.size())
         m_btCreate->SetLabel(_("Create Scenery OVL"));
     else
         m_btCreate->SetLabel(_("Create Texture OVL"));
+    */
 
     wxString title = _("Create OVL");
     if (m_SCN.filename != wxT(""))
         title += wxT(" - ") + m_SCN.filename.GetFullName();
     if (m_SCN.name != wxT(""))
         title += wxT(" (") + m_SCN.name + wxT(")");
+    if (READ_RCT3_EXPERTMODE())
+        title += wxT(" !!") + wxString(_("EXPERT MODE")) + wxT("!!");
     SetLabel(title);
 }
 
@@ -813,7 +819,11 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
         if (dialog->ShowModal() == wxID_OK) {
             ::wxGetApp().g_workdir.AssignDir(wxFileName(dialog->GetPath()).GetPath());
             m_SCN.filename = dialog->GetPath();
+
+            wxLogGui *logex = new wxLogGui();
+            wxLog *old = wxLog::SetActiveTarget(logex);
             try {
+                /*
                 if (!m_SCN.Load()) {
                     if (m_SCN.error != CSCNFILE_NO_ERROR) {
                         if (m_SCN.error == CSCNFILE_ERROR_VERSION)
@@ -829,6 +839,9 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
                         ::wxMessageBox(_("There were warings or errors loading the model files.\nThey will be shown to you when you open the respective model settings."), _("Warning"), wxOK | wxICON_WARNING, this);
                     }
                 }
+                */
+                m_SCN.Load();
+
                 if (m_SCN.references.size() && (!m_SCN.flexitextures.size())) {
                     m_nbTexRef->ChangeSelection(1);
                 } else if (!m_SCN.references.size()) {
@@ -840,8 +853,12 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
                     m_nbModels->ChangeSelection(0);
                 }
             } catch (RCT3Exception& e) {
-                ::wxMessageBox(_("Error loading scenery file.\n") + e.wxwhat(), _("Error"), wxOK | wxICON_ERROR, this);
+                wxLogError(_("Error loading scenery file.\n") + e.wxwhat());
             }
+            wxLog::FlushActive();
+            wxLog::SetActiveTarget(old);
+            delete logex;
+
             TransferDataToWindow();
             UpdateAll();
             MakeDirty(false);
@@ -853,7 +870,7 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
     ////////////////////////////
     // Save Scenery
     if (id == wxID_SAVE) {
-        Save();
+        Save(m_SCN.filename == wxT("")); // Does a save as if filename not set.
 //        if (m_SCN.filename == wxT("")) {
 //            // Shouldn't happen, but you never know...
 //            id = wxID_SAVEAS;
@@ -1339,10 +1356,12 @@ void dlgCreateScenery::OnModelEdit(wxCommandEvent& WXUNUSED(event)) {
     dialog->SetModel(m_SCN.models[sel]);
     if (dialog->ShowModal() == wxID_OK) {
         cModel mod = dialog->GetModel();
-        if (mod.name != m_SCN.models[sel].name) {
-            for (cLOD::iterator it = m_SCN.lods.begin(); it != m_SCN.lods.end(); it++) {
-                if (it->modelname == m_SCN.models[sel].name)
-                    it->modelname = mod.name;
+        if (!READ_RCT3_EXPERTMODE()) {
+            if (mod.name != m_SCN.models[sel].name) {
+                for (cLOD::iterator it = m_SCN.lods.begin(); it != m_SCN.lods.end(); it++) {
+                    if (it->modelname == m_SCN.models[sel].name)
+                        it->modelname = mod.name;
+                }
             }
         }
         m_SCN.models[sel] = mod;
@@ -1490,10 +1509,12 @@ void dlgCreateScenery::OnAModelEdit(wxCommandEvent& WXUNUSED(event)) {
     dialog->SetAnimatedModel(m_SCN.animatedmodels[sel]);
     if (dialog->ShowModal() == wxID_OK) {
         cAnimatedModel mod = dialog->GetAnimatedModel();
-        if (mod.name != m_SCN.animatedmodels[sel].name) {
-            for (cLOD::iterator it = m_SCN.lods.begin(); it != m_SCN.lods.end(); it++) {
-                if (it->modelname == m_SCN.animatedmodels[sel].name)
-                    it->modelname = mod.name;
+        if (!READ_RCT3_EXPERTMODE()) {
+            if (mod.name != m_SCN.animatedmodels[sel].name) {
+                for (cLOD::iterator it = m_SCN.lods.begin(); it != m_SCN.lods.end(); it++) {
+                    if (it->modelname == m_SCN.animatedmodels[sel].name)
+                        it->modelname = mod.name;
+                }
             }
         }
         m_SCN.animatedmodels[sel] = mod;
@@ -1549,7 +1570,7 @@ void dlgCreateScenery::OnAModelConvert(wxCommandEvent& WXUNUSED(event)) {
     for (cLOD::iterator it = m_SCN.lods.begin(); it != m_SCN.lods.end(); ++it) {
         if (it->modelname == orgname) {
             it->modelname = ft.name;
-            it->animated = true;
+            it->animated = false;
         }
     }
     m_SCN.models.push_back(ft);
@@ -1805,11 +1826,13 @@ void dlgCreateScenery::OnAnimationEdit(wxCommandEvent& WXUNUSED(event)) {
     dialog->SetAnimation(m_SCN.animations[sel]);
     if (dialog->ShowModal() == wxID_OK) {
         cAnimation mod = dialog->GetAnimation();
-        if (mod.name != m_SCN.animations[sel].name) {
-            for (cLOD::iterator it = m_SCN.lods.begin(); it != m_SCN.lods.end(); it++) {
-                for (cStringIterator st = it->animations.begin(); st != it->animations.end(); st++) {
-                    if ((*st) == m_SCN.animations[sel].name)
-                        (*st) = mod.name;
+        if (!READ_RCT3_EXPERTMODE()) {
+            if (mod.name != m_SCN.animations[sel].name) {
+                for (cLOD::iterator it = m_SCN.lods.begin(); it != m_SCN.lods.end(); it++) {
+                    for (cStringIterator st = it->animations.begin(); st != it->animations.end(); st++) {
+                        if ((*st) == m_SCN.animations[sel].name)
+                            (*st) = mod.name;
+                    }
                 }
             }
         }
@@ -1894,8 +1917,12 @@ void dlgCreateScenery::OnCheck(wxCommandEvent& WXUNUSED(event)) {
     bool all_ok = true;
     bool cont = true;
     //wxLogGuiExt *logex = new wxLogGuiExt(NULL);
+#ifndef __WXDEBUG__
     wxLogGui *logex = new wxLogGui();
     wxLog *old = wxLog::SetActiveTarget(logex);
+#endif
+
+    TransferDataFromWindow();
 
     try {
         all_ok = m_SCN.Check();
@@ -1910,8 +1937,10 @@ void dlgCreateScenery::OnCheck(wxCommandEvent& WXUNUSED(event)) {
         wxLogMessage(_("All data seems to be ok."));
     wxLog::FlushActive();
 
+#ifndef __WXDEBUG__
     wxLog::SetActiveTarget(old);
     delete logex;
+#endif
 }
 
 void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
@@ -2148,7 +2177,20 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
 */
     if (!cont)
         goto deinitlogger;
-#if 0
+
+    try {
+        wxBusyCursor bc;
+        was_going = true;
+        m_SCN.Make();
+    } catch (RCT3Exception& e) {
+        wxLogError(e.what());
+        error = true;
+    } catch (std::exception& e) {
+        wxLogError(_("Unknown exception during creation: %s"), e.what());
+        error = true;
+    }
+
+/*
     if (work.ovlname == wxT("")) {
         if (!textureovl) {
             if (work.filename != wxT(""))
@@ -2358,43 +2400,43 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
                             object->FetchObject(CurrentObj, &sh2->VertexCount, &sh2->Vertexes, &sh2->IndexCount,
                                                 &sh2->Triangles, &temp_min, &temp_max,
                                                 const_cast<D3DMATRIX *> ((do_transform)?(&transformMatrix):NULL));
-/*                        } else {
-                            D3DVECTOR up;
-                            up.x = -1.0;
-                            up.y = 0.0;
-                            up.z = -0.000000131179;
-                            object->FetchObject(CurrentObj, &sh2->VertexCount, &sh2->Vertexes, &sh2->IndexCount,
-                                                &sh2->Triangles, &temp_min, &temp_max,
-                                                const_cast<D3DMATRIX *> ((do_transform)?(&transformMatrix):NULL),
-                                                &up);
-                        }*/
+//                        } else {
+//                            D3DVECTOR up;
+//                            up.x = -1.0;
+//                            up.y = 0.0;
+//                            up.z = -0.000000131179;
+//                            object->FetchObject(CurrentObj, &sh2->VertexCount, &sh2->Vertexes, &sh2->IndexCount,
+//                                                &sh2->Triangles, &temp_min, &temp_max,
+//                                                const_cast<D3DMATRIX *> ((do_transform)?(&transformMatrix):NULL),
+//                                                &up);
+//                        }
                         boundsContain(&temp_min, &temp_max, &sh->BoundingBox1, &sh->BoundingBox2);
-                        /*
-                        if (i_mesh->place == SS2_PLACE_UNKNOWN) {
-                            boundsContain(&temp_min, &temp_max, &glass_min, &glass_max);
-                            has_unknown = true;
-                        }
-                        */
+
+//                        if (i_mesh->place == SS2_PLACE_UNKNOWN) {
+//                            boundsContain(&temp_min, &temp_max, &glass_min, &glass_max);
+//                            has_unknown = true;
+//                        }
+
                         CurrentMesh++;
                     }
                     CurrentObj++;
                 }
-/*
-                if (has_unknown) {
-                    if ((glass_min.x - sh->BoundingBox1.x) < 0.001)
-                        sh->BoundingBox1.x -= 0.001;
-                    if ((glass_min.y - sh->BoundingBox1.y) < 0.001)
-                        sh->BoundingBox1.y -= 0.001;
-                    if ((glass_min.z - sh->BoundingBox1.z) < 0.001)
-                        sh->BoundingBox1.z -= 0.001;
-                    if ((sh->BoundingBox2.x - glass_max.x) < 0.001)
-                        sh->BoundingBox2.x += 0.001;
-                    if ((sh->BoundingBox2.y - glass_max.y) < 0.001)
-                        sh->BoundingBox2.y += 0.001;
-                    if ((sh->BoundingBox2.z - glass_max.z) < 0.001)
-                        sh->BoundingBox2.z += 0.001;
-                }
-*/
+
+//                if (has_unknown) {
+//                    if ((glass_min.x - sh->BoundingBox1.x) < 0.001)
+//                        sh->BoundingBox1.x -= 0.001;
+//                    if ((glass_min.y - sh->BoundingBox1.y) < 0.001)
+//                        sh->BoundingBox1.y -= 0.001;
+//                    if ((glass_min.z - sh->BoundingBox1.z) < 0.001)
+//                        sh->BoundingBox1.z -= 0.001;
+//                    if ((sh->BoundingBox2.x - glass_max.x) < 0.001)
+//                        sh->BoundingBox2.x += 0.001;
+//                    if ((sh->BoundingBox2.y - glass_max.y) < 0.001)
+//                        sh->BoundingBox2.y += 0.001;
+//                    if ((sh->BoundingBox2.z - glass_max.z) < 0.001)
+//                        sh->BoundingBox2.z += 0.001;
+//                }
+
                 char **ftx = new char *[mesh_count];
                 ftxstore.push_back(ftx);
                 char **txs = new char *[mesh_count];
@@ -2788,7 +2830,7 @@ scenerycleanup:
         }
     }
     dialog->Destroy();
-#endif
+*/
 
 deinitlogger:
     if (was_going) {

@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 // New OVL creation library
-// Manager class for FTX structures
+// Manager class for BAN structures
 // Copyright (C) 2007 Tobias Minch
 //
 // This program is free software; you can redistribute it and/or
@@ -26,47 +26,55 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef MANAGERFTX_H_INCLUDED
-#define MANAGERFTX_H_INCLUDED
+#ifndef MANAGERBAN_H_INCLUDED
+#define MANAGERBAN_H_INCLUDED
 
+#include <map>
 #include <string>
 #include <vector>
 
-#include "flexitexture.h"
+#include "boneanim.h"
 #include "ManagerOVL.h"
 
 using namespace std;
 
-class ovlFTXManager: public ovlOVLManager {
+class ovlBANManager: public ovlOVLManager {
 public:
-    static const char* LOADER;
     static const char* NAME;
     static const char* TAG;
 private:
-    vector<FlexiTextureInfoStruct*> m_ftxlist;
-    vector<string> m_ftxnames;
+    vector<BoneAnim*> m_animationlist;
+    vector<string> m_animationnames;
 
-    FlexiTextureInfoStruct* m_cftis;
-    FlexiTextureStruct* m_cfts;
-    long m_ftscount;
+    //BoneAnim* m_canim;
+    BoneAnimBone* m_cbone;
+    long m_bonecount;
+    long m_transcount;
+    long m_rotcount;
+
+    unsigned long m_ntrans;
+    unsigned long m_nrot;
+
+    void CloseBone();
 public:
-    ovlFTXManager(): ovlOVLManager() {
-        m_cftis = NULL;
-        m_cfts = NULL;
-        m_ftscount = 0;
+    ovlBANManager(): ovlOVLManager() {
+        //m_canim = NULL;
+        m_cbone = NULL;
+        m_bonecount = 0;
+        m_transcount = 0;
+        m_rotcount = 0;
+        m_ntrans = 0;
+        m_nrot = 0;
     };
-    virtual ~ovlFTXManager();
+    virtual ~ovlBANManager();
 
-    void AddTexture(const char* name, unsigned long dimension, unsigned long fps, unsigned long recol,
-                    unsigned long animationcount, unsigned long* animation, unsigned long framecount);
-    void AddTextureFrame(unsigned long dimension, unsigned long recol,
-                         unsigned char* palette, unsigned char* texture, unsigned char* alpha);
+    void AddAnimation(const char* name, unsigned long bones, float totaltime);
+    void AddBone(const char* name, unsigned long translations, unsigned long rotations);
+    void AddTranslation(const txyz& t);
+    void AddRotation(const txyz& t);
 
     virtual unsigned char* Make();
 
-    virtual const char* Loader() const {
-        return LOADER;
-    };
     virtual const char* Name() const {
         return NAME;
     };
@@ -75,10 +83,5 @@ public:
     };
 };
 
-// "Fake" class for consistent access to file tags
-class ovlTXSManager: public ovlOVLManager {
-public:
-    static const char* TAG;
-};
 
 #endif

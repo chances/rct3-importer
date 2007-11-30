@@ -90,7 +90,7 @@ IMPLEMENT_APP_NO_MAIN(ToolApp)
 //  Globals (???)
 //
 //////////////////////////////////
-#define TITLE_VERSION "RCT3 Object Importer (v17fix3)"
+#define TITLE_VERSION "RCT3 Object Importer (v18)"
 
 
 
@@ -2831,6 +2831,11 @@ bool ToolApp::OnInit()
     int ovl_version;
     if (ovl_version = LibOVLCheckVersion(LIBOVL_VERSION)) {
         ::wxMessageBox(wxString::Format(_("LibOVL version mismatch.\nThis importer version was compiled against libovl v%d.\nFound was libovl v%d."), LIBOVL_VERSION, ovl_version), _("Fatal Error"), wxOK);
+        return false;
+    }
+
+    if (sizeof(Magick::Quantum) != 1) {
+        ::wxMessageBox(_("Compiled against GraphicsMagick with wrong quantum size. 8 bit quantum required"), _("Error"), wxOK);
         return false;
     }
 

@@ -29,14 +29,15 @@
 #include "StringTable.h"
 
 #include "OVLDebug.h"
+#include "OVLException.h"
 
 char* ovlStringTable::FindRawString(const std::string& findit) const {
     map<string, char*>::const_iterator fst = m_ptrmap.find(findit);
     if (fst == m_ptrmap.end()) {
-        DUMP_RELOCATION(f, "Find '%s' failed\n", findit.c_str());
+        throw EOvl("ovlStringTable::FindRawString: Could not find '"+findit+"'");
         return NULL;
     }
-    DUMP_RELOCATION(f, "Find '%s': %s (%x/%x)\n", findit.c_str(), fst->second, fst->second, m_table);
+    DUMP_LOG("ovlStringTable::FindRawString '%s': %s (%x/%x)", findit.c_str(), fst->second, fst->second, m_table);
     return fst->second;
 }
 
@@ -53,7 +54,7 @@ ovlStringTable::~ovlStringTable() {
 void ovlStringTable::AddString(const char *lstring) {
     string st = lstring;
     m_strings.push_back(st);
-    DUMP_RELOCATION(f, "Add String '%s'\n", lstring);
+    DUMP_LOG("ovlStringTable::AddString '%s'", lstring);
 }
 
 void ovlStringTable::AddSymbolString(const char *lstring, const char *lextension) {
@@ -61,7 +62,7 @@ void ovlStringTable::AddSymbolString(const char *lstring, const char *lextension
     st += ':';
     st += lextension;
     m_strings.push_back(st);
-    DUMP_RELOCATION(f, "Add Symbol String '%s':'%s'\n", lstring, lextension);
+    DUMP_LOG("ovlStringTable::AddSymbolString '%s':'%s'", lstring, lextension);
 }
 
 char* ovlStringTable::Make() {
@@ -98,8 +99,4 @@ char* ovlStringTable::FindSymbolString(const char *lstring, const char *lextensi
 int ovlStringTable::GetSize() const {
     return m_size;
 }
-
-const char* ovlStringTable::SVD = "svd";
-const char* ovlStringTable::BSH = "bsh";
-const char* ovlStringTable::BAN = "ban";
 

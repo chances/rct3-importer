@@ -57,7 +57,7 @@ public:
     wxFileName ovlpath;
     wxString name;
     unsigned long version;
-    long error;
+//    long error;
 //    wxString objfile;
     bool save_relative_paths;
 
@@ -77,8 +77,8 @@ public:
 //	wxArrayString transformnames;
 
 
-	cSCNFile(): filename(wxT("")),version(VERSION_CSCNFILE),error(CSCNFILE_NO_ERROR),save_relative_paths(true),m_work(NULL) {};
-	cSCNFile(wxString l_filename): filename(l_filename),error(CSCNFILE_NO_ERROR),save_relative_paths(true),m_work(NULL) {Load();};
+	cSCNFile(): filename(wxT("")),version(VERSION_CSCNFILE),save_relative_paths(true),m_work(NULL) {};
+	cSCNFile(wxString l_filename): filename(l_filename),save_relative_paths(true),m_work(NULL) {Load();};
 	void Init();
 	bool Load();
 	void LoadTextures(FILE *f);
@@ -86,19 +86,20 @@ public:
 	void LoadLODs(FILE *f);
 	void LoadReferences(FILE *f);
 	bool LoadLegacy(unsigned long objlen, FILE *f);
-	bool LoadXML();
+	bool LoadXML(wxXmlDocument* doc);
 //	bool LoadObject(bool reset = true);
 	bool Save();
-	void SaveTextures(FILE *f);
-	void SaveModels(FILE *f);
-	void SaveLODs(FILE *f);
-	void SaveReferences(FILE *f);
+//	void SaveTextures(FILE *f);
+//	void SaveModels(FILE *f);
+//	void SaveLODs(FILE *f);
+//	void SaveReferences(FILE *f);
 	void SaveXML();
 	bool Ok() {return version <= VERSION_CSCNFILE;};
-	bool Error() {return error;};
+//	bool Error() {return error;};
 
 	bool CheckForModelNameDuplicates();
 	bool Check();
+	void Make();
 	void CleanWork();
 
     virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);

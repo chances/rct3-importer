@@ -26,11 +26,16 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef OVLMATRIX_H_INCLUDED
-#define OVLMATRIX_H_INCLUDED
+#ifndef OVLNG_H_INCLUDED
+#define OVLNG_H_INCLUDED
 
+#include <map>
 #include <string>
 
+#include "LodSymRefManager.h"
+#include "ManagerOVL.h"
+#include "ovlstructs.h"
+#include "RelocationManager.h"
 #include "StringTable.h"
 
 using namespace std;
@@ -38,10 +43,33 @@ using namespace std;
 class cOvl {
 private:
     string m_file;
+    OvlInfo m_ovlinfo;
     ovlStringTable m_stringtable;
+    ovlRelocationManager m_relmanager;
+    ovlLodSymRefManager m_lsrmanager;
+    vector<string> m_references;
+
+    map<string, ovlOVLManager*> m_managers;
+
+    ovlOVLManager* GetManager(const char* tag);
+    void InitAndAddManager(ovlOVLManager* man);
 public:
     cOvl(string file);
     virtual ~cOvl();
+
+    void AddReference(const char* ref);
+
+    void Save();
+
+    template <class M>
+    M* GetManager() {
+        M* ret = dynamic_cast<M*>(GetManager(M::TAG));
+        if (!ret) {
+            ret = new M();
+            InitAndAddManager(ret);
+        }
+        return ret;
+    }
 };
 
 #endif

@@ -15,6 +15,9 @@
 #include "wx_pch.h"
 
 #include <wx/confbase.h>
+#ifndef DWORD
+#include <windows.h>
+#endif
 #include <d3d9types.h>
 
 template <class T>

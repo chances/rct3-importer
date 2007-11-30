@@ -29,6 +29,10 @@
 #ifndef LODSYMREFMANAGER_H_INCLUDED
 #define LODSYMREFMANAGER_H_INCLUDED
 
+#include <map>
+#include <string>
+#include <vector>
+
 #include "ovlstructs.h"
 #include "RelocationManager.h"
 
@@ -43,6 +47,8 @@ private:
     SymbolRefStruct* m_symrefs;
     SymbolRefStruct* m_csymref;
     ovlRelocationManager* m_relman;
+
+    vector<string> m_loadernames;
 
     int m_loadercount;
     int m_symbolcount;
@@ -63,10 +69,10 @@ public:
 
     void Init(ovlRelocationManager* relman);
     void Assign();
-    void Make();
+    void Make(const map<string, unsigned long>& loadernumbers);
 
     void AddLoader();
-    LoaderStruct* OpenLoader(unsigned long type, unsigned long *data, bool hasextradata, SymbolStruct *sym);
+    LoaderStruct* OpenLoader(const char* type, unsigned long *data, bool hasextradata, SymbolStruct *sym);
     LoaderStruct* CloseLoader();
     LoaderStruct* GetLoaders();
     int GetLoaderCount() {

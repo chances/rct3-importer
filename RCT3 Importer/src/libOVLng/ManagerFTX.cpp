@@ -34,6 +34,8 @@
 #include "OVLException.h"
 #include "rct3log.h"
 
+const char* ovlFTXManager::LOADER = "FGDK";
+const char* ovlFTXManager::NAME = "FlexiTexture";
 const char* ovlFTXManager::TAG = "ftx";
 const char* ovlTXSManager::TAG = "txs";
 
@@ -64,8 +66,12 @@ void ovlFTXManager::AddTexture(const char* name, unsigned long dimension, unsign
     ftis->fps = fps;
     ftis->Recolorable = recol;
     ftis->offsetCount = animationcount;
-    ftis->offset1 = new unsigned long[ftis->offsetCount];
-    memcpy(ftis->offset1, animation, ftis->offsetCount*4);
+    if (ftis->offsetCount) {
+        ftis->offset1 = new unsigned long[ftis->offsetCount];
+        memcpy(ftis->offset1, animation, ftis->offsetCount*4);
+    } else {
+        ftis->offset1 = NULL;
+    }
     ftis->fts2Count = framecount;
     ftis->fts2 = new FlexiTextureStruct[ftis->fts2Count];
 
@@ -127,7 +133,7 @@ unsigned char* ovlFTXManager::Make() {
     if (m_ftscount)
         throw EOvl("ovlFTXManager::Make called but last texture misses frames");
 
-    m_data = new unsigned char[m_size];
+    ovlOVLManager::Make();
     unsigned char* c_data = m_data;
 
     for (unsigned long t = 0; t < m_ftxlist.size(); ++t) {
@@ -137,10 +143,12 @@ unsigned char* ovlFTXManager::Make() {
         memcpy(c_dftis, m_ftxlist[t], sizeof(FlexiTextureInfoStruct));
 
         // Data Transfer, Animation
-        c_dftis->offset1 = reinterpret_cast<unsigned long*>(c_data);
-        c_data += 4 * c_dftis->offsetCount;
-        memcpy(c_dftis->offset1, m_ftxlist[t]->offset1, 4*c_dftis->offsetCount);
-        m_relman->AddRelocation((unsigned long *)&c_dftis->offset1);
+        if (c_dftis->offsetCount) {
+            c_dftis->offset1 = reinterpret_cast<unsigned long*>(c_data);
+            c_data += 4 * c_dftis->offsetCount;
+            memcpy(c_dftis->offset1, m_ftxlist[t]->offset1, 4*c_dftis->offsetCount);
+            m_relman->AddRelocation((unsigned long *)&c_dftis->offset1);
+        }
 
         // Data Transfer, FlexiTextureStructs
         c_dftis->fts2 = reinterpret_cast<FlexiTextureStruct*>(c_data);
@@ -172,7 +180,7 @@ unsigned char* ovlFTXManager::Make() {
         }
 
         SymbolStruct* s_ftx = m_lsrman->MakeSymbol(m_stable->FindSymbolString(m_ftxnames[t].c_str(), Tag()), reinterpret_cast<unsigned long*>(c_dftis), true);
-        m_lsrman->OpenLoader(0, reinterpret_cast<unsigned long*>(c_dftis), false, s_ftx);
+        m_lsrman->OpenLoader(TAG, reinterpret_cast<unsigned long*>(c_dftis), false, s_ftx);
         m_lsrman->CloseLoader();
     }
 

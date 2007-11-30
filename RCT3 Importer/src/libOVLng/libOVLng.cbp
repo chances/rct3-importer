@@ -30,12 +30,11 @@
 				<Option createDefFile="1" />
 				<Compiler>
 					<Add option="-Wall" />
-					<Add option="-pg" />
 					<Add option="-g" />
+					<Add option="-D__WXDEBUG__" />
+					<Add directory="$(#wx.include)" />
+					<Add directory="$(#wx.ansidebugstatic)" />
 				</Compiler>
-				<Linker>
-					<Add option="-pg -lgmon" />
-				</Linker>
 			</Target>
 		</Build>
 		<VirtualTargets>
@@ -64,16 +63,23 @@
 		<Unit filename="..\..\include\vertex.h" />
 		<Unit filename="LodSymRefManager.cpp" />
 		<Unit filename="LodSymRefManager.h" />
+		<Unit filename="ManagerBAN.cpp" />
+		<Unit filename="ManagerBAN.h" />
+		<Unit filename="ManagerBSH.cpp" />
+		<Unit filename="ManagerBSH.h" />
 		<Unit filename="ManagerFTX.cpp" />
 		<Unit filename="ManagerFTX.h" />
 		<Unit filename="ManagerOVL.cpp" />
 		<Unit filename="ManagerOVL.h" />
 		<Unit filename="ManagerSHS.cpp" />
 		<Unit filename="ManagerSHS.h" />
+		<Unit filename="ManagerSVD.cpp" />
+		<Unit filename="ManagerSVD.h" />
 		<Unit filename="OVLDebug.cpp" />
 		<Unit filename="OVLDebug.h" />
 		<Unit filename="OVLException.cpp" />
 		<Unit filename="OVLException.h" />
+		<Unit filename="OVLManagers.h" />
 		<Unit filename="OVLng.cpp" />
 		<Unit filename="OVLng.h" />
 		<Unit filename="RelocationManager.cpp" />

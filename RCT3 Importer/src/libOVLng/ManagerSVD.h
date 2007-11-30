@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 // New OVL creation library
-// Manager class for SHS structures
+// Manager class for SVD structures
 // Copyright (C) 2007 Tobias Minch
 //
 // This program is free software; you can redistribute it and/or
@@ -26,48 +26,51 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef MANAGERSHS_H_INCLUDED
-#define MANAGERSHS_H_INCLUDED
+#ifndef MANAGERSVD_H_INCLUDED
+#define MANAGERSVD_H_INCLUDED
 
 #include <map>
 #include <string>
 #include <vector>
 
-#include "staticshape.h"
+#include "sceneryvisual.h"
 #include "ManagerOVL.h"
 
 using namespace std;
 
-class ovlSHSManager: public ovlOVLManager {
+class ovlSVDManager: public ovlOVLManager {
 public:
     static const char* NAME;
     static const char* TAG;
 private:
-    vector<StaticShape1*> m_modellist;
-    vector<string> m_modelnames;
-    map<StaticShape2*, string> m_ftxmap;
-    map<StaticShape2*, string> m_txsmap;
+    vector<SceneryItemVisual*> m_svdlist;
+    vector<string> m_svdnames;
+    map<SceneryItemVisualLOD*, string> m_modelmap;
+    map<SceneryItemVisualLOD*, vector<string> > m_animationmap;
 
-    StaticShape1* m_cmodel;
-    unsigned long m_nmesh;
-    long m_meshcount;
-    unsigned long m_neffect;
-    long m_effectcount;
+    SceneryItemVisual* m_csvd;
+    //SceneryItemVisualLOD* m_clod;
+    long m_lodcount;
+    unsigned long m_nlod;
+    long m_animcount;
+    //unsigned long m_nanim;
 public:
-    ovlSHSManager(): ovlOVLManager() {
-        m_cmodel = NULL;
-        m_nmesh = 0;
-        m_neffect = 0;
-        m_meshcount = 0;
-        m_effectcount = 0;
+    ovlSVDManager(): ovlOVLManager() {
+        m_csvd = NULL;
+        //m_clod = NULL;
+        m_lodcount = 0;
+        m_nlod = 0;
+        m_animcount = 0;
+        //m_nanim = 0;
     };
-    virtual ~ovlSHSManager();
+    virtual ~ovlSVDManager();
 
-    void AddModel(const char* name, unsigned long meshes, unsigned long effects);
-    void SetBoundingBox(const D3DVECTOR& bbox1, const D3DVECTOR& bbox2);
-    void AddEffectPoint(const char* name, const D3DMATRIX& matrix);
-    void AddMesh(const char* ftx, const char* txs, unsigned long place, unsigned long flags, unsigned long sides,
-                 unsigned long vertexcount, VERTEX* vertices, unsigned long indexcount, unsigned long* indices);
+    void AddSVD(const char* name, unsigned long lods, unsigned long flags = 0, float sway = 0.0, float brightness = 1.0, float scale = 0.0);
+    void SetSVDUnknowns(float unk4, unsigned long unk6, unsigned long unk7, unsigned long unk8, unsigned long unk9, unsigned long unk10, unsigned long unk11);
+    void AddStaticLOD(const char* name, const char* modelname, float distance, unsigned long unk2 = 0, unsigned long unk4 = 0, unsigned long unk14 = 0);
+    void OpenAnimatedLOD(const char* name, const char* modelname, unsigned long animations, float distance, unsigned long unk2 = 0, unsigned long unk4 = 0, unsigned long unk14 = 0);
+    void AddAnimation(const char* name);
+    void CloseAnimatedLOD();
 
     virtual unsigned char* Make();
 
@@ -78,6 +81,7 @@ public:
         return TAG;
     };
 };
+
 
 
 #endif

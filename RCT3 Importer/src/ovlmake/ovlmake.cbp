@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="ovlmake" />
+		<Option pch_mode="0" />
+		<Option default_target="Debug DLL" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Release">
+				<Option output="..\..\bin\ovlmake.exe" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="..\..\bin" />
+				<Option object_output="..\..\lib\obj\release" />
+				<Option external_deps="..\..\lib\lib3DHelp.a;..\..\bin\libOVL.a;..\..\lib\libWXHelpb.a;..\..\lib\libASE.a;..\..\lib\libOVLng.a;" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option use_console_runner="0" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-Os" />
+					<Add option="-O2" />
+					<Add directory="$(#wx.baseansireleasestatic)" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="3DHelp" />
+					<Add library="WXHelpb" />
+					<Add library="libASE" />
+					<Add library="wx_base-2.8" />
+					<Add library="wx_base_xml-2.8" />
+					<Add library="libOVLng" />
+					<Add directory="..\..\bin" />
+				</Linker>
+			</Target>
+			<Target title="Profile">
+				<Option output="..\..\bin\ovlmakep.exe" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="..\..\bin" />
+				<Option object_output="..\..\lib\obj\profile" />
+				<Option external_deps="..\..\lib\lib3DHelpp.a;..\..\lib\libWXHelpbp.a;..\..\lib\libASEp.a;..\..\lib\libOVLngp.a;" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-Os" />
+					<Add option="-O2" />
+					<Add option="-pg" />
+					<Add directory="$(#wx.baseansidebugstatic)" />
+				</Compiler>
+				<Linker>
+					<Add option="-pg -lgmon" />
+					<Add library="libOVLngp" />
+					<Add library="3DHelpp" />
+					<Add library="WXHelpbp" />
+					<Add library="libASEp" />
+					<Add library="wx_msw-2.8" />
+					<Add directory="..\..\bin" />
+				</Linker>
+			</Target>
+			<Target title="Debug">
+				<Option output="..\..\bin\ovlmaked.exe" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="..\..\bin" />
+				<Option object_output="..\..\lib\obj\debug" />
+				<Option external_deps="..\..\lib\lib3DHelpd.a;..\..\bin\libOVLd.a;..\..\lib\libWXHelpbd.a;..\..\lib\libASEd.a;..\..\lib\libOVLngd.a;" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-W" />
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add option="-DDEBUG" />
+					<Add option="-D__WXDEBUG__" />
+					<Add directory="$(#wx.baseansidebugstatic)" />
+				</Compiler>
+				<Linker>
+					<Add library="3DHelpd" />
+					<Add library="WXHelpbd" />
+					<Add library="libASE" />
+					<Add library="libOVLngd" />
+					<Add library="wx_based-2.8" />
+					<Add library="wx_based_xml-2.8" />
+					<Add directory="..\..\bin" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-mthreads" />
+			<Add option="-pipe" />
+			<Add option="-fmessage-length=0" />
+			<Add option="-fexceptions" />
+			<Add option='-include &quot;wx_pch.h&quot;' />
+			<Add option="-Winvalid-pch" />
+			<Add option="-fno-strict-aliasing" />
+			<Add option="-DUSE_PCH" />
+			<Add option="-D__GNUWIN32__" />
+			<Add option="-D__WXMSW__" />
+			<Add option="-D_WIN32" />
+			<Add option="-DUSE_SQUISH" />
+			<Add option="-DCACHE_GXIMAGE" />
+			<Add directory="$(#wx.include)" />
+			<Add directory="..\lib3DHelp" />
+			<Add directory="..\..\include" />
+			<Add directory="..\libWXHelp" />
+			<Add directory="$(#mingw.include)\GraphicsMagick" />
+			<Add directory="$(#mingw.include)\plib" />
+			<Add directory="..\libOVLng" />
+		</Compiler>
+		<Linker>
+			<Add library="GraphicsMagick++" />
+			<Add library="GraphicsMagick" />
+			<Add library="png" />
+			<Add library="tiff" />
+			<Add library="jpeg" />
+			<Add library="z" />
+			<Add library="expat" />
+			<Add library="squish" />
+			<Add library="ole32" />
+			<Add library="uuid" />
+			<Add library="gdi32" />
+			<Add directory="..\..\lib" />
+		</Linker>
+		<Unit filename="OvlCompiler ReadMe.txt" />
+		<Unit filename="ReadMe 1st.txt" />
+		<Unit filename="ovlmake.cpp" />
+		<Unit filename="wx_pch.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

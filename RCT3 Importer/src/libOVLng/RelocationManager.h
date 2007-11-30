@@ -50,6 +50,7 @@ public:
 
     void AddRelocation(unsigned long *reloc);
     void Make();
+    void WriteFixups(FILE* f);
 };
 
 #endif

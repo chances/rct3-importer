@@ -39,6 +39,13 @@ D3DVECTOR vectorNormalize(const float x, const float y, const float z);
 inline D3DVECTOR vectorNormalize(const D3DVECTOR v) {
     return vectorNormalize(v.x, v.y, v.z);
 }
+inline D3DVECTOR vectorMake(const float x, const float y, const float z) {
+    D3DVECTOR v;
+    v.x = x;
+    v.y = y;
+    v.z = z;
+    return v;
+}
 inline VERTEX2 vertex2vertex2(VERTEX v, unsigned long bone, unsigned long unk) {
     VERTEX2 ret;
     ret.position = v.position;
@@ -67,6 +74,9 @@ D3DMATRIX matrixGetRotationZ(float rad);
 //       member of the array. They also return a pointer to this result.
 float matrixCalcDeterminant(const D3DMATRIX *m);
 D3DMATRIX matrixMultiply(const D3DMATRIX *m1, const D3DMATRIX *m2);
+inline D3DMATRIX matrixMultiply(const D3DMATRIX& m1, const D3DMATRIX& m2) {
+    return matrixMultiply(&m1, &m2);
+}
 D3DMATRIX *matrixMultiplyIP(D3DMATRIX *m1, const D3DMATRIX *m2);
 // These take an array and multiply it up in order.
 D3DMATRIX matrixMultiply(D3DMATRIX *ms, unsigned int count);
@@ -78,6 +88,8 @@ D3DMATRIX matrixTranspose(const D3DMATRIX m);
 D3DMATRIX matrixInverse(const D3DMATRIX m);
 #define matrixNormalTransform(m) matrixTranspose(matrixInverse( m ))
 
+D3DVECTOR matrixApply(const D3DVECTOR v, const D3DMATRIX m);
+D3DVECTOR *matrixApplyIP(D3DVECTOR *v, const D3DMATRIX m);
 VERTEX matrixApply(const VERTEX v, const D3DMATRIX m, const D3DMATRIX mnormal);
 VERTEX *matrixApplyIP(VERTEX *v, const D3DMATRIX m, const D3DMATRIX mnormal);
 VERTEX2 matrixApply(VERTEX2 v, const D3DMATRIX m, const D3DMATRIX mnormal);

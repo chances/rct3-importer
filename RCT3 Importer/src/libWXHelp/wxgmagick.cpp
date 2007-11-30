@@ -24,7 +24,7 @@ wxSize getBitmapSize(const char *filename) {
         img.read(filename);
         res = wxSize(img.columns(), img.rows());
     } catch (Magick::Exception e) {
-        res = wxDefaultSize;
+        res = wxSize(-1, -1);
         wxLogDebug(wxT("Error in wxGXImage::FromImage: %s"), e.what());
     }
 

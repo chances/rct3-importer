@@ -50,6 +50,7 @@ public:
         Init(docache);
         FromFile(filename);
     }
+ #if wxUSE_IMAGE
     wxGXImage(const wxImage& image) {
         Init(false);
         FromImage(image);
@@ -58,12 +59,14 @@ public:
         Init(false);
         FromBitmap(bmp);
     }
+ #endif
 #else
     wxGXImage() {Init();}
     wxGXImage(const wxString& filename) {
         Init();
         FromFile(filename);
     }
+ #if wxUSE_IMAGE
     wxGXImage(const wxImage& image) {
         Init();
         FromImage(image);
@@ -72,14 +75,17 @@ public:
         Init();
         FromBitmap(bmp);
     }
+ #endif
 #endif
 
     virtual ~wxGXImage() {
         //ilDeleteImage(m_ilimage);
     }
 
-    void FromImage(const wxImage& image);
     void FromFile(const wxString& filename);
+
+#if wxUSE_IMAGE
+    void FromImage(const wxImage& image);
 
     wxImage GetImage(int nw = -1, int nh = -1);
 
@@ -99,7 +105,7 @@ public:
         icon.CopyFromBitmap( wxBitmap(GetImage()) );
         return icon;
     }
-
+#endif
     void FromFileSystem(const wxString& filename);
 
     bool Ok() const {
@@ -119,6 +125,16 @@ public:
     const bool HasAlpha() const {
         return m_image.matte();
     }
+
+    wxGXImage& Rescale(unsigned int width, unsigned int height) {
+        m_image.sample(Magick::Geometry(width, height));
+        return *this;
+    }
+
+    void GetAlpha(unsigned char* data) const;
+    void GetGrayscale(unsigned char* data) const;
+    void GetAs8bit(unsigned char* data, unsigned char* palette) const;
+    void GetAs8bitForced(unsigned char* data, unsigned char* palette, bool special = false) const;
 
     // GraphicsMagick++ functions
     void flip() {m_image.flip();}

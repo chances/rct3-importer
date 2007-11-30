@@ -29,13 +29,23 @@
 #ifndef OVLDEBUG_H_INCLUDED
 #define OVLDEBUG_H_INCLUDED
 
-#ifdef DEBUGLOG
+#define DPTR(a) reinterpret_cast<unsigned long>(a)
+
+#if DEBUGLOG
 extern FILE* f_debug_log;
 extern FILE* f_debug_relocations;
+
+#elif __WXDEBUG__
+
+#include <wx/wx.h>
+#define DUMP_LOG(a, ...) wxLogDebug(wxT(a), ## __VA_ARGS__ )
+#define DUMP_RELOCATION(s, v) wxLogDebug(wxT("Relocation %08lx @ %08lx (%08lx): %s"), reinterpret_cast<unsigned long>(v), reinterpret_cast<unsigned long>(&v), reinterpret_cast<unsigned long>(v) - reinterpret_cast<unsigned long>(&v), s)
+#define DUMP_RELOCATION_STR(s, v) wxLogDebug(wxT("Relocation %08lx @ %08lx (%08lx): %s (%s)"), reinterpret_cast<unsigned long>(v), reinterpret_cast<unsigned long>(&v), reinterpret_cast<unsigned long>(v) - reinterpret_cast<unsigned long>(&v), s, v)
 
 #else
 #define INIT_LOGGING()
 #define DUMP_RELOCATION(...)
+#define DUMP_RELOCATION_STR(...)
 #define DUMP_LOG(...)
 #define DEINIT_LOGGING()
 #endif

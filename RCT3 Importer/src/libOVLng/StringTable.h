@@ -36,10 +36,6 @@
 using namespace std;
 
 class ovlStringTable {
-public:
-    static const char* SVD;
-    static const char* BSH;
-    static const char* BAN;
 private:
     list<string> m_strings;
     map<string, char*> m_ptrmap;

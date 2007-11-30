@@ -32,4 +32,7 @@
 #define READ_RCT3_TEXTURE()     wxcRead<long>(wxT("RCT3/TextureScaling"), RCT3_TEXTURE_ERROR_OUT)
 #define WRITE_RCT3_TEXTURE(v)   wxcWrite<long>(wxT("RCT3/TextureScaling"), v)
 
+#define READ_RCT3_EXPERTMODE()     wxcRead<bool>(wxT("RCT3/ExpertMode"), false)
+#define WRITE_RCT3_EXPERTMODE(v)   wxcWrite<bool>(wxT("RCT3/ExpertMode"), v)
+
 #endif

@@ -88,6 +88,8 @@ public:
         return v;
     }
 
+    txyz GetFixed(c3DLoaderOrientation ori);
+
     virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);
     virtual wxXmlNode* GetNode(const wxString& path);
     virtual const wxString GetTagName() const {return RCT3XML_CTXYZ;};
@@ -132,6 +134,8 @@ public:
 
     // Helper for bone assignment
     unsigned int bone;
+    // For compiler compatibility
+    wxString bonename;
 
     cMeshStruct() {
         Init();
@@ -225,6 +229,9 @@ DEF_RCT3_PROPERTY_F(unsigned long, AlphaSource, alphasource)
 
 #define RCT3XML_CFLEXITEXTURE wxT("texture")
 class cFlexiTexture: public cRCT3Xml {
+private:
+    static RGBQUAD g_rgbPalette[256];
+    static bool g_rgbPaletteCreated;
 public:
     typedef std::vector<cFlexiTexture>::iterator iterator;
     typedef std::vector<cFlexiTexture> vec;
@@ -245,6 +252,8 @@ public:
     virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);
     virtual wxXmlNode* GetNode(const wxString& path);
     virtual const wxString GetTagName() const {return RCT3XML_CFLEXITEXTURE;};
+
+    static RGBQUAD* GetRGBPalette();
 };
 
 class cModelBone;
@@ -419,10 +428,14 @@ public:
     cBoneAnimation::vec boneanimations;
     c3DLoaderOrientation usedorientation;
 
-    cAnimation(): name(wxT("")), usedorientation(ORIENTATION_UNKNOWN) {};
-    cAnimation(c3DLoaderOrientation ori): name(wxT("")), usedorientation(ori) {};
+    // Total time
+    float totaltime;
+
+    cAnimation(): name(wxT("")), usedorientation(ORIENTATION_UNKNOWN), totaltime(0.0) {};
+    cAnimation(c3DLoaderOrientation ori): name(wxT("")), usedorientation(ori), totaltime(0.0) {};
 
     bool FromCompilerXml(wxXmlNode* node, const wxString& path);
+    bool Check(const wxSortedArrayString& presentbones);
 
     virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);
     virtual wxXmlNode* GetNode(const wxString& path);

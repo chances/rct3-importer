@@ -418,6 +418,20 @@ D3DMATRIX matrixInverse(const D3DMATRIX m) {
     return matrixMultiply(r, det);
 }
 
+D3DVECTOR matrixApply(const D3DVECTOR v, const D3DMATRIX m) {
+    D3DVECTOR r;
+    r.x = v.x * m._11 + v.y * m._21 + v.z * m._31 + m._41;
+    r.y = v.x * m._12 + v.y * m._22 + v.z * m._32 + m._42;
+    r.z = v.x * m._13 + v.y * m._23 + v.z * m._33 + m._43;
+    return r;
+}
+
+D3DVECTOR *matrixApplyIP(D3DVECTOR *v, const D3DMATRIX m) {
+    D3DVECTOR r = matrixApply(*v, m);
+    *v = r;
+    return v;
+}
+
 VERTEX matrixApply(VERTEX v, const D3DMATRIX m, const D3DMATRIX mnormal) {
     VERTEX r = v;
     r.position.x = v.position.x * m._11 + v.position.y * m._21 + v.position.z * m._31 + m._41;

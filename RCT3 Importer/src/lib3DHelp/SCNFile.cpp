@@ -31,9 +31,15 @@
 #include <sstream>
 #include <stdio.h>
 
+#include "confhelp.h"
 #include "gximage.h"
+#include "lib3Dconfig.h"
 #include "matrix.h"
+#include "OVLEXception.h"
+#include "OVLManagers.h"
+#include "OVLng.h"
 #include "RCT3Exception.h"
+#include "rct3log.h"
 #include "texcheck.h"
 
 bool cSCNFile::CheckForModelNameDuplicates() {
@@ -80,14 +86,32 @@ void cSCNFile::Init() {
     references.clear();
     sivsettings = cSIVSettings();
 
-    error = CSCNFILE_NO_ERROR;
+//    error = CSCNFILE_NO_ERROR;
 }
 
 bool cSCNFile::Load() {
+    bool ret = true;
     Init();
 
     if (filename == "") {
         throw RCT3Exception(_("No scenery file name given."));
+    }
+
+    if (filename.GetExt().Lower() == wxT("xml")) {
+        wxXmlDocument doc;
+        if (doc.Load(filename.GetFullPath())) {
+            ret = LoadXML(&doc);
+            if (!ret)
+                wxLogWarning(_("There were warnings or errors loading the xml file.\nIf they concern models, they will be shown to you when you open the respective settings."));
+            return ret;
+        } else {
+            // wxXmlDocument reports errors
+            return false;
+        }
+    }
+
+    if (filename.GetExt().Lower() != wxT("scn")) {
+        wxLogWarning(_("Unrecognized file extension. Assuming it's a SCN scenery file."));
     }
 
     FILE *f = fopen(filename.GetFullPath().fn_str(), "rb");
@@ -98,15 +122,22 @@ bool cSCNFile::Load() {
     unsigned long objlen;
     fread(&objlen, sizeof(objlen), 1, f);
 
+/*
     // Check for XML file
     if (objlen == CSCNFILE_XMLFILE) {
         fclose(f);
         return LoadXML();
     }
+*/
 
     // Check for old file format and call legacy loading function
-    if (objlen < ((unsigned long) -1))
-        return LoadLegacy(objlen, f);
+    if (objlen < ((unsigned long) -1)) {
+        ret = LoadLegacy(objlen, f);
+        if (!ret)
+            wxLogWarning(_("There were warnings or errors loading the model files.\nThey will be shown to you when you open the respective model settings."));
+        filename.SetExt(wxT("xml"));
+        return ret;
+    }
 
     // Read magic
     char scnmagic[8];
@@ -154,12 +185,15 @@ bool cSCNFile::Load() {
     fread(&sivsettings.unk11, sizeof(unsigned long), 1, f);
 
     LoadTextures(f);
-    bool model_ok = LoadModels(f);
+    ret = LoadModels(f);
+    if (!ret)
+        wxLogWarning(_("There were warnings or errors loading the model files.\nThey will be shown to you when you open the respective model settings."));
     LoadLODs(f);
     LoadReferences(f);
 
     fclose(f);
-    return model_ok;
+    filename.SetExt(wxT("xml"));
+    return ret;
 }
 
 void cSCNFile::LoadTextures(FILE *f) {
@@ -943,6 +977,8 @@ bool cSCNFile::LoadObject(bool reset) {
     return true;
 }
 */
+
+/*
 void cSCNFile::SaveTextures(FILE *f) {
     unsigned long texcount = flexitextures.size();
     fwrite(&texcount, sizeof(texcount), 1, f);
@@ -1167,16 +1203,16 @@ void cSCNFile::SaveReferences(FILE *f) {
         }
     }
 }
+*/
 
 bool cSCNFile::Save() {
 //    unsigned long i;
-    error = CSCNFILE_NO_ERROR;
+//    error = CSCNFILE_NO_ERROR;
 
     if (filename == "") {
-        error = CSCNFILE_ERROR_FILENAME;
-        return false;
+        throw RCT3Exception(_("Saving failed, file name not set."));
     }
-
+/*
     FILE *f = fopen(filename.GetFullPath().fn_str(), "wb");
     if (!f) {
         error = CSCNFILE_ERROR_FILENAME;
@@ -1224,7 +1260,7 @@ bool cSCNFile::Save() {
     SaveReferences(f);
 
     fclose(f);
-
+*/
     SaveXML();
 
     return true;
@@ -1417,29 +1453,37 @@ bool cSCNFile::Save() {
 
 void cSCNFile::SaveXML() {
     wxString xmlfile = filename.GetFullPath();
-    xmlfile += wxT(".xml");
+    //xmlfile += wxT(".xml");
     wxXmlDocument doc;
     doc.SetFileEncoding(wxT("UTF-8"));
     doc.SetRoot(GetNode(filename.GetPath()));
     doc.Save(xmlfile, 2);
 }
 
-bool cSCNFile::LoadXML() {
+bool cSCNFile::LoadXML(wxXmlDocument* doc) {
     wxString temp;
-
+/*
     wxXmlDocument doc;
     if (!doc.Load(filename.GetFullPath()))
         throw RCT3Exception(wxString::Format(_("Error loading xml file '%s'."), filename.GetFullPath().fn_str()));
-
+*/
     // start processing the XML file
-    wxXmlNode* root = doc.GetRoot();
+    wxXmlNode* root = doc->GetRoot();
     if (root->GetName() != RCT3XML_CSCNFILE) {
         throw RCT3Exception(wxString::Format(_("Error loading xml file '%s'. Wrong root tag. Probably you tried to load a xml file made for a different purpose."), filename.GetFullPath().fn_str()));
     }
 
     wxString path = filename.GetPath();
 
-    return FromNode(root, path, 0);
+    // Peak at version to detect ovlcompiler xml
+    if (root->GetPropVal(wxT("version"), &temp)) {
+        return FromNode(root, path, 0);
+    } else {
+        version = VERSION_CSCNFILE_FIRSTXML;
+        name = filename.GetName();
+        return FromCompilerXml(root, path);
+    }
+
 }
 
 #define COMPILER_BSH wxT("bsh")
@@ -1452,6 +1496,14 @@ bool cSCNFile::FromCompilerXml(wxXmlNode* node, const wxString& path) {
     wxXmlNode *child = node->GetChildren();
     c3DLoaderOrientation ori = ORIENTATION_UNKNOWN;
     bool ret = true;
+
+    name = node->GetPropVal(wxT("name"), name);
+
+    // Read ovl file
+    ovlpath = node->GetPropVal(wxT("file"), wxT(""));
+    if (!ovlpath.IsAbsolute()) {
+        ovlpath.MakeAbsolute(path);
+    }
 
     while (child) {
 
@@ -1474,9 +1526,9 @@ bool cSCNFile::FromCompilerXml(wxXmlNode* node, const wxString& path) {
             if (ori != ORIENTATION_UNKNOWN) {
                 throw RCT3Exception(_("Second fix tag found."));
             }
-            wxString hand = node->GetPropVal(wxT("handedness"), wxT("left"));
+            wxString hand = child->GetPropVal(wxT("handedness"), wxT("left"));
             hand.MakeLower();
-            wxString up = node->GetPropVal(wxT("up"), wxT("y"));
+            wxString up = child->GetPropVal(wxT("up"), wxT("y"));
             up.MakeLower();
             if (hand == wxT("left")) {
                 if (up == wxT("x")) {
@@ -1501,6 +1553,7 @@ bool cSCNFile::FromCompilerXml(wxXmlNode* node, const wxString& path) {
             } else {
                 throw RCT3Exception(wxString::Format(_("Unknown value '%s' for handedness attribute in fix tag."), hand.c_str()));
             }
+            wxLogDebug(wxT("Fix tag found: %s %s (%d)"), hand.c_str(), up.c_str(), static_cast<unsigned int>(ori));
         } else if (child->GetName() == COMPILER_REFERENCE) {
             wxString ref = child->GetPropVal(wxT("path"), wxT(""));
             if (ref.IsEmpty())
@@ -1526,11 +1579,12 @@ bool cSCNFile::FromCompilerXml(wxXmlNode* node, const wxString& path) {
         lod.animated = true;
         lod.modelname = animatedmodels[0].name;
         lod.distance = 4000;
-        if (animations.size()) {
+        if (animations.size())
             lod.animations.Add(animations[0].name);
-        }
         lods.push_back(lod);
     }
+
+    filename = wxT(""); // Destroy filename to prevent overwriting
 
     return ret;
 }
@@ -1560,10 +1614,8 @@ bool cSCNFile::FromNode(wxXmlNode* node, const wxString& path, unsigned long ver
 
     // Read ovl file
     ovlpath = node->GetPropVal(wxT("file"), wxT(""));
-    if (!ovlpath.GetFullPath().IsSameAs(wxT(""))) {
-        if (!ovlpath.IsAbsolute()) {
-            ovlpath.MakeAbsolute(path);
-        }
+    if (!ovlpath.IsAbsolute()) {
+        ovlpath.MakeAbsolute(path);
     }
 
     // Read version
@@ -1574,14 +1626,13 @@ bool cSCNFile::FromNode(wxXmlNode* node, const wxString& path, unsigned long ver
         }
     } else {
         version = VERSION_CSCNFILE_FIRSTXML;
-        // OVLCompiler XML
-        return FromCompilerXml(node, path);
     }
 
     this->version = version;
 
     if (version > VERSION_CSCNFILE) {
-        error |= CSCNFILE_ERROR_VERSION_XML;
+        //error |= CSCNFILE_ERROR_VERSION_XML;
+        wxLogWarning(_("The xml scenery file was created with a newer importer version.\nThere might be some errors, so check whether everything is alright."));
         ret = false;
     }
 
@@ -1662,6 +1713,7 @@ wxXmlNode* cSCNFile::GetNode(const wxString& path) {
 }
 
 bool cSCNFile::Check() {
+    wxLogDebug(wxT("Trace, cSCNFile::Check"));
     bool warning = false;
     CleanWork();
 
@@ -1684,12 +1736,22 @@ bool cSCNFile::Check() {
 
             // Check for LODs
             if (!m_work->lods.size()) {
-                throw RCT3Exception(_("You didn't set any levels of detail!"));
+                if (READ_RCT3_EXPERTMODE()) {
+                    wxLogWarning(_("You didn't set any levels of detail."));
+                    warning = true;
+                } else {
+                    throw RCT3Exception(_("You didn't set any levels of detail!"));
+                }
             }
 
             // Check the models
             if ((!m_work->models.size()) && (!m_work->animatedmodels.size())) {
-                throw RCT3Exception(_("You didn't add any models!"));
+                if (READ_RCT3_EXPERTMODE()) {
+                    wxLogWarning(_("You didn't add any models."));
+                    warning = true;
+                } else {
+                    throw RCT3Exception(_("You didn't add any models!"));
+                }
             }
 
             // Check for duplicate names
@@ -1701,12 +1763,14 @@ bool cSCNFile::Check() {
             for (cModel::iterator i_mod = m_work->models.begin(); i_mod != m_work->models.end(); ++i_mod) {
                 // Note: at this stage we issue only warnings. Errors occur when a LOD references
                 //   a broken model
+                wxLogDebug(wxT("Trace, cSCNFile::Check model %s"), i_mod->name.c_str());
                 i_mod->Check(modnames);
             }
             cAnimatedModelMap amodnames;
             for (cAnimatedModel::iterator i_mod = m_work->animatedmodels.begin(); i_mod != m_work->animatedmodels.end(); ++i_mod) {
                 // Note: at this stage we issue only warnings. Errors occur when a LOD references
                 //   a broken model
+                wxLogDebug(wxT("Trace, cSCNFile::Check animated model %s"), i_mod->name.c_str());
                 i_mod->Check(amodnames);
             }
 
@@ -1735,23 +1799,50 @@ bool cSCNFile::Check() {
                         warning = true;
                         wxLogWarning(_("Level of Detail '%s' (%.1f): Animated model was marked as static."), i_lod->modelname.c_str(), i_lod->distance);
                     }
+                    for (int s = i_lod->animations.size()-1; s >= 0; --s) {
+                        bool a_found = false;
+                        for (cAnimation::iterator i_anim = m_work->animations.begin(); i_anim != m_work->animations.end(); ++i_anim) {
+                            if (i_anim->name == i_lod->animations[s]) {
+                                a_found = true;
+                                break;
+                            }
+                        }
+                        if (!a_found) {
+                            warning = true;
+                            if (READ_RCT3_EXPERTMODE()) {
+                                wxLogWarning(_("Level of Detail '%s' (%.1f): Assigned animation '%s'missing."), i_lod->modelname.c_str(), i_lod->distance, i_lod->animations[s].c_str());
+                            } else {
+                                wxLogWarning(_("Level of Detail '%s' (%.1f): Assigned animation '%s'missing. Removed."), i_lod->modelname.c_str(), i_lod->distance, i_lod->animations[s].c_str());
+                                i_lod->animations.erase(i_lod->animations.begin()+s);
+                            }
+                        }
+                    }
                     if (!i_lod->animations.size()) {
                         warning = true;
                         wxLogWarning(_("Level of Detail '%s' (%.1f): Animated model used but no animations assigned."), i_lod->modelname.c_str(), i_lod->distance);
                     }
                 } else {
-                    throw RCT3Exception(wxString::Format(_("Level of Detail '%s' (%.1f): Corresponding model missing."), i_lod->modelname.c_str(), i_lod->distance));
+                    if (READ_RCT3_EXPERTMODE()) {
+                        wxLogWarning(_("Level of Detail '%s' (%.1f): Corresponding model missing."), i_lod->modelname.c_str(), i_lod->distance);
+                    } else {
+                        throw RCT3Exception(wxString::Format(_("Level of Detail '%s' (%.1f): Corresponding model missing."), i_lod->modelname.c_str(), i_lod->distance));
+                    }
                 }
             }
 
             // Last add warnings about unused models and remember texture names and bones for used ones
             for (cModel::iterator i_mod = m_work->models.begin(); i_mod != m_work->models.end(); ++i_mod) {
-                if (i_mod->used) {
+                if ((i_mod->used) || READ_RCT3_EXPERTMODE()) {
                     for (cMeshStruct::iterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); ++i_mesh) {
                         if (!i_mesh->disabled) {
                             usedtextures.Add(i_mesh->FTX);
                             m_meshes++;
                         }
+                    }
+                    if (!i_mod->used) {
+                        // Expert mode
+                        warning = true;
+                        wxLogWarning(_("Model '%s': Unused."), i_mod->name.c_str());
                     }
                 } else {
                     warning = true;
@@ -1759,7 +1850,7 @@ bool cSCNFile::Check() {
                 }
             }
             for (cAnimatedModel::iterator i_mod = m_work->animatedmodels.begin(); i_mod != m_work->animatedmodels.end(); ++i_mod) {
-                if (i_mod->used) {
+                if ((i_mod->used) || READ_RCT3_EXPERTMODE()) {
                     for (cMeshStruct::iterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); ++i_mesh) {
                         if (!i_mesh->disabled) {
                             usedtextures.Add(i_mesh->FTX);
@@ -1769,21 +1860,38 @@ bool cSCNFile::Check() {
                     for (cModelBone::iterator i_bone = i_mod->modelbones.begin(); i_bone != i_mod->modelbones.end(); ++i_bone) {
                         presentbones.Add(i_bone->name);
                     }
+                    if (!i_mod->used) {
+                        // Expert mode
+                        warning = true;
+                        wxLogWarning(_("Animated model '%s': Unused."), i_mod->name.c_str());
+                    }
                 } else {
                     warning = true;
                     wxLogWarning(_("Animated model '%s': Unused. It will not be written to the ovl file."), i_mod->name.c_str());
                 }
+            }
+
+            // Check animations
+            for (cAnimation::iterator i_anim = m_work->animations.begin(); i_anim != m_work->animations.end(); ++i_anim) {
+                i_anim->Check(presentbones);
             }
         }
 
         // Check the textures
         for (cFlexiTexture::iterator i_ftx = m_work->flexitextures.begin(); i_ftx != m_work->flexitextures.end(); i_ftx++) {
             if ((!m_textureovl) && (usedtextures.Index(i_ftx->Name) == wxNOT_FOUND)) {
-                // We're not writing a texture ovl and the texture is unused
-                i_ftx->used = false;
-                warning = true;
-                wxLogWarning(_("Texture '%s': Unused. It will not be written to the ovl file."), i_ftx->Name.c_str());
+                if (READ_RCT3_EXPERTMODE()) {
+                    i_ftx->used = true;
+                    m_textures++;
+                    warning = true;
+                    wxLogWarning(_("Texture '%s': Unused."), i_ftx->Name.c_str());
+                } else {
+                    // We're not writing a texture ovl and the texture is unused
+                    i_ftx->used = false;
+                    warning = true;
+                    wxLogWarning(_("Texture '%s': Unused. It will not be written to the ovl file."), i_ftx->Name.c_str());
                 continue;
+                }
             } else {
                 // Either used or a texture ovl
                 i_ftx->used = true;
@@ -1869,6 +1977,422 @@ bool cSCNFile::Check() {
 
     }
     return !warning;
+}
+
+void cSCNFile::Make() {
+    if (!m_work)
+        Check();
+
+    try {
+        wxFileName ovlfile = ovlpath;
+        ovlfile.SetName(name);
+        cOvl c_ovl(ovlfile.GetFullPath().fn_str());
+
+        // References
+        for (cStringIterator it = references.begin(); it != references.end(); ++it) {
+            c_ovl.AddReference(it->c_str());
+        }
+
+        // SVD, shapes & animations
+        if (!m_textureovl) {
+            // SVD
+            ovlSVDManager* c_svd = c_ovl.GetManager<ovlSVDManager>();
+            c_svd->AddSVD(name.c_str(), m_work->lods.size(), sivsettings.sivflags, sivsettings.sway, sivsettings.brightness, sivsettings.scale);
+            c_svd->SetSVDUnknowns(sivsettings.unknown, sivsettings.unk6, sivsettings.unk7, sivsettings.unk8, sivsettings.unk9, sivsettings.unk10, sivsettings.unk11);
+            for (cLOD::iterator it = m_work->lods.begin(); it != m_work->lods.end(); ++it) {
+                if (it->animated) {
+                    c_svd->OpenAnimatedLOD(it->modelname.c_str(), it->modelname.c_str(), it->animations.size(), it->distance, it->unk2, it->unk4, it->unk14);
+                    if (it->animations.size()) {
+                        for (cStringIterator its = it->animations.begin(); its != it->animations.end(); ++its) {
+                            c_svd->AddAnimation(its->c_str());
+                        }
+                    }
+                    c_svd->CloseAnimatedLOD();
+                } else {
+                    c_svd->AddStaticLOD(it->modelname.c_str(), it->modelname.c_str(), it->distance, it->unk2, it->unk4, it->unk14);
+                }
+            }
+
+            // Static shapes
+            if (m_work->models.size()) {
+                ovlSHSManager* c_shs = c_ovl.GetManager<ovlSHSManager>();
+                for (cModel::iterator i_mod = m_work->models.begin(); i_mod != m_work->models.end(); ++i_mod) {
+                    if (!i_mod->used)
+                        continue;
+
+                    D3DVECTOR box_min, box_max;
+                    boundsInit(&box_min, &box_max);
+
+                    // Find active mesh count
+                    int mesh_count = 0;
+                    for (cMeshStruct::iterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
+                        if (!i_mesh->disabled)
+                            mesh_count++;
+                    }
+                    c_shs->AddModel(i_mod->name.c_str(), mesh_count, i_mod->effectpoints.size());
+
+                    // Determine transformation matrices
+                    D3DMATRIX transformMatrix = matrixMultiply(matrixMultiply(i_mod->transforms), matrixGetFixOrientation(i_mod->usedorientation));
+                    bool do_transform = !matrixIsEqual(transformMatrix, matrixGetUnity());
+                    D3DMATRIX undoDamage;
+                    int m = 0;
+                    for(m = i_mod->transformnames.size()-1; m>=0; m--) {
+                        if (i_mod->transformnames[m] == wxT("-"))
+                            break;
+                    }
+                    if (m>0) {
+                        // Note: if m=0, the first is the separator, so this can fall through to no separator
+                        std::vector<D3DMATRIX> undostack;
+                        for (int n = m; n < i_mod->transforms.size(); n++)
+                            undostack.push_back(i_mod->transforms[n]);
+                        undostack.push_back(matrixGetFixOrientation(i_mod->usedorientation));
+                        undoDamage = matrixInverse(matrixMultiply(undostack));
+                    } else {
+                        undoDamage = matrixInverse(transformMatrix);
+                    }
+                    // We need to reevaluate do_transform
+                    if (!do_transform)
+                        do_transform = !matrixIsEqual(undoDamage, matrixGetUnity());
+
+                    // Do effect points
+                    if (i_mod->effectpoints.size() != 0) {
+                        for (unsigned int e = 0; e < i_mod->effectpoints.size(); e++) {
+                            D3DMATRIX me;
+                            if (do_transform) {
+                                std::vector<D3DMATRIX> tempstack = i_mod->effectpoints[e].transforms;
+                                // to correctely apply the model transformation matrix to effect points we have to
+                                // transform in-game objects into modeler-space first by applying the inverse
+                                // of the model transformation matrix
+                                // (now replaced by the undoDamage matrix to allow separation of the coordinate
+                                // system fix from other model transformations)
+                                tempstack.insert(tempstack.begin(), undoDamage);
+                                // At the end of the stack, transform back
+                                tempstack.push_back(transformMatrix);
+                                me = matrixMultiply(tempstack);
+                            } else {
+                                me = matrixMultiply(i_mod->effectpoints[e].transforms);
+                            }
+                            c_shs->AddEffectPoint(i_mod->effectpoints[e].name.c_str(), me);
+                        }
+                    }
+
+                    c3DLoader *object = c3DLoader::LoadFile(i_mod->file.GetFullPath().fn_str());
+                    if (!object) {
+                        // Poof went the model!
+                        throw RCT3Exception(wxString::Format(_("Something happened to the file of model '%s'."), i_mod->name.c_str()));
+                    }
+
+                    unsigned long CurrentObj = 0;
+                    D3DVECTOR temp_min, temp_max;
+                    for (cMeshStruct::iterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
+                        if (i_mesh->disabled == false) {
+                            //progress.Update(++progress_count);
+                            unsigned long c_vertexcount;
+                            VERTEX* c_vertices;
+                            unsigned long c_indexcount;
+                            unsigned long* c_indices;
+                            D3DVECTOR c_fudge_normal;
+                            D3DVECTOR* c_pfudge_normal = NULL;
+                            boundsInit(&temp_min, &temp_max);
+                            switch (i_mesh->fudgenormals) {
+                                case CMS_FUDGE_X:
+                                    c_fudge_normal = vectorMake(1.0, 0.0, 0.0);
+                                    c_pfudge_normal = &c_fudge_normal;
+                                    break;
+                                case CMS_FUDGE_Y:
+                                    c_fudge_normal = vectorMake(0.0, 1.0, 0.0);
+                                    c_pfudge_normal = &c_fudge_normal;
+                                    break;
+                                case CMS_FUDGE_Z:
+                                    c_fudge_normal = vectorMake(0.0, 0.0, 1.0);
+                                    c_pfudge_normal = &c_fudge_normal;
+                                    break;
+                                case CMS_FUDGE_XM:
+                                    c_fudge_normal = vectorMake(-1.0, 0.0, 0.0);
+                                    c_pfudge_normal = &c_fudge_normal;
+                                    break;
+                                case CMS_FUDGE_YM:
+                                    c_fudge_normal = vectorMake(0.0, -1.0, 0.0);
+                                    c_pfudge_normal = &c_fudge_normal;
+                                    break;
+                                case CMS_FUDGE_ZM:
+                                    c_fudge_normal = vectorMake(0.0, 0.0, -1.0);
+                                    c_pfudge_normal = &c_fudge_normal;
+                                    break;
+                            }
+                            if (c_pfudge_normal)
+                                matrixApplyIP(c_pfudge_normal, matrixGetFixOrientation(i_mod->usedorientation));
+
+                            boundsInit(&temp_min, &temp_max);
+                            object->FetchObject(CurrentObj, &c_vertexcount, &c_vertices, &c_indexcount,
+                                                &c_indices, &temp_min, &temp_max,
+                                                const_cast<D3DMATRIX *> ((do_transform)?(&transformMatrix):NULL),
+                                                c_pfudge_normal);
+                            boundsContain(&temp_min, &temp_max, &box_min, &box_max);
+                            if (i_mesh->fudgenormals == CMS_FUDGE_RIM) {
+                                c3DLoader::FlattenNormals(c_vertexcount, c_vertices, temp_min, temp_max);
+                            }
+                            c_shs->AddMesh(i_mesh->FTX.c_str(), i_mesh->TXS.c_str(), i_mesh->place, i_mesh->flags,
+                                           i_mesh->unknown, c_vertexcount, c_vertices, c_indexcount, c_indices);
+                            delete[] c_vertices;
+                            delete[] c_indices;
+                        }
+                        CurrentObj++;
+                    }
+                    c_shs->SetBoundingBox(box_min, box_max);
+                    delete object;
+                }
+            }
+
+            // Animated shapes
+            if (m_work->animatedmodels.size()) {
+                ovlBSHManager* c_bsh = c_ovl.GetManager<ovlBSHManager>();
+                for (cAnimatedModel::iterator i_mod = m_work->animatedmodels.begin(); i_mod != m_work->animatedmodels.end(); ++i_mod) {
+                    if (!i_mod->used)
+                        continue;
+
+                    D3DVECTOR box_min, box_max;
+                    boundsInit(&box_min, &box_max);
+
+                    // Find active mesh count
+                    int mesh_count = 0;
+                    for (cMeshStruct::iterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
+                        if (!i_mesh->disabled)
+                            mesh_count++;
+                    }
+                    c_bsh->AddModel(i_mod->name.c_str(), mesh_count, i_mod->modelbones.size()+1);
+                    c_bsh->AddRootBone();
+
+                    // Determine transformation matrices
+                    D3DMATRIX transformMatrix = matrixMultiply(matrixMultiply(i_mod->transforms), matrixGetFixOrientation(i_mod->usedorientation));
+                    bool do_transform = !matrixIsEqual(transformMatrix, matrixGetUnity());
+                    D3DMATRIX undoDamage;
+                    int m = 0;
+                    for(m = i_mod->transformnames.size()-1; m>=0; m--) {
+                        if (i_mod->transformnames[m] == wxT("-"))
+                            break;
+                    }
+                    if (m>0) {
+                        // Note: if m=0, the first is the separator, so this can fall through to no separator
+                        std::vector<D3DMATRIX> undostack;
+                        for (int n = m; n < i_mod->transforms.size(); n++)
+                            undostack.push_back(i_mod->transforms[n]);
+                        undostack.push_back(matrixGetFixOrientation(i_mod->usedorientation));
+                        undoDamage = matrixInverse(matrixMultiply(undostack));
+                    } else {
+                        undoDamage = matrixInverse(transformMatrix);
+                    }
+                    // We need to reevaluate do_transform
+                    if (!do_transform)
+                        do_transform = !matrixIsEqual(undoDamage, matrixGetUnity());
+
+                    // Do effect points
+                    if (i_mod->modelbones.size() != 0) {
+                        for (unsigned int e = 0; e < i_mod->modelbones.size(); e++) {
+                            D3DMATRIX pos1, pos2;
+                            if (do_transform) {
+                                std::vector<D3DMATRIX> tempstack = i_mod->modelbones[e].positions1;
+                                // to correctely apply the model transformation matrix to effect points we have to
+                                // transform in-game objects into modeler-space first by applying the inverse
+                                // of the model transformation matrix
+                                // (now replaced by the undoDamage matrix to allow separation of the coordinate
+                                // system fix from other model transformations)
+                                tempstack.insert(tempstack.begin(), undoDamage);
+                                // At the end of the stack, transform back
+                                tempstack.push_back(transformMatrix);
+                                pos1 = matrixMultiply(tempstack);
+
+                                // Same for pos2
+                                tempstack = i_mod->modelbones[e].positions2;
+                                tempstack.insert(tempstack.begin(), undoDamage);
+                                tempstack.push_back(transformMatrix);
+                                pos2 = matrixMultiply(tempstack);
+                            } else {
+                                pos1 = matrixMultiply(i_mod->modelbones[e].positions1);
+                                pos2 = matrixMultiply(i_mod->modelbones[e].positions2);
+                            }
+                            c_bsh->AddBone(i_mod->modelbones[e].name.c_str(), i_mod->modelbones[e].nparent, pos1, pos2);
+                        }
+                    }
+
+                    c3DLoader *object = c3DLoader::LoadFile(i_mod->file.GetFullPath().fn_str());
+                    if (!object) {
+                        // Poof went the model!
+                        throw RCT3Exception(wxString::Format(_("Something happened to the file of model '%s'."), i_mod->name.c_str()));
+                    }
+
+                    unsigned long CurrentObj = 0;
+                    D3DVECTOR temp_min, temp_max;
+                    for (cMeshStruct::iterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
+                        if (i_mesh->disabled == false) {
+                            //progress.Update(++progress_count);
+                            unsigned long c_vertexcount;
+                            VERTEX2* c_vertices;
+                            unsigned long c_indexcount;
+                            unsigned short* c_indices;
+                            D3DVECTOR c_fudge_normal;
+                            D3DVECTOR* c_pfudge_normal = NULL;
+                            boundsInit(&temp_min, &temp_max);
+                            switch (i_mesh->fudgenormals) {
+                                case CMS_FUDGE_X:
+                                    c_fudge_normal = vectorMake(1.0, 0.0, 0.0);
+                                    c_pfudge_normal = &c_fudge_normal;
+                                    break;
+                                case CMS_FUDGE_Y:
+                                    c_fudge_normal = vectorMake(0.0, 1.0, 0.0);
+                                    c_pfudge_normal = &c_fudge_normal;
+                                    break;
+                                case CMS_FUDGE_Z:
+                                    c_fudge_normal = vectorMake(0.0, 0.0, 1.0);
+                                    c_pfudge_normal = &c_fudge_normal;
+                                    break;
+                                case CMS_FUDGE_XM:
+                                    c_fudge_normal = vectorMake(-1.0, 0.0, 0.0);
+                                    c_pfudge_normal = &c_fudge_normal;
+                                    break;
+                                case CMS_FUDGE_YM:
+                                    c_fudge_normal = vectorMake(0.0, -1.0, 0.0);
+                                    c_pfudge_normal = &c_fudge_normal;
+                                    break;
+                                case CMS_FUDGE_ZM:
+                                    c_fudge_normal = vectorMake(0.0, 0.0, -1.0);
+                                    c_pfudge_normal = &c_fudge_normal;
+                                    break;
+                            }
+                            if (c_pfudge_normal)
+                                matrixApplyIP(c_pfudge_normal, matrixGetFixOrientation(i_mod->usedorientation));
+
+                            boundsInit(&temp_min, &temp_max);
+                            object->FetchAsAnimObject(CurrentObj, i_mesh->bone, 0xff, &c_vertexcount, &c_vertices,
+                                                      &c_indexcount, &c_indices, &temp_min, &temp_max,
+                                                      const_cast<D3DMATRIX *> ((do_transform)?(&transformMatrix):NULL),
+                                                      c_pfudge_normal);
+                            boundsContain(&temp_min, &temp_max, &box_min, &box_max);
+                            if (i_mesh->fudgenormals == CMS_FUDGE_RIM) {
+                                c3DLoader::FlattenNormals(c_vertexcount, c_vertices, temp_min, temp_max);
+                            }
+                            c_bsh->AddMesh(i_mesh->FTX.c_str(), i_mesh->TXS.c_str(), i_mesh->place, i_mesh->flags,
+                                           i_mesh->unknown, c_vertexcount, c_vertices, c_indexcount, c_indices);
+                            delete[] c_vertices;
+                            delete[] c_indices;
+                        }
+                        CurrentObj++;
+                    }
+                    c_bsh->SetBoundingBox(box_min, box_max);
+                    delete object;
+                }
+            }
+
+            // Animations
+            if (m_work->animations.size()) {
+                ovlBANManager* c_ban = c_ovl.GetManager<ovlBANManager>();
+                for (cAnimation::iterator i_anim = m_work->animations.begin(); i_anim != m_work->animations.end(); ++i_anim) {
+                    c_ban->AddAnimation(i_anim->name.c_str(), i_anim->boneanimations.size(), i_anim->totaltime);
+                    for (cBoneAnimation::iterator i_bone = i_anim->boneanimations.begin(); i_bone != i_anim->boneanimations.end(); ++i_bone) {
+                        c_ban->AddBone(i_bone->name.c_str(), i_bone->translations.size(), i_bone->rotations.size());
+                        for (cTXYZ::iterator i_txyz = i_bone->translations.begin(); i_txyz != i_bone->translations.end(); ++i_txyz) {
+                            c_ban->AddTranslation(i_txyz->GetFixed(i_anim->usedorientation));
+                        }
+                        for (cTXYZ::iterator i_txyz = i_bone->rotations.begin(); i_txyz != i_bone->rotations.end(); ++i_txyz) {
+                            c_ban->AddRotation(i_txyz->GetFixed(i_anim->usedorientation));
+                        }
+                    }
+                }
+            }
+
+        }
+
+        // Textures
+        if (m_work->flexitextures.size()) {
+            ovlFTXManager* c_ftx = c_ovl.GetManager<ovlFTXManager>();
+            for (cFlexiTexture::iterator i_ftx = m_work->flexitextures.begin(); i_ftx != m_work->flexitextures.end(); i_ftx++) {
+                if (!i_ftx->used)
+                    continue;
+
+                //progress.Update(++progress_count);
+// TODO (tobi#1#): Reimplement textrue cache
+
+//                if (m_textureovl) {
+//                    ::wxGetApp().g_texturecache.push_back(i_ftx->Name);
+//                }
+
+                // Make the animation
+                unsigned long animationcount = 0;
+                for(cFlexiTextureAnim::iterator i_anim = i_ftx->Animation.begin(); i_anim != i_ftx->Animation.end(); i_anim++)
+                    animationcount += i_anim->count();
+                unsigned long animation[animationcount];
+                unsigned long x = 0;
+                for(cFlexiTextureAnim::iterator i_anim = i_ftx->Animation.begin(); i_anim != i_ftx->Animation.end(); i_anim++) {
+                    for (unsigned long i = 0; i < i_anim->count(); i++) {
+                        animation[x] = i_anim->frame();
+                        x++;
+                    }
+                }
+
+                // Get the size from the first frame
+                unsigned long dimension = checkRCT3Texture(i_ftx->Frames[0].texture().GetFullPath());
+                long texhandling = READ_RCT3_TEXTURE();
+                if (dimension > 1024)
+                    dimension = 1024;
+                switch (texhandling) {
+                    case RCT3_TEXTURE_SCALE_DOWN:
+                        dimension = 1 << local_log2(dimension);
+                        break;
+                    case RCT3_TEXTURE_SCALE_UP: {
+                            unsigned int l = local_log2(dimension);
+                            if ((1 << l) != dimension)
+                                dimension = 1 << (l+1);
+                        }
+                        break;
+                }
+
+                c_ftx->AddTexture(i_ftx->Name.c_str(), dimension, i_ftx->FPS, i_ftx->Recolorable,
+                                  animationcount, reinterpret_cast<unsigned long*>(&animation), i_ftx->Frames.size());
+
+                // Now loop through the frames
+                for (cFlexiTextureFrame::iterator i_ftxfr = i_ftx->Frames.begin(); i_ftxfr != i_ftx->Frames.end(); i_ftxfr++) {
+                    wxGXImage tex(i_ftxfr->texture().GetFullPath());
+                    RGBQUAD palette[256];
+                    memset(&palette, 0, 256 * sizeof(RGBQUAD));
+
+                    if ((tex.GetWidth() != dimension) || (tex.GetHeight() != dimension))
+                        tex.Rescale(dimension, dimension);
+                    unsigned char data[dimension * dimension];
+                    unsigned char alpha[dimension * dimension];
+
+                    if (i_ftxfr->recolorable()) {
+                        memcpy(&palette, cFlexiTexture::GetRGBPalette(), sizeof(palette));
+                        tex.GetAs8bitForced(reinterpret_cast<unsigned char*>(&data), reinterpret_cast<unsigned char*>(&palette), true);
+                    } else {
+                        tex.GetAs8bit(reinterpret_cast<unsigned char*>(&data), reinterpret_cast<unsigned char*>(&palette));
+                    }
+
+                    if (i_ftxfr->alphasource() == CFTF_ALPHA_INTERNAL) {
+                        tex.GetAlpha(reinterpret_cast<unsigned char*>(&alpha));
+                    } else if (i_ftxfr->alphasource() == CFTF_ALPHA_EXTERNAL) {
+                        wxGXImage alp(i_ftxfr->alpha().GetFullPath());
+                        if ((alp.GetWidth() != dimension) || (alp.GetHeight() != dimension))
+                            alp.Rescale(dimension, dimension);
+                        alp.GetGrayscale(reinterpret_cast<unsigned char*>(&alpha));
+                    }
+
+                    for (unsigned int j = 0; j < 256; j++)
+                        palette[j].rgbReserved = i_ftxfr->alphacutoff();
+
+                    c_ftx->AddTextureFrame(dimension, i_ftxfr->recolorable(),
+                                           reinterpret_cast<unsigned char*>(&palette),
+                                           reinterpret_cast<unsigned char*>(&data),
+                                           (i_ftxfr->alphasource() == CFTF_ALPHA_NONE)?NULL:reinterpret_cast<unsigned char*>(&alpha));
+                }
+            }
+        }
+
+        c_ovl.Save();
+    } catch (EOvl& e) {
+        throw RCT3Exception(wxString::Format(_("Error during OVL creation: %s"), e.what()));
+    } catch (Magick::Exception& e) {
+        throw RCT3Exception(wxString::Format(_("Error from image library: %s"), e.what()));
+    }
 }
 
 void cSCNFile::CleanWork() {

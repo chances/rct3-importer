@@ -108,7 +108,7 @@
 			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="All" targets="Debug;Profile;Release;Debug STD;Release STD;" />
+			<Add alias="All" targets="Debug;Release;" />
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-Wall" />
@@ -121,6 +121,7 @@
 			<Add directory="..\..\include" />
 			<Add directory="..\libWXHelp" />
 			<Add directory="$(#mingw.include)\GraphicsMagick" />
+			<Add directory="..\libOVLng" />
 		</Compiler>
 		<Unit filename="3DLoader.cpp" />
 		<Unit filename="3DLoader.h" />
