@@ -121,6 +121,7 @@
 		</Linker>
 		<Unit filename="OvlCompiler ReadMe.txt" />
 		<Unit filename="ReadMe 1st.txt" />
+		<Unit filename="changelog.txt" />
 		<Unit filename="ovlmake.cpp" />
 		<Unit filename="wx_pch.h" />
 		<Extensions>

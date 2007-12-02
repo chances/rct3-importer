@@ -35,7 +35,7 @@
 #include "RCT3Exception.h"
 #include "OVLException.h"
 
-#define VERSION_OVLMAKE "OvlMake v0.1"
+#define VERSION_OVLMAKE "OvlMake v0.1.1"
 
 int DoCompile(const wxCmdLineParser& parser) {
     int ret = 0;
@@ -73,15 +73,26 @@ int DoCompile(const wxCmdLineParser& parser) {
                     outputfile.SetPath(c_scn.ovlpath.GetPath());
             }
         } else {
-            outputfile = parser.GetParam(1);
+            wxString temp = parser.GetParam(1);
+            if (temp.Lower().EndsWith(wxT(".common.ovl")))
+                temp = temp.BeforeLast('.');
+            outputfile = temp;
         }
 
-        {
+        if (!checkonly) {
             // Copy as wxFileName gets confused by common.ovl
             wxFileName temp = outputfile;
-            temp.SetExt(wxT("common.ovl"));
-            if ((!temp.IsFileWritable()) && (!checkonly))
-                throw RCT3Exception(_("Cannot write output file ")+temp.GetFullPath());
+            if (!convert)
+                temp.SetExt(wxT("common.ovl"));
+            if (temp.GetPath().IsEmpty())
+                temp.SetPath(wxT("."));
+            if (temp.FileExists()) {
+                if (!temp.IsFileWritable())
+                    throw RCT3Exception(_("Cannot write output file ")+temp.GetFullPath());
+            } else {
+                if (!temp.IsDirWritable())
+                    throw RCT3Exception(_("Cannot write output file ")+temp.GetFullPath());
+            }
         }
 
         if (convert) {
