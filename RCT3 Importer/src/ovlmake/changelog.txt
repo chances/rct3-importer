@@ -3,3 +3,8 @@ Version 0.1
 
 Version 0.1.1
 * Fixed handling and checking of output file name
+
+Version 0.1.2
+* Fixed bug in bsh writing
+* Fixed issue with GraphicsMagick not finding it's config files
+* Write the three "classic" lods, not just one as ovlcompiler did

@@ -71,6 +71,20 @@
 					<Add option="-s" />
 				</Linker>
 			</Target>
+			<Target title="Debug Base">
+				<Option output="..\..\lib\libWXHelpbd" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="..\..\lib\obj\debugbase" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add option="-D__WXDEBUG__" />
+					<Add directory="$(#mingw.lib)\wx\include\base-ansi-debug-static-2.8" />
+				</Compiler>
+			</Target>
 		</Build>
 		<VirtualTargets>
 			<Add alias="All" targets="Debug;Profile;Release;" />

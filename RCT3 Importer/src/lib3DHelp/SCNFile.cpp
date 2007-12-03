@@ -1578,9 +1578,13 @@ bool cSCNFile::FromCompilerXml(wxXmlNode* node, const wxString& path) {
         cLOD lod;
         lod.animated = true;
         lod.modelname = animatedmodels[0].name;
-        lod.distance = 4000;
+        lod.distance = 40;
         if (animations.size())
             lod.animations.Add(animations[0].name);
+        lods.push_back(lod);
+        lod.distance = 100;
+        lods.push_back(lod);
+        lod.distance = 4000;
         lods.push_back(lod);
     }
 

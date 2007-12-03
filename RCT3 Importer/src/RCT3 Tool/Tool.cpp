@@ -2852,6 +2852,10 @@ bool ToolApp::OnInit()
     delete[] dir;
     wxConfig::Set(new wxFileConfig(wxT("RCT3 Importer"), wxT("Freeware"), g_appdir+wxT("RCT3 Importer.conf"), wxT(""), wxCONFIG_USE_LOCAL_FILE));
 
+    // *&^$% GraphicsMagick
+    wxString appenv = wxT("MAGICK_CONFIGURE_PATH=") + g_appdir;
+    putenv(appenv.c_str());
+
 //    g_config = new RCT3Config(g_appdir);
 //    g_config->Load();
 /*

@@ -264,7 +264,7 @@ unsigned char* ovlBSHManager::Make() {
             // Data transfer, indices
             c_mesh->Triangles = reinterpret_cast<unsigned short*>(c_data);
             c_data += c_mesh->IndexCount * sizeof(unsigned short);
-            memcpy(c_mesh->Triangles, m_modellist[i]->sh[s]->Triangles, c_mesh->IndexCount * sizeof(unsigned long));
+            memcpy(c_mesh->Triangles, m_modellist[i]->sh[s]->Triangles, c_mesh->IndexCount * sizeof(unsigned short));
             m_relman->AddRelocation((unsigned long *)&c_mesh->Triangles);
             DUMP_RELOCATION("ovlBSHManager::Make, Triangles", c_mesh->Triangles);
 

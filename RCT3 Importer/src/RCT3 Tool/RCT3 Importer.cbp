@@ -162,6 +162,7 @@
 			<Add directory="..\libWXHelp" />
 			<Add directory="$(#mingw.include)\GraphicsMagick" />
 			<Add directory="$(#mingw.include)\plib" />
+			<Add directory="..\libOVLng" />
 		</Compiler>
 		<Linker>
 			<Add library="GraphicsMagick++" />

@@ -16,6 +16,7 @@ Improvements over OvlCompiler
 * Within the bsh tag you can reference bones via number (as described for ovlcompiler) or by name. This applies to the bone attribute of geomobj tags and the parent attribute of bone tags.
 * The root ovl tag supports two new attributes, 'name' and 'file'. These influence what happens if you don't give an output filename (read below for a full explanation).
 * Able to handle all image formats the importer can.
+* Writes three levels of detail.
 * OvlMake is basically a command line tool wrapping the library that will do the work in the next importer version, basically this means a full rewrite of ovlcompiler. All the original bugs therefore have been replaced by a bunch of entirely new ones =)
 * OvlMake supports three different input formats. The first is ovlcompiler's xml format with the enhancements I've explained so far. The second one is the scn format of the RCT3 Importer. The third is a new xml format that will be used in future importer versions. This format was not designed to be written by humans, so some of it's attributes have obscure values. You can convert ovlcompiler xml and importer scn files into this format with a command line switch. !!!Caveat: ovlmake tells scn and xml files apart by the extension, not the content. Everything that doesn't have xml will be treated as a scn file. Do not feed it arbitrary files, that may lead to a crash!!!
 

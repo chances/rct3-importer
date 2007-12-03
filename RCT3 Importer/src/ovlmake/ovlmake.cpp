@@ -30,12 +30,13 @@
 #include <wx/cmdline.h>
 #include <wx/filename.h>
 #include <exception>
+#include <stdlib.h>
 
 #include "SCNFile.h"
 #include "RCT3Exception.h"
 #include "OVLException.h"
 
-#define VERSION_OVLMAKE "OvlMake v0.1.1"
+#define VERSION_OVLMAKE "OvlMake v0.1.2"
 
 int DoCompile(const wxCmdLineParser& parser) {
     int ret = 0;
@@ -155,6 +156,11 @@ int main(int argc, char **argv)
     #define wxArgv argv
 #endif // wxUSE_UNICODE/!wxUSE_UNICODE
 
+    // *&^$% GraphicsMagick
+    wxFileName app = wxString(wxArgv[0]);
+    wxString appenv = wxT("MAGICK_CONFIGURE_PATH=") + app.GetPathWithSep();
+    putenv(appenv.c_str());
+
     wxInitializer initializer;
     if ( !initializer )
     {
@@ -164,7 +170,7 @@ int main(int argc, char **argv)
     }
 
     fprintf(stderr, VERSION_OVLMAKE);
-    fprintf(stderr, "\n------------\n\n");
+    fprintf(stderr, "\n--------------\n\n");
 
     static const wxCmdLineEntryDesc cmdLineDesc[] =
     {

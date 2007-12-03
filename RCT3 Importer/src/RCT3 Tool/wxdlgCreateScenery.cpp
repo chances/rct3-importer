@@ -45,6 +45,7 @@
 #include "lib3Dconfig.h"
 #include "logext.h"
 #include "matrix.h"
+#include "OVLException.h"
 #include "popupmessagewin.h"
 #include "rct3log.h"
 #include "texcheck.h"
@@ -640,7 +641,7 @@ void dlgCreateScenery::UpdateControlState() {
     }
     m_btAnimationAddToLod->Enable(en);
 
-    m_btCreate->Enable(m_SCN.flexitextures.size() || (m_SCN.models.size() && m_SCN.lods.size()));
+    m_btCreate->Enable(m_SCN.flexitextures.size() || ((m_SCN.models.size() || m_SCN.animatedmodels.size()) && m_SCN.lods.size()));
     /*
     if (m_SCN.models.size())
         m_btCreate->SetLabel(_("Create Scenery OVL"));
@@ -2183,6 +2184,9 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
         was_going = true;
         m_SCN.Make();
     } catch (RCT3Exception& e) {
+        wxLogError(e.what());
+        error = true;
+    } catch (EOvl& e) {
         wxLogError(e.what());
         error = true;
     } catch (std::exception& e) {
