@@ -12,11 +12,11 @@ Improvements over OvlCompiler
 * You don't need to give an output file. !!!Please read below to understand what happens if you omit it.!!!
 * OvlMake supports a few command line options. Run it without giving an input file to see them.
 * You don't need to care about matching the name attributes of the bsh and ban tags anymore. They also don't need to match the filename of the xml or ovl file.
-* You can give more than one bsh or ban tag, but only the first will be used. Mone will generate a warning as there is no sensible way they can be used within the limits of ovlcompiler's xml syntax. Best forget I told you it's possible =)
+* You can give more than one ban tag, but only the first will be used. More will generate a warning as there is no sensible way they can be used within the limits of ovlcompiler's xml syntax. Best forget I told you it's possible =)
+* Minor LOD support, affects how multiple bsh tags are handled. See below for more info.
 * Within the bsh tag you can reference bones via number (as described for ovlcompiler) or by name. This applies to the bone attribute of geomobj tags and the parent attribute of bone tags.
 * The root ovl tag supports two new attributes, 'name' and 'file'. These influence what happens if you don't give an output filename (read below for a full explanation).
 * Able to handle all image formats the importer can.
-* Writes three levels of detail.
 * OvlMake is basically a command line tool wrapping the library that will do the work in the next importer version, basically this means a full rewrite of ovlcompiler. All the original bugs therefore have been replaced by a bunch of entirely new ones =)
 * OvlMake supports three different input formats. The first is ovlcompiler's xml format with the enhancements I've explained so far. The second one is the scn format of the RCT3 Importer. The third is a new xml format that will be used in future importer versions. This format was not designed to be written by humans, so some of it's attributes have obscure values. You can convert ovlcompiler xml and importer scn files into this format with a command line switch. !!!Caveat: ovlmake tells scn and xml files apart by the extension, not the content. Everything that doesn't have xml will be treated as a scn file. Do not feed it arbitrary files, that may lead to a crash!!!
 
@@ -34,6 +34,19 @@ If the input file contains the info, it is used. This is the case for newer scn 
 Easy. The name defaults to the input file name, the path to the input file's path.
 
 If you give an output file name, it supercedes any information given in the file. If only one part of information is given in the file, the other takes it's default.
+
+Minor LOD support
+-----------------
+By default, ovlmake acts like ovlcompiler and writes one LOD at 4000 distance. Starting with version 0.1.3, you can add an 'options' tag with a 'lods' attribute. You can set this attribute to 1, 3 or 4. Example:
+<options lods="3" />
+If you define 4 lods, the last one will be static. Distances are 40/100/4000 for 3, 40/100/300/4000 for 4 lods.
+How exactly ovlmake proceeds depends on the number of bsh tags you define.
+1 bsh tag: The single model is copied (and made static for the 4th lod if applicable).
+2 bsh tags: Not supported, treated like one and will generate a warning for the second (which isn't used).
+3 bsh tags: Used in the order they are defined. For 4 lods, the last will be copied and made static.
+4 bsh tags: Used in order, last will be made static (so no need to define bones for it). Generates a waring for 3 lods.
+More: Treated like 4, superfluous ones are ignored and yield warnings.
+If you need more fine tuning, convert to an importer xml and do it there (this much should be obvious ^.^).
 
 A few final words
 -----------------

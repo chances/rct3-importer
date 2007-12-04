@@ -1608,6 +1608,60 @@ bool cAnimatedModel::FromCompilerXml(wxXmlNode* node, const wxString& path) {
     return ret && (!error.size());
 }
 
+bool cAnimatedModel::FromNode(wxXmlNode* node, const wxString& path, unsigned long version) {
+    bool ret = true;
+    wxString temp;
+    if (!node)
+        return false;
+    if (!node->GetName().IsSameAs(RCT3XML_CANIMATEDMODEL))
+        return false;
+
+    name = node->GetPropVal(wxT("name"), wxT(""));
+    file = node->GetPropVal(wxT("file"), wxT(""));
+    if (!file.GetFullPath().IsSameAs(wxT(""))) {
+        if (!file.IsAbsolute()) {
+            file.MakeAbsolute(path);
+        }
+    }
+    if (node->GetPropVal(wxT("orientation"), &temp)) {
+        unsigned long l = 0;
+        if (!temp.ToULong(&l)) {
+            usedorientation = ORIENTATION_UNKNOWN;
+            ret = false;
+        } else {
+            usedorientation = static_cast<c3DLoaderOrientation>(l);
+        }
+    } else {
+        usedorientation = ORIENTATION_UNKNOWN;
+    }
+
+    wxXmlNode* child = node->GetChildren();
+    while(child) {
+        if (child->GetName() == RCT3XML_MATRIX) {
+            wxString n = _("Error");
+            D3DMATRIX m;
+            if (!XmlParseMatrixNode(child, &m, &n, version))
+                ret = false;
+            transforms.push_back(m);
+            transformnames.Add(n);
+        } else if (child->GetName() == RCT3XML_CMESHSTRUCT) {
+            cMeshStruct m;
+            if (!m.FromNode(child, path, version))
+                ret = false;
+            meshstructs.push_back(m);
+        } else if (child->GetName() == RCT3XML_CMODELBONE) {
+            cModelBone b;
+            if (!b.FromNode(child, path, version))
+                ret = false;
+            modelbones.push_back(b);
+        }
+
+        child = child->GetNext();
+    }
+    Sync();
+    return ret;
+}
+
 wxXmlNode* cAnimatedModel::AddNodeContent(wxXmlNode* node, const wxString& path, bool do_local) {
     wxXmlNode* lastchild = cModel::AddNodeContent(node, path, false);
     if (do_local) {

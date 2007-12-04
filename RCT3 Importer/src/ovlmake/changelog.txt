@@ -8,3 +8,7 @@ Version 0.1.2
 * Fixed bug in bsh writing
 * Fixed issue with GraphicsMagick not finding it's config files
 * Write the three "classic" lods, not just one as ovlcompiler did
+
+Version 0.1.3
+* Minor LOD handling
+* Fixed reading of new importer xml format

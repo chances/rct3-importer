@@ -1491,11 +1491,13 @@ bool cSCNFile::LoadXML(wxXmlDocument* doc) {
 #define COMPILER_FTX wxT("ftx")
 #define COMPILER_FIX wxT("fix")
 #define COMPILER_REFERENCE wxT("reference")
+#define COMPILER_OPTIONS wxT("options")
 
 bool cSCNFile::FromCompilerXml(wxXmlNode* node, const wxString& path) {
     wxXmlNode *child = node->GetChildren();
     c3DLoaderOrientation ori = ORIENTATION_UNKNOWN;
     bool ret = true;
+    int option_lods = 1;
 
     name = node->GetPropVal(wxT("name"), name);
 
@@ -1559,6 +1561,17 @@ bool cSCNFile::FromCompilerXml(wxXmlNode* node, const wxString& path) {
             if (ref.IsEmpty())
                 throw RCT3Exception(_("REFERENCE tag misses path attribute."));
             references.Add(ref);
+        } else if (child->GetName() == COMPILER_OPTIONS) {
+            wxString te = child->GetPropVal(wxT("lods"), wxT("1"));
+            if (te == wxT("1")) {
+                option_lods = 1;
+            } else if (te == wxT("3")) {
+                option_lods = 3;
+            } else if (te == wxT("4")) {
+                option_lods = 4;
+            } else {
+                throw RCT3Exception(wxString::Format(_("Unknown lod option '%s'."), te.c_str()));
+            }
         } else if COMPILER_WRONGTAG(child) {
             throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ovl tag."), child->GetName().c_str()));
         }
@@ -1578,14 +1591,94 @@ bool cSCNFile::FromCompilerXml(wxXmlNode* node, const wxString& path) {
         cLOD lod;
         lod.animated = true;
         lod.modelname = animatedmodels[0].name;
-        lod.distance = 40;
         if (animations.size())
             lod.animations.Add(animations[0].name);
-        lods.push_back(lod);
-        lod.distance = 100;
-        lods.push_back(lod);
-        lod.distance = 4000;
-        lods.push_back(lod);
+        switch (option_lods) {
+            case 1: {
+                    lod.distance = 4000;
+                    lods.push_back(lod);
+                }
+                break;
+            case 3: {
+                    lod.distance = 40;
+                    lods.push_back(lod);
+                    if (animatedmodels.size() == 3) {
+                        lod.modelname = animatedmodels[1].name;
+                        lod.distance = 100;
+                        lods.push_back(lod);
+                        lod.modelname = animatedmodels[2].name;
+                        lod.distance = 4000;
+                        lods.push_back(lod);
+                    } else {
+                        cAnimatedModel m = animatedmodels[0];
+                        m.name += wxT("MLOD");
+                        animatedmodels.push_back(m);
+                        lod.modelname = m.name;
+                        lod.distance = 100;
+                        lods.push_back(lod);
+
+                        m = animatedmodels[0];
+                        m.name += wxT("LLOD");
+                        animatedmodels.push_back(m);
+                        lod.modelname = m.name;
+                        lod.distance = 4000;
+                        lods.push_back(lod);
+                    }
+                }
+                break;
+            case 4: {
+                    lod.distance = 40;
+                    lods.push_back(lod);
+                    if (animatedmodels.size() >= 3) {
+                        lod.modelname = animatedmodels[1].name;
+                        lod.distance = 100;
+                        lods.push_back(lod);
+                        lod.modelname = animatedmodels[2].name;
+                        lod.distance = 300;
+                        lods.push_back(lod);
+                        cModel sm;
+                        if (animatedmodels.size() == 3) {
+                            cModel sm = cModel(animatedmodels[2]);
+                            sm.name += wxT("ULLOD");
+                        } else {
+                            cModel sm = cModel(animatedmodels[3]);
+                            animatedmodels.erase(animatedmodels.begin()+3);
+                        }
+                        sm.effectpoints.clear();
+                        models.push_back(sm);
+                        lod.modelname = sm.name;
+                        lod.distance = 4000;
+                        lod.animated = false;
+                        lods.push_back(lod);
+                    } else {
+                        cAnimatedModel m = animatedmodels[0];
+                        m.name += wxT("MLOD");
+                        animatedmodels.push_back(m);
+                        lod.modelname = m.name;
+                        lod.distance = 100;
+                        lods.push_back(lod);
+
+                        m = animatedmodels[0];
+                        m.name += wxT("LLOD");
+                        animatedmodels.push_back(m);
+                        lod.modelname = m.name;
+                        lod.distance = 300;
+                        lods.push_back(lod);
+
+                        cModel sm = cModel(animatedmodels[0]);
+                        sm.name += wxT("ULLOD");
+                        sm.effectpoints.clear();
+                        models.push_back(sm);
+                        lod.modelname = sm.name;
+                        lod.distance = 4000;
+                        lod.animated = false;
+                        lods.push_back(lod);
+                    }
+                }
+                break;
+        }
+    } else {
+        throw RCT3Exception(_("No bsh tags found."));
     }
 
     filename = wxT(""); // Destroy filename to prevent overwriting

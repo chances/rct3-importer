@@ -391,6 +391,7 @@ public:
 
     bool FromCompilerXml(wxXmlNode* node, const wxString& path);
 
+    virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);
     virtual wxXmlNode* AddNodeContent(wxXmlNode* node, const wxString& path, bool do_local);
     virtual const wxString GetTagName() const {return RCT3XML_CANIMATEDMODEL;};
 };

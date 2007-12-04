@@ -36,7 +36,7 @@
 #include "RCT3Exception.h"
 #include "OVLException.h"
 
-#define VERSION_OVLMAKE "OvlMake v0.1.2"
+#define VERSION_OVLMAKE "ovlmake v0.1.3"
 
 int DoCompile(const wxCmdLineParser& parser) {
     int ret = 0;
@@ -169,6 +169,7 @@ int main(int argc, char **argv)
         return -1;
     }
 
+    fprintf(stderr, "--------------\n");
     fprintf(stderr, VERSION_OVLMAKE);
     fprintf(stderr, "\n--------------\n\n");
 
