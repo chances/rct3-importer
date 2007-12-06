@@ -33,6 +33,7 @@
 #include <string>
 #include <vector>
 
+#include "OVLClasses.h"
 #include "ovlstructs.h"
 #include "RelocationManager.h"
 
@@ -40,55 +41,56 @@ using namespace std;
 
 class ovlLodSymRefManager {
 private:
-    LoaderStruct* m_loaders;
-    LoaderStruct* m_cloader;
-    SymbolStruct* m_symbols;
-    SymbolStruct* m_csymbol;
-    SymbolRefStruct* m_symrefs;
-    SymbolRefStruct* m_csymref;
+    LoaderStruct* m_loaders[2];
+    LoaderStruct* m_cloader[2];
+    SymbolStruct* m_symbols[2];
+    SymbolStruct* m_csymbol[2];
+    SymbolRefStruct* m_symrefs[2];
+    SymbolRefStruct* m_csymref[2];
     ovlRelocationManager* m_relman;
 
-    vector<string> m_loadernames;
+    vector<string> m_loadernames[2];
 
-    int m_loadercount;
-    int m_symbolcount;
-    int m_symrefcount;
-    int m_uloadercount;
-    int m_usymbolcount;
-    int m_usymrefcount;
+    int m_loadercount[2];
+    int m_symbolcount[2];
+    int m_symrefcount[2];
+    int m_uloadercount[2];
+    int m_usymbolcount[2];
+    int m_usymrefcount[2];
 
     bool m_made;
-    bool m_loaderopen;
+    bool m_loaderopen[2];
 public:
     ovlLodSymRefManager() {
         m_relman = NULL;
         m_made = false;
-        m_loaderopen = false;
+        m_loaderopen[0] = false;
+        m_loaderopen[1] = false;
     };
     virtual ~ovlLodSymRefManager();
 
     void Init(ovlRelocationManager* relman);
-    void Assign();
+    void Assign(cOvlInfo* info);
     void Make(const map<string, unsigned long>& loadernumbers);
 
-    void AddLoader();
-    LoaderStruct* OpenLoader(const char* type, unsigned long *data, bool hasextradata, SymbolStruct *sym);
-    LoaderStruct* CloseLoader();
-    LoaderStruct* GetLoaders();
-    int GetLoaderCount() {
-        return m_loadercount;
+    void AddLoader(cOvlType type);
+    LoaderStruct* OpenLoader(cOvlType type, const char* ctype, unsigned long *data, bool hasextradata, SymbolStruct *sym);
+    LoaderStruct* CloseLoader(cOvlType type);
+    //LoaderStruct* GetLoaders();
+    int GetLoaderCount(cOvlType type) {
+        return m_loadercount[type];
     }
-    void AddSymbol();
-    SymbolStruct* MakeSymbol(char *symbol, unsigned long *data, bool ispointer);
+    void AddSymbol(cOvlType type);
+    SymbolStruct* MakeSymbol(cOvlType type, char *symbol, unsigned long *data, bool ispointer);
     SymbolStruct* GetSymbols();
-    int GetSymbolCount() {
-        return m_symbolcount;
+    int GetSymbolCount(cOvlType type) {
+        return m_symbolcount[type];
     }
-    void AddSymRef();
-    SymbolRefStruct* MakeSymRef(char *symbol, unsigned long *ref);
+    void AddSymRef(cOvlType type);
+    SymbolRefStruct* MakeSymRef(cOvlType type, char *symbol, unsigned long *ref);
     SymbolRefStruct* GetSymRefs();
-    int GetSymRefCount() {
-        return m_symrefcount;
+    int GetSymRefCount(cOvlType type) {
+        return m_symrefcount[type];
     }
 
 };

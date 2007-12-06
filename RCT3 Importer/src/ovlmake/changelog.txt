@@ -12,3 +12,7 @@ Version 0.1.2
 Version 0.1.3
 * Minor LOD handling
 * Fixed reading of new importer xml format
+
+Version 0.1.4
+* Fixed a bug in importer xml writing concerning rotational keyframes
+* Now writes ovls that have the same data distribution as vanilla ovls

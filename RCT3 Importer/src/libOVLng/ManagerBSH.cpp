@@ -74,18 +74,25 @@ void ovlBSHManager::AddModel(const char* name, unsigned long meshes, unsigned lo
     c_bsh->BonePositions1 = new D3DMATRIX[c_bsh->BoneCount];
     c_bsh->BonePositions2 = new D3DMATRIX[c_bsh->BoneCount];
 
+    // One common blob per model
+    m_blobs[reinterpret_cast<unsigned char*>(c_bsh)] = cOvlMemBlob(OVLT_COMMON, 4, 0);
+
     // BoneShape1
     m_size += sizeof(BoneShape1);
     // BoneShape2 pointers
     m_size += c_bsh->MeshCount * sizeof(BoneShape2*);
+
+    // Put in common
     // BoneStructs
-    m_size += c_bsh->BoneCount * sizeof(BoneStruct);
+    //m_size += c_bsh->BoneCount * sizeof(BoneStruct);
+    m_blobs[reinterpret_cast<unsigned char*>(c_bsh)].size += c_bsh->BoneCount * sizeof(BoneStruct);
     // Bone positions
-    m_size += 2 * c_bsh->BoneCount * sizeof(D3DMATRIX);
+    //m_size += 2 * c_bsh->BoneCount * sizeof(D3DMATRIX);
+    m_blobs[reinterpret_cast<unsigned char*>(c_bsh)].size += 2 * c_bsh->BoneCount * sizeof(D3DMATRIX);
 
     m_modellist.push_back(c_bsh);
-    m_lsrman->AddLoader();
-    m_lsrman->AddSymbol();
+    m_lsrman->AddLoader(OVLT_UNIQUE);
+    m_lsrman->AddSymbol(OVLT_UNIQUE);
     m_modelnames.push_back(string(name));
     m_stable->AddSymbolString(name, Tag());
 
@@ -205,20 +212,22 @@ void ovlBSHManager::AddMesh(const char* ftx, const char* txs, unsigned long plac
     // StaticShape2
     m_size += sizeof(BoneShape2);
     // Vertices
-    m_size += bsh2->VertexCount * sizeof(VERTEX2);
+    //m_size += bsh2->VertexCount * sizeof(VERTEX2);
+    m_blobs[reinterpret_cast<unsigned char*>(m_cmodel)].size += bsh2->VertexCount * sizeof(VERTEX2);
     // Indices
-    m_size += bsh2->IndexCount * sizeof(unsigned short);
+    //m_size += bsh2->IndexCount * sizeof(unsigned short);
+    m_blobs[reinterpret_cast<unsigned char*>(m_cmodel)].size += bsh2->IndexCount * sizeof(unsigned short);
 
     m_stable->AddSymbolString(ftx, ovlFTXManager::TAG);
-    m_lsrman->AddSymRef();
+    m_lsrman->AddSymRef(OVLT_UNIQUE);
     m_stable->AddSymbolString(txs, ovlTXSManager::TAG);
-    m_lsrman->AddSymRef();
+    m_lsrman->AddSymRef(OVLT_UNIQUE);
 
     m_nmesh++;
     m_meshcount--;
 }
 
-unsigned char* ovlBSHManager::Make() {
+unsigned char* ovlBSHManager::Make(cOvlInfo* info) {
     DUMP_LOG("Trace: ovlBSHManager::Make()");
     Check("ovlBSHManager::Make");
     if (m_meshcount)
@@ -226,10 +235,13 @@ unsigned char* ovlBSHManager::Make() {
     if (m_bonecount)
         throw EOvl("ovlBSHManager::Make called but there are unassigned bones left");
 
-    ovlOVLManager::Make();
-    unsigned char* c_data = m_data;
+    m_blobs[0] = cOvlMemBlob(OVLT_UNIQUE, 2, m_size);
+    ovlOVLManager::Make(info);
+    unsigned char* c_data = m_blobs[0].data;
 
     for (unsigned long i = 0; i < m_modellist.size(); ++i) {
+        unsigned char* c_commondata = m_blobs[reinterpret_cast<unsigned char*>(m_modellist[i])].data;
+
         // Data transfer, BoneShape1
         BoneShape1* c_model = reinterpret_cast<BoneShape1*>(c_data);
         c_data += sizeof(BoneShape1);
@@ -242,8 +254,8 @@ unsigned char* ovlBSHManager::Make() {
         DUMP_RELOCATION("ovlBSHManager::Make, BoneShape2 pointers", c_model->sh);
 
         // Symbol and Loader
-        SymbolStruct* c_symbol = m_lsrman->MakeSymbol(m_stable->FindSymbolString(m_modelnames[i].c_str(), Tag()), reinterpret_cast<unsigned long*>(c_model), true);
-        m_lsrman->OpenLoader(TAG, reinterpret_cast<unsigned long*>(c_model), false, c_symbol);
+        SymbolStruct* c_symbol = m_lsrman->MakeSymbol(OVLT_UNIQUE, m_stable->FindSymbolString(m_modelnames[i].c_str(), Tag()), reinterpret_cast<unsigned long*>(c_model), true);
+        m_lsrman->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_model), false, c_symbol);
 
         for (unsigned long s = 0; s < m_modellist[i]->MeshCount; ++s) {
             // Data transfer, StaticShape2
@@ -255,27 +267,41 @@ unsigned char* ovlBSHManager::Make() {
             DUMP_RELOCATION("ovlBSHManager::Make, StaticShape2", c_model->sh[s]);
 
             // Data transfer, vertices
-            c_mesh->Vertexes = reinterpret_cast<VERTEX2*>(c_data);
-            c_data += c_mesh->VertexCount * sizeof(VERTEX2);
+//            c_mesh->Vertexes = reinterpret_cast<VERTEX2*>(c_data);
+//            c_data += c_mesh->VertexCount * sizeof(VERTEX2);
+//            memcpy(c_mesh->Vertexes, m_modellist[i]->sh[s]->Vertexes, c_mesh->VertexCount * sizeof(VERTEX2));
+//            m_relman->AddRelocation((unsigned long *)&c_mesh->Vertexes);
+//            DUMP_RELOCATION("ovlBSHManager::Make, Vertexes", c_mesh->Vertexes);
+            c_mesh->Vertexes = reinterpret_cast<VERTEX2*>(c_commondata);
+            c_commondata += c_mesh->VertexCount * sizeof(VERTEX2);
             memcpy(c_mesh->Vertexes, m_modellist[i]->sh[s]->Vertexes, c_mesh->VertexCount * sizeof(VERTEX2));
             m_relman->AddRelocation((unsigned long *)&c_mesh->Vertexes);
             DUMP_RELOCATION("ovlBSHManager::Make, Vertexes", c_mesh->Vertexes);
 
             // Data transfer, indices
-            c_mesh->Triangles = reinterpret_cast<unsigned short*>(c_data);
-            c_data += c_mesh->IndexCount * sizeof(unsigned short);
+//            c_mesh->Triangles = reinterpret_cast<unsigned short*>(c_data);
+//            c_data += c_mesh->IndexCount * sizeof(unsigned short);
+//            memcpy(c_mesh->Triangles, m_modellist[i]->sh[s]->Triangles, c_mesh->IndexCount * sizeof(unsigned short));
+//            m_relman->AddRelocation((unsigned long *)&c_mesh->Triangles);
+//            DUMP_RELOCATION("ovlBSHManager::Make, Triangles", c_mesh->Triangles);
+            c_mesh->Triangles = reinterpret_cast<unsigned short*>(c_commondata);
+            c_commondata += c_mesh->IndexCount * sizeof(unsigned short);
             memcpy(c_mesh->Triangles, m_modellist[i]->sh[s]->Triangles, c_mesh->IndexCount * sizeof(unsigned short));
             m_relman->AddRelocation((unsigned long *)&c_mesh->Triangles);
             DUMP_RELOCATION("ovlBSHManager::Make, Triangles", c_mesh->Triangles);
 
             // Symbol references
-            m_lsrman->MakeSymRef(m_stable->FindSymbolString(m_ftxmap[m_modellist[i]->sh[s]].c_str(), ovlFTXManager::TAG), reinterpret_cast<unsigned long*>(&c_mesh->fts));
-            m_lsrman->MakeSymRef(m_stable->FindSymbolString(m_txsmap[m_modellist[i]->sh[s]].c_str(), ovlTXSManager::TAG), reinterpret_cast<unsigned long*>(&c_mesh->TextureData));
+            m_lsrman->MakeSymRef(OVLT_UNIQUE, m_stable->FindSymbolString(m_ftxmap[m_modellist[i]->sh[s]].c_str(), ovlFTXManager::TAG), reinterpret_cast<unsigned long*>(&c_mesh->fts));
+            m_lsrman->MakeSymRef(OVLT_UNIQUE, m_stable->FindSymbolString(m_txsmap[m_modellist[i]->sh[s]].c_str(), ovlTXSManager::TAG), reinterpret_cast<unsigned long*>(&c_mesh->TextureData));
         }
 
         // Data transfer, BonesStructs
-        c_model->Bones = reinterpret_cast<BoneStruct*>(c_data);
-        c_data += c_model->BoneCount * sizeof(BoneStruct);
+//        c_model->Bones = reinterpret_cast<BoneStruct*>(c_data);
+//        c_data += c_model->BoneCount * sizeof(BoneStruct);
+//        m_relman->AddRelocation((unsigned long *)&c_model->Bones);
+//        DUMP_RELOCATION("ovlBSHManager::Make, Bones", c_model->Bones);
+        c_model->Bones = reinterpret_cast<BoneStruct*>(c_commondata);
+        c_commondata += c_model->BoneCount * sizeof(BoneStruct);
         m_relman->AddRelocation((unsigned long *)&c_model->Bones);
         DUMP_RELOCATION("ovlBSHManager::Make, Bones", c_model->Bones);
         for (unsigned long s = 0; s < c_model->BoneCount; ++s) {
@@ -288,19 +314,29 @@ unsigned char* ovlBSHManager::Make() {
         }
 
         // Data transfer, matrices
-        c_model->BonePositions1 = reinterpret_cast<D3DMATRIX*>(c_data);
-        c_data += c_model->BoneCount * sizeof(D3DMATRIX);
+//        c_model->BonePositions1 = reinterpret_cast<D3DMATRIX*>(c_data);
+//        c_data += c_model->BoneCount * sizeof(D3DMATRIX);
+//        memcpy(c_model->BonePositions1, m_modellist[i]->BonePositions1, c_model->BoneCount * sizeof(D3DMATRIX));
+//        m_relman->AddRelocation((unsigned long *)&c_model->BonePositions1);
+//        DUMP_RELOCATION("ovlBSHManager::Make, BonePositions1", c_model->BonePositions1);
+        c_model->BonePositions1 = reinterpret_cast<D3DMATRIX*>(c_commondata);
+        c_commondata += c_model->BoneCount * sizeof(D3DMATRIX);
         memcpy(c_model->BonePositions1, m_modellist[i]->BonePositions1, c_model->BoneCount * sizeof(D3DMATRIX));
         m_relman->AddRelocation((unsigned long *)&c_model->BonePositions1);
         DUMP_RELOCATION("ovlBSHManager::Make, BonePositions1", c_model->BonePositions1);
 
-        c_model->BonePositions2 = reinterpret_cast<D3DMATRIX*>(c_data);
-        c_data += c_model->BoneCount * sizeof(D3DMATRIX);
+//        c_model->BonePositions2 = reinterpret_cast<D3DMATRIX*>(c_data);
+//        c_data += c_model->BoneCount * sizeof(D3DMATRIX);
+//        memcpy(c_model->BonePositions2, m_modellist[i]->BonePositions2, c_model->BoneCount * sizeof(D3DMATRIX));
+//        m_relman->AddRelocation((unsigned long *)&c_model->BonePositions2);
+//        DUMP_RELOCATION("ovlBSHManager::Make, BonePositions2", c_model->BonePositions2);
+        c_model->BonePositions2 = reinterpret_cast<D3DMATRIX*>(c_commondata);
+        c_commondata += c_model->BoneCount * sizeof(D3DMATRIX);
         memcpy(c_model->BonePositions2, m_modellist[i]->BonePositions2, c_model->BoneCount * sizeof(D3DMATRIX));
         m_relman->AddRelocation((unsigned long *)&c_model->BonePositions2);
         DUMP_RELOCATION("ovlBSHManager::Make, BonePositions2", c_model->BonePositions2);
 
-        m_lsrman->CloseLoader();
+        m_lsrman->CloseLoader(OVLT_UNIQUE);
     }
 
     return m_data;

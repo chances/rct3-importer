@@ -65,8 +65,8 @@ void ovlBANManager::AddAnimation(const char* name, unsigned long bones, float to
     m_size += c_ban->BoneCount * sizeof(BoneAnimBone);
 
     m_animationlist.push_back(c_ban);
-    m_lsrman->AddLoader();
-    m_lsrman->AddSymbol();
+    m_lsrman->AddLoader(OVLT_COMMON);
+    m_lsrman->AddSymbol(OVLT_COMMON);
     m_animationnames.push_back(string(name));
     m_stable->AddSymbolString(name, Tag());
 
@@ -143,7 +143,7 @@ void ovlBANManager::AddRotation(const txyz& t) {
     CloseBone();
 }
 
-unsigned char* ovlBANManager::Make() {
+unsigned char* ovlBANManager::Make(cOvlInfo* info) {
     Check("ovlBANManager::Make");
     if (m_bonecount)
         throw EOvl("ovlBANManager::Make called but there are unassigned bones left");
@@ -152,8 +152,10 @@ unsigned char* ovlBANManager::Make() {
     if (m_rotcount)
         throw EOvl("ovlBANManager::Make called but there are unassigned rotations left");
 
-    ovlOVLManager::Make();
-    unsigned char* c_data = m_data;
+
+    m_blobs[0] = cOvlMemBlob(OVLT_COMMON, 4, m_size);
+    ovlOVLManager::Make(info);
+    unsigned char* c_data = m_blobs[0].data;
 
     for (unsigned long i = 0; i < m_animationlist.size(); ++i) {
         // Data transfer, BoneAnim
@@ -168,9 +170,9 @@ unsigned char* ovlBANManager::Make() {
         m_relman->AddRelocation((unsigned long *)&c_ban->Bones);
 
         // Symbol and Loader
-        SymbolStruct* c_symbol = m_lsrman->MakeSymbol(m_stable->FindSymbolString(m_animationnames[i].c_str(), Tag()), reinterpret_cast<unsigned long*>(c_ban), true);
-        m_lsrman->OpenLoader(TAG, reinterpret_cast<unsigned long*>(c_ban), false, c_symbol);
-        m_lsrman->CloseLoader();
+        SymbolStruct* c_symbol = m_lsrman->MakeSymbol(OVLT_COMMON, m_stable->FindSymbolString(m_animationnames[i].c_str(), Tag()), reinterpret_cast<unsigned long*>(c_ban), true);
+        m_lsrman->OpenLoader(OVLT_COMMON, TAG, reinterpret_cast<unsigned long*>(c_ban), false, c_symbol);
+        m_lsrman->CloseLoader(OVLT_COMMON);
 
         for (unsigned long s = 0; s < c_ban->BoneCount; ++s) {
             // Bone name

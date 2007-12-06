@@ -42,25 +42,25 @@ using namespace std;
 cOvl::cOvl(string file) {
     m_file = file;
 
-    string temp = m_file + ".common.ovl";
-    m_ovlinfo.OpenFiles[OVL_COMMON].FileName = new char[temp.length()+1];
-    strcpy(m_ovlinfo.OpenFiles[OVL_COMMON].FileName, temp.c_str());
-    m_ovlinfo.OpenFiles[OVL_COMMON].ReferenceCount=0;
-    m_ovlinfo.OpenFiles[OVL_COMMON].References=NULL;
-    memset(m_ovlinfo.OpenFiles[OVL_COMMON].Types,0,sizeof(m_ovlinfo.OpenFiles[OVL_COMMON].Types));
+    //string temp = m_file + ".common.ovl";
+    m_ovlinfo.OpenFiles[OVLT_COMMON].filename = m_file + ".common.ovl";
+    //strcpy(m_ovlinfo.OpenFiles[OVL_COMMON].FileName, temp.c_str());
+    //m_ovlinfo.OpenFiles[OVL_COMMON].ReferenceCount=0;
+    //m_ovlinfo.OpenFiles[OVL_COMMON].References=NULL;
+    //memset(m_ovlinfo.OpenFiles[OVL_COMMON].Types,0,sizeof(m_ovlinfo.OpenFiles[OVL_COMMON].Types));
 
-    temp = m_file + ".unique.ovl";
-    m_ovlinfo.OpenFiles[OVL_UNIQUE].FileName = new char[temp.length()+1];
-    strcpy(m_ovlinfo.OpenFiles[OVL_UNIQUE].FileName, temp.c_str());
-    memset(m_ovlinfo.OpenFiles[OVL_UNIQUE].Types,0,sizeof(m_ovlinfo.OpenFiles[OVL_UNIQUE].Types));
+    //temp = m_file + ".unique.ovl";
+    m_ovlinfo.OpenFiles[OVLT_UNIQUE].filename = m_file + ".unique.ovl";
+    //strcpy(m_ovlinfo.OpenFiles[OVL_UNIQUE].FileName, temp.c_str());
+    //memset(m_ovlinfo.OpenFiles[OVL_UNIQUE].Types,0,sizeof(m_ovlinfo.OpenFiles[OVL_UNIQUE].Types));
 
     m_relmanager.Init(&m_ovlinfo);
     m_lsrmanager.Init(&m_relmanager);
 }
 
 cOvl::~cOvl() {
-    delete[] m_ovlinfo.OpenFiles[OVL_COMMON].FileName;
-    delete[] m_ovlinfo.OpenFiles[OVL_UNIQUE].FileName;
+//    delete[] m_ovlinfo.OpenFiles[OVL_COMMON].FileName;
+//    delete[] m_ovlinfo.OpenFiles[OVL_UNIQUE].FileName;
 }
 
 ovlOVLManager* cOvl::GetManager(const char* tag) {
@@ -80,19 +80,20 @@ void cOvl::InitAndAddManager(ovlOVLManager* man) {
 }
 
 void cOvl::AddReference(const char* ref) {
-    m_references.push_back(string(ref));
+    //m_references.push_back(string(ref));
+    m_ovlinfo.OpenFiles[OVLT_UNIQUE].references.push_back(string(ref));
 }
 
 void cOvl::Save() {
     // First assign space for the loaders, symobls and symbol references
-    m_lsrmanager.Assign();
+    m_lsrmanager.Assign(&m_ovlinfo);
 
     // Then make the string table
-    m_stringtable.Make();
+    m_stringtable.Make(&m_ovlinfo);
 
     // Now make all the managers' contents
     for (map<string, ovlOVLManager*>::iterator it = m_managers.begin(); it != m_managers.end(); ++it) {
-        it->second->Make();
+        it->second->Make(&m_ovlinfo);
     }
 
     // Now we make the loaders, symobls and symbol references
@@ -107,7 +108,16 @@ void cOvl::Save() {
         m_lsrmanager.Make(c_loadertypes);
     }
 
+    // First we assign the offsets so relocations can be set up corretly
+    m_ovlinfo.MakeOffsets();
 
+    // Them we relsolve the relocations
+    m_relmanager.Make();
+
+    // And write the files
+    m_ovlinfo.WriteFiles(m_managers);
+
+/*
     ////////////////////////
     // Prepare UNIQUE file
     m_ovlinfo.CurrentFile = OVL_UNIQUE;
@@ -274,6 +284,6 @@ void cOvl::Save() {
     // Clean Up
     delete c_type0file;
     delete[] c_type2files;
-
+*/
 }
 

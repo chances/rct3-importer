@@ -73,7 +73,7 @@ public:
     void AddTranslation(const txyz& t);
     void AddRotation(const txyz& t);
 
-    virtual unsigned char* Make();
+    virtual unsigned char* Make(cOvlInfo* info);
 
     virtual const char* Name() const {
         return NAME;

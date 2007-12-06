@@ -74,11 +74,19 @@ void ovlOVLManager::WriteLoader(FILE* f) {
     fwrite(Tag(), len, 1, f);
 }
 
-unsigned char* ovlOVLManager::Make() {
+unsigned char* ovlOVLManager::Make(cOvlInfo* info) {
     // No checking, this is done by derived objects
-    m_data = new unsigned char[m_size];
-    memset(m_data, 0, m_size);
-    return m_data;
+    //m_data = new unsigned char[m_size];
+    //memset(m_data, 0, m_size);
+    if (m_blobs.size()) {
+        for (map<unsigned char*, cOvlMemBlob>::iterator it = m_blobs.begin(); it != m_blobs.end(); ++it) {
+            it->second.data = info->OpenFiles[it->second.type].GetBlock(it->second.file, it->second.size);
+        }
+        return NULL;
+    } else {
+        m_data = info->OpenFiles[OVLT_UNIQUE].GetBlock(2, m_size);
+        return m_data;
+    }
 }
 
 void ovlOVLManager::Check(const string& err) {

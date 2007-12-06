@@ -33,6 +33,8 @@
 #include <map>
 #include <string>
 
+#include "OVLClasses.h"
+
 using namespace std;
 
 class ovlStringTable {
@@ -49,7 +51,7 @@ public:
 
     void AddString(const char *lstring);
     void AddSymbolString(const char *lstring, const char *lextension);
-    char* Make();
+    char* Make(cOvlInfo* info);
     char* FindString(const char *lstring) const;
     char* FindSymbolString(const char *lstring, const char *lextension) const;
     int GetSize() const;

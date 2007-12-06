@@ -31,26 +31,25 @@
 
 #include <queue>
 
-#include "ovlstructs.h"
+#include "OVLClasses.h"
 
 using namespace std;
 
 class ovlRelocationManager {
 private:
     queue<unsigned long *> m_relocations;
-    queue<unsigned long> m_fixups;
-    OvlInfo* m_info;
+    cOvlInfo* m_info;
 
-    unsigned long DoRelocationForSaving(unsigned long *reloc);
+    unsigned long DoRelocationForSaving(unsigned long *reloc, bool& common);
 public:
     ovlRelocationManager() {};
     virtual ~ovlRelocationManager() {};
 
-    void Init(OvlInfo* info);
+    void Init(cOvlInfo* info);
 
     void AddRelocation(unsigned long *reloc);
     void Make();
-    void WriteFixups(FILE* f);
+    //void WriteFixups(FILE* f);
 };
 
 #endif

@@ -36,7 +36,7 @@
 #include "RCT3Exception.h"
 #include "OVLException.h"
 
-#define VERSION_OVLMAKE "ovlmake v0.1.3"
+#define VERSION_OVLMAKE "ovlmake v0.1.4"
 
 int DoCompile(const wxCmdLineParser& parser) {
     int ret = 0;

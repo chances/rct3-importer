@@ -29,9 +29,11 @@
 #ifndef MANAGEROVL_H_INCLUDED
 #define MANAGEROVL_H_INCLUDED
 
+#include <map>
 #include <string>
 
 #include "LodSymRefManager.h"
+#include "OVLClasses.h"
 #include "RelocationManager.h"
 #include "StringTable.h"
 
@@ -44,6 +46,8 @@ public:
 protected:
     unsigned long m_size;
     unsigned char* m_data;
+    map<unsigned char*, cOvlMemBlob> m_blobs;
+
     ovlLodSymRefManager* m_lsrman;
     ovlRelocationManager* m_relman;
     ovlStringTable* m_stable;
@@ -55,7 +59,7 @@ public:
 
     virtual void Init(ovlLodSymRefManager* lsrman, ovlRelocationManager* relman, ovlStringTable* stable);
 
-    virtual unsigned char* Make() = 0;
+    virtual unsigned char* Make(cOvlInfo* info) = 0;
     virtual void WriteLoader(FILE* f);
 
     virtual const unsigned long GetSize() const;

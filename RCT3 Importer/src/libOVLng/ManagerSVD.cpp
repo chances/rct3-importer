@@ -77,8 +77,8 @@ void ovlSVDManager::AddSVD(const char* name, unsigned long lods, unsigned long f
     m_size += c_svd->LODCount * sizeof(SceneryItemVisualLOD*);
 
     m_svdlist.push_back(c_svd);
-    m_lsrman->AddLoader();
-    m_lsrman->AddSymbol();
+    m_lsrman->AddLoader(OVLT_UNIQUE);
+    m_lsrman->AddSymbol(OVLT_UNIQUE);
     m_svdnames.push_back(string(name));
     m_stable->AddSymbolString(name, Tag());
 
@@ -142,7 +142,7 @@ void ovlSVDManager::AddStaticLOD(const char* name, const char* modelname, float 
     m_stable->AddString(name);
     m_modelmap[c_lod] = string(modelname);
     m_stable->AddSymbolString(modelname, ovlSHSManager::TAG);
-    m_lsrman->AddSymRef();
+    m_lsrman->AddSymRef(OVLT_UNIQUE);
 
     m_nlod++;
     m_lodcount--;
@@ -190,7 +190,7 @@ void ovlSVDManager::OpenAnimatedLOD(const char* name, const char* modelname, uns
     m_stable->AddString(name);
     m_modelmap[c_lod] = string(modelname);
     m_stable->AddSymbolString(modelname, ovlBSHManager::TAG);
-    m_lsrman->AddSymRef();
+    m_lsrman->AddSymRef(OVLT_UNIQUE);
 
     m_animcount = c_lod->AnimationCount;
 }
@@ -220,12 +220,12 @@ void ovlSVDManager::AddAnimation(const char* name) {
 
     m_animationmap[m_csvd->LODMeshes[m_nlod]].push_back(string(name));
     m_stable->AddSymbolString(name, ovlBANManager::TAG);
-    m_lsrman->AddSymRef();
+    m_lsrman->AddSymRef(OVLT_UNIQUE);
 
     m_animcount--;
 }
 
-unsigned char* ovlSVDManager::Make() {
+unsigned char* ovlSVDManager::Make(cOvlInfo* info) {
     DUMP_LOG("Trace: ovlSVDManager::Make()");
     Check("ovlSVDManager::Make");
     if (m_lodcount)
@@ -233,7 +233,7 @@ unsigned char* ovlSVDManager::Make() {
     if (m_animcount)
         throw EOvl("ovlSVDManager::Make called but last lod misses animations");
 
-    ovlOVLManager::Make();
+    ovlOVLManager::Make(info);
     unsigned char* c_data = m_data;
 
     for (unsigned long i = 0; i < m_svdlist.size(); ++i) {
@@ -249,8 +249,8 @@ unsigned char* ovlSVDManager::Make() {
         DUMP_RELOCATION("ovlSVDManager::Make, LodMeshes pointers", c_svd->LODMeshes);
 
         // Symbol and Loader
-        SymbolStruct* c_symbol = m_lsrman->MakeSymbol(m_stable->FindSymbolString(m_svdnames[i].c_str(), Tag()), reinterpret_cast<unsigned long*>(c_svd), true);
-        m_lsrman->OpenLoader(TAG, reinterpret_cast<unsigned long*>(c_svd), false, c_symbol);
+        SymbolStruct* c_symbol = m_lsrman->MakeSymbol(OVLT_UNIQUE, m_stable->FindSymbolString(m_svdnames[i].c_str(), Tag()), reinterpret_cast<unsigned long*>(c_svd), true);
+        m_lsrman->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_svd), false, c_symbol);
 
         for (unsigned long s = 0; s < m_svdlist[i]->LODCount; ++s) {
             // Data Transfer, LOD
@@ -269,13 +269,13 @@ unsigned char* ovlSVDManager::Make() {
             switch (c_svd->LODMeshes[s]->MeshType) {
                 case SVDLOD_MESHTYPE_STATIC: {
                         // Symbol reference for shs name
-                        m_lsrman->MakeSymRef(m_stable->FindSymbolString(m_modelmap[m_svdlist[i]->LODMeshes[s]].c_str(), ovlSHSManager::TAG),
+                        m_lsrman->MakeSymRef(OVLT_UNIQUE, m_stable->FindSymbolString(m_modelmap[m_svdlist[i]->LODMeshes[s]].c_str(), ovlSHSManager::TAG),
                                              reinterpret_cast<unsigned long*>(&c_svd->LODMeshes[s]->StaticShape));
                     }
                     break;
                 case SVDLOD_MESHTYPE_ANIMATED: {
                         // Symbol reference for bsh name
-                        m_lsrman->MakeSymRef(m_stable->FindSymbolString(m_modelmap[m_svdlist[i]->LODMeshes[s]].c_str(), ovlBSHManager::TAG),
+                        m_lsrman->MakeSymRef(OVLT_UNIQUE, m_stable->FindSymbolString(m_modelmap[m_svdlist[i]->LODMeshes[s]].c_str(), ovlBSHManager::TAG),
                                              reinterpret_cast<unsigned long*>(&c_svd->LODMeshes[s]->BoneShape));
 
                         // Animations
@@ -294,7 +294,7 @@ unsigned char* ovlSVDManager::Make() {
                                 DUMP_RELOCATION("ovlSVDManager::Make, AnimationArray", c_svd->LODMeshes[s]->AnimationArray[a]);
 
                                 // Symbol reference for ban name
-                                m_lsrman->MakeSymRef(m_stable->FindSymbolString(m_animationmap[m_svdlist[i]->LODMeshes[s]][a].c_str(), ovlBANManager::TAG),
+                                m_lsrman->MakeSymRef(OVLT_UNIQUE, m_stable->FindSymbolString(m_animationmap[m_svdlist[i]->LODMeshes[s]][a].c_str(), ovlBANManager::TAG),
                                                      reinterpret_cast<unsigned long*>(c_svd->LODMeshes[s]->AnimationArray[a]));
                             }
                         }
@@ -303,7 +303,7 @@ unsigned char* ovlSVDManager::Make() {
             }
         }
 
-        m_lsrman->CloseLoader();
+        m_lsrman->CloseLoader(OVLT_UNIQUE);
     }
 
     return m_data;

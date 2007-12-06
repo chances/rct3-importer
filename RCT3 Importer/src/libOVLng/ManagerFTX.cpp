@@ -83,8 +83,8 @@ void ovlFTXManager::AddTexture(const char* name, unsigned long dimension, unsign
     m_size += sizeof(FlexiTextureStruct) * ftis->fts2Count;
 
     m_ftxlist.push_back(ftis);
-    m_lsrman->AddLoader();
-    m_lsrman->AddSymbol();
+    m_lsrman->AddLoader(OVLT_COMMON);
+    m_lsrman->AddSymbol(OVLT_COMMON);
     m_ftxnames.push_back(string(name));
     m_stable->AddSymbolString(name, Tag());
 
@@ -118,23 +118,28 @@ void ovlFTXManager::AddTextureFrame(unsigned long dimension, unsigned long recol
     // Palette
     m_size += 256*sizeof(RGBQUAD);
     // Texture
-    m_size += m_cfts->width*m_cfts->height;
+    //m_size += m_cfts->width*m_cfts->height;
+    m_blobs[m_cfts->texture] = cOvlMemBlob(OVLT_COMMON, 0, m_cfts->width*m_cfts->height);
     // Alpha
     if (alpha) {
-        m_size += m_cfts->width*m_cfts->height;
+        //m_size += m_cfts->width*m_cfts->height;
+        m_blobs[m_cfts->alpha] = cOvlMemBlob(OVLT_COMMON, 0, m_cfts->width*m_cfts->height);
     }
 
     m_ftscount--;
     m_cfts++;
 }
 
-unsigned char* ovlFTXManager::Make() {
+unsigned char* ovlFTXManager::Make(cOvlInfo* info) {
     Check("ovlFTXManager::Make");
+    if (!info)
+        throw EOvl("ovlFTXManager::Make called without valid info");
     if (m_ftscount)
         throw EOvl("ovlFTXManager::Make called but last texture misses frames");
 
-    ovlOVLManager::Make();
-    unsigned char* c_data = m_data;
+    m_blobs[0] = cOvlMemBlob(OVLT_COMMON, 2, m_size);
+    ovlOVLManager::Make(info);
+    unsigned char* c_data = m_blobs[0].data;
 
     for (unsigned long t = 0; t < m_ftxlist.size(); ++t) {
         // Data Transfer, FlexiTextureInfoStruct
@@ -165,23 +170,29 @@ unsigned char* ovlFTXManager::Make() {
             m_relman->AddRelocation((unsigned long*)&c_dftis->fts2[i].palette);
 
             // Texture
-            c_dftis->fts2[i].texture = c_data;
-            c_data += c_dftis->fts2[i].width * c_dftis->fts2[i].height;
+//            c_dftis->fts2[i].texture = c_data;
+//            c_data += c_dftis->fts2[i].width * c_dftis->fts2[i].height;
+//            memcpy(c_dftis->fts2[i].texture, m_ftxlist[t]->fts2[i].texture, c_dftis->fts2[i].width * c_dftis->fts2[i].height);
+//            m_relman->AddRelocation((unsigned long*)&c_dftis->fts2[i].texture);
+            c_dftis->fts2[i].texture = m_blobs[m_ftxlist[t]->fts2[i].texture].data;
             memcpy(c_dftis->fts2[i].texture, m_ftxlist[t]->fts2[i].texture, c_dftis->fts2[i].width * c_dftis->fts2[i].height);
             m_relman->AddRelocation((unsigned long*)&c_dftis->fts2[i].texture);
 
             // Alpha
             if (m_ftxlist[t]->fts2[i].alpha) {
-                c_dftis->fts2[i].alpha = c_data;
-                c_data += c_dftis->fts2[i].width * c_dftis->fts2[i].height;
+//                c_dftis->fts2[i].alpha = c_data;
+//                c_data += c_dftis->fts2[i].width * c_dftis->fts2[i].height;
+//                memcpy(c_dftis->fts2[i].alpha, m_ftxlist[t]->fts2[i].alpha, c_dftis->fts2[i].width * c_dftis->fts2[i].height);
+//                m_relman->AddRelocation((unsigned long*)&c_dftis->fts2[i].alpha);
+                c_dftis->fts2[i].alpha = m_blobs[m_ftxlist[t]->fts2[i].alpha].data;
                 memcpy(c_dftis->fts2[i].alpha, m_ftxlist[t]->fts2[i].alpha, c_dftis->fts2[i].width * c_dftis->fts2[i].height);
                 m_relman->AddRelocation((unsigned long*)&c_dftis->fts2[i].alpha);
-            }
+          }
         }
 
-        SymbolStruct* s_ftx = m_lsrman->MakeSymbol(m_stable->FindSymbolString(m_ftxnames[t].c_str(), Tag()), reinterpret_cast<unsigned long*>(c_dftis), true);
-        m_lsrman->OpenLoader(TAG, reinterpret_cast<unsigned long*>(c_dftis), false, s_ftx);
-        m_lsrman->CloseLoader();
+        SymbolStruct* s_ftx = m_lsrman->MakeSymbol(OVLT_COMMON, m_stable->FindSymbolString(m_ftxnames[t].c_str(), Tag()), reinterpret_cast<unsigned long*>(c_dftis), true);
+        m_lsrman->OpenLoader(OVLT_COMMON, TAG, reinterpret_cast<unsigned long*>(c_dftis), false, s_ftx);
+        m_lsrman->CloseLoader(OVLT_COMMON);
     }
 
     return m_data;

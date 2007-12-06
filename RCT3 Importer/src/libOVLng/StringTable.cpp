@@ -47,8 +47,8 @@ ovlStringTable::ovlStringTable() {
 }
 
 ovlStringTable::~ovlStringTable() {
-    if (m_table)
-        delete[] m_table;
+//    if (m_table)
+//        delete[] m_table;
 }
 
 void ovlStringTable::AddString(const char *lstring) {
@@ -65,7 +65,10 @@ void ovlStringTable::AddSymbolString(const char *lstring, const char *lextension
     DUMP_LOG("ovlStringTable::AddSymbolString '%s':'%s'", lstring, lextension);
 }
 
-char* ovlStringTable::Make() {
+char* ovlStringTable::Make(cOvlInfo* info) {
+    if (!info)
+        throw EOvl("ovlStringTable::Make called without valid info");
+
     char* tempstr;
     if (m_table)
         return m_table;
@@ -74,7 +77,9 @@ char* ovlStringTable::Make() {
     for (list<string>::iterator it = m_strings.begin(); it != m_strings.end(); ++it) {
         m_size += it->length() + 1;
     }
-    m_table = new char[m_size];
+
+    //m_table = new char[m_size];
+    m_table = reinterpret_cast<char*>(info->OpenFiles[OVLT_COMMON].GetBlock(0, m_size));
     tempstr = m_table;
     for (list<string>::iterator it = m_strings.begin(); it != m_strings.end(); ++it) {
         strcpy(tempstr, it->c_str());

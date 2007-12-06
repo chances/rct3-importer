@@ -43,11 +43,10 @@ using namespace std;
 class cOvl {
 private:
     string m_file;
-    OvlInfo m_ovlinfo;
+    cOvlInfo m_ovlinfo;
     ovlStringTable m_stringtable;
     ovlRelocationManager m_relmanager;
     ovlLodSymRefManager m_lsrmanager;
-    vector<string> m_references;
 
     map<string, ovlOVLManager*> m_managers;
 

@@ -30,7 +30,7 @@
 
 #include "OVLDebug.h"
 
-void ovlRelocationManager::Init(OvlInfo* info) {
+void ovlRelocationManager::Init(cOvlInfo* info) {
     m_info = info;
 }
 
@@ -38,7 +38,8 @@ void ovlRelocationManager::AddRelocation(unsigned long* reloc) {
     m_relocations.push(reloc);
 }
 
-unsigned long ovlRelocationManager::DoRelocationForSaving(unsigned long *reloc) {
+unsigned long ovlRelocationManager::DoRelocationForSaving(unsigned long *reloc, bool& common) {
+/*
 	for (unsigned long i = 0;i < 9;i++) {
 		for (unsigned long j = 0; j < m_info->OpenFiles[m_info->CurrentFile].Types[i].count;j++) {
 			if ((reloc >= (unsigned long *)m_info->OpenFiles[m_info->CurrentFile].Types[i].dataptr[j].data)
@@ -52,7 +53,7 @@ unsigned long ovlRelocationManager::DoRelocationForSaving(unsigned long *reloc) 
 	}
 
 	//Added code : IF the file is .Common OVL return
-	if (m_info->CurrentFile == OVL_COMMON)
+	if (common)
 		return 0xFFFFFFFF;
 
 
@@ -68,6 +69,35 @@ unsigned long ovlRelocationManager::DoRelocationForSaving(unsigned long *reloc) 
 		}
 	}
 	return 0xFFFFFFFF;
+*/
+    // First look in common
+    common = true;
+	for (unsigned long i = 0;i < 9;i++) {
+	    for (vector<cOvlFile*>::iterator it = m_info->OpenFiles[OVLT_COMMON].types[i].files.begin(); it != m_info->OpenFiles[OVLT_COMMON].types[i].files.end(); ++it) {
+			if ((reloc >= reinterpret_cast<unsigned long*>((*it)->data))
+			    && (reloc <= reinterpret_cast<unsigned long*>((*it)->data + (*it)->size))) {
+				return (reinterpret_cast<unsigned long>(reloc)
+                      - reinterpret_cast<unsigned long>((*it)->data)
+                      + (*it)->reloffset
+                       );
+			}
+	    }
+	}
+
+    common = false;
+	for (unsigned long i = 0;i < 9;i++) {
+	    for (vector<cOvlFile*>::iterator it = m_info->OpenFiles[OVLT_UNIQUE].types[i].files.begin(); it != m_info->OpenFiles[OVLT_UNIQUE].types[i].files.end(); ++it) {
+			if ((reloc >= reinterpret_cast<unsigned long*>((*it)->data))
+			    && (reloc <= reinterpret_cast<unsigned long*>((*it)->data + (*it)->size))) {
+				return (reinterpret_cast<unsigned long>(reloc)
+                      - reinterpret_cast<unsigned long>((*it)->data)
+                      + (*it)->reloffset
+                       );
+			}
+	    }
+	}
+
+	return 0xFFFFFFFF;
 }
 
 void ovlRelocationManager::Make() {
@@ -76,18 +106,23 @@ void ovlRelocationManager::Make() {
         m_relocations.pop();
         unsigned long* reloc = *(unsigned long **)relocation; // This is the pointer that needs fixing
         if (reloc != 0) {
-            unsigned long fixup = DoRelocationForSaving(reloc);
+            bool common = true;
+            unsigned long fixup = DoRelocationForSaving(reloc, common);
             if (fixup == 0xFFFFFFFF) {
                 fixup = 0;
             }
             *relocation = fixup;
-            unsigned long fixup2 = DoRelocationForSaving(relocation);
-            DUMP_LOG("Resolve relocated ptr %08lx @ %08lx, fixup %08lx, fixup2 %08lx",DPTR(reloc),DPTR(relocation),fixup,fixup2);
-            m_fixups.push(fixup2);
+            unsigned long fixup2 = DoRelocationForSaving(relocation, common);
+            DUMP_LOG("Resolve relocated ptr %08lx @ %08lx, fixup %08lx, fixup2 %08lx stored in %s",DPTR(reloc),DPTR(relocation),fixup,fixup2,common?"common":"unique");
+            //m_fixups.push(fixup2);
+            if (common)
+                m_info->OpenFiles[OVLT_COMMON].fixups.push(fixup2);
+            else
+                m_info->OpenFiles[OVLT_UNIQUE].fixups.push(fixup2);
         }
     }
 }
-
+/*
 void ovlRelocationManager::WriteFixups(FILE* f) {
     unsigned long size = m_fixups.size();
     fwrite(&size, sizeof(unsigned long), 1, f);
@@ -97,3 +132,4 @@ void ovlRelocationManager::WriteFixups(FILE* f) {
         fwrite(&c_fixup, sizeof(unsigned long), 1, f);
     }
 }
+*/

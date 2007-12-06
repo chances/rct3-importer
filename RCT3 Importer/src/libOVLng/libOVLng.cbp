@@ -75,12 +75,16 @@
 		<Unit filename="ManagerSHS.h" />
 		<Unit filename="ManagerSVD.cpp" />
 		<Unit filename="ManagerSVD.h" />
+		<Unit filename="OVLClasses.cpp" />
+		<Unit filename="OVLClasses.h" />
 		<Unit filename="OVLDebug.cpp" />
 		<Unit filename="OVLDebug.h" />
 		<Unit filename="OVLException.cpp" />
 		<Unit filename="OVLException.h" />
 		<Unit filename="OVLManagers.h" />
-		<Unit filename="OVLng.cpp" />
+		<Unit filename="OVLng.cpp">
+			<Option weight="100" />
+		</Unit>
 		<Unit filename="OVLng.h" />
 		<Unit filename="RelocationManager.cpp" />
 		<Unit filename="RelocationManager.h" />

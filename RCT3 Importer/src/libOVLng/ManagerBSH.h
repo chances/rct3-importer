@@ -72,7 +72,7 @@ public:
     void AddMesh(const char* ftx, const char* txs, unsigned long place, unsigned long flags, unsigned long sides,
                  unsigned long vertexcount, VERTEX2* vertices, unsigned long indexcount, unsigned short* indices);
 
-    virtual unsigned char* Make();
+    virtual unsigned char* Make(cOvlInfo* info);
 
     virtual const char* Name() const {
         return NAME;

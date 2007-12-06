@@ -62,7 +62,7 @@ public:
     void AddTextureFrame(unsigned long dimension, unsigned long recol,
                          unsigned char* palette, unsigned char* texture, unsigned char* alpha);
 
-    virtual unsigned char* Make();
+    virtual unsigned char* Make(cOvlInfo* info);
 
     virtual const char* Loader() const {
         return LOADER;
