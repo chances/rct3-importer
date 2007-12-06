@@ -90,7 +90,7 @@ IMPLEMENT_APP_NO_MAIN(ToolApp)
 //  Globals (???)
 //
 //////////////////////////////////
-#define TITLE_VERSION "RCT3 Object Importer (v18)"
+#define TITLE_VERSION "RCT3 Object Importer (v18alpha)"
 
 
 
@@ -143,7 +143,7 @@ bool ReadIconTexture(HWND hwnd, IconTexture * t);
 char *LastCreatedOVL = NULL;
 
 
-BOOL CALLBACK TextEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) {
+BOOL CALLBACK TextEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
     switch (Message) {
     case WM_INITDIALOG:
         if (CurrentTextString != -1) {
@@ -232,7 +232,7 @@ BOOL CALLBACK TextEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPa
 }
 
 bool enabled;
-BOOL CALLBACK GSIEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) {
+BOOL CALLBACK GSIEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
     switch (Message) {
     case WM_INITDIALOG:
         SendDlgItemMessage(hwnd, IDC_LIST, LB_RESETCONTENT, 0, 0);
@@ -330,7 +330,7 @@ BOOL CALLBACK GSIEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
     return TRUE;
 }
 
-BOOL CALLBACK TextureEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) {
+BOOL CALLBACK TextureEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
     char sfile[MAX_PATH] = "";
     switch (Message) {
     case WM_INITDIALOG:
@@ -433,7 +433,7 @@ BOOL CALLBACK TextureEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM 
     return TRUE;
 }
 
-BOOL CALLBACK SIDEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) {
+BOOL CALLBACK SIDEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
     char sfile[MAX_PATH] = "";
     switch (Message) {
     case WM_INITDIALOG:
@@ -1009,16 +1009,19 @@ BOOL CALLBACK SIDEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
             EndDialog(hwnd, 0);
             break;
         case IDC_SAVESID: {
-                unsigned long ovllen, loclen, sizex, sizey, wallicon, icon, wallname, name, type,
-                unk4, supportstype, unk17;
-                long cost, refund;
+//                unsigned long ovllen, loclen, sizex, sizey, wallicon, icon, wallname, name, type,
+//                unk4, supportstype, unk17;
+                unsigned long sizex, sizey;
+                unsigned long type, unk4, unk17;
+//                long cost, refund;
                 unsigned long extra, sizeflag;
                 unsigned long posxlen, posylen, poszlen, sizexlen, sizeylen, sizezlen;
                 unsigned long unk31, unk32, unk33, dunk3, dunk5;
                 long dunk2, dunk4;
                 BOOL unk31fail, unk32fail, unk33fail, dunk2fail, dunk3fail, dunk4fail, dunk5fail;
                 char *temp;
-                BOOL costfail, refundfail, sizexfail, sizeyfail;
+//                BOOL costfail, refundfail, sizexfail, sizeyfail;
+                BOOL sizexfail, sizeyfail;
 
                 posxlen = GetWindowTextLength(GetDlgItem(hwnd, IDC_XPOS));
                 posylen = GetWindowTextLength(GetDlgItem(hwnd, IDC_YPOS));
@@ -1353,7 +1356,7 @@ BOOL CALLBACK SIDEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
     return TRUE;
 }
 
-BOOL CALLBACK SIDManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) {
+BOOL CALLBACK SIDManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
     switch (Message) {
     case WM_INITDIALOG:
         SendDlgItemMessage(hwnd, IDC_LIST, LB_RESETCONTENT, 0, 0);
@@ -1438,7 +1441,7 @@ BOOL CALLBACK SIDManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPara
     return TRUE;
 }
 
-BOOL CALLBACK TextureManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) {
+BOOL CALLBACK TextureManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
     switch (Message) {
     case WM_INITDIALOG:
         SendDlgItemMessage(hwnd, IDC_LIST, LB_RESETCONTENT, 0, 0);
@@ -1514,7 +1517,7 @@ BOOL CALLBACK TextureManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM l
     return TRUE;
 }
 
-BOOL CALLBACK GSIAutoDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) {
+BOOL CALLBACK GSIAutoDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
     switch (Message) {
     case WM_INITDIALOG:
         SendDlgItemMessage(hwnd, IDC_GSIAUTOLIST, LB_RESETCONTENT, 0, 0);
@@ -1571,7 +1574,7 @@ BOOL CALLBACK GSIAutoDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
     return TRUE;
 }
 
-BOOL CALLBACK GSIManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) {
+BOOL CALLBACK GSIManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
     switch (Message) {
     case WM_INITDIALOG:
         SendDlgItemMessage(hwnd, IDC_LIST, LB_RESETCONTENT, 0, 0);
@@ -1652,7 +1655,7 @@ BOOL CALLBACK GSIManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPara
     return TRUE;
 }
 
-BOOL CALLBACK TextManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) {
+BOOL CALLBACK TextManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
     switch (Message) {
     case WM_INITDIALOG:
         SendDlgItemMessage(hwnd, IDC_LIST, LB_RESETCONTENT, 0, 0);
@@ -1725,7 +1728,7 @@ BOOL CALLBACK TextManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lPar
     return TRUE;
 }
 
-BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) {
+BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
 /*
     OPENFILENAME ofn;
     char sfile[MAX_PATH] = "";
@@ -2829,7 +2832,7 @@ bool ToolApp::OnInit()
 	//(*AppInitialize
 
     int ovl_version;
-    if (ovl_version = LibOVLCheckVersion(LIBOVL_VERSION)) {
+    if ((ovl_version = LibOVLCheckVersion(LIBOVL_VERSION))) {
         ::wxMessageBox(wxString::Format(_("LibOVL version mismatch.\nThis importer version was compiled against libovl v%d.\nFound was libovl v%d."), LIBOVL_VERSION, ovl_version), _("Fatal Error"), wxOK);
         return false;
     }
@@ -2925,6 +2928,7 @@ bool ToolApp::OnInit()
 
 int ToolApp::OnRun() {
 #ifdef DEBUG
+    wxMessageBox(wxT("Debugging"));
     wxLogWindow win(NULL, wxT("Debug Log"), true, false);
 #endif
     DialogBox(hInst, MAKEINTRESOURCE(IDD_MAIN), NULL, (DLGPROC) MainDlgProc);

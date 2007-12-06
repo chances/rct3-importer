@@ -20,9 +20,9 @@ void wxFileSelectorCombo<wxDirDialog>::OnButtonClick() {
     if (m_dialog) {
         wxFileName name = GetValue();
         if (name!=wxT("")) {
-            m_dialog->SetPath(name.GetPath());
+            m_dialog->SetPath(name.GetFullPath());
         } else if (m_defdir) {
-            m_dialog->SetPath(m_defdir->GetPath());
+            m_dialog->SetPath(m_defdir->GetFullPath());
         }
         if ( m_dialog->ShowModal() == wxID_OK ) {
             SetValue(m_dialog->GetPath());

@@ -72,9 +72,10 @@ bool wxGXPicture::Create(wxWindow *parent, wxWindowID id,
     Scale = 0;
     ScaleX = ScaleY = 1;
 
+/*
     if ( id == wxID_ANY )
         m_windowId = (int)NewControlId();
-    else
+    else */
         m_windowId = id;
 
     m_windowStyle = style;

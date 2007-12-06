@@ -765,6 +765,10 @@ void dlgBone::SetBone(const cModelBone& bn) {
             }
         }
 //    }
+    m_cbUsePos2->SetValue(m_bn.usepos2);
+    m_btEdit2->Enable(m_bn.usepos2);
+    m_btQuick2->Enable(m_bn.usepos2);
+    m_btClear2->Enable(m_bn.usepos2);
     UpdateAll();
 }
 

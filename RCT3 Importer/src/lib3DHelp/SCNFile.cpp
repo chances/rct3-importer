@@ -1502,7 +1502,7 @@ bool cSCNFile::FromCompilerXml(wxXmlNode* node, const wxString& path) {
     name = node->GetPropVal(wxT("name"), name);
 
     // Read ovl file
-    ovlpath = node->GetPropVal(wxT("file"), wxT(""));
+    ovlpath = node->GetPropVal(wxT("file"), wxT(".\\"));
     if (!ovlpath.IsAbsolute()) {
         ovlpath.MakeAbsolute(path);
     }
@@ -1710,7 +1710,7 @@ bool cSCNFile::FromNode(wxXmlNode* node, const wxString& path, unsigned long ver
     name = node->GetPropVal(wxT("name"), wxT(""));
 
     // Read ovl file
-    ovlpath = node->GetPropVal(wxT("file"), wxT(""));
+    ovlpath = node->GetPropVal(wxT("file"), wxT(".\\"));
     if (!ovlpath.IsAbsolute()) {
         ovlpath.MakeAbsolute(path);
     }
@@ -1745,6 +1745,16 @@ bool cSCNFile::FromNode(wxXmlNode* node, const wxString& path, unsigned long ver
         CSCNFILE_READVECTOR(animatedmodels, cAnimatedModel, RCT3XML_CANIMATEDMODEL, RCT3XML_CSCNFILE_ANIMATEDMODELS)
         CSCNFILE_READVECTOR(animations, cAnimation, RCT3XML_CANIMATION, RCT3XML_CSCNFILE_ANIMATIONS)
         CSCNFILE_READVECTOR(lods, cLOD, RCT3XML_CLOD, RCT3XML_CSCNFILE_LODS)
+        } else if (child->GetName() == RCT3XML_CSCNFILE_REFERENCES) {
+            wxXmlNode* subchild = child->GetChildren();
+            while (subchild) {
+                if (subchild->GetName() == RCT3XML_REFERENCE) {
+                    wxString ref = subchild->GetPropVal(wxT("path"), wxT(""));
+                    if (!ref.IsEmpty())
+                        references.push_back(ref);
+                }
+                subchild = subchild->GetNext();
+            }
         }
 
         child = child->GetNext();
@@ -1777,7 +1787,7 @@ wxXmlNode* cSCNFile::GetNode(const wxString& path) {
     node->AddProperty(wxT("name"), name);
     wxFileName temp = ovlpath;
     temp.MakeRelativeTo(path);
-    node->AddProperty(wxT("file"), temp.GetFullPath());
+    node->AddProperty(wxT("file"), temp.GetPathWithSep());
     node->AddProperty(wxT("version"), wxString::Format("%lu", version));
 
     lastparent = sivsettings.GetNode(path);

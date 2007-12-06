@@ -413,11 +413,11 @@ void dlgMatrix::OnRotate(wxCommandEvent& event) {
     double d = 0.0;
     m_textRotation->GetValue().ToDouble(&d);
     if (event.GetId() == XRCID("m_btRotationX"))
-        AddMatrix(wxString::Format(_("Rotate by %.1fº around the X-axis"), d), matrixGetRotationX(Deg2Rad(d)));
+        AddMatrix(wxString::Format(_("Rotate by %.1f around the X-axis"), d), matrixGetRotationX(Deg2Rad(d)));
     else if (event.GetId() == XRCID("m_btRotationY"))
-        AddMatrix(wxString::Format(_("Rotate by %.1fº around the Y-axis"), d), matrixGetRotationY(Deg2Rad(d)));
+        AddMatrix(wxString::Format(_("Rotate by %.1f around the Y-axis"), d), matrixGetRotationY(Deg2Rad(d)));
     else if (event.GetId() == XRCID("m_btRotationZ"))
-        AddMatrix(wxString::Format(_("Rotate by %.1fº around the Z-axis"), d), matrixGetRotationZ(Deg2Rad(d)));
+        AddMatrix(wxString::Format(_("Rotate by %.1f around the Z-axis"), d), matrixGetRotationZ(Deg2Rad(d)));
     else
         ::wxMessageBox(_("Internal Bug"), _("Error"), wxOK, this);
 }

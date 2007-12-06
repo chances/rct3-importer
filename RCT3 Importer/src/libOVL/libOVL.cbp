@@ -101,6 +101,8 @@
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-fno-strict-aliasing" />
+			<Add option="-mthreads" />
+			<Add option="-fexceptions" />
 			<Add option="-DBUILDING_DLL=1" />
 			<Add option="-DLIBOVL_EXPORTS=1" />
 			<Add directory="..\..\include" />

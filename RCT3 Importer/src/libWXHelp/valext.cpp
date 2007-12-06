@@ -64,11 +64,12 @@ wxExtendedValidator::wxExtendedValidator(wxString* val, bool empty_allowed, bool
     m_useDefault = !check_exist; // Negate it to make the first general check in Validate work.
 }
 
-wxExtendedValidator::wxExtendedValidator(wxFileName* val, bool empty_allowed, bool check_exist):wxSilent() {
+wxExtendedValidator::wxExtendedValidator(wxFileName* val, bool empty_allowed, bool check_exist, bool dir):wxSilent() {
     Initialize();
     m_pFileName = val;
     m_zeroAllowed = empty_allowed;
     m_useDefault = !check_exist; // Negate it to make the first general check in Validate work.
+    m_isDir = dir;
 }
 
 wxExtendedValidator::wxExtendedValidator(const wxExtendedValidator& copyFrom):wxValidator(),wxSilent() {
@@ -92,6 +93,7 @@ bool wxExtendedValidator::Copy(const wxExtendedValidator& val) {
     m_useDefault = val.m_useDefault;
     m_floatDefault = val.m_floatDefault;
     m_uintDefault = val.m_uintDefault;
+    m_isDir = val.m_isDir;
 
     return true;
 }
@@ -203,7 +205,12 @@ bool wxExtendedValidator::Validate(wxWindow* parent) {
             }
         }
     } else if (m_pFileName) {
-        wxFileName test = value;
+        wxFileName test;
+        if (m_isDir) {
+            test.SetPath(value);
+        } else {
+            test = value;
+        }
         if ((!m_zeroAllowed) && (test == wxT(""))) {
             // Empty not allowed
             if (!m_silent) {
@@ -217,7 +224,13 @@ bool wxExtendedValidator::Validate(wxWindow* parent) {
             // We check if the file exists, but only if the value is non-empty
             // If it's empty at this stage, we interpret it as "either a valid file or nothing"
             if (test != wxT("")) {
-                if (!::wxFileExists(test.GetFullPath())) {
+                bool exists = false;
+                if (m_isDir) {
+                    exists = wxFileName::DirExists(test.GetPathWithSep());
+                } else {
+                    exists = wxFileName::FileExists(test.GetFullPath());
+                }
+                if (!exists) {
                     // File does not exist.
                     if (!m_silent) {
                         m_validatorWindow->SetFocus();
@@ -251,7 +264,11 @@ bool wxExtendedValidator::TransferToWindow(void) {
         } else if (m_pString) {
             pControl->SetValue(*m_pString);
         } else if (m_pFileName) {
-            pControl->SetValue(m_pFileName->GetFullPath());
+            if (m_isDir) {
+                pControl->SetValue(m_pFileName->GetPathWithSep());
+            } else {
+                pControl->SetValue(m_pFileName->GetFullPath());
+            }
         }
     } else if (dynamic_cast<wxComboCtrl*>(m_validatorWindow)) {
         wxComboCtrl *pControl = dynamic_cast<wxComboCtrl*>(m_validatorWindow);
@@ -267,7 +284,11 @@ bool wxExtendedValidator::TransferToWindow(void) {
         } else if (m_pString) {
             pControl->SetValue(*m_pString);
         } else if (m_pFileName) {
-            pControl->SetValue(m_pFileName->GetFullPath());
+            if (m_isDir) {
+                pControl->SetValue(m_pFileName->GetPathWithSep());
+            } else {
+                pControl->SetValue(m_pFileName->GetFullPath());
+            }
         }
     } else {
         return false;
@@ -354,7 +375,12 @@ bool wxExtendedValidator::TransferFromWindow(void) {
         }
         *m_pString = value;
     } else if (m_pFileName) {
-        wxFileName test = value;
+        wxFileName test;
+        if (m_isDir) {
+            test.SetPath(value);
+        } else {
+            test = value;
+        }
         if ((!m_zeroAllowed) && (test == wxT(""))) {
             // Empty not allowed
             return false;
@@ -364,7 +390,13 @@ bool wxExtendedValidator::TransferFromWindow(void) {
             // We check if the file exists, but only if the value is non-empty
             // If it's empty at this stage, we interpret it as "either a valid file or nothing"
             if (test != wxT("")) {
-                if (!::wxFileExists(test.GetFullPath())) {
+                bool exists = false;
+                if (m_isDir) {
+                    exists = wxFileName::DirExists(test.GetPathWithSep());
+                } else {
+                    exists = wxFileName::FileExists(test.GetFullPath());
+                }
+                if (!exists) {
                     // File does not exist.
                     return false;
                 }

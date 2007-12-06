@@ -92,7 +92,11 @@ class wxTextureListBox : public wxSceneryListBox {
 public:
     wxTextureListBox(wxWindow *parent, cSCNFile *contents): wxSceneryListBox(parent, contents) {
         UpdateContents();
-        SetSelection(0);
+        if (m_contents) {
+            SetSelection(m_contents->flexitextures.size()?0:wxNOT_FOUND);
+        } else {
+            SetSelection(wxNOT_FOUND);
+        }
     }
     virtual void UpdateContents() {
         SetItemCount(m_contents->flexitextures.size() + ::wxGetApp().g_texturecache.size());
@@ -152,7 +156,11 @@ class wxReferenceListBox : public wxSceneryListBox {
 public:
     wxReferenceListBox(wxWindow *parent, cSCNFile *contents): wxSceneryListBox(parent, contents) {
         UpdateContents();
-        SetSelection(0);
+        if (m_contents) {
+            SetSelection(m_contents->references.size()?0:wxNOT_FOUND);
+        } else {
+            SetSelection(wxNOT_FOUND);
+        }
     }
     virtual void UpdateContents() {
         SetItemCount(m_contents->references.size());
@@ -177,7 +185,11 @@ class wxModelListBox : public wxSceneryListBox {
 public:
     wxModelListBox(wxWindow *parent, cSCNFile *contents): wxSceneryListBox(parent, contents) {
         UpdateContents();
-        SetSelection(0);
+        if (m_contents) {
+            SetSelection(m_contents->models.size()?0:wxNOT_FOUND);
+        } else {
+            SetSelection(wxNOT_FOUND);
+        }
     }
     virtual void UpdateContents() {
         SetItemCount(m_contents->models.size());
@@ -239,7 +251,11 @@ class wxAnimatedModelListBox : public wxSceneryListBox {
 public:
     wxAnimatedModelListBox(wxWindow *parent, cSCNFile *contents): wxSceneryListBox(parent, contents) {
         UpdateContents();
-        SetSelection(0);
+        if (m_contents) {
+            SetSelection(m_contents->animatedmodels.size()?0:wxNOT_FOUND);
+        } else {
+            SetSelection(wxNOT_FOUND);
+        }
     }
     virtual void UpdateContents() {
         SetItemCount(m_contents->animatedmodels.size());
@@ -301,7 +317,11 @@ class wxLODListBox : public wxSceneryListBox {
 public:
     wxLODListBox(wxWindow *parent, cSCNFile *contents): wxSceneryListBox(parent, contents) {
         UpdateContents();
-        SetSelection(0);
+        if (m_contents) {
+            SetSelection(m_contents->lods.size()?0:wxNOT_FOUND);
+        } else {
+            SetSelection(wxNOT_FOUND);
+        }
     }
     virtual void UpdateContents() {
         SetItemCount(m_contents->lods.size());
@@ -347,7 +367,11 @@ class wxAnimationsListBox : public wxSceneryListBox {
 public:
     wxAnimationsListBox(wxWindow *parent, cSCNFile *contents): wxSceneryListBox(parent, contents) {
         UpdateContents();
-        SetSelection(0);
+        if (m_contents) {
+            SetSelection(m_contents->animations.size()?0:wxNOT_FOUND);
+        } else {
+            SetSelection(wxNOT_FOUND);
+        }
     }
     virtual void UpdateContents() {
         SetItemCount(m_contents->animations.size());
@@ -541,7 +565,7 @@ dlgCreateScenery::dlgCreateScenery(wxWindow *parent) {
     t_text->Destroy();
 
     m_textName->SetValidator(wxExtendedValidator(&m_SCN.name));
-    m_textPath->SetValidator(wxExtendedValidator(&m_SCN.ovlpath));
+    m_textPath->SetValidator(wxExtendedValidator(&m_SCN.ovlpath, true, true, true));
 
     m_htlbAnimation = new wxAnimationsListBox(this, &m_SCN);
     wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbAnimation"), m_htlbAnimation, this);
@@ -754,7 +778,7 @@ bool dlgCreateScenery::Save(bool as) {
                                _T("Save Scenery File"),
                                wxEmptyString,
                                wxEmptyString,
-                               _T("Scenery Files (*.scn)|*.scn"),
+                               _T("Scenery Files (*.xml)|*.xml"),
                                wxFD_SAVE|wxFD_OVERWRITE_PROMPT|wxFD_CHANGE_DIR,
                                wxDefaultPosition,
                                wxSize(600,400)
@@ -855,6 +879,7 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
                 }
             } catch (RCT3Exception& e) {
                 wxLogError(_("Error loading scenery file.\n") + e.wxwhat());
+                m_SCN = cSCNFile();
             }
             wxLog::FlushActive();
             wxLog::SetActiveTarget(old);

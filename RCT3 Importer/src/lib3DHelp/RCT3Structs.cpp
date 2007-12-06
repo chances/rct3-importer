@@ -1791,6 +1791,7 @@ wxXmlNode* cBoneAnimation::GetNode(const wxString& path) {
     node->SetChildren(trans);
 
     wxXmlNode* rot = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, RCT3XML_CBONEANIMATION_ROTATIONS);
+    lastchild = NULL;
     for (cTXYZ::iterator it = rotations.begin(); it != rotations.end(); it++) {
         wxXmlNode* newchild = it->GetNode(path);
         if (lastchild)

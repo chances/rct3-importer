@@ -89,6 +89,34 @@
 					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
+			<Target title="Debug DLL (Public)">
+				<Option output="..\..\bin\RCT3 Importer PD.exe" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="..\..\bin" />
+				<Option object_output="..\..\lib\obj\debug dll pd" />
+				<Option external_deps="..\..\lib\lib3DHelpd.a;..\..\bin\libOVLd.a;..\..\lib\libWXHelpd.a;..\..\lib\libASEd.a;..\..\lib\libOVLngd.a;" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-W" />
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add option="-DDEBUG" />
+					<Add option="-D__WXDEBUG__" />
+					<Add option="-DPUBLICDEBUG" />
+					<Add directory="..\libOVL" />
+					<Add directory="$(#wx.ansidebugstatic)" />
+				</Compiler>
+				<Linker>
+					<Add library="libOVLd" />
+					<Add library="3DHelpd" />
+					<Add library="WXHelpd" />
+					<Add library="libASE" />
+					<Add library="libOVLngd" />
+					<Add library="wx_mswd-2.8" />
+					<Add directory="..\..\bin" />
+				</Linker>
+			</Target>
 			<Target title="Release">
 				<Option output="..\..\bin\RCT3 Importer.exe" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="..\..\bin" />
@@ -188,6 +216,7 @@
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="app.rc">
 			<Option compilerVar="CPP" />
@@ -196,6 +225,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="bmy.pal">
 			<Option compile="1" />
@@ -211,6 +241,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="changelog.txt">
 			<Option target="Release DLL" />
@@ -218,6 +249,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="crystal\crystal.xrc">
 			<Option compile="1" />
@@ -232,6 +264,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="global.h">
 			<Option target="Release DLL" />
@@ -239,6 +272,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="ilhelper.cpp">
 			<Option target="Release DLL" />
@@ -246,6 +280,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="ilhelper.h">
 			<Option target="Release DLL" />
@@ -253,6 +288,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="rct3config.cpp">
 			<Option compile="0" />
@@ -262,6 +298,7 @@
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="rct3config.h">
 			<Option target="Release DLL" />
@@ -269,6 +306,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="rct3imp.txt">
 			<Option target="Release DLL" />
@@ -276,6 +314,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="resource.h">
 			<Option target="Release DLL" />
@@ -283,6 +322,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="resources.cpp">
 			<Option virtualFolder="resources\" />
@@ -291,6 +331,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="resources.h">
 			<Option virtualFolder="resources\" />
@@ -299,6 +340,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="win_predefine.h">
 			<Option target="Release DLL" />
@@ -306,6 +348,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wx_pch.h">
 			<Option compile="1" />
@@ -323,6 +366,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgAnimation.cpp">
 			<Option virtualFolder="wx\" />
@@ -331,6 +375,7 @@
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgAnimation.h">
 			<Option virtualFolder="wx\" />
@@ -339,6 +384,7 @@
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgAttract.cpp">
 			<Option virtualFolder="wx\" />
@@ -347,6 +393,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgAttract.h">
 			<Option virtualFolder="wx\" />
@@ -355,6 +402,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgAttractMan.cpp">
 			<Option virtualFolder="wx\" />
@@ -363,6 +411,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgAttractMan.h">
 			<Option virtualFolder="wx\" />
@@ -371,6 +420,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgCreateScenery.cpp">
 			<Option virtualFolder="wx\" />
@@ -379,6 +429,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgCreateScenery.h">
 			<Option virtualFolder="wx\" />
@@ -387,6 +438,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgEffect.cpp">
 			<Option virtualFolder="wx\" />
@@ -395,6 +447,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgEffect.h">
 			<Option virtualFolder="wx\" />
@@ -403,6 +456,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgEffectLight.cpp">
 			<Option virtualFolder="wx\" />
@@ -411,6 +465,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgEffectLight.h">
 			<Option virtualFolder="wx\" />
@@ -419,6 +474,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgInfo.cpp">
 			<Option virtualFolder="wx\" />
@@ -427,6 +483,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgInfo.h">
 			<Option virtualFolder="wx\" />
@@ -435,6 +492,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgLOD.cpp">
 			<Option virtualFolder="wx\" />
@@ -443,6 +501,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgLOD.h">
 			<Option virtualFolder="wx\" />
@@ -451,6 +510,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgMatrix.cpp">
 			<Option virtualFolder="wx\" />
@@ -459,6 +519,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgMatrix.h">
 			<Option virtualFolder="wx\" />
@@ -467,6 +528,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgMatrixLoad.cpp">
 			<Option virtualFolder="wx\" />
@@ -475,6 +537,7 @@
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgMatrixLoad.h">
 			<Option virtualFolder="wx\" />
@@ -483,6 +546,7 @@
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgModel.cpp">
 			<Option virtualFolder="wx\" />
@@ -491,6 +555,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgModel.h">
 			<Option virtualFolder="wx\" />
@@ -499,6 +564,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgSave.cpp">
 			<Option target="Release DLL" />
@@ -506,6 +572,7 @@
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgSave.h">
 			<Option target="Release DLL" />
@@ -513,6 +580,7 @@
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgStall.cpp">
 			<Option virtualFolder="wx\" />
@@ -521,6 +589,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgStall.h">
 			<Option virtualFolder="wx\" />
@@ -529,6 +598,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgStallMan.cpp">
 			<Option virtualFolder="wx\" />
@@ -537,6 +607,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgStallMan.h">
 			<Option virtualFolder="wx\" />
@@ -545,6 +616,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgTexture.cpp">
 			<Option virtualFolder="wx\" />
@@ -553,6 +625,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="wxdlgTexture.h">
 			<Option virtualFolder="wx\" />
@@ -561,6 +634,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc\xrc_animation.xrc">
 			<Option compile="1" />
@@ -648,6 +722,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_animation.cpp">
 			<Option virtualFolder="xrc\" />
@@ -656,6 +731,7 @@
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_animation.h">
 			<Option virtualFolder="xrc\" />
@@ -664,6 +740,7 @@
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_attract.cpp">
 			<Option virtualFolder="xrc\" />
@@ -672,6 +749,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_attract.h">
 			<Option virtualFolder="xrc\" />
@@ -680,6 +758,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_attractman.cpp">
 			<Option virtualFolder="xrc\" />
@@ -688,6 +767,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_attractman.h">
 			<Option virtualFolder="xrc\" />
@@ -696,6 +776,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_bitmap_crystal.cpp">
 			<Option virtualFolder="xrc\" />
@@ -704,6 +785,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_bitmap_crystal.h">
 			<Option virtualFolder="xrc\" />
@@ -712,6 +794,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_createscenery.cpp">
 			<Option virtualFolder="xrc\" />
@@ -720,6 +803,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_createscenery.h">
 			<Option virtualFolder="xrc\" />
@@ -728,6 +812,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_effect.cpp">
 			<Option virtualFolder="xrc\" />
@@ -736,6 +821,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_effect.h">
 			<Option virtualFolder="xrc\" />
@@ -744,6 +830,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_effectmenu.cpp">
 			<Option virtualFolder="xrc\" />
@@ -752,6 +839,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_effectmenu.h">
 			<Option virtualFolder="xrc\" />
@@ -760,6 +848,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_info.cpp">
 			<Option virtualFolder="xrc\" />
@@ -768,6 +857,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_info.h">
 			<Option virtualFolder="xrc\" />
@@ -776,6 +866,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_lod.cpp">
 			<Option virtualFolder="xrc\" />
@@ -784,6 +875,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_lod.h">
 			<Option virtualFolder="xrc\" />
@@ -792,6 +884,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_matrix.cpp">
 			<Option virtualFolder="xrc\" />
@@ -800,6 +893,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_matrix.h">
 			<Option virtualFolder="xrc\" />
@@ -808,6 +902,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_misc.cpp">
 			<Option virtualFolder="xrc\" />
@@ -816,6 +911,7 @@
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_misc.h">
 			<Option virtualFolder="xrc\" />
@@ -824,6 +920,7 @@
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_model.cpp">
 			<Option virtualFolder="xrc\" />
@@ -832,6 +929,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_model.h">
 			<Option virtualFolder="xrc\" />
@@ -840,6 +938,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_scenerysettings.cpp">
 			<Option compile="0" />
@@ -850,6 +949,7 @@
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_scenerysettings.h">
 			<Option virtualFolder="xrc\" />
@@ -858,6 +958,7 @@
 			<Option target="Debug DLL" />
 			<Option target="Release" />
 			<Option target="Debug" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_stall.cpp">
 			<Option virtualFolder="xrc\" />
@@ -866,6 +967,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_stall.h">
 			<Option virtualFolder="xrc\" />
@@ -874,6 +976,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_stallman.cpp">
 			<Option virtualFolder="xrc\" />
@@ -882,6 +985,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_stallman.h">
 			<Option virtualFolder="xrc\" />
@@ -890,6 +994,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_texture.cpp">
 			<Option virtualFolder="xrc\" />
@@ -898,6 +1003,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_texture.h">
 			<Option virtualFolder="xrc\" />
@@ -906,6 +1012,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_texturesimple.cpp">
 			<Option virtualFolder="xrc\" />
@@ -914,6 +1021,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Unit filename="xrc_texturesimple.h">
 			<Option virtualFolder="xrc\" />
@@ -922,6 +1030,7 @@
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Profile DLL" />
+			<Option target="Debug DLL (Public)" />
 		</Unit>
 		<Extensions>
 			<code_completion />

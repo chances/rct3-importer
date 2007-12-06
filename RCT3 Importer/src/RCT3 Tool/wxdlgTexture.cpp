@@ -71,7 +71,11 @@ wxTextureEditListBox::wxTextureEditListBox(wxWindow *parent, cFlexiTexture *cont
 wxFrameListBox::wxFrameListBox(wxWindow *parent, cFlexiTexture *content):
         wxTextureEditListBox(parent, content, wxLB_MULTIPLE) {
     UpdateContents();
-    SetSelection(0);
+    if (m_contents) {
+        SetSelection(m_contents->Frames.size()?0:wxNOT_FOUND);
+    } else {
+        SetSelection(wxNOT_FOUND);
+    }
 }
 
 void wxFrameListBox::UpdateContents() {

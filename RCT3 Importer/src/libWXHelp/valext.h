@@ -30,7 +30,7 @@ public:
     wxExtendedValidator(unsigned int* val, bool zero_allowed = true, bool use_default = true, unsigned int default_val = 0);
     wxExtendedValidator(unsigned long* val, bool zero_allowed = true, bool use_default = true, unsigned long default_val = 0);
     wxExtendedValidator(wxString* val, bool empty_allowed = true, bool check_exist = false);
-    wxExtendedValidator(wxFileName* val, bool empty_allowed = true, bool check_exist = false);
+    wxExtendedValidator(wxFileName* val, bool empty_allowed = true, bool check_exist = false, bool dir = false);
     wxExtendedValidator(const wxExtendedValidator& copyFrom);
 
     virtual ~wxExtendedValidator(){}
@@ -60,6 +60,7 @@ protected:
     unsigned long   m_uintDefault;
     bool            m_useDefault;
     bool            m_zeroAllowed;
+    bool            m_isDir;
 
     bool CheckValidator() const
     {
