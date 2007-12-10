@@ -30,11 +30,14 @@
 
 #include "MS3DLoader.h"
 #include "MS3DFile.h"
+#include "wxLocalLog.h"
 
 cMS3DLoader::cMS3DLoader(const char *filename): c3DLoader(filename) {
+wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s)"), filename);
     CMS3DFile *ms3df = new CMS3DFile();
     if (!ms3df->LoadFromFile(filename))
         return;
+wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename, ms3df->GetNumGroups(), ms3df->GetNumVertices());
     for (int m = 0; m < ms3df->GetNumGroups(); m++) {
         c3DMesh cmesh;
 
@@ -190,4 +193,5 @@ cMS3DLoader::cMS3DLoader(const char *filename): c3DLoader(filename) {
             m_meshes.push_back(cmesh);
         }
     }
+wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s), End"), filename);
 }

@@ -93,7 +93,7 @@ struct ms3d_material_t
     char            mode;                               // 0, 1, 2 is unused now
     char            texture[128];                        // texture.bmp
     char            alphamap[128];                       // alpha.bmp
-} ;
+} PACK_STRUCT;
 
 struct ms3d_keyframe_rot_t
 {
@@ -170,7 +170,7 @@ public:
 
 
 	float GetAnimationFPS();
-	float GetCurrentTime();
+	float GetCurrentTimeM();
 	int GetTotalFrames();
 
 

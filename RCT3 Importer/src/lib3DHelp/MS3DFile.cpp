@@ -19,6 +19,8 @@
 #include <set>
 #include <stdio.h>
 
+#include "wxLocalLog.h"
+
 CMS3DFile::CMS3DFile()
 :	m_fAnimationFPS(24.0f),
 	m_fCurrentTime(0.0f),
@@ -33,6 +35,7 @@ CMS3DFile::~CMS3DFile()
 
 DWORD CMS3DFile::LoadFromFile(LPCTSTR lpszFileName)
 {
+wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile(%s)"), lpszFileName);
 	FILE *fp = fopen(lpszFileName, "rb");
 	if (!fp)
 		return FALSE;
@@ -54,6 +57,7 @@ DWORD CMS3DFile::LoadFromFile(LPCTSTR lpszFileName)
 	// vertices
 	word nNumVertices;
 	fread(&nNumVertices, 1, sizeof(word), fp);
+wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile vertices %d"), nNumVertices);
 	m_arrVertices.clear();
 	m_arrVertices.resize(nNumVertices);
 
@@ -62,6 +66,7 @@ DWORD CMS3DFile::LoadFromFile(LPCTSTR lpszFileName)
 	// triangles
 	word nNumTriangles;
 	fread(&nNumTriangles, 1, sizeof(word), fp);
+wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile triangles %d"), nNumTriangles);
 	m_arrTriangles.resize(nNumTriangles);
 	fread(&m_arrTriangles[0], nNumTriangles, sizeof(ms3d_triangle_t), fp);
 
@@ -104,6 +109,7 @@ DWORD CMS3DFile::LoadFromFile(LPCTSTR lpszFileName)
 	// groups
 	word nNumGroups;
 	fread(&nNumGroups, 1, sizeof(word), fp);
+wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile groups %d"), nNumGroups);
 	m_arrGroups.resize(nNumGroups);
 	for (i = 0; i < nNumGroups; i++)
 	{
@@ -118,6 +124,7 @@ DWORD CMS3DFile::LoadFromFile(LPCTSTR lpszFileName)
 	// materials
 	word nNumMaterials;
 	fread(&nNumMaterials, 1, sizeof(word), fp);
+wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile materials %d"), nNumMaterials);
 	m_arrMaterials.resize(nNumMaterials);
 	fread(&m_arrMaterials[0], nNumMaterials, sizeof(ms3d_material_t), fp);
 
@@ -128,6 +135,7 @@ DWORD CMS3DFile::LoadFromFile(LPCTSTR lpszFileName)
 	// joints
 	word nNumJoints;
 	fread(&nNumJoints, 1, sizeof(word), fp);
+wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile joints %d"), nNumJoints);
 	m_arrJoints.resize(nNumJoints);
 	for (i = 0; i < nNumJoints; i++)
 	{
@@ -153,6 +161,7 @@ DWORD CMS3DFile::LoadFromFile(LPCTSTR lpszFileName)
 
         int nNumGroupComments;
         fread(&nNumGroupComments, 1, sizeof(int), fp);
+wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile group comments %d"), nNumGroupComments);
         m_arrGroupComments.resize(nNumGroupComments);
         for (i = 0; i < nNumGroupComments; i++)
         {
@@ -167,6 +176,7 @@ DWORD CMS3DFile::LoadFromFile(LPCTSTR lpszFileName)
 
         int nNumMaterialComments;
         fread(&nNumMaterialComments, 1, sizeof(int), fp);
+wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile material comments %d"), nNumMaterialComments);
         m_arrMaterialComments.resize(nNumMaterialComments);
         for (i = 0; i < nNumMaterialComments; i++)
         {
@@ -181,6 +191,7 @@ DWORD CMS3DFile::LoadFromFile(LPCTSTR lpszFileName)
 
         int nNumJointComments;
         fread(&nNumJointComments, 1, sizeof(int), fp);
+wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile joint comments %d"), nNumJointComments);
         m_arrJointComments.resize(nNumJointComments);
         for (i = 0; i < nNumJointComments; i++)
         {
@@ -195,6 +206,7 @@ DWORD CMS3DFile::LoadFromFile(LPCTSTR lpszFileName)
 
         int nNumModelComments;
         fread(&nNumModelComments, 1, sizeof(int), fp);
+wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile model comments %d"), nNumModelComments);
         m_arrModelComments.resize(nNumModelComments);
         for (i = 0; i < nNumModelComments; i++)
         {
@@ -317,7 +329,7 @@ float CMS3DFile::GetAnimationFPS()
 	return m_fAnimationFPS;
 }
 
-float CMS3DFile::GetCurrentTime()
+float CMS3DFile::GetCurrentTimeM()
 {
 	return m_fCurrentTime;
 }

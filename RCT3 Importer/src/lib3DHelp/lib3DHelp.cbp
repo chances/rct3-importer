@@ -3,7 +3,6 @@
 	<FileVersion major="1" minor="6" />
 	<Project>
 		<Option title="lib3DHelp" />
-		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
@@ -203,6 +202,7 @@
 			<Option target="Release" />
 			<Option target="Show Macros (Debug)" />
 		</Unit>
+		<Unit filename="wxLocalLog.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />
