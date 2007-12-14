@@ -39,6 +39,7 @@
 #include <wx/valgen.h>
 
 #include "auipicfiledlg.h"
+#include "confhelp.h"
 #include "htmlentities.h"
 #include "rct3log.h"
 #include "SCNFile.h"
@@ -391,6 +392,13 @@ dlgTexture::dlgTexture(wxWindow *parent) {
 
     m_btOk->SetId(wxID_OK);
     m_btCancel->SetId(wxID_CANCEL);
+
+    SetSize(READ_APP_SIZE("Texture", GetSize()));
+    Center();
+}
+
+dlgTexture::~dlgTexture() {
+    WRITE_APP_SIZE("Texture", GetSize());
 }
 
 void dlgTexture::SetFlexiTexture(const cFlexiTexture& val) {
@@ -619,7 +627,7 @@ void dlgTexture::OnFrameAdd(wxCommandEvent& WXUNUSED(event)) {
         wxArrayString t_paths;
         fdialog->GetPaths(t_paths);
 
-        ILinfo info;
+//        ILinfo info;
         if (t_paths.GetCount() == 1) {
             cFlexiTextureFrame ftxf;
             //getBitmapInfo(t_paths[0].fn_str(), info);
@@ -667,7 +675,7 @@ void dlgTexture::OnFrameAdd(wxCommandEvent& WXUNUSED(event)) {
                     fr.alphasource(CFTF_ALPHA_INTERNAL);
                 m_ft.Frames.push_back(fr);
                 if (m_size == 0) {
-                    m_size = info.Width;
+                    m_size = img.GetWidth();
                 }
                 if (m_textTextureName->GetValue() == wxT("")) {
                     m_textTextureName->SetValue(fr.texture().GetName());

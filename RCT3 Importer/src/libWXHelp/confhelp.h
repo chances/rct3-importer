@@ -20,6 +20,8 @@
 #endif
 #include <d3d9types.h>
 
+#include "basicsize.h"
+
 template <class T>
 T wxcRead(const wxString& path, const T& def) {
     wxConfigBase* conf = wxConfigBase::Get(false);
@@ -34,6 +36,8 @@ T wxcRead(const wxString& path, const T& def) {
 
 template <>
 D3DMATRIX wxcRead(const wxString& path, const D3DMATRIX& def);
+template <>
+wxSize wxcRead(const wxString& path, const wxSize& def);
 
 template <class T>
 bool wxcWrite(const wxString& path, const T& val) {
@@ -45,6 +49,8 @@ bool wxcWrite(const wxString& path, const T& val) {
 
 template <>
 bool wxcWrite(const wxString& path, const D3DMATRIX& val);
+template <>
+bool wxcWrite(const wxString& path, const wxSize& val);
 
 bool wxcFlush();
 

@@ -29,7 +29,6 @@
 #include "OVLng.h"
 
 #include "OVLDebug.h"
-#include "OVLException.h"
 
 using namespace std;
 
@@ -40,7 +39,12 @@ using namespace std;
 ////////////////////////////////////////////////////////////////////////////////
 
 cOvl::cOvl(string file) {
+    Init(file);
+}
+
+void cOvl::Init(string file) {
     m_file = file;
+    m_init = true;
 
     //string temp = m_file + ".common.ovl";
     m_ovlinfo.OpenFiles[OVLT_COMMON].filename = m_file + ".common.ovl";
@@ -55,7 +59,7 @@ cOvl::cOvl(string file) {
     //memset(m_ovlinfo.OpenFiles[OVL_UNIQUE].Types,0,sizeof(m_ovlinfo.OpenFiles[OVL_UNIQUE].Types));
 
     m_relmanager.Init(&m_ovlinfo);
-    m_lsrmanager.Init(&m_relmanager);
+    m_lsrmanager.Init(&m_relmanager, &m_stringtable);
 }
 
 cOvl::~cOvl() {
@@ -75,21 +79,26 @@ void cOvl::InitAndAddManager(ovlOVLManager* man) {
     if (!man)
         throw EOvl("cOvl::AddAndInitManager called with invalid manager");
 
-    man->Init(&m_lsrmanager, &m_relmanager, &m_stringtable);
+    man->Init(this);
     m_managers[man->Tag()] = man;
 }
 
 void cOvl::AddReference(const char* ref) {
+    if (!m_init)
+        throw EOvl("cOvl::AddReference called uninitialized");
     //m_references.push_back(string(ref));
     m_ovlinfo.OpenFiles[OVLT_UNIQUE].references.push_back(string(ref));
 }
 
 void cOvl::Save() {
-    // First assign space for the loaders, symobls and symbol references
-    m_lsrmanager.Assign(&m_ovlinfo);
+    if (!m_init)
+        throw EOvl("cOvl::Save called uninitialized");
 
-    // Then make the string table
+    // First make the string table
     m_stringtable.Make(&m_ovlinfo);
+
+    // Then assign space for the loaders, symbols and symbol references
+    m_lsrmanager.Assign(&m_ovlinfo);
 
     // Now make all the managers' contents
     for (map<string, ovlOVLManager*>::iterator it = m_managers.begin(); it != m_managers.end(); ++it) {
@@ -115,7 +124,7 @@ void cOvl::Save() {
     m_relmanager.Make();
 
     // And write the files
-    m_ovlinfo.WriteFiles(m_managers);
+    m_ovlinfo.WriteFiles(m_managers, m_lsrmanager);
 
 /*
     ////////////////////////

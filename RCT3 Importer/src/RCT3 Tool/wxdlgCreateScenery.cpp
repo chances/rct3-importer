@@ -591,7 +591,14 @@ dlgCreateScenery::dlgCreateScenery(wxWindow *parent) {
 
     UpdateAll();
 
+    SetSize(READ_APP_SIZE("CreateSceney", GetSize()));
+    Center();
+
     m_dirtyfile = false;
+}
+
+dlgCreateScenery::~dlgCreateScenery() {
+    WRITE_APP_SIZE("CreateSceney", GetSize());
 }
 
 wxString dlgCreateScenery::GetOVLPath() {

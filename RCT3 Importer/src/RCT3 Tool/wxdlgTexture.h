@@ -215,6 +215,7 @@ private:
     DECLARE_EVENT_TABLE()
 public:
     dlgTexture(wxWindow *parent=NULL);
+    virtual ~dlgTexture();
 
     virtual void SetFlexiTexture(const cFlexiTexture& val);
     virtual cFlexiTexture GetFlexiTexture();

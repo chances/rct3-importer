@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 // New OVL creation library
-// Base manager class for structures
+// Manager class for FLIC structures
 // Copyright (C) 2007 Tobias Minch
 //
 // This program is free software; you can redistribute it and/or
@@ -26,66 +26,60 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef MANAGEROVL_H_INCLUDED
-#define MANAGEROVL_H_INCLUDED
+#ifndef MANAGERFLIC_H_INCLUDED
+#define MANAGERFLIC_H_INCLUDED
 
-#include <map>
 #include <string>
+#include <map>
 
-#include "LodSymRefManager.h"
-#include "OVLClasses.h"
-#include "RelocationManager.h"
-#include "StringTable.h"
+#include "ManagerOVL.h"
+
+#include "icontexture.h"
 
 using namespace std;
 
-class cOvl;
-class ovlOVLManager {
+struct FlicInternal {
+    FlicHeader header;
+    FlicStruct flic;
+    unsigned long datasize;
+    FlicStruct** madep1;
+    FlicStruct* madep2;
+};
+
+class ovlFLICManager: public ovlOVLManager {
 public:
     static const char* LOADER;
+    static const char* NAME;
+    static const char* TAG;
     static const unsigned long TYPE;
-protected:
-    unsigned long m_size;
-    unsigned char* m_data;
-    map<unsigned char*, cOvlMemBlob> m_blobs;
-    bool m_made;
-    ovlOVLManager* m_defermake;
-    bool m_deferable;
-
-    virtual void Check(const string& err);
 private:
-    cOvl* m_ovl;
+    map<string, FlicInternal> m_flics;
 public:
-    ovlOVLManager();
-    virtual ~ovlOVLManager();
+    ovlFLICManager(): ovlOVLManager() {
+        m_deferable = true;
+    };
+    virtual ~ovlFLICManager();
 
-    virtual void Init(cOvl* ovl);
+    void AddTexture(const string& name, unsigned long dimension, unsigned long size, unsigned long* data);
+    void SetParameters(const string& name, unsigned long format = 0x13, unsigned long unk1 = 1, float unk2 = 1.0);
 
-    void DeferMake(ovlOVLManager* man);
+    FlicStruct** GetPointer1(const string& name);
+    FlicStruct* GetPointer2(const string& name);
 
-    bool IsMade() {
-        return m_made;
-    }
+    virtual unsigned char* Make(cOvlInfo* info);
 
-    virtual unsigned char* Make(cOvlInfo* info) = 0;
-    virtual void WriteLoader(FILE* f);
-
-    virtual const unsigned long GetSize() const;
-    virtual unsigned char* GetData();
     virtual const char* Loader() const {
         return LOADER;
     };
-    virtual const char* Name() const = 0;
-    virtual const char* Tag() const = 0;
+    virtual const char* Name() const {
+        return NAME;
+    };
+    virtual const char* Tag() const {
+        return TAG;
+    };
     virtual const unsigned long Type() const {
         return TYPE;
     };
-
-    //static ovlOVLManager* MakeManager(const char* tag);
-protected:
-    ovlLodSymRefManager* GetLSRManager();
-    ovlStringTable* GetStringTable();
-    ovlRelocationManager* GetRelocationManager();
 };
 
 #endif

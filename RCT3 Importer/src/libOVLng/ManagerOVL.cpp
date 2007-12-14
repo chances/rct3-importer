@@ -28,7 +28,9 @@
 
 #include "ManagerOVL.h"
 
+#include "OVLDebug.h"
 #include "OVLException.h"
+#include "OVLng.h"
 
 using namespace std;
 
@@ -38,20 +40,42 @@ const unsigned long ovlOVLManager::TYPE = 1;
 ovlOVLManager::ovlOVLManager() {
     m_data = NULL;
     m_size = 0;
-    m_lsrman = NULL;
-    m_relman = NULL;
-    m_stable = NULL;
+    m_ovl = NULL;
+    m_defermake = NULL;
+    m_deferable = false;
 }
 
-void ovlOVLManager::Init(ovlLodSymRefManager* lsrman, ovlRelocationManager* relman, ovlStringTable* stable) {
-    m_lsrman = lsrman;
-    m_relman = relman;
-    m_stable = stable;
+void ovlOVLManager::Init(cOvl* ovl) {
+    m_ovl = ovl;
+    m_made = false;
+}
+
+void ovlOVLManager::DeferMake(ovlOVLManager* man) {
+    if (!m_deferable)
+        throw EOvl("ovlOVLManager("+string(Tag())+")::DeferMake called on undeferable type.");
+    DUMP_LOG("Trace: ovlOVLManager::DeferMake(%s)", man->Tag());
+    if (m_defermake) {
+        m_defermake->DeferMake(man);
+    } else {
+        m_defermake = man;
+    }
 }
 
 ovlOVLManager::~ovlOVLManager() {
     if (m_data)
         delete[] m_data;
+}
+
+ovlLodSymRefManager* ovlOVLManager::GetLSRManager() {
+    return &m_ovl->m_lsrmanager;
+}
+
+ovlStringTable* ovlOVLManager::GetStringTable() {
+    return &m_ovl->m_stringtable;
+}
+
+ovlRelocationManager* ovlOVLManager::GetRelocationManager() {
+    return &m_ovl->m_relmanager;
 }
 
 void ovlOVLManager::WriteLoader(FILE* f) {
@@ -78,6 +102,8 @@ unsigned char* ovlOVLManager::Make(cOvlInfo* info) {
     // No checking, this is done by derived objects
     //m_data = new unsigned char[m_size];
     //memset(m_data, 0, m_size);
+    DUMP_LOG("Trace: ovlOVLManager(%s)::Make", Tag());
+    m_made = true;
     if (m_blobs.size()) {
         for (map<unsigned char*, cOvlMemBlob>::iterator it = m_blobs.begin(); it != m_blobs.end(); ++it) {
             it->second.data = info->OpenFiles[it->second.type].GetBlock(it->second.file, it->second.size);
@@ -90,8 +116,9 @@ unsigned char* ovlOVLManager::Make(cOvlInfo* info) {
 }
 
 void ovlOVLManager::Check(const string& err) {
-    if ((!m_lsrman) || (!m_relman) || (!m_stable))
-        throw EOvl("ovlOVLManager("+string(Tag())+")::Check failed due to one of the managers being unavailable in "+err);
+    DUMP_LOG("Trace: ovlOVLManager(%s)::Check()", err.c_str());
+    if (!m_ovl)
+        throw EOvl("ovlOVLManager("+string(Tag())+")::Check failed due to ovl class unavailable in "+err);
     if (m_data)
         throw EOvl("ovlOVLManager("+string(Tag())+")::Check failed as Make was already called in "+err);
 }

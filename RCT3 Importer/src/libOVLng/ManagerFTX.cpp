@@ -83,10 +83,10 @@ void ovlFTXManager::AddTexture(const char* name, unsigned long dimension, unsign
     m_size += sizeof(FlexiTextureStruct) * ftis->fts2Count;
 
     m_ftxlist.push_back(ftis);
-    m_lsrman->AddLoader(OVLT_COMMON);
-    m_lsrman->AddSymbol(OVLT_COMMON);
+    GetLSRManager()->AddLoader(OVLT_COMMON);
+    GetLSRManager()->AddSymbol(OVLT_COMMON);
     m_ftxnames.push_back(string(name));
-    m_stable->AddSymbolString(name, Tag());
+    GetStringTable()->AddSymbolString(name, Tag());
 
     m_cftis = ftis;
     m_cfts = ftis->fts2;
@@ -152,14 +152,14 @@ unsigned char* ovlFTXManager::Make(cOvlInfo* info) {
             c_dftis->offset1 = reinterpret_cast<unsigned long*>(c_data);
             c_data += 4 * c_dftis->offsetCount;
             memcpy(c_dftis->offset1, m_ftxlist[t]->offset1, 4*c_dftis->offsetCount);
-            m_relman->AddRelocation((unsigned long *)&c_dftis->offset1);
+            GetRelocationManager()->AddRelocation((unsigned long *)&c_dftis->offset1);
         }
 
         // Data Transfer, FlexiTextureStructs
         c_dftis->fts2 = reinterpret_cast<FlexiTextureStruct*>(c_data);
         c_data += sizeof(FlexiTextureStruct) * c_dftis->fts2Count;
         memcpy(c_dftis->fts2, m_ftxlist[t]->fts2, sizeof(FlexiTextureStruct) * c_dftis->fts2Count);
-        m_relman->AddRelocation((unsigned long *)&c_dftis->fts2);
+        GetRelocationManager()->AddRelocation((unsigned long *)&c_dftis->fts2);
 
         // Data Transfer, Texture Data
         for (unsigned long i = 0; i < m_ftxlist[t]->fts2Count; ++i) {
@@ -167,7 +167,7 @@ unsigned char* ovlFTXManager::Make(cOvlInfo* info) {
             c_dftis->fts2[i].palette = c_data;
             c_data += 256*sizeof(RGBQUAD);
             memcpy(c_dftis->fts2[i].palette, m_ftxlist[t]->fts2[i].palette, 256*sizeof(RGBQUAD));
-            m_relman->AddRelocation((unsigned long*)&c_dftis->fts2[i].palette);
+            GetRelocationManager()->AddRelocation((unsigned long*)&c_dftis->fts2[i].palette);
 
             // Texture
 //            c_dftis->fts2[i].texture = c_data;
@@ -176,7 +176,7 @@ unsigned char* ovlFTXManager::Make(cOvlInfo* info) {
 //            m_relman->AddRelocation((unsigned long*)&c_dftis->fts2[i].texture);
             c_dftis->fts2[i].texture = m_blobs[m_ftxlist[t]->fts2[i].texture].data;
             memcpy(c_dftis->fts2[i].texture, m_ftxlist[t]->fts2[i].texture, c_dftis->fts2[i].width * c_dftis->fts2[i].height);
-            m_relman->AddRelocation((unsigned long*)&c_dftis->fts2[i].texture);
+            GetRelocationManager()->AddRelocation((unsigned long*)&c_dftis->fts2[i].texture);
 
             // Alpha
             if (m_ftxlist[t]->fts2[i].alpha) {
@@ -186,13 +186,13 @@ unsigned char* ovlFTXManager::Make(cOvlInfo* info) {
 //                m_relman->AddRelocation((unsigned long*)&c_dftis->fts2[i].alpha);
                 c_dftis->fts2[i].alpha = m_blobs[m_ftxlist[t]->fts2[i].alpha].data;
                 memcpy(c_dftis->fts2[i].alpha, m_ftxlist[t]->fts2[i].alpha, c_dftis->fts2[i].width * c_dftis->fts2[i].height);
-                m_relman->AddRelocation((unsigned long*)&c_dftis->fts2[i].alpha);
+                GetRelocationManager()->AddRelocation((unsigned long*)&c_dftis->fts2[i].alpha);
           }
         }
 
-        SymbolStruct* s_ftx = m_lsrman->MakeSymbol(OVLT_COMMON, m_stable->FindSymbolString(m_ftxnames[t].c_str(), Tag()), reinterpret_cast<unsigned long*>(c_dftis), true);
-        m_lsrman->OpenLoader(OVLT_COMMON, TAG, reinterpret_cast<unsigned long*>(c_dftis), false, s_ftx);
-        m_lsrman->CloseLoader(OVLT_COMMON);
+        SymbolStruct* s_ftx = GetLSRManager()->MakeSymbol(OVLT_COMMON, GetStringTable()->FindSymbolString(m_ftxnames[t].c_str(), Tag()), reinterpret_cast<unsigned long*>(c_dftis));
+        GetLSRManager()->OpenLoader(OVLT_COMMON, TAG, reinterpret_cast<unsigned long*>(c_dftis), false, s_ftx);
+        GetLSRManager()->CloseLoader(OVLT_COMMON);
     }
 
     return m_data;

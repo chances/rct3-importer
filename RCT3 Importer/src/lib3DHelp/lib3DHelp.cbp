@@ -126,6 +126,11 @@
 		<Unit filename="3DLoader.h" />
 		<Unit filename="3DLoaderTypes.h" />
 		<Unit filename="3Dstring.h" />
+		<Unit filename="AN8Loaderr.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="AN8Loaderr.h" />
 		<Unit filename="ASE3DLoader.cpp" />
 		<Unit filename="ASE3DLoader.h" />
 		<Unit filename="MS3DFile.cpp" />

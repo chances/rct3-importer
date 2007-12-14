@@ -47,6 +47,9 @@
 #define READ_APP_TOOLTIPS()     wxcRead<bool>(wxT("App/Tooltips"), true)
 #define WRITE_APP_TOOLTIPS(v)   wxcWrite<bool>(wxT("App/Tooltips"), v)
 
+#define READ_APP_SIZE(w, d)     wxcRead<wxSize>(wxString(wxT("App/Size/"))+wxT(w), d)
+#define WRITE_APP_SIZE(w, v)   wxcWrite<wxSize>(wxString(wxT("App/Size/"))+wxT(w), v)
+
 /*
 #define RCT3CONFIG_VERSION      4
 

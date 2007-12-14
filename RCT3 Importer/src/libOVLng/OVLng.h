@@ -37,10 +37,12 @@
 #include "ovlstructs.h"
 #include "RelocationManager.h"
 #include "StringTable.h"
+#include "OVLException.h"
 
 using namespace std;
 
 class cOvl {
+friend class ovlOVLManager;
 private:
     string m_file;
     cOvlInfo m_ovlinfo;
@@ -50,18 +52,32 @@ private:
 
     map<string, ovlOVLManager*> m_managers;
 
+    bool m_init;
+
     ovlOVLManager* GetManager(const char* tag);
     void InitAndAddManager(ovlOVLManager* man);
 public:
+    cOvl(){
+        m_init = false;
+    };
     cOvl(string file);
     virtual ~cOvl();
 
+    void Init(string file);
+
     void AddReference(const char* ref);
+    void AddDataSymbol(cOvlType type, const char *symbol, unsigned long data) {
+        if (!m_init)
+            throw EOvl("cOvl::AddDataSymbol called uninitialized");
+        m_lsrmanager.AddSymbol(type, symbol, data);
+    }
 
     void Save();
 
     template <class M>
     M* GetManager() {
+        if (!m_init)
+            throw EOvl("cOvl::GetManager called uninitialized");
         M* ret = dynamic_cast<M*>(GetManager(M::TAG));
         if (!ret) {
             ret = new M();

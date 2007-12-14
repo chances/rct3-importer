@@ -34,16 +34,13 @@
 #include <string>
 #include <vector>
 
-//#include "ovlstructs.h"
+#include "ovlstructs.h"
 
 using namespace std;
 
-enum cOvlType {
-    OVLT_COMMON = 0,
-    OVLT_UNIQUE = 1
-};
-
 class ovlOVLManager;
+class ovlLodSymRefManager;
+class ovlExtraChunk;
 
 class cOvlMemBlob {
 public:
@@ -142,7 +139,7 @@ public:
     cOvlFileClass(){};
     unsigned char* GetBlock(int filetype, unsigned long size);
     unsigned long MakeRelOffsets(unsigned long from);
-    void Write(const map<string, ovlOVLManager*>& managers);
+    void Write(const map<string, ovlOVLManager*>& managers, const vector<ovlExtraChunk*>& extra);
 };
 
 class cOvlInfo {
@@ -155,10 +152,7 @@ public:
         unsigned long off = OpenFiles[OVLT_COMMON].MakeRelOffsets(0);
         OpenFiles[OVLT_UNIQUE].MakeRelOffsets(off);
     };
-    void WriteFiles(const map<string, ovlOVLManager*>& managers) {
-        OpenFiles[OVLT_COMMON].Write(managers);
-        OpenFiles[OVLT_UNIQUE].Write(managers);
-    }
+    void WriteFiles(const map<string, ovlOVLManager*>& managers, const ovlLodSymRefManager& lsrman);
 };
 
 #endif

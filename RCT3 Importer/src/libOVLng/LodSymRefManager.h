@@ -35,9 +35,29 @@
 
 #include "OVLClasses.h"
 #include "ovlstructs.h"
-#include "RelocationManager.h"
+
+class ovlRelocationManager;
+class ovlStringTable;
 
 using namespace std;
+
+class ovlExtraChunk {
+public:
+    unsigned long size;
+    unsigned char* data;
+
+    ovlExtraChunk() {
+        size = 0;
+        data = NULL;
+    };
+    ovlExtraChunk(unsigned long s, unsigned char* d) {
+        size = s;
+        data = d;
+    };
+    ~ovlExtraChunk() {
+        delete[] data;
+    };
+};
 
 class ovlLodSymRefManager {
 private:
@@ -47,7 +67,8 @@ private:
     SymbolStruct* m_csymbol[2];
     SymbolRefStruct* m_symrefs[2];
     SymbolRefStruct* m_csymref[2];
-    ovlRelocationManager* m_relman;
+    map<string, unsigned long> m_npsymbols[2];
+    vector<ovlExtraChunk*> m_loaderextras[2];
 
     vector<string> m_loadernames[2];
 
@@ -60,28 +81,36 @@ private:
 
     bool m_made;
     bool m_loaderopen[2];
+    unsigned long m_loaderextracount[2];
+    ovlRelocationManager* m_relman;
+    ovlStringTable* m_stable;
 public:
     ovlLodSymRefManager() {
         m_relman = NULL;
+        m_stable = NULL;
         m_made = false;
         m_loaderopen[0] = false;
         m_loaderopen[1] = false;
+        m_loaderextracount[0] = 0;
+        m_loaderextracount[1] = 0;
     };
     virtual ~ovlLodSymRefManager();
 
-    void Init(ovlRelocationManager* relman);
+    void Init(ovlRelocationManager* relman, ovlStringTable* stable);
     void Assign(cOvlInfo* info);
     void Make(const map<string, unsigned long>& loadernumbers);
 
     void AddLoader(cOvlType type);
-    LoaderStruct* OpenLoader(cOvlType type, const char* ctype, unsigned long *data, bool hasextradata, SymbolStruct *sym);
+    LoaderStruct* OpenLoader(cOvlType type, const char* ctype, unsigned long *data, unsigned long extradatacount, SymbolStruct *sym);
+    void AddExtraData(cOvlType type, unsigned long size, unsigned char* data);
     LoaderStruct* CloseLoader(cOvlType type);
     //LoaderStruct* GetLoaders();
     int GetLoaderCount(cOvlType type) {
         return m_loadercount[type];
     }
     void AddSymbol(cOvlType type);
-    SymbolStruct* MakeSymbol(cOvlType type, char *symbol, unsigned long *data, bool ispointer);
+    void AddSymbol(cOvlType type, const char *symbol, unsigned long data);                // Non-pointer symbols
+    SymbolStruct* MakeSymbol(cOvlType type, char *symbol, unsigned long *data);     // Pointer symbols
     SymbolStruct* GetSymbols();
     int GetSymbolCount(cOvlType type) {
         return m_symbolcount[type];
@@ -93,6 +122,9 @@ public:
         return m_symrefcount[type];
     }
 
+    const vector<ovlExtraChunk*>& GetExtraChunks(cOvlType type) const {
+        return m_loaderextras[type];
+    }
 };
 
 #endif

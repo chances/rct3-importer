@@ -53,7 +53,7 @@ unsigned long cOvlFileClass::MakeRelOffsets(unsigned long from) {
     return currel;
 }
 
-void cOvlFileClass::Write(const map<string, ovlOVLManager*>& managers) {
+void cOvlFileClass::Write(const map<string, ovlOVLManager*>& managers, const vector<ovlExtraChunk*>& extra) {
     FILE* f = fopen(filename.c_str(),"wb");
     if (!f)
         throw EOvl("cOvlFileClass::Write: cannot open unique file for writing");
@@ -107,7 +107,18 @@ void cOvlFileClass::Write(const map<string, ovlOVLManager*>& managers) {
         fwrite(&c_fixup, sizeof(unsigned long), 1, f);
     }
 
+    // Write Extradata
+    for (vector<ovlExtraChunk*>::const_iterator it = extra.begin(); it != extra.end(); ++it) {
+        fwrite(&(*it)->size, sizeof(unsigned long), 1, f);
+        fwrite((*it)->data, (*it)->size, 1, f);
+    }
+
     // Close file
     fclose(f);
 
+}
+
+void cOvlInfo::WriteFiles(const map<string, ovlOVLManager*>& managers, const ovlLodSymRefManager& lsrman) {
+    OpenFiles[OVLT_COMMON].Write(managers, lsrman.GetExtraChunks(OVLT_COMMON));
+    OpenFiles[OVLT_UNIQUE].Write(managers, lsrman.GetExtraChunks(OVLT_UNIQUE));
 }

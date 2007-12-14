@@ -128,6 +128,7 @@
 			<Option target="Profile" />
 			<Option target="Release" />
 		</Unit>
+		<Unit filename="basicsize.h" />
 		<Unit filename="choicewrapper.cpp">
 			<Option virtualFolder="wrapper\" />
 			<Option target="Debug" />
@@ -228,6 +229,8 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="ilpict.cpp">
+			<Option compile="0" />
+			<Option link="0" />
 			<Option target="Debug" />
 			<Option target="Profile" />
 			<Option target="Release" />

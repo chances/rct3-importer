@@ -28,6 +28,7 @@
 
 #include "ASE3DLoader.h"
 #include "MS3DLoader.h"
+//#include "AN8Loaderr.h"
 
 c3DLoader* DoLoadFile(const char *filename) {
     c3DLoader *res;
@@ -39,6 +40,14 @@ c3DLoader* DoLoadFile(const char *filename) {
         else
             delete res;
     }
+
+//    res = new cAN8Loader(filename);
+//    if (res) {
+//        if (!res->Failed())
+//            return res;
+//        else
+//            delete res;
+//    }
 
     res = new cASE3DLoader(filename);
     if (res) {

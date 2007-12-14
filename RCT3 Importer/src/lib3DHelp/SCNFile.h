@@ -51,6 +51,8 @@
 #define RCT3XML_CSCNFILE_ANIMATIONS wxT("animations")
 #define RCT3XML_CSCNFILE_LODS wxT("lods")
 #define RCT3XML_CSCNFILE_REFERENCES wxT("references")
+
+class cOvl;
 class cSCNFile: public cRCT3Xml {
 public:
     wxFileName filename;
@@ -78,7 +80,13 @@ public:
 
 
 	cSCNFile(): filename(wxT("")),version(VERSION_CSCNFILE),save_relative_paths(true),m_work(NULL) {};
-	cSCNFile(wxString l_filename): filename(l_filename),save_relative_paths(true),m_work(NULL) {Load();};
+	cSCNFile(wxString l_filename, wxXmlDocument* doc = NULL): filename(l_filename),save_relative_paths(true),m_work(NULL) {
+	    if (doc) {
+	        LoadXML(doc);
+	    } else {
+            Load();
+	    }
+    };
 	void Init();
 	bool Load();
 	void LoadTextures(FILE *f);
@@ -100,6 +108,7 @@ public:
 	bool CheckForModelNameDuplicates();
 	bool Check();
 	void Make();
+	void MakeToOvl(cOvl& c_ovl);
 	void CleanWork();
 
     virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);

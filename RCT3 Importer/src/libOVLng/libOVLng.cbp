@@ -50,12 +50,14 @@
 		</Linker>
 		<Unit filename="..\..\include\boneanim.h" />
 		<Unit filename="..\..\include\boneshape.h" />
+		<Unit filename="..\..\include\car.h" />
 		<Unit filename="..\..\include\flexitexture.h" />
 		<Unit filename="..\..\include\guiicon.h" />
 		<Unit filename="..\..\include\icontexture.h" />
 		<Unit filename="..\..\include\ovlstructs.h" />
 		<Unit filename="..\..\include\path.h" />
 		<Unit filename="..\..\include\scenery.h" />
+		<Unit filename="..\..\include\sceneryrevised.h" />
 		<Unit filename="..\..\include\sceneryvisual.h" />
 		<Unit filename="..\..\include\stall.h" />
 		<Unit filename="..\..\include\staticshape.h" />
@@ -67,14 +69,26 @@
 		<Unit filename="ManagerBAN.h" />
 		<Unit filename="ManagerBSH.cpp" />
 		<Unit filename="ManagerBSH.h" />
+		<Unit filename="ManagerFLIC.cpp" />
+		<Unit filename="ManagerFLIC.h" />
 		<Unit filename="ManagerFTX.cpp" />
 		<Unit filename="ManagerFTX.h" />
-		<Unit filename="ManagerOVL.cpp" />
+		<Unit filename="ManagerGSI.cpp" />
+		<Unit filename="ManagerGSI.h" />
+		<Unit filename="ManagerOVL.cpp">
+			<Option weight="10" />
+		</Unit>
 		<Unit filename="ManagerOVL.h" />
 		<Unit filename="ManagerSHS.cpp" />
 		<Unit filename="ManagerSHS.h" />
+		<Unit filename="ManagerSID.cpp" />
+		<Unit filename="ManagerSID.h" />
 		<Unit filename="ManagerSVD.cpp" />
 		<Unit filename="ManagerSVD.h" />
+		<Unit filename="ManagerTEX.cpp" />
+		<Unit filename="ManagerTEX.h" />
+		<Unit filename="ManagerTXT.cpp" />
+		<Unit filename="ManagerTXT.h" />
 		<Unit filename="OVLClasses.cpp" />
 		<Unit filename="OVLClasses.h" />
 		<Unit filename="OVLDebug.cpp" />

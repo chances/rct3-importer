@@ -77,10 +77,10 @@ void ovlSVDManager::AddSVD(const char* name, unsigned long lods, unsigned long f
     m_size += c_svd->LODCount * sizeof(SceneryItemVisualLOD*);
 
     m_svdlist.push_back(c_svd);
-    m_lsrman->AddLoader(OVLT_UNIQUE);
-    m_lsrman->AddSymbol(OVLT_UNIQUE);
+    GetLSRManager()->AddLoader(OVLT_UNIQUE);
+    GetLSRManager()->AddSymbol(OVLT_UNIQUE);
     m_svdnames.push_back(string(name));
-    m_stable->AddSymbolString(name, Tag());
+    GetStringTable()->AddSymbolString(name, Tag());
 
     m_csvd = c_svd;
     m_nlod = 0;
@@ -139,10 +139,10 @@ void ovlSVDManager::AddStaticLOD(const char* name, const char* modelname, float 
     // SceneryItemVisualLOD
     m_size += sizeof(SceneryItemVisualLOD);
 
-    m_stable->AddString(name);
+    GetStringTable()->AddString(name);
     m_modelmap[c_lod] = string(modelname);
-    m_stable->AddSymbolString(modelname, ovlSHSManager::TAG);
-    m_lsrman->AddSymRef(OVLT_UNIQUE);
+    GetStringTable()->AddSymbolString(modelname, ovlSHSManager::TAG);
+    GetLSRManager()->AddSymRef(OVLT_UNIQUE);
 
     m_nlod++;
     m_lodcount--;
@@ -187,10 +187,10 @@ void ovlSVDManager::OpenAnimatedLOD(const char* name, const char* modelname, uns
     // Pointers
     m_size += c_lod->AnimationCount * sizeof(BoneAnim**);
 
-    m_stable->AddString(name);
+    GetStringTable()->AddString(name);
     m_modelmap[c_lod] = string(modelname);
-    m_stable->AddSymbolString(modelname, ovlBSHManager::TAG);
-    m_lsrman->AddSymRef(OVLT_UNIQUE);
+    GetStringTable()->AddSymbolString(modelname, ovlBSHManager::TAG);
+    GetLSRManager()->AddSymRef(OVLT_UNIQUE);
 
     m_animcount = c_lod->AnimationCount;
 }
@@ -219,8 +219,8 @@ void ovlSVDManager::AddAnimation(const char* name) {
     m_size += 4;
 
     m_animationmap[m_csvd->LODMeshes[m_nlod]].push_back(string(name));
-    m_stable->AddSymbolString(name, ovlBANManager::TAG);
-    m_lsrman->AddSymRef(OVLT_UNIQUE);
+    GetStringTable()->AddSymbolString(name, ovlBANManager::TAG);
+    GetLSRManager()->AddSymRef(OVLT_UNIQUE);
 
     m_animcount--;
 }
@@ -245,37 +245,37 @@ unsigned char* ovlSVDManager::Make(cOvlInfo* info) {
         // Assign space for LOD pointers
         c_svd->LODMeshes = reinterpret_cast<SceneryItemVisualLOD**>(c_data);
         c_data += c_svd->LODCount * sizeof(SceneryItemVisualLOD*);
-        m_relman->AddRelocation((unsigned long *)&c_svd->LODMeshes);
+        GetRelocationManager()->AddRelocation((unsigned long *)&c_svd->LODMeshes);
         DUMP_RELOCATION("ovlSVDManager::Make, LodMeshes pointers", c_svd->LODMeshes);
 
         // Symbol and Loader
-        SymbolStruct* c_symbol = m_lsrman->MakeSymbol(OVLT_UNIQUE, m_stable->FindSymbolString(m_svdnames[i].c_str(), Tag()), reinterpret_cast<unsigned long*>(c_svd), true);
-        m_lsrman->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_svd), false, c_symbol);
+        SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(m_svdnames[i].c_str(), Tag()), reinterpret_cast<unsigned long*>(c_svd));
+        GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_svd), false, c_symbol);
 
         for (unsigned long s = 0; s < m_svdlist[i]->LODCount; ++s) {
             // Data Transfer, LOD
             c_svd->LODMeshes[s] = reinterpret_cast<SceneryItemVisualLOD*>(c_data);
             c_data += sizeof(SceneryItemVisualLOD);
             memcpy(c_svd->LODMeshes[s], m_svdlist[i]->LODMeshes[s], sizeof(SceneryItemVisualLOD));
-            m_relman->AddRelocation((unsigned long*)&c_svd->LODMeshes[s]);
+            GetRelocationManager()->AddRelocation((unsigned long*)&c_svd->LODMeshes[s]);
             DUMP_RELOCATION("ovlSVDManager::Make, LodMesh", c_svd->LODMeshes[s]);
 
             // LodName
-            c_svd->LODMeshes[s]->LODName = m_stable->FindString(m_svdlist[i]->LODMeshes[s]->LODName);
-            m_relman->AddRelocation((unsigned long*)&c_svd->LODMeshes[s]->LODName);
+            c_svd->LODMeshes[s]->LODName = GetStringTable()->FindString(m_svdlist[i]->LODMeshes[s]->LODName);
+            GetRelocationManager()->AddRelocation((unsigned long*)&c_svd->LODMeshes[s]->LODName);
             DUMP_RELOCATION_STR("ovlSVDManager::Make, LodName", c_svd->LODMeshes[s]->LODName);
 
             // LOD type specific stuff
             switch (c_svd->LODMeshes[s]->MeshType) {
                 case SVDLOD_MESHTYPE_STATIC: {
                         // Symbol reference for shs name
-                        m_lsrman->MakeSymRef(OVLT_UNIQUE, m_stable->FindSymbolString(m_modelmap[m_svdlist[i]->LODMeshes[s]].c_str(), ovlSHSManager::TAG),
+                        GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(m_modelmap[m_svdlist[i]->LODMeshes[s]].c_str(), ovlSHSManager::TAG),
                                              reinterpret_cast<unsigned long*>(&c_svd->LODMeshes[s]->StaticShape));
                     }
                     break;
                 case SVDLOD_MESHTYPE_ANIMATED: {
                         // Symbol reference for bsh name
-                        m_lsrman->MakeSymRef(OVLT_UNIQUE, m_stable->FindSymbolString(m_modelmap[m_svdlist[i]->LODMeshes[s]].c_str(), ovlBSHManager::TAG),
+                        GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(m_modelmap[m_svdlist[i]->LODMeshes[s]].c_str(), ovlBSHManager::TAG),
                                              reinterpret_cast<unsigned long*>(&c_svd->LODMeshes[s]->BoneShape));
 
                         // Animations
@@ -283,18 +283,18 @@ unsigned char* ovlSVDManager::Make(cOvlInfo* info) {
                             // Allocate space for the pointers
                             c_svd->LODMeshes[s]->AnimationArray = reinterpret_cast<BoneAnim***>(c_data);
                             c_data += c_svd->LODMeshes[s]->AnimationCount * sizeof(BoneAnim**);
-                            m_relman->AddRelocation((unsigned long *)&c_svd->LODMeshes[s]->AnimationArray);
+                            GetRelocationManager()->AddRelocation((unsigned long *)&c_svd->LODMeshes[s]->AnimationArray);
                             DUMP_RELOCATION("ovlSVDManager::Make, AnimationArray pointers", c_svd->LODMeshes[s]->AnimationArray);
 
                             for (unsigned long a = 0; a < m_svdlist[i]->LODMeshes[s]->AnimationCount; ++a) {
                                 // Allocate space for animation pointer
                                 c_svd->LODMeshes[s]->AnimationArray[a] = reinterpret_cast<BoneAnim**>(c_data);
                                 c_data += sizeof(BoneAnim*);
-                                m_relman->AddRelocation((unsigned long *)&c_svd->LODMeshes[s]->AnimationArray[a]);
+                                GetRelocationManager()->AddRelocation((unsigned long *)&c_svd->LODMeshes[s]->AnimationArray[a]);
                                 DUMP_RELOCATION("ovlSVDManager::Make, AnimationArray", c_svd->LODMeshes[s]->AnimationArray[a]);
 
                                 // Symbol reference for ban name
-                                m_lsrman->MakeSymRef(OVLT_UNIQUE, m_stable->FindSymbolString(m_animationmap[m_svdlist[i]->LODMeshes[s]][a].c_str(), ovlBANManager::TAG),
+                                GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(m_animationmap[m_svdlist[i]->LODMeshes[s]][a].c_str(), ovlBANManager::TAG),
                                                      reinterpret_cast<unsigned long*>(c_svd->LODMeshes[s]->AnimationArray[a]));
                             }
                         }
@@ -303,7 +303,7 @@ unsigned char* ovlSVDManager::Make(cOvlInfo* info) {
             }
         }
 
-        m_lsrman->CloseLoader(OVLT_UNIQUE);
+        GetLSRManager()->CloseLoader(OVLT_UNIQUE);
     }
 
     return m_data;

@@ -45,7 +45,8 @@ struct SymbolStruct2
 {
 	char *Symbol;
 	unsigned long *data;
-	unsigned long IsPointer;
+	unsigned short IsPointer;
+	unsigned short unknown; // FFFF for v5, 0000 for v4 it seems
 	unsigned long Checksum;
 };
 struct LoaderStruct
@@ -87,6 +88,12 @@ struct OvlInfo
 
 #define OVL_COMMON 0
 #define OVL_UNIQUE 1
+
+enum cOvlType {
+    OVLT_COMMON = 0,
+    OVLT_UNIQUE = 1
+};
+
 
 #endif
 

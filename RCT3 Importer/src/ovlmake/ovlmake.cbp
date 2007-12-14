@@ -120,6 +120,8 @@
 			<Add directory="..\..\lib" />
 		</Linker>
 		<Unit filename="OvlCompiler ReadMe.txt" />
+		<Unit filename="RawOvlMake.cpp" />
+		<Unit filename="RawOvlMake.h" />
 		<Unit filename="ReadMe 1st.txt" />
 		<Unit filename="changelog.txt" />
 		<Unit filename="ovlmake.cpp" />

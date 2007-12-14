@@ -1824,10 +1824,6 @@ bool cSCNFile::Check() {
     bool warning = false;
     CleanWork();
 
-    if (name.IsEmpty()) {
-        throw RCT3Exception(_("OVL Name not set."));
-    }
-
     m_work = new cSCNFile(*this);
 
 
@@ -2087,6 +2083,10 @@ bool cSCNFile::Check() {
 }
 
 void cSCNFile::Make() {
+    if (name.IsEmpty()) {
+        throw RCT3Exception(_("OVL Name not set."));
+    }
+
     if (!m_work)
         Check();
 
@@ -2094,6 +2094,18 @@ void cSCNFile::Make() {
         wxFileName ovlfile = ovlpath;
         ovlfile.SetName(name);
         cOvl c_ovl(ovlfile.GetFullPath().fn_str());
+        MakeToOvl(c_ovl);
+        c_ovl.Save();
+    } catch (EOvl& e) {
+        throw RCT3Exception(wxString::Format(_("Error during OVL creation: %s"), e.what()));
+    } catch (Magick::Exception& e) {
+        throw RCT3Exception(wxString::Format(_("Error from image library: %s"), e.what()));
+    }
+}
+
+void cSCNFile::MakeToOvl(cOvl& c_ovl) {
+    if (!m_work)
+        Check();
 
         // References
         for (cStringIterator it = references.begin(); it != references.end(); ++it) {
@@ -2494,12 +2506,6 @@ void cSCNFile::Make() {
             }
         }
 
-        c_ovl.Save();
-    } catch (EOvl& e) {
-        throw RCT3Exception(wxString::Format(_("Error during OVL creation: %s"), e.what()));
-    } catch (Magick::Exception& e) {
-        throw RCT3Exception(wxString::Format(_("Error from image library: %s"), e.what()));
-    }
 }
 
 void cSCNFile::CleanWork() {

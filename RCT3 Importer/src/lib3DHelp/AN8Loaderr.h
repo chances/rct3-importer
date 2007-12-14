@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 // 3D Utility Library
-// Loader constants
+// MS3D Loader
 // Copyright (C) 2006 Tobias Minch
 //
 // This program is free software; you can redistribute it and/or
@@ -23,27 +23,17 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef _3DLOADERTYPES_H_INCLUDED
-#define _3DLOADERTYPES_H_INCLUDED
+#ifndef AN8LOADER_H_INCLUDED
+#define AN8LOADER_H_INCLUDED
 
-#define C3DLOADER_GENERIC       0
-#define C3DLOADER_ASE           1
-#define C3DLOADER_MS3D          2
-#define C3DLOADER_AN8           3
+#include "3DLoader.h"
 
-#define C3DMESH_INVALID         0
-#define C3DMESH_VALID           1
-
-enum {
-    ORIENTATION_UNKNOWN = 0L,
-    ORIENTATION_RIGHT_XUP,
-    ORIENTATION_RIGHT_YUP,
-    ORIENTATION_RIGHT_ZUP,
-    ORIENTATION_LEFT_XUP,
-    ORIENTATION_LEFT_YUP,
-    ORIENTATION_LEFT_ZUP
+class cAN8Loader: public c3DLoader
+{
+public:
+    cAN8Loader(const char *filename);
+    virtual int GetType() {return C3DLOADER_AN8;};
+    virtual c3DLoaderOrientation GetOrientation() {return ORIENTATION_RIGHT_ZUP;};
 };
 
-typedef unsigned int c3DLoaderOrientation;
-
-#endif // 3DLOADERTYPES_H_INCLUDED
+#endif // MS3DLOADER_H_INCLUDED

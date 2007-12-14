@@ -27,6 +27,7 @@
 
 #include "wx_pch.h"
 
+#include <wx/config.h>
 #include <wx/cmdline.h>
 #include <wx/filename.h>
 #include <exception>
@@ -35,8 +36,11 @@
 #include "SCNFile.h"
 #include "RCT3Exception.h"
 #include "OVLException.h"
+#include "RawOvlMake.h"
+#include "lib3Dconfig.h"
+#include "confhelp.h"
 
-#define VERSION_OVLMAKE "ovlmake v0.1.4"
+#define VERSION_OVLMAKE "ovlmake v0.1.5"
 
 int DoCompile(const wxCmdLineParser& parser) {
     int ret = 0;
@@ -59,7 +63,35 @@ int DoCompile(const wxCmdLineParser& parser) {
         if (!inputfile.IsFileReadable())
             throw RCT3Exception(_("Cannot read input file"));
 
-        cSCNFile c_scn(inputfile.GetFullPath());
+        cSCNFile c_scn;
+        if (inputfile.GetExt().Lower() == wxT("xml")) {
+            wxXmlDocument doc;
+            if (doc.Load(inputfile.GetFullPath())) {
+                wxXmlNode* root = doc.GetRoot();
+                if (root->GetName() == RAWXML_ROOT) {
+                    if (convert)
+                        throw RCT3Exception(_("You cannot convert raw xml files"));
+
+                    wxLogMessage(_("Processing raw xml file..."));
+                    WRITE_RCT3_EXPERTMODE(true);
+
+                    if (parser.GetParamCount() < 2) {
+                        cRawOvl rovl(root, inputfile);
+                    } else {
+                        cRawOvl rovl(root, inputfile, inputfile.GetPathWithSep(),parser.GetParam(1));
+                    }
+                    return ret;
+                } else {
+                    c_scn.filename = inputfile;
+                    c_scn.LoadXML(&doc);
+                }
+            } else {
+                throw RCT3Exception(_("Error in xml file"));
+            }
+        } else {
+            c_scn.filename = inputfile.GetFullPath();
+            c_scn.Load();
+        }
 
         if (parser.GetParamCount() < 2) {
             outputfile = inputfile;
@@ -161,6 +193,8 @@ int main(int argc, char **argv)
     wxString appenv = wxT("MAGICK_CONFIGURE_PATH=") + app.GetPathWithSep();
     putenv(appenv.c_str());
 
+    wxConfig::Set(new wxConfig(wxT("ovlmake")));
+
     wxInitializer initializer;
     if ( !initializer )
     {
@@ -211,6 +245,8 @@ int main(int argc, char **argv)
         delete [] wxArgv;
     }
 #endif // wxUSE_UNICODE
+
+    wxConfig::Get()->DeleteAll();
 
     wxUnusedVar(argc);
     wxUnusedVar(argv);

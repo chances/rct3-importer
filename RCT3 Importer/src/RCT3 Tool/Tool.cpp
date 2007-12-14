@@ -1748,6 +1748,9 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
         SendDlgItemMessage(hwnd, IDC_THEME, LB_ADDSTRING, 0, (LPARAM) "$Paradise Island");
         SendDlgItemMessage(hwnd, IDC_THEME, LB_ADDSTRING, 0, (LPARAM) "#Safari");
         SendDlgItemMessage(hwnd, IDC_THEME, LB_ADDSTRING, 0, (LPARAM) "#Prehistoric");
+        SendDlgItemMessage(hwnd, IDC_THEME, LB_ADDSTRING, 0, (LPARAM) "Custom");
+        SendDlgItemMessage(hwnd, IDC_THEME, LB_ADDSTRING, 0, (LPARAM) "User 1");
+        SendDlgItemMessage(hwnd, IDC_THEME, LB_ADDSTRING, 0, (LPARAM) "User 2");
         SendDlgItemMessage(hwnd, IDC_THEME, LB_ADDSTRING, 0, (LPARAM) "None");
         SetDlgItemText(hwnd, IDC_NOTES,
                        "Notes about RCT3 Soaked! and RCT3 Wild! expansion packs\r\n"
@@ -2928,7 +2931,6 @@ bool ToolApp::OnInit()
 
 int ToolApp::OnRun() {
 #ifdef DEBUG
-    wxMessageBox(wxT("Debugging"));
     wxLogWindow win(NULL, wxT("Debug Log"), true, false);
 #endif
     DialogBox(hInst, MAKEINTRESOURCE(IDD_MAIN), NULL, (DLGPROC) MainDlgProc);
@@ -3015,7 +3017,7 @@ bool InstallTheme(HWND hwnd) {
 //    wxFileName test2 = test1;
 
     styleval = SendDlgItemMessage(hwnd, IDC_THEME, LB_GETCURSEL, 0, 0);
-    if (styleval > 8)
+    if (styleval > 11)
         styleval = 255;
     len = MAX_PATH;
 /*
@@ -3253,7 +3255,7 @@ bool ReadIconTexture(HWND hwnd, IconTexture * t) {
         t->fmh.MHeight = height;
         t->fmh.MWidth = width;
         t->data = data;
-    } catch (Magick::Exception e) {
+    } catch (Magick::Exception& e) {
         MessageBox(hwnd, e.what(), "Error", MB_OK);
         return false;
     }

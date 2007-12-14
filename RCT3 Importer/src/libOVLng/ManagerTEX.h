@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 // New OVL creation library
-// Base manager class for structures
+// Manager class for TEX structures
 // Copyright (C) 2007 Tobias Minch
 //
 // This program is free software; you can redistribute it and/or
@@ -26,66 +26,53 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef MANAGEROVL_H_INCLUDED
-#define MANAGEROVL_H_INCLUDED
+#ifndef MANAGERTEX_H_INCLUDED
+#define MANAGERTEX_H_INCLUDED
 
-#include <map>
 #include <string>
+#include <map>
 
-#include "LodSymRefManager.h"
-#include "OVLClasses.h"
-#include "RelocationManager.h"
-#include "StringTable.h"
+#include "ManagerOVL.h"
+
+#include "icontexture.h"
 
 using namespace std;
 
-class cOvl;
-class ovlOVLManager {
+class ovlFLICManager;
+class ovlTEXManager: public ovlOVLManager {
 public:
     static const char* LOADER;
+    static const char* NAME;
+    static const char* TAG;
     static const unsigned long TYPE;
-protected:
-    unsigned long m_size;
-    unsigned char* m_data;
-    map<unsigned char*, cOvlMemBlob> m_blobs;
-    bool m_made;
-    ovlOVLManager* m_defermake;
-    bool m_deferable;
-
-    virtual void Check(const string& err);
 private:
-    cOvl* m_ovl;
+    map<string, TextureStruct> m_textures;
+
+    ovlFLICManager* m_flicman;
 public:
-    ovlOVLManager();
-    virtual ~ovlOVLManager();
+    ovlTEXManager(): ovlOVLManager() {};
+    virtual ~ovlTEXManager(){};
 
     virtual void Init(cOvl* ovl);
 
-    void DeferMake(ovlOVLManager* man);
+    void AddTexture(const string& name, unsigned long dimension, unsigned long size, unsigned long* data);
+    void SetUnknowns18(const string& name, unsigned long unk1 = 0x70007, unsigned long unk2 = 0x70007, unsigned long unk3 = 0x70007, unsigned long unk4 = 0x70007, unsigned long unk5 = 0x70007, unsigned long unk6 = 0x70007, unsigned long unk7 = 0x70007, unsigned long unk8 = 0x70007);
+    void SetUnknowns912(const string& name, unsigned long unk9 = 1, unsigned long unk10 = 8, unsigned long unk11 = 0x10, unsigned long unk12 = 1);
 
-    bool IsMade() {
-        return m_made;
-    }
+    virtual unsigned char* Make(cOvlInfo* info);
 
-    virtual unsigned char* Make(cOvlInfo* info) = 0;
-    virtual void WriteLoader(FILE* f);
-
-    virtual const unsigned long GetSize() const;
-    virtual unsigned char* GetData();
     virtual const char* Loader() const {
         return LOADER;
     };
-    virtual const char* Name() const = 0;
-    virtual const char* Tag() const = 0;
+    virtual const char* Name() const {
+        return NAME;
+    };
+    virtual const char* Tag() const {
+        return TAG;
+    };
     virtual const unsigned long Type() const {
         return TYPE;
     };
-
-    //static ovlOVLManager* MakeManager(const char* tag);
-protected:
-    ovlLodSymRefManager* GetLSRManager();
-    ovlStringTable* GetStringTable();
-    ovlRelocationManager* GetRelocationManager();
 };
 
 #endif

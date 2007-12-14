@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 // New OVL creation library
-// Base manager class for structures
+// Manager class for TXT structures
 // Copyright (C) 2007 Tobias Minch
 //
 // This program is free software; you can redistribute it and/or
@@ -26,66 +26,45 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef MANAGEROVL_H_INCLUDED
-#define MANAGEROVL_H_INCLUDED
+#ifndef MANAGERTXT_H_INCLUDED
+#define MANAGERTXT_H_INCLUDED
 
-#include <map>
 #include <string>
+#include <vector>
 
-#include "LodSymRefManager.h"
-#include "OVLClasses.h"
-#include "RelocationManager.h"
-#include "StringTable.h"
+#include "ManagerOVL.h"
 
 using namespace std;
 
-class cOvl;
-class ovlOVLManager {
+class ovlTXTManager: public ovlOVLManager {
 public:
     static const char* LOADER;
+    static const char* NAME;
+    static const char* TAG;
     static const unsigned long TYPE;
-protected:
-    unsigned long m_size;
-    unsigned char* m_data;
-    map<unsigned char*, cOvlMemBlob> m_blobs;
-    bool m_made;
-    ovlOVLManager* m_defermake;
-    bool m_deferable;
-
-    virtual void Check(const string& err);
 private:
-    cOvl* m_ovl;
+    vector<string> m_txtnames;
+    vector<string> m_txtstrings;
 public:
-    ovlOVLManager();
-    virtual ~ovlOVLManager();
+    ovlTXTManager(): ovlOVLManager() {};
+    virtual ~ovlTXTManager(){};
 
-    virtual void Init(cOvl* ovl);
+    void AddText(const char* name, const char* str);
 
-    void DeferMake(ovlOVLManager* man);
+    virtual unsigned char* Make(cOvlInfo* info);
 
-    bool IsMade() {
-        return m_made;
-    }
-
-    virtual unsigned char* Make(cOvlInfo* info) = 0;
-    virtual void WriteLoader(FILE* f);
-
-    virtual const unsigned long GetSize() const;
-    virtual unsigned char* GetData();
     virtual const char* Loader() const {
         return LOADER;
     };
-    virtual const char* Name() const = 0;
-    virtual const char* Tag() const = 0;
+    virtual const char* Name() const {
+        return NAME;
+    };
+    virtual const char* Tag() const {
+        return TAG;
+    };
     virtual const unsigned long Type() const {
         return TYPE;
     };
-
-    //static ovlOVLManager* MakeManager(const char* tag);
-protected:
-    ovlLodSymRefManager* GetLSRManager();
-    ovlStringTable* GetStringTable();
-    ovlRelocationManager* GetRelocationManager();
 };
 
 #endif

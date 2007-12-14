@@ -29,6 +29,7 @@
 #include "ManagerBAN.h"
 
 #include "OVLException.h"
+#include "OVLng.h"
 
 const char* ovlBANManager::NAME = "BoneAnim";
 const char* ovlBANManager::TAG = "ban";
@@ -65,10 +66,10 @@ void ovlBANManager::AddAnimation(const char* name, unsigned long bones, float to
     m_size += c_ban->BoneCount * sizeof(BoneAnimBone);
 
     m_animationlist.push_back(c_ban);
-    m_lsrman->AddLoader(OVLT_COMMON);
-    m_lsrman->AddSymbol(OVLT_COMMON);
+    GetLSRManager()->AddLoader(OVLT_COMMON);
+    GetLSRManager()->AddSymbol(OVLT_COMMON);
     m_animationnames.push_back(string(name));
-    m_stable->AddSymbolString(name, Tag());
+    GetStringTable()->AddSymbolString(name, Tag());
 
     //m_canim = c_ban;
     m_cbone = c_ban->Bones;
@@ -104,7 +105,7 @@ void ovlBANManager::AddBone(const char* name, unsigned long translations, unsign
     // Rotations
     m_size += m_cbone->RotateCount * sizeof(txyz);
 
-    m_stable->AddString(name);
+    GetStringTable()->AddString(name);
 
     m_transcount = m_cbone->TranslateCount;
     m_ntrans = 0;
@@ -167,24 +168,24 @@ unsigned char* ovlBANManager::Make(cOvlInfo* info) {
         c_ban->Bones = reinterpret_cast<BoneAnimBone*>(c_data);
         c_data += c_ban->BoneCount * sizeof(BoneAnimBone);
         memcpy(c_ban->Bones, m_animationlist[i]->Bones, c_ban->BoneCount * sizeof(BoneAnimBone));
-        m_relman->AddRelocation((unsigned long *)&c_ban->Bones);
+        GetRelocationManager()->AddRelocation((unsigned long *)&c_ban->Bones);
 
         // Symbol and Loader
-        SymbolStruct* c_symbol = m_lsrman->MakeSymbol(OVLT_COMMON, m_stable->FindSymbolString(m_animationnames[i].c_str(), Tag()), reinterpret_cast<unsigned long*>(c_ban), true);
-        m_lsrman->OpenLoader(OVLT_COMMON, TAG, reinterpret_cast<unsigned long*>(c_ban), false, c_symbol);
-        m_lsrman->CloseLoader(OVLT_COMMON);
+        SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_COMMON, GetStringTable()->FindSymbolString(m_animationnames[i].c_str(), Tag()), reinterpret_cast<unsigned long*>(c_ban));
+        GetLSRManager()->OpenLoader(OVLT_COMMON, TAG, reinterpret_cast<unsigned long*>(c_ban), false, c_symbol);
+        GetLSRManager()->CloseLoader(OVLT_COMMON);
 
         for (unsigned long s = 0; s < c_ban->BoneCount; ++s) {
             // Bone name
-            c_ban->Bones[s].Name = m_stable->FindString(m_animationlist[i]->Bones[s].Name);
-            m_relman->AddRelocation((unsigned long *)&c_ban->Bones[s].Name);
+            c_ban->Bones[s].Name = GetStringTable()->FindString(m_animationlist[i]->Bones[s].Name);
+            GetRelocationManager()->AddRelocation((unsigned long *)&c_ban->Bones[s].Name);
 
             // Translations
             if (c_ban->Bones[s].TranslateCount) {
                 c_ban->Bones[s].Translate = reinterpret_cast<txyz*>(c_data);
                 c_data += c_ban->Bones[s].TranslateCount * sizeof(txyz);
                 memcpy(c_ban->Bones[s].Translate, m_animationlist[i]->Bones[s].Translate, c_ban->Bones[s].TranslateCount * sizeof(txyz));
-                m_relman->AddRelocation((unsigned long *)&c_ban->Bones[s].Translate);
+                GetRelocationManager()->AddRelocation((unsigned long *)&c_ban->Bones[s].Translate);
             }
 
             // Rotations
@@ -192,7 +193,7 @@ unsigned char* ovlBANManager::Make(cOvlInfo* info) {
                 c_ban->Bones[s].Rotate = reinterpret_cast<txyz*>(c_data);
                 c_data += c_ban->Bones[s].RotateCount * sizeof(txyz);
                 memcpy(c_ban->Bones[s].Rotate, m_animationlist[i]->Bones[s].Rotate, c_ban->Bones[s].RotateCount * sizeof(txyz));
-                m_relman->AddRelocation((unsigned long *)&c_ban->Bones[s].Rotate);
+                GetRelocationManager()->AddRelocation((unsigned long *)&c_ban->Bones[s].Rotate);
             }
 
         }

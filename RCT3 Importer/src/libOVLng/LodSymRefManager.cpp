@@ -30,6 +30,8 @@
 
 #include "OVLDebug.h"
 #include "OVLException.h"
+#include "RelocationManager.h"
+#include "StringTable.h"
 
 int comparesymbols(const void *s1,const void *s2) {
 	return stricmp(((SymbolStruct *)s1)->Symbol,((SymbolStruct *)s2)->Symbol);
@@ -46,10 +48,15 @@ ovlLodSymRefManager::~ovlLodSymRefManager() {
             delete[] m_symrefs[i];
     }
     */
+    for (int i = 0; i < 2; ++i) {
+        for (int j = 0; j < m_loaderextras[i].size(); ++j)
+            delete m_loaderextras[i][j];
+    }
 }
 
-void ovlLodSymRefManager::Init(ovlRelocationManager* relman) {
+void ovlLodSymRefManager::Init(ovlRelocationManager* relman, ovlStringTable* stable) {
     m_relman = relman;
+    m_stable = stable;
     for (int i = 0; i < 2; ++i) {
         m_loaders[i] = NULL;
         m_cloader[i] = NULL;
@@ -68,6 +75,8 @@ void ovlLodSymRefManager::Assign(cOvlInfo* info) {
         throw EOvl("ovlLodSymRefManager::Assign called twice");
     if (!info)
         throw EOvl("ovlLodSymRefManager::Assign called without valid info");
+    if (!m_stable)
+        throw EOvl("ovlLodSymRefManager::Assign called with unassigned string table");
 
 
     for (int i = 0; i < 2; ++i) {
@@ -88,7 +97,19 @@ void ovlLodSymRefManager::Assign(cOvlInfo* info) {
         m_uloadercount[i] = 0;
         m_usymbolcount[i] = 0;
         m_usymrefcount[i] = 0;
+
+
+        for (map<string, unsigned long>::iterator it = m_npsymbols[i].begin(); it != m_npsymbols[i].end(); ++it) {
+            m_csymbol[i]->Symbol = m_stable->FindString(it->first.c_str());
+            m_csymbol[i]->data = reinterpret_cast<unsigned long*>(it->second);
+            m_csymbol[i]->IsPointer = false;
+            // We do not push relocations, that's done in Make() after sorting
+
+            m_usymbolcount[i]++;
+            m_csymbol[i]++;
+        }
     }
+
 }
 
 void ovlLodSymRefManager::Make(const map<string, unsigned long>& loadernumbers) {
@@ -121,8 +142,10 @@ void ovlLodSymRefManager::Make(const map<string, unsigned long>& loadernumbers) 
         for (int m = 0; m < m_symbolcount[i]; m++) {
             m_relman->AddRelocation((unsigned long *)&(syms2[m].Symbol));
             DUMP_RELOCATION_STR("ovlLodSymRefManager::Make, Symbol", syms2[m].Symbol);
-            m_relman->AddRelocation((unsigned long *)&(syms2[m].data));
-            DUMP_RELOCATION("ovlLodSymRefManager::Make, Data", syms2[m].data);
+            if (syms2[m].IsPointer) {
+                m_relman->AddRelocation((unsigned long *)&(syms2[m].data));
+                DUMP_RELOCATION("ovlLodSymRefManager::Make, Data", syms2[m].data);
+            }
         }
         LoaderStruct *ldrs2 = (LoaderStruct *)m_loaders[i];
         for (int m = 0; m < m_loadercount[i]; m++) {
@@ -132,8 +155,8 @@ void ovlLodSymRefManager::Make(const map<string, unsigned long>& loadernumbers) 
             ldrs2[m].LoaderType = ld->second;
 
             for (int j = 0; j < m_symbolcount[i]; j++) {
-                if (ldrs2[m].data == syms2[m].data) {
-                    ldrs2[m].Sym = &syms2[m];
+                if ((ldrs2[m].data == syms2[j].data) && (syms2[j].IsPointer)) {
+                    ldrs2[m].Sym = &syms2[j];
                 }
             }
         }
@@ -148,8 +171,8 @@ void ovlLodSymRefManager::AddLoader(cOvlType type) {
     m_loadercount[type]++;
 }
 
-LoaderStruct* ovlLodSymRefManager::OpenLoader(cOvlType type, const char* ctype, unsigned long *data, bool hasextradata, SymbolStruct *sym) {
-    DUMP_LOG("Trace: ovlLodSymRefManager::OpenLoader('%s', %08lx, %d, %08lx)", ctype, DPTR(data), hasextradata, DPTR(sym));
+LoaderStruct* ovlLodSymRefManager::OpenLoader(cOvlType type, const char* ctype, unsigned long *data, unsigned long extradatacount, SymbolStruct *sym) {
+    DUMP_LOG("Trace: ovlLodSymRefManager::OpenLoader('%s', %08lx, %ld, %08lx)", ctype, DPTR(data), extradatacount, DPTR(sym));
     if (!m_loaders[type])
         throw EOvl("ovlLodSymRefManager::OpenLoader called before assignment");
     if (!m_relman)
@@ -163,18 +186,33 @@ LoaderStruct* ovlLodSymRefManager::OpenLoader(cOvlType type, const char* ctype, 
     m_cloader[type]->data = data;
     m_relman->AddRelocation((unsigned long *)&m_cloader[type]->data);
     DUMP_RELOCATION("ovlLodSymRefManager::OpenLoader, Data", m_cloader[type]->data);
-    m_cloader[type]->HasExtraData = hasextradata;
-    m_cloader[type]->Sym = sym;
-    m_relman->AddRelocation((unsigned long *)&m_cloader[type]->Sym);
-    DUMP_RELOCATION("ovlLodSymRefManager::OpenLoader, Sym", m_cloader[type]->Sym);
+    m_cloader[type]->HasExtraData = extradatacount;
+    if (sym) {
+        m_cloader[type]->Sym = sym;
+        m_relman->AddRelocation((unsigned long *)&m_cloader[type]->Sym);
+        DUMP_RELOCATION("ovlLodSymRefManager::OpenLoader, Sym", m_cloader[type]->Sym);
+    } else {
+        m_cloader[type]->Sym = NULL;
+    }
     m_cloader[type]->SymbolsToResolve = 0;
 
     string t = ctype;
     m_loadernames[type].push_back(t);
 
     m_loaderopen[type] = true;
+    m_loaderextracount[type] = extradatacount;
 
     return m_cloader[type];
+}
+
+void ovlLodSymRefManager::AddExtraData(cOvlType type, unsigned long size, unsigned char* data) {
+    if (!m_loaderopen[type])
+        throw EOvl("ovlLodSymRefManager::AddExtraData called with closed loader");
+    if (!m_loaderextracount[type])
+        throw EOvl("ovlLodSymRefManager::AddExtraData called with no unadded extra data left");
+
+    m_loaderextras[type].push_back(new ovlExtraChunk(size, data));
+    m_loaderextracount[type]--;
 }
 
 LoaderStruct* ovlLodSymRefManager::CloseLoader(cOvlType type) {
@@ -182,6 +220,8 @@ LoaderStruct* ovlLodSymRefManager::CloseLoader(cOvlType type) {
         throw EOvl("ovlLodSymRefManager::CloseLoader called before assignment");
     if (!m_loaderopen[type])
         throw EOvl("ovlLodSymRefManager::CloseLoader called with closed loader");
+    if (m_loaderextracount[type])
+        throw EOvl("ovlLodSymRefManager::CloseLoader called with unadded extra data");
 
     m_loaderopen[type] = false;
     m_uloadercount[type]++;
@@ -201,7 +241,18 @@ void ovlLodSymRefManager::AddSymbol(cOvlType type) {
     m_symbolcount[type]++;
 }
 
-SymbolStruct* ovlLodSymRefManager::MakeSymbol(cOvlType type, char* symbol, unsigned long *data, bool ispointer) {
+void ovlLodSymRefManager::AddSymbol(cOvlType type, const char* symbol, unsigned long data) {
+    if (m_loaders[0] || m_symbols[0] || m_symrefs[0] || m_loaders[1] || m_symbols[1] || m_symrefs[1])
+        throw EOvl("ovlLodSymRefManager::AddSymbol(2) called after assignment");
+    if (!m_stable)
+        throw EOvl("ovlLodSymRefManager::AddSymbol(2) called with unassigned string table");
+
+    m_symbolcount[type]++;
+    m_npsymbols[type][string(symbol)] = data;
+    m_stable->AddString(symbol);
+}
+
+SymbolStruct* ovlLodSymRefManager::MakeSymbol(cOvlType type, char* symbol, unsigned long *data) {
     if (!m_symbols[type])
         throw EOvl("ovlLodSymRefManager::MakeSymbol called before assignment");
     if (m_usymbolcount[type] == m_symbolcount[type])
@@ -209,7 +260,7 @@ SymbolStruct* ovlLodSymRefManager::MakeSymbol(cOvlType type, char* symbol, unsig
 
     m_csymbol[type]->Symbol = symbol;
     m_csymbol[type]->data = data;
-    m_csymbol[type]->IsPointer = ispointer;
+    m_csymbol[type]->IsPointer = true;
     // We do not push relocations, that's done in Make() after sorting
 
     m_usymbolcount[type]++;

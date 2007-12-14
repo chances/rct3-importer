@@ -279,6 +279,7 @@ public:
     cSCNFile m_SCN;
 
     dlgCreateScenery(wxWindow *parent=NULL);
+    virtual ~dlgCreateScenery();
     void SetDefaultRef(const wxString& prefix, const wxString& theme) {
         m_defaultRef = wxT("../shared/") + prefix + theme + wxT("-texture");
         m_prefix = prefix;

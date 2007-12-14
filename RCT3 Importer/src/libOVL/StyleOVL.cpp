@@ -45,14 +45,14 @@ const char *stdstrings =  "StyleIndex:int\0GUIIcon:txs\0"
                     "WaterCannon\0"
                     "aquarium\0aquariumcorner\0defaultpool\0defaultpoolpath\0defaultpoolsmall\0sand\0pathunderwater\0ts1a\0ts6\0ts7\0ts8";
 */
-#define STDSTRINGS_SIZE 81
+#define STDSTRINGS_SIZE 28
 const char *stdstrings =
                     "StyleIndex:int\0" // 15
                     "GUIIcon:txs\0" // 12
-                    "\0" // 1
-                    "MapColourBlue:flt\0" // 18
-                    "MapColourRed:flt\0" // 17
-                    "MapColorGreen:flt\0"; // 18 /// 81
+                    "\0"; // 1 ///28
+//                    "MapColourBlue:flt\0" // 18
+//                    "MapColourRed:flt\0" // 17
+//                    "MapColourGreen:flt\0"; // 19 /// 82
 /*
                     "GuestInjectionPoint\0"
                     "LitterBin\0 Capacity 4.0\0"
@@ -342,9 +342,9 @@ LIBOVL_API bool saveStyleOVL()
 	unsigned char *stallitems;
     unsigned char *attractions;
 	symbolcount++;
-	symbolcount++;
-	symbolcount++;
-	symbolcount++;
+//	symbolcount++;
+//	symbolcount++;
+//	symbolcount++;
 	unsigned long i;
 	char *Symbol;
 	for (unsigned long i = 0;i < SceneryItems.size();i++)
@@ -551,10 +551,11 @@ LIBOVL_API bool saveStyleOVL()
 	char *StyleIndex = strings;
 	GUIIcon = StyleIndex+(strlen(StyleIndex)+1);
 	char *nullstring = GUIIcon+(strlen(GUIIcon)+1);
-	char *mapblue = nullstring+1;
-	char *mapred = mapblue+strlen(mapblue)+1;
-	char *mapgreen = mapred+strlen(mapred)+1;
-	strings = mapgreen+strlen(mapgreen)+1;
+//	char *mapblue = nullstring+1;
+//	char *mapred = mapblue+strlen(mapblue)+1;
+//	char *mapgreen = mapred+strlen(mapred)+1;
+//	strings = mapgreen+strlen(mapgreen)+1;
+    strings = nullstring+1;
 	use_extra[0].type = nullstring;
 	use_extra[0].parameter = nullstring;
 	for(unsigned long i = 1; i < EXTRA_COUNT; i++) {
@@ -656,18 +657,18 @@ LIBOVL_API bool saveStyleOVL()
 	symbols[SymbolPos].data = (unsigned long *)styleval;
 	symbols[SymbolPos].IsPointer = 0;
 	SymbolPos++;
-	symbols[SymbolPos].Symbol = mapred;
-	symbols[SymbolPos].data = 0;
-	symbols[SymbolPos].IsPointer = 0;
-	SymbolPos++;
-	symbols[SymbolPos].Symbol = mapgreen;
-	symbols[SymbolPos].data = 0;
-	symbols[SymbolPos].IsPointer = 0;
-	SymbolPos++;
-	symbols[SymbolPos].Symbol = mapblue;
-	symbols[SymbolPos].data = 0;
-	symbols[SymbolPos].IsPointer = 0;
-	SymbolPos++;
+//	symbols[SymbolPos].Symbol = mapred;
+//	symbols[SymbolPos].data = 0;
+//	symbols[SymbolPos].IsPointer = 0;
+//	SymbolPos++;
+//	symbols[SymbolPos].Symbol = mapgreen;
+//	symbols[SymbolPos].data = 0;
+//	symbols[SymbolPos].IsPointer = 0;
+//	SymbolPos++;
+//	symbols[SymbolPos].Symbol = mapblue;
+//	symbols[SymbolPos].data = 0;
+//	symbols[SymbolPos].IsPointer = 0;
+//	SymbolPos++;
 	TextString::LoaderNumber = loadernum;
 	loadernum++;
 	Texture::LoaderNumber = loadernum;
@@ -930,7 +931,8 @@ LIBOVL_API bool saveStyleOVL()
 	for (i = 0;i < symbolcount;i++)
 	{
 		relocations.push((unsigned long *)&(syms2[i].Symbol));
-		if ((syms2[i].Symbol != mapblue) && (syms2[i].Symbol != mapgreen) && (syms2[i].Symbol != mapred) && (syms2[i].Symbol != StyleIndex))
+//		if ((syms2[i].Symbol != mapblue) && (syms2[i].Symbol != mapgreen) && (syms2[i].Symbol != mapred) && (syms2[i].Symbol != StyleIndex))
+		if (syms2[i].Symbol != StyleIndex)
 		{
 			relocations.push((unsigned long *)&(syms2[i].data));
 		}

@@ -1120,7 +1120,11 @@ wxEffectListBox::wxEffectListBox(wxWindow *parent, cModel *content):
         wxHtmlListBox(parent, wxID_ANY, wxDefaultPosition, wxSize(-1,150), wxSUNKEN_BORDER) {
     m_contents = content;
     UpdateContents();
-    SetSelection(0);
+    if (m_contents) {
+        SetSelection(m_contents->effectpoints.size()?0:wxNOT_FOUND);
+    } else {
+        SetSelection(wxNOT_FOUND);
+    }
 }
 
 void wxEffectListBox::UpdateContents() {
@@ -1392,11 +1396,15 @@ dlgModel::dlgModel(wxWindow *parent, bool animated):m_model(NULL), m_animated(an
     m_mgr.SetFlags(0);
 
     UpdateAll();
+
+    SetSize(READ_APP_SIZE("Model", GetSize()));
+    Center();
 }
 
 dlgModel::~dlgModel() {
 //    if (m_model)
 //        delete m_model;
+    WRITE_APP_SIZE("Model", GetSize());
     m_mgr.UnInit();
 }
 
