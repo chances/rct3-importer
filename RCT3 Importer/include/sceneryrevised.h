@@ -218,6 +218,13 @@ struct Sound
 	int channel2size; 	// 0 if not channel2
 };
 
+struct Sound3
+{
+    float unk1;
+    float unk2;
+    unsigned long unk3;  // Usually 0
+};
+
 struct Sound2
 {
         float unk1;
@@ -450,7 +457,7 @@ struct SceneryItem
 };
 struct SceneryItemExtra1
 {
-	unsigned char *SoundsUnk;
+	Sound3 *SoundsUnk;              // Array of SoundsCount length
 	unsigned long unk2;
 	unsigned long AddonPack;        // 1 for Soaked
 	unsigned long GenericAddon;
@@ -458,7 +465,7 @@ struct SceneryItemExtra1
 
 struct SceneryItemExtra2
 {
-	unsigned char *SoundsUnk;
+	Sound3 *SoundsUnk;
 	unsigned long unk2;
 	unsigned long AddonPack;       // 0 = Vanilla, 1 = Soaked, 2 = Wild
 	unsigned long GenericAddon;
