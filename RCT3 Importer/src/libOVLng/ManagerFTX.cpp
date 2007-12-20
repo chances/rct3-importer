@@ -31,13 +31,13 @@
 #define WIN32_MEAN_AND_LEAN
 #include <windows.h>
 
+#include "ManagerCommon.h"
 #include "OVLException.h"
 #include "rct3log.h"
 
 const char* ovlFTXManager::LOADER = "FGDK";
 const char* ovlFTXManager::NAME = "FlexiTexture";
 const char* ovlFTXManager::TAG = "ftx";
-const char* ovlTXSManager::TAG = "txs";
 
 ovlFTXManager::~ovlFTXManager() {
     for (vector<FlexiTextureInfoStruct*>::iterator it = m_ftxlist.begin(); it != m_ftxlist.end(); ++it) {

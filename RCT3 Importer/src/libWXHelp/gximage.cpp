@@ -411,6 +411,7 @@ void wxGXImage::FromFileSystem(const wxString& filename) {
 }
 
 void wxGXImage::GetAlpha(unsigned char* data) const {
+    wxLogDebug(wxT("TRACE wxGXImage::GetAlpha"));
     if (m_image.matte()) {
         const_cast<Magick::Image*>(&m_image)->write(0, 0, m_image.columns(), m_image.rows(), "A", Magick::CharPixel, data);
         for (unsigned int i = 0; i < m_image.columns()*m_image.rows(); ++i)
@@ -421,6 +422,7 @@ void wxGXImage::GetAlpha(unsigned char* data) const {
 }
 
 void wxGXImage::GetGrayscale(unsigned char* data) const {
+    wxLogDebug(wxT("TRACE wxGXImage::GetGrayscale"));
     Magick::Image temp = m_image;
     temp.type(Magick::GrayscaleType);
     const Magick::PixelPacket* src = temp.getConstPixels(0, 0, m_image.columns(), m_image.rows());
@@ -431,15 +433,17 @@ void wxGXImage::GetGrayscale(unsigned char* data) const {
 }
 
 void wxGXImage::GetAs8bit(unsigned char* data, unsigned char* palette) const {
+    wxLogDebug(wxT("TRACE wxGXImage::GetAs8bit"));
     Magick::Image temp = m_image;
     RGBQUAD* pal = reinterpret_cast<RGBQUAD*>(palette);
 
     if (temp.matte())
         temp.matte(false);
 
-    if (temp.type() != Magick::PaletteType) {
+    if ((temp.type() != Magick::PaletteType) || (temp.totalColors() != 256)) {
         temp.quantizeColors(256);
         temp.quantizeDither(false);
+        temp.quantize();
         temp.type(Magick::PaletteType);
     }
 
@@ -456,6 +460,7 @@ void wxGXImage::GetAs8bit(unsigned char* data, unsigned char* palette) const {
 }
 
 void wxGXImage::GetAs8bitForced(unsigned char* data, unsigned char* palette, bool special) const {
+    wxLogDebug(wxT("TRACE wxGXImage::GetAs8bitForced"));
     RGBQUAD* pal = reinterpret_cast<RGBQUAD*>(palette);
     const Magick::PixelPacket* src = m_image.getConstPixels(0, 0, m_image.columns(), m_image.rows());
 
@@ -479,6 +484,7 @@ void wxGXImage::GetAs8bitForced(unsigned char* data, unsigned char* palette, boo
 
 #ifdef USE_SQUISH
 void wxGXImage::DxtCompress(void* buffer, const int dxt) {
+    wxLogDebug(wxT("TRACE wxGXImage::DxtCompress"));
     int datasize = 4*m_image.rows()*m_image.columns();
     squish::u8* data = new squish::u8[datasize];
     Magick::Image temp = m_image;

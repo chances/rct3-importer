@@ -102,7 +102,6 @@ void showBitmapInfo(wxWindow *parent, const char *filename) {
     res.Printf("File: %s\n", filename);
     try {
         Magick::Image img(filename);
-        img.colorMapSize(256);
         res += wxString::Format(_("Size: %dx%d\n"), img.columns(), img.rows());
         res += wxString::Format(_("Format: %s (%s)\n"), img.magick().c_str(), img.format().c_str());
         res += _("Image Type: ") + getGXTypeString(img.type()) + wxT("\n");

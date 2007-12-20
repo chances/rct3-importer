@@ -87,7 +87,7 @@
 			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="All" targets="Debug;Profile;Release;" />
+			<Add alias="All" targets="Debug;Profile;Release;Release Base;Debug Base;" />
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-Wall" />

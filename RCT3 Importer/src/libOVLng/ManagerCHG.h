@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 // New OVL creation library
-// Manager class for FTX structures
+// Manager class for CHG structures
 // Copyright (C) 2007 Tobias Minch
 //
 // This program is free software; you can redistribute it and/or
@@ -26,53 +26,70 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef MANAGERFTX_H_INCLUDED
-#define MANAGERFTX_H_INCLUDED
+#ifndef MANAGERCHG_H_INCLUDED
+#define MANAGERCHG_H_INCLUDED
 
+#include <map>
 #include <string>
 #include <vector>
 
-#include "flexitexture.h"
+#include "stall.h"
 #include "ManagerOVL.h"
+#include "ManagerCommon.h"
 
 using namespace std;
 
-class ovlFTXManager: public ovlOVLManager {
+class cChangingRoom {
+public:
+    string name;
+    cAttraction attraction;
+    string sid;
+    string spline;
+
+    cChangingRoom() {
+        attraction.type = ATTRACTION_TYPE_Changing_Room | ATTRACTION_TYPE_Soaked;
+	    attraction.unk2 = 0;
+	    attraction.unk3 = 0;
+	    attraction.unk6 = 4960;
+	    attraction.unk10 = -1;
+	    attraction.unk11 = 1;
+	    attraction.unk12 = 0;
+
+    };
+    void Fill(ChangingRoom* chg) {
+        chg->SID = NULL;
+        chg->spline = NULL;
+        attraction.Fill(chg->att);
+    }
+};
+
+class ovlCHGManager: public ovlOVLManager {
 public:
     static const char* LOADER;
     static const char* NAME;
     static const char* TAG;
 private:
-    vector<FlexiTextureInfoStruct*> m_ftxlist;
-    vector<string> m_ftxnames;
+    map<string, cChangingRoom>  m_items;
 
-    FlexiTextureInfoStruct* m_cftis;
-    FlexiTextureStruct* m_cfts;
-    long m_ftscount;
 public:
-    ovlFTXManager(): ovlOVLManager() {
-        m_cftis = NULL;
-        m_cfts = NULL;
-        m_ftscount = 0;
+    ovlCHGManager(): ovlOVLManager() {
     };
-    virtual ~ovlFTXManager();
 
-    void AddTexture(const char* name, unsigned long dimension, unsigned long fps, unsigned long recol,
-                    unsigned long animationcount, unsigned long* animation, unsigned long framecount);
-    void AddTextureFrame(unsigned long dimension, unsigned long recol,
-                         unsigned char* palette, unsigned char* texture, unsigned char* alpha);
+    void AddRoom(const cChangingRoom& item);
 
     virtual unsigned char* Make(cOvlInfo* info);
 
-    virtual const char* Loader() const {
-        return LOADER;
-    };
     virtual const char* Name() const {
         return NAME;
     };
     virtual const char* Tag() const {
         return TAG;
     };
+    virtual const char* Loader() const {
+        return LOADER;
+    };
 };
+
+
 
 #endif

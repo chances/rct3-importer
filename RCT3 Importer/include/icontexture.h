@@ -74,6 +74,7 @@ struct TextureStruct
 	unsigned long unk11; //seen 0x0D and 0x10, use 0x10 for icons
 	unsigned long *TextureData; //always 0 on disk files, use GUIIcon:txs as a symbol resolve for icons
 	unsigned long unk12; //always 1
+                         // hiword is addonpack, 2 has two more unknowns at end of struct
 	FlicStruct **Flic; //always points to pointer before flic data
 	TextureStruct2 *ts2;
 };

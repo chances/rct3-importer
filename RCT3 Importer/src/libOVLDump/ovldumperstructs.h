@@ -77,14 +77,14 @@ public:
 
     unsigned long relocation;
     unsigned long* relocationsite;
-    int r_filetype; // Common or unique
+    cOvlType r_filetype; // Common or unique
     int r_file;     // 0-8
     unsigned long r_block;
     string r_inwhat;
 
     unsigned long targetrelocation;
     void* target;
-    int t_filetype; // Common or unique
+    cOvlType t_filetype; // Common or unique
     int t_file;     // 0-8
     unsigned long t_block;
     string t_usedfor;
@@ -96,13 +96,13 @@ public:
     OvlRelocation() {
         relocation = 0;
         relocationsite = NULL;
-        r_filetype = 0;
+        r_filetype = OVLT_COMMON;
         r_file = -1;
         r_block = 0xFFFFFFFF;
         r_inwhat = "";
         targetrelocation = 0;
         target = NULL;
-        t_filetype = 0;
+        t_filetype = OVLT_COMMON;
         t_file = -1;
         t_block = 0xFFFFFFFF;
         t_usedfor = "";
@@ -150,7 +150,7 @@ public:
     unsigned long count;
     unsigned long size;
     unsigned long reloffset;
-    vector<OvlFileBlock> files;
+    vector<OvlFileBlock> blocks;
 
     vector<unsigned long> unknownv5_list;
     unsigned long unknownv4v5_1;

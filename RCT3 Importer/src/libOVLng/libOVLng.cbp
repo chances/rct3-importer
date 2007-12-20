@@ -51,6 +51,7 @@
 		<Unit filename="..\..\include\boneanim.h" />
 		<Unit filename="..\..\include\boneshape.h" />
 		<Unit filename="..\..\include\car.h" />
+		<Unit filename="..\..\include\carrieditems.h" />
 		<Unit filename="..\..\include\flexitexture.h" />
 		<Unit filename="..\..\include\guiicon.h" />
 		<Unit filename="..\..\include\icontexture.h" />
@@ -59,6 +60,7 @@
 		<Unit filename="..\..\include\scenery.h" />
 		<Unit filename="..\..\include\sceneryrevised.h" />
 		<Unit filename="..\..\include\sceneryvisual.h" />
+		<Unit filename="..\..\include\spline.h" />
 		<Unit filename="..\..\include\stall.h" />
 		<Unit filename="..\..\include\staticshape.h" />
 		<Unit filename="..\..\include\terraintype.h" />
@@ -69,6 +71,14 @@
 		<Unit filename="ManagerBAN.h" />
 		<Unit filename="ManagerBSH.cpp" />
 		<Unit filename="ManagerBSH.h" />
+		<Unit filename="ManagerCED.cpp" />
+		<Unit filename="ManagerCED.h" />
+		<Unit filename="ManagerCHG.cpp" />
+		<Unit filename="ManagerCHG.h" />
+		<Unit filename="ManagerCID.cpp" />
+		<Unit filename="ManagerCID.h" />
+		<Unit filename="ManagerCommon.cpp" />
+		<Unit filename="ManagerCommon.h" />
 		<Unit filename="ManagerFLIC.cpp" />
 		<Unit filename="ManagerFLIC.h" />
 		<Unit filename="ManagerFTX.cpp" />
@@ -83,6 +93,10 @@
 		<Unit filename="ManagerSHS.h" />
 		<Unit filename="ManagerSID.cpp" />
 		<Unit filename="ManagerSID.h" />
+		<Unit filename="ManagerSPL.cpp" />
+		<Unit filename="ManagerSPL.h" />
+		<Unit filename="ManagerSTA.cpp" />
+		<Unit filename="ManagerSTA.h" />
 		<Unit filename="ManagerSVD.cpp" />
 		<Unit filename="ManagerSVD.h" />
 		<Unit filename="ManagerTEX.cpp" />

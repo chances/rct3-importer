@@ -37,6 +37,9 @@
 
 using namespace std;
 
+#define RelocationFromVar(m, s) \
+    ((reinterpret_cast<unsigned long>(&m) + s.reloffset) - reinterpret_cast<unsigned long>(s.data))
+
 class cOVLDump {
 protected:
     string m_file[2];
@@ -69,7 +72,7 @@ protected:
     void Init();
     void ReadFile(cOvlType type);
     void WriteFile(cOvlType type);
-    void ResolveRelocation(const unsigned long relocation, void** target, int& filetype, int& file, unsigned long& block);
+    void ResolveRelocation(const unsigned long relocation, void** target, cOvlType& filetype, int& file, unsigned long& block);
     void MakeStrings(cOvlType type);
     void MakeSymbols(cOvlType type);
     void MakeLoaders(cOvlType type);
@@ -113,6 +116,9 @@ public:
     const OvlStringTableEntry& GetString(unsigned long id);
     void SetString(unsigned long id, const char* newstr);
 
+    const map<string, map<string, OvlRelocation*> >& GetStructures(cOvlType type) {
+        return m_structmap[type];
+    }
 };
 
 #endif

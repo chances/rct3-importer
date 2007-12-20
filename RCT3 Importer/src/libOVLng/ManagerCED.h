@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 // New OVL creation library
-// Manager class for FTX structures
+// Manager class for CED structures
 // Copyright (C) 2007 Tobias Minch
 //
 // This program is free software; you can redistribute it and/or
@@ -26,53 +26,76 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef MANAGERFTX_H_INCLUDED
-#define MANAGERFTX_H_INCLUDED
+#ifndef MANAGERCED_H_INCLUDED
+#define MANAGERCED_H_INCLUDED
 
+#include <map>
 #include <string>
 #include <vector>
 
-#include "flexitexture.h"
+#include "carrieditems.h"
 #include "ManagerOVL.h"
+#include "ManagerCommon.h"
 
 using namespace std;
 
-class ovlFTXManager: public ovlOVLManager {
+class cCarriedItemExtra {
+public:
+    string name;
+    unsigned long unk1; // 0
+    string nametxt;
+	string icon;        // 20x20
+	unsigned long unk4; // 0 usually, 4 for Mustard
+	float hunger;       // >= 0.0, <= 0.3   Probably influences hunger
+	float thirst;       // >= -0.3, <=0.3   Probably influences thirst, negative increases, positive quenches
+	float unk7;         // 0.0 usually, 0.3 for Parmesan, Chilli, ChilliSauce and Marshmellow
+
+    cCarriedItemExtra() {
+        unk1 = 0;
+        unk4 = 0;
+        unk7 = 0.0;
+        hunger = 0.0;
+        thirst = 0.0;
+    }
+    void Fill(CarriedItemExtra* ced) {
+        ced->unk1 = unk1;
+        ced->name = NULL;
+        ced->icon = NULL;
+        ced->unk4 = unk4;
+        ced->hunger = hunger;
+        ced->thirst = thirst;
+        ced->unk7 = unk7;
+    }
+};
+
+
+class ovlCEDManager: public ovlOVLManager {
 public:
     static const char* LOADER;
     static const char* NAME;
     static const char* TAG;
 private:
-    vector<FlexiTextureInfoStruct*> m_ftxlist;
-    vector<string> m_ftxnames;
+    map<string, cCarriedItemExtra>  m_extras;
 
-    FlexiTextureInfoStruct* m_cftis;
-    FlexiTextureStruct* m_cfts;
-    long m_ftscount;
 public:
-    ovlFTXManager(): ovlOVLManager() {
-        m_cftis = NULL;
-        m_cfts = NULL;
-        m_ftscount = 0;
+    ovlCEDManager(): ovlOVLManager() {
     };
-    virtual ~ovlFTXManager();
 
-    void AddTexture(const char* name, unsigned long dimension, unsigned long fps, unsigned long recol,
-                    unsigned long animationcount, unsigned long* animation, unsigned long framecount);
-    void AddTextureFrame(unsigned long dimension, unsigned long recol,
-                         unsigned char* palette, unsigned char* texture, unsigned char* alpha);
+    void AddExtra(const cCarriedItemExtra& item);
 
     virtual unsigned char* Make(cOvlInfo* info);
 
-    virtual const char* Loader() const {
-        return LOADER;
-    };
     virtual const char* Name() const {
         return NAME;
     };
     virtual const char* Tag() const {
         return TAG;
     };
+    virtual const char* Loader() const {
+        return LOADER;
+    };
 };
+
+
 
 #endif

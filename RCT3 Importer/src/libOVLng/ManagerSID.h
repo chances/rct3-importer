@@ -242,7 +242,7 @@ public:
 class cSidExtra {
 public:
     unsigned short version;
-	unsigned char *SoundsUnk;
+	SceneryExtraSound* SoundsUnk;
 	unsigned long unk2;
 	unsigned long AddonPack;       // 0 = Vanilla, 1 = Soaked, 2 = Wild
 	unsigned long GenericAddon;

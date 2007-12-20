@@ -1110,6 +1110,9 @@ cFlexiTexture dlgTextureSimple::GetFlexiTexture() {
 
 void dlgTextureSimple::SetTextureName(const wxString& val) {
     m_frame.Texture = val;
+    m_frame.AlphaCutoff = 0;
+    m_frame.Recolorable = 0;
+    m_frame.AlphaSource = 0;
     m_ft.Name = wxFileName(val).GetName();
 
     try {

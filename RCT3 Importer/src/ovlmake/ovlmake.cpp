@@ -50,10 +50,36 @@ int DoCompile(const wxCmdLineParser& parser) {
         wxFileName outputfile;
         bool convert = parser.Found(wxT("c"));
         bool checkonly = parser.Found(wxT("check"));
+        bool dryrun = parser.Found(wxT("dryrun"));
+        bool install = parser.Found(wxT("install"));
+        wxString installdir = wxT("");
+        if (!parser.Found(wxT("installdir"), &installdir)) {
+            if (install) {
+                HKEY key;
+                char *temp = new char[MAX_PATH+1];
+                LONG res = RegOpenKeyEx(HKEY_LOCAL_MACHINE,
+                                        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{907B4640-266B-4A21-92FB-CD1A86CD0F63}",
+                                        0, KEY_QUERY_VALUE, &key);
+                unsigned long length = MAX_PATH;
+                res = RegQueryValueEx(key, "InstallLocation", 0, NULL, (LPBYTE) temp, &length);
+                installdir = temp;
+                delete[] temp;
+                RegCloseKey(key);
+                if (res != ERROR_SUCCESS) {
+                    throw RCT3Exception(_("Cannot determine installatinon directory. Use --installdir to set manually."));
+                }
+            }
+        } else {
+            install = true;
+        }
         if (convert)
             wxLogMessage(_("Mode: Convert to new xml"));
         else if (checkonly)
             wxLogMessage(_("Mode: Check input"));
+        else if (dryrun)
+            wxLogMessage(_("Mode: Dryrun"));
+        else if (install)
+            wxLogMessage(_("Mode: Install"));
         else
             wxLogMessage(_("Mode: Create OVL"));
 
@@ -75,10 +101,21 @@ int DoCompile(const wxCmdLineParser& parser) {
                     wxLogMessage(_("Processing raw xml file..."));
                     WRITE_RCT3_EXPERTMODE(true);
 
-                    if (parser.GetParamCount() < 2) {
-                        cRawOvl rovl(root, inputfile);
+                    cRawOvl rovl;
+                    rovl.SetOptions(install, dryrun);
+                    if (install) {
+                        wxFileName temp(installdir, wxEmptyString);
+                        rovl.Process(root, inputfile, temp.GetPathWithSep());
+                    } else if (parser.GetParamCount() < 2) {
+                        rovl.Process(root, inputfile);
                     } else {
-                        cRawOvl rovl(root, inputfile, inputfile.GetPathWithSep(),parser.GetParam(1));
+                        rovl.Process(root, inputfile, inputfile.GetPathWithSep(),parser.GetParam(1));
+                    }
+                    if (dryrun) {
+                        fprintf(stderr, "\nDryrun results:\n");
+                        for (std::vector<wxFileName>::const_iterator it = rovl.GetDryrun().begin(); it != rovl.GetDryrun().end(); ++it) {
+                            fprintf(stderr, "%s\n", it->GetFullPath().fn_str());
+                        }
                     }
                     return ret;
                 } else {
@@ -92,6 +129,9 @@ int DoCompile(const wxCmdLineParser& parser) {
             c_scn.filename = inputfile.GetFullPath();
             c_scn.Load();
         }
+
+        if (install || dryrun)
+            throw RCT3Exception(_("Cannot dryrun or install non-raw xml file."));
 
         if (parser.GetParamCount() < 2) {
             outputfile = inputfile;
@@ -221,20 +261,46 @@ int main(int argc, char **argv)
         { wxCMD_LINE_NONE }
     };
 
+    static const wxCmdLineEntryDesc cmdLineRealDesc[] =
+    {
+        { wxCMD_LINE_SWITCH, NULL, wxT("realhelp"), _("show this help message"),
+            wxCMD_LINE_VAL_NONE, wxCMD_LINE_OPTION_HELP },
+        { wxCMD_LINE_SWITCH, wxT("c"), wxT("convert"), _("convert the input file to new importer xml format (instead of creating ovl)") },
+        { wxCMD_LINE_SWITCH, NULL, wxT("ignore"), _("ignore warnings durnig the sanity check and compile nevertheless") },
+        { wxCMD_LINE_SWITCH, NULL, wxT("check"), _("only check the input file, do not actually write output") },
+        { wxCMD_LINE_SWITCH, NULL, wxT("dryrun"), _("only show which files would be generated, do not actually write output") },
+        { wxCMD_LINE_SWITCH, NULL, wxT("install"), _("install ovls to RCT3 (output file is ignored)") },
+        { wxCMD_LINE_OPTION, NULL, wxT("installdir"), _("name install directory (implies --install)") },
+
+        { wxCMD_LINE_PARAM,  NULL, NULL, _("input file"), wxCMD_LINE_VAL_STRING },
+        { wxCMD_LINE_PARAM,  NULL, NULL, _("output file"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
+
+        { wxCMD_LINE_NONE }
+    };
+
     wxCmdLineParser parser(cmdLineDesc, argc, wxArgv);
     parser.SetSwitchChars("-");
 
-    switch ( parser.Parse() )
-    {
+    if (parser.Parse(false) != -1) {
+        wxCmdLineParser parser2(cmdLineRealDesc, argc, wxArgv);
+        parser2.SetSwitchChars("-");
+        switch ( parser2.Parse(false) )
+        {
+            case -1:
+                parser2.Usage();
+                break;
+            case 0:
+                ret = DoCompile(parser2);
+                break;
 
-        case 0:
-            ret = DoCompile(parser);
-            break;
-
-        default:
-            wxLogError(_("Command line syntax error detected, aborting."));
-            ret = -1;
-            break;
+            default:
+                parser.Usage();
+                wxLogError(_("Command line syntax error detected, aborting."));
+                ret = -1;
+                break;
+        }
+    } else {
+        parser.Usage();
     }
 
 #if wxUSE_UNICODE

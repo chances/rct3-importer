@@ -218,24 +218,39 @@ struct Sound
 	int channel2size; 	// 0 if not channel2
 };
 
-struct Sound3
+struct SceneryExtraSound
 {
     float unk1;
     float unk2;
     unsigned long unk3;  // Usually 0
 };
 
-struct Sound2
+struct SoundScript1
 {
-        float unk1;
-        unsigned long unk2; // 0 terminates list.
+        float unk1;         // != 0.0
+        unsigned long unk2; // 0 terminates list, otherwise always 1
 };
-struct Sound1
+struct SoundScript2 // Some kind of script
+{
+        unsigned long unk1; // == 0
+        // repeated till instruction == 0
+        unsigned long instruction; // 1, 2, 3 or 4
+        float parameter[];         // x = 1 for i = 1 or 2
+                                   // x = 3 for i = 3 or 4.
+                                   // the last value of a triple and the only value of 1/2 always increase in the list
+                                   // the maximum of this increase seems to be the length of the animation in the case
+                                   // of a ride event.
+                                   // I found no kind of index into the SoundArray, so either they are played in parallel,
+                                   // as a whole or in turn.
+                                   // I suspect intsruction 1 is like a SoundScript1 entry. It probably means "Play sounds at
+                                   // this timepoint".
+};
+struct ScenerySound
 {
     	unsigned long SoundCount;
     	Sound **SoundArray;
-    	unsigned long Sound2Count;
-    	Sound2 **Sound2Array;
+    	unsigned long Sound2Count; // Rides seem to have 4, Ride Events 1
+    	SoundScript1 **Sound2Array; // Each entry is either a SoundScript1 or SoundScript2 "structure"
 };
 
 struct SceneryParams
@@ -407,7 +422,7 @@ struct SceneryItem
 	unsigned long unk4; //valid values are 0-17
 	unsigned long xsquares;
 	unsigned long ysquares;
-	SceneryItemData *data;
+	SceneryItemData *data; // Array, xsquares*ysquares in size
 	float xpos;
 	float ypos;
 	float zpos;
@@ -430,7 +445,7 @@ struct SceneryItem
 	unsigned long count;
 	SceneryParams *params;
 	unsigned long SoundsCount; //count for sounds structures
-	Sound1* Sounds; //for rides, points to data for sounds & other things
+	ScenerySound* Sounds; //for rides, points to data for sounds & other things
 	wchar_t *Name;
 	unsigned long unk27; //is 0
 	unsigned long unk28; //is 0
@@ -448,7 +463,7 @@ struct SceneryItem
 	unsigned long unk40; //is 0
 	unsigned long unk41; //is 0
 	unsigned long carcount; //is 0 except for flying saucers and dodgems
-	char** cars;            //is 0 except for flying saucers and dodgems (pointer I think)
+	char** cars;            // List of strings
 	unsigned long unk44; //is 0
 	unsigned long unk45; //is 0 except for trampoline
 	unsigned long unk46; //is 0 except for trampoline
@@ -457,7 +472,7 @@ struct SceneryItem
 };
 struct SceneryItemExtra1
 {
-	Sound3 *SoundsUnk;              // Array of SoundsCount length
+	SceneryExtraSound *SoundsUnk;              // Array of SoundsCount length
 	unsigned long unk2;
 	unsigned long AddonPack;        // 1 for Soaked
 	unsigned long GenericAddon;
@@ -465,7 +480,7 @@ struct SceneryItemExtra1
 
 struct SceneryItemExtra2
 {
-	Sound3 *SoundsUnk;
+	SceneryExtraSound *SoundsUnk;
 	unsigned long unk2;
 	unsigned long AddonPack;       // 0 = Vanilla, 1 = Soaked, 2 = Wild
 	unsigned long GenericAddon;

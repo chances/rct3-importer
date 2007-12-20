@@ -28,8 +28,8 @@
 
 #include "ManagerTEX.h"
 
+#include "ManagerCommon.h"
 #include "ManagerFLIC.h"
-#include "ManagerFTX.h"
 #include "OVLException.h"
 #include "OVLng.h"
 

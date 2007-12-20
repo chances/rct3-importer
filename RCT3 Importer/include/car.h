@@ -11,18 +11,215 @@
 */
 
 
-#ifndef __ovlstructs_h__
-#define __ovlstructs_h__
+#ifndef __car_h__
+#define __car_h__
 
 struct RideCar
 {
     char*	     	    name;			// Possibly a language lookup
     char*		        username;
-    unsigned long		unk1;			// Possibly boolean flags.
+    unsigned long		flags;			// Possibly boolean flags. Second byte seems to signify stricture version
     SceneryItemVisual*  svd;
-    float		        unk2;			// Probably weight
-    float		        unk3[12];
-    float		        unk4;			// Always 0
+    float		        weight1;	    // Probably weight. Can be zero (rot mouse)
+    SceneryItemVisual*  seatsvd;        // If seats move in some way (rotating mouse, multidimensional)
+    unsigned long       unk7;           // Seen 2 (cuttlefish multidim), 4 (rot mouse, EuroSpinner). 0 if not rotating
+                                        // Probably 2 = horizontal axis, 4 = vertical axis
+    float               weight2;        // Probably weight of seats. -1.0 for cars withot rotation
+    float               unk9;           // Seen 0.3, 4.0
+    unsigned long       unk10;          // Seen 0
+    float               unk11;          // Seen -1
+    float               unk12;          // Seen 0.1, 0.3
+    unsigned long       unk13;          // Seen 0
+    unsigned long       unk14;          // Seen 0
+    float               unk15;          // Seen -1.0
+    unsigned long       unk16;          // Seen 0
+    unsigned long       unk17;          // Seen 0
+    unsigned long       unk18;          // Seen 0
+    unsigned long       unk19;          // Seen 0
+    long                unk20;          // Seen -1
+    long                unk21;          // Seen -1
+    long                unk22;          // Seen -1
+    long                unk23;          // Seen -1
+    unsigned long       unk24;          // Seen 0
+    unsigned long       unk25;          // Seen 1
+    unsigned long       unk26;          // Seen 2
+    long                unk27;          // Seen -1
+    long                unk28;          // Seen -1
+    long                unk29;          // Seen -1
+    long                unk30;          // Seen -1
+    long                unk31;          // Seen -1
+    long                unk32;          // Seen -1
+    long                unk33;          // Seen -1
+    long                unk34;          // Seen -1
+    long                unk35;          // Seen -1
+    long                unk36;          // Seen -1
+    long                unk37;          // Seen -1
+    long                unk38;          // Seen -1
+    long                unk39;          // Seen -1
+    unsigned long       unk40;
+    unsigned long       unk41;
+    unsigned long       unk42;
+    unsigned long       unk43;
+    unsigned long       unk44;
+    unsigned long       unk45;
+    unsigned long       unk46;
+    unsigned long       unk47;
+    unsigned long       unk48;
+    unsigned long       unk49;
+    unsigned long       unk50;
+    unsigned long       unk51;
+    unsigned long       unk52;          // Seen 4
+    unsigned long       unk53;          // Seen 4
+    unsigned long       unk54;
+    float               unk55;          // Seen -1.0
+    long                unk56;          // Seen -1
+    float               unk57;          // Seen -1.0
+    float               unk58;          // Seen -1.0
+    float               unk59;          // Seen -1.0
+    float               unk60;          // Seen -1.0
+};
+
+struct RideCar2
+{
+    char*	     	    name;			// Possibly a language lookup
+    char*		        username;
+    unsigned long		flags;			// Possibly boolean flags. Second byte seems to signify stricture version
+    SceneryItemVisual*  svd;
+    float		        weight1;	    // Probably weight. Can be zero (rot mouse)
+    SceneryItemVisual*  seatsvd;        // If seats move in some way (rotating mouse, multidimensional)
+    unsigned long       unk7;           // Seen 2 (cuttlefish multidim), 4 (rot mouse, EuroSpinner). 0 if not rotating
+                                        // Probably 2 = horizontal axis, 4 = vertical axis
+    float               weight2;        // Probably weight of seats. -1.0 for cars withot rotation
+    float               unk9;           // Seen 0.3, 4.0
+    unsigned long       unk10;          // Seen 0
+    float               unk11;          // Seen -1
+    float               unk12;          // Seen 0.1, 0.3
+    unsigned long       unk13;          // Seen 0
+    unsigned long       unk14;          // Seen 0
+    float               unk15;          // Seen -1.0
+    unsigned long       unk16;          // Seen 0
+    unsigned long       unk17;          // Seen 0
+    unsigned long       unk18;          // Seen 0
+    unsigned long       unk19;          // Seen 0
+    long                unk20;          // Seen -1
+    long                unk21;          // Seen -1
+    long                unk22;          // Seen -1
+    long                unk23;          // Seen -1
+    unsigned long       unk24;          // Seen 0
+    unsigned long       unk25;          // Seen 1
+    unsigned long       unk26;          // Seen 2
+    long                unk27;          // Seen -1
+    long                unk28;          // Seen -1
+    long                unk29;          // Seen -1
+    long                unk30;          // Seen -1
+    long                unk31;          // Seen -1
+    long                unk32;          // Seen -1
+    long                unk33;          // Seen -1
+    long                unk34;          // Seen -1
+    long                unk35;          // Seen -1
+    long                unk36;          // Seen -1
+    long                unk37;          // Seen -1
+    long                unk38;          // Seen -1
+    long                unk39;          // Seen -1
+    unsigned long       unk40;
+    unsigned long       unk41;
+    unsigned long       unk42;
+    unsigned long       unk43;
+    unsigned long       unk44;
+    unsigned long       unk45;
+    unsigned long       unk46;
+    unsigned long       unk47;
+    unsigned long       unk48;
+    unsigned long       unk49;
+    SceneryItemVisual*  axelsvd;
+    unsigned long       unk51;
+    unsigned long       unk52;          // Seen 1, 4
+    unsigned long       unk53;          // Seen 4, 1 (for rear car)
+    unsigned long       unk54;
+    float               unk55;          // Seen 0
+    long                unk56;          // Seen 0
+    float               unk57;          // Seen -1.0
+    float               unk58;          // Seen 4.0
+    float               unk59;          // Seen 0
+    float               unk60;          // Seen -1.0
+    float               unk61;          // Seen 0.1
+    unsigned long       unk62;
+    unsigned long       unk63;
+    float               unk64;          // Seen -1.0
+    unsigned long       unk65;
+    unsigned long       unk66;          // Seen 1
+    unsigned long       unk67;
+    unsigned long       unk68;
+    unsigned long       unk69;          // Seen 1
+    unsigned long       unk70;
+    unsigned long       unk71;
+    unsigned long       unk72;          // Seen 0
+    float               unk73;          // Seen -9999.9
+};
+
+struct RideCar3
+{
+    char*	     	    name;			// Possibly a language lookup
+    char*		        username;
+    unsigned long		flags;			// Possibly boolean flags. Second byte seems to signify stricture version
+    SceneryItemVisual*  svd;
+    float		        weight1;	    // Probably weight. Can be zero (rot mouse)
+    SceneryItemVisual*  seatsvd;        // If seats move in some way (rotating mouse, multidimensional)
+    unsigned long       unk7;           // Seen 2 (cuttlefish multidim), 4 (rot mouse, EuroSpinner). 0 if not rotating
+                                        // Probably 2 = horizontal axis, 4 = vertical axis
+    float               weight2;        // Probably weight of seats. -1.0 for cars withot rotation
+    float               unk9;           // Seen 0.3, 4.0
+    unsigned long       unk10;          // Seen 0
+    float               unk11;          // Seen -1
+    float               unk12;          // Seen 0.1, 0.3
+    unsigned long       unk13;          // Seen 0
+    unsigned long       unk14;          // Seen 0
+    float               unk15;          // Seen -1.0
+    unsigned long       unk16;          // Seen 0
+    unsigned long       unk17;          // Seen 0
+    unsigned long       unk18;          // Seen 0
+    unsigned long       unk19;          // Seen 0
+    long                unk20;          // Seen -1
+    long                unk21;          // Seen -1
+    long                unk22;          // Seen -1
+    long                unk23;          // Seen -1
+    unsigned long       unk24;          // Seen 0
+    unsigned long       unk25;          // Seen 1
+    unsigned long       unk26;          // Seen 2
+    long                unk27;          // Seen -1
+    long                unk28;          // Seen -1
+    long                unk29;          // Seen -1
+    long                unk30;          // Seen -1
+    long                unk31;          // Seen -1
+    long                unk32;          // Seen -1
+    long                unk33;          // Seen -1
+    long                unk34;          // Seen -1
+    long                unk35;          // Seen -1
+    long                unk36;          // Seen -1
+    long                unk37;          // Seen -1
+    long                unk38;          // Seen -1
+    long                unk39;          // Seen -1
+    unsigned long       unk40;
+    unsigned long       unk41;
+    unsigned long       unk42;
+    unsigned long       unk43;
+    unsigned long       unk44;
+    unsigned long       unk45;
+    unsigned long       unk46;
+    unsigned long       unk47;
+    unsigned long       unk48;
+    unsigned long       unk49;
+    unsigned long       unk50;
+    unsigned long       unk51;
+    unsigned long       unk52;          // Seen 4
+    unsigned long       unk53;          // Seen 4
+    unsigned long       unk54;
+    float               unk55;          // Seen -1.0
+    long                unk56;          // Seen -1
+    float               unk57;          // Seen -1.0
+    float               unk58;          // Seen -1.0
+    float               unk59;          // Seen -1.0
+    float               unk60;          // Seen -1.0
 };
 
 struct RideTrain3 // ?

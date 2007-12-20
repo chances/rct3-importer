@@ -61,12 +61,12 @@ void cOVLDump::Load(const char* filename) {
     for (std::vector<OvlRelocation>::iterator itr = m_relocations[OVL_COMMON].begin(); itr != m_relocations[OVL_COMMON].end(); ++itr) {
         ResolveRelocation(itr->relocation, reinterpret_cast<void**>(&itr->relocationsite), itr->r_filetype, itr->r_file, itr->r_block);
         if (itr->relocationsite) {
-            m_fileblocks[itr->r_filetype][itr->r_file].files[itr->r_block].relocs.insert(&(*itr));
+            m_fileblocks[itr->r_filetype][itr->r_file].blocks[itr->r_block].relocs.insert(&(*itr));
             m_relmap[itr->relocation] = &(*itr);
             itr->targetrelocation = *(itr->relocationsite);
             ResolveRelocation(itr->targetrelocation, &itr->target, itr->t_filetype, itr->t_file, itr->t_block);
             if (itr->target) {
-                m_fileblocks[itr->t_filetype][itr->t_file].files[itr->t_block].targets.insert(&(*itr));
+                m_fileblocks[itr->t_filetype][itr->t_file].blocks[itr->t_block].targets.insert(&(*itr));
                 //m_relmap[itr->targetrelocation] = &(*itr);
                 m_targets[itr->targetrelocation] = itr->target;
             }
@@ -77,12 +77,12 @@ void cOVLDump::Load(const char* filename) {
     for (std::vector<OvlRelocation>::iterator itr = m_relocations[OVL_UNIQUE].begin(); itr != m_relocations[OVL_UNIQUE].end(); ++itr) {
         ResolveRelocation(itr->relocation, reinterpret_cast<void**>(&itr->relocationsite), itr->r_filetype, itr->r_file, itr->r_block);
         if (itr->relocationsite) {
-            m_fileblocks[itr->r_filetype][itr->r_file].files[itr->r_block].relocs.insert(&(*itr));
+            m_fileblocks[itr->r_filetype][itr->r_file].blocks[itr->r_block].relocs.insert(&(*itr));
             m_relmap[itr->relocation] = &(*itr);
             itr->targetrelocation = *(itr->relocationsite);
             ResolveRelocation(itr->targetrelocation, &itr->target, itr->t_filetype, itr->t_file, itr->t_block);
             if (itr->target) {
-                m_fileblocks[itr->t_filetype][itr->t_file].files[itr->t_block].targets.insert(&(*itr));
+                m_fileblocks[itr->t_filetype][itr->t_file].blocks[itr->t_block].targets.insert(&(*itr));
                 //m_relmap[itr->targetrelocation] = &(*itr);
                 m_targets[itr->targetrelocation] = itr->target;
             }
@@ -295,7 +295,7 @@ void cOVLDump::ReadFile(cOvlType type) {
         m_fileblocks[type][i].count = *reinterpret_cast<unsigned long*>(c_data);
         c_data += 4;
         if (m_fileblocks[type][i].count) {
-            m_fileblocks[type][i].files.resize(m_fileblocks[type][i].count);
+            m_fileblocks[type][i].blocks.resize(m_fileblocks[type][i].count);
         }
         m_fileblocks[type][i].size = 0;
 
@@ -306,9 +306,9 @@ void cOVLDump::ReadFile(cOvlType type) {
 
             // Sizes
             for (unsigned long m = 0; m < m_fileblocks[type][i].count; ++m) {
-                m_fileblocks[type][i].files[m].size =  *reinterpret_cast<unsigned long*>(c_data);
+                m_fileblocks[type][i].blocks[m].size =  *reinterpret_cast<unsigned long*>(c_data);
                 c_data += 4;
-                m_fileblocks[type][i].size += m_fileblocks[type][i].files[m].size;
+                m_fileblocks[type][i].size += m_fileblocks[type][i].blocks[m].size;
             }
         }
     }
@@ -347,19 +347,19 @@ void cOVLDump::ReadFile(cOvlType type) {
             }
             if (m_header[type].version == 1) {
                 // Read size
-                m_fileblocks[type][i].files[m].size =  *reinterpret_cast<unsigned long*>(c_data);
+                m_fileblocks[type][i].blocks[m].size =  *reinterpret_cast<unsigned long*>(c_data);
                 c_data += 4;
-                m_fileblocks[type][i].size += m_fileblocks[type][i].files[m].size;
+                m_fileblocks[type][i].size += m_fileblocks[type][i].blocks[m].size;
             }
             if (c_data < m_data[type] + m_size[type]) {
-                m_fileblocks[type][i].files[m].reloffset = m_reloffset;
-                m_reloffset += m_fileblocks[type][i].files[m].size;
-                m_fileblocks[type][i].files[m].fileoffset = c_data - m_data[type];
-                if (m_fileblocks[type][i].files[m].size) {
-                    m_fileblocks[type][i].files[m].data = reinterpret_cast<unsigned char*>(c_data);
-                    c_data += m_fileblocks[type][i].files[m].size;
+                m_fileblocks[type][i].blocks[m].reloffset = m_reloffset;
+                m_reloffset += m_fileblocks[type][i].blocks[m].size;
+                m_fileblocks[type][i].blocks[m].fileoffset = c_data - m_data[type];
+                if (m_fileblocks[type][i].blocks[m].size) {
+                    m_fileblocks[type][i].blocks[m].data = reinterpret_cast<unsigned char*>(c_data);
+                    c_data += m_fileblocks[type][i].blocks[m].size;
                 } else {
-                    m_fileblocks[type][i].files[m].data = NULL;
+                    m_fileblocks[type][i].blocks[m].data = NULL;
                 }
             }
         }
@@ -387,49 +387,49 @@ void cOVLDump::ReadFile(cOvlType type) {
     m_dataend[type] = c_data;
 }
 
-void cOVLDump::ResolveRelocation(const unsigned long relocation, void** target, int& filetype, int& file, unsigned long& block) {
+void cOVLDump::ResolveRelocation(const unsigned long relocation, void** target, cOvlType& filetype, int& file, unsigned long& block) {
     *target = NULL;
-    if (relocation < m_fileblocks[OVL_UNIQUE][0].reloffset) {
+    if (relocation < m_fileblocks[OVLT_UNIQUE][0].reloffset) {
         // In common
-        filetype = OVL_COMMON;
+        filetype = OVLT_COMMON;
     } else {
         // In unique
-        filetype = OVL_UNIQUE;
+        filetype = OVLT_UNIQUE;
     }
     for (int i = 0; i < 9; ++i) {
         if (relocation >= m_fileblocks[filetype][i].reloffset)
             file = i;
     }
     for (unsigned long i = 0; i < m_fileblocks[filetype][file].count; ++i) {
-        if ((relocation >= m_fileblocks[filetype][file].files[i].reloffset) &&
-            (relocation < m_fileblocks[filetype][file].files[i].reloffset + m_fileblocks[filetype][file].files[i].size)) {
+        if ((relocation >= m_fileblocks[filetype][file].blocks[i].reloffset) &&
+            (relocation < m_fileblocks[filetype][file].blocks[i].reloffset + m_fileblocks[filetype][file].blocks[i].size)) {
             block = i;
-            *target = m_fileblocks[filetype][file].files[i].data + (relocation - m_fileblocks[filetype][file].files[i].reloffset);
+            *target = m_fileblocks[filetype][file].blocks[i].data + (relocation - m_fileblocks[filetype][file].blocks[i].reloffset);
             return;
         }
     }
 }
 
 void cOVLDump::MakeStrings(cOvlType type) {
-    if (!m_fileblocks[type][0].files.size())
+    if (!m_fileblocks[type][0].blocks.size())
         return;
-    if (!m_fileblocks[type][0].files[0].size)
+    if (!m_fileblocks[type][0].blocks[0].size)
         return;
 
-    for (std::set<OvlRelocation*>::iterator it = m_fileblocks[type][0].files[0].targets.begin(); it != m_fileblocks[type][0].files[0].targets.end(); ++it) {
+    for (std::set<OvlRelocation*>::iterator it = m_fileblocks[type][0].blocks[0].targets.begin(); it != m_fileblocks[type][0].blocks[0].targets.end(); ++it) {
         (*it)->t_data = string(reinterpret_cast<char*>((*it)->target));
         (*it)->t_usedfor = string("String: ") + (*it)->t_data;
     }
 
-    char* c_data = reinterpret_cast<char*>(m_fileblocks[type][0].files[0].data);
-    while (c_data < reinterpret_cast<char*>(m_fileblocks[type][0].files[0].data) + m_fileblocks[type][0].files[0].size) {
+    char* c_data = reinterpret_cast<char*>(m_fileblocks[type][0].blocks[0].data);
+    while (c_data < reinterpret_cast<char*>(m_fileblocks[type][0].blocks[0].data) + m_fileblocks[type][0].blocks[0].size) {
         OvlStringTableEntry str;
         str.entry = c_data;
         str.orgstring = c_data;
         str.orglength = strlen(str.orgstring);
-        unsigned long ofs = reinterpret_cast<unsigned long>(c_data) - reinterpret_cast<unsigned long>(m_fileblocks[type][0].files[0].data);
-        str.reloffset = m_fileblocks[type][0].files[0].reloffset + ofs;
-        str.fileoffset = m_fileblocks[type][0].files[0].fileoffset + ofs;
+        unsigned long ofs = reinterpret_cast<unsigned long>(c_data) - reinterpret_cast<unsigned long>(m_fileblocks[type][0].blocks[0].data);
+        str.reloffset = m_fileblocks[type][0].blocks[0].reloffset + ofs;
+        str.fileoffset = m_fileblocks[type][0].blocks[0].fileoffset + ofs;
         m_strings.insert(str);
         c_data += str.entry.size()+1;
     }
@@ -441,25 +441,22 @@ void cOVLDump::MakeStrings(cOvlType type) {
 //    return (reinterpret_cast<unsigned long>(member) * reloffset) - reinterpret_cast<unsigned long>(source);
 //}
 
-#define RelocationFromVar(m, s) \
-    ((reinterpret_cast<unsigned long>(&m) + s.reloffset) - reinterpret_cast<unsigned long>(s.data))
-
 void cOVLDump::MakeSymbols(cOvlType type) {
-    if (!m_fileblocks[type][2].files.size())
+    if (!m_fileblocks[type][2].blocks.size())
         return;
-    if (!m_fileblocks[type][2].files[0].size)
+    if (!m_fileblocks[type][2].blocks[0].size)
         return;
 
     if (m_header[type].version == 1) {
-        SymbolStruct* syms = reinterpret_cast<SymbolStruct*>(m_fileblocks[type][2].files[0].data);
-        unsigned long symcount = m_fileblocks[type][2].files[0].size / sizeof(SymbolStruct);
+        SymbolStruct* syms = reinterpret_cast<SymbolStruct*>(m_fileblocks[type][2].blocks[0].data);
+        unsigned long symcount = m_fileblocks[type][2].blocks[0].size / sizeof(SymbolStruct);
         for (unsigned long s = 0; s < symcount; ++s) {
             OvlSymbol sy;
-            sy.symbol = m_relmap[RelocationFromVar(syms[s].Symbol, m_fileblocks[type][2].files[0])];
+            sy.symbol = m_relmap[RelocationFromVar(syms[s].Symbol, m_fileblocks[type][2].blocks[0])];
             sy.symbol->r_inwhat = string("SymbolStruct(") + sy.symbol->t_data + ")->Symbol";
             sy.IsPointer = syms[s].IsPointer;
             if (sy.IsPointer) {
-                sy.data = m_relmap[RelocationFromVar(syms[s].data, m_fileblocks[type][2].files[0])];
+                sy.data = m_relmap[RelocationFromVar(syms[s].data, m_fileblocks[type][2].blocks[0])];
                 sy.data->r_inwhat = string("SymbolStruct(") + sy.symbol->t_data + ")->data";
             } else {
                 sy.data = reinterpret_cast<OvlRelocation*>(syms[s].data);
@@ -468,17 +465,17 @@ void cOVLDump::MakeSymbols(cOvlType type) {
             m_symbols[type].push_back(sy);
         }
     } else {
-        SymbolStruct2* syms = reinterpret_cast<SymbolStruct2*>(m_fileblocks[type][2].files[0].data);
-        unsigned long symcount = m_fileblocks[type][2].files[0].size / sizeof(SymbolStruct2);
+        SymbolStruct2* syms = reinterpret_cast<SymbolStruct2*>(m_fileblocks[type][2].blocks[0].data);
+        unsigned long symcount = m_fileblocks[type][2].blocks[0].size / sizeof(SymbolStruct2);
         for (unsigned long s = 0; s < symcount; ++s) {
             OvlSymbol sy;
 //            sy.symbol = reinterpret_cast<char*>(m_relmap[reinterpret_cast<unsigned long>(syms[s].Symbol)]->target);
 //            sy.data = m_relmap[reinterpret_cast<unsigned long>(syms[s].data)];
-            sy.symbol = m_relmap[RelocationFromVar(syms[s].Symbol, m_fileblocks[type][2].files[0])];
+            sy.symbol = m_relmap[RelocationFromVar(syms[s].Symbol, m_fileblocks[type][2].blocks[0])];
             sy.symbol->r_inwhat = string("SymbolStruct2(") + sy.symbol->t_data + ")->Symbol";
             sy.IsPointer = syms[s].IsPointer;
             if (sy.IsPointer) {
-                sy.data = m_relmap[RelocationFromVar(syms[s].data, m_fileblocks[type][2].files[0])];
+                sy.data = m_relmap[RelocationFromVar(syms[s].data, m_fileblocks[type][2].blocks[0])];
                 if (sy.data)
                     sy.data->r_inwhat = string("SymbolStruct2(") + sy.symbol->t_data + ")->data";
             } else {
@@ -493,22 +490,22 @@ void cOVLDump::MakeSymbols(cOvlType type) {
 }
 
 void cOVLDump::MakeLoaders(cOvlType type) {
-    if (m_fileblocks[type][2].files.size()<=1)
+    if (m_fileblocks[type][2].blocks.size()<=1)
         return;
-    if (!m_fileblocks[type][2].files[1].size)
+    if (!m_fileblocks[type][2].blocks[1].size)
         return;
 
     bool symres = false;
 
-    LoaderStruct* lods = reinterpret_cast<LoaderStruct*>(m_fileblocks[type][2].files[1].data);
-    unsigned long lodcount = m_fileblocks[type][2].files[1].size / sizeof(LoaderStruct);
+    LoaderStruct* lods = reinterpret_cast<LoaderStruct*>(m_fileblocks[type][2].blocks[1].data);
+    unsigned long lodcount = m_fileblocks[type][2].blocks[1].size / sizeof(LoaderStruct);
     for (unsigned long l = 0; l < lodcount; ++l) {
         OvlLoader lo;
         lo.loadertype = lods[l].LoaderType;
         lo.name = m_loaderheaders[type][lo.loadertype].name;
 //        lo.data = m_relmap[reinterpret_cast<unsigned long>(lods[l].data)];
-        lo.data = m_relmap[RelocationFromVar(lods[l].data, m_fileblocks[type][2].files[1])];
-        lo.symbol = m_relmap[RelocationFromVar(lods[l].Sym, m_fileblocks[type][2].files[1])];
+        lo.data = m_relmap[RelocationFromVar(lods[l].data, m_fileblocks[type][2].blocks[1])];
+        lo.symbol = m_relmap[RelocationFromVar(lods[l].Sym, m_fileblocks[type][2].blocks[1])];
         if (m_header[type].version == 5) {
             lo.hasextradata = *reinterpret_cast<unsigned short*>(&lods[l].HasExtraData);
             lo.unknownv5 = *(reinterpret_cast<unsigned short*>(&lods[l].HasExtraData)+1);
@@ -545,15 +542,33 @@ void cOVLDump::MakeLoaders(cOvlType type) {
     }
 
     if (symres) {
-        for (set<OvlRelocation*>::iterator it = m_fileblocks[type][2].files[2].relocs.begin(); it != m_fileblocks[type][2].files[2].relocs.end(); ++it) {
-            (*it)->t_issymref = true;
+        if (m_header[type].version == 1) {
+            SymbolRefStruct* symrefs = reinterpret_cast<SymbolRefStruct*>(m_fileblocks[type][2].blocks[2].data);
+            unsigned long symrefcount = m_fileblocks[type][2].blocks[2].size / sizeof(SymbolRefStruct);
+            for (unsigned long s = 0; s < symrefcount; ++s) {
+                OvlRelocation* rel = m_relmap[RelocationFromVar(symrefs[s].reference, m_fileblocks[type][2].blocks[2])];
+                char* name = reinterpret_cast<char*>(m_targets[reinterpret_cast<unsigned long>(symrefs[s].Symbol)]);
+                rel->t_issymref = true;
+                rel->r_inwhat = string("SymbolReference(") + name + ")";
+                rel->t_usedfor = string("|- ") + name;
+            }
+        } else {
+            SymbolRefStruct2* symrefs = reinterpret_cast<SymbolRefStruct2*>(m_fileblocks[type][2].blocks[2].data);
+            unsigned long symrefcount = m_fileblocks[type][2].blocks[2].size / sizeof(SymbolRefStruct2);
+            for (unsigned long s = 0; s < symrefcount; ++s) {
+                OvlRelocation* rel = m_relmap[RelocationFromVar(symrefs[s].reference, m_fileblocks[type][2].blocks[2])];
+                char* name = reinterpret_cast<char*>(m_targets[reinterpret_cast<unsigned long>(symrefs[s].Symbol)]);
+                rel->t_issymref = true;
+                rel->r_inwhat = string("SymbolReference(") + name + ")";
+                rel->t_usedfor = string("|- ") + name;
+            }
         }
     }
 }
 
 void cOVLDump::MakeStructureSizes(cOvlType type) {
     for (unsigned int i = 0; i < 9; ++i) {
-        for (vector<OvlFileBlock>::iterator i_bl = m_fileblocks[type][i].files.begin(); i_bl != m_fileblocks[type][i].files.end(); ++i_bl) {
+        for (vector<OvlFileBlock>::iterator i_bl = m_fileblocks[type][i].blocks.begin(); i_bl != m_fileblocks[type][i].blocks.end(); ++i_bl) {
             set<OvlRelocation*>::iterator i_old = i_bl->targets.begin();
             for (set<OvlRelocation*>::iterator i_reloc = i_bl->targets.begin(); i_reloc != i_bl->targets.end(); ++i_reloc) {
                 if (i_reloc != i_bl->targets.begin()) {
@@ -584,17 +599,17 @@ unsigned long cOVLDump::GetBlockCount(cOvlType type, int file) {
 }
 
 unsigned long cOVLDump::GetBlockSize(cOvlType type, int file, unsigned long block) {
-    if (block >= m_fileblocks[type][file].files.size())
+    if (block >= m_fileblocks[type][file].blocks.size())
         throw EOvlD("GetBlockSize called with illegal block");
 
-    return m_fileblocks[type][file].files[block].size;
+    return m_fileblocks[type][file].blocks[block].size;
 }
 
 unsigned long cOVLDump::GetBlockOffset(cOvlType type, int file, unsigned long block) {
-    if (block >= m_fileblocks[type][file].files.size())
+    if (block >= m_fileblocks[type][file].blocks.size())
         throw EOvlD("GetBlockOffset called with illegal block");
 
-    return m_fileblocks[type][file].files[block].reloffset;
+    return m_fileblocks[type][file].blocks[block].reloffset;
 }
 
 const OvlSymbol& cOVLDump::GetSymbol(cOvlType type, unsigned long id) {

@@ -44,6 +44,7 @@ bool wxcWrite(const wxString& path, const D3DMATRIX& val) {
     return true;
 }
 
+#if wxUSE_IMAGE
 template <>
 wxSize wxcRead(const wxString& path, const wxSize& def) {
     wxConfigBase* conf = wxConfigBase::Get(false);
@@ -77,3 +78,4 @@ bool wxcFlush() {
     else
         return false;
 }
+#endif

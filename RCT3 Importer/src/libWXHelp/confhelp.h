@@ -36,8 +36,10 @@ T wxcRead(const wxString& path, const T& def) {
 
 template <>
 D3DMATRIX wxcRead(const wxString& path, const D3DMATRIX& def);
+#if wxUSE_IMAGE
 template <>
 wxSize wxcRead(const wxString& path, const wxSize& def);
+#endif
 
 template <class T>
 bool wxcWrite(const wxString& path, const T& val) {
@@ -49,8 +51,10 @@ bool wxcWrite(const wxString& path, const T& val) {
 
 template <>
 bool wxcWrite(const wxString& path, const D3DMATRIX& val);
+#if wxUSE_IMAGE
 template <>
 bool wxcWrite(const wxString& path, const wxSize& val);
+#endif
 
 bool wxcFlush();
 

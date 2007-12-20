@@ -2114,26 +2114,30 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
 
         // SVD, shapes & animations
         if (!m_textureovl) {
-            // SVD
-            ovlSVDManager* c_svd = c_ovl.GetManager<ovlSVDManager>();
-            c_svd->AddSVD(name.c_str(), m_work->lods.size(), sivsettings.sivflags, sivsettings.sway, sivsettings.brightness, sivsettings.scale);
-            c_svd->SetSVDUnknowns(sivsettings.unknown, sivsettings.unk6, sivsettings.unk7, sivsettings.unk8, sivsettings.unk9, sivsettings.unk10, sivsettings.unk11);
-            for (cLOD::iterator it = m_work->lods.begin(); it != m_work->lods.end(); ++it) {
-                if (it->animated) {
-                    c_svd->OpenAnimatedLOD(it->modelname.c_str(), it->modelname.c_str(), it->animations.size(), it->distance, it->unk2, it->unk4, it->unk14);
-                    if (it->animations.size()) {
-                        for (cStringIterator its = it->animations.begin(); its != it->animations.end(); ++its) {
-                            c_svd->AddAnimation(its->c_str());
+            if (m_work->lods.size()) {
+                // SVD
+                wxLogDebug(wxT("TRACE cSCNFile::MakeToOvl SVD"));
+                ovlSVDManager* c_svd = c_ovl.GetManager<ovlSVDManager>();
+                c_svd->AddSVD(name.c_str(), m_work->lods.size(), sivsettings.sivflags, sivsettings.sway, sivsettings.brightness, sivsettings.scale);
+                c_svd->SetSVDUnknowns(sivsettings.unknown, sivsettings.unk6, sivsettings.unk7, sivsettings.unk8, sivsettings.unk9, sivsettings.unk10, sivsettings.unk11);
+                for (cLOD::iterator it = m_work->lods.begin(); it != m_work->lods.end(); ++it) {
+                    if (it->animated) {
+                        c_svd->OpenAnimatedLOD(it->modelname.c_str(), it->modelname.c_str(), it->animations.size(), it->distance, it->unk2, it->unk4, it->unk14);
+                        if (it->animations.size()) {
+                            for (cStringIterator its = it->animations.begin(); its != it->animations.end(); ++its) {
+                                c_svd->AddAnimation(its->c_str());
+                            }
                         }
+                        c_svd->CloseAnimatedLOD();
+                    } else {
+                        c_svd->AddStaticLOD(it->modelname.c_str(), it->modelname.c_str(), it->distance, it->unk2, it->unk4, it->unk14);
                     }
-                    c_svd->CloseAnimatedLOD();
-                } else {
-                    c_svd->AddStaticLOD(it->modelname.c_str(), it->modelname.c_str(), it->distance, it->unk2, it->unk4, it->unk14);
                 }
             }
 
             // Static shapes
             if (m_work->models.size()) {
+                wxLogDebug(wxT("TRACE cSCNFile::MakeToOvl SHS"));
                 ovlSHSManager* c_shs = c_ovl.GetManager<ovlSHSManager>();
                 for (cModel::iterator i_mod = m_work->models.begin(); i_mod != m_work->models.end(); ++i_mod) {
                     if (!i_mod->used)
@@ -2265,6 +2269,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
 
             // Animated shapes
             if (m_work->animatedmodels.size()) {
+                wxLogDebug(wxT("TRACE cSCNFile::MakeToOvl BSH"));
                 ovlBSHManager* c_bsh = c_ovl.GetManager<ovlBSHManager>();
                 for (cAnimatedModel::iterator i_mod = m_work->animatedmodels.begin(); i_mod != m_work->animatedmodels.end(); ++i_mod) {
                     if (!i_mod->used)
@@ -2404,6 +2409,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
 
             // Animations
             if (m_work->animations.size()) {
+                wxLogDebug(wxT("TRACE cSCNFile::MakeToOvl BAN"));
                 ovlBANManager* c_ban = c_ovl.GetManager<ovlBANManager>();
                 for (cAnimation::iterator i_anim = m_work->animations.begin(); i_anim != m_work->animations.end(); ++i_anim) {
                     c_ban->AddAnimation(i_anim->name.c_str(), i_anim->boneanimations.size(), i_anim->totaltime);
@@ -2423,6 +2429,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
 
         // Textures
         if (m_work->flexitextures.size()) {
+            wxLogDebug(wxT("TRACE cSCNFile::MakeToOvl FTX"));
             ovlFTXManager* c_ftx = c_ovl.GetManager<ovlFTXManager>();
             for (cFlexiTexture::iterator i_ftx = m_work->flexitextures.begin(); i_ftx != m_work->flexitextures.end(); i_ftx++) {
                 if (!i_ftx->used)
@@ -2478,6 +2485,8 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                         tex.Rescale(dimension, dimension);
                     unsigned char data[dimension * dimension];
                     unsigned char alpha[dimension * dimension];
+
+                    tex.flip();
 
                     if (i_ftxfr->recolorable()) {
                         memcpy(&palette, cFlexiTexture::GetRGBPalette(), sizeof(palette));

@@ -12,7 +12,7 @@
 #define __STALL_H__
 
 #include "guiicon.h"
-#include "scenery.h"
+#include "sceneryrevised.h"
 
 struct StallItem
 {
@@ -21,12 +21,12 @@ struct StallItem
 };
 struct Attraction
 {
-	unsigned long unk1;
+	unsigned long type; // second byte 02
 	wchar_t* Name;
 	wchar_t* Description;
 	GUISkinItem *GSI;
 	unsigned long unk2;
-	unsigned long unk3;
+	long unk3;
 	unsigned long unk4;
 	unsigned long unk5;
 	unsigned long unk6;
@@ -34,9 +34,29 @@ struct Attraction
 	unsigned long unk7;
 	unsigned long unk8;
 	unsigned long unk9;
-	unsigned long unk10;
+	long unk10;
 	unsigned long unk11;
 	unsigned long unk12;
+};
+struct Attraction2
+{
+	unsigned long type; // second byte 03
+	wchar_t* Name;
+	wchar_t* Description;
+	GUISkinItem *GSI;
+	unsigned long unk2;
+	long unk3;
+	unsigned long unk4;
+	unsigned long unk5;
+	unsigned long unk6;
+	unsigned char *spline;
+	unsigned long unk7;
+	unsigned long unk8;
+	unsigned long unk9;
+	long unk10;
+	unsigned long unk11;
+	unsigned long unk12;
+	unsigned long unk13;
 };
 struct StallStr
 {
@@ -68,7 +88,7 @@ struct AttractionStr
 };
 struct Stall
 {
-	unsigned long StallType; //7 = food, 8 = drinks, 9 = misc, 14 = info/umbrella
+	unsigned long type; //7 = food, 8 = drinks, 9 = misc, 14 = info/umbrella
 	wchar_t* Name;
 	wchar_t* Description;
 	GUISkinItem *GSI;
@@ -81,7 +101,7 @@ struct Stall
 	unsigned long unk7;
 	unsigned long unk8;
 	unsigned long unk9;
-	unsigned long unk10;
+	long unk10;
 	SceneryItem *SID;
 	unsigned long itemcount;
 	StallItem *Items;

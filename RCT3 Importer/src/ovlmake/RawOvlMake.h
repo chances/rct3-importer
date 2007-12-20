@@ -42,6 +42,12 @@ private:
     wxFileName m_output;
     wxFileName m_outputbasedir;
     wxFileName m_input;  // For path relativity
+    wxSortedArrayString m_options;
+
+    bool m_install;
+    bool m_dryrun;
+    std::vector<wxFileName> m_dryrunfiles;
+
     cOvl m_ovl;
 
     void Load(wxXmlNode* root);
@@ -51,11 +57,51 @@ private:
     long ParseSigned(wxXmlNode* node, const wxString& nodes, const wxString& attribute);
     double ParseFloat(wxXmlNode* node, const wxString& nodes, const wxString& attribute);
 
+    void ParseCED(wxXmlNode* node);
+    void ParseCHG(wxXmlNode* node);
+    void ParseCID(wxXmlNode* node);
     void ParseSID(wxXmlNode* node);
+    void ParseSPL(wxXmlNode* node);
+    void ParseSTA(wxXmlNode* node);
     void ParseTEX(wxXmlNode* node);
+    void Parse(wxXmlNode* node);
+    void ParseConditions(wxXmlNode* node);
+
+    void Init() {
+        m_install = false;
+        m_dryrun = false;
+    }
 public:
-    cRawOvl(const wxFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT("")));
-    cRawOvl(wxXmlNode* root, const wxFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT("")));
+    cRawOvl(){
+        Init();
+    }
+    cRawOvl(const wxFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT(""))) {
+        Init();
+        Process(file, outputdir, output);
+    }
+    cRawOvl(wxXmlNode* root, const wxFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT(""))) {
+        Init();
+        Process(root, file, outputdir, output);
+    }
+
+    void SetOptions(bool install, bool dryrun) {
+        m_install = install;
+        m_dryrun = dryrun;
+    }
+
+    const std::vector<wxFileName>& GetDryrun() const {
+        return m_dryrunfiles;
+    }
+
+    void Process(const wxFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT("")));
+    void Process(wxXmlNode* root, const wxFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT("")));
+
+    void AddConditions(const wxString& options);
+    void AddConditions(const wxArrayString& options);
+    void AddConditions(const wxSortedArrayString& options);
+    void RemoveConditions(const wxString& options);
+    void ParseConditions(const wxString& options);
+    void ClearConditions();
 };
 
 #endif

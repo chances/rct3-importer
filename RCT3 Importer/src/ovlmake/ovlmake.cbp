@@ -124,6 +124,7 @@
 		<Unit filename="RawOvlMake.h" />
 		<Unit filename="ReadMe 1st.txt" />
 		<Unit filename="changelog.txt" />
+		<Unit filename="ovlmake-raw-v1.dtd" />
 		<Unit filename="ovlmake.cpp" />
 		<Unit filename="wx_pch.h" />
 		<Extensions>

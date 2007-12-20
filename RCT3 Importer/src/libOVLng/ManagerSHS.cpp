@@ -28,6 +28,7 @@
 
 #include "ManagerSHS.h"
 
+#include "ManagerCommon.h"
 #include "ManagerFTX.h"
 #include "OVLDebug.h"
 #include "OVLException.h"

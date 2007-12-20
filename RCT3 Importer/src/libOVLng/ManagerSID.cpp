@@ -138,9 +138,15 @@ unsigned char* ovlSIDManager::Make(cOvlInfo* info) {
             c_commondata += sizeof(unsigned long);
             GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->data->unk4));
         }
-        c_sid->params = reinterpret_cast<SceneryParams*>(c_commondata);
-        c_commondata += it->second.parameters.size() * sizeof(SceneryParams);
-        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->params));
+        if (it->second.parameters.size()) {
+            c_sid->params = reinterpret_cast<SceneryParams*>(c_commondata);
+            c_commondata += it->second.parameters.size() * sizeof(SceneryParams);
+            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->params));
+            c_sid->count = it->second.parameters.size();
+        } else {
+            c_sid->params = NULL;
+            c_sid->count = 0;
+        }
 
         it->second.Fill(c_sid);
         // 'Simple' strings
@@ -169,6 +175,7 @@ unsigned char* ovlSIDManager::Make(cOvlInfo* info) {
             GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.ui.groupicon.c_str(), ovlGSIManager::TAG),
                                  reinterpret_cast<unsigned long*>(&c_sid->groupicon));
         }
+        c_sid->svdcount = it->second.svds.size();
         for (unsigned long c = 0; c < it->second.svds.size(); ++c) {
             GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.svds[c].c_str(), ovlSVDManager::TAG),
                                  reinterpret_cast<unsigned long*>(&c_sid->svd[c]));

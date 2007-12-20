@@ -1162,7 +1162,11 @@ bool cModel::Check(cModelMap& modnames) {
 
     // Initialize for the next step
     modnames[name] = this;
-    used = false;
+    if (READ_RCT3_EXPERTMODE()) {
+        used = true;
+    } else {
+        used = false;
+    }
 
     return !warning;
 }

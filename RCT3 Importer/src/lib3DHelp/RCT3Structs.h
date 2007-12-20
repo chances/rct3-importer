@@ -209,6 +209,15 @@ public:
 	cFlexiTextureFrame(): used(false) {
 	    Init();
 	}
+	cFlexiTextureFrame(const cFlexiTextureFrame& o_fr) {
+	    m_raw = o_fr.m_raw;
+	    used = o_fr.used;
+	}
+	cFlexiTextureFrame& operator =(const cFlexiTextureFrame& o_fr) {
+	    m_raw = o_fr.m_raw;
+	    used = o_fr.used;
+	    return *this;
+    }
 
 	bool Check(cFlexiTexture* parent);
 
