@@ -47,7 +47,7 @@ public:
 protected:
     unsigned long m_size;
     unsigned char* m_data;
-    map<unsigned char*, cOvlMemBlob> m_blobs;
+    map<string, cOvlMemBlob> m_blobs;
     bool m_made;
     ovlOVLManager* m_defermake;
     bool m_deferable;
@@ -67,7 +67,7 @@ public:
         return m_made;
     }
 
-    virtual unsigned char* Make(cOvlInfo* info) = 0;
+    virtual void Make(cOvlInfo* info) = 0;
     virtual void WriteLoader(FILE* f);
 
     virtual const unsigned long GetSize() const;

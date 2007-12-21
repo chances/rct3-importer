@@ -37,9 +37,10 @@ const unsigned long ovlTXTManager::TYPE = 2;
 
 void ovlTXTManager::AddText(const char* name, const char* str) {
     Check("ovlTXTManager::AddText");
+    if (m_items.find(string(name)) != m_items.end())
+        throw EOvl(string("ovlTXTManager::AddText: Item with name '")+name+"' already exists");
 
-    m_txtnames.push_back(string(name));
-    m_txtstrings.push_back(string(str));
+    m_items[string(name)] = str;
 
     // Text
     m_size += (strlen(str)+1) * 2;
@@ -49,22 +50,22 @@ void ovlTXTManager::AddText(const char* name, const char* str) {
     GetStringTable()->AddSymbolString(name, Tag());
 }
 
-unsigned char* ovlTXTManager::Make(cOvlInfo* info) {
+void ovlTXTManager::Make(cOvlInfo* info) {
     Check("ovlFTXManager::Make");
     if (!info)
         throw EOvl("ovlFTXManager::Make called without valid info");
 
-    m_blobs[0] = cOvlMemBlob(OVLT_COMMON, 2, m_size);
+    m_blobs[""] = cOvlMemBlob(OVLT_COMMON, 2, m_size);
     ovlOVLManager::Make(info);
-    unsigned char* c_data = m_blobs[0].data;
+    unsigned char* c_data = m_blobs[""].data;
 
-    for (unsigned long t = 0; t < m_txtnames.size(); ++t) {
+    for (map<string, string>::iterator it = m_items.begin(); it != m_items.end(); ++it) {
         // Data Transfer, Text
         wchar_t* c_txt = reinterpret_cast<wchar_t*>(c_data);
-        c_data += (m_txtstrings[t].length()+1) * 2;
-        mbstowcs(c_txt, m_txtstrings[t].c_str(), m_txtstrings[t].length()+1);
+        c_data += (it->second.length()+1) * 2;
+        mbstowcs(c_txt, it->second.c_str(), it->second.length()+1);
 
-        SymbolStruct* s_txt = GetLSRManager()->MakeSymbol(OVLT_COMMON, GetStringTable()->FindSymbolString(m_txtnames[t].c_str(), Tag()), reinterpret_cast<unsigned long*>(c_txt));
+        SymbolStruct* s_txt = GetLSRManager()->MakeSymbol(OVLT_COMMON, GetStringTable()->FindSymbolString(it->first.c_str(), Tag()), reinterpret_cast<unsigned long*>(c_txt));
         GetLSRManager()->OpenLoader(OVLT_COMMON, TAG, reinterpret_cast<unsigned long*>(c_txt), 1, s_txt);
         unsigned char* ex = new unsigned char[4];
         *reinterpret_cast<unsigned long*>(ex) = 1;
@@ -72,5 +73,4 @@ unsigned char* ovlTXTManager::Make(cOvlInfo* info) {
         GetLSRManager()->CloseLoader(OVLT_COMMON);
     }
 
-    return m_data;
 }

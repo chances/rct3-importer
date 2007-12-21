@@ -41,6 +41,8 @@ void ovlCEDManager::AddExtra(const cCarriedItemExtra& item) {
     Check("ovlCEDManager::AddExtra");
     if (item.name == "")
         throw EOvl("ovlCEDManager::AddExtra called without name");
+    if (m_extras.find(item.name) != m_extras.end())
+        throw EOvl("ovlCEDManager::AddExtra: Item with name '"+item.name+"' already exists");
     if (item.nametxt == "")
         throw EOvl("ovlCEDManager::AddExtra called without name text");
     if (item.icon == "")
@@ -63,7 +65,7 @@ void ovlCEDManager::AddExtra(const cCarriedItemExtra& item) {
 
 }
 
-unsigned char* ovlCEDManager::Make(cOvlInfo* info) {
+void ovlCEDManager::Make(cOvlInfo* info) {
     DUMP_LOG("Trace: ovlCEDManager::Make()");
     Check("ovlCEDManager::Make");
 
@@ -88,6 +90,4 @@ unsigned char* ovlCEDManager::Make(cOvlInfo* info) {
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
 
     }
-
-    return NULL;
 }

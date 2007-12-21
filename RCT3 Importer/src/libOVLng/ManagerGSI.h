@@ -57,7 +57,7 @@ public:
 
     void AddItem(const char* name, const char* texture, unsigned long left, unsigned long top, unsigned long right, unsigned long bottom);
 
-    virtual unsigned char* Make(cOvlInfo* info);
+    virtual void Make(cOvlInfo* info);
 
     virtual const char* Loader() const {
         return LOADER;

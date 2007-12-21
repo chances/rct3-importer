@@ -99,14 +99,14 @@ FlicStruct* ovlFLICManager::GetPointer2(const string& name) {
     return it->second.madep2;
 }
 
-unsigned char* ovlFLICManager::Make(cOvlInfo* info) {
+void ovlFLICManager::Make(cOvlInfo* info) {
     Check("ovlFLICManager::Make");
     if (!info)
         throw EOvl("ovlFTXManager::Make called without valid info");
 
-    m_blobs[0] = cOvlMemBlob(OVLT_COMMON, 2, m_size);
+    m_blobs[""] = cOvlMemBlob(OVLT_COMMON, 2, m_size);
     ovlOVLManager::Make(info);
-    unsigned char* c_data = m_blobs[0].data;
+    unsigned char* c_data = m_blobs[""].data;
 
     for (map<string, FlicInternal>::iterator it = m_flics.begin(); it != m_flics.end(); ++it) {
         // Data Transfer etc. We use the Flic helper struct to get the pointer right.
@@ -158,6 +158,4 @@ unsigned char* ovlFLICManager::Make(cOvlInfo* info) {
     if (m_defermake) {
         m_defermake->Make(info);
     }
-
-    return NULL;
 }

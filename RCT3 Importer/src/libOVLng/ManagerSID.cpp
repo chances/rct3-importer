@@ -43,6 +43,8 @@ void ovlSIDManager::AddSID(const cSid& sid) {
         throw EOvl("ovlSIDManager::AddSID called without svds");
     if (sid.name == "")
         throw EOvl("ovlSIDManager::AddSID called without name");
+    if (m_sids.find(sid.name) != m_sids.end())
+        throw EOvl("ovlSIDManager::AddSID: Item with name '"+sid.name+"' already exists");
     if (sid.ovlpath == "")
         throw EOvl("ovlSIDManager::AddSID called without ovlpath");
     if (sid.ui.name == "")
@@ -97,15 +99,15 @@ void ovlSIDManager::AddSID(const cSid& sid) {
 
 }
 
-unsigned char* ovlSIDManager::Make(cOvlInfo* info) {
+void ovlSIDManager::Make(cOvlInfo* info) {
     DUMP_LOG("Trace: ovlSIDManager::Make()");
     Check("ovlSIDManager::Make");
 
-    m_blobs[0] = cOvlMemBlob(OVLT_UNIQUE, 2, m_size);
-    m_blobs[reinterpret_cast<unsigned char*>(1)] = cOvlMemBlob(OVLT_COMMON, 2, m_commonsize);
+    m_blobs["0"] = cOvlMemBlob(OVLT_UNIQUE, 2, m_size);
+    m_blobs["1"] = cOvlMemBlob(OVLT_COMMON, 2, m_commonsize);
     ovlOVLManager::Make(info);
-    unsigned char* c_data = m_blobs[0].data;
-    unsigned char* c_commondata = m_blobs[reinterpret_cast<unsigned char*>(1)].data;
+    unsigned char* c_data = m_blobs["0"].data;
+    unsigned char* c_commondata = m_blobs["1"].data;
 
     for (map<string, cSid>::iterator it = m_sids.begin(); it != m_sids.end(); ++it) {
         // Assign structs
@@ -185,5 +187,4 @@ unsigned char* ovlSIDManager::Make(cOvlInfo* info) {
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
     }
 
-    return NULL;
 }

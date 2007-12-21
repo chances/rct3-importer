@@ -38,6 +38,102 @@
 
 using namespace std;
 
+class cEffectStruct {
+public:
+    string name;
+	D3DMATRIX pos;
+
+    cEffectStruct() {};
+    void Fill(D3DMATRIX* m) {
+        *m = pos;
+    }
+};
+
+class cStaticShape2 {
+public:
+	string fts; //is 0 in disk files
+	string texturestyle; //is 0 in disk files
+	unsigned long placetexturing; //0 = dont see texturing on things when being placed, 1 = see texturing on things when being placed
+	unsigned long textureflags; //always 0
+	unsigned long sides; //seen values of 3 or 1 for this, 3 is more common
+	vector<VERTEX> vertices;
+	vector<unsigned long> indices;
+
+	cStaticShape2() {
+	    placetexturing = 1;
+	    textureflags = 0;
+	    sides = 3;
+	}
+	void Fill(StaticShape2* ss2, unsigned long* vert, unsigned long* ind) {
+	    ss2->unk1 = 0xffffffff;
+	    ss2->fts = NULL;
+	    ss2->TextureData = NULL;
+	    ss2->PlaceTexturing = placetexturing;
+	    ss2->textureflags = textureflags;
+	    ss2->sides = sides;
+	    ss2->VertexCount = vertices.size();
+	    if (vert)
+            *vert += vertices.size();
+	    ss2->IndexCount = indices.size();
+	    if (ind)
+            *ind += indices.size();
+	    for(unsigned long i = 0; i < vertices.size(); ++i) {
+	        ss2->Vertexes[i] = vertices[i];
+	    }
+	    for(unsigned long i = 0; i < indices.size(); ++i) {
+	        ss2->Triangles[i] = indices[i];
+	    }
+	}
+};
+
+class cStaticShape1 {
+public:
+    string name;
+    D3DVECTOR bbox1;
+    D3DVECTOR bbox2;
+	vector<cStaticShape2> meshes;
+    vector<cEffectStruct> effects;
+
+	cStaticShape1() {};
+	void Fill(StaticShape1* ss1) {
+	    ss1->BoundingBox1 = bbox1;
+	    ss1->BoundingBox2 = bbox2;
+	    ss1->TotalVertexCount = 0;
+	    ss1->TotalIndexCount = 0;
+	    ss1->MeshCount2 = meshes.size();
+	    ss1->MeshCount = meshes.size();
+	    for(unsigned long i = 0; i < meshes.size(); ++i) {
+            meshes[i].Fill(ss1->sh[i], &ss1->TotalVertexCount, &ss1->TotalIndexCount);
+	    }
+	    ss1->EffectCount = effects.size();
+	    for(unsigned long i = 0; i < effects.size(); ++i) {
+            effects[i].Fill(&ss1->EffectPosition[i]);
+	    }
+	}
+};
+
+class ovlSHSManager: public ovlOVLManager {
+public:
+    static const char* NAME;
+    static const char* TAG;
+private:
+    map<string, cStaticShape1> m_items;
+public:
+    ovlSHSManager(): ovlOVLManager() {};
+
+    void AddModel(const cStaticShape1& item);
+
+    virtual void Make(cOvlInfo* info);
+
+    virtual const char* Name() const {
+        return NAME;
+    };
+    virtual const char* Tag() const {
+        return TAG;
+    };
+};
+
+/*
 class ovlSHSManager: public ovlOVLManager {
 public:
     static const char* NAME;
@@ -69,7 +165,7 @@ public:
     void AddMesh(const char* ftx, const char* txs, unsigned long place, unsigned long flags, unsigned long sides,
                  unsigned long vertexcount, VERTEX* vertices, unsigned long indexcount, unsigned long* indices);
 
-    virtual unsigned char* Make(cOvlInfo* info);
+    virtual void Make(cOvlInfo* info);
 
     virtual const char* Name() const {
         return NAME;
@@ -78,6 +174,5 @@ public:
         return TAG;
     };
 };
-
-
+*/
 #endif

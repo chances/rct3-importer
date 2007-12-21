@@ -14,6 +14,8 @@
 #include "guiicon.h"
 #include "sceneryrevised.h"
 
+#include "spline.h"
+
 struct StallItem
 {
 	char *CID;
@@ -30,9 +32,9 @@ struct Attraction
 	unsigned long unk4;
 	unsigned long unk5;
 	unsigned long unk6;
-	unsigned char *spline;
-	unsigned long unk7;
-	unsigned long unk8;
+	Spline* spline;             // A loop on flat rides
+	unsigned long pathcount;    // Count for the next struct
+	Spline** paths;             // splines for peep paths. Last is the mechanic's path
 	unsigned long unk9;
 	long unk10;
 	unsigned long unk11;
@@ -49,9 +51,9 @@ struct Attraction2
 	unsigned long unk4;
 	unsigned long unk5;
 	unsigned long unk6;
-	unsigned char *spline;
-	unsigned long unk7;
-	unsigned long unk8;
+	Spline* spline;             // A loop on flat rides
+	unsigned long pathcount;    // Count for the next struct
+	Spline** paths;             // splines for peep paths. Last is the mechanic's path
 	unsigned long unk9;
 	long unk10;
 	unsigned long unk11;

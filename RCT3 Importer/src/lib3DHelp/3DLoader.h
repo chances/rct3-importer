@@ -34,6 +34,9 @@
 
 #include "3DLoaderTypes.h"
 
+class cBoneShape2;
+class cStaticShape2;
+
 class c3DMesh {
 public:
     std::vector<VERTEX> m_vertices;
@@ -112,6 +115,8 @@ public:
     };
     virtual bool FetchObject(unsigned int index, unsigned long *vertexcount, VERTEX **vertices, unsigned long *index_count, unsigned long **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal = NULL);
     virtual bool FetchAsAnimObject(unsigned int index, unsigned long bone, unsigned long unk, unsigned long *vertexcount, VERTEX2 **vertices, unsigned long *index_count, unsigned short **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal = NULL);
+    virtual bool FetchObject(unsigned int index, cStaticShape2* sh, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal = NULL);
+    virtual bool FetchObject(unsigned int index, unsigned long bone, unsigned long unk, cBoneShape2* sh, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal = NULL);
 
     virtual int GetType() {return C3DLOADER_GENERIC;};
     virtual STRING3D GetName() {return m_name;};
@@ -119,6 +124,8 @@ public:
 
     static int FlattenNormals(const unsigned long vertexcount, VERTEX *vertices, const D3DVECTOR& bbox_min, const D3DVECTOR& bbox_max);
     static int FlattenNormals(const unsigned long vertexcount, VERTEX2 *vertices, const D3DVECTOR& bbox_min, const D3DVECTOR& bbox_max);
+    static int FlattenNormals(cStaticShape2* sh, const D3DVECTOR& bbox_min, const D3DVECTOR& bbox_max);
+    static int FlattenNormals(cBoneShape2* sh, const D3DVECTOR& bbox_min, const D3DVECTOR& bbox_max);
     static c3DLoader *LoadFile(const char *filename);
 #ifndef STD_ONLY
     static void ClearCache();

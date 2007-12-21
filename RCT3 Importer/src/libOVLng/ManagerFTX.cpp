@@ -28,17 +28,94 @@
 
 #include "ManagerFTX.h"
 
-#define WIN32_MEAN_AND_LEAN
-#include <windows.h>
 
 #include "ManagerCommon.h"
 #include "OVLException.h"
-#include "rct3log.h"
 
 const char* ovlFTXManager::LOADER = "FGDK";
 const char* ovlFTXManager::NAME = "FlexiTexture";
 const char* ovlFTXManager::TAG = "ftx";
 
+void ovlFTXManager::AddTexture(const cFlexiTextureInfoStruct& item) {
+    Check("ovlFTXManager::AddTexture");
+    if (item.name == "")
+        throw EOvl("ovlFTXManager::AddTexture called without name");
+    if (m_items.find(item.name) != m_items.end())
+        throw EOvl("ovlFTXManager::AddTexture: Item with name '"+item.name+"' already exists");
+
+    m_items[item.name] = item;
+
+    // FlexiTextureInfoStruct
+    m_size += sizeof(FlexiTextureInfoStruct);
+    // Animations
+    m_size += item.animation.size() * sizeof(unsigned long);
+    // Frames
+    m_size += item.frames.size() * sizeof(FlexiTextureStruct);
+
+    for (vector<cFlexiTextureStruct>::const_iterator it = item.frames.begin(); it != item.frames.end(); ++it) {
+        m_size += 256*sizeof(RGBQUAD);
+        // Texture
+        m_blobs[item.name + "_t"] = cOvlMemBlob(OVLT_COMMON, 0, it->dimension * it->dimension);
+        // Alpha
+        if (it->alpha.get()) {
+            m_blobs[item.name + "_a"] = cOvlMemBlob(OVLT_COMMON, 0, it->dimension * it->dimension);
+        }
+    }
+
+    GetLSRManager()->AddSymbol(OVLT_COMMON);
+    GetLSRManager()->AddLoader(OVLT_COMMON);
+    GetStringTable()->AddSymbolString(item.name.c_str(), ovlFTXManager::TAG);
+}
+
+void ovlFTXManager::Make(cOvlInfo* info) {
+    Check("ovlFTXManager::Make");
+    if (!info)
+        throw EOvl("ovlFTXManager::Make called without valid info");
+
+    m_blobs[""] = cOvlMemBlob(OVLT_COMMON, 2, m_size);
+    ovlOVLManager::Make(info);
+    unsigned char* c_data = m_blobs[""].data;
+
+    for (map<string, cFlexiTextureInfoStruct>::iterator it = m_items.begin(); it != m_items.end(); ++it) {
+        FlexiTextureInfoStruct* c_dftis = reinterpret_cast<FlexiTextureInfoStruct*>(c_data);
+        c_data += sizeof(FlexiTextureInfoStruct);
+
+        if (it->second.animation.size()) {
+            c_dftis->offset1 = reinterpret_cast<unsigned long*>(c_data);
+            c_data += 4 * it->second.animation.size();
+            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_dftis->offset1));
+        }
+
+        c_dftis->fts2 = reinterpret_cast<FlexiTextureStruct*>(c_data);
+        c_data += sizeof(FlexiTextureStruct) * it->second.frames.size();
+        GetRelocationManager()->AddRelocation((unsigned long *)&c_dftis->fts2);
+
+        for (unsigned long i = 0; i < it->second.frames.size(); ++i) {
+            // Palette
+            c_dftis->fts2[i].palette = c_data;
+            c_data += 256*sizeof(RGBQUAD);
+            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_dftis->fts2[i].palette));
+
+            // Texture
+            c_dftis->fts2[i].texture = m_blobs[it->first + "_t"].data;
+            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_dftis->fts2[i].texture));
+
+            // Alpha
+            if (it->second.frames[i].alpha.get()) {
+                c_dftis->fts2[i].alpha = m_blobs[it->first + "_a"].data;
+                GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_dftis->fts2[i].alpha));
+          }
+        }
+        it->second.Fill(c_dftis);
+
+        SymbolStruct* s_ftx = GetLSRManager()->MakeSymbol(OVLT_COMMON, GetStringTable()->FindSymbolString(it->first.c_str(), Tag()), reinterpret_cast<unsigned long*>(c_dftis));
+        GetLSRManager()->OpenLoader(OVLT_COMMON, TAG, reinterpret_cast<unsigned long*>(c_dftis), false, s_ftx);
+        GetLSRManager()->CloseLoader(OVLT_COMMON);
+    }
+
+}
+
+/*
 ovlFTXManager::~ovlFTXManager() {
     for (vector<FlexiTextureInfoStruct*>::iterator it = m_ftxlist.begin(); it != m_ftxlist.end(); ++it) {
         delete[] (*it)->offset1;
@@ -197,3 +274,4 @@ unsigned char* ovlFTXManager::Make(cOvlInfo* info) {
 
     return m_data;
 }
+*/

@@ -38,6 +38,137 @@
 
 using namespace std;
 
+class cBoneStruct {
+public:
+    string name;
+	unsigned long parentbonenumber;
+	D3DMATRIX pos1;
+	D3DMATRIX pos2;
+
+    cBoneStruct() {
+        parentbonenumber = -1;
+    }
+    cBoneStruct(bool root) {
+        parentbonenumber = -1;
+        if (root) {
+            name = "Scene Root";
+            pos1._11  = 1.0;
+            pos1._12  = 0.0;
+            pos1._13  = 0.0;
+            pos1._14  = 0.0;
+            pos1._21  = 0.0;
+            pos1._22  = 1.0;
+            pos1._23  = 0.0;
+            pos1._24  = 0.0;
+            pos1._31  = 0.0;
+            pos1._32  = 0.0;
+            pos1._33  = 1.0;
+            pos1._34  = 0.0;
+            pos1._41  = 0.0;
+            pos1._42  = 0.0;
+            pos1._43  = 0.0;
+            pos1._44  = 1.0;
+            pos2 = pos1;
+        }
+    }
+    void Fill(BoneStruct* bs) {
+        bs->ParentBoneNumber = parentbonenumber;
+    }
+    void Fill1(D3DMATRIX* m) {
+        *m = pos1;
+    }
+    void Fill2(D3DMATRIX* m) {
+        *m = pos2;
+    }
+};
+
+class cBoneShape2 {
+public:
+	string fts; //is 0 in disk files
+	string texturestyle; //is 0 in disk files
+	unsigned long placetexturing; //0 = dont see texturing on things when being placed, 1 = see texturing on things when being placed
+	unsigned long textureflags; //always 0
+	unsigned long sides; //seen values of 3 or 1 for this, 3 is more common
+	vector<VERTEX2> vertices;
+	vector<unsigned short> indices;
+
+	cBoneShape2() {
+	    placetexturing = 1;
+	    textureflags = 0;
+	    sides = 3;
+	}
+	void Fill(BoneShape2* bs2, unsigned long* vert, unsigned long* ind) {
+	    bs2->unk1 = 0xffffffff;
+	    bs2->fts = NULL;
+	    bs2->TextureData = NULL;
+	    bs2->PlaceTexturing = placetexturing;
+	    bs2->textureflags = textureflags;
+	    bs2->sides = sides;
+	    bs2->VertexCount = vertices.size();
+	    if (vert)
+            *vert += vertices.size();
+	    bs2->IndexCount = indices.size();
+	    if (ind)
+            *ind += indices.size();
+	    for(unsigned long i = 0; i < vertices.size(); ++i) {
+	        bs2->Vertexes[i] = vertices[i];
+	    }
+	    for(unsigned long i = 0; i < indices.size(); ++i) {
+	        bs2->Triangles[i] = indices[i];
+	    }
+	}
+};
+
+class cBoneShape1 {
+public:
+    string name;
+    D3DVECTOR bbox1;
+    D3DVECTOR bbox2;
+	vector<cBoneShape2> meshes;
+    vector<cBoneStruct> bones;
+
+	cBoneShape1() {};
+	void Fill(BoneShape1* bs1) {
+	    bs1->BoundingBox1 = bbox1;
+	    bs1->BoundingBox2 = bbox2;
+	    bs1->TotalVertexCount = 0;
+	    bs1->TotalIndexCount = 0;
+	    bs1->MeshCount2 = meshes.size();
+	    bs1->MeshCount = meshes.size();
+	    for(unsigned long i = 0; i < meshes.size(); ++i) {
+            meshes[i].Fill(bs1->sh[i], &bs1->TotalVertexCount, &bs1->TotalIndexCount);
+	    }
+	    bs1->BoneCount = bones.size();
+	    for(unsigned long i = 0; i < bones.size(); ++i) {
+            bones[i].Fill(&bs1->Bones[i]);
+            bones[i].Fill1(&bs1->BonePositions1[i]);
+            bones[i].Fill2(&bs1->BonePositions2[i]);
+	    }
+	}
+};
+
+class ovlBSHManager: public ovlOVLManager {
+public:
+    static const char* NAME;
+    static const char* TAG;
+private:
+    map<string, cBoneShape1> m_items;
+public:
+    ovlBSHManager(): ovlOVLManager() {};
+
+    void AddModel(const cBoneShape1& item);
+
+    virtual void Make(cOvlInfo* info);
+
+    virtual const char* Name() const {
+        return NAME;
+    };
+    virtual const char* Tag() const {
+        return TAG;
+    };
+};
+
+/*
 class ovlBSHManager: public ovlOVLManager {
 public:
     static const char* NAME;
@@ -81,6 +212,6 @@ public:
         return TAG;
     };
 };
-
+*/
 
 #endif

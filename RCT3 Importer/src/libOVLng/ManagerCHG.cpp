@@ -44,6 +44,8 @@ void ovlCHGManager::AddRoom(const cChangingRoom& item) {
     Check("ovlCHGManager::AddRoom");
     if (item.name == "")
         throw EOvl("ovlCHGManager::AddRoom called without name");
+    if (m_items.find(item.name) != m_items.end())
+        throw EOvl("ovlCHGManager::AddRoom: Item with name '"+item.name+"' already exists");
     if (item.sid == "")
         throw EOvl("ovlCHGManager::AddRoom called without sid");
     if (item.attraction.name == "")
@@ -80,7 +82,7 @@ void ovlCHGManager::AddRoom(const cChangingRoom& item) {
 
 }
 
-unsigned char* ovlCHGManager::Make(cOvlInfo* info) {
+void ovlCHGManager::Make(cOvlInfo* info) {
     DUMP_LOG("Trace: ovlCHGManager::Make()");
     Check("ovlCHGManager::Make");
 
@@ -122,5 +124,4 @@ unsigned char* ovlCHGManager::Make(cOvlInfo* info) {
 
     }
 
-    return NULL;
 }

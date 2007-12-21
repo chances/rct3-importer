@@ -59,16 +59,16 @@ void ovlGSIManager::AddItem(const char* name, const char* texture, unsigned long
     GetStringTable()->AddSymbolString(texture, ovlTEXManager::TAG);
 }
 
-unsigned char* ovlGSIManager::Make(cOvlInfo* info) {
+void ovlGSIManager::Make(cOvlInfo* info) {
     Check("ovlGSIManager::Make");
     if (!info)
         throw EOvl("ovlGSIManager::Make called without valid info");
 
-    m_blobs[0] = cOvlMemBlob(OVLT_UNIQUE, 2, m_size);
-    m_blobs[reinterpret_cast<unsigned char*>(1)] = cOvlMemBlob(OVLT_COMMON, 2, m_commonsize);
+    m_blobs["0"] = cOvlMemBlob(OVLT_UNIQUE, 2, m_size);
+    m_blobs["1"] = cOvlMemBlob(OVLT_COMMON, 2, m_commonsize);
     ovlOVLManager::Make(info);
-    unsigned char* c_data = m_blobs[0].data;
-    unsigned char* c_commondata = m_blobs[reinterpret_cast<unsigned char*>(1)].data;
+    unsigned char* c_data = m_blobs["0"].data;
+    unsigned char* c_commondata = m_blobs["1"].data;
 
     for (unsigned long t = 0; t < m_gsinames.size(); ++t) {
         // Data setup, GUISkinItem
@@ -89,5 +89,4 @@ unsigned char* ovlGSIManager::Make(cOvlInfo* info) {
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
     }
 
-    return m_data;
 }

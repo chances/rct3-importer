@@ -26,6 +26,9 @@
 #include "3DLoader.h"
 #include "matrix.h"
 
+#include "ManagerBSH.h"
+#include "ManagerSHS.h"
+
 #include "ASE3DLoader.h"
 #include "MS3DLoader.h"
 //#include "AN8Loaderr.h"
@@ -152,6 +155,35 @@ bool c3DLoader::FetchObject(unsigned int index, unsigned long *vertexcount, VERT
     return true;
 }
 
+bool c3DLoader::FetchObject(unsigned int index, cStaticShape2* sh, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal) {
+    int i;
+    if (m_meshes.size() <= 0)
+        return false;
+
+    sh->vertices.resize(m_meshes[index].m_vertices.size());
+    sh->indices.resize(m_meshes[index].m_indices.size());
+    D3DMATRIX normaltransform;
+    if (transform)
+        normaltransform = matrixNormalTransform(*transform);
+    for (i = 0; i < m_meshes[index].m_vertices.size(); i++) {
+        if (transform)
+            sh->vertices[i] = matrixApply(m_meshes[index].m_vertices[i], *transform, normaltransform);
+        else
+            sh->vertices[i] = m_meshes[index].m_vertices[i];
+        if (fudge_normal) {
+            sh->vertices[i].normal = *fudge_normal;
+        }
+        boundsContain(&(sh->vertices[i]).position, bbox_min, bbox_max);
+    }
+    bool do_mirror = (transform)?(matrixCalcDeterminant(transform)<0.0):false;
+    for (i = 0; i < m_meshes[index].m_indices.size(); i+=3) {
+        sh->indices[i] = m_meshes[index].m_indices[i+((do_mirror)?1:0)];
+        sh->indices[i+1] = m_meshes[index].m_indices[i+((do_mirror)?0:1)];
+        sh->indices[i+2] = m_meshes[index].m_indices[i+2];
+    }
+    return true;
+}
+
 bool c3DLoader::FetchAsAnimObject(unsigned int index, unsigned long bone, unsigned long unk, unsigned long *vertexcount, VERTEX2 **vertices, unsigned long *index_count, unsigned short **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal) {
     int i;
     if (m_meshes.size() <= 0)
@@ -178,6 +210,35 @@ bool c3DLoader::FetchAsAnimObject(unsigned int index, unsigned long bone, unsign
         (*indices)[i] = m_meshes[index].m_indices[i+((do_mirror)?1:0)];
         (*indices)[i+1] = m_meshes[index].m_indices[i+((do_mirror)?0:1)];
         (*indices)[i+2] = m_meshes[index].m_indices[i+2];
+    }
+    return true;
+}
+
+bool c3DLoader::FetchObject(unsigned int index, unsigned long bone, unsigned long unk, cBoneShape2* sh, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal) {
+    int i;
+    if (m_meshes.size() <= 0)
+        return false;
+
+    sh->vertices.resize(m_meshes[index].m_vertices.size());
+    sh->indices.resize(m_meshes[index].m_indices.size());
+    D3DMATRIX normaltransform;
+    if (transform)
+        normaltransform = matrixNormalTransform(*transform);
+    for (i = 0; i < m_meshes[index].m_vertices.size(); i++) {
+        if (transform)
+            sh->vertices[i] = vertex2vertex2(matrixApply(m_meshes[index].m_vertices[i], *transform, normaltransform), bone, unk);
+        else
+            sh->vertices[i] = vertex2vertex2(m_meshes[index].m_vertices[i], bone, unk);
+        if (fudge_normal) {
+            sh->vertices[i].normal = *fudge_normal;
+        }
+        boundsContain(&(sh->vertices[i]).position, bbox_min, bbox_max);
+    }
+    bool do_mirror = (transform)?(matrixCalcDeterminant(transform)<0.0):false;
+    for (i = 0; i < m_meshes[index].m_indices.size(); i+=3) {
+        sh->indices[i] = m_meshes[index].m_indices[i+((do_mirror)?1:0)];
+        sh->indices[i+1] = m_meshes[index].m_indices[i+((do_mirror)?0:1)];
+        sh->indices[i+2] = m_meshes[index].m_indices[i+2];
     }
     return true;
 }
@@ -258,6 +319,30 @@ int c3DLoader::FlattenNormals(const unsigned long vertexcount, VERTEX2 *vertices
     for (int i = 0; i < vertexcount; ++i) {
         if ((vertices[i].position.x < min_rim.x) || (vertices[i].position.x > max_rim.x) || (vertices[i].position.y < min_rim.y) || (vertices[i].position.y > max_rim.y) || (vertices[i].position.z < min_rim.z) || (vertices[i].position.z > max_rim.z)) {
             flattenNormal(vertices[i]);
+        }
+    }
+}
+
+int c3DLoader::FlattenNormals(cStaticShape2* sh, const D3DVECTOR& bbox_min, const D3DVECTOR& bbox_max) {
+    D3DVECTOR min_rim, max_rim;
+    MAKE_OFFSET(min, +)
+    MAKE_OFFSET(max, -)
+
+    for (int i = 0; i < sh->vertices.size(); ++i) {
+        if ((sh->vertices[i].position.x < min_rim.x) || (sh->vertices[i].position.x > max_rim.x) || (sh->vertices[i].position.y < min_rim.y) || (sh->vertices[i].position.y > max_rim.y) || (sh->vertices[i].position.z < min_rim.z) || (sh->vertices[i].position.z > max_rim.z)) {
+            flattenNormal(sh->vertices[i]);
+        }
+    }
+}
+
+int c3DLoader::FlattenNormals(cBoneShape2* sh, const D3DVECTOR& bbox_min, const D3DVECTOR& bbox_max) {
+    D3DVECTOR min_rim, max_rim;
+    MAKE_OFFSET(min, +)
+    MAKE_OFFSET(max, -)
+
+    for (int i = 0; i < sh->vertices.size(); ++i) {
+        if ((sh->vertices[i].position.x < min_rim.x) || (sh->vertices[i].position.x > max_rim.x) || (sh->vertices[i].position.y < min_rim.y) || (sh->vertices[i].position.y > max_rim.y) || (sh->vertices[i].position.z < min_rim.z) || (sh->vertices[i].position.z > max_rim.z)) {
+            flattenNormal(sh->vertices[i]);
         }
     }
 }

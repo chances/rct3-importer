@@ -321,8 +321,6 @@
 <!ATTLIST attractionunknowns u4 CDATA #IMPLIED>
 <!ATTLIST attractionunknowns u5 CDATA #IMPLIED>
 <!ATTLIST attractionunknowns u6 CDATA #IMPLIED>
-<!ATTLIST attractionunknowns u7 CDATA #IMPLIED>
-<!ATTLIST attractionunknowns u8 CDATA #IMPLIED>
 <!ATTLIST attractionunknowns u9 CDATA #IMPLIED>
 <!ATTLIST attractionunknowns u10 CDATA #IMPLIED>
 <!ATTLIST attractionunknowns u11 CDATA #IMPLIED>

@@ -337,7 +337,7 @@ public:
 
     void AddSID(const cSid& sid);
 
-    virtual unsigned char* Make(cOvlInfo* info);
+    virtual void Make(cOvlInfo* info);
 
     virtual const char* Name() const {
         return NAME;

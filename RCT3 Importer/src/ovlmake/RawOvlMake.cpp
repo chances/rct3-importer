@@ -320,8 +320,6 @@ void cRawOvl::ParseCHG(wxXmlNode* node) {
             OPTION_PARSE(unsigned long, room.attraction.unk4, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u4")));
             OPTION_PARSE(unsigned long, room.attraction.unk5, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u5")));
             OPTION_PARSE(unsigned long, room.attraction.unk6, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u6")));
-            OPTION_PARSE(unsigned long, room.attraction.unk7, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u7")));
-            OPTION_PARSE(unsigned long, room.attraction.unk8, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u8")));
             OPTION_PARSE(unsigned long, room.attraction.unk9, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u9")));
             OPTION_PARSE(long, room.attraction.unk10, ParseSigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u10")));
             OPTION_PARSE(unsigned long, room.attraction.unk11, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u11")));
@@ -629,8 +627,6 @@ void cRawOvl::ParseSTA(wxXmlNode* node) {
             OPTION_PARSE(unsigned long, stall.attraction.unk4, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u4")));
             OPTION_PARSE(unsigned long, stall.attraction.unk5, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u5")));
             OPTION_PARSE(unsigned long, stall.attraction.unk6, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u6")));
-            OPTION_PARSE(unsigned long, stall.attraction.unk7, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u7")));
-            OPTION_PARSE(unsigned long, stall.attraction.unk8, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u8")));
             OPTION_PARSE(unsigned long, stall.attraction.unk9, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u9")));
             OPTION_PARSE(long, stall.attraction.unk10, ParseSigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u10")));
             OPTION_PARSE(unsigned long, stall.attraction.unk11, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u11")));

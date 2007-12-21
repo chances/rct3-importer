@@ -66,7 +66,7 @@ public:
     FlicStruct** GetPointer1(const string& name);
     FlicStruct* GetPointer2(const string& name);
 
-    virtual unsigned char* Make(cOvlInfo* info);
+    virtual void Make(cOvlInfo* info);
 
     virtual const char* Loader() const {
         return LOADER;

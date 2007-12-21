@@ -39,6 +39,8 @@ void ovlSPLManager::AddSpline(const cSpline& item) {
     Check("ovlSPLManager::AddSpline");
     if (item.name == "")
         throw EOvl("ovlSPLManager::AddSpline called without name");
+    if (m_items.find(item.name) != m_items.end())
+        throw EOvl("ovlSPLManager::AddSpline: Item with name '"+item.name+"' already exists");
     if (item.nodes.size() == 0)
         throw EOvl("ovlSPLManager::AddSpline called without nodes");
 
@@ -55,13 +57,13 @@ void ovlSPLManager::AddSpline(const cSpline& item) {
 
 }
 
-unsigned char* ovlSPLManager::Make(cOvlInfo* info) {
+void ovlSPLManager::Make(cOvlInfo* info) {
     DUMP_LOG("Trace: ovlSPLManager::Make()");
     Check("ovlSPLManager::Make");
 
-    m_blobs[0] = cOvlMemBlob(OVLT_COMMON, 2, m_size);
+    m_blobs[""] = cOvlMemBlob(OVLT_COMMON, 2, m_size);
     ovlOVLManager::Make(info);
-    unsigned char* c_data = m_blobs[0].data;
+    unsigned char* c_data = m_blobs[""].data;
 
     for (map<string, cSpline>::iterator it = m_items.begin(); it != m_items.end(); ++it) {
         // Assign structs
@@ -88,5 +90,4 @@ unsigned char* ovlSPLManager::Make(cOvlInfo* info) {
 
     }
 
-    return NULL;
 }

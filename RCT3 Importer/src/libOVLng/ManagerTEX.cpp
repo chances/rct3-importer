@@ -109,19 +109,19 @@ void ovlTEXManager::SetUnknowns912(const string& name, unsigned long unk9, unsig
 }
 
 
-unsigned char* ovlTEXManager::Make(cOvlInfo* info) {
+void ovlTEXManager::Make(cOvlInfo* info) {
     Check("ovlTEXManager::Make");
     if (!info)
         throw EOvl("ovlFTXManager::Make called without valid info");
 
     if (!m_flicman->IsMade()) {
         m_flicman->DeferMake(this);
-        return NULL;
+        return;
     }
 
-    m_blobs[0] = cOvlMemBlob(OVLT_UNIQUE, 2, m_size);
+    m_blobs[""] = cOvlMemBlob(OVLT_UNIQUE, 2, m_size);
     ovlOVLManager::Make(info);
-    unsigned char* c_data = m_blobs[0].data;
+    unsigned char* c_data = m_blobs[""].data;
 
     for (map<string, TextureStruct>::iterator it = m_textures.begin(); it != m_textures.end(); ++it) {
         Tex* c_tex = reinterpret_cast<Tex*>(c_data);
@@ -142,6 +142,4 @@ unsigned char* ovlTEXManager::Make(cOvlInfo* info) {
         GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(GUIICON, ovlTXSManager::TAG), reinterpret_cast<unsigned long*>(&c_tex->t1.TextureData));
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
     }
-
-    return NULL;
 }

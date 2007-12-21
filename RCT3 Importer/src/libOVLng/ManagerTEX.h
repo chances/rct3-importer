@@ -59,7 +59,7 @@ public:
     void SetUnknowns18(const string& name, unsigned long unk1 = 0x70007, unsigned long unk2 = 0x70007, unsigned long unk3 = 0x70007, unsigned long unk4 = 0x70007, unsigned long unk5 = 0x70007, unsigned long unk6 = 0x70007, unsigned long unk7 = 0x70007, unsigned long unk8 = 0x70007);
     void SetUnknowns912(const string& name, unsigned long unk9 = 1, unsigned long unk10 = 8, unsigned long unk11 = 0x10, unsigned long unk12 = 1);
 
-    virtual unsigned char* Make(cOvlInfo* info);
+    virtual void Make(cOvlInfo* info);
 
     virtual const char* Loader() const {
         return LOADER;

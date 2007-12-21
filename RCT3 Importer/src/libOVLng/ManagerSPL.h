@@ -60,6 +60,8 @@ public:
     string name;
     vector<SplineNode> nodes;
     unsigned long cyclic;
+    float totallength;
+    bool calc_length;
     float unk3;
     vector<float> lengths;
     vector<cSplineData> unknowndata;
@@ -67,13 +69,18 @@ public:
 
     cSpline() {
         cyclic = 0;
+        totallength = 0.0;
+        calc_length = true;
         unk3 = 0.0;
         unk6 = 0.0;
     };
     void Fill(Spline* spl) {
         spl->count = nodes.size();
         spl->cyclic = cyclic;
-        spl->length = 0.0;
+        if (calc_length)
+            spl->totallength = 0.0;
+        else
+            spl->totallength = totallength;
         spl->unk3 = unk3;
         spl->unk6 = unk6;
         for (unsigned int i = 0; i < nodes.size(); ++i) {
@@ -81,7 +88,8 @@ public:
         }
         for (unsigned int i = 0; i < lengths.size(); ++i) {
             spl->lengths[i] = lengths[i];
-            spl->length += lengths[i];
+            if (calc_length)
+                spl->totallength += lengths[i];
         }
         unsigned long c = 0;
         for (vector<cSplineData>::iterator it = unknowndata.begin(); it != unknowndata.end(); ++it) {
@@ -107,7 +115,7 @@ public:
 
     void AddSpline(const cSpline& item);
 
-    virtual unsigned char* Make(cOvlInfo* info);
+    virtual void Make(cOvlInfo* info);
 
     virtual const char* Name() const {
         return NAME;

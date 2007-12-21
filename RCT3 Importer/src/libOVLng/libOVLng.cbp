@@ -52,6 +52,8 @@
 		<Unit filename="..\..\include\boneshape.h" />
 		<Unit filename="..\..\include\car.h" />
 		<Unit filename="..\..\include\carrieditems.h" />
+		<Unit filename="..\..\include\counted_array_ptr.h" />
+		<Unit filename="..\..\include\counted_ptr.h" />
 		<Unit filename="..\..\include\flexitexture.h" />
 		<Unit filename="..\..\include\guiicon.h" />
 		<Unit filename="..\..\include\icontexture.h" />

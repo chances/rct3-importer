@@ -44,6 +44,8 @@ void ovlSTAManager::AddStall(const cStall& stall) {
     Check("ovlSTAManager::AddStall");
     if (stall.name == "")
         throw EOvl("ovlSTAManager::AddStall called without name");
+    if (m_stalls.find(stall.name) != m_stalls.end())
+        throw EOvl("ovlSTAManager::AddStall: Item with name '"+stall.name+"' already exists");
     if (stall.sid == "")
         throw EOvl("ovlSTAManager::AddStall called without sid");
     if (stall.attraction.name == "")
@@ -92,7 +94,7 @@ void ovlSTAManager::AddStall(const cStall& stall) {
 
 }
 
-unsigned char* ovlSTAManager::Make(cOvlInfo* info) {
+void ovlSTAManager::Make(cOvlInfo* info) {
     DUMP_LOG("Trace: ovlSTAManager::Make()");
     Check("ovlSTAManager::Make");
 
@@ -190,6 +192,4 @@ unsigned char* ovlSTAManager::Make(cOvlInfo* info) {
         }
 
     }
-
-    return NULL;
 }

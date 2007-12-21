@@ -36,6 +36,144 @@
 const char* ovlSHSManager::NAME = "StaticShape";
 const char* ovlSHSManager::TAG = "shs";
 
+void ovlSHSManager::AddModel(const cStaticShape1& item) {
+    DUMP_LOG("Trace: ovlSHSManager::Make(%s)", item.name.c_str());
+    Check("ovlSHSManager::AddModel");
+    if (item.name == "")
+        throw EOvl("ovlSHSManager::AddModel called without name");
+    if (m_items.find(item.name) != m_items.end())
+        throw EOvl("ovlSHSManager::AddModel: Item with name '"+item.name+"' already exists");
+
+    m_items[item.name] = item;
+
+    // One common blob per model
+    m_blobs[item.name] = cOvlMemBlob(OVLT_COMMON, 4, 0);
+
+    // StaticShape1
+    m_size += sizeof(StaticShape1);
+    // StaticShape2 pointers
+    m_size += item.meshes.size() * sizeof(StaticShape2*);
+
+    // Put in common
+    // Effect name pointers
+    m_blobs[item.name].size += item.effects.size() * sizeof(char*);
+    // Effect positions
+    m_blobs[item.name].size += item.effects.size() * sizeof(D3DMATRIX);
+
+    // Meshes
+    for (vector<cStaticShape2>::const_iterator it = item.meshes.begin(); it != item.meshes.end(); ++it) {
+        // StaticShape2
+        m_size += sizeof(StaticShape2);
+        // Vertices
+        m_blobs[item.name].size += it->vertices.size() * sizeof(VERTEX);
+        // Indices
+        m_blobs[item.name].size += it->indices.size() * sizeof(unsigned long);
+
+        // Symbol Refs
+        GetStringTable()->AddSymbolString(it->fts.c_str(), ovlFTXManager::TAG);
+        GetLSRManager()->AddSymRef(OVLT_UNIQUE);
+        GetStringTable()->AddSymbolString(it->texturestyle.c_str(), ovlTXSManager::TAG);
+        GetLSRManager()->AddSymRef(OVLT_UNIQUE);
+    }
+
+    // Effect names
+    for (vector<cEffectStruct>::const_iterator it = item.effects.begin(); it != item.effects.end(); ++it) {
+        unsigned long namelength = it->name.length()+1;
+        // Add padded name size
+        while (namelength % 4 != 0) {
+            namelength++;
+        }
+        //m_size += namelength;
+        m_blobs[item.name].size += namelength;
+    }
+
+    GetLSRManager()->AddSymbol(OVLT_UNIQUE);
+    GetLSRManager()->AddLoader(OVLT_UNIQUE);
+    GetStringTable()->AddSymbolString(item.name.c_str(), ovlSHSManager::TAG);
+}
+
+void ovlSHSManager::Make(cOvlInfo* info) {
+    DUMP_LOG("Trace: ovlSHSManager::Make()");
+    Check("ovlSHSManager::Make");
+
+    m_blobs[""] = cOvlMemBlob(OVLT_UNIQUE, 2, m_size);
+    ovlOVLManager::Make(info);
+    unsigned char* c_data = m_blobs[""].data;
+
+    for (map<string, cStaticShape1>::iterator it = m_items.begin(); it != m_items.end(); ++it) {
+        unsigned char* c_commondata = m_blobs[it->first].data;
+
+        StaticShape1* c_model = reinterpret_cast<StaticShape1*>(c_data);
+        c_data += sizeof(StaticShape1);
+
+        // Assign space for StaticShape2 pointers
+        c_model->sh = reinterpret_cast<StaticShape2**>(c_data);
+        c_data += it->second.meshes.size() * 4;
+        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->sh));
+        DUMP_RELOCATION("ovlSHSManager::Make, BoneShape2 pointers", c_model->sh);
+
+        // Symbol and Loader
+        SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), Tag()), reinterpret_cast<unsigned long*>(c_model));
+        GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_model), false, c_symbol);
+
+        unsigned long s = 0;
+        for (vector<cStaticShape2>::iterator itb = it->second.meshes.begin(); itb != it->second.meshes.end(); ++itb) {
+            c_model->sh[s] = reinterpret_cast<StaticShape2*>(c_data);
+            c_data += sizeof(StaticShape2);
+            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->sh[s]));
+            DUMP_RELOCATION("ovlSHSManager::Make, StaticShape2", c_model->sh[s]);
+
+            c_model->sh[s]->Vertexes = reinterpret_cast<VERTEX*>(c_commondata);
+            c_commondata += itb->vertices.size() * sizeof(VERTEX);
+            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->sh[s]->Vertexes));
+            DUMP_RELOCATION("ovlSHSManager::Make, Vertexes", c_model->sh[s]->Vertexes);
+
+            c_model->sh[s]->Triangles = reinterpret_cast<unsigned long*>(c_commondata);
+            c_commondata += itb->indices.size() * sizeof(unsigned long);
+            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->sh[s]->Triangles));
+            DUMP_RELOCATION("ovlSHSManager::Make, Triangles", c_model->sh[s]->Triangles);
+
+            // Symbol references
+            GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(itb->fts.c_str(), ovlFTXManager::TAG), reinterpret_cast<unsigned long*>(&c_model->sh[s]->fts));
+            GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(itb->texturestyle.c_str(), ovlTXSManager::TAG), reinterpret_cast<unsigned long*>(&c_model->sh[s]->TextureData));
+
+            s++;
+        }
+
+        c_model->EffectName = reinterpret_cast<char**>(c_commondata);
+        c_commondata += it->second.effects.size() * sizeof(char*);
+        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->EffectName));
+        DUMP_RELOCATION("ovlSHSManager::Make, EffectNames", c_model->EffectName);
+
+        c_model->EffectPosition = reinterpret_cast<D3DMATRIX*>(c_commondata);
+        c_commondata += it->second.effects.size() * sizeof(D3DMATRIX);
+        GetRelocationManager()->AddRelocation((unsigned long *)&c_model->EffectPosition);
+        DUMP_RELOCATION("ovlSHSManager::Make, EffectPositions", c_model->EffectPosition);
+
+        s = 0;
+        for (vector<cEffectStruct>::iterator itb = it->second.effects.begin(); itb != it->second.effects.end(); ++itb) {
+            c_model->EffectName[s] = reinterpret_cast<char*>(c_commondata);
+            strcpy(reinterpret_cast<char*>(c_commondata), itb->name.c_str());
+            c_commondata += itb->name.length() + 1;
+            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->EffectName[s]));
+            DUMP_RELOCATION("ovlSHSManager::Make, Effect Name", c_model->EffectName[s]);
+
+            // Padding
+            unsigned long x = itb->name.length() + 1;
+            while (x % 4 != 0) {
+                *c_commondata = 0;
+                c_commondata++;
+                x++;
+            }
+            s++;
+        }
+
+        it->second.Fill(c_model);
+        GetLSRManager()->CloseLoader(OVLT_UNIQUE);
+    }
+}
+
+/*
 ovlSHSManager::~ovlSHSManager() {
     for (unsigned long i = 0; i < m_modellist.size(); ++i) {
         for (unsigned long s = 0; s < m_modellist[i]->MeshCount; ++s) {
@@ -311,4 +449,4 @@ unsigned char* ovlSHSManager::Make(cOvlInfo* info) {
 
     return m_data;
 }
-
+*/

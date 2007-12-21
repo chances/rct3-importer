@@ -225,7 +225,7 @@ void ovlSVDManager::AddAnimation(const char* name) {
     m_animcount--;
 }
 
-unsigned char* ovlSVDManager::Make(cOvlInfo* info) {
+void ovlSVDManager::Make(cOvlInfo* info) {
     DUMP_LOG("Trace: ovlSVDManager::Make()");
     Check("ovlSVDManager::Make");
     if (m_lodcount)
@@ -305,6 +305,4 @@ unsigned char* ovlSVDManager::Make(cOvlInfo* info) {
 
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
     }
-
-    return m_data;
 }

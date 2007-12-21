@@ -72,8 +72,7 @@ public:
 	unsigned long unk5;
 	unsigned long unk6;
 	string spline;
-	unsigned long unk7;
-	unsigned long unk8;
+	vector<string> splines;
 	unsigned long unk9;
 	long unk10;
 	unsigned long unk11;
@@ -88,8 +87,6 @@ public:
 	    unk4 = 0;
 	    unk5 = 0;
 	    unk6 = 1500;
-	    unk7 = 0;
-	    unk8 = 0;
 	    unk9 = 0;
 	    unk10 = 12;
 	    unk11 = 0;

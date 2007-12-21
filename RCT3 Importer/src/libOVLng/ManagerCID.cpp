@@ -45,6 +45,8 @@ void ovlCIDManager::AddItem(const cCarriedItem& item) {
     Check("ovlCIDManager::AddItem");
     if (item.name == "")
         throw EOvl("ovlCIDManager::AddItem called without name");
+    if (m_items.find(item.name) != m_items.end())
+        throw EOvl("ovlCIDManager::AddItem: Item with name '"+item.name+"' already exists");
     if (item.nametxt == "")
         throw EOvl("ovlCIDManager::AddItem called without name text");
     if (item.pluralnametxt == "")
@@ -99,7 +101,7 @@ void ovlCIDManager::AddItem(const cCarriedItem& item) {
     GetStringTable()->AddString(item.soaked.textureoption.c_str());
 }
 
-unsigned char* ovlCIDManager::Make(cOvlInfo* info) {
+void ovlCIDManager::Make(cOvlInfo* info) {
     DUMP_LOG("Trace: ovlCIDManager::Make()");
     Check("ovlCIDManager::Make");
 
@@ -166,6 +168,4 @@ unsigned char* ovlCIDManager::Make(cOvlInfo* info) {
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
 
     }
-
-    return NULL;
 }

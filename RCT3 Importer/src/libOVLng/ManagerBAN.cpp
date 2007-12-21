@@ -28,12 +28,89 @@
 
 #include "ManagerBAN.h"
 
+#include "OVLDebug.h"
 #include "OVLException.h"
 #include "OVLng.h"
 
 const char* ovlBANManager::NAME = "BoneAnim";
 const char* ovlBANManager::TAG = "ban";
 
+void ovlBANManager::AddAnimation(const cBoneAnim& item) {
+    Check("ovlBANManager::AddAnimation");
+    if (item.name == "")
+        throw EOvl("ovlBANManager::AddAnimation called without name");
+    if (m_items.find(item.name) != m_items.end())
+        throw EOvl("ovlBANManager::AddAnimation: Item with name '"+item.name+"' already exists");
+    for (vector<cBoneAnimBone>::const_iterator it = item.bones.begin(); it != item.bones.end(); ++it) {
+        if (it->name == "")
+            throw EOvl("ovlBANManager::AddAnimation called with nameless bone");
+    }
+
+    m_items[item.name] = item;
+
+    // BoneAnim
+    m_size += sizeof(BoneAnim);
+    // BoneAnimBones
+    m_size += item.bones.size() * sizeof(BoneAnimBone);
+    // Frames
+    for (vector<cBoneAnimBone>::const_iterator it = item.bones.begin(); it != item.bones.end(); ++it) {
+        GetStringTable()->AddString(it->name.c_str());
+        // Translations
+        m_size += it->translations.size() * sizeof(txyz);
+        // Rotations
+        m_size += it->rotations.size() * sizeof(txyz);
+    }
+
+
+    GetLSRManager()->AddSymbol(OVLT_COMMON);
+    GetLSRManager()->AddLoader(OVLT_COMMON);
+    GetStringTable()->AddSymbolString(item.name.c_str(), ovlBANManager::TAG);
+}
+
+void ovlBANManager::Make(cOvlInfo* info) {
+    DUMP_LOG("Trace: ovlBANManager::Make()");
+    Check("ovlBANManager::Make");
+
+    m_blobs[""] = cOvlMemBlob(OVLT_COMMON, 4, m_size);
+    ovlOVLManager::Make(info);
+    unsigned char* c_data = m_blobs[""].data;
+
+    for (map<string, cBoneAnim>::iterator it = m_items.begin(); it != m_items.end(); ++it) {
+        BoneAnim* c_ban = reinterpret_cast<BoneAnim*>(c_data);
+        c_data += sizeof(BoneAnim);
+
+        c_ban->Bones = reinterpret_cast<BoneAnimBone*>(c_data);
+        c_data += it->second.bones.size() * sizeof(BoneAnimBone);
+        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_ban->Bones));
+
+        unsigned long c = 0;
+        for (vector<cBoneAnimBone>::iterator itb = it->second.bones.begin(); itb != it->second.bones.end(); ++itb) {
+            c_ban->Bones[c].Name = GetStringTable()->FindString(itb->name.c_str());
+            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_ban->Bones[c].Name));
+
+            if (itb->translations.size()) {
+                c_ban->Bones[c].Translate = reinterpret_cast<txyz*>(c_data);
+                c_data += itb->translations.size() * sizeof(txyz);
+                GetRelocationManager()->AddRelocation((unsigned long *)&c_ban->Bones[c].Translate);
+            }
+            if (itb->rotations.size()) {
+                c_ban->Bones[c].Rotate = reinterpret_cast<txyz*>(c_data);
+                c_data += itb->rotations.size() * sizeof(txyz);
+                GetRelocationManager()->AddRelocation((unsigned long *)&c_ban->Bones[c].Rotate);
+            }
+            c++;
+        }
+
+        it->second.Fill(c_ban);
+
+        // Symbol and Loader
+        SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_COMMON, GetStringTable()->FindSymbolString(it->second.name.c_str(), Tag()), reinterpret_cast<unsigned long*>(c_ban));
+        GetLSRManager()->OpenLoader(OVLT_COMMON, TAG, reinterpret_cast<unsigned long*>(c_ban), false, c_symbol);
+        GetLSRManager()->CloseLoader(OVLT_COMMON);
+    }
+}
+
+/*
 ovlBANManager::~ovlBANManager() {
     for (unsigned long i = 0; i < m_animationlist.size(); ++i) {
         for (unsigned long s = 0; s < m_animationlist[i]->BoneCount; ++s) {
@@ -201,4 +278,4 @@ unsigned char* ovlBANManager::Make(cOvlInfo* info) {
 
     return m_data;
 }
-
+*/

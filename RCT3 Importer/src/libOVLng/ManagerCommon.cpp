@@ -45,8 +45,8 @@ void cAttraction::Fill(Attraction* att) {
         att2->unk5 = unk5;
         att2->unk6 = unk6;
         att2->spline = NULL;
-        att2->unk7 = unk7;
-        att2->unk8 = unk8;
+        att2->pathcount = splines.size();
+        att2->paths = NULL;
         att2->unk9 = unk9;
         att2->unk10 = unk10;
         att2->unk11 = unk11;
@@ -63,8 +63,8 @@ void cAttraction::Fill(Attraction* att) {
         att->unk5 = unk5;
         att->unk6 = unk6;
         att->spline = NULL;
-        att->unk7 = unk7;
-        att->unk8 = unk8;
+        att->pathcount = splines.size();
+        att->paths = NULL;
         att->unk9 = unk9;
         att->unk10 = unk10;
         att->unk11 = unk11;
@@ -81,8 +81,8 @@ void cAttraction::Fill(Stall* sta) {
     sta->unk4 = unk4;
     sta->unk5 = unk5;
     sta->unk6 = unk6;
-    sta->unk7 = unk7;
-    sta->unk8 = unk8;
+    sta->unk7 = 0;
+    sta->unk8 = 0;
     sta->unk9 = unk9;
     sta->unk10 = unk10;
 }

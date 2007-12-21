@@ -2143,16 +2143,17 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                     if (!i_mod->used)
                         continue;
 
-                    D3DVECTOR box_min, box_max;
-                    boundsInit(&box_min, &box_max);
+                    cStaticShape1 c_mod;
+
+                    boundsInit(&c_mod.bbox1, &c_mod.bbox2);
 
                     // Find active mesh count
-                    int mesh_count = 0;
-                    for (cMeshStruct::iterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
-                        if (!i_mesh->disabled)
-                            mesh_count++;
-                    }
-                    c_shs->AddModel(i_mod->name.c_str(), mesh_count, i_mod->effectpoints.size());
+//                    int mesh_count = 0;
+//                    for (cMeshStruct::iterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
+//                        if (!i_mesh->disabled)
+//                            mesh_count++;
+//                    }
+                    c_mod.name = i_mod->name.c_str();
 
                     // Determine transformation matrices
                     D3DMATRIX transformMatrix = matrixMultiply(matrixMultiply(i_mod->transforms), matrixGetFixOrientation(i_mod->usedorientation));
@@ -2180,7 +2181,8 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                     // Do effect points
                     if (i_mod->effectpoints.size() != 0) {
                         for (unsigned int e = 0; e < i_mod->effectpoints.size(); e++) {
-                            D3DMATRIX me;
+                            cEffectStruct c_es;
+                            c_es.name = i_mod->effectpoints[e].name.c_str();
                             if (do_transform) {
                                 std::vector<D3DMATRIX> tempstack = i_mod->effectpoints[e].transforms;
                                 // to correctely apply the model transformation matrix to effect points we have to
@@ -2191,11 +2193,11 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                                 tempstack.insert(tempstack.begin(), undoDamage);
                                 // At the end of the stack, transform back
                                 tempstack.push_back(transformMatrix);
-                                me = matrixMultiply(tempstack);
+                                c_es.pos = matrixMultiply(tempstack);
                             } else {
-                                me = matrixMultiply(i_mod->effectpoints[e].transforms);
+                                c_es.pos = matrixMultiply(i_mod->effectpoints[e].transforms);
                             }
-                            c_shs->AddEffectPoint(i_mod->effectpoints[e].name.c_str(), me);
+                            c_mod.effects.push_back(c_es);
                         }
                     }
 
@@ -2210,10 +2212,19 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                     for (cMeshStruct::iterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
                         if (i_mesh->disabled == false) {
                             //progress.Update(++progress_count);
+                            cStaticShape2 c_ss2;
+                            c_ss2.fts = i_mesh->FTX.c_str();
+                            c_ss2.texturestyle = i_mesh->TXS.c_str();
+                            c_ss2.placetexturing = i_mesh->place;
+                            c_ss2.textureflags = i_mesh->flags;
+                            c_ss2.sides = i_mesh->unknown;
+
+                            /*
                             unsigned long c_vertexcount;
                             VERTEX* c_vertices;
                             unsigned long c_indexcount;
                             unsigned long* c_indices;
+                            */
                             D3DVECTOR c_fudge_normal;
                             D3DVECTOR* c_pfudge_normal = NULL;
                             boundsInit(&temp_min, &temp_max);
@@ -2247,22 +2258,22 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                                 matrixApplyIP(c_pfudge_normal, matrixGetFixOrientation(i_mod->usedorientation));
 
                             boundsInit(&temp_min, &temp_max);
-                            object->FetchObject(CurrentObj, &c_vertexcount, &c_vertices, &c_indexcount,
-                                                &c_indices, &temp_min, &temp_max,
+                            object->FetchObject(CurrentObj, &c_ss2, &temp_min, &temp_max,
                                                 const_cast<D3DMATRIX *> ((do_transform)?(&transformMatrix):NULL),
                                                 c_pfudge_normal);
-                            boundsContain(&temp_min, &temp_max, &box_min, &box_max);
+                            boundsContain(&temp_min, &temp_max, &c_mod.bbox1, &c_mod.bbox2);
                             if (i_mesh->fudgenormals == CMS_FUDGE_RIM) {
-                                c3DLoader::FlattenNormals(c_vertexcount, c_vertices, temp_min, temp_max);
+                                c3DLoader::FlattenNormals(&c_ss2, temp_min, temp_max);
                             }
-                            c_shs->AddMesh(i_mesh->FTX.c_str(), i_mesh->TXS.c_str(), i_mesh->place, i_mesh->flags,
-                                           i_mesh->unknown, c_vertexcount, c_vertices, c_indexcount, c_indices);
-                            delete[] c_vertices;
-                            delete[] c_indices;
+                            //c_shs->AddMesh(i_mesh->FTX.c_str(), i_mesh->TXS.c_str(), i_mesh->place, i_mesh->flags,
+                            //               i_mesh->unknown, c_vertexcount, c_vertices, c_indexcount, c_indices);
+                            //delete[] c_vertices;
+                            //delete[] c_indices;
+                            c_mod.meshes.push_back(c_ss2);
                         }
                         CurrentObj++;
                     }
-                    c_shs->SetBoundingBox(box_min, box_max);
+                    c_shs->AddModel(c_mod);
                     delete object;
                 }
             }
@@ -2275,17 +2286,18 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                     if (!i_mod->used)
                         continue;
 
-                    D3DVECTOR box_min, box_max;
-                    boundsInit(&box_min, &box_max);
+                    cBoneShape1 c_bs1;
+
+                    boundsInit(&c_bs1.bbox1, &c_bs1.bbox2);
 
                     // Find active mesh count
-                    int mesh_count = 0;
-                    for (cMeshStruct::iterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
-                        if (!i_mesh->disabled)
-                            mesh_count++;
-                    }
-                    c_bsh->AddModel(i_mod->name.c_str(), mesh_count, i_mod->modelbones.size()+1);
-                    c_bsh->AddRootBone();
+//                    int mesh_count = 0;
+//                    for (cMeshStruct::iterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
+//                        if (!i_mesh->disabled)
+//                            mesh_count++;
+//                    }
+                    c_bs1.name = i_mod->name.c_str();
+                    c_bs1.bones.push_back(cBoneStruct(true));
 
                     // Determine transformation matrices
                     D3DMATRIX transformMatrix = matrixMultiply(matrixMultiply(i_mod->transforms), matrixGetFixOrientation(i_mod->usedorientation));
@@ -2313,7 +2325,9 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                     // Do effect points
                     if (i_mod->modelbones.size() != 0) {
                         for (unsigned int e = 0; e < i_mod->modelbones.size(); e++) {
-                            D3DMATRIX pos1, pos2;
+                            cBoneStruct c_bone;
+                            c_bone.name = i_mod->modelbones[e].name.c_str();
+                            c_bone.parentbonenumber = i_mod->modelbones[e].nparent;
                             if (do_transform) {
                                 std::vector<D3DMATRIX> tempstack = i_mod->modelbones[e].positions1;
                                 // to correctely apply the model transformation matrix to effect points we have to
@@ -2324,18 +2338,18 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                                 tempstack.insert(tempstack.begin(), undoDamage);
                                 // At the end of the stack, transform back
                                 tempstack.push_back(transformMatrix);
-                                pos1 = matrixMultiply(tempstack);
+                                c_bone.pos1 = matrixMultiply(tempstack);
 
                                 // Same for pos2
                                 tempstack = i_mod->modelbones[e].positions2;
                                 tempstack.insert(tempstack.begin(), undoDamage);
                                 tempstack.push_back(transformMatrix);
-                                pos2 = matrixMultiply(tempstack);
+                                c_bone.pos2 = matrixMultiply(tempstack);
                             } else {
-                                pos1 = matrixMultiply(i_mod->modelbones[e].positions1);
-                                pos2 = matrixMultiply(i_mod->modelbones[e].positions2);
+                                c_bone.pos1 = matrixMultiply(i_mod->modelbones[e].positions1);
+                                c_bone.pos2 = matrixMultiply(i_mod->modelbones[e].positions2);
                             }
-                            c_bsh->AddBone(i_mod->modelbones[e].name.c_str(), i_mod->modelbones[e].nparent, pos1, pos2);
+                            c_bs1.bones.push_back(c_bone);
                         }
                     }
 
@@ -2350,10 +2364,13 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                     for (cMeshStruct::iterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
                         if (i_mesh->disabled == false) {
                             //progress.Update(++progress_count);
-                            unsigned long c_vertexcount;
-                            VERTEX2* c_vertices;
-                            unsigned long c_indexcount;
-                            unsigned short* c_indices;
+                            cBoneShape2 c_bs2;
+                            c_bs2.fts = i_mesh->FTX.c_str();
+                            c_bs2.texturestyle = i_mesh->TXS.c_str();
+                            c_bs2.placetexturing = i_mesh->place;
+                            c_bs2.textureflags = i_mesh->flags;
+                            c_bs2.sides = i_mesh->unknown;
+
                             D3DVECTOR c_fudge_normal;
                             D3DVECTOR* c_pfudge_normal = NULL;
                             boundsInit(&temp_min, &temp_max);
@@ -2387,22 +2404,27 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                                 matrixApplyIP(c_pfudge_normal, matrixGetFixOrientation(i_mod->usedorientation));
 
                             boundsInit(&temp_min, &temp_max);
-                            object->FetchAsAnimObject(CurrentObj, i_mesh->bone, 0xff, &c_vertexcount, &c_vertices,
-                                                      &c_indexcount, &c_indices, &temp_min, &temp_max,
+                            object->FetchObject(CurrentObj, i_mesh->bone, 0xff, &c_bs2, &temp_min, &temp_max,
                                                       const_cast<D3DMATRIX *> ((do_transform)?(&transformMatrix):NULL),
                                                       c_pfudge_normal);
-                            boundsContain(&temp_min, &temp_max, &box_min, &box_max);
+//                            object->FetchAsAnimObject(CurrentObj, i_mesh->bone, 0xff, &c_vertexcount, &c_vertices,
+//                                                      &c_indexcount, &c_indices, &temp_min, &temp_max,
+//                                                      const_cast<D3DMATRIX *> ((do_transform)?(&transformMatrix):NULL),
+//                                                      c_pfudge_normal);
+                            boundsContain(&temp_min, &temp_max, &c_bs1.bbox1, &c_bs1.bbox2);
                             if (i_mesh->fudgenormals == CMS_FUDGE_RIM) {
-                                c3DLoader::FlattenNormals(c_vertexcount, c_vertices, temp_min, temp_max);
+                                c3DLoader::FlattenNormals(&c_bs2, temp_min, temp_max);
                             }
-                            c_bsh->AddMesh(i_mesh->FTX.c_str(), i_mesh->TXS.c_str(), i_mesh->place, i_mesh->flags,
-                                           i_mesh->unknown, c_vertexcount, c_vertices, c_indexcount, c_indices);
-                            delete[] c_vertices;
-                            delete[] c_indices;
+                            c_bs1.meshes.push_back(c_bs2);
+//                            c_bsh->AddMesh(i_mesh->FTX.c_str(), i_mesh->TXS.c_str(), i_mesh->place, i_mesh->flags,
+//                                           i_mesh->unknown, c_vertexcount, c_vertices, c_indexcount, c_indices);
+//                            delete[] c_vertices;
+//                            delete[] c_indices;
                         }
                         CurrentObj++;
                     }
-                    c_bsh->SetBoundingBox(box_min, box_max);
+                    //c_bsh->SetBoundingBox(box_min, box_max);
+                    c_bsh->AddModel(c_bs1);
                     delete object;
                 }
             }
@@ -2412,16 +2434,20 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                 wxLogDebug(wxT("TRACE cSCNFile::MakeToOvl BAN"));
                 ovlBANManager* c_ban = c_ovl.GetManager<ovlBANManager>();
                 for (cAnimation::iterator i_anim = m_work->animations.begin(); i_anim != m_work->animations.end(); ++i_anim) {
-                    c_ban->AddAnimation(i_anim->name.c_str(), i_anim->boneanimations.size(), i_anim->totaltime);
+                    cBoneAnim c_item;
+                    c_item.name = i_anim->name.c_str();
                     for (cBoneAnimation::iterator i_bone = i_anim->boneanimations.begin(); i_bone != i_anim->boneanimations.end(); ++i_bone) {
-                        c_ban->AddBone(i_bone->name.c_str(), i_bone->translations.size(), i_bone->rotations.size());
+                        cBoneAnimBone c_bone;
+                        c_bone.name = i_bone->name.c_str();
                         for (cTXYZ::iterator i_txyz = i_bone->translations.begin(); i_txyz != i_bone->translations.end(); ++i_txyz) {
-                            c_ban->AddTranslation(i_txyz->GetFixed(i_anim->usedorientation));
+                            c_bone.translations.insert(i_txyz->GetFixed(i_anim->usedorientation));
                         }
                         for (cTXYZ::iterator i_txyz = i_bone->rotations.begin(); i_txyz != i_bone->rotations.end(); ++i_txyz) {
-                            c_ban->AddRotation(i_txyz->GetFixed(i_anim->usedorientation));
+                            c_bone.rotations.insert(i_txyz->GetFixed(i_anim->usedorientation));
                         }
+                        c_item.bones.push_back(c_bone);
                     }
+                    c_ban->AddAnimation(c_item);
                 }
             }
 
@@ -2435,6 +2461,12 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                 if (!i_ftx->used)
                     continue;
 
+                cFlexiTextureInfoStruct c_ftis;
+                c_ftis.name = i_ftx->Name.c_str();
+                c_ftis.fps = i_ftx->FPS;
+                c_ftis.recolourable = i_ftx->Recolorable;
+
+
                 //progress.Update(++progress_count);
 // TODO (tobi#1#): Reimplement textrue cache
 
@@ -2443,15 +2475,16 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
 //                }
 
                 // Make the animation
-                unsigned long animationcount = 0;
-                for(cFlexiTextureAnim::iterator i_anim = i_ftx->Animation.begin(); i_anim != i_ftx->Animation.end(); i_anim++)
-                    animationcount += i_anim->count();
-                unsigned long animation[animationcount];
-                unsigned long x = 0;
+//                unsigned long animationcount = 0;
+//                for(cFlexiTextureAnim::iterator i_anim = i_ftx->Animation.begin(); i_anim != i_ftx->Animation.end(); i_anim++)
+//                    animationcount += i_anim->count();
+//                unsigned long animation[animationcount];
+//                unsigned long x = 0;
                 for(cFlexiTextureAnim::iterator i_anim = i_ftx->Animation.begin(); i_anim != i_ftx->Animation.end(); i_anim++) {
                     for (unsigned long i = 0; i < i_anim->count(); i++) {
-                        animation[x] = i_anim->frame();
-                        x++;
+                        c_ftis.animation.push_back(i_anim->frame());
+//                        animation[x] = i_anim->frame();
+//                        x++;
                     }
                 }
 
@@ -2472,46 +2505,53 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                         break;
                 }
 
-                c_ftx->AddTexture(i_ftx->Name.c_str(), dimension, i_ftx->FPS, i_ftx->Recolorable,
-                                  animationcount, reinterpret_cast<unsigned long*>(&animation), i_ftx->Frames.size());
+                c_ftis.dimension = dimension;
 
                 // Now loop through the frames
                 for (cFlexiTextureFrame::iterator i_ftxfr = i_ftx->Frames.begin(); i_ftxfr != i_ftx->Frames.end(); i_ftxfr++) {
+                    cFlexiTextureStruct c_fts;
+                    c_fts.dimension = dimension;
+                    c_fts.recolourable = i_ftxfr->recolorable();
+
                     wxGXImage tex(i_ftxfr->texture().GetFullPath());
-                    RGBQUAD palette[256];
-                    memset(&palette, 0, 256 * sizeof(RGBQUAD));
+                    c_fts.palette = counted_array_ptr<unsigned char>(new unsigned char[256 * sizeof(RGBQUAD)]);
+                    memset(c_fts.palette.get(), 0, 256 * sizeof(RGBQUAD));
 
                     if ((tex.GetWidth() != dimension) || (tex.GetHeight() != dimension))
                         tex.Rescale(dimension, dimension);
-                    unsigned char data[dimension * dimension];
-                    unsigned char alpha[dimension * dimension];
+                    c_fts.texture = counted_array_ptr<unsigned char>(new unsigned char[dimension * dimension]);
+                    if (i_ftxfr->alphasource() != CFTF_ALPHA_NONE)
+                        c_fts.alpha = counted_array_ptr<unsigned char>(new unsigned char[dimension * dimension]);
 
                     tex.flip();
 
                     if (i_ftxfr->recolorable()) {
-                        memcpy(&palette, cFlexiTexture::GetRGBPalette(), sizeof(palette));
-                        tex.GetAs8bitForced(reinterpret_cast<unsigned char*>(&data), reinterpret_cast<unsigned char*>(&palette), true);
+                        memcpy(c_fts.palette.get(), cFlexiTexture::GetRGBPalette(), 256 * sizeof(RGBQUAD));
+                        tex.GetAs8bitForced(c_fts.texture.get(), c_fts.palette.get(), true);
                     } else {
-                        tex.GetAs8bit(reinterpret_cast<unsigned char*>(&data), reinterpret_cast<unsigned char*>(&palette));
+                        tex.GetAs8bit(c_fts.texture.get(), c_fts.palette.get());
                     }
 
                     if (i_ftxfr->alphasource() == CFTF_ALPHA_INTERNAL) {
-                        tex.GetAlpha(reinterpret_cast<unsigned char*>(&alpha));
+                        tex.GetAlpha(c_fts.alpha.get());
                     } else if (i_ftxfr->alphasource() == CFTF_ALPHA_EXTERNAL) {
                         wxGXImage alp(i_ftxfr->alpha().GetFullPath());
                         if ((alp.GetWidth() != dimension) || (alp.GetHeight() != dimension))
                             alp.Rescale(dimension, dimension);
-                        alp.GetGrayscale(reinterpret_cast<unsigned char*>(&alpha));
+                        alp.GetGrayscale(c_fts.alpha.get());
                     }
 
                     for (unsigned int j = 0; j < 256; j++)
-                        palette[j].rgbReserved = i_ftxfr->alphacutoff();
+                        reinterpret_cast<RGBQUAD*>(c_fts.palette.get())[j].rgbReserved = i_ftxfr->alphacutoff();
 
-                    c_ftx->AddTextureFrame(dimension, i_ftxfr->recolorable(),
-                                           reinterpret_cast<unsigned char*>(&palette),
-                                           reinterpret_cast<unsigned char*>(&data),
-                                           (i_ftxfr->alphasource() == CFTF_ALPHA_NONE)?NULL:reinterpret_cast<unsigned char*>(&alpha));
+                    c_ftis.frames.push_back(c_fts);
+//                    c_ftx->AddTextureFrame(dimension, i_ftxfr->recolorable(),
+//                                           reinterpret_cast<unsigned char*>(&palette),
+//                                           reinterpret_cast<unsigned char*>(&data),
+//                                           (i_ftxfr->alphasource() == CFTF_ALPHA_NONE)?NULL:reinterpret_cast<unsigned char*>(&alpha));
                 }
+
+                c_ftx->AddTexture(c_ftis);
             }
         }
 

@@ -36,6 +36,137 @@
 const char* ovlBSHManager::NAME = "BoneShape";
 const char* ovlBSHManager::TAG = "bsh";
 
+void ovlBSHManager::AddModel(const cBoneShape1& item) {
+    DUMP_LOG("Trace: ovlBSHManager::Make(%s)", item.name.c_str());
+    Check("ovlBSHManager::AddModel");
+    if (item.name == "")
+        throw EOvl("ovlBSHManager::AddModel called without name");
+    if (m_items.find(item.name) != m_items.end())
+        throw EOvl("ovlBSHManager::AddModel: Item with name '"+item.name+"' already exists");
+
+    m_items[item.name] = item;
+
+    // One common blob per model
+    m_blobs[item.name] = cOvlMemBlob(OVLT_COMMON, 4, 0);
+
+    // BoneShape1
+    m_size += sizeof(BoneShape1);
+    // BoneShape2 pointers
+    m_size += item.meshes.size() * sizeof(BoneShape2*);
+
+    // Put in common
+    // BoneStructs
+    //m_size += c_bsh->BoneCount * sizeof(BoneStruct);
+    m_blobs[item.name].size += item.bones.size() * sizeof(BoneStruct);
+    // Bone positions
+    //m_size += 2 * c_bsh->BoneCount * sizeof(D3DMATRIX);
+    m_blobs[item.name].size += 2 * item.bones.size() * sizeof(D3DMATRIX);
+
+    // Meshes
+    for (vector<cBoneShape2>::const_iterator it = item.meshes.begin(); it != item.meshes.end(); ++it) {
+        // BoneShape2
+        m_size += sizeof(BoneShape2);
+        // Vertices
+        m_blobs[item.name].size += it->vertices.size() * sizeof(VERTEX2);
+        // Indices
+        m_blobs[item.name].size += it->indices.size() * sizeof(unsigned short);
+
+        // Symbol Refs
+        GetStringTable()->AddSymbolString(it->fts.c_str(), ovlFTXManager::TAG);
+        GetLSRManager()->AddSymRef(OVLT_UNIQUE);
+        GetStringTable()->AddSymbolString(it->texturestyle.c_str(), ovlTXSManager::TAG);
+        GetLSRManager()->AddSymRef(OVLT_UNIQUE);
+    }
+
+    // Bone names
+    for (vector<cBoneStruct>::const_iterator it = item.bones.begin(); it != item.bones.end(); ++it) {
+        GetStringTable()->AddString(it->name.c_str());
+    }
+
+    GetLSRManager()->AddSymbol(OVLT_UNIQUE);
+    GetLSRManager()->AddLoader(OVLT_UNIQUE);
+    GetStringTable()->AddSymbolString(item.name.c_str(), ovlBSHManager::TAG);
+
+}
+
+void ovlBSHManager::Make(cOvlInfo* info) {
+    DUMP_LOG("Trace: ovlBSHManager::Make()");
+    Check("ovlBSHManager::Make");
+
+    m_blobs[""] = cOvlMemBlob(OVLT_UNIQUE, 2, m_size);
+    ovlOVLManager::Make(info);
+    unsigned char* c_data = m_blobs[""].data;
+
+    for (map<string, cBoneShape1>::iterator it = m_items.begin(); it != m_items.end(); ++it) {
+        unsigned char* c_commondata = m_blobs[it->first].data;
+
+        BoneShape1* c_model = reinterpret_cast<BoneShape1*>(c_data);
+        c_data += sizeof(BoneShape1);
+
+        // Assign space for BoneShape2 pointers
+        c_model->sh = reinterpret_cast<BoneShape2**>(c_data);
+        c_data += it->second.meshes.size() * 4;
+        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->sh));
+        DUMP_RELOCATION("ovlBSHManager::Make, BoneShape2 pointers", c_model->sh);
+
+        // Symbol and Loader
+        SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), Tag()), reinterpret_cast<unsigned long*>(c_model));
+        GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_model), false, c_symbol);
+
+        unsigned long s = 0;
+        for (vector<cBoneShape2>::iterator itb = it->second.meshes.begin(); itb != it->second.meshes.end(); ++itb) {
+            c_model->sh[s] = reinterpret_cast<BoneShape2*>(c_data);
+            c_data += sizeof(BoneShape2);
+            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->sh[s]));
+            DUMP_RELOCATION("ovlBSHManager::Make, BoneShape2", c_model->sh[s]);
+
+            c_model->sh[s]->Vertexes = reinterpret_cast<VERTEX2*>(c_commondata);
+            c_commondata += itb->vertices.size() * sizeof(VERTEX2);
+            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->sh[s]->Vertexes));
+            DUMP_RELOCATION("ovlBSHManager::Make, Vertexes", c_model->sh[s]->Vertexes);
+
+            c_model->sh[s]->Triangles = reinterpret_cast<unsigned short*>(c_commondata);
+            c_commondata += itb->indices.size() * sizeof(unsigned short);
+            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->sh[s]->Triangles));
+            DUMP_RELOCATION("ovlBSHManager::Make, Triangles", c_model->sh[s]->Triangles);
+
+            // Symbol references
+            GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(itb->fts.c_str(), ovlFTXManager::TAG), reinterpret_cast<unsigned long*>(&c_model->sh[s]->fts));
+            GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(itb->texturestyle.c_str(), ovlTXSManager::TAG), reinterpret_cast<unsigned long*>(&c_model->sh[s]->TextureData));
+
+            s++;
+        }
+
+        c_model->Bones = reinterpret_cast<BoneStruct*>(c_commondata);
+        c_commondata += it->second.bones.size() * sizeof(BoneStruct);
+        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->Bones));
+        DUMP_RELOCATION("ovlBSHManager::Make, Bones", c_model->Bones);
+
+        c_model->BonePositions1 = reinterpret_cast<D3DMATRIX*>(c_commondata);
+        c_commondata += it->second.bones.size() * sizeof(D3DMATRIX);
+        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->BonePositions1));
+        DUMP_RELOCATION("ovlBSHManager::Make, BonePositions1", c_model->BonePositions1);
+
+        c_model->BonePositions2 = reinterpret_cast<D3DMATRIX*>(c_commondata);
+        c_commondata += it->second.bones.size() * sizeof(D3DMATRIX);
+        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->BonePositions2));
+        DUMP_RELOCATION("ovlBSHManager::Make, BonePositions2", c_model->BonePositions2);
+
+        s = 0;
+        for (vector<cBoneStruct>::iterator itb = it->second.bones.begin(); itb != it->second.bones.end(); ++itb) {
+            c_model->Bones[s].BoneName = GetStringTable()->FindString(itb->name.c_str());
+            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->Bones[s].BoneName));
+            DUMP_RELOCATION("ovlBSHManager::Make, BoneName", c_model->Bones[s].BoneName);
+            s++;
+        }
+
+        it->second.Fill(c_model);
+        GetLSRManager()->CloseLoader(OVLT_UNIQUE);
+    }
+
+}
+
+/*
 ovlBSHManager::~ovlBSHManager() {
     for (unsigned long i = 0; i < m_modellist.size(); ++i) {
         for (unsigned long s = 0; s < m_modellist[i]->MeshCount; ++s) {
@@ -342,4 +473,4 @@ unsigned char* ovlBSHManager::Make(cOvlInfo* info) {
 
     return m_data;
 }
-
+*/

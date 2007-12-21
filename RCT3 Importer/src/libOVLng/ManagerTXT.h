@@ -43,15 +43,14 @@ public:
     static const char* TAG;
     static const unsigned long TYPE;
 private:
-    vector<string> m_txtnames;
-    vector<string> m_txtstrings;
+    map<string, string> m_items;
 public:
     ovlTXTManager(): ovlOVLManager() {};
     virtual ~ovlTXTManager(){};
 
     void AddText(const char* name, const char* str);
 
-    virtual unsigned char* Make(cOvlInfo* info);
+    virtual void Make(cOvlInfo* info);
 
     virtual const char* Loader() const {
         return LOADER;

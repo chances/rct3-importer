@@ -120,7 +120,7 @@ public:
 
     void AddStall(const cStall& stall);
 
-    virtual unsigned char* Make(cOvlInfo* info);
+    virtual void Make(cOvlInfo* info);
 
     virtual const char* Name() const {
         return NAME;
