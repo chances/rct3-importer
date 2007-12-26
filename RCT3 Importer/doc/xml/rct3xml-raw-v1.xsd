@@ -1,0 +1,1092 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema elementFormDefault="qualified"
+           targetNamespace="http://rct3.sourceforge.net/rct3xml/raw"
+           version="1" xmlns="http://rct3.sourceforge.net/rct3xml/raw"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns2="http://rct3.sourceforge.net/rct3xml/scenery"
+           xmlns:tns="http://rct3.sourceforge.net/rct3xml/raw"
+           xmlns:ns="http://www.w3.org/1999/xhtml"
+           xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <xs:include schemaLocation="http://rct3.sourceforge.net/xml/rct3xml-shared-v1.xsd"/>
+
+  <xs:simpleType name="CEDReference">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="CIDReference">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="FTXReference">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="GSIReference">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="SHSReference">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="SIDReference">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="SPLReference">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="SVDReference">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="TEXReference">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="TXTReference">
+    <xs:restriction base="xs:string"/>
+  </xs:simpleType>
+
+  <xs:simpleType name="rawCheckFor">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="presence"/>
+
+      <xs:enumeration value="reference"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="rawFailMode">
+    <xs:restriction base="xs:unsignedInt">
+      <xs:enumeration value="0">
+        <xs:annotation>
+          <xs:documentation>Default, warn in creation mode, fail in install
+          mode</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+
+      <xs:enumeration value="1">
+        <xs:annotation>
+          <xs:documentation>Fail in creation mode, fail in install
+          mode</xs:documentation>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="rawPatchWhat">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="addreference"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:group name="ovltags">
+    <xs:choice>
+      <xs:element ref="section"/>
+
+      <xs:element ref="subovl"/>
+
+      <xs:element ref="copy"/>
+
+      <xs:element ref="patch"/>
+
+      <xs:element ref="import"/>
+
+      <xs:element ref="ced"/>
+
+      <xs:element ref="chg"/>
+
+      <xs:element ref="cid"/>
+
+      <xs:element ref="ftx"/>
+
+      <xs:element ref="gsi"/>
+
+      <xs:element ref="sid"/>
+
+      <xs:element ref="spl"/>
+
+      <xs:element ref="sta"/>
+
+      <xs:element ref="tex"/>
+
+      <xs:element ref="txt"/>
+
+      <xs:element ref="reference"/>
+
+      <xs:element ref="symbol"/>
+    </xs:choice>
+  </xs:group>
+
+  <xs:group name="roottags">
+    <xs:choice>
+      <xs:element ref="variables"/>
+
+      <xs:element ref="set"/>
+
+      <xs:element ref="unset"/>
+
+      <xs:element ref="check"/>
+    </xs:choice>
+  </xs:group>
+
+  <xs:attributeGroup name="baseattrs">
+    <xs:attribute name="comment" type="xs:string"/>
+
+    <xs:attribute name="if" type="xs:string"/>
+
+    <xs:attribute name="ifnot" type="xs:string"/>
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="rootattrs">
+    <xs:attribute name="file" type="xs:string"/>
+
+    <xs:attribute name="basedir" type="xs:string"/>
+
+    <xs:attribute name="installdir" type="xs:string"/>
+
+    <xs:attribute name="conditions" type="xs:string"/>
+  </xs:attributeGroup>
+
+  <xs:element name="rawovl">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group maxOccurs="unbounded" minOccurs="0" ref="roottags"/>
+
+        <xs:group maxOccurs="unbounded" ref="ovltags"/>
+      </xs:sequence>
+
+      <xs:attributeGroup ref="rootattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="section">
+    <xs:complexType>
+      <xs:group maxOccurs="unbounded" minOccurs="0" ref="ovltags"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="subovl">
+    <xs:annotation>
+      <xs:documentation>The subovl tag can either have children or the include
+      attribute.</xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType>
+      <xs:sequence>
+        <xs:group maxOccurs="unbounded" minOccurs="0" ref="roottags"/>
+
+        <xs:group maxOccurs="unbounded" minOccurs="0" ref="ovltags"/>
+      </xs:sequence>
+
+      <xs:attribute name="include" type="xs:string"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+
+      <xs:attributeGroup ref="rootattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="import">
+    <xs:complexType>
+      <xs:attribute name="file" type="xs:string" use="required"/>
+
+      <xs:attribute name="name" type="xs:string"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="copy">
+    <xs:complexType>
+      <xs:attribute name="from" type="xs:string" use="required"/>
+
+      <xs:attribute name="to" type="xs:string" use="required"/>
+
+      <xs:attribute default="0" name="failmode" type="rawFailMode"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="patch">
+    <xs:complexType>
+      <xs:attribute name="file" type="xs:string" use="required"/>
+
+      <xs:attribute name="what" type="rawPatchWhat" use="required"/>
+
+      <xs:attribute name="parameter" type="xs:string" use="required"/>
+
+      <xs:attribute default="0" name="failmode" type="rawFailMode"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="variables">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded" minOccurs="0">
+        <xs:element ref="variables"/>
+
+        <xs:element ref="set"/>
+
+        <xs:element ref="unset"/>
+      </xs:choice>
+
+      <xs:attribute name="include" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="set">
+    <xs:annotation>
+      <xs:documentation>variable tags are superceded by command line
+      variables</xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="required"/>
+
+      <xs:attribute name="to" type="xs:string">
+        <xs:annotation>
+          <xs:documentation>If value is left out, the variable is set as a
+          condition (ie to "1").</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="unset">
+    <xs:annotation>
+      <xs:documentation>variable tags are superceded by command line
+      variables</xs:documentation>
+    </xs:annotation>
+
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="check">
+    <xs:complexType>
+      <xs:attribute name="file" type="xs:string" use="required"/>
+
+      <xs:attribute name="for" type="rawCheckFor" use="required"/>
+
+      <xs:attribute name="parameter" type="xs:string"/>
+
+      <xs:attribute name="set" type="xs:string" use="required"/>
+
+      <xs:attribute name="to" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="attractionbase">
+    <xs:complexType>
+      <xs:attribute name="type" type="ovlAttractionType"/>
+
+      <xs:attribute name="icon" type="GSIReference"/>
+
+      <xs:attribute name="spline" type="SPLReference"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="attractionunknowns">
+    <xs:complexType>
+      <xs:attribute name="u2" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u3" type="xs:int"/>
+
+      <xs:attribute name="u4" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u5" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u6" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u9" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u10" type="xs:int"/>
+
+      <xs:attribute name="u11" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u12" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u13" type="xs:unsignedInt"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ced">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="cedmore"/>
+      </xs:sequence>
+
+      <xs:attribute name="name" type="xs:string" use="required"/>
+
+      <xs:attribute name="nametxt" type="TXTReference" use="required">
+        <xs:annotation>
+          <xs:documentation>Reference: TXT</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="icon" type="GSIReference" use="required">
+        <xs:annotation>
+          <xs:documentation>Reference: GSI</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="cedmore">
+    <xs:complexType>
+      <xs:attribute name="hunger" type="xs:float"/>
+
+      <xs:attribute name="thirst" type="xs:float"/>
+
+      <xs:attribute name="u1" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u4" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u7" type="xs:float"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="chg">
+    <xs:complexType>
+      <xs:all>
+        <xs:element minOccurs="0" ref="attractionbase"/>
+
+        <xs:element minOccurs="0" ref="attractionunknowns"/>
+      </xs:all>
+
+      <xs:attribute name="name" type="xs:string" use="required"/>
+
+      <xs:attribute name="nametxt" type="TXTReference" use="required">
+        <xs:annotation>
+          <xs:documentation>Reference: TXT</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="description" type="TXTReference" use="required">
+        <xs:annotation>
+          <xs:documentation>Reference: TXT</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="sid" type="SIDReference" use="required">
+        <xs:annotation>
+          <xs:documentation>Reference: SID</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="roomspline" type="SPLReference" use="required">
+        <xs:annotation>
+          <xs:documentation>Reference: SPL</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="cid">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="cidshape"/>
+
+        <xs:choice maxOccurs="unbounded" minOccurs="0">
+          <xs:element ref="cidmore"/>
+
+          <xs:element ref="cidextra"/>
+
+          <xs:element ref="cidsettings"/>
+
+          <xs:element ref="cidtrash"/>
+
+          <xs:element ref="cidsoaked"/>
+
+          <xs:element ref="cidsizeunknowns"/>
+
+          <xs:element ref="cidunknowns"/>
+        </xs:choice>
+      </xs:sequence>
+
+      <xs:attribute name="name" type="xs:string" use="required"/>
+
+      <xs:attribute name="nametxt" type="TXTReference" use="required">
+        <xs:annotation>
+          <xs:documentation>Reference: TXT</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="pluralnametxt" type="TXTReference" use="required">
+        <xs:annotation>
+          <xs:documentation>Reference: TXT</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="cidshape">
+    <xs:complexType>
+      <xs:attribute name="shaped" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:boolean"/>
+        </xs:simpleType>
+      </xs:attribute>
+
+      <xs:attribute name="shape1" type="SHSReference">
+        <xs:annotation>
+          <xs:documentation>Reference: SHS</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="shape2" type="SHSReference">
+        <xs:annotation>
+          <xs:documentation>Reference: SHS</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="distance" type="xs:float"/>
+
+      <xs:attribute name="defaultcolour" type="ovlColour"/>
+
+      <xs:attribute name="ftx" type="FTXReference">
+        <xs:annotation>
+          <xs:documentation>Reference: FTX</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attribute name="scalex" type="xs:float"/>
+
+      <xs:attribute name="scaley" type="xs:float"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="cidmore">
+    <xs:complexType>
+      <xs:attribute name="addonpack">
+        <xs:simpleType>
+          <xs:restriction base="xs:unsignedInt">
+            <xs:minInclusive value="0"/>
+
+            <xs:maxInclusive value="2"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+
+      <xs:attribute name="icon" type="GSIReference">
+        <xs:annotation>
+          <xs:documentation>Reference: GSI</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="cidextra">
+    <xs:complexType>
+      <xs:attribute name="name" type="CEDReference" use="required"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="cidsettings">
+    <xs:complexType>
+      <xs:attribute name="flags" type="xs:unsignedInt"/>
+
+      <xs:attribute name="ageclass" type="xs:int"/>
+
+      <xs:attribute name="type" type="xs:unsignedInt"/>
+
+      <xs:attribute name="hunger" type="xs:float"/>
+
+      <xs:attribute name="thirst" type="xs:float"/>
+
+      <xs:attribute name="lightprotectionfactor" type="xs:float"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="cidtrash">
+    <xs:complexType>
+      <xs:attribute name="wrapper" type="CIDReference"/>
+
+      <xs:attribute name="trash1" type="xs:float"/>
+
+      <xs:attribute name="trash2" type="xs:int"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="cidsoaked">
+    <xs:complexType>
+      <xs:attribute name="malebody" type="xs:string"/>
+
+      <xs:attribute name="malelegs" type="xs:string"/>
+
+      <xs:attribute name="femalebody" type="xs:string"/>
+
+      <xs:attribute name="femalelegs" type="xs:string"/>
+
+      <xs:attribute name="unknown" type="xs:unsignedLong"/>
+
+      <xs:attribute name="textureoption" type="xs:string"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="cidsizeunknowns">
+    <xs:complexType>
+      <xs:attribute name="u1" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u2" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u3" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u4" type="xs:unsignedInt"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="cidunknowns">
+    <xs:complexType>
+      <xs:attribute name="u1" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u3" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u26" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u27" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u28" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u33" type="xs:unsignedInt"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ftx">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" minOccurs="0" ref="ftxanimation"/>
+
+        <xs:element maxOccurs="unbounded" ref="ftxframe"/>
+      </xs:sequence>
+
+      <xs:attribute name="name" type="xs:string" use="required"/>
+
+      <xs:attribute name="dimension">
+        <xs:simpleType>
+          <xs:restriction base="xs:unsignedInt">
+            <xs:minInclusive value="4"/>
+
+            <xs:maxInclusive value="1024"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+
+      <xs:attribute default="0" name="fps" type="xs:unsignedInt"/>
+
+      <xs:attribute default="0" name="recolourable">
+        <xs:simpleType>
+          <xs:restriction base="xs:unsignedInt">
+            <xs:minInclusive value="0"/>
+
+            <xs:maxInclusive value="7"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ftxanimation">
+    <xs:complexType>
+      <xs:attribute name="index" type="xs:unsignedInt" use="required"/>
+
+      <xs:attribute default="1" name="repeat">
+        <xs:simpleType>
+          <xs:restriction base="xs:unsignedInt">
+            <xs:minInclusive value="1"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ftxframe">
+    <xs:complexType>
+      <xs:choice>
+        <xs:sequence>
+          <xs:element name="image">
+            <xs:complexType>
+              <xs:simpleContent>
+                <xs:extension base="xs:string">
+                  <xs:attribute default="0" name="usealpha" type="xs:boolean"/>
+                </xs:extension>
+              </xs:simpleContent>
+            </xs:complexType>
+          </xs:element>
+
+          <xs:element minOccurs="0" name="alpha" type="xs:string"/>
+        </xs:sequence>
+
+        <xs:sequence>
+          <xs:element name="palettedata" type="xs:base64Binary"/>
+
+          <xs:element name="texturedata" type="xs:base64Binary"/>
+
+          <xs:element minOccurs="0" name="alphadata" type="xs:base64Binary"/>
+        </xs:sequence>
+      </xs:choice>
+
+      <xs:attribute name="dimension">
+        <xs:simpleType>
+          <xs:restriction base="xs:unsignedInt">
+            <xs:minInclusive value="4"/>
+
+            <xs:maxInclusive value="1024"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+
+      <xs:attribute name="recolourable">
+        <xs:simpleType>
+          <xs:restriction base="xs:unsignedInt">
+            <xs:maxInclusive value="7"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="gsi">
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="required"/>
+
+      <xs:attribute name="tex" type="TEXReference" use="required"/>
+
+      <xs:attribute name="top" type="xs:unsignedInt" use="required"/>
+
+      <xs:attribute name="bottom" type="xs:unsignedInt" use="required"/>
+
+      <xs:attribute name="left" type="xs:unsignedInt" use="required"/>
+
+      <xs:attribute name="right" type="xs:unsignedInt" use="required"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="sid">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded" minOccurs="0">
+        <xs:element ref="sidgroup"/>
+
+        <xs:element ref="sidtype"/>
+
+        <xs:element ref="sidposition"/>
+
+        <xs:element ref="sidcolours"/>
+
+        <xs:element ref="sidflags"/>
+
+        <xs:element ref="sidvisual"/>
+
+        <xs:element ref="sidimporterunknowns"/>
+
+        <xs:element ref="sidstallunknowns"/>
+
+        <xs:element ref="sidparameter"/>
+      </xs:choice>
+
+      <xs:attribute name="name" type="xs:string" use="required"/>
+
+      <xs:attribute name="ovlpath" type="xs:string" use="required"/>
+
+      <xs:attribute name="nametxt" type="TXTReference" use="required"/>
+
+      <xs:attribute name="icon" type="GSIReference" use="required"/>
+
+      <xs:attribute name="svd" type="SVDReference" use="required"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="sidgroup">
+    <xs:complexType>
+      <xs:attribute name="name" type="TXTReference" use="required"/>
+
+      <xs:attribute name="icon" type="GSIReference" use="required"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="sidtype">
+    <xs:complexType>
+      <xs:attribute name="scenerytype">
+        <xs:simpleType>
+          <xs:restriction base="xs:int">
+            <xs:minInclusive value="0"/>
+
+            <xs:maxInclusive value="46"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+
+      <xs:attribute name="cost" type="xs:int"/>
+
+      <xs:attribute name="removalcost" type="xs:int"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="sidposition">
+    <xs:complexType>
+      <xs:attribute name="type">
+        <xs:simpleType>
+          <xs:restriction base="xs:int">
+            <xs:minInclusive value="0"/>
+
+            <xs:maxInclusive value="8"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+
+      <xs:attribute name="xsquares" type="xs:int"/>
+
+      <xs:attribute name="ysquares" type="xs:int"/>
+
+      <xs:attribute name="xpos" type="xs:float"/>
+
+      <xs:attribute name="ypos" type="xs:float"/>
+
+      <xs:attribute name="zpos" type="xs:float"/>
+
+      <xs:attribute name="xsize" type="xs:float"/>
+
+      <xs:attribute name="ysize" type="xs:float"/>
+
+      <xs:attribute name="zsize" type="xs:float"/>
+
+      <xs:attribute name="supports"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="sidcolours">
+    <xs:complexType>
+      <xs:attribute name="choice1" type="ovlColour"/>
+
+      <xs:attribute name="choice2" type="ovlColour"/>
+
+      <xs:attribute name="choice3" type="ovlColour"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="sidflags">
+    <xs:complexType>
+      <xs:attribute name="set" type="xs:string" use="required"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="sidvisual">
+    <xs:complexType>
+      <xs:attribute name="name" type="SVDReference" use="required"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="sidimporterunknowns">
+    <xs:complexType>
+      <xs:attribute name="u1" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u2" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u6" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u7" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u8" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u9" type="xs:unsignedInt"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="sidstallunknowns">
+    <xs:complexType>
+      <xs:attribute name="u1" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u2" type="xs:unsignedInt"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="sidparameter">
+    <xs:complexType>
+      <xs:attribute name="name" type="ovlSidParameters" use="required"/>
+
+      <xs:attribute name="param" type="xs:string"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="spl">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="splnode"/>
+
+        <xs:element ref="spllength"/>
+
+        <xs:element ref="spldata"/>
+      </xs:choice>
+
+      <xs:attribute name="name" type="xs:string" use="required"/>
+
+      <xs:attribute name="u3" type="xs:float" use="required"/>
+
+      <xs:attribute name="u6" type="xs:float"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="splnode">
+    <xs:complexType>
+      <xs:attribute name="x" type="xs:float" use="required"/>
+
+      <xs:attribute name="y" type="xs:float" use="required"/>
+
+      <xs:attribute name="z" type="xs:float" use="required"/>
+
+      <xs:attribute name="cp1x" type="xs:float" use="required"/>
+
+      <xs:attribute name="cp1y" type="xs:float" use="required"/>
+
+      <xs:attribute name="cp1z" type="xs:float" use="required"/>
+
+      <xs:attribute name="cp2x" type="xs:float" use="required"/>
+
+      <xs:attribute name="cp2y" type="xs:float" use="required"/>
+
+      <xs:attribute name="cp2z" type="xs:float" use="required"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="spllength">
+    <xs:complexType>
+      <xs:attribute name="length" type="xs:float" use="required"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="spldata">
+    <xs:complexType>
+      <xs:attribute name="data" type="xs:hexBinary" use="required"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="sta">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded" minOccurs="0">
+        <xs:element ref="attractionbase"/>
+
+        <xs:element ref="staitem"/>
+
+        <xs:element ref="stastallunknowns"/>
+
+        <xs:element ref="attractionunknowns"/>
+      </xs:choice>
+
+      <xs:attribute name="name" type="xs:string" use="required"/>
+
+      <xs:attribute name="nametxt" type="TXTReference" use="required"/>
+
+      <xs:attribute name="description" type="TXTReference" use="required"/>
+
+      <xs:attribute name="sid" type="SIDReference" use="required"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="staitem">
+    <xs:complexType>
+      <xs:attribute name="cid" type="CIDReference" use="required"/>
+
+      <xs:attribute name="cost" type="xs:unsignedInt" use="required"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="stastallunknowns">
+    <xs:complexType>
+      <xs:attribute name="u1" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u2" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u3" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u4" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u5" type="xs:unsignedInt"/>
+
+      <xs:attribute name="u6" type="xs:unsignedInt"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="tex">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="texturefile">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:string">
+                <xs:attributeGroup ref="baseattrs"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element name="texturedata">
+          <xs:complexType>
+            <xs:simpleContent>
+              <xs:extension base="xs:base64Binary">
+                <xs:attribute name="dimension" use="required">
+                  <xs:simpleType>
+                    <xs:restriction base="xs:unsignedInt">
+                      <xs:minInclusive value="4"/>
+
+                      <xs:maxInclusive value="1024"/>
+                    </xs:restriction>
+                  </xs:simpleType>
+                </xs:attribute>
+
+                <xs:attributeGroup ref="baseattrs"/>
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+
+      <xs:attribute name="name" type="xs:string" use="required"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+
+    <xs:unique name="texEnsureOneData">
+      <xs:selector xpath="texturefile|texturedata"/>
+
+      <xs:field xpath="if"/>
+
+      <xs:field xpath="ifnot"/>
+    </xs:unique>
+  </xs:element>
+
+  <xs:element name="txt">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute name="name" type="xs:string" use="required"/>
+
+          <xs:attribute name="type" use="required">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="text"/>
+
+                <xs:enumeration value="raw"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="reference">
+    <xs:complexType>
+      <xs:attribute name="path" type="xs:string" use="required"/>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="symbol">
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="required"/>
+
+      <xs:attribute name="target" type="ovlFile" use="required"/>
+
+      <xs:attribute name="type" use="required">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="int"/>
+
+            <xs:enumeration value="float"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+
+      <xs:attribute name="data" use="required">
+        <xs:simpleType>
+          <xs:union>
+            <xs:simpleType>
+              <xs:restriction base="xs:unsignedInt"/>
+            </xs:simpleType>
+
+            <xs:simpleType>
+              <xs:restriction base="xs:float"/>
+            </xs:simpleType>
+          </xs:union>
+        </xs:simpleType>
+      </xs:attribute>
+
+      <xs:attributeGroup ref="baseattrs"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

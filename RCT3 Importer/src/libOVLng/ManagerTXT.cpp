@@ -36,14 +36,22 @@ const char* ovlTXTManager::TAG = "txt";
 const unsigned long ovlTXTManager::TYPE = 2;
 
 void ovlTXTManager::AddText(const char* name, const char* str) {
+    counted_array_ptr<wchar_t> newstr(new wchar_t[strlen(str)+1]);
+    mbstowcs(newstr.get(), str, strlen(str)+1);
+    AddText(name, newstr.get());
+}
+
+void ovlTXTManager::AddText(const char* name, const wchar_t* str) {
     Check("ovlTXTManager::AddText");
     if (m_items.find(string(name)) != m_items.end())
         throw EOvl(string("ovlTXTManager::AddText: Item with name '")+name+"' already exists");
 
-    m_items[string(name)] = str;
+    counted_array_ptr<wchar_t> newstr(new wchar_t[wcslen(str)+1]);
+    wcscpy(newstr.get(), str);
+    m_items[string(name)] = newstr;
 
     // Text
-    m_size += (strlen(str)+1) * 2;
+    m_size += (wcslen(str)+1) * 2;
 
     GetLSRManager()->AddLoader(OVLT_COMMON);
     GetLSRManager()->AddSymbol(OVLT_COMMON);
@@ -59,11 +67,11 @@ void ovlTXTManager::Make(cOvlInfo* info) {
     ovlOVLManager::Make(info);
     unsigned char* c_data = m_blobs[""].data;
 
-    for (map<string, string>::iterator it = m_items.begin(); it != m_items.end(); ++it) {
+    for (map<string, counted_array_ptr<wchar_t> >::iterator it = m_items.begin(); it != m_items.end(); ++it) {
         // Data Transfer, Text
         wchar_t* c_txt = reinterpret_cast<wchar_t*>(c_data);
-        c_data += (it->second.length()+1) * 2;
-        mbstowcs(c_txt, it->second.c_str(), it->second.length()+1);
+        c_data += (wcslen(it->second.get())+1) * 2;
+        wcscpy(c_txt, it->second.get());
 
         SymbolStruct* s_txt = GetLSRManager()->MakeSymbol(OVLT_COMMON, GetStringTable()->FindSymbolString(it->first.c_str(), Tag()), reinterpret_cast<unsigned long*>(c_txt));
         GetLSRManager()->OpenLoader(OVLT_COMMON, TAG, reinterpret_cast<unsigned long*>(c_txt), 1, s_txt);

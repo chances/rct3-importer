@@ -392,13 +392,13 @@ bool cFlexiTextureAnim::FromNode(wxXmlNode* node, const wxString& path, unsigned
     }
     if (node->GetPropVal(wxT("count"), &temp)) {
         if (!temp.ToULong(&t)) {
-            count(0);
+            count(1);
             ret = false;
         } else {
             count(t);
         }
     } else {
-        count(0);
+        count(1);
     }
 
     return ret;
@@ -1375,8 +1375,10 @@ wxXmlNode* cModelBone::GetNode(const wxString& path) {
     wxXmlNode* node = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, RCT3XML_CMODELBONE);
     wxXmlNode* lastchild = NULL;
     node->AddProperty(wxT("name"), name);
-    node->AddProperty(wxT("parent"), parent);
-    node->AddProperty(wxT("usepos2"), usepos2?wxT("1"):wxT("0"));
+    if (!parent.IsEmpty())
+        node->AddProperty(wxT("parent"), parent);
+    if (usepos2)
+        node->AddProperty(wxT("usepos2"), wxT("1"));
 
     //wxXmlNode* pos1 = new wxXmlNode(node, wxXML_ELEMENT_NODE, RCT3XML_CMODELBONE_P1);
     wxXmlNode* pos1 = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, RCT3XML_CMODELBONE_P1);

@@ -41,6 +41,7 @@
 #include "RCT3Exception.h"
 #include "rct3log.h"
 #include "texcheck.h"
+#include "xmldefs.h"
 
 bool cSCNFile::CheckForModelNameDuplicates() {
     for (cModel::iterator moda = models.begin(); moda != models.end(); moda++) {
@@ -1789,6 +1790,9 @@ wxXmlNode* cSCNFile::GetNode(const wxString& path) {
     temp.MakeRelativeTo(path);
     node->AddProperty(wxT("file"), temp.GetPathWithSep());
     node->AddProperty(wxT("version"), wxString::Format("%lu", version));
+    node->AddProperty(wxT("xmlns"), WXW(XML_NAMESPACE_SCENERY));
+    node->AddProperty(wxT("xmlns:xsi"), WXW(XML_NAMESPACE_SCHEMAINSTANCE));
+    node->AddProperty(wxT("xsi:schemaLocation"), WXW(XML_NAMESPACE_SCENERY)+wxT(" ")+WXW(XML_SCHEMALOCATION_SCENERY));
 
     lastparent = sivsettings.GetNode(path);
     //lastparent->SetParent(node);

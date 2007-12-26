@@ -32,6 +32,8 @@
 #include <string>
 #include <vector>
 
+#include "counted_array_ptr.h"
+
 #include "ManagerOVL.h"
 
 using namespace std;
@@ -43,12 +45,13 @@ public:
     static const char* TAG;
     static const unsigned long TYPE;
 private:
-    map<string, string> m_items;
+    map<string, counted_array_ptr<wchar_t> > m_items;
 public:
     ovlTXTManager(): ovlOVLManager() {};
     virtual ~ovlTXTManager(){};
 
     void AddText(const char* name, const char* str);
+    void AddText(const char* name, const wchar_t* str);
 
     virtual void Make(cOvlInfo* info);
 

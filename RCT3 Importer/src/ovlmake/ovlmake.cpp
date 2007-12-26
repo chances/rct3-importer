@@ -72,12 +72,16 @@ int DoCompile(const wxCmdLineParser& parser) {
         } else {
             install = true;
         }
+        wxString bake;
+        parser.Found(wxT("bake"), &bake);
         if (convert)
             wxLogMessage(_("Mode: Convert to new xml"));
         else if (checkonly)
             wxLogMessage(_("Mode: Check input"));
         else if (dryrun)
             wxLogMessage(_("Mode: Dryrun"));
+        else if (!bake.IsEmpty())
+            wxLogMessage(_("Mode: Bake"));
         else if (install)
             wxLogMessage(_("Mode: Install"));
         else
@@ -102,7 +106,14 @@ int DoCompile(const wxCmdLineParser& parser) {
                     WRITE_RCT3_EXPERTMODE(true);
 
                     cRawOvl rovl;
-                    rovl.SetOptions(install, dryrun);
+                    if (!bake.IsEmpty()) {
+                        rovl.SetOptions(MODE_BAKE, dryrun);
+                        rovl.AddBakeStructures(bake);
+                    } else if (install) {
+                        rovl.SetOptions(MODE_INSTALL, dryrun);
+                    } else {
+                        rovl.SetOptions(MODE_COMPILE, dryrun);
+                    }
                     if (install) {
                         wxFileName temp(installdir, wxEmptyString);
                         rovl.Process(root, inputfile, temp.GetPathWithSep());
@@ -111,10 +122,23 @@ int DoCompile(const wxCmdLineParser& parser) {
                     } else {
                         rovl.Process(root, inputfile, inputfile.GetPathWithSep(),parser.GetParam(1));
                     }
+                    if (!bake.IsEmpty()) {
+                        if (parser.GetParamCount() < 2) {
+                            outputfile = inputfile;
+                            outputfile.SetName(outputfile.GetName() + wxT("_baked"));
+                        } else {
+                            outputfile = parser.GetParam(1);
+                        }
+                        wxLogMessage(_("Writing baked raw xml file ") + outputfile.GetFullPath());
+                        doc.Save(outputfile.GetFullPath(), 4);
+                    }
                     if (dryrun) {
                         fprintf(stderr, "\nDryrun results:\n");
-                        for (std::vector<wxFileName>::const_iterator it = rovl.GetDryrun().begin(); it != rovl.GetDryrun().end(); ++it) {
-                            fprintf(stderr, "%s\n", it->GetFullPath().fn_str());
+                        for (std::vector<wxFileName>::const_iterator it = rovl.GetModifiedFiles().begin(); it != rovl.GetModifiedFiles().end(); ++it) {
+                            fprintf(stderr, "Modified: %s\n", it->GetFullPath().fn_str());
+                        }
+                        for (std::vector<wxFileName>::const_iterator it = rovl.GetNewFiles().begin(); it != rovl.GetNewFiles().end(); ++it) {
+                            fprintf(stderr, "New: %s\n", it->GetFullPath().fn_str());
                         }
                     }
                     return ret;
@@ -271,6 +295,7 @@ int main(int argc, char **argv)
         { wxCMD_LINE_SWITCH, NULL, wxT("dryrun"), _("only show which files would be generated, do not actually write output") },
         { wxCMD_LINE_SWITCH, NULL, wxT("install"), _("install ovls to RCT3 (output file is ignored)") },
         { wxCMD_LINE_OPTION, NULL, wxT("installdir"), _("name install directory (implies --install)") },
+        { wxCMD_LINE_OPTION, NULL, wxT("bake"), _("bake included data into a new xml file. Space delimitered list.") },
 
         { wxCMD_LINE_PARAM,  NULL, NULL, _("input file"), wxCMD_LINE_VAL_STRING },
         { wxCMD_LINE_PARAM,  NULL, NULL, _("output file"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },

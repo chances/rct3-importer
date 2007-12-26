@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema elementFormDefault="qualified"
+           targetNamespace="http://rct3.sourceforge.net/rct3xml/scenery"
+           version="1" xmlns="http://rct3.sourceforge.net/rct3xml/scenery"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://rct3.sourceforge.net/rct3xml/scenery"
+           xmlns:html="http://www.w3.org/1999/xhtml"
+           xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <xs:include schemaLocation="http://rct3.sourceforge.net/xml/rct3xml-scenery-shared-v1.xsd"/>
+
+  <xs:element name="ovl">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="siv"/>
+
+        <xs:element minOccurs="0" name="textures">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" minOccurs="0" ref="texture"/>
+            </xs:sequence>
+          </xs:complexType>
+
+          <xs:unique name="unOvlTextureName">
+            <xs:selector xpath="tns:texture"/>
+
+            <xs:field xpath="@name"/>
+          </xs:unique>
+        </xs:element>
+
+        <xs:element minOccurs="0" name="models">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" minOccurs="0" ref="model"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element minOccurs="0" name="animatedmodels">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" minOccurs="0"
+                          ref="animatedmodel"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element minOccurs="0" name="animations">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" minOccurs="0" ref="animation"/>
+            </xs:sequence>
+          </xs:complexType>
+
+          <xs:unique name="unOvlAnimationName">
+            <xs:selector xpath="tns:animation"/>
+
+            <xs:field xpath="@name"/>
+          </xs:unique>
+        </xs:element>
+
+        <xs:element minOccurs="0" name="lods">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" minOccurs="0" ref="lod"/>
+            </xs:sequence>
+          </xs:complexType>
+
+          <xs:unique name="unOvlLodDistance">
+            <xs:selector xpath="tns:lod"/>
+
+            <xs:field xpath="@distance"/>
+          </xs:unique>
+        </xs:element>
+
+        <xs:element minOccurs="0" name="references">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" minOccurs="0" name="reference">
+                <xs:complexType>
+                  <xs:attribute name="path" type="xs:string" use="required"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+
+          <xs:unique name="unOvlReferencePath">
+            <xs:selector xpath="tns:reference"/>
+
+            <xs:field xpath="@path"/>
+          </xs:unique>
+        </xs:element>
+      </xs:sequence>
+
+      <xs:attribute name="name" type="xs:string"/>
+
+      <xs:attribute name="file" type="xs:string"/>
+
+      <xs:attribute name="version" type="xs:unsignedInt" use="required">
+        <xs:annotation>
+          <xs:documentation>Version attribute discerns scenery xmls from
+          ovlcompiler xmls, so it's required to use it
+          here.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+
+    <xs:unique name="unOvlModelName">
+      <xs:selector xpath="tns:models/tns:model | tns:animatedmodels/tns:animatedmodel"/>
+
+      <xs:field xpath="@name"/>
+    </xs:unique>
+  </xs:element>
+
+  <xs:element name="siv" type="impSivType"/>
+
+  <xs:element name="texture" type="impTextureType"/>
+
+  <xs:element name="model" type="impModelType"/>
+
+  <xs:element name="animatedmodel" type="impAnimatedModelType">
+    <xs:key name="amBones">
+      <xs:selector xpath="tns:modelbone"/>
+
+      <xs:field xpath="@name"/>
+    </xs:key>
+
+    <xs:keyref name="amBoneParent" refer="amBones">
+      <xs:selector xpath="tns:modelbone"/>
+
+      <xs:field xpath="@parent"/>
+    </xs:keyref>
+
+    <xs:key name="amMeshes">
+      <xs:selector xpath="tns:mesh"/>
+
+      <xs:field xpath="@name"/>
+    </xs:key>
+
+    <xs:keyref name="amMeshRef" refer="amMeshes">
+      <xs:selector xpath="tns:modelbone/tns:bmesh"/>
+
+      <xs:field xpath="@name"/>
+    </xs:keyref>
+  </xs:element>
+
+  <xs:element name="animation" type="impAnimationType">
+    <xs:unique name="animationName">
+      <xs:selector xpath="tns:boneanimation"/>
+
+      <xs:field xpath="@name"/>
+    </xs:unique>
+  </xs:element>
+
+  <xs:element name="lod" type="impLodType"/>
+</xs:schema>

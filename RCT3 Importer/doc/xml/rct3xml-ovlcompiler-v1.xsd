@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Liquid XML Studio 1.0.7.0 (http://www.liquid-technologies.com) -->
+<xs:schema elementFormDefault="qualified"
+           targetNamespace="http://rct3.sourceforge.net/rct3xml/ovlcompiler"
+           version="1" xmlns="http://rct3.sourceforge.net/rct3xml/ovlcompiler"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:tns="http://rct3.sourceforge.net/rct3xml/ovlcompiler"
+           xmlns:rs="http://rct3.sourceforge.net/rct3xml/shared"
+           xmlns:ns="http://www.w3.org/1999/xhtml"
+           xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
+  <xs:include schemaLocation="http://rct3.sourceforge.net/xml/rct3xml-shared-v1.xsd"/>
+
+  <xs:simpleType name="FixHandedness">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="left"/>
+
+      <xs:enumeration value="right"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="Axis">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="x"/>
+
+      <xs:enumeration value="y"/>
+
+      <xs:enumeration value="z"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="MeshFlags">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="none"/>
+
+      <xs:enumeration value="sign"/>
+
+      <xs:enumeration value="terrain"/>
+
+      <xs:enumeration value="cliff"/>
+
+      <xs:enumeration value="water"/>
+
+      <xs:enumeration value="watermask"/>
+
+      <xs:enumeration value="billboard"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="MeshPlacing">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="both"/>
+
+      <xs:enumeration value="texture"/>
+
+      <xs:enumeration value="glass"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="PositionMatrix">
+    <xs:restriction base="genFloatList">
+      <xs:length value="16"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="TXYZ">
+    <xs:simpleContent>
+      <xs:extension base="XYZPosition">
+        <xs:attribute name="time" type="xs:float" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:simpleType name="XYZPosition">
+    <xs:restriction base="genFloatList">
+      <xs:length value="3"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:element name="ovl">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="fix"/>
+
+        <xs:element maxOccurs="4" ref="bsh"/>
+
+        <xs:element ref="ban"/>
+
+        <xs:element maxOccurs="unbounded" minOccurs="0" ref="ftx"/>
+
+        <xs:element maxOccurs="unbounded" minOccurs="0" ref="reference"/>
+
+        <xs:element minOccurs="0" ref="options"/>
+      </xs:sequence>
+
+      <xs:attribute name="name" type="xs:string"/>
+
+      <xs:attribute name="file" type="xs:string"/>
+
+      <xs:attribute name="version" type="xs:unsignedInt" use="prohibited">
+        <xs:annotation>
+          <xs:documentation>Lack of version attribute discerns importer xmls
+          from ovlcompiler xmls, so it's forbidden to use it
+          here.</xs:documentation>
+        </xs:annotation>
+      </xs:attribute>
+    </xs:complexType>
+
+    <xs:unique name="covlBshName">
+      <xs:selector xpath="tns:bsh"/>
+
+      <xs:field xpath="@name"/>
+    </xs:unique>
+
+    <xs:unique name="covlFtxName">
+      <xs:selector xpath="tns:ftx"/>
+
+      <xs:field xpath="@name"/>
+    </xs:unique>
+
+    <xs:key name="covlBoneKeyGlobal">
+      <xs:selector xpath="tns:bsh/tns:bone"/>
+
+      <xs:field xpath="@name"/>
+    </xs:key>
+
+    <xs:keyref name="covlBANBoneReference" refer="covlBoneKeyGlobal">
+      <xs:selector xpath="tns:ban/tns:bone"/>
+
+      <xs:field xpath="@name"/>
+    </xs:keyref>
+  </xs:element>
+
+  <xs:element name="bsh">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="geomobj">
+          <xs:complexType>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+
+            <xs:attribute name="bone" type="xs:string"/>
+
+            <xs:attribute name="ftx" type="xs:string" use="required"/>
+
+            <xs:attribute default="SIOpaque" name="txs" type="ovlTextureStyle"/>
+
+            <xs:attribute default="both" name="placing" type="MeshPlacing"/>
+
+            <xs:attribute default="none" name="flags" type="MeshFlags"/>
+
+            <xs:attribute default="0" name="doublesided" type="xs:boolean"/>
+          </xs:complexType>
+        </xs:element>
+
+        <xs:element maxOccurs="unbounded" name="bone">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="pos1" type="PositionMatrix"/>
+
+              <xs:element name="pos2" type="PositionMatrix"/>
+            </xs:sequence>
+
+            <xs:attribute name="name" type="xs:string" use="required"/>
+
+            <xs:attribute name="parent" type="xs:string"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+
+      <xs:attribute name="name" type="xs:string" use="required"/>
+
+      <xs:attribute name="model" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:unique name="BoneName">
+      <xs:selector xpath="tns:bone"/>
+
+      <xs:field xpath="@name"/>
+    </xs:unique>
+
+    <xs:unique name="GeomObjName">
+      <xs:selector xpath="tns:geomobj"/>
+
+      <xs:field xpath="@name"/>
+    </xs:unique>
+
+    <xs:key name="BoneNameLocal">
+      <xs:selector xpath="tns:bone"/>
+
+      <xs:field xpath="@name"/>
+    </xs:key>
+
+    <xs:keyref name="BoneReference" refer="BoneNameLocal">
+      <xs:selector xpath="tns:geomobj"/>
+
+      <xs:field xpath="@bone"/>
+    </xs:keyref>
+
+    <xs:keyref name="ParentReference" refer="BoneNameLocal">
+      <xs:selector xpath="tns:bone"/>
+
+      <xs:field xpath="@parent"/>
+    </xs:keyref>
+  </xs:element>
+
+  <xs:element name="ban">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="bone">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" minOccurs="0" name="translate"
+                          type="TXYZ"/>
+
+              <xs:element maxOccurs="unbounded" minOccurs="0" name="rotate"
+                          type="TXYZ"/>
+            </xs:sequence>
+
+            <xs:attribute name="name" type="xs:string" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+
+      <xs:attribute name="name" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="ftx">
+    <xs:complexType>
+      <xs:attribute name="name" type="xs:string" use="required"/>
+
+      <xs:attribute name="image" type="xs:string" use="required"/>
+
+      <xs:attribute name="alpha" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="reference">
+    <xs:complexType>
+      <xs:attribute name="path" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="fix">
+    <xs:complexType>
+      <xs:attribute default="left" name="handedness" type="FixHandedness"/>
+
+      <xs:attribute default="y" name="up" type="Axis"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="options">
+    <xs:complexType>
+      <xs:attribute default="1" name="lods">
+        <xs:simpleType>
+          <xs:restriction base="xs:unsignedInt">
+            <xs:enumeration value="1"/>
+
+            <xs:enumeration value="3"/>
+
+            <xs:enumeration value="4"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

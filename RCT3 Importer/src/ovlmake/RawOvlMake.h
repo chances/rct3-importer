@@ -34,19 +34,34 @@
 
 #include "OVLng.h"
 
-#define RAWXML_ROOT wxT("rawovl")
-#define RAWXML_SUBROOT wxT("subovl")
+#define RAWXML_ROOT      wxT("rawovl")
+#define RAWXML_SUBROOT   wxT("subovl")
+#define RAWXML_VARIABLE  wxT("variable")
+#define RAWXML_VARIABLES wxT("variables")
+
+WX_DECLARE_STRING_HASH_MAP(wxString, cRawOvlVars);
+
+enum eRawOvlMode {
+    MODE_COMPILE = 0,
+    MODE_INSTALL = 1,
+    MODE_BAKE = 2
+};
 
 class cRawOvl {
 private:
     wxFileName m_output;
     wxFileName m_outputbasedir;
     wxFileName m_input;  // For path relativity
-    wxSortedArrayString m_options;
+//    wxSortedArrayString m_options;
+    wxSortedArrayString m_bake;
+    wxFileName m_bakeroot;
+    cRawOvlVars m_commandvariables;
+    cRawOvlVars m_variables;
 
-    bool m_install;
+    eRawOvlMode m_mode;
     bool m_dryrun;
-    std::vector<wxFileName> m_dryrunfiles;
+    std::vector<wxFileName> m_modifiedfiles;
+    std::vector<wxFileName> m_newfiles;
 
     cOvl m_ovl;
 
@@ -57,6 +72,18 @@ private:
     long ParseSigned(wxXmlNode* node, const wxString& nodes, const wxString& attribute);
     double ParseFloat(wxXmlNode* node, const wxString& nodes, const wxString& attribute);
 
+    bool MakeVariable(wxString& var);
+    void PassBakeStructures(const wxSortedArrayString& bake) {
+        m_bake = bake;
+    }
+    void PassBakeRoot(const wxFileName& br) {
+        m_bakeroot = br;
+    }
+    void PassVariables(const cRawOvlVars& c, const cRawOvlVars& v) {
+        m_commandvariables = c;
+        m_variables = v;
+    }
+
     void ParseCED(wxXmlNode* node);
     void ParseCHG(wxXmlNode* node);
     void ParseCID(wxXmlNode* node);
@@ -64,11 +91,12 @@ private:
     void ParseSPL(wxXmlNode* node);
     void ParseSTA(wxXmlNode* node);
     void ParseTEX(wxXmlNode* node);
+    void ParseVariable(wxXmlNode* node, bool command = false);
+    void ParseVariables(wxXmlNode* node, bool command = false, const wxString& path = wxT(""));
     void Parse(wxXmlNode* node);
-    void ParseConditions(wxXmlNode* node);
 
     void Init() {
-        m_install = false;
+        m_mode = MODE_COMPILE;
         m_dryrun = false;
     }
 public:
@@ -84,13 +112,16 @@ public:
         Process(root, file, outputdir, output);
     }
 
-    void SetOptions(bool install, bool dryrun) {
-        m_install = install;
+    void SetOptions(eRawOvlMode mode, bool dryrun) {
+        m_mode = mode;
         m_dryrun = dryrun;
     }
 
-    const std::vector<wxFileName>& GetDryrun() const {
-        return m_dryrunfiles;
+    const std::vector<wxFileName>& GetModifiedFiles() const {
+        return m_modifiedfiles;
+    }
+    const std::vector<wxFileName>& GetNewFiles() const {
+        return m_newfiles;
     }
 
     void Process(const wxFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT("")));
@@ -101,7 +132,10 @@ public:
     void AddConditions(const wxSortedArrayString& options);
     void RemoveConditions(const wxString& options);
     void ParseConditions(const wxString& options);
-    void ClearConditions();
+
+    void LoadVariables(const wxFileName& fn, bool command = false, wxXmlNode* target = NULL);
+
+    void AddBakeStructures(const wxString& structs);
 };
 
 #endif

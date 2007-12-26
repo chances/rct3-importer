@@ -67,6 +67,7 @@
 		<Unit filename="..\..\include\staticshape.h" />
 		<Unit filename="..\..\include\terraintype.h" />
 		<Unit filename="..\..\include\vertex.h" />
+		<Unit filename="..\..\include\xmldefs.h" />
 		<Unit filename="LodSymRefManager.cpp" />
 		<Unit filename="LodSymRefManager.h" />
 		<Unit filename="ManagerBAN.cpp" />
@@ -120,6 +121,13 @@
 		<Unit filename="RelocationManager.h" />
 		<Unit filename="StringTable.cpp" />
 		<Unit filename="StringTable.h" />
+		<Unit filename="base64.h" />
+		<Unit filename="base64_decode.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="base64_encode.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<envvars />

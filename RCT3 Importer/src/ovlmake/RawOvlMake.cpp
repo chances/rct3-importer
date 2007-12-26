@@ -29,6 +29,8 @@
 
 #include <wx/tokenzr.h>
 
+#include "base64.h"
+#include "counted_array_ptr.h"
 #include "OVLManagers.h"
 #include "RCT3Exception.h"
 #include "RCT3Macros.h"
@@ -50,8 +52,6 @@
 #define RAWXML_TXT wxT("txt")
 
 #define RAWXML_CED_MORE             wxT("cedmore")
-
-#define RAWXML_CHG_IS               wxT("chgis")
 
 #define RAWXML_CID_SHAPE            wxT("cidshape")
 #define RAWXML_CID_MORE             wxT("cidmore")
@@ -76,16 +76,22 @@
 #define RAWXML_SPL_LENGTH           wxT("spllength")
 #define RAWXML_SPL_DATA             wxT("spldata")
 
-#define RAWXML_STA_IS               wxT("stais")
 #define RAWXML_STA_ITEM             wxT("staitem")
 #define RAWXML_STA_STALLUNKNOWNS    wxT("stastallunknowns")
 
-#define RAWXML_ATTRACTIONUNKNOWNS   wxT("attractionunknowns")
+#define RAWXML_TEX_FILE             wxT("texturefile")
+#define RAWXML_TEX_DATA             wxT("texturedata")
+
+#define RAWXML_ATTRACTION_BASE      wxT("attractionbase")
+#define RAWXML_ATTRACTION_UNKNOWNS  wxT("attractionunknowns")
 
 
 #define RAWXML_IMPORT    wxT("import")
 #define RAWXML_REFERENCE wxT("reference")
 #define RAWXML_SYMBOL    wxT("symbol")
+
+#define RAWBAKE_ABSOLUTE wxT("absolute")
+#define RAWBAKE_XML      wxT("xml")
 
 #define OPTION_PARSE(t, v, p) \
     try { \
@@ -98,25 +104,52 @@
 #define OPTION_PARSE_STRING(v, node, a) \
     { \
         wxString t = node->GetPropVal(a, wxT("")); \
+        MakeVariable(t); \
         if (!t.IsEmpty()) \
             v = t.c_str(); \
     }
 
 #define DO_CONDITION_COMMENT() \
-        if (child->HasProp(wxT("if"))) { \
-            if (m_options.Index(child->GetPropVal(wxT("if"), wxT(""))) == wxNOT_FOUND) { \
-                child = child->GetNext(); \
-                continue; \
+        if (m_mode != MODE_BAKE) { \
+            if (child->HasProp(wxT("if"))) { \
+                bool haveit = true; \
+                wxString t = child->GetPropVal(wxT("if"), wxT("")); \
+                MakeVariable(t); \
+                cRawOvlVars::iterator it = m_commandvariables.find(t); \
+                if (it == m_commandvariables.end()) \
+                    it = m_variables.find(t); \
+                if (it == m_variables.end()) \
+                    haveit = false; \
+                if (haveit) { \
+                    haveit = it->second != wxT("0"); \
+                } \
+                if (!haveit) { \
+                    child = child->GetNext(); \
+                    continue; \
+                } \
             } \
-        } \
-        if (child->HasProp(wxT("ifnot"))) { \
-            if (m_options.Index(child->GetPropVal(wxT("ifnot"), wxT(""))) != wxNOT_FOUND) { \
-                child = child->GetNext(); \
-                continue; \
+            if (child->HasProp(wxT("ifnot"))) { \
+                bool haveit = true; \
+                wxString t = child->GetPropVal(wxT("ifnot"), wxT("")); \
+                MakeVariable(t); \
+                cRawOvlVars::iterator it = m_commandvariables.find(t); \
+                if (it == m_commandvariables.end()) \
+                    it = m_variables.find(t); \
+                if (it == m_variables.end()) \
+                    haveit = false; \
+                if (haveit) { \
+                    haveit = it->second != wxT("0"); \
+                } \
+                if (haveit) { \
+                    child = child->GetNext(); \
+                    continue; \
+                } \
             } \
         } \
         if (child->HasProp(wxT("comment"))) { \
-            wxLogMessage(child->GetPropVal(wxT("comment"), wxT(""))); \
+            wxString t = child->GetPropVal(wxT("comment"), wxT("")); \
+            MakeVariable(t); \
+            wxLogMessage(t); \
         }
 
 
@@ -139,7 +172,6 @@ void cRawOvl::Process(const wxFileName& file, const wxFileName& outputdir, const
         throw RCT3Exception(wxT("Error loading xml file ")+file.GetFullPath());
 
     wxXmlNode* root = doc.GetRoot();
-    ParseConditions(root);
     Load(root);
 }
 
@@ -151,7 +183,6 @@ void cRawOvl::Process(wxXmlNode* root, const wxFileName& file, const wxFileName&
     } else {
         m_outputbasedir.SetPath(outputdir.GetPathWithSep());
     }
-    ParseConditions(root);
     Load(root);
 }
 
@@ -160,22 +191,22 @@ void cRawOvl::AddConditions(const wxString& options) {
 
     while (tok.HasMoreTokens()) {
         wxString t = tok.GetNextToken();
-        if ((m_options.Index(t) == wxNOT_FOUND) && (t != wxT("inherit")))
-            m_options.Add(t);
+        if ((m_variables.find(t) == m_variables.end()) && (t != wxT("inherit")))
+            m_variables[t] = wxT("1");
     }
 }
 
 void cRawOvl::AddConditions(const wxArrayString& options) {
     for (wxArrayString::const_iterator it = options.begin(); it != options.end(); ++it) {
-        if ((m_options.Index(*it) == wxNOT_FOUND) && (*it != wxT("inherit")))
-            m_options.Add(*it);
+        if ((m_variables.find(*it) == m_variables.end()) && (*it != wxT("inherit")))
+            m_variables[*it] = wxT("1");
     }
 }
 
 void cRawOvl::AddConditions(const wxSortedArrayString& options) {
     for (wxSortedArrayString::const_iterator it = options.begin(); it != options.end(); ++it) {
-        if ((m_options.Index(*it) == wxNOT_FOUND) && (*it != wxT("inherit")))
-            m_options.Add(*it);
+        if ((m_variables.find(*it) == m_variables.end()) && (*it != wxT("inherit")))
+            m_variables[*it] = wxT("1");
     }
 }
 
@@ -184,8 +215,8 @@ void cRawOvl::RemoveConditions(const wxString& options) {
 
     while (tok.HasMoreTokens()) {
         wxString t = tok.GetNextToken();
-        if (m_options.Index(t) != wxNOT_FOUND)
-            m_options.Remove(t);
+        if (m_variables.find(t) != m_variables.end())
+            m_variables.erase(t);
     }
 }
 
@@ -195,34 +226,48 @@ void cRawOvl::ParseConditions(const wxString& options) {
     while (tok.HasMoreTokens()) {
         wxString t = tok.GetNextToken();
         if (t[0] == '-') {
-            if (m_options.Index(t.Mid(1)) != wxNOT_FOUND)
-                m_options.Remove(t.Mid(1));
+            if (m_variables.find(t.Mid(1)) != m_variables.end())
+                m_variables.erase(t.Mid(1));
         } else if (t[0] == '+') {
-            if ((m_options.Index(t.Mid(1)) == wxNOT_FOUND) && (t.Mid(1) != wxT("inherit")))
-                m_options.Add(t.Mid(1));
+            if ((m_variables.find(t.Mid(1)) == m_variables.end()) && (t.Mid(1) != wxT("inherit")))
+                m_variables[t.Mid(1)] = wxT("1");
         } else {
-            if ((m_options.Index(t) == wxNOT_FOUND) && (t != wxT("inherit")))
-                m_options.Add(t);
+            if ((m_variables.find(t) == m_variables.end()) && (t != wxT("inherit")))
+                m_variables[t] = wxT("1");
         }
     }
 }
 
-void cRawOvl::ClearConditions() {
-    m_options.Clear();
+void cRawOvl::AddBakeStructures(const wxString& structs) {
+    wxStringTokenizer tok(structs, wxT(" "));
+
+    while (tok.HasMoreTokens()) {
+        wxString t = tok.GetNextToken();
+        if (m_bake.Index(t) == wxNOT_FOUND)
+            m_bake.Add(t);
+    }
 }
 
-void cRawOvl::ParseConditions(wxXmlNode* node) {
-    // Preset options overwrite attribute
-    if (m_options.size() == 0) {
-        if (node->HasProp(wxT("conditions"))) {
-            wxString cond = node->GetPropVal(wxT("conditions"), wxT(""));
-            ParseConditions(cond);
+bool cRawOvl::MakeVariable(wxString& var) {
+    var.Trim();
+    var.Trim(false);
+    if (var.StartsWith("$") && var.EndsWith("$")) {
+        wxString varname = var.AfterFirst('$').BeforeLast('$');
+        cRawOvlVars::iterator it = m_commandvariables.find(varname);
+        if (it == m_commandvariables.end())
+            it = m_variables.find(varname);
+        if (it == m_variables.end()) {
+            wxLogWarning(wxString::Format(_("Varible '%s' undefined."), varname.c_str()));
+            return false;
         }
+        var = it->second;
     }
+    return true;
 }
 
 cOvlType cRawOvl::ParseType(wxXmlNode* node, const wxString& nodes, const wxString& attribute) {
     wxString t = node->GetPropVal(attribute, wxT(""));
+    MakeVariable(t);
     if (t.IsEmpty())
         throw RCT3Exception(nodes+_(" tag misses ") + attribute + _(" attribute."));
     if (t == wxT("common")) {
@@ -236,6 +281,7 @@ cOvlType cRawOvl::ParseType(wxXmlNode* node, const wxString& nodes, const wxStri
 
 wxString cRawOvl::ParseString(wxXmlNode* node, const wxString& nodes, const wxString& attribute) {
     wxString t = node->GetPropVal(attribute, wxT(""));
+    MakeVariable(t);
     if (t.IsEmpty())
         throw RCT3Exception(nodes+_(" tag misses ") + attribute + _(" attribute."));
     return t;
@@ -243,6 +289,7 @@ wxString cRawOvl::ParseString(wxXmlNode* node, const wxString& nodes, const wxSt
 
 unsigned long cRawOvl::ParseUnsigned(wxXmlNode* node, const wxString& nodes, const wxString& attribute) {
     wxString t = node->GetPropVal(attribute, wxT(""));
+    MakeVariable(t);
     unsigned long i;
     if (t.IsEmpty())
         throw RCT3Exception(nodes+_(" tag misses ") + attribute + _(" attribute."));
@@ -253,6 +300,7 @@ unsigned long cRawOvl::ParseUnsigned(wxXmlNode* node, const wxString& nodes, con
 
 long cRawOvl::ParseSigned(wxXmlNode* node, const wxString& nodes, const wxString& attribute) {
     wxString t = node->GetPropVal(attribute, wxT(""));
+    MakeVariable(t);
     long i;
     if (t.IsEmpty())
         throw RCT3Exception(nodes+_(" tag misses ") + attribute + _(" attribute."));
@@ -263,13 +311,74 @@ long cRawOvl::ParseSigned(wxXmlNode* node, const wxString& nodes, const wxString
 
 double cRawOvl::ParseFloat(wxXmlNode* node, const wxString& nodes, const wxString& attribute) {
     wxString t = node->GetPropVal(attribute, wxT(""));
-    t.Trim();
+    MakeVariable(t);
     double i;
     if (t.IsEmpty())
         throw RCT3Exception(nodes+_(" tag misses ") + attribute + _(" attribute."));
     if (!t.ToDouble(&i))
         throw RCT3InvalidValueException(nodes+_(" tag, ") + attribute + _(" attribute: invalid value ")+t);
     return i;
+}
+
+void cRawOvl::ParseVariable(wxXmlNode* node, bool command) {
+    wxString name = ParseString(node, RAWXML_VARIABLE, wxT("name"));
+    if (node->HasProp(wxT("value"))) {
+        wxString value = ParseString(node, RAWXML_VARIABLE, wxT("value"));
+        if (command)
+            m_commandvariables[name] = value;
+        else
+            m_variables[name] = value;
+    } else {
+        if (command)
+            m_commandvariables.erase(name);
+        else
+            m_variables.erase(name);
+    }
+}
+
+void cRawOvl::ParseVariables(wxXmlNode* node, bool command, const wxString& path) {
+    wxString inc = wxT("");
+    OPTION_PARSE_STRING(inc, node, wxT("include"));
+    if (!inc.IsEmpty()) {
+        wxFileName src;
+        if (path.IsEmpty()) {
+            src = wxFileName::DirName(m_input.GetPath());
+        } else {
+            src = wxFileName::DirName(path);
+        }
+        wxFileName filename = inc;
+        if (!filename.IsAbsolute())
+            filename.MakeAbsolute(src.GetPathWithSep());
+        LoadVariables(filename, command, (m_bake.Index(RAWXML_VARIABLES)!=wxNOT_FOUND)?node:NULL );
+
+        if (m_mode == MODE_BAKE) {
+            if (m_bake.Index(RAWXML_VARIABLES) == wxNOT_FOUND) {
+                wxString newfile;
+                if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
+                    filename.MakeRelativeTo(m_bakeroot.GetPathWithSep());
+                }
+                newfile = filename.GetFullPath();
+                node->DeleteProperty(wxT("include"));
+                node->AddProperty(wxT("include"), newfile);
+            } else {
+                node->DeleteProperty(wxT("include"));
+            }
+        }
+    }
+
+    wxXmlNode *child = node->GetChildren();
+    while (child) {
+        DO_CONDITION_COMMENT();
+
+        if (child->GetName() == RAWXML_VARIABLE) {
+            ParseVariable(child, command);
+        } else if (child->GetName() == RAWXML_VARIABLES) {
+            ParseVariables(child, command, path);
+        } else if COMPILER_WRONGTAG(child) {
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in variables tag."), child->GetName().c_str()));
+        }
+        child = child->GetNext();
+    }
 }
 
 void cRawOvl::ParseCED(wxXmlNode* node) {
@@ -310,21 +419,21 @@ void cRawOvl::ParseCHG(wxXmlNode* node) {
     while (child) {
         DO_CONDITION_COMMENT();
 
-        if (child->GetName() == RAWXML_CHG_IS) {
-            OPTION_PARSE(unsigned long, room.attraction.type, ParseUnsigned(child, RAWXML_CHG_IS, wxT("type")));
+        if (child->GetName() == RAWXML_ATTRACTION_BASE) {
+            OPTION_PARSE(unsigned long, room.attraction.type, ParseUnsigned(child, RAWXML_ATTRACTION_BASE, wxT("type")));
             OPTION_PARSE_STRING(room.attraction.icon, child, wxT("icon"));
             OPTION_PARSE_STRING(room.spline, child, wxT("attractionspline"));
-        } else if (child->GetName() == RAWXML_ATTRACTIONUNKNOWNS) {
-            OPTION_PARSE(unsigned long, room.attraction.unk2, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u2")));
-            OPTION_PARSE(long, room.attraction.unk3, ParseSigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u3")));
-            OPTION_PARSE(unsigned long, room.attraction.unk4, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u4")));
-            OPTION_PARSE(unsigned long, room.attraction.unk5, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u5")));
-            OPTION_PARSE(unsigned long, room.attraction.unk6, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u6")));
-            OPTION_PARSE(unsigned long, room.attraction.unk9, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u9")));
-            OPTION_PARSE(long, room.attraction.unk10, ParseSigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u10")));
-            OPTION_PARSE(unsigned long, room.attraction.unk11, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u11")));
-            OPTION_PARSE(unsigned long, room.attraction.unk12, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u12")));
-            OPTION_PARSE(unsigned long, room.attraction.unk13, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u13")));
+        } else if (child->GetName() == RAWXML_ATTRACTION_UNKNOWNS) {
+            OPTION_PARSE(unsigned long, room.attraction.unk2, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u2")));
+            OPTION_PARSE(long, room.attraction.unk3, ParseSigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u3")));
+            OPTION_PARSE(unsigned long, room.attraction.unk4, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u4")));
+            OPTION_PARSE(unsigned long, room.attraction.unk5, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u5")));
+            OPTION_PARSE(unsigned long, room.attraction.unk6, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u6")));
+            OPTION_PARSE(unsigned long, room.attraction.unk9, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u9")));
+            OPTION_PARSE(long, room.attraction.unk10, ParseSigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u10")));
+            OPTION_PARSE(unsigned long, room.attraction.unk11, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u11")));
+            OPTION_PARSE(unsigned long, room.attraction.unk12, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u12")));
+            OPTION_PARSE(unsigned long, room.attraction.unk13, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u13")));
         } else if COMPILER_WRONGTAG(child) {
             throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in sta tag."), child->GetName().c_str()));
         }
@@ -477,6 +586,10 @@ void cRawOvl::ParseSID(wxXmlNode* node) {
             cSidParam param;
             param.name = ParseString(child, RAWXML_SID_GROUP, wxT("name")).c_str();
             OPTION_PARSE_STRING(param.param, child, wxT("param"));
+            if (param.param != "") {
+                if (param.param[0] != ' ')
+                    param.param = " " + param.param;
+            }
             sid.parameters.push_back(param);
         } else if COMPILER_WRONGTAG(child) {
             throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in sid tag."), child->GetName().c_str()));
@@ -605,8 +718,8 @@ void cRawOvl::ParseSTA(wxXmlNode* node) {
     while (child) {
         DO_CONDITION_COMMENT();
 
-        if (child->GetName() == RAWXML_STA_IS) {
-            OPTION_PARSE(unsigned long, stall.attraction.type, ParseUnsigned(child, RAWXML_STA_IS, wxT("type")));
+        if (child->GetName() == RAWXML_ATTRACTION_BASE) {
+            OPTION_PARSE(unsigned long, stall.attraction.type, ParseUnsigned(child, RAWXML_ATTRACTION_BASE, wxT("type")));
             OPTION_PARSE_STRING(stall.attraction.icon, child, wxT("icon"));
             OPTION_PARSE_STRING(stall.attraction.spline, child, wxT("spline"));
         } else if (child->GetName() == RAWXML_STA_ITEM) {
@@ -621,17 +734,17 @@ void cRawOvl::ParseSTA(wxXmlNode* node) {
             OPTION_PARSE(unsigned long, stall.unknowns.unk4, ParseUnsigned(child, RAWXML_STA_STALLUNKNOWNS, wxT("u4")));
             OPTION_PARSE(unsigned long, stall.unknowns.unk5, ParseUnsigned(child, RAWXML_STA_STALLUNKNOWNS, wxT("u5")));
             OPTION_PARSE(unsigned long, stall.unknowns.unk6, ParseUnsigned(child, RAWXML_STA_STALLUNKNOWNS, wxT("u6")));
-        } else if (child->GetName() == RAWXML_ATTRACTIONUNKNOWNS) {
-            OPTION_PARSE(unsigned long, stall.attraction.unk2, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u2")));
-            OPTION_PARSE(long, stall.attraction.unk3, ParseSigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u3")));
-            OPTION_PARSE(unsigned long, stall.attraction.unk4, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u4")));
-            OPTION_PARSE(unsigned long, stall.attraction.unk5, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u5")));
-            OPTION_PARSE(unsigned long, stall.attraction.unk6, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u6")));
-            OPTION_PARSE(unsigned long, stall.attraction.unk9, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u9")));
-            OPTION_PARSE(long, stall.attraction.unk10, ParseSigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u10")));
-            OPTION_PARSE(unsigned long, stall.attraction.unk11, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u11")));
-            OPTION_PARSE(unsigned long, stall.attraction.unk12, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u12")));
-            OPTION_PARSE(unsigned long, stall.attraction.unk13, ParseUnsigned(child, RAWXML_ATTRACTIONUNKNOWNS, wxT("u13")));
+        } else if (child->GetName() == RAWXML_ATTRACTION_UNKNOWNS) {
+            OPTION_PARSE(unsigned long, stall.attraction.unk2, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u2")));
+            OPTION_PARSE(long, stall.attraction.unk3, ParseSigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u3")));
+            OPTION_PARSE(unsigned long, stall.attraction.unk4, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u4")));
+            OPTION_PARSE(unsigned long, stall.attraction.unk5, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u5")));
+            OPTION_PARSE(unsigned long, stall.attraction.unk6, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u6")));
+            OPTION_PARSE(unsigned long, stall.attraction.unk9, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u9")));
+            OPTION_PARSE(long, stall.attraction.unk10, ParseSigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u10")));
+            OPTION_PARSE(unsigned long, stall.attraction.unk11, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u11")));
+            OPTION_PARSE(unsigned long, stall.attraction.unk12, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u12")));
+            OPTION_PARSE(unsigned long, stall.attraction.unk13, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u13")));
         } else if COMPILER_WRONGTAG(child) {
             throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in sta tag."), child->GetName().c_str()));
         }
@@ -645,37 +758,125 @@ void cRawOvl::ParseSTA(wxXmlNode* node) {
 
 void cRawOvl::ParseTEX(wxXmlNode* node) {
     wxString name = ParseString(node, RAWXML_TEX, wxT("name"));
-    wxFileName texture = ParseString(node, RAWXML_TEX, wxT("texture"));
-    if (!texture.IsAbsolute())
-        texture.MakeAbsolute(m_input.GetPathWithSep());
-    unsigned char* data = NULL;
-    if (!texture.IsFileReadable())
-        throw RCT3Exception(_("tex tag: File not readable: ") + texture.GetFullPath());
+//    wxFileName texture = ParseString(node, RAWXML_TEX, wxT("texture"));
+//    if (!texture.IsAbsolute())
+//        texture.MakeAbsolute(m_input.GetPathWithSep());
+    counted_array_ptr<unsigned char> data;
+    unsigned long dimension = 0;
+    unsigned long datasize = 0;
 
-    try {
-        wxGXImage img(texture.GetFullPath(), false);
+    wxXmlNode* child = node->GetChildren();
+    while (child) {
+        DO_CONDITION_COMMENT();
 
-        int width = img.GetWidth();
-        int height = img.GetHeight();
-        if (width != height) {
-            throw Magick::Exception("Icon texture is not square");
+        if (child->GetName() == RAWXML_TEX_FILE) {
+            if (data.get() && (m_mode != MODE_BAKE))
+                throw RCT3Exception(wxString(wxT("tex tag '"))+name+wxT("': multiple datasources."));
+
+            wxString t = child->GetNodeContent();
+            MakeVariable(t);
+            wxFileName texture = t;
+            if (!texture.IsAbsolute())
+                texture.MakeAbsolute(m_input.GetPathWithSep());
+
+            if (m_mode == MODE_BAKE) {
+                if (m_bake.Index(RAWXML_TEX) == wxNOT_FOUND) {
+                    wxString newfile;
+                    if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
+                        texture.MakeRelativeTo(m_bakeroot.GetPathWithSep());
+                    }
+                    newfile = texture.GetFullPath();
+                    delete child->GetChildren();
+                    child->SetChildren(new wxXmlNode(NULL, wxXML_TEXT_NODE, wxT(""), newfile));
+                    child = child->GetNext();
+                    continue;
+                }
+            }
+
+            if (!texture.IsFileReadable())
+                throw RCT3Exception(_("tex tag: File not readable: ") + texture.GetFullPath());
+
+            try {
+                wxGXImage img(texture.GetFullPath(), false);
+
+                int width = img.GetWidth();
+                int height = img.GetHeight();
+                if (width != height) {
+                    throw Magick::Exception("Icon texture is not square");
+                }
+                if ((1 << local_log2(width)) != width) {
+                    throw Magick::Exception("Icon texture's width/height is not a power of 2");
+                }
+                img.flip();
+                img.dxtCompressionMethod(squish::kColourIterativeClusterFit | squish::kWeightColourByAlpha);
+                datasize = img.GetDxtBufferSize(wxDXT3);
+                dimension = width;
+                data = counted_array_ptr<unsigned char>(new unsigned char[datasize]);
+                img.DxtCompress(data.get(), wxDXT3);
+
+                if (m_mode == MODE_BAKE) {
+                    wxString temp;
+                    unsigned char* buf = reinterpret_cast<unsigned char*>(temp.GetWriteBuf(datasize * 4));
+                    unsigned long outlen = datasize * 4;
+                    int bret = base64_encode(data.get(), datasize, buf, &outlen);
+                    switch (bret) {
+                        case CRYPT_OK:
+                            break;
+                        case CRYPT_BUFFER_OVERFLOW:
+                            throw RCT3Exception(wxString(_("Buffer overflow baking texture '")) + texture.GetFullPath() + _("' in tex tag ") + name);
+                        default:
+                            throw RCT3Exception(wxString(_("Unknown base64 error baking texture '")) + texture.GetFullPath() + _("' in tex tag ") + name);
+                    }
+                    temp.UngetWriteBuf(outlen);
+                    child->SetName(RAWXML_TEX_DATA);
+                    child->AddProperty(wxT("dimension"), wxString::Format(wxT("%u"), img.GetWidth()));
+                    delete child->GetChildren();
+                    child->SetChildren(new wxXmlNode(NULL, wxXML_TEXT_NODE, wxT(""), temp));
+                }
+
+            } catch (Magick::Exception& e) {
+                throw RCT3Exception(wxString::Format(_("tex tag: GarphicsMagik exception: %s"), e.what()));
+            }
+        } else if (child->GetName() == RAWXML_TEX_DATA) {
+            if (m_mode == MODE_BAKE) {
+                child = child->GetNext();
+                continue;
+            }
+            if (data.get())
+                throw RCT3Exception(wxString(wxT("tex tag '"))+name+wxT("': multiple datasources."));
+            dimension = ParseUnsigned(child, RAWXML_TEX_DATA, wxT("dimension"));
+            datasize = squish::GetStorageRequirements(dimension, dimension, wxDXT3);
+            unsigned long outlen = datasize;
+
+            data = counted_array_ptr<unsigned char>(new unsigned char[datasize]);
+            wxString tex = child->GetNodeContent();
+            MakeVariable(tex);
+            int bret = base64_decode(reinterpret_cast<const unsigned char*>(tex.c_str()), tex.Length(), data.get(), &outlen);
+            switch (bret) {
+                case CRYPT_OK:
+                    break;
+                case CRYPT_INVALID_PACKET:
+                    throw RCT3Exception(wxString(_("Decoding error in tex tag ")) + name);
+                case CRYPT_BUFFER_OVERFLOW:
+                    throw RCT3Exception(wxString(_("Buffer overflow decoding tex tag ")) + name);
+                default:
+                    throw RCT3Exception(wxString(_("Unknown base64 error decoding tex tag ")) + name);
+            }
+            if (outlen != datasize)
+                throw RCT3Exception(wxString(_("Datasize mismatch error in tex tag ")) + name);
+
+        } else if COMPILER_WRONGTAG(child) {
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in tex tag."), child->GetName().c_str()));
         }
-        if ((1 << local_log2(width)) != width) {
-            throw Magick::Exception("Icon texture's width/height is not a power of 2");
-        }
-        img.flip();
-        img.dxtCompressionMethod(squish::kColourIterativeClusterFit | squish::kWeightColourByAlpha);
-        int datasize = img.GetDxtBufferSize(wxDXT3);
-        data = new unsigned char[datasize];
-        img.DxtCompress(data, wxDXT3);
-
-        ovlTEXManager* c_tex = m_ovl.GetManager<ovlTEXManager>();
-        c_tex->AddTexture(name.c_str(), width, datasize, reinterpret_cast<unsigned long*>(data));
-    } catch (Magick::Exception& e) {
-        delete[] data;
-        throw RCT3Exception(wxString::Format(_("tex tag: GarphicsMagik exception: %s"), e.what()));
+        child = child->GetNext();
     }
-    delete[] data;
+
+    if (m_mode != MODE_BAKE) {
+        if (!data.get())
+            throw RCT3Exception(wxString(wxT("tex tag '"))+name+wxT("': no datasource."));
+        ovlTEXManager* c_tex = m_ovl.GetManager<ovlTEXManager>();
+        c_tex->AddTexture(name.c_str(), dimension, datasize, reinterpret_cast<unsigned long*>(data.get()));
+    }
 }
 
 void cRawOvl::Parse(wxXmlNode* node) {
@@ -691,28 +892,65 @@ void cRawOvl::Parse(wxXmlNode* node) {
             wxString incfile = child->GetPropVal(wxT("include"), wxT(""));
 
             cRawOvl c_raw;
-            c_raw.SetOptions(m_install, m_dryrun);
-            if (child->HasProp(wxT("conditions"))) {
-                wxString cond = node->GetPropVal(wxT("conditions"), wxT(""));
-                if (cond.StartsWith(wxT("inherit"))) {
-                    c_raw.AddConditions(m_options);
-                }
-                c_raw.ParseConditions(cond);
-            } else {
-                c_raw.AddConditions(m_options);
-            }
+            c_raw.SetOptions(m_mode, m_dryrun);
+            c_raw.PassBakeStructures(m_bake);
+            if (m_mode == MODE_BAKE)
+                c_raw.PassBakeRoot(m_bakeroot);
+            c_raw.PassVariables(m_commandvariables, m_variables);
             if (incfile.IsEmpty()) {
                 c_raw.Process(child, m_input, m_outputbasedir);
             } else {
-                c_raw.Process(incfile, m_input, m_outputbasedir);
+                if (child->GetChildren())
+                    throw RCT3Exception(wxT("A subovl tag with include attribute may not have content"));
+
+                wxFileName filename = incfile;
+                if (!filename.IsAbsolute())
+                    filename.MakeAbsolute(m_input.GetPathWithSep());
+
+                if (m_mode == MODE_BAKE) {
+                    if (m_bake.Index(RAWBAKE_XML) == wxNOT_FOUND) {
+                        wxString newfile;
+                        if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
+                            filename.MakeRelativeTo(m_bakeroot.GetPathWithSep());
+                        }
+                        newfile = filename.GetFullPath();
+                        child->DeleteProperty(wxT("include"));
+                        child->AddProperty(wxT("include"), newfile);
+                        child = child->GetNext();
+                        continue;
+                    }
+                }
+
+                wxXmlDocument doc;
+                doc.Load(filename.GetFullPath());
+                wxXmlNode* root = doc.GetRoot();
+                c_raw.Process(root, filename, m_outputbasedir);
+                if (m_mode == MODE_BAKE) {
+                    doc.DetachRoot();
+                    root->SetName(RAWXML_SUBROOT);
+                    child->SetChildren(root);
+                    root->SetParent(child);
+                    child->DeleteProperty(wxT("include"));
+                }
             }
-            for (std::vector<wxFileName>::const_iterator it = c_raw.GetDryrun().begin(); it != c_raw.GetDryrun().end(); ++it) {
-                m_dryrunfiles.push_back(*it);
+            for (std::vector<wxFileName>::const_iterator it = c_raw.GetModifiedFiles().begin(); it != c_raw.GetModifiedFiles().end(); ++it) {
+                m_modifiedfiles.push_back(*it);
             }
+            for (std::vector<wxFileName>::const_iterator it = c_raw.GetNewFiles().begin(); it != c_raw.GetNewFiles().end(); ++it) {
+                m_newfiles.push_back(*it);
+            }
+        } else if (child->GetName() == RAWXML_VARIABLE) {
+            ParseVariable(child);
+        } else if (child->GetName() == RAWXML_VARIABLES) {
+            ParseVariables(child);
         } else if (m_dryrun) {
             // The rest creates the file
         } else if (child->GetName() == RAWXML_IMPORT) {
             // <import file="scenery file" (name="internal svd name") />
+            if (m_mode == MODE_BAKE) {
+                child = child->GetNext();
+                continue;
+            }
             wxFileName filename = ParseString(child, RAWXML_IMPORT, wxT("file"));
             wxString name = child->GetPropVal(wxT("name"), wxT(""));
             if (!filename.IsAbsolute())
@@ -723,13 +961,29 @@ void cRawOvl::Parse(wxXmlNode* node) {
             }
             c_scn.MakeToOvl(m_ovl);
         } else if (child->GetName() == RAWXML_CED) {
+            if (m_mode == MODE_BAKE) {
+                child = child->GetNext();
+                continue;
+            }
             ParseCED(child);
         } else if (child->GetName() == RAWXML_CHG) {
+            if (m_mode == MODE_BAKE) {
+                child = child->GetNext();
+                continue;
+            }
             ParseCHG(child);
         } else if (child->GetName() == RAWXML_CID) {
+            if (m_mode == MODE_BAKE) {
+                child = child->GetNext();
+                continue;
+            }
             ParseCID(child);
         } else if (child->GetName() == RAWXML_GSI) {
             // <gsi name="string" tex="string" top="long int" left="long int" bottom="long int" right="long int" />
+            if (m_mode == MODE_BAKE) {
+                child = child->GetNext();
+                continue;
+            }
             wxString name = ParseString(child, RAWXML_GSI, wxT("name"));
             wxString tex = ParseString(child, RAWXML_GSI, wxT("tex"));
             unsigned long top = ParseUnsigned(child, RAWXML_GSI, wxT("top"));
@@ -762,8 +1016,16 @@ void cRawOvl::Parse(wxXmlNode* node) {
             //     <sidparameter name="string" param="string" />
             //       (add a parameter. name is required, param is optional in most cases. If present, it usually starts with a space.)
             // </sid>
+            if (m_mode == MODE_BAKE) {
+                child = child->GetNext();
+                continue;
+            }
             ParseSID(child);
         } else if (child->GetName() == RAWXML_SPL) {
+            if (m_mode == MODE_BAKE) {
+                child = child->GetNext();
+                continue;
+            }
             ParseSPL(child);
         } else if (child->GetName() == RAWXML_STA) {
             // <sta name="string" nametxt="txt" description="txt" sid="sid">
@@ -771,25 +1033,101 @@ void cRawOvl::Parse(wxXmlNode* node) {
             //     <staitem cid="cid" cost="long int" />
             //     <stastallunknowns u1="long int" u2="long int" u3="long int" u4="long int" u5="long int" u6="long int" />
             // </sta>
+            if (m_mode == MODE_BAKE) {
+                child = child->GetNext();
+                continue;
+            }
             ParseSTA(child);
         } else if (child->GetName() == RAWXML_TEX) {
             // <tex name="string" texture="texture file" />
+//            if ((m_mode == MODE_BAKE) && (m_bake.Index(RAWXML_TEX) == wxNOT_FOUND)) {
+//                child = child->GetNext();
+//                continue;
+//            }
             ParseTEX(child);
         } else if (child->GetName() == RAWXML_TXT) {
             // <txt name="string" text="string" />
             wxString name = ParseString(child, RAWXML_TXT, wxT("name"));
-            wxString text = ParseString(child, RAWXML_TXT, wxT("text"));
+            wxString type = ParseString(child, RAWXML_TXT, wxT("type"));
+            if (type == wxT("text")) {
+                if ((m_mode == MODE_BAKE) && (m_bake.Index(RAWXML_TXT) == wxNOT_FOUND)) {
+                    child = child->GetNext();
+                    continue;
+                }
+                wxString text = child->GetNodeContent();
+                MakeVariable(text);
 
-            ovlTXTManager* c_txt = m_ovl.GetManager<ovlTXTManager>();
-            c_txt->AddText(name.c_str(), text.c_str());
+                if (m_mode == MODE_BAKE) {
+                    int wlength = text.Length()+1;
+                    counted_array_ptr<wchar_t> tempch(new wchar_t[wlength]);
+                    mbstowcs(tempch.get(), text.c_str(), wlength);
+                    wxString temp;
+                    unsigned char* buf = reinterpret_cast<unsigned char*>(temp.GetWriteBuf(wlength * 2 * 4));
+                    unsigned long outlen = wlength * 2 * 4;
+                    int bret = base64_encode(reinterpret_cast<unsigned char*>(tempch.get()), wlength * 2, buf, &outlen);
+                    switch (bret) {
+                        case CRYPT_OK:
+                            break;
+                        case CRYPT_BUFFER_OVERFLOW:
+                            throw RCT3Exception(wxString(_("Buffer overflow baking text '")) + text + _("' in txt tag ") + name);
+                        default:
+                            throw RCT3Exception(wxString(_("Unknown base64 error baking text '")) + text + _("' in txt tag ") + name);
+                    }
+                    temp.UngetWriteBuf(outlen);
+                    child->DeleteProperty(wxT("type"));
+                    child->AddProperty(wxT("type"), wxT("raw"));
+                    delete child->GetChildren();
+                    child->SetChildren(new wxXmlNode(NULL, wxXML_TEXT_NODE, wxT(""), temp));
+                } else {
+                    ovlTXTManager* c_txt = m_ovl.GetManager<ovlTXTManager>();
+                    c_txt->AddText(name.c_str(), text.c_str());
+                }
+            } else if (type == wxT("raw")) {
+                if (m_mode == MODE_BAKE) {
+                    child = child->GetNext();
+                    continue;
+                }
+                wxString text = child->GetNodeContent();
+                MakeVariable(text);
+
+                unsigned long datasize = text.Length();
+                unsigned long outlen = datasize;
+                counted_array_ptr<wchar_t> data = counted_array_ptr<wchar_t>(new wchar_t[datasize/2]);
+
+                int bret = base64_decode(reinterpret_cast<const unsigned char*>(text.c_str()), text.Length(), reinterpret_cast<unsigned char*>(data.get()), &outlen);
+                switch (bret) {
+                    case CRYPT_OK:
+                        break;
+                    case CRYPT_INVALID_PACKET:
+                        throw RCT3Exception(wxString(_("Decoding error in txt tag ")) + name);
+                    case CRYPT_BUFFER_OVERFLOW:
+                        throw RCT3Exception(wxString(_("Buffer overflow decoding txt tag ")) + name);
+                    default:
+                        throw RCT3Exception(wxString(_("Unknown base64 error decoding txt tag ")) + name);
+                }
+                ovlTXTManager* c_txt = m_ovl.GetManager<ovlTXTManager>();
+                c_txt->AddText(name.c_str(), data.get());
+
+            } else {
+                throw RCT3Exception(wxString::Format(_("Unknown type '%s' in txt tag '%s'."), type.c_str(), name.c_str()));
+            }
+
         } else if (child->GetName() == RAWXML_REFERENCE) {
             // <reference path="relative path" />
+            if (m_mode == MODE_BAKE) {
+                child = child->GetNext();
+                continue;
+            }
             wxString ref = child->GetPropVal(wxT("path"), wxT(""));
             if (ref.IsEmpty())
                 throw RCT3Exception(_("REFERENCE tag misses path attribute."));
             m_ovl.AddReference(ref);
         } else if (child->GetName() == RAWXML_SYMBOL) {
             // <symbol target="common|unique" name="string" type="int|float" data="data" />
+            if (m_mode == MODE_BAKE) {
+                child = child->GetNext();
+                continue;
+            }
             cOvlType target = ParseType(child, RAWXML_SYMBOL);
             wxString name = ParseString(child, RAWXML_SYMBOL, wxT("name"));
             wxString type = ParseString(child, RAWXML_SYMBOL, wxT("type"));
@@ -819,11 +1157,21 @@ void cRawOvl::Load(wxXmlNode* root) {
         throw RCT3Exception(wxT("cRawOvl::Load, root is null"));
     bool subonly = false;
 
+    if (m_bakeroot == wxT(""))
+        m_bakeroot = m_input;
+
+    if (m_mode != MODE_BAKE) {
+        if (root->HasProp(wxT("conditions"))) {
+            wxString cond = root->GetPropVal(wxT("conditions"), wxT(""));
+            ParseConditions(cond);
+        }
+    }
+
     if ((root->GetName() == RAWXML_ROOT) || (root->GetName() == RAWXML_SUBROOT)) {
         // <rawovl|subovl file="outputfile" basedir="dir outputfile is relative to">
         {
             wxString basedir = root->GetPropVal(wxT("basedir"), wxT(""));
-            if (m_install && root->HasProp(wxT("installdir"))) {
+            if ((m_mode == MODE_INSTALL) && root->HasProp(wxT("installdir"))) {
                 basedir = root->GetPropVal(wxT("installdir"), wxT(""));
             }
             if (!basedir.IsEmpty()) {
@@ -866,7 +1214,7 @@ void cRawOvl::Load(wxXmlNode* root) {
             }
 
             // Cannot check writability as we don't create dirs
-            if (!m_dryrun) {
+            if ((!m_dryrun) && (m_mode != MODE_BAKE)) {
                 if (!m_output.DirExists()) {
                     //if (!::wxMkDir(m_output.GetPathWithSep()))
                     //    throw RCT3Exception(_("Failed to create directory: ")+m_output.GetPathWithSep());
@@ -891,9 +1239,16 @@ void cRawOvl::Load(wxXmlNode* root) {
                 }
             }
 
-            if (m_dryrun) {
-                m_dryrunfiles.push_back(m_output);
-            } else {
+            {
+                wxFileName temp = m_output;
+                temp.SetExt(wxT("common.ovl"));
+                if (temp.FileExists()) {
+                    m_modifiedfiles.push_back(m_output);
+                } else {
+                    m_newfiles.push_back(m_output);
+                }
+            }
+            if ((!m_dryrun) && (m_mode != MODE_BAKE)) {
                 m_ovl.Init(m_output.GetFullPath().c_str());
             }
             wxLogMessage(_("Writing ovl from raw: ")+m_output.GetFullPath()+wxT(".common.ovl"));
@@ -905,7 +1260,7 @@ void cRawOvl::Load(wxXmlNode* root) {
         // Start parsing
         Parse(root);
 
-        if ((!subonly) && (!m_dryrun)) {
+        if ((!subonly) && (!m_dryrun) && (m_mode != MODE_BAKE)) {
             m_ovl.Save();
             wxLogMessage(_("OVL written successfully"));
         }
@@ -913,4 +1268,37 @@ void cRawOvl::Load(wxXmlNode* root) {
         throw RCT3Exception(wxT("cRawOvl::Load, wrong root"));
     }
 
+}
+
+void cRawOvl::LoadVariables(const wxFileName& fn, bool command, wxXmlNode* target) {
+    wxXmlDocument doc;
+    doc.Load(fn.GetFullPath());
+
+    wxXmlNode* root = doc.GetRoot();
+
+    if (root->GetName() == RAWXML_VARIABLES) {
+        ParseVariables(root, command, fn.GetPathWithSep());
+        if (target && (m_mode == MODE_BAKE) && (m_bake.Index(RAWXML_VARIABLES) != wxNOT_FOUND)) {
+            wxXmlNode* newvars = root->GetChildren();
+            if (newvars) {
+                root->SetChildren(NULL);
+                wxXmlNode* oldvars = target->GetChildren();
+                if (oldvars)
+                    oldvars->SetParent(NULL);
+                target->SetChildren(newvars);
+                if (oldvars) {
+                    wxXmlNode* child = newvars;
+                    wxXmlNode* lastchild = newvars;
+                    while (child) {
+                        child = child->GetNext();
+                        if (child)
+                            lastchild = child;
+                    }
+                    lastchild->SetNext(oldvars);
+                }
+            }
+        }
+    } else {
+        throw RCT3Exception(wxT("cRawOvl::LoadVariables, wrong root"));
+    }
 }

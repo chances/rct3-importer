@@ -115,16 +115,16 @@ void StallData::AddData(unsigned long *data,unsigned long *itemdata)
    		switch (Stalls[i]->stalltype)
    		{
         case 0:
-            datas[i].StallType = 7;
+            datas[i].type = 7;
             break;
         case 1:
-            datas[i].StallType = 8;
+            datas[i].type = 8;
             break;
         case 2:
-            datas[i].StallType = 9;
+            datas[i].type = 9;
             break;
         case 3:
-            datas[i].StallType = 14;
+            datas[i].type = 14;
             break;
    		}
    		datas[i].unk2 = Stalls[i]->unk2;
