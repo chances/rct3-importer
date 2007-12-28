@@ -20,7 +20,7 @@ class RCT3Exception: public std::exception {
 public:
     RCT3Exception(const wxString& message);
     virtual const char* what() const throw() {
-        return m_message.c_str();
+        return m_message.mb_str(wxConvLocal);
     }
     virtual const wxString& wxwhat() const throw() {
         return m_message;

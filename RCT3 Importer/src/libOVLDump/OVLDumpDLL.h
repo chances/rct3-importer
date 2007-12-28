@@ -1,8 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// 3D Utility Library
-// MS3D Loader
-// Copyright (C) 2006 Tobias Minch
+// OVL dumping library
+// Copyright (C) 2007 Tobias Minch
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -21,19 +20,41 @@
 // Written by
 //   Tobias Minich - belgabor@gmx.de
 //
+// Based on the ovl dumper by Jonathan Wilson
+//
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef MS3DLOADER_H_INCLUDED
-#define MS3DLOADER_H_INCLUDED
 
-#include "3DLoader.h"
+#ifndef _OVLDUMPDLL_H_
+#define _OVLDUMPDLL_H_
 
-class cMS3DLoader: public c3DLoader
-{
-public:
-    cMS3DLoader(const wxChar *filename);
-    virtual int GetType() {return C3DLOADER_MS3D;};
-    virtual c3DLoaderOrientation GetOrientation() {return ORIENTATION_RIGHT_YUP;};
-};
+#ifdef OVLDUMP_DLL
 
-#endif // MS3DLOADER_H_INCLUDED
+#ifdef OVLDUMP_DLL_BUILDING
+#define LIBOVLDUMP_API extern "C" __declspec(dllexport)
+#else
+#define LIBOVLDUMP_API extern "C" __declspec(dllimport)
+#endif
+
+#define THEME_ERROR_NOTOPEN -1
+#define THEME_ERROR_NOTFOUND -2
+#define THEME_ERROR_OTHER -3
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+LIBOVLDUMP_API bool ovlOpen(const char* filename);
+LIBOVLDUMP_API bool ovlSave();
+LIBOVLDUMP_API bool ovlClose();
+LIBOVLDUMP_API const char* ovlGetLastError();
+LIBOVLDUMP_API long ovlGetThemeCategory();
+LIBOVLDUMP_API long ovlSetThemeCategory(unsigned long newcat);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+
+#endif

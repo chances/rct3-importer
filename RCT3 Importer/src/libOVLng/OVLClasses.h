@@ -30,7 +30,7 @@
 #define OVLCLASSES_H_INCLUDED
 
 #include <map>
-#include <queue>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -134,7 +134,7 @@ public:
 	string filename;
 	cOvlFileType types[9];
     vector<string> references;
-    queue<unsigned long> fixups;
+    set<unsigned long> fixups;
 
     cOvlFileClass(){};
     unsigned char* GetBlock(int filetype, unsigned long size);

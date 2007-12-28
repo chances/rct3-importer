@@ -4,9 +4,7 @@
            version="1" xmlns="http://rct3.sourceforge.net/rct3xml/raw"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:tns2="http://rct3.sourceforge.net/rct3xml/scenery"
            xmlns:tns="http://rct3.sourceforge.net/rct3xml/raw"
-           xmlns:ns="http://www.w3.org/1999/xhtml"
            xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
   <xs:include schemaLocation="http://rct3.sourceforge.net/xml/rct3xml-shared-v1.xsd"/>
 

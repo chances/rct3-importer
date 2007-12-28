@@ -36,7 +36,8 @@
 
 #define RAWXML_ROOT      wxT("rawovl")
 #define RAWXML_SUBROOT   wxT("subovl")
-#define RAWXML_VARIABLE  wxT("variable")
+#define RAWXML_SET       wxT("set")
+#define RAWXML_UNSET     wxT("unset")
 #define RAWXML_VARIABLES wxT("variables")
 
 WX_DECLARE_STRING_HASH_MAP(wxString, cRawOvlVars);
@@ -91,7 +92,8 @@ private:
     void ParseSPL(wxXmlNode* node);
     void ParseSTA(wxXmlNode* node);
     void ParseTEX(wxXmlNode* node);
-    void ParseVariable(wxXmlNode* node, bool command = false);
+    void ParseSet(wxXmlNode* node, bool command = false);
+    void ParseUnset(wxXmlNode* node, bool command = false);
     void ParseVariables(wxXmlNode* node, bool command = false, const wxString& path = wxT(""));
     void Parse(wxXmlNode* node);
 

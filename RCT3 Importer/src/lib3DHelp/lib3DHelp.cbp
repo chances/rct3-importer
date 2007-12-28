@@ -105,6 +105,23 @@
 					<Add directory="$(#wx.ansidebugstatic)" />
 				</Compiler>
 			</Target>
+			<Target title="Release Unicode">
+				<Option output="..\..\lib\lib3DHelpu" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="..\..\lib\obj\releaseuni" />
+				<Option external_deps="..\..\lib\libWXHelp.a;" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-Os" />
+					<Add option="-O2" />
+					<Add directory="$(#mingw.lib)\wx\include\msw-unicode-release-static-2.8" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
 		</Build>
 		<VirtualTargets>
 			<Add alias="All" targets="Debug;Release;" />
@@ -142,12 +159,14 @@
 			<Option target="Profile" />
 			<Option target="Release" />
 			<Option target="Show Macros (Debug)" />
+			<Option target="Release Unicode" />
 		</Unit>
 		<Unit filename="RCT3Exception.h">
 			<Option target="Debug" />
 			<Option target="Profile" />
 			<Option target="Release" />
 			<Option target="Show Macros (Debug)" />
+			<Option target="Release Unicode" />
 		</Unit>
 		<Unit filename="RCT3Macros.h" />
 		<Unit filename="RCT3Structs.cpp">
@@ -155,30 +174,35 @@
 			<Option target="Profile" />
 			<Option target="Release" />
 			<Option target="Show Macros (Debug)" />
+			<Option target="Release Unicode" />
 		</Unit>
 		<Unit filename="RCT3Structs.h">
 			<Option target="Debug" />
 			<Option target="Profile" />
 			<Option target="Release" />
 			<Option target="Show Macros (Debug)" />
+			<Option target="Release Unicode" />
 		</Unit>
 		<Unit filename="SCNFile.cpp">
 			<Option target="Debug" />
 			<Option target="Profile" />
 			<Option target="Release" />
 			<Option target="Show Macros (Debug)" />
+			<Option target="Release Unicode" />
 		</Unit>
 		<Unit filename="SCNFile.h">
 			<Option target="Debug" />
 			<Option target="Profile" />
 			<Option target="Release" />
 			<Option target="Show Macros (Debug)" />
+			<Option target="Release Unicode" />
 		</Unit>
 		<Unit filename="lib3Dconfig.h">
 			<Option target="Debug" />
 			<Option target="Profile" />
 			<Option target="Release" />
 			<Option target="Show Macros (Debug)" />
+			<Option target="Release Unicode" />
 		</Unit>
 		<Unit filename="matrix.cpp" />
 		<Unit filename="matrix.h" />
@@ -188,30 +212,35 @@
 			<Option target="Profile" />
 			<Option target="Release" />
 			<Option target="Show Macros (Debug)" />
+			<Option target="Release Unicode" />
 		</Unit>
 		<Unit filename="texcheck.h">
 			<Option target="Debug" />
 			<Option target="Profile" />
 			<Option target="Release" />
 			<Option target="Show Macros (Debug)" />
+			<Option target="Release Unicode" />
 		</Unit>
 		<Unit filename="valtexture.cpp">
 			<Option target="Debug" />
 			<Option target="Profile" />
 			<Option target="Release" />
 			<Option target="Show Macros (Debug)" />
+			<Option target="Release Unicode" />
 		</Unit>
 		<Unit filename="valtexture.h">
 			<Option target="Debug" />
 			<Option target="Profile" />
 			<Option target="Release" />
 			<Option target="Show Macros (Debug)" />
+			<Option target="Release Unicode" />
 		</Unit>
 		<Unit filename="wxLocalLog.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />
 			<debugger />
+			<lib_finder />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

@@ -116,9 +116,9 @@ void ovlRelocationManager::Make() {
             DUMP_LOG("Resolve relocated ptr %08lx @ %08lx, fixup %08lx, fixup2 %08lx stored in %s",DPTR(reloc),DPTR(relocation),fixup,fixup2,common?"common":"unique");
             //m_fixups.push(fixup2);
             if (common)
-                m_info->OpenFiles[OVLT_COMMON].fixups.push(fixup2);
+                m_info->OpenFiles[OVLT_COMMON].fixups.insert(fixup2);
             else
-                m_info->OpenFiles[OVLT_UNIQUE].fixups.push(fixup2);
+                m_info->OpenFiles[OVLT_UNIQUE].fixups.insert(fixup2);
         }
     }
 }

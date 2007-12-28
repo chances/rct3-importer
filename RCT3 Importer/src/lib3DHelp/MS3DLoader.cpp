@@ -32,10 +32,10 @@
 #include "MS3DFile.h"
 #include "wxLocalLog.h"
 
-cMS3DLoader::cMS3DLoader(const char *filename): c3DLoader(filename) {
+cMS3DLoader::cMS3DLoader(const wxChar *filename): c3DLoader(filename) {
 wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s)"), filename);
     CMS3DFile *ms3df = new CMS3DFile();
-    if (!ms3df->LoadFromFile(filename))
+    if (!ms3df->LoadFromFile(wxString(filename).mb_str(wxConvFile)))
         return;
 wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename, ms3df->GetNumGroups(), ms3df->GetNumVertices());
     for (int m = 0; m < ms3df->GetNumGroups(); m++) {
@@ -44,7 +44,7 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
         ms3d_group_t *group;
         ms3df->GetGroupAt(m, &group);
 
-        cmesh.m_name = group->name;
+        cmesh.m_name = wxString(group->name, wxConvLocal);
         cmesh.m_flag = C3DMESH_VALID;
 
         VERTEX tv;
@@ -177,7 +177,7 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
             cmesh.m_flag = C3DMESH_INVALID;
             char *tmp = new char[256];
             snprintf(tmp, 255, "Vertex at <%.4f,%.4f,%.4f>", vertex->vertex[0], vertex->vertex[1], vertex->vertex[2]);
-            cmesh.m_name = tmp;
+            cmesh.m_name = wxString(tmp, wxConvLocal);
             delete[] tmp;
 
             tv.position.x = vertex->vertex[0];

@@ -94,7 +94,7 @@ bool cSCNFile::Load() {
     bool ret = true;
     Init();
 
-    if (filename == "") {
+    if (filename == wxT("")) {
         throw RCT3Exception(_("No scenery file name given."));
     }
 
@@ -115,7 +115,7 @@ bool cSCNFile::Load() {
         wxLogWarning(_("Unrecognized file extension. Assuming it's a SCN scenery file."));
     }
 
-    FILE *f = fopen(filename.GetFullPath().fn_str(), "rb");
+    FILE *f = fopen(filename.GetFullPath().mb_str(wxConvFile), "rb");
     if (!f) {
         throw RCT3Exception(_("Failed to open scenery file."));
     }
@@ -161,7 +161,7 @@ bool cSCNFile::Load() {
     if (count) {
         char *tmp = new char[count];
         fread(tmp, count, 1, f);
-        wxFileName ovlname = wxString(tmp);
+        wxFileName ovlname = wxString(tmp, wxConvLocal);
         if (strlen(tmp)) {
             if (!ovlname.IsAbsolute()) {
                 ovlname.MakeAbsolute(filename.GetPath());
@@ -209,7 +209,7 @@ void cSCNFile::LoadTextures(FILE *f) {
         if (namelen) {
             tmp = new char[namelen];
             fread(tmp, namelen, 1, f);
-            ft.Name = tmp;
+            ft.Name = wxString(tmp, wxConvLocal);
             delete[] tmp;
         }
 
@@ -246,7 +246,7 @@ void cSCNFile::LoadTextures(FILE *f) {
             if (texturelen) {
                 tmp = new char[texturelen];
                 fread(tmp, texturelen, 1, f);
-                ftfr.texture(wxString(tmp));
+                ftfr.texture(wxString(tmp, wxConvFile));
                 if (strlen(tmp)) {
                     if (!ftfr.texture().IsAbsolute()) {
                         ftfr.texture_nc().MakeAbsolute(filename.GetPath());
@@ -260,7 +260,7 @@ void cSCNFile::LoadTextures(FILE *f) {
             if (alphalen) {
                 tmp = new char[alphalen];
                 fread(tmp, alphalen, 1, f);
-                ftfr.alpha(wxString(tmp));
+                ftfr.alpha(wxString(tmp, wxConvFile));
                 if (strlen(tmp)) {
                     if (!ftfr.alpha().IsAbsolute()) {
                         ftfr.alpha_nc().MakeAbsolute(filename.GetPath());
@@ -300,7 +300,7 @@ bool cSCNFile::LoadModels(FILE *f) {
         if (count) {
             tmp = new char[count];
             fread(tmp, count, 1, f);
-            mod.name = tmp;
+            mod.name = wxString(tmp, wxConvLocal);
             delete[] tmp;
         }
 
@@ -310,7 +310,7 @@ bool cSCNFile::LoadModels(FILE *f) {
         if (count) {
             tmp = new char[count];
             fread(tmp, count, 1, f);
-            mod.file = wxString(tmp);
+            mod.file = wxString(tmp, wxConvFile);
             if (strlen(tmp)) {
                 if (!mod.file.IsAbsolute()) {
                     mod.file.MakeAbsolute(filename.GetPath());
@@ -329,7 +329,7 @@ bool cSCNFile::LoadModels(FILE *f) {
             if (count) {
                 tmp = new char[count];
                 fread(tmp, count, 1, f);
-                mod.transformnames.push_back(wxString(tmp));
+                mod.transformnames.push_back(wxString(tmp, wxConvLocal));
                 delete[] tmp;
             } else {
                 mod.transformnames.push_back(_("<empty name>"));
@@ -369,7 +369,7 @@ bool cSCNFile::LoadModels(FILE *f) {
             if (count) {
                 tmp = new char[count];
                 fread(tmp, count, 1, f);
-                ms.Name = tmp;
+                ms.Name = wxString(tmp, wxConvLocal);
                 delete[] tmp;
             }
 
@@ -387,7 +387,7 @@ bool cSCNFile::LoadModels(FILE *f) {
             if (count) {
                 tmp = new char[count];
                 fread(tmp, count, 1, f);
-                ms.FTX = tmp;
+                ms.FTX = wxString(tmp, wxConvLocal);
                 delete[] tmp;
             }
 
@@ -396,7 +396,7 @@ bool cSCNFile::LoadModels(FILE *f) {
             if (count) {
                 tmp = new char[count];
                 fread(tmp, count, 1, f);
-                ms.TXS = tmp;
+                ms.TXS = wxString(tmp, wxConvLocal);
                 delete[] tmp;
             }
 
@@ -415,7 +415,7 @@ bool cSCNFile::LoadModels(FILE *f) {
             if (count) {
                 tmp = new char[count];
                 fread(tmp, count, 1, f);
-                e.name = tmp;
+                e.name = wxString(tmp, wxConvLocal);
                 delete[] tmp;
             }
 
@@ -431,7 +431,7 @@ bool cSCNFile::LoadModels(FILE *f) {
                 if (count) {
                     tmp = new char[count];
                     fread(tmp, count, 1, f);
-                    e.transformnames.push_back(wxString(tmp));
+                    e.transformnames.push_back(wxString(tmp, wxConvLocal));
                     delete[] tmp;
                 } else {
                     e.transformnames.push_back(_("<empty name>"));
@@ -481,7 +481,7 @@ void cSCNFile::LoadLODs(FILE *f) {
         if (count) {
             tmp = new char[count];
             fread(tmp, count, 1, f);
-            lod.modelname = tmp;
+            lod.modelname = wxString(tmp, wxConvLocal);
             delete[] tmp;
         }
 
@@ -506,7 +506,7 @@ void cSCNFile::LoadReferences(FILE *f) {
         if (count) {
             tmp = new char[count];
             fread(tmp, count, 1, f);
-            references.push_back(wxString(tmp));
+            references.push_back(wxString(tmp, wxConvLocal));
             delete[] tmp;
         }
     }
@@ -524,7 +524,7 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
         fread(tmp, objlen, 1, f);
 
     if (objlen) {
-        models[0].file = tmp;
+        models[0].file = wxString(tmp, wxConvFile);
         wxFileName t = models[0].file;
         models[0].name = t.GetName();
     }
@@ -548,20 +548,20 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
             if (ftxlen) {
                 tmp = new char[ftxlen];
                 fread(tmp, ftxlen, 1, f);
-                ms.FTX = tmp;
+                ms.FTX = wxString(tmp, wxConvLocal);
                 delete[] tmp;
             } else
-                ms.FTX = "";
+                ms.FTX = wxT("");
 
             unsigned long txslen;
             fread(&txslen, sizeof(txslen), 1, f);
             if (txslen) {
                 tmp = new char[txslen];
                 fread(tmp, txslen, 1, f);
-                ms.TXS = tmp;
+                ms.TXS = wxString(tmp, wxConvLocal);
                 delete[] tmp;
             } else
-                ms.TXS = "";
+                ms.TXS = wxT("");
         }
         ms.effectpoint = false;
         models[0].meshstructs.push_back(ms);
@@ -579,7 +579,7 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
         if (namelen) {
             tmp = new char[namelen];
             fread(tmp, namelen, 1, f);
-            ft.Name = tmp;
+            ft.Name = wxString(tmp, wxConvLocal);
             delete[] tmp;
         } else
             ft.Name = wxT("");
@@ -591,7 +591,7 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
         if (texturelen) {
             tmp = new char[texturelen];
             fread(tmp, texturelen, 1, f);
-            ftfr.texture(wxString(tmp));
+            ftfr.texture(wxString(tmp, wxConvFile));
             delete[] tmp;
         } else
             ftfr.texture(wxString(wxT("")));
@@ -601,7 +601,7 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
         if (alphalen) {
             tmp = new char[alphalen];
             fread(tmp, alphalen, 1, f);
-            ftfr.alpha(wxString(tmp));
+            ftfr.alpha(wxString(tmp, wxConvFile));
             delete[] tmp;
         } else
             ftfr.alpha(wxString(wxT("")));
@@ -626,7 +626,7 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
             wxString ref;
             tmp = new char[reflen];
             fread(tmp, reflen, 1, f);
-            ref = tmp;
+            ref = wxString(tmp, wxConvFile);
             delete[] tmp;
             references.push_back(ref);
         }
@@ -643,10 +643,10 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
         if (namelen) {
             tmp = new char[namelen];
             fread(tmp, namelen, 1, f);
-            e.name = tmp;
+            e.name = wxString(tmp, wxConvLocal);
             delete[] tmp;
         } else
-            e.name = "";
+            e.name = wxT("");
 
         D3DMATRIX m;
         fread(&m._11, sizeof(m._11), 1, f);
@@ -666,7 +666,7 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
         fread(&m._43, sizeof(m._43), 1, f);
         fread(&m._44, sizeof(m._44), 1, f);
         e.transforms.push_back(m);
-        e.transformnames.push_back("Custom Matrix (old scn)");
+        e.transformnames.push_back(_("Custom Matrix (old scn)"));
 
         models[0].effectpoints.push_back(e);
     }
@@ -684,7 +684,7 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
             fread(&fixorient, sizeof(long), 1, f);
             if ((version <=2) && fixorient) {
                 models[0].transforms.push_back(matrixGetFixOrientation());
-                models[0].transformnames.push_back("Fix Orientation (old scn)");
+                models[0].transformnames.push_back(_("Fix Orientation (old scn)"));
             }
         }
         // SCN Version 2 Stuff
@@ -706,10 +706,10 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
                 if (namelen) {
                     tmp = new char[namelen];
                     fread(tmp, namelen, 1, f);
-                    mname = tmp;
+                    mname = wxString(tmp, wxConvLocal);
                     delete[] tmp;
                 } else
-                    mname = "";
+                    mname = wxT("");
                 //tmpmeshlist.push_back(mname);
                 models[0].meshstructs[i].Name = mname;
             }
@@ -726,10 +726,10 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
                 if (namelen) {
                     tmp = new char[namelen];
                     fread(tmp, namelen, 1, f);
-                    nam = tmp;
+                    nam = wxString(tmp, wxConvLocal);
                     delete[] tmp;
                 } else
-                    nam = "";
+                    nam = wxT("");
                 models[0].transformnames.push_back(nam);
 
                 fread(&m._11, sizeof(m._11), 1, f);
@@ -761,10 +761,10 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
                 if (namelen) {
                     tmp = new char[namelen];
                     fread(tmp, namelen, 1, f);
-                    e.name = tmp;
+                    e.name = wxString(tmp, wxConvLocal);
                     delete[] tmp;
                 } else
-                    e.name = "";
+                    e.name = wxT("");
 
                 fread(&matrices, sizeof(matrices), 1, f);
                 for (unsigned long j = 0; j < matrices; j++) {
@@ -775,10 +775,10 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
                     if (namelen) {
                         tmp = new char[namelen];
                         fread(tmp, namelen, 1, f);
-                        nam = tmp;
+                        nam = wxString(tmp, wxConvLocal);
                         delete[] tmp;
                     } else
-                        nam = "";
+                        nam = wxT("");
                     e.transformnames.push_back(nam);
 
                     fread(&m._11, sizeof(m._11), 1, f);
@@ -1210,7 +1210,7 @@ bool cSCNFile::Save() {
 //    unsigned long i;
 //    error = CSCNFILE_NO_ERROR;
 
-    if (filename == "") {
+    if (filename == wxT("")) {
         throw RCT3Exception(_("Saving failed, file name not set."));
     }
 /*
@@ -1789,7 +1789,7 @@ wxXmlNode* cSCNFile::GetNode(const wxString& path) {
     wxFileName temp = ovlpath;
     temp.MakeRelativeTo(path);
     node->AddProperty(wxT("file"), temp.GetPathWithSep());
-    node->AddProperty(wxT("version"), wxString::Format("%lu", version));
+    node->AddProperty(wxT("version"), wxString::Format(wxT("%lu"), version));
     node->AddProperty(wxT("xmlns"), WXW(XML_NAMESPACE_SCENERY));
     node->AddProperty(wxT("xmlns:xsi"), WXW(XML_NAMESPACE_SCHEMAINSTANCE));
     node->AddProperty(wxT("xsi:schemaLocation"), WXW(XML_NAMESPACE_SCENERY)+wxT(" ")+WXW(XML_SCHEMALOCATION_SCENERY));
@@ -2097,7 +2097,7 @@ void cSCNFile::Make() {
     try {
         wxFileName ovlfile = ovlpath;
         ovlfile.SetName(name);
-        cOvl c_ovl(ovlfile.GetFullPath().fn_str());
+        cOvl c_ovl(std::string(ovlfile.GetFullPath().mb_str(wxConvFile)));
         MakeToOvl(c_ovl);
         c_ovl.Save();
     } catch (EOvl& e) {
@@ -2113,7 +2113,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
 
         // References
         for (cStringIterator it = references.begin(); it != references.end(); ++it) {
-            c_ovl.AddReference(it->c_str());
+            c_ovl.AddReference(it->mb_str(wxConvFile));
         }
 
         // SVD, shapes & animations
@@ -2122,19 +2122,19 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                 // SVD
                 wxLogDebug(wxT("TRACE cSCNFile::MakeToOvl SVD"));
                 ovlSVDManager* c_svd = c_ovl.GetManager<ovlSVDManager>();
-                c_svd->AddSVD(name.c_str(), m_work->lods.size(), sivsettings.sivflags, sivsettings.sway, sivsettings.brightness, sivsettings.scale);
+                c_svd->AddSVD(name.ToAscii(), m_work->lods.size(), sivsettings.sivflags, sivsettings.sway, sivsettings.brightness, sivsettings.scale);
                 c_svd->SetSVDUnknowns(sivsettings.unknown, sivsettings.unk6, sivsettings.unk7, sivsettings.unk8, sivsettings.unk9, sivsettings.unk10, sivsettings.unk11);
                 for (cLOD::iterator it = m_work->lods.begin(); it != m_work->lods.end(); ++it) {
                     if (it->animated) {
-                        c_svd->OpenAnimatedLOD(it->modelname.c_str(), it->modelname.c_str(), it->animations.size(), it->distance, it->unk2, it->unk4, it->unk14);
+                        c_svd->OpenAnimatedLOD(it->modelname.ToAscii(), it->modelname.ToAscii(), it->animations.size(), it->distance, it->unk2, it->unk4, it->unk14);
                         if (it->animations.size()) {
                             for (cStringIterator its = it->animations.begin(); its != it->animations.end(); ++its) {
-                                c_svd->AddAnimation(its->c_str());
+                                c_svd->AddAnimation(its->ToAscii());
                             }
                         }
                         c_svd->CloseAnimatedLOD();
                     } else {
-                        c_svd->AddStaticLOD(it->modelname.c_str(), it->modelname.c_str(), it->distance, it->unk2, it->unk4, it->unk14);
+                        c_svd->AddStaticLOD(it->modelname.ToAscii(), it->modelname.ToAscii(), it->distance, it->unk2, it->unk4, it->unk14);
                     }
                 }
             }
@@ -2157,7 +2157,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
 //                        if (!i_mesh->disabled)
 //                            mesh_count++;
 //                    }
-                    c_mod.name = i_mod->name.c_str();
+                    c_mod.name = i_mod->name.ToAscii();
 
                     // Determine transformation matrices
                     D3DMATRIX transformMatrix = matrixMultiply(matrixMultiply(i_mod->transforms), matrixGetFixOrientation(i_mod->usedorientation));
@@ -2186,7 +2186,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                     if (i_mod->effectpoints.size() != 0) {
                         for (unsigned int e = 0; e < i_mod->effectpoints.size(); e++) {
                             cEffectStruct c_es;
-                            c_es.name = i_mod->effectpoints[e].name.c_str();
+                            c_es.name = i_mod->effectpoints[e].name.ToAscii();
                             if (do_transform) {
                                 std::vector<D3DMATRIX> tempstack = i_mod->effectpoints[e].transforms;
                                 // to correctely apply the model transformation matrix to effect points we have to
@@ -2217,8 +2217,8 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                         if (i_mesh->disabled == false) {
                             //progress.Update(++progress_count);
                             cStaticShape2 c_ss2;
-                            c_ss2.fts = i_mesh->FTX.c_str();
-                            c_ss2.texturestyle = i_mesh->TXS.c_str();
+                            c_ss2.fts = i_mesh->FTX.ToAscii();
+                            c_ss2.texturestyle = i_mesh->TXS.ToAscii();
                             c_ss2.placetexturing = i_mesh->place;
                             c_ss2.textureflags = i_mesh->flags;
                             c_ss2.sides = i_mesh->unknown;
@@ -2300,7 +2300,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
 //                        if (!i_mesh->disabled)
 //                            mesh_count++;
 //                    }
-                    c_bs1.name = i_mod->name.c_str();
+                    c_bs1.name = i_mod->name.ToAscii();
                     c_bs1.bones.push_back(cBoneStruct(true));
 
                     // Determine transformation matrices
@@ -2330,7 +2330,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                     if (i_mod->modelbones.size() != 0) {
                         for (unsigned int e = 0; e < i_mod->modelbones.size(); e++) {
                             cBoneStruct c_bone;
-                            c_bone.name = i_mod->modelbones[e].name.c_str();
+                            c_bone.name = i_mod->modelbones[e].name.ToAscii();
                             c_bone.parentbonenumber = i_mod->modelbones[e].nparent;
                             if (do_transform) {
                                 std::vector<D3DMATRIX> tempstack = i_mod->modelbones[e].positions1;
@@ -2369,8 +2369,8 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                         if (i_mesh->disabled == false) {
                             //progress.Update(++progress_count);
                             cBoneShape2 c_bs2;
-                            c_bs2.fts = i_mesh->FTX.c_str();
-                            c_bs2.texturestyle = i_mesh->TXS.c_str();
+                            c_bs2.fts = i_mesh->FTX.ToAscii();
+                            c_bs2.texturestyle = i_mesh->TXS.ToAscii();
                             c_bs2.placetexturing = i_mesh->place;
                             c_bs2.textureflags = i_mesh->flags;
                             c_bs2.sides = i_mesh->unknown;
@@ -2439,10 +2439,10 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                 ovlBANManager* c_ban = c_ovl.GetManager<ovlBANManager>();
                 for (cAnimation::iterator i_anim = m_work->animations.begin(); i_anim != m_work->animations.end(); ++i_anim) {
                     cBoneAnim c_item;
-                    c_item.name = i_anim->name.c_str();
+                    c_item.name = i_anim->name.ToAscii();
                     for (cBoneAnimation::iterator i_bone = i_anim->boneanimations.begin(); i_bone != i_anim->boneanimations.end(); ++i_bone) {
                         cBoneAnimBone c_bone;
-                        c_bone.name = i_bone->name.c_str();
+                        c_bone.name = i_bone->name.ToAscii();
                         for (cTXYZ::iterator i_txyz = i_bone->translations.begin(); i_txyz != i_bone->translations.end(); ++i_txyz) {
                             c_bone.translations.insert(i_txyz->GetFixed(i_anim->usedorientation));
                         }
@@ -2466,7 +2466,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                     continue;
 
                 cFlexiTextureInfoStruct c_ftis;
-                c_ftis.name = i_ftx->Name.c_str();
+                c_ftis.name = i_ftx->Name.ToAscii();
                 c_ftis.fps = i_ftx->FPS;
                 c_ftis.recolourable = i_ftx->Recolorable;
 

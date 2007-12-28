@@ -44,7 +44,7 @@ public:
     STRING3D m_name;
     unsigned long m_flag;
 
-    c3DMesh():m_name("") {};
+    c3DMesh():m_name(wxT("")) {};
 };
 
 #ifndef STD_ONLY
@@ -69,7 +69,7 @@ protected:
     static c3DLoaderCache g_cache;
 #endif
 public:
-    c3DLoader(const char *filename) : m_meshes(0) {
+    c3DLoader(const wxChar *filename) : m_meshes(0) {
         m_filename = filename;
         m_name = STRING3D_EMPTY;
     };
@@ -92,7 +92,7 @@ public:
     };
     virtual STRINGLIST3D GetWarnings() const {return m_warnings;};
     virtual STRING3D GetObjectName(unsigned int index) {
-        return (index>=m_meshes.size())?"":m_meshes[index].m_name;
+        return (index>=m_meshes.size())?wxT(""):m_meshes[index].m_name;
     };
     virtual int GetObjectVertexCount(unsigned int index) {
         return (index>=m_meshes.size())?0:m_meshes[index].m_vertices.size();
@@ -126,7 +126,7 @@ public:
     static int FlattenNormals(const unsigned long vertexcount, VERTEX2 *vertices, const D3DVECTOR& bbox_min, const D3DVECTOR& bbox_max);
     static int FlattenNormals(cStaticShape2* sh, const D3DVECTOR& bbox_min, const D3DVECTOR& bbox_max);
     static int FlattenNormals(cBoneShape2* sh, const D3DVECTOR& bbox_min, const D3DVECTOR& bbox_max);
-    static c3DLoader *LoadFile(const char *filename);
+    static c3DLoader *LoadFile(const wxChar *filename);
 #ifndef STD_ONLY
     static void ClearCache();
 #endif

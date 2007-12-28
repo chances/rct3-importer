@@ -101,10 +101,13 @@ void cOvlFileClass::Write(const map<string, ovlOVLManager*>& managers, const vec
     // Write fixups
     unsigned long size = fixups.size();
     fwrite(&size, sizeof(unsigned long), 1, f);
-    while (fixups.empty() == false) {
-        unsigned long c_fixup = fixups.front();
-        fixups.pop();
-        fwrite(&c_fixup, sizeof(unsigned long), 1, f);
+//    while (fixups.empty() == false) {
+//        unsigned long c_fixup = fixups.front();
+//        fixups.pop();
+//        fwrite(&c_fixup, sizeof(unsigned long), 1, f);
+//    }
+    for(set<unsigned long>::iterator it = fixups.begin(); it != fixups.end(); ++it) {
+        fwrite(&(*it), sizeof(unsigned long), 1, f);
     }
 
     // Write Extradata

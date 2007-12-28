@@ -31,7 +31,7 @@
 class cASE3DLoader: public c3DLoader
 {
 public:
-    cASE3DLoader(const char *filename);
+    cASE3DLoader(const wxChar *filename);
     virtual int GetType() {return C3DLOADER_ASE;};
 };
 

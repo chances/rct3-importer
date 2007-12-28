@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
+         xmlns="http://relaxng.org/ns/structure/1.0"
+         xmlns:ns="http://relaxng.org/ns/structure/1.0"
+         xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">
+  <define name="ovlDefaultColour">
+    <data type="unsignedInt">
+      <param name="minInclusive">0</param>
+
+      <param name="maxInclusive">31</param>
+    </data>
+  </define>
+
+  <define name="ovlRecolourable">
+    <data type="unsignedInt">
+      <param name="minInclusive">0</param>
+
+      <param name="maxInclusive">7</param>
+    </data>
+  </define>
+
+  <define name="ovlTextureDimension">
+    <data type="unsignedInt">
+      <param name="minInclusive">4</param>
+
+      <param name="maxInclusive">1024</param>
+    </data>
+  </define>
+
+  <define name="ovlSidParameters">
+    <choice>
+      <value type="string">LoudSpeaker</value>
+
+      <value type="string">GuestInjectionPoint</value>
+
+      <value type="string">VistaPoint</value>
+
+      <value type="string">ParkEntrance</value>
+
+      <value type="string">PathFountain</value>
+
+      <value type="string">WaterCannon</value>
+
+      <value type="string">QueueLineEntertainer</value>
+
+      <value type="string">LitterBin</value>
+
+      <value type="string">ParkBench</value>
+
+      <value type="string">LifeguardChair</value>
+
+      <value type="string">PoolExtra</value>
+
+      <value type="string">Sign</value>
+
+      <value type="string">RideEvent</value>
+
+      <value type="string">PassportPost</value>
+
+      <value type="string">Waterable</value>
+    </choice>
+  </define>
+</grammar>

@@ -79,9 +79,9 @@ void wxAUIPicFileDialog::HandleFilenameChange() {
     wxString fullname = m_list->GetDir() + wxFILE_SEP_PATH + m_text->GetValue();
     if (wxFileExists(fullname)) {
         m_picFileName->SetLabel(m_text->GetValue());
-        wxSize imgsize = getBitmapSize(fullname.fn_str());
+        wxSize imgsize = getBitmapSize(fullname.mb_str(wxConvFile));
         if (imgsize != wxDefaultSize) {
-            wxString det = wxString::Format("%dx%d\n", imgsize.GetWidth(), imgsize.GetHeight());
+            wxString det = wxString::Format(wxT("%dx%d\n"), imgsize.GetWidth(), imgsize.GetHeight());
 
             m_picDetails->SetLabel(det);
             //m_pic->SetBitmap(wxBitmap(img));

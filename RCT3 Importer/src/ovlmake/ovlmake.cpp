@@ -56,12 +56,12 @@ int DoCompile(const wxCmdLineParser& parser) {
         if (!parser.Found(wxT("installdir"), &installdir)) {
             if (install) {
                 HKEY key;
-                char *temp = new char[MAX_PATH+1];
+                wxChar *temp = new wxChar[MAX_PATH+1];
                 LONG res = RegOpenKeyEx(HKEY_LOCAL_MACHINE,
-                                        "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{907B4640-266B-4A21-92FB-CD1A86CD0F63}",
+                                        wxT("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{907B4640-266B-4A21-92FB-CD1A86CD0F63}"),
                                         0, KEY_QUERY_VALUE, &key);
                 unsigned long length = MAX_PATH;
-                res = RegQueryValueEx(key, "InstallLocation", 0, NULL, (LPBYTE) temp, &length);
+                res = RegQueryValueEx(key, wxT("InstallLocation"), 0, NULL, (LPBYTE) temp, &length);
                 installdir = temp;
                 delete[] temp;
                 RegCloseKey(key);
@@ -135,10 +135,10 @@ int DoCompile(const wxCmdLineParser& parser) {
                     if (dryrun) {
                         fprintf(stderr, "\nDryrun results:\n");
                         for (std::vector<wxFileName>::const_iterator it = rovl.GetModifiedFiles().begin(); it != rovl.GetModifiedFiles().end(); ++it) {
-                            fprintf(stderr, "Modified: %s\n", it->GetFullPath().fn_str());
+                            fprintf(stderr, "Modified: %s\n", it->GetFullPath().mb_str(wxConvFile).data());
                         }
                         for (std::vector<wxFileName>::const_iterator it = rovl.GetNewFiles().begin(); it != rovl.GetNewFiles().end(); ++it) {
-                            fprintf(stderr, "New: %s\n", it->GetFullPath().fn_str());
+                            fprintf(stderr, "New: %s\n", it->GetFullPath().mb_str(wxConvFile).data());
                         }
                     }
                     return ret;
@@ -255,7 +255,7 @@ int main(int argc, char **argv)
     // *&^$% GraphicsMagick
     wxFileName app = wxString(wxArgv[0]);
     wxString appenv = wxT("MAGICK_CONFIGURE_PATH=") + app.GetPathWithSep();
-    putenv(appenv.c_str());
+    putenv(appenv.mb_str(wxConvLocal));
 
     wxConfig::Set(new wxConfig(wxT("ovlmake")));
 
@@ -304,11 +304,11 @@ int main(int argc, char **argv)
     };
 
     wxCmdLineParser parser(cmdLineDesc, argc, wxArgv);
-    parser.SetSwitchChars("-");
+    parser.SetSwitchChars(wxT("-"));
 
     if (parser.Parse(false) != -1) {
         wxCmdLineParser parser2(cmdLineRealDesc, argc, wxArgv);
-        parser2.SetSwitchChars("-");
+        parser2.SetSwitchChars(wxT("-"));
         switch ( parser2.Parse(false) )
         {
             case -1:

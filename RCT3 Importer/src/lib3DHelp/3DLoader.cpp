@@ -33,7 +33,7 @@
 #include "MS3DLoader.h"
 //#include "AN8Loaderr.h"
 
-c3DLoader* DoLoadFile(const char *filename) {
+c3DLoader* DoLoadFile(const wxChar *filename) {
     c3DLoader *res;
 
     res = new cMS3DLoader(filename);
@@ -243,7 +243,7 @@ bool c3DLoader::FetchObject(unsigned int index, unsigned long bone, unsigned lon
     return true;
 }
 
-c3DLoader *c3DLoader::LoadFile(const char *filename) {
+c3DLoader *c3DLoader::LoadFile(const wxChar *filename) {
 #ifdef STD_ONLY
     return DoLoadFile(filename);
 #else

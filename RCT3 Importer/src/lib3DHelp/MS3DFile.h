@@ -150,7 +150,7 @@ public:
 	virtual ~CMS3DFile();
 
 public:
-	DWORD LoadFromFile(LPCTSTR lpszFileName);
+	DWORD LoadFromFile(const char* lpszFileName);
 	void Clear();
 
 	DWORD GetNumVertices();

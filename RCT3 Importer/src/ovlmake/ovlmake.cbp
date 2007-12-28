@@ -27,7 +27,6 @@
 					<Add library="WXHelpb" />
 					<Add library="libASE" />
 					<Add library="wx_base-2.8" />
-					<Add library="wx_base_xml-2.8" />
 					<Add library="libOVLng" />
 					<Add directory="..\..\bin" />
 				</Linker>
@@ -82,6 +81,30 @@
 					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
+			<Target title="Release Unicode">
+				<Option output="..\..\bin\ovlmake.exe" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="..\..\bin" />
+				<Option object_output="..\..\lib\obj\releaseuni" />
+				<Option external_deps="..\..\lib\lib3DHelpu.a;..\..\bin\libOVL.a;..\..\lib\libWXHelpbu.a;..\..\lib\libASE.a;..\..\lib\libOVLng.a;" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option use_console_runner="0" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-Os" />
+					<Add option="-O2" />
+					<Add directory="$(#mingw.lib)\wx\include\base-unicode-release-static-2.8" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="3DHelpu" />
+					<Add library="WXHelpbu" />
+					<Add library="libASE" />
+					<Add library="wx_baseu-2.8" />
+					<Add library="libOVLng" />
+					<Add directory="..\..\bin" />
+				</Linker>
+			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-mthreads" />
@@ -124,13 +147,13 @@
 		<Unit filename="RawOvlMake.h" />
 		<Unit filename="ReadMe 1st.txt" />
 		<Unit filename="changelog.txt" />
-		<Unit filename="ovlmake-raw-v1.dtd" />
 		<Unit filename="ovlmake.cpp" />
 		<Unit filename="wx_pch.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />
 			<debugger />
+			<lib_finder />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

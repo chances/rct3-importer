@@ -168,7 +168,7 @@
     <xs:restriction base="xs:unsignedInt">
       <xs:minInclusive value="0"/>
 
-      <xs:maxInclusive value="32"/>
+      <xs:maxInclusive value="31"/>
     </xs:restriction>
   </xs:simpleType>
 

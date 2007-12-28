@@ -29,12 +29,12 @@
 #include "ASE3DLoader.h"
 #include "libASE.h"
 
-cASE3DLoader::cASE3DLoader(const char *filename): c3DLoader(filename) {
+cASE3DLoader::cASE3DLoader(const wxChar *filename): c3DLoader(filename) {
     ASE_Scene *scene = NULL;
 
     {
         // Test whether it's an ASE
-        FILE *fp = fopen(filename, "r");
+        FILE *fp = fopen(wxString(filename).mb_str(wxConvFile), "r");
         if (!fp)
             return;
         char test[20];
@@ -48,7 +48,9 @@ cASE3DLoader::cASE3DLoader(const char *filename): c3DLoader(filename) {
 
 
     try {
-        scene = ASE_loadFilename(const_cast<char *> (filename));
+        wxString fn = filename;
+        const char* temp = fn.mb_str(wxConvFile);
+        scene = ASE_loadFilename(const_cast<char*> (temp));
     } catch (...) {
         try {
             ASE_freeScene(scene);
@@ -58,7 +60,7 @@ cASE3DLoader::cASE3DLoader(const char *filename): c3DLoader(filename) {
     if (scene) {
         for (int m = 0; m < scene->objectCount; m++) {
             c3DMesh cmesh;
-            cmesh.m_name = scene->objs[m].name;
+            cmesh.m_name = wxString(scene->objs[m].name, wxConvLocal);
             cmesh.m_flag = C3DMESH_VALID;
 
             ASE_Mesh *mesh = &scene->objs[m].mesh;

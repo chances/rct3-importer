@@ -87,7 +87,7 @@ protected:
 public:
     wxGXImageCacheEntryFile(wxString filename):wxGXImageCacheEntry() {
         try {
-            m_image = new Magick::Image(filename.fn_str());
+            m_image = new Magick::Image(std::string(filename.mb_str(wxConvFile)));
             m_file = filename;
             wxLogDebug(wxT("Trace, wxGXImageCacheEntryFile new cache entry '%s'"), filename.c_str());
             if (m_image)
@@ -106,7 +106,7 @@ public:
                 wxLogDebug(wxT("Trace, wxGXImageCacheEntryFile MTime change '%s'"), lfile.c_str());
                 delete m_image;
                 try {
-                    m_image = new Magick::Image(lfile.fn_str());
+                    m_image = new Magick::Image(std::string(lfile.mb_str(wxConvFile)));
                     if (m_image)
                         m_mtime = m_file.GetModificationTime();
                 } catch (Magick::Exception e) {
@@ -124,7 +124,7 @@ public:
         } else {
             // Try again
             try {
-                m_image = new Magick::Image(m_file.GetFullPath().fn_str());
+                m_image = new Magick::Image(std::string(m_file.GetFullPath().mb_str(wxConvFile)));
                 if (m_image)
                     m_mtime = m_file.GetModificationTime();
             } catch (Magick::Exception e) {
@@ -243,7 +243,7 @@ wxImage wxGXImage::GetImage(int nw, int nh) {
                 img.SetAlpha(alphadata);
             }
         } catch (Magick::Exception e) {
-            m_error = e.what();
+            m_error = wxString(e.what(), wxConvLocal);
             img = wxImage(wxNullImage);
             wxLogDebug(wxT("Error in wxGXImage::GetImage: %s"), e.what());
         }
@@ -277,7 +277,7 @@ void wxGXImage::FromImage(const wxImage& image) {
             }
         } catch (Magick::Exception e) {
             m_valid = false;
-            m_error = e.what();
+            m_error = wxString(e.what(), wxConvLocal);
             wxLogDebug(wxT("Error in wxGXImage::FromImage: %s"), e.what());
         }
     } else {
@@ -314,10 +314,10 @@ void wxGXImage::FromFile(const wxString& filename) {
 #endif
         try {
             m_valid = true;
-            m_image.read(filename.fn_str());
+            m_image.read(std::string(filename.mb_str(wxConvFile)));
         } catch (Magick::Exception e) {
             m_valid = false;
-            m_error = e.what();
+            m_error = wxString(e.what(), wxConvLocal);
             wxLogDebug(wxT("Error in wxGXImage::FromFile: %s"), e.what());
         }
 #ifdef CACHE_GXIMAGE
@@ -366,7 +366,7 @@ void wxGXImage::FromFileSystem(const wxString& filename) {
             }
         } catch (Magick::Exception e) {
             m_valid = false;
-            m_error = e.what();
+            m_error = wxString(e.what(), wxConvLocal);
             wxLogDebug(wxT("Error in wxGXImage::FromFile: %s"), e.what());
         }
     } else {

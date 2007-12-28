@@ -54,22 +54,22 @@ bool XmlParseMatrixNode(wxXmlNode* node, D3DMATRIX* matrix, wxString* name, unsi
     while(child) {
         if (child->GetName() == wxT("row1")) {
             temp = child->GetNodeContent();
-            if (sscanf(temp.c_str(), "%f %f %f %f", &matrix->_11, &matrix->_12, &matrix->_13, &matrix->_14) != 4)
+            if (sscanf(temp.mb_str(wxConvLocal), "%f %f %f %f", &matrix->_11, &matrix->_12, &matrix->_13, &matrix->_14) != 4)
                 ret = false;
             rows++;
         } else if (child->GetName() == wxT("row2")) {
             temp = child->GetNodeContent();
-            if (sscanf(temp.c_str(), "%f %f %f %f", &matrix->_21, &matrix->_22, &matrix->_23, &matrix->_24) != 4)
+            if (sscanf(temp.mb_str(wxConvLocal), "%f %f %f %f", &matrix->_21, &matrix->_22, &matrix->_23, &matrix->_24) != 4)
                 ret = false;
             rows++;
         } else if (child->GetName() == wxT("row3")) {
             temp = child->GetNodeContent();
-            if (sscanf(temp.c_str(), "%f %f %f %f", &matrix->_31, &matrix->_32, &matrix->_33, &matrix->_34) != 4)
+            if (sscanf(temp.mb_str(wxConvLocal), "%f %f %f %f", &matrix->_31, &matrix->_32, &matrix->_33, &matrix->_34) != 4)
                 ret = false;
             rows++;
         } else if (child->GetName() == wxT("row4")) {
             temp = child->GetNodeContent();
-            if (sscanf(temp.c_str(), "%f %f %f %f", &matrix->_41, &matrix->_42, &matrix->_43, &matrix->_44) != 4)
+            if (sscanf(temp.mb_str(wxConvLocal), "%f %f %f %f", &matrix->_41, &matrix->_42, &matrix->_43, &matrix->_44) != 4)
                 ret = false;
             rows++;
         }
@@ -132,7 +132,7 @@ wxXmlNode* XmlMakeMatrixNode(const D3DMATRIX& matrix, const wxString& name) {
 
 #define TXYZ_READPROP(pr, s) \
     temp = node->GetPropVal(wxT(pr), wxT("0.0")); \
-    if (sscanf(temp.c_str(), "%f", &v.s) != 1) { \
+    if (sscanf(temp.mb_str(wxConvLocal), "%f", &v.s) != 1) { \
         ret = false; \
         v.s = 0.0; \
     }
@@ -237,11 +237,11 @@ bool cMeshStruct::FromCompilerXml(wxXmlNode* node, const wxString& path) {
 
     unknown = node->GetPropVal(wxT("doublesided"),wxT("0")).IsSameAs(wxT("1"))?1:3;
     wxString placing = node->GetPropVal(wxT("placing"),wxT("both")).Lower();
-    if (placing.IsSameAs("texture")) {
+    if (placing.IsSameAs(wxT("texture"))) {
         place = 1;
-    } else if (placing.IsSameAs("glass")) {
+    } else if (placing.IsSameAs(wxT("glass"))) {
         place = 2;
-    } else if (placing.IsSameAs("both")) {
+    } else if (placing.IsSameAs(wxT("both"))) {
         place = 0;
     } else {
         throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Unknown placing value '%s'."), Name.c_str(), placing.c_str()));
@@ -251,33 +251,33 @@ bool cMeshStruct::FromCompilerXml(wxXmlNode* node, const wxString& path) {
     FTX = node->GetPropVal(wxT("ftx"),wxT(""));
     TXS = node->GetPropVal(wxT("txs"),wxT(""));
 
-    if (sflags.IsSameAs("sign")) {
+    if (sflags.IsSameAs(wxT("sign"))) {
         flags = 12;
         TXS = wxT("SIOpaqueUnlit");
-    } else if (sflags.IsSameAs("terrain")) {
+    } else if (sflags.IsSameAs(wxT("terrain"))) {
         flags = 12288;
         FTX = wxT("useterraintexture");
         TXS = wxT("SIOpaque");
-    } else if (sflags.IsSameAs("cliff")) {
+    } else if (sflags.IsSameAs(wxT("cliff"))) {
         flags = 20480;
         FTX = wxT("useclifftexture");
         TXS = wxT("SIOpaque");
-    } else if (sflags.IsSameAs("water")) {
+    } else if (sflags.IsSameAs(wxT("water"))) {
         FTX = wxT("siwater");
         TXS = wxT("SIWater");
-    } else if (sflags.IsSameAs("watermask")) {
+    } else if (sflags.IsSameAs(wxT("watermask"))) {
         FTX = wxT("watermask");
         TXS = wxT("SIFillZ");
-    } else if (sflags.IsSameAs("billboard")) {
+    } else if (sflags.IsSameAs(wxT("billboard"))) {
         flags = 32788;
         FTX = wxT("UseAdTexture");
         TXS = wxT("SIOpaque");
     } else if (!sflags.IsEmpty()) {
-        throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Unknown flags value '%s'."), Name.c_str(), sflags.c_str()));
+        throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Unknown flags value '%s'."), Name.mb_str(wxConvLocal).data(), sflags.mb_str(wxConvLocal).data()));
     }
 
     if (FTX.IsEmpty() || TXS.IsEmpty()) {
-        throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Missing ftx or txs attribute."), Name.c_str()));
+        throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Missing ftx or txs attribute."), Name.mb_str(wxConvLocal).data()));
     }
 
     return true;
@@ -355,10 +355,10 @@ wxXmlNode* cMeshStruct::GetNode(const wxString& path) {
     node->AddProperty(wxT("disabled"), disabled?wxT("1"):wxT("0"));
     node->AddProperty(wxT("txs"), TXS);
     node->AddProperty(wxT("ftx"), FTX);
-    node->AddProperty(wxT("place"), wxString::Format("%lu", place));
-    node->AddProperty(wxT("flags"), wxString::Format("%lu", flags));
-    node->AddProperty(wxT("unknown"), wxString::Format("%lu", unknown));
-    node->AddProperty(wxT("fudgenormals"), wxString::Format("%lu", fudgenormals));
+    node->AddProperty(wxT("place"), wxString::Format(wxT("%lu"), place));
+    node->AddProperty(wxT("flags"), wxString::Format(wxT("%lu"), flags));
+    node->AddProperty(wxT("unknown"), wxString::Format(wxT("%lu"), unknown));
+    node->AddProperty(wxT("fudgenormals"), wxString::Format(wxT("%lu"), fudgenormals));
     node->AddProperty(wxT("name"), Name);
     return node;
 }
@@ -406,8 +406,8 @@ bool cFlexiTextureAnim::FromNode(wxXmlNode* node, const wxString& path, unsigned
 
 wxXmlNode* cFlexiTextureAnim::GetNode(const wxString& path) {
     wxXmlNode* node = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, RCT3XML_CFLEXITEXTUREANIM);
-    node->AddProperty(wxT("frame"), wxString::Format("%lu", frame()));
-    node->AddProperty(wxT("count"), wxString::Format("%lu", count()));
+    node->AddProperty(wxT("frame"), wxString::Format(wxT("%lu"), frame()));
+    node->AddProperty(wxT("count"), wxString::Format(wxT("%lu"), count()));
     return node;
 }
 
@@ -516,9 +516,9 @@ wxXmlNode* cFlexiTextureFrame::GetNode(const wxString& path) {
     temp = alpha();
     temp.MakeRelativeTo(path);
     node->AddProperty(wxT("alpha"), temp.GetFullPath());
-    node->AddProperty(wxT("recolorable"), wxString::Format("%lu", recolorable()));
-    node->AddProperty(wxT("alphacutoff"), wxString::Format("%hhu", alphacutoff()));
-    node->AddProperty(wxT("alphasource"), wxString::Format("%lu", alphasource()));
+    node->AddProperty(wxT("recolorable"), wxString::Format(wxT("%lu"), recolorable()));
+    node->AddProperty(wxT("alphacutoff"), wxString::Format(wxT("%hhu"), alphacutoff()));
+    node->AddProperty(wxT("alphasource"), wxString::Format(wxT("%lu"), alphasource()));
     return node;
 }
 
@@ -713,8 +713,8 @@ wxXmlNode* cFlexiTexture::GetNode(const wxString& path) {
     wxXmlNode* node = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, RCT3XML_CFLEXITEXTURE);
     wxXmlNode* lastchild = NULL;
     node->AddProperty(wxT("name"), Name);
-    node->AddProperty(wxT("fps"), wxString::Format("%lu", FPS));
-    node->AddProperty(wxT("recolorable"), wxString::Format("%lu", Recolorable));
+    node->AddProperty(wxT("fps"), wxString::Format(wxT("%lu"), FPS));
+    node->AddProperty(wxT("recolorable"), wxString::Format(wxT("%lu"), Recolorable));
     for (cFlexiTextureAnim::iterator it = Animation.begin(); it != Animation.end(); it++) {
         wxXmlNode* newchild = it->GetNode(path);
         //newchild->SetParent(node);
@@ -876,7 +876,7 @@ cMeshStruct cModel::MakeMesh(c3DLoader* obj, unsigned int n) {
 }
 
 bool cModel::Load() {
-    c3DLoader *obj = c3DLoader::LoadFile(const_cast<char *>(file.GetFullPath().fn_str()));
+    c3DLoader *obj = c3DLoader::LoadFile(file.GetFullPath().fn_str());
 
     if (!obj) {
         fatal_error = true;
@@ -925,7 +925,7 @@ bool cModel::Sync() {
         return Load();
 
     // Load & check the object file
-    c3DLoader *obj = c3DLoader::LoadFile(const_cast<char *>(file.GetFullPath().fn_str()));
+    c3DLoader *obj = c3DLoader::LoadFile(file.GetFullPath().fn_str());
     if (!obj) {
         fatal_error = true;
         error.push_back(_("Model file not found or of an unknown format."));
@@ -1232,7 +1232,7 @@ wxXmlNode* cModel::AddNodeContent(wxXmlNode* node, const wxString& path, bool do
     temp.MakeRelativeTo(path);
     node->AddProperty(wxT("file"), temp.GetFullPath());
     unsigned long l = usedorientation;
-    node->AddProperty(wxT("orientation"), wxString::Format("%lu", l));
+    node->AddProperty(wxT("orientation"), wxString::Format(wxT("%lu"), l));
 
     for (unsigned int i = 0; i < transforms.size(); i++) {
         wxXmlNode* newchild = XmlMakeMatrixNode(transforms[i], transformnames[i]);
@@ -1292,7 +1292,7 @@ bool cModelBone::FromCompilerXml(wxXmlNode* node, const wxString& path) {
                 throw RCT3Exception(wxString::Format(_("Duplicate pos1 tag of bone '%s'."), name.c_str()));
 
             D3DMATRIX t;
-            if (sscanf(child->GetNodeContent().c_str(), "%f %f %f %f  %f %f %f %f  %f %f %f %f  %f %f %f %f",
+            if (sscanf(child->GetNodeContent().mb_str(wxConvLocal), "%f %f %f %f  %f %f %f %f  %f %f %f %f  %f %f %f %f",
                     &t._11, &t._12, &t._13, &t._14, &t._21, &t._22, &t._23, &t._24,
                     &t._31, &t._32, &t._33, &t._34, &t._41, &t._42, &t._43, &t._44) != 16) {
                 throw RCT3Exception(wxString::Format(_("POS1 tag of bone '%s' must contain 16 decimal values."), name.c_str()));
@@ -1304,7 +1304,7 @@ bool cModelBone::FromCompilerXml(wxXmlNode* node, const wxString& path) {
                 throw RCT3Exception(wxString::Format(_("Duplicate pos2 tag of bone '%s'."), name.c_str()));
 
             D3DMATRIX t;
-            if (sscanf(child->GetNodeContent().c_str(), "%f %f %f %f  %f %f %f %f  %f %f %f %f  %f %f %f %f",
+            if (sscanf(child->GetNodeContent().mb_str(wxConvLocal), "%f %f %f %f  %f %f %f %f  %f %f %f %f  %f %f %f %f",
                     &t._11, &t._12, &t._13, &t._14, &t._21, &t._22, &t._23, &t._24,
                     &t._31, &t._32, &t._33, &t._34, &t._41, &t._42, &t._43, &t._44) != 16) {
                 throw RCT3Exception(wxString::Format(_("POS2 tag of bone '%s' must contain 16 decimal values."), name.c_str()));
@@ -1711,11 +1711,11 @@ bool cBoneAnimation::FromCompilerXml(wxXmlNode* node, const wxString& path) {
             if (temp.IsEmpty())
                 throw RCT3Exception(_("TRANSLATE tag lacks time attribute"));
             txyz v;
-            if (sscanf(temp.c_str(), "%f", &v.Time) != 1)
+            if (sscanf(temp.mb_str(wxConvLocal), "%f", &v.Time) != 1)
                 throw RCT3Exception(_("TRANSLATE tag has malformed time attribute"));
 
             temp = child->GetNodeContent();
-            if (sscanf(temp.c_str(), "%f %f %f", &v.X, &v.Y, &v.Z) != 3)
+            if (sscanf(temp.mb_str(wxConvLocal), "%f %f %f", &v.X, &v.Y, &v.Z) != 3)
                 throw RCT3Exception(_("TRANSLATE tag has malformed content"));
 
             translations.push_back(v);
@@ -1724,11 +1724,11 @@ bool cBoneAnimation::FromCompilerXml(wxXmlNode* node, const wxString& path) {
             if (temp.IsEmpty())
                 throw RCT3Exception(_("ROTATE tag lacks time attribute"));
             txyz v;
-            if (sscanf(temp.c_str(), "%f", &v.Time) != 1)
+            if (sscanf(temp.mb_str(wxConvLocal), "%f", &v.Time) != 1)
                 throw RCT3Exception(_("ROTATE tag has malformed time attribute"));
 
             temp = child->GetNodeContent();
-            if (sscanf(temp.c_str(), "%f %f %f", &v.X, &v.Y, &v.Z) != 3)
+            if (sscanf(temp.mb_str(wxConvLocal), "%f %f %f", &v.X, &v.Y, &v.Z) != 3)
                 throw RCT3Exception(_("ROTATE tag has malformed content"));
 
             rotations.push_back(v);
@@ -1925,7 +1925,7 @@ wxXmlNode* cAnimation::GetNode(const wxString& path) {
     wxXmlNode* lastchild = NULL;
     node->AddProperty(wxT("name"), name);
     unsigned long l = usedorientation;
-    node->AddProperty(wxT("orientation"), wxString::Format("%lu", l));
+    node->AddProperty(wxT("orientation"), wxString::Format(wxT("%lu"), l));
 
     for (cBoneAnimation::iterator it = boneanimations.begin(); it != boneanimations.end(); it++) {
         wxXmlNode* newchild = it->GetNode(path);
@@ -1957,7 +1957,7 @@ bool cLOD::FromNode(wxXmlNode* node, const wxString& path, unsigned long version
     modelname = node->GetPropVal(wxT("modelname"), wxT(""));
     animated = node->GetPropVal(wxT("animated"), wxT("0")).IsSameAs(wxT("1"));
     temp = node->GetPropVal(wxT("distance"), wxT("0.0"));
-    if (sscanf(temp.c_str(), "%f", &distance) != 1)
+    if (sscanf(temp.mb_str(wxConvLocal), "%f", &distance) != 1)
         ret = false;
     if (node->GetPropVal(wxT("unk2"), &temp)) {
         if (!temp.ToULong(&unk2)) {
@@ -2001,9 +2001,9 @@ wxXmlNode* cLOD::GetNode(const wxString& path) {
     node->AddProperty(wxT("modelname"), modelname);
     node->AddProperty(wxT("animated"), animated?wxT("1"):wxT("0"));
     node->AddProperty(wxT("distance"), wxString::Format(wxT("%8f"), distance));
-    node->AddProperty(wxT("unk2"), wxString::Format("%lu", unk2));
-    node->AddProperty(wxT("unk4"), wxString::Format("%lu", unk4));
-    node->AddProperty(wxT("unk14"), wxString::Format("%lu", unk14));
+    node->AddProperty(wxT("unk2"), wxString::Format(wxT("%lu"), unk2));
+    node->AddProperty(wxT("unk4"), wxString::Format(wxT("%lu"), unk4));
+    node->AddProperty(wxT("unk14"), wxString::Format(wxT("%lu"), unk14));
 
     for (cStringIterator it = animations.begin(); it != animations.end(); it++) {
         //wxXmlNode* newchild = new wxXmlNode(node, wxXML_ELEMENT_NODE, RCT3XML_CLOD_ANIMATION);
@@ -2046,16 +2046,16 @@ bool cSIVSettings::FromNode(wxXmlNode* node, const wxString& path, unsigned long
         sivflags = 0;
     }
     temp = node->GetPropVal(wxT("sway"), wxT("0.0"));
-    if (sscanf(temp.c_str(), "%f", &sway) != 1)
+    if (sscanf(temp.mb_str(wxConvLocal), "%f", &sway) != 1)
         ret = false;
     temp = node->GetPropVal(wxT("brightness"), wxT("0.0"));
-    if (sscanf(temp.c_str(), "%f", &brightness) != 1)
+    if (sscanf(temp.mb_str(wxConvLocal), "%f", &brightness) != 1)
         ret = false;
     temp = node->GetPropVal(wxT("unknown"), wxT("0.0"));
-    if (sscanf(temp.c_str(), "%f", &unknown) != 1)
+    if (sscanf(temp.mb_str(wxConvLocal), "%f", &unknown) != 1)
         ret = false;
     temp = node->GetPropVal(wxT("scale"), wxT("0.0"));
-    if (sscanf(temp.c_str(), "%f", &scale) != 1)
+    if (sscanf(temp.mb_str(wxConvLocal), "%f", &scale) != 1)
         ret = false;
     if (node->GetPropVal(wxT("unk6"), &temp)) {
         if (!temp.ToULong(&unk6)) {
@@ -2111,17 +2111,17 @@ bool cSIVSettings::FromNode(wxXmlNode* node, const wxString& path, unsigned long
 
 wxXmlNode* cSIVSettings::GetNode(const wxString& path) {
     wxXmlNode* node = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, RCT3XML_CSIVSETTINGS);
-    node->AddProperty(wxT("sivflags"), wxString::Format("%u", sivflags));
+    node->AddProperty(wxT("sivflags"), wxString::Format(wxT("%u"), sivflags));
     node->AddProperty(wxT("sway"), wxString::Format(wxT("%8f"), sway));
     node->AddProperty(wxT("brightness"), wxString::Format(wxT("%8f"), brightness));
     node->AddProperty(wxT("unknown"), wxString::Format(wxT("%8f"), unknown));
     node->AddProperty(wxT("scale"), wxString::Format(wxT("%8f"), scale));
-    node->AddProperty(wxT("unk6"), wxString::Format("%lu", unk6));
-    node->AddProperty(wxT("unk7"), wxString::Format("%lu", unk7));
-    node->AddProperty(wxT("unk8"), wxString::Format("%lu", unk8));
-    node->AddProperty(wxT("unk9"), wxString::Format("%lu", unk9));
-    node->AddProperty(wxT("unk10"), wxString::Format("%lu", unk10));
-    node->AddProperty(wxT("unk11"), wxString::Format("%lu", unk11));
+    node->AddProperty(wxT("unk6"), wxString::Format(wxT("%lu"), unk6));
+    node->AddProperty(wxT("unk7"), wxString::Format(wxT("%lu"), unk7));
+    node->AddProperty(wxT("unk8"), wxString::Format(wxT("%lu"), unk8));
+    node->AddProperty(wxT("unk9"), wxString::Format(wxT("%lu"), unk9));
+    node->AddProperty(wxT("unk10"), wxString::Format(wxT("%lu"), unk10));
+    node->AddProperty(wxT("unk11"), wxString::Format(wxT("%lu"), unk11));
 
     return node;
 }

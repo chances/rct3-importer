@@ -33,7 +33,7 @@ CMS3DFile::~CMS3DFile()
 {
 }
 
-DWORD CMS3DFile::LoadFromFile(LPCTSTR lpszFileName)
+DWORD CMS3DFile::LoadFromFile(const char* lpszFileName)
 {
 wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile(%s)"), lpszFileName);
 	FILE *fp = fopen(lpszFileName, "rb");
