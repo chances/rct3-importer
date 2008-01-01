@@ -38,12 +38,51 @@
 
 using namespace std;
 
-class cSidFlags {
+class cSidSquareUnknowns {
 public:
-    bool flag[64];
-    cSidFlags() {
-        for (int i = 0; i < 64; ++i)
+    bool flag[32];
+    unsigned long unk6; // SIDData unk2
+    unsigned long unk7; // SIDData unk3
+    bool use_unk8;
+    unsigned long unk8; // SIDData unk4
+    unsigned long unk9; // SIDData unk5
+
+    cSidSquareUnknowns() {
+        for (int i = 0; i < 32; ++i)
             flag[i] = false;
+        unk6 = 0;
+        unk7 = 0;
+        use_unk8 = false;
+        unk8 = 0;
+        unk9 = 0;
+    }
+    void Fill(SceneryItemData* i) {
+        i->flags2 = 0;
+        for (unsigned long x = 0; x<32; ++x) {
+            if (flag[x])
+                i->flags2 += (1 << x);
+        }
+        i->unk2 = unk6;
+        i->unk3 = unk7;
+        if (use_unk8)
+            *(i->unk4) = unk8;
+        else
+            i->unk4 = NULL;
+        i->unk5 = unk9;
+    }
+};
+
+class cSidImporterUnknowns {
+public:
+    bool flag[32];
+    unsigned long unk1; // unk4
+    unsigned long unk2; // unk17
+
+    cSidImporterUnknowns() {
+        for (int i = 0; i < 32; ++i)
+            flag[i] = false;
+        unk1 = 0;
+        unk2 = 0;
     }
     void Fill(SceneryItem* i) {
         i->flags1 = 0;
@@ -51,43 +90,8 @@ public:
             if (flag[x])
                 i->flags1 += (1 << x);
         }
-        i->data->flags2 = 0;
-        for (unsigned long x = 32; x<64; ++x) {
-            if (flag[x])
-                i->data->flags2 += (1 << (x-32));
-        }
-    }
-};
-
-class cSidImporterUnknowns {
-public:
-    unsigned long unk1; // unk4
-    unsigned long unk2; // unk17
-    unsigned long unk6; // SIDData unk2
-    unsigned long unk7; // SIDData unk3
-    bool use_unk8;
-    unsigned long unk8; // SIDData unk4
-    unsigned long unk9; // SIDData unk5
-
-    cSidImporterUnknowns() {
-        unk1 = 0;
-        unk2 = 0;
-        unk6 = 0;
-        unk7 = 0;
-        use_unk8 = false;
-        unk8 = 0;
-        unk9 = 0;
-    }
-    void Fill(SceneryItem* i) {
         i->unk4 = unk1;
         i->unk17 = unk2;
-        i->data->unk2 = unk6;
-        i->data->unk3 = unk7;
-        if (use_unk8)
-            *(i->data->unk4) = unk8;
-        else
-            i->data->unk4 = NULL;
-        i->data->unk5 = unk9;
     }
 };
 
@@ -293,8 +297,8 @@ public:
     cSidUI ui;
     cSidPosition position;
     cSidDefaultColours colours;
-    cSidFlags flags;
     cSidImporterUnknowns importerunknowns;
+    vector<cSidSquareUnknowns> squareunknowns;
     cSidStallUnknowns stallunknowns;
     cSidUnknowns unknowns;
     cSidExtra extra;
@@ -306,11 +310,23 @@ public:
         ui.Fill(i);
         position.Fill(i);
         colours.Fill(i);
-        flags.Fill(i);
         importerunknowns.Fill(i);
         stallunknowns.Fill(i);
         unknowns.Fill(i);
         extra.Fill(i);
+
+        for (unsigned long x = 0; x < position.xsquares * position.ysquares; ++x) {
+            if (squareunknowns.size() < position.xsquares * position.ysquares) {
+                if (squareunknowns.size() == 0) {
+                    cSidSquareUnknowns uk;
+                    uk.Fill(&i->data[x]);
+                } else {
+                    squareunknowns[0].Fill(&i->data[x]);
+                }
+            } else {
+                squareunknowns[x].Fill(&i->data[x]);
+            }
+        }
 
         // Unsupported stuff
         i->unk13count = 0;

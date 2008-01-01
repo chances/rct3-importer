@@ -53,11 +53,13 @@ private:
     wxFileName m_output;
     wxFileName m_outputbasedir;
     wxFileName m_input;  // For path relativity
+    wxFileName m_userdir;
 //    wxSortedArrayString m_options;
     wxSortedArrayString m_bake;
     wxFileName m_bakeroot;
     cRawOvlVars m_commandvariables;
     cRawOvlVars m_variables;
+    std::string m_prefix;
 
     eRawOvlMode m_mode;
     bool m_dryrun;
@@ -68,7 +70,9 @@ private:
 
     void Load(wxXmlNode* root);
     cOvlType ParseType(wxXmlNode* node, const wxString& nodes, const wxString& attribute = wxT("target"));
-    wxString ParseString(wxXmlNode* node, const wxString& nodes, const wxString& attribute);
+    wxString ParseString(wxXmlNode* node, const wxString& nodes, const wxString& attribute, bool* variable, bool addprefix = false);
+    wxString ParseStringOption(std::string& str, wxXmlNode* node, const wxString& attribute, bool* variable, bool addprefix = false);
+    wxString ParseStringOption(wxString& str, wxXmlNode* node, const wxString& attribute, bool* variable, bool addprefix = false);
     unsigned long ParseUnsigned(wxXmlNode* node, const wxString& nodes, const wxString& attribute);
     long ParseSigned(wxXmlNode* node, const wxString& nodes, const wxString& attribute);
     double ParseFloat(wxXmlNode* node, const wxString& nodes, const wxString& attribute);
@@ -92,7 +96,7 @@ private:
     void ParseSPL(wxXmlNode* node);
     void ParseSTA(wxXmlNode* node);
     void ParseTEX(wxXmlNode* node);
-    void ParseSet(wxXmlNode* node, bool command = false);
+    void ParseSet(wxXmlNode* node, bool command = false, const wxString& tag = RAWXML_SET);
     void ParseUnset(wxXmlNode* node, bool command = false);
     void ParseVariables(wxXmlNode* node, bool command = false, const wxString& path = wxT(""));
     void Parse(wxXmlNode* node);
@@ -138,6 +142,13 @@ public:
     void LoadVariables(const wxFileName& fn, bool command = false, wxXmlNode* target = NULL);
 
     void AddBakeStructures(const wxString& structs);
+
+    void SetPrefix(const std::string& prefix) {
+        m_prefix = prefix;
+    }
+    void SetUserDir(const wxFileName& userdir) {
+        m_userdir = userdir;
+    }
 };
 
 #endif

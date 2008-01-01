@@ -120,6 +120,7 @@
 		</Build>
 		<VirtualTargets>
 			<Add alias="All" targets="Debug;Profile;Release;Release Base;Debug Base;" />
+			<Add alias="All Unicode" targets="Release Unicode;Release Base Unicode;" />
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-Wall" />

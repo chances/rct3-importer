@@ -96,6 +96,9 @@ public:
     void InjectReference(cOvlType type, const char* ref) {
         m_injectreferences[type].push_back(ref);
     }
+    const vector<string>& GetReferences(cOvlType type) const {
+        return m_references[type];
+    }
 
     unsigned long GetBlockCount(cOvlType type, int file);
     unsigned long GetBlockSize(cOvlType type, int file, unsigned long block);

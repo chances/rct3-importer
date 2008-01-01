@@ -48,6 +48,8 @@ void cOVLDump::Load(const char* filename) {
         string fn = filename;
         m_file[OVLT_COMMON] = fn;
         int r = fn.rfind(".common.", fn.size());
+        if (r == string::npos)
+            throw EOvlD("Filename passed to Load must include the 'common.ovl' extension.");
         fn.replace(r, 8, ".unique.");
         m_file[OVLT_UNIQUE] = fn;
     }

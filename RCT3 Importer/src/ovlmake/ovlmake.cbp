@@ -28,6 +28,7 @@
 					<Add library="libASE" />
 					<Add library="wx_base-2.8" />
 					<Add library="libOVLng" />
+					<Add library="libOVLDump" />
 					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
@@ -77,7 +78,7 @@
 					<Add library="libASE" />
 					<Add library="libOVLngd" />
 					<Add library="wx_based-2.8" />
-					<Add library="wx_based_xml-2.8" />
+					<Add library="libOVLDumpd" />
 					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
@@ -102,6 +103,7 @@
 					<Add library="libASE" />
 					<Add library="wx_baseu-2.8" />
 					<Add library="libOVLng" />
+					<Add library="libOVLDump" />
 					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
@@ -127,6 +129,7 @@
 			<Add directory="$(#mingw.include)\GraphicsMagick" />
 			<Add directory="$(#mingw.include)\plib" />
 			<Add directory="..\libOVLng" />
+			<Add directory="..\libOVLDump" />
 		</Compiler>
 		<Linker>
 			<Add library="GraphicsMagick++" />
@@ -148,6 +151,7 @@
 		<Unit filename="ReadMe 1st.txt" />
 		<Unit filename="changelog.txt" />
 		<Unit filename="ovlmake.cpp" />
+		<Unit filename="todo.txt" />
 		<Unit filename="wx_pch.h" />
 		<Extensions>
 			<code_completion />

@@ -272,12 +272,16 @@ bool cMeshStruct::FromCompilerXml(wxXmlNode* node, const wxString& path) {
         flags = 32788;
         FTX = wxT("UseAdTexture");
         TXS = wxT("SIOpaque");
+    } else if (sflags.IsSameAs(wxT("animatedbillboard"))) {
+        flags = 32768;
+        FTX = wxT("UseAdTexture");
+        TXS = wxT("SIOpaque");
     } else if (!sflags.IsEmpty()) {
-        throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Unknown flags value '%s'."), Name.mb_str(wxConvLocal).data(), sflags.mb_str(wxConvLocal).data()));
+        throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Unknown flags value '%s'."), Name.c_str(), sflags.c_str()));
     }
 
     if (FTX.IsEmpty() || TXS.IsEmpty()) {
-        throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Missing ftx or txs attribute."), Name.mb_str(wxConvLocal).data()));
+        throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Missing ftx or txs attribute."), Name.c_str()));
     }
 
     return true;

@@ -11,6 +11,14 @@
     </data>
   </define>
 
+  <define name="ovlExtraPack">
+    <data type="unsignedByte">
+      <param name="minInclusive">0</param>
+
+      <param name="maxInclusive">2</param>
+    </data>
+  </define>
+
   <define name="ovlRecolourable">
     <data type="unsignedInt">
       <param name="minInclusive">0</param>
@@ -25,6 +33,45 @@
 
       <param name="maxInclusive">1024</param>
     </data>
+  </define>
+
+  <define name="ovlSidSupports">
+    <choice>
+      <value type="string">adventure</value>
+      <value type="string">crazygolf</value>
+      <value type="string">crazygolfholes</value>
+      <value type="string">girder</value>
+      <value type="string">ornate</value>
+      <value type="string">pathasphalt</value>
+      <value type="string">pathcrazy</value>
+      <value type="string">pathdirt</value>
+      <value type="string">pathleafy</value>
+      <value type="string">marble</value>
+      <value type="string">pathtarmac</value>
+      <value type="string">flatqueueset1</value>
+      <value type="string">romanpillar</value>
+      <value type="string">scaffolding</value>
+      <value type="string">space</value>
+      <value type="string">spooky</value>
+      <value type="string">steel</value>
+      <value type="string">ts1</value>
+      <value type="string">ts2</value>
+      <value type="string">ts3</value>
+      <value type="string">ts4</value>
+      <value type="string">ts5</value>
+      <value type="string">flatwildwest</value>
+      <value type="string">aquarium</value>
+      <value type="string">aquariumcorner</value>
+      <value type="string">defaultpool</value>
+      <value type="string">defaultpoolpath</value>
+      <value type="string">defaultpoolsmall</value>
+      <value type="string">sand</value>
+      <value type="string">pathunderwater</value>
+      <value type="string">ts1a</value>
+      <value type="string">ts6</value>
+      <value type="string">ts7</value>
+      <value type="string">ts8</value>
+    </choice>
   </define>
 
   <define name="ovlSidParameters">

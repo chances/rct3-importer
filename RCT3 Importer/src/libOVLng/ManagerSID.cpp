@@ -51,6 +51,8 @@ void ovlSIDManager::AddSID(const cSid& sid) {
         throw EOvl("ovlSIDManager::AddSID called without menu name");
     if (sid.ui.icon == "")
         throw EOvl("ovlSIDManager::AddSID called without menu icon");
+    if ((sid.squareunknowns.size()>1) && (sid.squareunknowns.size() != (sid.position.xsquares * sid.position.ysquares)))
+        throw EOvl("ovlSIDManager::AddSID called with illegal numer of square unknowns");
 
     m_sids[sid.name] = sid;
 
@@ -64,10 +66,20 @@ void ovlSIDManager::AddSID(const cSid& sid) {
     // SVD pointers
     m_size += sid.svds.size() * 4;
     // Data
-    m_commonsize += sizeof(SceneryItemData);
+    m_commonsize += sid.position.xsquares * sid.position.ysquares * sizeof(SceneryItemData);
     // Unknown 8
-    if (sid.importerunknowns.use_unk8) {
-        m_commonsize += sizeof(unsigned long);
+    if (sid.squareunknowns.size()) {
+        if (sid.squareunknowns.size()>1) {
+            for (unsigned long x = 0; x < sid.position.xsquares * sid.position.ysquares; ++x) {
+                if (sid.squareunknowns[x].use_unk8) {
+                    m_commonsize += sizeof(unsigned long);
+                }
+            }
+        } else {
+            if (sid.squareunknowns[0].use_unk8) {
+                m_commonsize += sid.position.xsquares * sid.position.ysquares * sizeof(unsigned long);
+            }
+        }
     }
     // Params
     m_commonsize += sid.parameters.size() * sizeof(SceneryParams);
@@ -133,12 +145,24 @@ void ovlSIDManager::Make(cOvlInfo* info) {
 
         // Assign common
         c_sid->data = reinterpret_cast<SceneryItemData*>(c_commondata);
-        c_commondata += sizeof(SceneryItemData);
+        c_commondata += it->second.position.xsquares * it->second.position.ysquares * sizeof(SceneryItemData);
         GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->data));
-        if (it->second.importerunknowns.use_unk8) {
-            c_sid->data->unk4 = reinterpret_cast<unsigned long*>(c_commondata);
-            c_commondata += sizeof(unsigned long);
-            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->data->unk4));
+        if (it->second.squareunknowns.size()) {
+            for (unsigned long x = 0; x < it->second.position.xsquares * it->second.position.ysquares; ++x) {
+                if (it->second.squareunknowns.size() >= (it->second.position.xsquares * it->second.position.ysquares)) {
+                    if (it->second.squareunknowns[x].use_unk8) {
+                        c_sid->data[x].unk4 = reinterpret_cast<unsigned long*>(c_commondata);
+                        c_commondata += sizeof(unsigned long);
+                        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->data[x].unk4));
+                    }
+                } else {
+                    if (it->second.squareunknowns[0].use_unk8) {
+                        c_sid->data[x].unk4 = reinterpret_cast<unsigned long*>(c_commondata);
+                        c_commondata += sizeof(unsigned long);
+                        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->data[x].unk4));
+                    }
+                }
+            }
         }
         if (it->second.parameters.size()) {
             c_sid->params = reinterpret_cast<SceneryParams*>(c_commondata);

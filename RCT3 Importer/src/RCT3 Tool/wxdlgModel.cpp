@@ -235,6 +235,11 @@ bool wxMeshListModel::SetValue( wxVariant &variant, unsigned int col, unsigned i
                             m_content->meshstructs[row].FTX = wxT("UseAdTexture");
                             m_content->meshstructs[row].TXS = wxT("SIOpaque");
                             break;
+                        case 7:
+                            m_content->meshstructs[row].flags = 32768;
+                            m_content->meshstructs[row].FTX = wxT("UseAdTexture");
+                            m_content->meshstructs[row].TXS = wxT("SIOpaque");
+                            break;
                         default:
                             m_content->meshstructs[row].flags = 0;
                     }
@@ -291,6 +296,9 @@ protected:
         }
         if (m_value->flags == 32788) {
             sel = 6;
+        }
+        if (m_value->flags == 32768) {
+            sel = 7;
         }
         if (m_value->FTX != wxT("")) {
             if (m_value->FTX.CmpNoCase("siwater") == 0) {
@@ -890,6 +898,7 @@ public:
 			wxMeshListFlagsRenderer::m_styles.Add(_("Water Texture"));
 			wxMeshListFlagsRenderer::m_styles.Add(_("Water Mask Texture"));
 			wxMeshListFlagsRenderer::m_styles.Add(_("Billboard Texture"));
+			wxMeshListFlagsRenderer::m_styles.Add(_("Animated Billboard"));
         }
     }
     bool SetValue( const wxVariant &value ) {

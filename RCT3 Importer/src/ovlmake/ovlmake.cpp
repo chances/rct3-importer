@@ -42,9 +42,23 @@
 
 #define VERSION_OVLMAKE "ovlmake v0.1.5"
 
+void printVersion() {
+    fprintf(stderr, "--------------\n");
+    fprintf(stderr, VERSION_OVLMAKE);
+    fprintf(stderr, "\n--------------\n\n");
+}
+
 int DoCompile(const wxCmdLineParser& parser) {
     int ret = 0;
     try {
+        if (!parser.Found(wxT("s"))) {
+            printVersion();
+            wxLog::SetVerbose(parser.Found(wxT("v")));
+            if (parser.Found(wxT("q")))
+                wxLog::SetLogLevel(wxLOG_Warning);
+        } else {
+            wxLog::SetLogLevel(wxLOG_Error);
+        }
         wxString p;
         wxFileName inputfile;
         wxFileName outputfile;
@@ -267,10 +281,6 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    fprintf(stderr, "--------------\n");
-    fprintf(stderr, VERSION_OVLMAKE);
-    fprintf(stderr, "\n--------------\n\n");
-
     static const wxCmdLineEntryDesc cmdLineDesc[] =
     {
         { wxCMD_LINE_SWITCH, wxT("h"), wxT("help"), _("show this help message"),
@@ -278,6 +288,9 @@ int main(int argc, char **argv)
         { wxCMD_LINE_SWITCH, wxT("c"), wxT("convert"), _("convert the input file to new importer xml format (instead of creating ovl)") },
         { wxCMD_LINE_SWITCH, NULL, wxT("ignore"), _("ignore warnings durnig the sanity check and compile nevertheless") },
         { wxCMD_LINE_SWITCH, NULL, wxT("check"), _("only check the input file, do not actually write output") },
+        { wxCMD_LINE_SWITCH, wxT("v"), wxT("verbose"), _("enable verbose logging") },
+        { wxCMD_LINE_SWITCH, wxT("q"), wxT("quiet"), _("in quiet mode only warnings and errors are shown") },
+        { wxCMD_LINE_SWITCH, wxT("s"), wxT("silent"), _("in silent mode only errors are shown") },
 
         { wxCMD_LINE_PARAM,  NULL, NULL, _("input file"), wxCMD_LINE_VAL_STRING },
         { wxCMD_LINE_PARAM,  NULL, NULL, _("output file"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
@@ -292,6 +305,9 @@ int main(int argc, char **argv)
         { wxCMD_LINE_SWITCH, wxT("c"), wxT("convert"), _("convert the input file to new importer xml format (instead of creating ovl)") },
         { wxCMD_LINE_SWITCH, NULL, wxT("ignore"), _("ignore warnings durnig the sanity check and compile nevertheless") },
         { wxCMD_LINE_SWITCH, NULL, wxT("check"), _("only check the input file, do not actually write output") },
+        { wxCMD_LINE_SWITCH, wxT("v"), wxT("verbose"), _("enable verbose logging") },
+        { wxCMD_LINE_SWITCH, wxT("q"), wxT("quiet"), _("in quiet mode only warnings and errors are shown") },
+        { wxCMD_LINE_SWITCH, wxT("s"), wxT("silent"), _("in silent mode only errors are shown") },
         { wxCMD_LINE_SWITCH, NULL, wxT("dryrun"), _("only show which files would be generated, do not actually write output") },
         { wxCMD_LINE_SWITCH, NULL, wxT("install"), _("install ovls to RCT3 (output file is ignored)") },
         { wxCMD_LINE_OPTION, NULL, wxT("installdir"), _("name install directory (implies --install)") },
@@ -312,6 +328,7 @@ int main(int argc, char **argv)
         switch ( parser2.Parse(false) )
         {
             case -1:
+                printVersion();
                 parser2.Usage();
                 break;
             case 0:
@@ -319,12 +336,14 @@ int main(int argc, char **argv)
                 break;
 
             default:
+                printVersion();
                 parser.Usage();
                 wxLogError(_("Command line syntax error detected, aborting."));
                 ret = -1;
                 break;
         }
     } else {
+        printVersion();
         parser.Usage();
     }
 
