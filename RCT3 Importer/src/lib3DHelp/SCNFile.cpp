@@ -1791,8 +1791,8 @@ wxXmlNode* cSCNFile::GetNode(const wxString& path) {
     node->AddProperty(wxT("file"), temp.GetPathWithSep());
     node->AddProperty(wxT("version"), wxString::Format(wxT("%lu"), version));
     node->AddProperty(wxT("xmlns"), WXW(XML_NAMESPACE_SCENERY));
-    node->AddProperty(wxT("xmlns:xsi"), WXW(XML_NAMESPACE_SCHEMAINSTANCE));
-    node->AddProperty(wxT("xsi:schemaLocation"), WXW(XML_NAMESPACE_SCENERY)+wxT(" ")+WXW(XML_SCHEMALOCATION_SCENERY));
+    //node->AddProperty(wxT("xmlns:xsi"), WXW(XML_NAMESPACE_SCHEMAINSTANCE));
+    //node->AddProperty(wxT("xsi:schemaLocation"), WXW(XML_NAMESPACE_SCENERY)+wxT(" ")+WXW(XML_SCHEMALOCATION_SCENERY));
 
     lastparent = sivsettings.GetNode(path);
     //lastparent->SetParent(node);

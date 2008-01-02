@@ -14,11 +14,11 @@ Command Line Usage
 The tool is invoked using the following format:
 
     ovlcompiler inputfile outputfile
-    
+
 where "inputfile" specifies a .xml file and "outputfile" specifies a .common.ovl file, eg:
 
     ovlcompiler c:\test.xml c:\test.common.ovl
-    
+
 the name of the outputfile should correspond to the name given to the bsh in the xml description otherwise "No SVD for SID" error can occur.
 
 
@@ -54,7 +54,7 @@ The following is an example of the XML that ovlcompiler understands
       <rotate time="0.0">0.0      0.0 0.0 </rotate>
       <rotate time="1.0">1.570796 0.0 0.0 </rotate>
       <rotate time="6.0">1.570796 0.0 0.0 </rotate>
-      <rotate time="7.0">0.0      0.0 0.0 </rotate>       
+      <rotate time="7.0">0.0      0.0 0.0 </rotate>
     </bone>
   </ban>
   <ftx name="texture" image="C:\test.bmp" alpha="C:\test_alpha.bmp"/>
@@ -79,13 +79,13 @@ geomobj:    geomobj describes the mappings between meshes in the model file, bon
             ftx:            The name of the texture to use. Textures are specified using "ftx" elements at the "ovl" level.
             txs:            The style with which the texture should be applied to the model.
 	    placing:        The texture placing setting. Optional. Can be "both" (default), "texture" or "glass" (the latter is called 'Unknown' in the Importer).
-	    flags:          The texture flags setting. Optional. Can be "none" (default), "sign", "terrain", "cliff", "water", "watermask" or "billboard"
+	    flags:          The texture flags setting. Optional. Can be "none" (default), "sign", "terrain", "cliff", "water", "watermask", "billboard" or "animatedbillboard"
 	                    Note: If you set this to "sign", the txs attribute will be ignored (and you can leave it out).
 			          If you set it to something else (not "sign" or "none"), both ftx and txs attributes will be ignored (and you can leave them out).
 	    doublesided:    Determines wether faces are textured on one side (0, default) or both sides (1). Optional.
 bone:       Describes the bones in the object. A child of bsh. There can be many bones in an object.
             name:           The name of the bone. This is matched against bone names in the ban element.
-            parent:         The bone that is the parent of this bone. 
+            parent:         The bone that is the parent of this bone.
 pos1:	    The position and orientation of the bone. The 16 floats represent a 4x4 matrix, expressed row by row. A child of bone.
 pos2:       Typically identical to the pos1.
 ban:        ban describe the bone animations, a child of ovl.
@@ -129,7 +129,7 @@ Rotation occur about the bones frame of reference, the bones frame of reference 
       <rotate time="0.0">0.0      0.0 0.0 </rotate>
       <rotate time="1.0">1.570796 0.0 0.0 </rotate>
       <rotate time="6.0">1.570796 0.0 0.0 </rotate>
-      <rotate time="7.0">0.0      0.0 0.0 </rotate>       
+      <rotate time="7.0">0.0      0.0 0.0 </rotate>
     </bone>
   </ban>
 
@@ -149,7 +149,7 @@ Movement of one bone can be specified with respect to another bone, eg. a hand b
         <pos2>1.0 0.0 0.0 0.0   0.0 1.0 0.0 0.0   0.0 0.0 1.0 0.0   0.0 0.0 0.0 1.0</pos2>
     </bone>
   </bsh>
-  
+
 A childbone's frame of reference will now depend on the orientation of "parentbone" and will move when "parentbone" moves.
 
 Effects Points
@@ -160,7 +160,7 @@ Effects points can be added by creating a bone with the name of the effects poin
         <pos1>1.0 0.0 0.0 0.0   0.0 1.0 0.0 0.0   0.0 0.0 1.0 0.0   0.0 0.0 0.0 1.0</pos1>
         <pos2>1.0 0.0 0.0 0.0   0.0 1.0 0.0 0.0   0.0 0.0 1.0 0.0   0.0 0.0 0.0 1.0</pos2>
     </bone>
-    
+
 Animations can be used to move the effects point around. If a "start" point coincides with it's "end" point then the effect does not run. Effects can be made to "start" and "stop" by moving the start and endpoints apart using an animation and then bringing them back together again.
 
 References
@@ -181,7 +181,7 @@ RCT3 Limitations
 ----------------
 
 - Dynamic lighting isn't supported, ie. animations can't be used to turn lights on and off.
-- Speakers can't be made into Ride Events. 
+- Speakers can't be made into Ride Events.
 
 
 

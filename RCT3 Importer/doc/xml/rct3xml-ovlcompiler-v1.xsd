@@ -9,7 +9,7 @@
            xmlns:rs="http://rct3.sourceforge.net/rct3xml/shared"
            xmlns:ns="http://www.w3.org/1999/xhtml"
            xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
-  <xs:include schemaLocation="http://rct3.sourceforge.net/xml/rct3xml-shared-v1.xsd"/>
+  <xs:include schemaLocation="rct3xml-shared-v1.xsd"/>
 
   <xs:simpleType name="FixHandedness">
     <xs:restriction base="xs:string">
@@ -44,6 +44,8 @@
       <xs:enumeration value="watermask"/>
 
       <xs:enumeration value="billboard"/>
+
+      <xs:enumeration value="animatedbillboard"/>
     </xs:restriction>
   </xs:simpleType>
 
