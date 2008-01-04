@@ -25,12 +25,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "OVLDebug.h"
 
 #include "ManagerSHS.h"
 
 #include "ManagerCommon.h"
 #include "ManagerFTX.h"
-#include "OVLDebug.h"
 #include "OVLException.h"
 
 const char* ovlSHSManager::NAME = "StaticShape";

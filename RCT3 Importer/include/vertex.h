@@ -23,8 +23,8 @@ struct VERTEX {
 struct VERTEX2 {
 	D3DVECTOR position;
 	D3DVECTOR normal;
-	unsigned long Bone;
-	unsigned long unk;
+	char bone[4];
+	unsigned char boneweight[4];
 	D3DCOLOR color;
 	FLOAT tu, tv;
 };

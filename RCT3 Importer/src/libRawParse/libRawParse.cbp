@@ -2,13 +2,13 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="lib3DHelp" />
+		<Option title="libRawParse" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="..\..\lib\lib3DHelpd" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\libRawParsed" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="..\..\lib\obj\lib3DHelp\debug" />
+				<Option object_output="..\..\lib\obj\libRawParse\debug" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -20,9 +20,9 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="..\..\lib\lib3DHelp" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\libRawParse" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="..\..\lib\obj\lib3DHelp\release" />
+				<Option object_output="..\..\lib\obj\libRawParse\release" />
 				<Option external_deps="..\..\lib\libWXHelp.a;" />
 				<Option type="2" />
 				<Option compiler="gcc" />
@@ -37,9 +37,9 @@
 				</Linker>
 			</Target>
 			<Target title="Release Unicode">
-				<Option output="..\..\lib\lib3DHelpu" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\libRawParseu" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="..\..\lib\obj\lib3DHelp\releaseuni" />
+				<Option object_output="..\..\lib\obj\libRawParse\releaseuni" />
 				<Option external_deps="..\..\lib\libWXHelp.a;" />
 				<Option type="2" />
 				<Option compiler="gcc" />
@@ -54,9 +54,9 @@
 				</Linker>
 			</Target>
 			<Target title="Debug Unicode">
-				<Option output="..\..\lib\lib3DHelpud" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\libRawParseud" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="..\..\lib\obj\lib3DHelp\debuguni" />
+				<Option object_output="..\..\lib\obj\libRawParse\debuguni" />
 				<Option external_deps="..\..\lib\libWXHelpd.a;" />
 				<Option type="2" />
 				<Option compiler="gcc" />
@@ -90,41 +90,18 @@
 			<Add directory="..\libWXHelp" />
 			<Add directory="$(#mingw.include)\GraphicsMagick" />
 			<Add directory="..\libOVLng" />
+			<Add directory="..\lib3DHelp" />
+			<Add directory="..\libOVLDump" />
 		</Compiler>
-		<Unit filename="3DLoader.cpp" />
-		<Unit filename="3DLoader.h" />
-		<Unit filename="3DLoaderTypes.h" />
-		<Unit filename="3Dstring.h" />
-		<Unit filename="AN8Loaderr.cpp">
-			<Option compile="0" />
-			<Option link="0" />
-		</Unit>
-		<Unit filename="AN8Loaderr.h" />
-		<Unit filename="ASE3DLoader.cpp" />
-		<Unit filename="ASE3DLoader.h" />
-		<Unit filename="MS3DFile.cpp" />
-		<Unit filename="MS3DFile.h" />
-		<Unit filename="MS3DLoader.cpp" />
-		<Unit filename="MS3DLoader.h" />
-		<Unit filename="RCT3Exception.cpp" />
-		<Unit filename="RCT3Exception.h" />
-		<Unit filename="RCT3Macros.h" />
-		<Unit filename="RCT3Structs.cpp" />
-		<Unit filename="RCT3Structs.h" />
-		<Unit filename="SCNFile.cpp" />
-		<Unit filename="SCNFile.h" />
-		<Unit filename="lib3Dconfig.h" />
-		<Unit filename="matrix.cpp" />
-		<Unit filename="matrix.h" />
-		<Unit filename="rct3log.h" />
-		<Unit filename="texcheck.cpp" />
-		<Unit filename="texcheck.h" />
-		<Unit filename="valtexture.cpp" />
-		<Unit filename="valtexture.h" />
-		<Unit filename="wxLocalLog.h" />
+		<Unit filename="RawParse.h" />
+		<Unit filename="RawParse_Base.cpp" />
+		<Unit filename="RawParse_BasicParse.cpp" />
+		<Unit filename="RawParse_Extra.cpp" />
+		<Unit filename="RawParse_MainParse.cpp" />
+		<Unit filename="RawParse_StructParse.cpp" />
+		<Unit filename="RawParse_cpp.h" />
 		<Unit filename="wx_pch.h">
 			<Option compile="1" />
-			<Option link="1" />
 			<Option weight="0" />
 		</Unit>
 		<Extensions>

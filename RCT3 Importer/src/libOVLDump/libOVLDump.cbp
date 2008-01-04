@@ -8,7 +8,7 @@
 			<Target title="Debug">
 				<Option output="..\..\lib\libOVLDumpd" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="..\..\lib\obj\Debug" />
+				<Option object_output="..\..\lib\obj\libOVLDump\Debug" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -22,7 +22,7 @@
 			<Target title="Release">
 				<Option output="..\..\lib\libOVLDump" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="..\..\lib\obj\Release\" />
+				<Option object_output="..\..\lib\obj\libOVLDump\Release\" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -37,7 +37,7 @@
 			<Target title="Debug DLL">
 				<Option output="..\..\bin\OVLDumpd" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="..\..\bin" />
-				<Option object_output="..\..\lib\obj\DebugDLL" />
+				<Option object_output="..\..\lib\obj\libOVLDump\DebugDLL" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -53,7 +53,7 @@
 			<Target title="Release DLL">
 				<Option output="..\..\bin\OVLDump" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="..\..\bin" />
-				<Option object_output="..\..\lib\obj\ReleaseDLL" />
+				<Option object_output="..\..\lib\obj\libOVLDump\ReleaseDLL" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -70,6 +70,12 @@
 		</Build>
 		<VirtualTargets>
 			<Add alias="All" targets="Debug;Release;" />
+			<Add alias="Debug Base" targets="Debug;" />
+			<Add alias="Debug Base Unicode" targets="Release;" />
+			<Add alias="Debug Unicode" targets="Debug;" />
+			<Add alias="Release Base" targets="Release;" />
+			<Add alias="Release Base Unicode" targets="Release;" />
+			<Add alias="Release Unicode" targets="Release;" />
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-Wall" />

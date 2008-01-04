@@ -30,21 +30,38 @@
 #include <wx/config.h>
 #include <wx/cmdline.h>
 #include <wx/filename.h>
+#include <wx/stdpaths.h>
 #include <exception>
 #include <stdlib.h>
+
+#include "version.h"
 
 #include "SCNFile.h"
 #include "RCT3Exception.h"
 #include "OVLException.h"
-#include "RawOvlMake.h"
+#include "RawParse.h"
 #include "lib3Dconfig.h"
 #include "confhelp.h"
 
 #define VERSION_OVLMAKE "ovlmake v0.1.5"
 
 void printVersion() {
-    fprintf(stderr, "--------------\n");
-    fprintf(stderr, VERSION_OVLMAKE);
+    wxString strdate = _("Built on ") + wxString(AutoVersion::DATE, wxConvLocal) + wxT(".")
+                          + wxString(AutoVersion::MONTH, wxConvLocal) + wxT(".")
+                          + wxString(AutoVersion::YEAR, wxConvLocal);
+    wxString strversion = wxString::Format(wxT("ovlmake v%ld.%ld.%ld"), AutoVersion::MAJOR, AutoVersion::MINOR, AutoVersion::BUILD)+ wxString(AutoVersion::STATUS_SHORT, wxConvLocal);
+    fprintf(stderr, "\n--------------\n");
+#ifdef UNICODE
+    strdate += wxT(", Unicode");
+    strdate += _(" version");
+    fprintf(stderr, "%s\n", strversion.mb_str(wxConvLocal).data());
+    fprintf(stderr, "%s", strdate.mb_str(wxConvLocal).data());
+#else
+    strdate += wxT(", ANSI");
+    strdate += _(" version");
+    fprintf(stderr, "%s\n", strversion.c_str());
+    fprintf(stderr, "%s", strdate.c_str());
+#endif
     fprintf(stderr, "\n--------------\n\n");
 }
 
@@ -119,7 +136,8 @@ int DoCompile(const wxCmdLineParser& parser) {
                     wxLogMessage(_("Processing raw xml file..."));
                     WRITE_RCT3_EXPERTMODE(true);
 
-                    cRawOvl rovl;
+                    cRawParser rovl;
+                    rovl.SetUserDir(wxStandardPaths::Get().GetDocumentsDir());
                     if (!bake.IsEmpty()) {
                         rovl.SetOptions(MODE_BAKE, dryrun);
                         rovl.AddBakeStructures(bake);
@@ -149,10 +167,18 @@ int DoCompile(const wxCmdLineParser& parser) {
                     if (dryrun) {
                         fprintf(stderr, "\nDryrun results:\n");
                         for (std::vector<wxFileName>::const_iterator it = rovl.GetModifiedFiles().begin(); it != rovl.GetModifiedFiles().end(); ++it) {
+#ifdef UNICODE
                             fprintf(stderr, "Modified: %s\n", it->GetFullPath().mb_str(wxConvFile).data());
+#else
+                            fprintf(stderr, "Modified: %s\n", it->GetFullPath().c_str());
+#endif
                         }
                         for (std::vector<wxFileName>::const_iterator it = rovl.GetNewFiles().begin(); it != rovl.GetNewFiles().end(); ++it) {
+#ifdef UNICODE
                             fprintf(stderr, "New: %s\n", it->GetFullPath().mb_str(wxConvFile).data());
+#else
+                            fprintf(stderr, "New: %s\n", it->GetFullPath().c_str());
+#endif
                         }
                     }
                     return ret;

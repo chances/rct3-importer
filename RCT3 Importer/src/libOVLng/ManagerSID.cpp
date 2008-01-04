@@ -25,13 +25,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "OVLDebug.h"
 
 #include "ManagerSID.h"
 
 #include "ManagerGSI.h"
 #include "ManagerSVD.h"
 #include "ManagerTXT.h"
-#include "OVLDebug.h"
 #include "OVLException.h"
 
 const char* ovlSIDManager::NAME = "SceneryItem";

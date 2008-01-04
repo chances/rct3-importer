@@ -29,6 +29,8 @@
 
 #include "wx_pch.h"
 
+#include <d3d9types.h>
+
 #include <wx/filename.h>
 #include <wx/xml/xml.h>
 
@@ -40,7 +42,7 @@
 #define RAWXML_UNSET     wxT("unset")
 #define RAWXML_VARIABLES wxT("variables")
 
-WX_DECLARE_STRING_HASH_MAP(wxString, cRawOvlVars);
+WX_DECLARE_STRING_HASH_MAP(wxString, cRawParserVars);
 
 enum eRawOvlMode {
     MODE_COMPILE = 0,
@@ -48,7 +50,7 @@ enum eRawOvlMode {
     MODE_BAKE = 2
 };
 
-class cRawOvl {
+class cRawParser {
 private:
     wxFileName m_output;
     wxFileName m_outputbasedir;
@@ -57,8 +59,8 @@ private:
 //    wxSortedArrayString m_options;
     wxSortedArrayString m_bake;
     wxFileName m_bakeroot;
-    cRawOvlVars m_commandvariables;
-    cRawOvlVars m_variables;
+    cRawParserVars m_commandvariables;
+    cRawParserVars m_variables;
     std::string m_prefix;
 
     eRawOvlMode m_mode;
@@ -71,11 +73,12 @@ private:
     void Load(wxXmlNode* root);
     cOvlType ParseType(wxXmlNode* node, const wxString& nodes, const wxString& attribute = wxT("target"));
     wxString ParseString(wxXmlNode* node, const wxString& nodes, const wxString& attribute, bool* variable, bool addprefix = false);
-    wxString ParseStringOption(std::string& str, wxXmlNode* node, const wxString& attribute, bool* variable, bool addprefix = false);
-    wxString ParseStringOption(wxString& str, wxXmlNode* node, const wxString& attribute, bool* variable, bool addprefix = false);
+    void ParseStringOption(std::string& str, wxXmlNode* node, const wxString& attribute, bool* variable, bool addprefix = false);
+    void ParseStringOption(wxString& str, wxXmlNode* node, const wxString& attribute, bool* variable, bool addprefix = false);
     unsigned long ParseUnsigned(wxXmlNode* node, const wxString& nodes, const wxString& attribute);
     long ParseSigned(wxXmlNode* node, const wxString& nodes, const wxString& attribute);
     double ParseFloat(wxXmlNode* node, const wxString& nodes, const wxString& attribute);
+    void ParseVector(wxXmlNode* node, D3DVECTOR& v, const wxString& nodes);
 
     bool MakeVariable(wxString& var);
     void PassBakeStructures(const wxSortedArrayString& bake) {
@@ -84,18 +87,24 @@ private:
     void PassBakeRoot(const wxFileName& br) {
         m_bakeroot = br;
     }
-    void PassVariables(const cRawOvlVars& c, const cRawOvlVars& v) {
+    void PassVariables(const cRawParserVars& c, const cRawParserVars& v) {
         m_commandvariables = c;
         m_variables = v;
     }
 
+    void CopyBaseAttributes(const wxXmlNode* from, wxXmlNode* to);
+
+    void ParseBAN(wxXmlNode* node);
+    void ParseBSH(wxXmlNode* node);
     void ParseCED(wxXmlNode* node);
     void ParseCHG(wxXmlNode* node);
     void ParseCID(wxXmlNode* node);
+    void ParseFTX(wxXmlNode* node);
     void ParseSID(wxXmlNode* node);
     void ParseSPL(wxXmlNode* node);
     void ParseSTA(wxXmlNode* node);
     void ParseTEX(wxXmlNode* node);
+
     void ParseSet(wxXmlNode* node, bool command = false, const wxString& tag = RAWXML_SET);
     void ParseUnset(wxXmlNode* node, bool command = false);
     void ParseVariables(wxXmlNode* node, bool command = false, const wxString& path = wxT(""));
@@ -106,14 +115,14 @@ private:
         m_dryrun = false;
     }
 public:
-    cRawOvl(){
+    cRawParser(){
         Init();
     }
-    cRawOvl(const wxFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT(""))) {
+    cRawParser(const wxFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT(""))) {
         Init();
         Process(file, outputdir, output);
     }
-    cRawOvl(wxXmlNode* root, const wxFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT(""))) {
+    cRawParser(wxXmlNode* root, const wxFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT(""))) {
         Init();
         Process(root, file, outputdir, output);
     }

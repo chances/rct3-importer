@@ -25,6 +25,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "OVLDebug.h"
 
 #include "ManagerCID.h"
 
@@ -34,7 +35,6 @@
 #include "ManagerSHS.h"
 #include "ManagerSID.h"
 #include "ManagerTXT.h"
-#include "OVLDebug.h"
 #include "OVLException.h"
 
 const char* ovlCIDManager::LOADER = "FGDK";

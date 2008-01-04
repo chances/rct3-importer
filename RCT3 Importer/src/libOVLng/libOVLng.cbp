@@ -9,7 +9,7 @@
 			<Target title="Release">
 				<Option output="..\..\lib\libOVLng.a" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="" />
-				<Option object_output="..\..\lib\obj\release" />
+				<Option object_output="..\..\lib\obj\libOVLng\release" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -24,7 +24,7 @@
 			<Target title="Debug">
 				<Option output="..\..\lib\libOVLngd.a" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="" />
-				<Option object_output="..\..\lib\obj\debug" />
+				<Option object_output="..\..\lib\obj\libOVLng\debug" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -36,9 +36,29 @@
 					<Add directory="$(#wx.ansidebugstatic)" />
 				</Compiler>
 			</Target>
+			<Target title="Debug Unicode">
+				<Option output="..\..\lib\libOVLngud.a" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="" />
+				<Option object_output="..\..\lib\obj\libOVLng\debuguni" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add option="-D__WXDEBUG__" />
+					<Add directory="$(#wx.include)" />
+					<Add directory="$(#mingw.lib)\wx\include\msw-unicode-debug-static-2.8" />
+				</Compiler>
+			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="All" targets="Release;Debug;" />
+			<Add alias="All" targets="Release;Debug;Debug Unicode;" />
+			<Add alias="Debug Base" targets="Debug;" />
+			<Add alias="Debug Base Unicode" targets="Debug Unicode;" />
+			<Add alias="Release Base" targets="Release;" />
+			<Add alias="Release Base Unicode" targets="Release;" />
+			<Add alias="Release Unicode" targets="Release;" />
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-fno-strict-aliasing" />
@@ -132,6 +152,7 @@
 			<code_completion />
 			<envvars />
 			<debugger />
+			<lib_finder />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

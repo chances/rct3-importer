@@ -25,12 +25,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "OVLDebug.h"
 
 #include "ManagerCED.h"
 
 #include "ManagerGSI.h"
 #include "ManagerTXT.h"
-#include "OVLDebug.h"
 #include "OVLException.h"
 
 const char* ovlCEDManager::LOADER = "FGDK";

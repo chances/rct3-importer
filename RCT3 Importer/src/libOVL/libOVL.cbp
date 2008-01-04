@@ -7,77 +7,26 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Release">
-				<Option output="..\..\lib\libOVL.a" prefix_auto="0" extension_auto="0" />
-				<Option working_dir="" />
-				<Option type="2" />
+				<Option output="..\..\bin\libOVL.dll" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="..\..\bin" />
+				<Option object_output="..\..\lib\obj\libOVL\release dll" />
+				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
+				<Option createStaticLib="1" />
+				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
 					<Add option="-Os" />
 					<Add option="-O2" />
-					<Add option="-DLIBOVL_STATIC" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 				</Linker>
 			</Target>
 			<Target title="Debug">
-				<Option output="..\..\lib\libOVLd.a" prefix_auto="0" extension_auto="0" />
-				<Option working_dir="" />
-				<Option object_output="..\..\lib\obj" />
-				<Option type="2" />
-				<Option compiler="gcc" />
-				<Option createDefFile="1" />
-				<Compiler>
-					<Add option="-Wall" />
-					<Add option="-pg" />
-					<Add option="-g" />
-					<Add option="-DLIBOVL_STATIC" />
-				</Compiler>
-				<Linker>
-					<Add option="-pg -lgmon" />
-				</Linker>
-			</Target>
-			<Target title="Release DLL">
-				<Option output="..\..\bin\libOVL.dll" prefix_auto="0" extension_auto="0" />
-				<Option working_dir="..\..\bin" />
-				<Option object_output="..\..\lib\obj\release dll" />
-				<Option type="3" />
-				<Option compiler="gcc" />
-				<Option createDefFile="1" />
-				<Option createStaticLib="1" />
-				<Option projectLinkerOptionsRelation="2" />
-				<Compiler>
-					<Add option="-Os" />
-					<Add option="-O2" />
-				</Compiler>
-				<Linker>
-					<Add option="-s" />
-				</Linker>
-			</Target>
-			<Target title="Profile DLL">
-				<Option output="..\..\bin\libOVLp.dll" prefix_auto="0" extension_auto="0" />
-				<Option working_dir="..\..\bin" />
-				<Option object_output="..\..\lib\obj\profile dll" />
-				<Option type="3" />
-				<Option compiler="gcc" />
-				<Option createDefFile="1" />
-				<Option createStaticLib="1" />
-				<Option projectLinkerOptionsRelation="2" />
-				<Compiler>
-					<Add option="-Os" />
-					<Add option="-O2" />
-					<Add option="-pg" />
-				</Compiler>
-				<Linker>
-					<Add option="-s" />
-					<Add option="-pg -lgmon" />
-				</Linker>
-			</Target>
-			<Target title="Debug DLL">
 				<Option output="..\..\bin\libOVLd.dll" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="..\..\bin" />
-				<Option object_output="..\..\lib\obj\debug dll" />
+				<Option object_output="..\..\lib\obj\libOVL\debug dll" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option host_application="RCT3 Importer.exe" />
@@ -97,7 +46,7 @@
 			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="All DLL" targets="Release DLL;Profile DLL;Debug DLL;" />
+			<Add alias="All DLL" targets="Release;Debug;" />
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-fno-strict-aliasing" />
@@ -145,6 +94,7 @@
 			<code_completion />
 			<envvars />
 			<debugger />
+			<lib_finder />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

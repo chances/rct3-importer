@@ -125,6 +125,17 @@ public:
 c3DLoaderCache c3DLoader::g_cache;
 #endif
 
+VERTEX c3DLoader::GetObjectVertex(unsigned int mesh, unsigned int vertex) {
+    VERTEX res;
+    memset(&res, 0, sizeof(res));
+    if (mesh<m_meshes.size()) {
+        if (vertex<m_meshes[mesh].m_vertices.size()) {
+            res = vertex22vertex(m_meshes[mesh].m_vertices[vertex]);
+        }
+    }
+    return res;
+};
+
 bool c3DLoader::FetchObject(unsigned int index, unsigned long *vertexcount, VERTEX **vertices, unsigned long *index_count, unsigned long **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal) {
     int i;
     if (m_meshes.size() <= 0)
@@ -137,9 +148,9 @@ bool c3DLoader::FetchObject(unsigned int index, unsigned long *vertexcount, VERT
         normaltransform = matrixNormalTransform(*transform);
     for (i = 0; i < *vertexcount; i++) {
         if (transform)
-            (*vertices)[i] = matrixApply(m_meshes[index].m_vertices[i], *transform, normaltransform);
+            (*vertices)[i] = vertex22vertex(matrixApply(m_meshes[index].m_vertices[i], *transform, normaltransform));
         else
-            (*vertices)[i] = m_meshes[index].m_vertices[i];
+            (*vertices)[i] = vertex22vertex(m_meshes[index].m_vertices[i]);
         if (fudge_normal) {
             (*vertices)[i].normal = *fudge_normal;
         }
@@ -167,9 +178,9 @@ bool c3DLoader::FetchObject(unsigned int index, cStaticShape2* sh, D3DVECTOR *bb
         normaltransform = matrixNormalTransform(*transform);
     for (i = 0; i < m_meshes[index].m_vertices.size(); i++) {
         if (transform)
-            sh->vertices[i] = matrixApply(m_meshes[index].m_vertices[i], *transform, normaltransform);
+            sh->vertices[i] = vertex22vertex(matrixApply(m_meshes[index].m_vertices[i], *transform, normaltransform));
         else
-            sh->vertices[i] = m_meshes[index].m_vertices[i];
+            sh->vertices[i] = vertex22vertex(m_meshes[index].m_vertices[i]);
         if (fudge_normal) {
             sh->vertices[i].normal = *fudge_normal;
         }
@@ -184,7 +195,7 @@ bool c3DLoader::FetchObject(unsigned int index, cStaticShape2* sh, D3DVECTOR *bb
     return true;
 }
 
-bool c3DLoader::FetchAsAnimObject(unsigned int index, unsigned long bone, unsigned long unk, unsigned long *vertexcount, VERTEX2 **vertices, unsigned long *index_count, unsigned short **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal) {
+bool c3DLoader::FetchAsAnimObject(unsigned int index, unsigned long bone, unsigned long *vertexcount, VERTEX2 **vertices, unsigned long *index_count, unsigned short **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal) {
     int i;
     if (m_meshes.size() <= 0)
         return false;
@@ -196,9 +207,9 @@ bool c3DLoader::FetchAsAnimObject(unsigned int index, unsigned long bone, unsign
         normaltransform = matrixNormalTransform(*transform);
     for (i = 0; i < *vertexcount; i++) {
         if (transform)
-            (*vertices)[i] = vertex2vertex2(matrixApply(m_meshes[index].m_vertices[i], *transform, normaltransform), bone, unk);
+            (*vertices)[i] = vertex2castrate(matrixApply(m_meshes[index].m_vertices[i], *transform, normaltransform), bone);
         else
-            (*vertices)[i] = vertex2vertex2(m_meshes[index].m_vertices[i], bone, unk);
+            (*vertices)[i] = vertex2castrate(m_meshes[index].m_vertices[i], bone);
         if (fudge_normal) {
             (*vertices)[i].normal = *fudge_normal;
         }
@@ -214,7 +225,7 @@ bool c3DLoader::FetchAsAnimObject(unsigned int index, unsigned long bone, unsign
     return true;
 }
 
-bool c3DLoader::FetchObject(unsigned int index, unsigned long bone, unsigned long unk, cBoneShape2* sh, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal) {
+bool c3DLoader::FetchObject(unsigned int index, unsigned long bone, cBoneShape2* sh, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal) {
     int i;
     if (m_meshes.size() <= 0)
         return false;
@@ -226,9 +237,9 @@ bool c3DLoader::FetchObject(unsigned int index, unsigned long bone, unsigned lon
         normaltransform = matrixNormalTransform(*transform);
     for (i = 0; i < m_meshes[index].m_vertices.size(); i++) {
         if (transform)
-            sh->vertices[i] = vertex2vertex2(matrixApply(m_meshes[index].m_vertices[i], *transform, normaltransform), bone, unk);
+            sh->vertices[i] = vertex2castrate(matrixApply(m_meshes[index].m_vertices[i], *transform, normaltransform), bone);
         else
-            sh->vertices[i] = vertex2vertex2(m_meshes[index].m_vertices[i], bone, unk);
+            sh->vertices[i] = vertex2castrate(m_meshes[index].m_vertices[i], bone);
         if (fudge_normal) {
             sh->vertices[i].normal = *fudge_normal;
         }

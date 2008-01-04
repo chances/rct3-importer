@@ -93,6 +93,12 @@
       <data type="string"></data>
     </define>
 
+    <define name="TXSReference">
+      <a:documentation>Reference to a texture style</a:documentation>
+
+      <data type="string"></data>
+    </define>
+
     <define name="TXTReference">
       <a:documentation>Reference to a txt structure</a:documentation>
 
@@ -183,6 +189,8 @@
       <ref name="write"></ref>
 
       <ref name="import"></ref>
+
+      <ref name="ban"></ref>
 
       <ref name="ced"></ref>
 
@@ -419,17 +427,31 @@
         <a:documentation>Copy needs filenames with
         extension.</a:documentation>
 
-        <element name="write" type="string">
+        <element name="write">
+          <choice>
+            <group>
+              <attribute name="type">
+                <value type="string">file</value>
+              </attribute>
+
+              <data type="anyURI">
+                <param name="minLength">1</param>
+              </data>
+            </group>
+
+            <group>
+              <attribute name="type">
+                <value type="string">data</value>
+              </attribute>
+
+              <data type="base64Binary">
+                <param name="minLength">1</param>
+              </data>
+            </group>
+          </choice>
+
           <attribute name="to">
             <data type="string"></data>
-          </attribute>
-
-          <attribute name="type">
-            <choice>
-              <value type="string">file</value>
-
-              <value type="string">data</value>
-            </choice>
           </attribute>
 
           <optional>
@@ -548,6 +570,232 @@
     </define>
 
     <div>
+      <a:documentation>ban tags</a:documentation>
+
+      <define name="ban">
+        <element name="ban">
+          <ref name="baseattrs"></ref>
+
+          <attribute name="name">
+            <data type="string"></data>
+          </attribute>
+
+          <optional>
+            <attribute name="totaltime">
+              <data type="float">
+                <param name="minExclusive">0</param>
+              </data>
+            </attribute>
+          </optional>
+
+          <oneOrMore>
+            <ref name="banbone"></ref>
+          </oneOrMore>
+        </element>
+      </define>
+
+      <define name="banbone">
+        <element name="banbone">
+          <ref name="baseattrs"></ref>
+
+          <attribute name="name">
+            <data type="string"></data>
+          </attribute>
+
+          <oneOrMore>
+            <choice>
+              <element name="translation">
+                <ref name="ovlTXYZ"></ref>
+              </element>
+
+              <element name="rotation">
+                <ref name="ovlTXYZ"></ref>
+              </element>
+            </choice>
+          </oneOrMore>
+        </element>
+      </define>
+    </div>
+
+    <div>
+      <a:documentation>bsh tagsc </a:documentation>
+
+      <define name="bsh">
+        <element name="bsh">
+          <ref name="baseattrs"></ref>
+
+          <attribute name="name">
+            <data type="string"></data>
+          </attribute>
+
+          <optional>
+            <element name="boundingboxmin">
+              <ref name="ovlVector"></ref>
+            </element>
+
+            <element name="boundingboxmax">
+              <ref name="ovlVector"></ref>
+            </element>
+          </optional>
+
+          <interleave>
+            <oneOrMore>
+              <ref name="bshmesh"></ref>
+            </oneOrMore>
+
+            <zeroOrMore>
+              <ref name="bshbone"></ref>
+            </zeroOrMore>
+          </interleave>
+        </element>
+      </define>
+
+      <define name="bshmesh">
+        <element name="bshmesh">
+          <ref name="baseattrs"></ref>
+
+          <attribute name="ftx">
+            <ref name="FTXReference"></ref>
+          </attribute>
+
+          <attribute name="txs">
+            <ref name="TXSReference"></ref>
+          </attribute>
+
+          <optional>
+            <attribute name="placing">
+              <choice>
+                <value type="unsignedInt">0</value>
+
+                <value type="unsignedInt">1</value>
+
+                <value type="unsignedInt">2</value>
+              </choice>
+            </attribute>
+          </optional>
+
+          <optional>
+            <attribute name="flags">
+              <data type="unsignedInt"></data>
+            </attribute>
+          </optional>
+
+          <optional>
+            <attribute name="doublesided">
+              <choice>
+                <value type="unsignedInt">1</value>
+
+                <value type="unsignedInt">3</value>
+              </choice>
+            </attribute>
+          </optional>
+
+          <choice>
+            <group>
+              <attribute name="meshname">
+                <data type="string"></data>
+              </attribute>
+
+              <attribute name="modelfile">
+                <data type="string"></data>
+              </attribute>
+
+              <attribute name="bone">
+                <data type="int"></data>
+              </attribute>
+
+              <optional>
+                <attribute name="handedness">
+                  <choice>
+                    <value type="string">left</value>
+
+                    <value type="string">right</value>
+                  </choice>
+                </attribute>
+              </optional>
+
+              <optional>
+                <attribute name="up">
+                  <choice>
+                    <value type="string">x</value>
+
+                    <value type="string">y</value>
+
+                    <value type="string">z</value>
+                  </choice>
+                </attribute>
+              </optional>
+
+              <optional>
+                <attribute name="fudge">
+                  <ref name="impFudge"></ref>
+                </attribute>
+              </optional>
+            </group>
+
+            <interleave>
+              <oneOrMore>
+                <element name="vertex2">
+                  <ref name="ovlVertex2"></ref>
+                </element>
+              </oneOrMore>
+
+              <oneOrMore>
+                <element name="triangle">
+                  <attribute name="a">
+                    <data type="unsignedShort"></data>
+                  </attribute>
+
+                  <attribute name="b">
+                    <data type="unsignedShort"></data>
+                  </attribute>
+
+                  <attribute name="c">
+                    <data type="unsignedShort"></data>
+                  </attribute>
+                </element>
+              </oneOrMore>
+            </interleave>
+          </choice>
+        </element>
+      </define>
+
+      <define name="bshbone">
+        <element name="bshbone">
+          <ref name="baseattrs"></ref>
+
+          <choice>
+            <attribute name="name">
+              <value type="string">Scene Root</value>
+            </attribute>
+
+            <group>
+              <attribute name="name">
+                <data type="string"></data>
+              </attribute>
+
+              <attribute name="parent">
+                <data type="int"></data>
+              </attribute>
+
+              <element name="position1">
+                <ref name="impMatrix"></ref>
+              </element>
+
+              <optional>
+                <element name="position2">
+                  <ref name="impMatrix"></ref>
+                </element>
+              </optional>
+            </group>
+          </choice>
+        </element>
+      </define>
+    </div>
+
+    <div>
+      <a:documentation>ced tags</a:documentation>
+
       <define name="ced">
         <element name="ced">
           <ref name="baseattrs"></ref>
@@ -979,26 +1227,32 @@
           </optional>
 
           <optional>
-            <attribute name="fps">
-              <data type="unsignedInt"></data>
-            </attribute>
-          </optional>
-
-          <optional>
             <attribute name="recolourable">
               <ref name="ovlRecolourable"></ref>
             </attribute>
           </optional>
 
-          <interleave>
-            <zeroOrMore>
-              <ref name="ftxanimation"></ref>
-            </zeroOrMore>
+          <choice>
+            <ref name="ftxframe"></ref>
 
-            <oneOrMore>
-              <ref name="ftxframe"></ref>
-            </oneOrMore>
-          </interleave>
+            <group>
+              <attribute name="fps">
+                <data type="unsignedInt">
+                  <param name="minInclusive">1</param>
+                </data>
+              </attribute>
+
+              <interleave>
+                <oneOrMore>
+                  <ref name="ftxanimation"></ref>
+                </oneOrMore>
+
+                <oneOrMore>
+                  <ref name="ftxframe"></ref>
+                </oneOrMore>
+              </interleave>
+            </group>
+          </choice>
         </element>
       </define>
 
@@ -1036,10 +1290,18 @@
             </attribute>
           </optional>
 
+          <optional>
+            <attribute name="alphacutoff">
+              <data type="unsignedByte"></data>
+            </attribute>
+          </optional>
+
           <choice>
             <choice>
               <group>
                 <element name="image">
+                  <ref name="baseattrs"></ref>
+
                   <optional>
                     <attribute name="usealpha">
                       <value type="boolean">0</value>
@@ -1051,12 +1313,16 @@
 
                 <optional>
                   <element name="alpha">
+                    <ref name="baseattrs"></ref>
+
                     <data type="string"></data>
                   </element>
                 </optional>
               </group>
 
               <element name="image">
+                <ref name="baseattrs"></ref>
+
                 <optional>
                   <attribute name="usealpha">
                     <value type="boolean">1</value>
@@ -1069,15 +1335,21 @@
 
             <group>
               <element name="palettedata">
+                <ref name="baseattrs"></ref>
+
                 <data type="base64Binary"></data>
               </element>
 
               <element name="texturedata">
+                <ref name="baseattrs"></ref>
+
                 <data type="base64Binary"></data>
               </element>
 
               <optional>
                 <element name="alphadata">
+                  <ref name="baseattrs"></ref>
+
                   <data type="base64Binary"></data>
                 </element>
               </optional>

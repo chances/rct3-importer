@@ -3,15 +3,14 @@
 	<FileVersion major="1" minor="6" />
 	<Project>
 		<Option title="ovlmake" />
-		<Option pch_mode="0" />
 		<Option default_target="Debug DLL" />
 		<Option compiler="gcc" />
 		<Build>
-			<Target title="Release">
+			<Target title="Release Base">
 				<Option output="..\..\bin\ovlmake.exe" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="..\..\bin" />
-				<Option object_output="..\..\lib\obj\release" />
-				<Option external_deps="..\..\lib\lib3DHelp.a;..\..\bin\libOVL.a;..\..\lib\libWXHelpb.a;..\..\lib\libASE.a;..\..\lib\libOVLng.a;" />
+				<Option object_output="..\..\lib\obj\ovlmake\release" />
+				<Option external_deps="..\..\lib\lib3DHelp.a;..\..\lib\libASE.a;..\..\lib\libOVLDump.a;..\..\lib\libOVLng.a;..\..\lib\libRawParse.a;..\..\lib\libWXHelpb.a;" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Option use_console_runner="0" />
@@ -19,50 +18,28 @@
 				<Compiler>
 					<Add option="-Os" />
 					<Add option="-O2" />
-					<Add directory="$(#wx.baseansireleasestatic)" />
+					<Add directory="$(#mingw.lib)\wx\include\base-ansi-release-static-2.8" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add library="libRawParse" />
+					<Add library="libOVLDump" />
 					<Add library="3DHelp" />
 					<Add library="WXHelpb" />
 					<Add library="libASE" />
 					<Add library="wx_base-2.8" />
 					<Add library="libOVLng" />
-					<Add library="libOVLDump" />
 					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
-			<Target title="Profile">
-				<Option output="..\..\bin\ovlmakep.exe" prefix_auto="0" extension_auto="0" />
-				<Option working_dir="..\..\bin" />
-				<Option object_output="..\..\lib\obj\profile" />
-				<Option external_deps="..\..\lib\lib3DHelpp.a;..\..\lib\libWXHelpbp.a;..\..\lib\libASEp.a;..\..\lib\libOVLngp.a;" />
-				<Option type="0" />
-				<Option compiler="gcc" />
-				<Option projectLinkerOptionsRelation="2" />
-				<Compiler>
-					<Add option="-Os" />
-					<Add option="-O2" />
-					<Add option="-pg" />
-					<Add directory="$(#wx.baseansidebugstatic)" />
-				</Compiler>
-				<Linker>
-					<Add option="-pg -lgmon" />
-					<Add library="libOVLngp" />
-					<Add library="3DHelpp" />
-					<Add library="WXHelpbp" />
-					<Add library="libASEp" />
-					<Add library="wx_msw-2.8" />
-					<Add directory="..\..\bin" />
-				</Linker>
-			</Target>
-			<Target title="Debug">
+			<Target title="Debug Base">
 				<Option output="..\..\bin\ovlmaked.exe" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="..\..\bin" />
-				<Option object_output="..\..\lib\obj\debug" />
-				<Option external_deps="..\..\lib\lib3DHelpd.a;..\..\bin\libOVLd.a;..\..\lib\libWXHelpbd.a;..\..\lib\libASEd.a;..\..\lib\libOVLngd.a;" />
-				<Option type="0" />
+				<Option object_output="..\..\lib\obj\ovlmake\debug" />
+				<Option external_deps="..\..\lib\lib3DHelpd.a;..\..\lib\libWXHelpbd.a;..\..\lib\libASEd.a;..\..\lib\libOVLngd.a;..\..\lib\libRawParsed.a;..\..\lib\libOVLDumpd.a;" />
+				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option use_console_runner="0" />
 				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
 					<Add option="-W" />
@@ -79,14 +56,15 @@
 					<Add library="libOVLngd" />
 					<Add library="wx_based-2.8" />
 					<Add library="libOVLDumpd" />
+					<Add library="libRawParsed" />
 					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
-			<Target title="Release Unicode">
+			<Target title="Release Base Unicode">
 				<Option output="..\..\bin\ovlmake.exe" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="..\..\bin" />
-				<Option object_output="..\..\lib\obj\releaseuni" />
-				<Option external_deps="..\..\lib\lib3DHelpu.a;..\..\bin\libOVL.a;..\..\lib\libWXHelpbu.a;..\..\lib\libASE.a;..\..\lib\libOVLng.a;" />
+				<Option object_output="..\..\lib\obj\ovlmake\releaseuni" />
+				<Option external_deps="..\..\lib\lib3DHelpu.a;..\..\lib\libWXHelpbu.a;..\..\lib\libASE.a;..\..\lib\libOVLng.a;..\..\lib\libOVLDump.a;..\..\lib\libRawParseu.a;" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Option use_console_runner="0" />
@@ -98,12 +76,42 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add library="libRawParseu" />
+					<Add library="libOVLDump" />
 					<Add library="3DHelpu" />
 					<Add library="WXHelpbu" />
 					<Add library="libASE" />
 					<Add library="wx_baseu-2.8" />
 					<Add library="libOVLng" />
-					<Add library="libOVLDump" />
+					<Add directory="..\..\bin" />
+				</Linker>
+			</Target>
+			<Target title="Debug Base Unicode">
+				<Option output="..\..\bin\ovlmaked.exe" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="..\..\bin" />
+				<Option object_output="..\..\lib\obj\ovlmake\debuguni" />
+				<Option external_deps="..\..\lib\lib3DHelpud.a;..\..\lib\libWXHelpbud.a;..\..\lib\libASEd.a;..\..\lib\libOVLngud.a;..\..\lib\libRawParseud.a;..\..\lib\libOVLDumpd.a;" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option use_console_runner="0" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-Os" />
+					<Add option="-O2" />
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add option="-DDEBUG" />
+					<Add option="-D__WXDEBUG__" />
+					<Add directory="$(#mingw.lib)\wx\include\base-unicode-debug-static-2.8" />
+				</Compiler>
+				<Linker>
+					<Add library="3DHelpud" />
+					<Add library="WXHelpbud" />
+					<Add library="libASE" />
+					<Add library="wx_baseud-2.8" />
+					<Add library="libOVLngud" />
+					<Add library="libOVLDumpd" />
+					<Add library="libRawParseud" />
 					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
@@ -130,6 +138,7 @@
 			<Add directory="$(#mingw.include)\plib" />
 			<Add directory="..\libOVLng" />
 			<Add directory="..\libOVLDump" />
+			<Add directory="..\libRawParse" />
 		</Compiler>
 		<Linker>
 			<Add library="GraphicsMagick++" />
@@ -146,18 +155,27 @@
 			<Add directory="..\..\lib" />
 		</Linker>
 		<Unit filename="OvlCompiler ReadMe.txt" />
-		<Unit filename="RawOvlMake.cpp" />
-		<Unit filename="RawOvlMake.h" />
 		<Unit filename="ReadMe 1st.txt" />
 		<Unit filename="changelog.txt" />
 		<Unit filename="ovlmake.cpp" />
 		<Unit filename="todo.txt" />
-		<Unit filename="wx_pch.h" />
+		<Unit filename="version.h">
+			<Option target="Release Base Unicode" />
+		</Unit>
+		<Unit filename="wx_pch.h">
+			<Option compile="1" />
+			<Option weight="0" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<envvars />
 			<debugger />
 			<lib_finder />
+			<AutoVersioning>
+				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />
+				<Settings autoincrement="0" date_declarations="1" do_auto_increment="1" ask_to_increment="0" language="C++" svn="1" svn_directory="C:\Development\svn" header_path="version.h" />
+				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
+			</AutoVersioning>
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

@@ -257,6 +257,14 @@ void CMS3DFile::GetVertexAt(int nIndex, ms3d_vertex_t **ppVertex)
 		*ppVertex = &m_arrVertices[nIndex];
 }
 
+void CMS3DFile::GetVertexExAt(int nIndex, ms3d_vertex_ex_t **ppVertex)
+{
+	if (nIndex >= 0 && nIndex < (int) m_arrVerticesEx.size())
+		*ppVertex = &m_arrVerticesEx[nIndex];
+    else
+		*ppVertex = NULL;
+}
+
 
 DWORD CMS3DFile::GetNumTriangles()
 {
@@ -313,7 +321,7 @@ void CMS3DFile::GetJointAt(int nIndex, ms3d_joint_t **ppJoint)
 		*ppJoint = &m_arrJoints[nIndex];
 }
 
-int CMS3DFile::FindJointByName(LPCTSTR lpszName)
+int CMS3DFile::FindJointByName(const char* lpszName)
 {
 	for (UINT i = 0; i < m_arrJoints.size(); i++)
 	{

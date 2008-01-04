@@ -14,6 +14,8 @@
 #include "wx/wxprec.h"
 #include "wx/defs.h"
 
+#include <memory>
+
 #include <wx/filesys.h>
 #include <wx/mstream.h>
 
@@ -26,12 +28,12 @@
 Magick::Image* LoadImageFromFileSystem(const wxFSFile* file) {
     Magick::Image* ret = NULL;
     if (file) {
-        wxInputStream* filestream = file->GetStream();
+        std::auto_ptr<wxInputStream> filestream(file->GetStream());
         filestream->SeekI(0, wxFromEnd);
         int len = filestream->TellI();
         char* buf = new char[len];
         filestream->SeekI(0);
-        wxMemoryOutputStream* buffer = new wxMemoryOutputStream(buf, len);
+        std::auto_ptr<wxMemoryOutputStream> buffer(new wxMemoryOutputStream(buf, len));
         buffer->Write(*filestream);
 
         try {
@@ -51,9 +53,7 @@ Magick::Image* LoadImageFromFileSystem(const wxFSFile* file) {
             wxLogDebug(wxT("Trace, LoadImageFromFileSystem, invalid, length %d"), len);
         }
 #endif
-        delete buffer;
         //delete[] buf;
-        delete filestream;
     } else {
         wxLogDebug(wxT("Trace, LoadImageFromFileSystem, invalid wxFSFile"));
     }
@@ -147,9 +147,9 @@ public:
             m_file = filename;
             wxLogDebug(wxT("Trace, wxGXImageCacheEntryFileSystem new cache entry '%s'"), m_file.c_str());
             wxFileSystem fs;
-            wxFSFile* file = fs.OpenFile(filename, wxFS_READ|wxFS_SEEKABLE);
-            if (file) {
-                m_image = LoadImageFromFileSystem(file);
+            std::auto_ptr<wxFSFile> file(fs.OpenFile(filename, wxFS_READ|wxFS_SEEKABLE));
+            if (file.get()) {
+                m_image = LoadImageFromFileSystem(file.get());
                 if (m_image)
                     m_mtime = file->GetModificationTime();
             }
@@ -163,13 +163,13 @@ public:
     Magick::Image* Get() {
         if (m_image) {
             wxFileSystem fs;
-            wxFSFile* file = fs.OpenFile(m_file, wxFS_READ|wxFS_SEEKABLE);
-            if (file) {
+            std::auto_ptr<wxFSFile> file(fs.OpenFile(m_file, wxFS_READ|wxFS_SEEKABLE));
+            if (file.get()) {
                 if (m_mtime != file->GetModificationTime()) {
                     wxLogDebug(wxT("Trace, wxGXImageCacheEntryFileSystem MTime change '%s'"), m_file.c_str());
                     delete m_image;
                     try {
-                        m_image = LoadImageFromFileSystem(file);
+                        m_image = LoadImageFromFileSystem(file.get());
                         if (m_image)
                             m_mtime = file->GetModificationTime();
                     } catch (Magick::Exception e) {
@@ -353,10 +353,10 @@ void wxGXImage::FromFileSystem(const wxString& filename) {
         wxLogDebug(wxT("Trace, wxGXImage::FromFileSystem, Uncached '%s'"), filename.fn_str());
 #endif
     wxFileSystem fs;
-    wxFSFile* file = fs.OpenFile(filename, wxFS_READ);
-    if (file) {
+    std::auto_ptr<wxFSFile> file(fs.OpenFile(filename, wxFS_READ));
+    if (file.get()) {
         try {
-            Magick::Image *im = LoadImageFromFileSystem(file);
+            Magick::Image *im = LoadImageFromFileSystem(file.get());
             if (im) {
                 m_image = *im;
                 m_valid = true;

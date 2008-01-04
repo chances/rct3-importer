@@ -39,35 +39,31 @@ class cStaticShape2;
 
 class c3DMesh {
 public:
-    std::vector<VERTEX> m_vertices;
+    std::vector<VERTEX2> m_vertices;
     std::vector<unsigned long> m_indices;
-    STRING3D m_name;
+    wxString m_name;
     unsigned long m_flag;
 
     c3DMesh():m_name(wxT("")) {};
 };
 
-#ifndef STD_ONLY
 #include <wx/hashmap.h>
 class c3DLoaderCacheEntry;
 WX_DECLARE_STRING_HASH_MAP(c3DLoaderCacheEntry*, c3DLoaderCache);
-#endif
+
 class c3DLoader {
-#ifndef STD_ONLY
 friend class c3DLoaderCacheEntry;
-#endif
 protected:
-    STRING3D m_filename;
-    STRING3D m_name;
+    wxString m_filename;
+    wxString m_name;
     // Having no meshes signifies an invalid file
     std::vector<c3DMesh> m_meshes;
+    wxArrayString m_bones;
     // Warnings should only be added by a loader implementation if it
     // recognized the file is of it's type but is otherwise invalid
-    STRINGLIST3D m_warnings;
-    // no m_meshes and no m_warnigs signal that the loader did not recognize the file.
-#ifndef STD_ONLY
+    wxArrayString m_warnings;
+    // no m_meshes and no m_warnings signal that the loader did not recognize the file.
     static c3DLoaderCache g_cache;
-#endif
 public:
     c3DLoader(const wxChar *filename) : m_meshes(0) {
         m_filename = filename;
@@ -103,20 +99,11 @@ public:
     virtual bool IsObjectValid(unsigned int index) {
         return (index>=m_meshes.size())?false:m_meshes[index].m_flag;
     };
-    virtual VERTEX GetObjectVertex(unsigned int mesh, unsigned int vertex) {
-        VERTEX res;
-        memset(&res, 0, sizeof(res));
-        if (mesh<m_meshes.size()) {
-            if (vertex<m_meshes[mesh].m_vertices.size()) {
-                res = m_meshes[mesh].m_vertices[vertex];
-            }
-        }
-        return res;
-    };
+    virtual VERTEX GetObjectVertex(unsigned int mesh, unsigned int vertex);
     virtual bool FetchObject(unsigned int index, unsigned long *vertexcount, VERTEX **vertices, unsigned long *index_count, unsigned long **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal = NULL);
-    virtual bool FetchAsAnimObject(unsigned int index, unsigned long bone, unsigned long unk, unsigned long *vertexcount, VERTEX2 **vertices, unsigned long *index_count, unsigned short **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal = NULL);
+    virtual bool FetchAsAnimObject(unsigned int index, unsigned long bone, unsigned long *vertexcount, VERTEX2 **vertices, unsigned long *index_count, unsigned short **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal = NULL);
     virtual bool FetchObject(unsigned int index, cStaticShape2* sh, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal = NULL);
-    virtual bool FetchObject(unsigned int index, unsigned long bone, unsigned long unk, cBoneShape2* sh, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal = NULL);
+    virtual bool FetchObject(unsigned int index, unsigned long bone, cBoneShape2* sh, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal = NULL);
 
     virtual int GetType() {return C3DLOADER_GENERIC;};
     virtual STRING3D GetName() {return m_name;};
@@ -127,9 +114,7 @@ public:
     static int FlattenNormals(cStaticShape2* sh, const D3DVECTOR& bbox_min, const D3DVECTOR& bbox_max);
     static int FlattenNormals(cBoneShape2* sh, const D3DVECTOR& bbox_min, const D3DVECTOR& bbox_max);
     static c3DLoader *LoadFile(const wxChar *filename);
-#ifndef STD_ONLY
     static void ClearCache();
-#endif
 };
 
 #endif // 3DLOADER_H_INCLUDED

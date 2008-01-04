@@ -48,7 +48,7 @@ public:
     explicit wxGXImage(bool docache = true) {Init(docache);}
     wxGXImage(const wxString& filename, bool docache = true) {
         Init(docache);
-        FromFile(filename);
+        FromFileSystem(filename);
     }
  #if wxUSE_IMAGE
     wxGXImage(const wxImage& image) {
@@ -139,6 +139,7 @@ public:
     // GraphicsMagick++ functions
     void flip() {m_image.flip();}
     void flop() {m_image.flop();}
+    Magick::ImageType type() {return m_image.type();}
 
 #ifdef USE_SQUISH
     const int GetDxtBufferSize(const int dxt) const {

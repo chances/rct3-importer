@@ -46,12 +46,46 @@ inline D3DVECTOR vectorMake(const float x, const float y, const float z) {
     v.z = z;
     return v;
 }
-inline VERTEX2 vertex2vertex2(VERTEX v, unsigned long bone, unsigned long unk) {
+inline VERTEX2 vertex2vertex2(VERTEX v, unsigned char bone) {
     VERTEX2 ret;
     ret.position = v.position;
     ret.normal = v.normal;
-    ret.Bone = bone;
-    ret.unk = unk;
+    *reinterpret_cast<unsigned long*>(&ret.bone) = 0;
+    *reinterpret_cast<unsigned long*>(&ret.boneweight) = 0;
+    ret.bone[0] = bone;
+    ret.boneweight[0] = 0xff;
+    ret.color = v.color;
+    ret.tu = v.tu;
+    ret.tv = v.tv;
+    return ret;
+}
+
+inline VERTEX2 vertex2castrate(VERTEX2 v, unsigned char bone) {
+    VERTEX2 ret;
+    ret.position = v.position;
+    ret.normal = v.normal;
+    *reinterpret_cast<unsigned long*>(&ret.bone) = 0;
+    *reinterpret_cast<unsigned long*>(&ret.boneweight) = 0;
+    ret.bone[0] = bone;
+    ret.boneweight[0] = 0xff;
+    ret.color = v.color;
+    ret.tu = v.tu;
+    ret.tv = v.tv;
+    return ret;
+}
+
+inline void vertex2init(VERTEX2& v) {
+    *reinterpret_cast<unsigned long*>(&v.bone) = 0;
+    *reinterpret_cast<unsigned long*>(&v.boneweight) = 0;
+    v.bone[0] = -1;
+    v.boneweight[0] = 0xff;
+    v.color = 0xffffffff;
+}
+
+inline VERTEX vertex22vertex(VERTEX2 v) {
+    VERTEX ret;
+    ret.position = v.position;
+    ret.normal = v.normal;
     ret.color = v.color;
     ret.tu = v.tu;
     ret.tv = v.tv;

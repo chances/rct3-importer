@@ -29,9 +29,49 @@
 #include "ASE3DLoader.h"
 #include "libASE.h"
 
+#include <wx/filesys.h>
+#include <wx/mstream.h>
+
+#include "counted_array_ptr.h"
+#include "matrix.h"
+
 cASE3DLoader::cASE3DLoader(const wxChar *filename): c3DLoader(filename) {
     ASE_Scene *scene = NULL;
 
+    counted_array_ptr<char> buf;
+    int len = 0;
+
+    {
+        wxFileSystem fs;
+        std::auto_ptr<wxFSFile> file(fs.OpenFile(filename, wxFS_READ));
+
+        if (!file.get())
+            return;
+
+        std::auto_ptr<wxInputStream> filestream(file->GetStream());
+
+        if (!filestream.get())
+            return;
+
+        filestream->SeekI(0, wxFromEnd);
+        len = filestream->TellI();
+        filestream->SeekI(0);
+
+        buf = counted_array_ptr<char>(new char[len]);
+
+        std::auto_ptr<wxMemoryOutputStream> buffer(new wxMemoryOutputStream(buf.get(), len));
+        buffer->Write(*filestream);
+    }
+
+    if (!len)
+        return;
+
+    // Test whether it's an ase
+    if (strncasecmp(buf.get(), "*3DSMAX_ASCIIEXPORT", 19))
+        return;
+
+
+/*
     {
         // Test whether it's an ASE
         FILE *fp = fopen(wxString(filename).mb_str(wxConvFile), "r");
@@ -44,13 +84,14 @@ cASE3DLoader::cASE3DLoader(const wxChar *filename): c3DLoader(filename) {
         if (stricmp(test, "*3DSMAX_ASCIIEXPORT") != 0)
             return;
     }
-
+*/
 
 
     try {
-        wxString fn = filename;
-        const char* temp = fn.mb_str(wxConvFile);
-        scene = ASE_loadFilename(const_cast<char*> (temp));
+//        wxString fn = filename;
+//        const char* temp = fn.mb_str(wxConvFile);
+//        scene = ASE_loadFilename(const_cast<char*> (temp));
+        scene = ASE_loadBuffer(buf.get(), len);
     } catch (...) {
         try {
             ASE_freeScene(scene);
@@ -64,7 +105,8 @@ cASE3DLoader::cASE3DLoader(const wxChar *filename): c3DLoader(filename) {
             cmesh.m_flag = C3DMESH_VALID;
 
             ASE_Mesh *mesh = &scene->objs[m].mesh;
-            VERTEX tv;
+            VERTEX2 tv;
+            vertex2init(tv);
             unsigned long i, j;
 
             if (mesh->faceCount == 0) {
@@ -109,8 +151,8 @@ cASE3DLoader::cASE3DLoader(const wxChar *filename): c3DLoader(filename) {
                     // now see if we have already added this point
                     add = TRUE;
                     for (j = 0; j < (unsigned long) cmesh.m_vertices.size(); ++j) {
-                        VERTEX *pv = &cmesh.m_vertices[j];
-                        if (memcmp(pv, &tv, sizeof(VERTEX)) == 0) {
+                        VERTEX2 *pv = &cmesh.m_vertices[j];
+                        if (memcmp(pv, &tv, sizeof(VERTEX2)) == 0) {
                             // we have a match so exit
                             add = FALSE;
                             break;
@@ -145,8 +187,8 @@ cASE3DLoader::cASE3DLoader(const wxChar *filename): c3DLoader(filename) {
                     // now see if we have already added this point
                     add = TRUE;
                     for (j = 0; j < (unsigned long) cmesh.m_vertices.size(); ++j) {
-                        VERTEX *pv = &cmesh.m_vertices[j];
-                        if (memcmp(pv, &tv, sizeof(VERTEX)) == 0) {
+                        VERTEX2 *pv = &cmesh.m_vertices[j];
+                        if (memcmp(pv, &tv, sizeof(VERTEX2)) == 0) {
                             // we have a match so exit
                             add = FALSE;
                             break;
@@ -181,8 +223,8 @@ cASE3DLoader::cASE3DLoader(const wxChar *filename): c3DLoader(filename) {
                     // now see if we have already added this point
                     add = TRUE;
                     for (j = 0; j < (unsigned long) cmesh.m_vertices.size(); ++j) {
-                        VERTEX *pv = &cmesh.m_vertices[j];
-                        if (memcmp(pv, &tv, sizeof(VERTEX)) == 0) {
+                        VERTEX2 *pv = &cmesh.m_vertices[j];
+                        if (memcmp(pv, &tv, sizeof(VERTEX2)) == 0) {
                             // we have a match so exit
                             add = FALSE;
                             break;

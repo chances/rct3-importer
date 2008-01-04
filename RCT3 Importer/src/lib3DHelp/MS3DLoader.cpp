@@ -31,10 +31,11 @@
 #include "MS3DLoader.h"
 #include "MS3DFile.h"
 #include "wxLocalLog.h"
+#include "matrix.h"
 
 cMS3DLoader::cMS3DLoader(const wxChar *filename): c3DLoader(filename) {
 wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s)"), filename);
-    CMS3DFile *ms3df = new CMS3DFile();
+    std::auto_ptr<CMS3DFile> ms3df(new CMS3DFile());
     if (!ms3df->LoadFromFile(wxString(filename).mb_str(wxConvFile)))
         return;
 wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename, ms3df->GetNumGroups(), ms3df->GetNumVertices());
@@ -47,7 +48,8 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
         cmesh.m_name = wxString(group->name, wxConvLocal);
         cmesh.m_flag = C3DMESH_VALID;
 
-        VERTEX tv;
+        VERTEX2 tv;
+        vertex2init(tv);
         unsigned long i, j;
 
         if (group->numtriangles == 0) {
@@ -55,6 +57,7 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
         } else
             for (i = 0; i < group->numtriangles * 3; i += 3) {
                 ms3d_vertex_t *vertex;
+                ms3d_vertex_ex_t *vertexex = NULL;
                 ms3d_triangle_t *face;
 
                 UINT index = i / 3;
@@ -73,6 +76,7 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
                     continue;
                 }
                 ms3df->GetVertexAt(i_vertex, &vertex);
+                ms3df->GetVertexExAt(i_vertex, &vertexex);
                 tv.position.x = vertex->vertex[0];
                 tv.position.y = vertex->vertex[1];
                 tv.position.z = vertex->vertex[2];
@@ -83,11 +87,30 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
                 tv.tu = face->s[0];
                 tv.tv = 1.0-face->t[0];
 
+                tv.bone[0] = vertex->boneId;
+                if (vertexex) {
+                    unsigned char lastweight = 255;
+                    bool readnext = true;
+                    for (int c = 0; c < 3; ++c) {
+                        if (readnext) {
+                            tv.boneweight[c] = vertexex->weights[c];
+                            lastweight -= vertexex->weights[c];
+                        }
+                        if (vertexex->boneIds[c] != -1) {
+                            tv.bone[c+1] = vertexex->boneIds[c];
+                            readnext = true;
+                        } else {
+                            readnext = false;
+                        }
+                    }
+                    tv.boneweight[3] = lastweight;
+                }
+
                 // now see if we have already added this point
                 add = TRUE;
                 for (j = 0; j < (long) cmesh.m_vertices.size(); ++j) {
-                    VERTEX *pv = &cmesh.m_vertices[j];
-                    if (memcmp(pv, &tv, sizeof(VERTEX)) == 0) {
+                    VERTEX2 *pv = &cmesh.m_vertices[j];
+                    if (memcmp(pv, &tv, sizeof(VERTEX2)) == 0) {
                         // we have a match so exit
                         add = FALSE;
                         break;
@@ -100,12 +123,14 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
                 cmesh.m_indices.push_back(j);
 
                 // now for the second one
+                vertex2init(tv);
                 i_vertex = face->vertexIndices[1];
                 if (i_vertex >= ms3df->GetNumVertices()) {
                     cmesh.m_flag = C3DMESH_INVALID;
                     continue;
                 }
                 ms3df->GetVertexAt(i_vertex, &vertex);
+                ms3df->GetVertexExAt(i_vertex, &vertexex);
                 tv.position.x = vertex->vertex[0];
                 tv.position.y = vertex->vertex[1];
                 tv.position.z = vertex->vertex[2];
@@ -116,11 +141,30 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
                 tv.tu = face->s[1];
                 tv.tv = 1.0-face->t[1];
 
+                tv.bone[0] = vertex->boneId;
+                if (vertexex) {
+                    unsigned char lastweight = 255;
+                    bool readnext = true;
+                    for (int c = 0; c < 3; ++c) {
+                        if (readnext) {
+                            tv.boneweight[c] = vertexex->weights[c];
+                            lastweight -= vertexex->weights[c];
+                        }
+                        if (vertexex->boneIds[c] != -1) {
+                            tv.bone[c+1] = vertexex->boneIds[c];
+                            readnext = true;
+                        } else {
+                            readnext = false;
+                        }
+                    }
+                    tv.boneweight[3] = lastweight;
+                }
+
                 // now see if we have already added this point
                 add = TRUE;
                 for (j = 0; j < (long) cmesh.m_vertices.size(); ++j) {
-                    VERTEX *pv = &cmesh.m_vertices[j];
-                    if (memcmp(pv, &tv, sizeof(VERTEX)) == 0) {
+                    VERTEX2 *pv = &cmesh.m_vertices[j];
+                    if (memcmp(pv, &tv, sizeof(VERTEX2)) == 0) {
                         // we have a match so exit
                         add = FALSE;
                         break;
@@ -133,12 +177,14 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
                 cmesh.m_indices.push_back(j);
 
                 // now for the third one
+                vertex2init(tv);
                 i_vertex = face->vertexIndices[2];
                 if (i_vertex >= ms3df->GetNumVertices()) {
                     cmesh.m_flag = C3DMESH_INVALID;
                     continue;
                 }
                 ms3df->GetVertexAt(i_vertex, &vertex);
+                ms3df->GetVertexExAt(i_vertex, &vertexex);
                 tv.position.x = vertex->vertex[0];
                 tv.position.y = vertex->vertex[1];
                 tv.position.z = vertex->vertex[2];
@@ -149,11 +195,30 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
                 tv.tu = face->s[2];
                 tv.tv = 1.0-face->t[2];
 
+                tv.bone[0] = vertex->boneId;
+                if (vertexex) {
+                    unsigned char lastweight = 255;
+                    bool readnext = true;
+                    for (int c = 0; c < 3; ++c) {
+                        if (readnext) {
+                            tv.boneweight[c] = vertexex->weights[c];
+                            lastweight -= vertexex->weights[c];
+                        }
+                        if (vertexex->boneIds[c] != -1) {
+                            tv.bone[c+1] = vertexex->boneIds[c];
+                            readnext = true;
+                        } else {
+                            readnext = false;
+                        }
+                    }
+                    tv.boneweight[3] = lastweight;
+                }
+
                 // now see if we have already added this point
                 add = TRUE;
                 for (j = 0; j < (long) cmesh.m_vertices.size(); ++j) {
-                    VERTEX *pv = &cmesh.m_vertices[j];
-                    if (memcmp(pv, &tv, sizeof(VERTEX)) == 0) {
+                    VERTEX2 *pv = &cmesh.m_vertices[j];
+                    if (memcmp(pv, &tv, sizeof(VERTEX2)) == 0) {
                         // we have a match so exit
                         add = FALSE;
                         break;
@@ -173,12 +238,10 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
         ms3df->GetVertexAt(m, &vertex);
         if (vertex->referenceCount == 0) {
             c3DMesh cmesh;
-            VERTEX tv;
+            VERTEX2 tv;
+            vertex2init(tv);
             cmesh.m_flag = C3DMESH_INVALID;
-            char *tmp = new char[256];
-            snprintf(tmp, 255, "Vertex at <%.4f,%.4f,%.4f>", vertex->vertex[0], vertex->vertex[1], vertex->vertex[2]);
-            cmesh.m_name = wxString(tmp, wxConvLocal);
-            delete[] tmp;
+            cmesh.m_name = wxString::Format(wxT("Vertex at <%.4f,%.4f,%.4f>"), vertex->vertex[0], vertex->vertex[1], vertex->vertex[2]);
 
             tv.position.x = vertex->vertex[0];
             tv.position.y = vertex->vertex[1];
@@ -192,6 +255,12 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
             cmesh.m_vertices.push_back(tv);
             m_meshes.push_back(cmesh);
         }
+    }
+
+    for (int m = 0; m < ms3df->GetNumJoints(); m++) {
+        ms3d_joint_t * joint;
+        ms3df->GetJointAt(m, &joint);
+        m_bones.push_back(wxString(joint->name, wxConvLocal));
     }
 wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s), End"), filename);
 }

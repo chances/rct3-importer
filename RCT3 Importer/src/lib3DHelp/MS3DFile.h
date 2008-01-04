@@ -16,6 +16,10 @@
 #ifndef _MS3DFILE_H
 #define _MS3DFILE_H
 
+#ifdef __WXDEBUG__
+#include "wx_pch.h"
+#endif
+
 //#pragma once
 
 //#include "main include file.h"
@@ -165,7 +169,8 @@ public:
 	void GetMaterialAt(int nIndex, ms3d_material_t **ppMaterial);
 	DWORD GetNumJoints();
 	void GetJointAt(int nIndex, ms3d_joint_t **ppJoint);
-	int FindJointByName(LPCTSTR lpszName);
+	int FindJointByName(const char* lpszName);
+	void GetVertexExAt(int nIndex, ms3d_vertex_ex_t **ppVertex);
 
 
 

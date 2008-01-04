@@ -884,7 +884,7 @@ LIBASE_API ASE_Scene* ASE_loadFile(FILE* file)
     return ret;
 }
 
-LIBASE_API ASE_Scene* ASE_loadFilename(char* filename)
+LIBASE_API ASE_Scene* ASE_loadFilename(const char* filename)
 {
     ASE_Scene* ret;
 

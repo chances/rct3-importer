@@ -25,10 +25,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "OVLDebug.h"
 
 #include "ManagerOVL.h"
 
-#include "OVLDebug.h"
 #include "OVLException.h"
 #include "OVLng.h"
 

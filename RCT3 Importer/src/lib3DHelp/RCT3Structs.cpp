@@ -932,7 +932,7 @@ bool cModel::Sync() {
     c3DLoader *obj = c3DLoader::LoadFile(file.GetFullPath().fn_str());
     if (!obj) {
         fatal_error = true;
-        error.push_back(_("Model file not found or of an unknown format."));
+        error.push_back(wxString::Format(_("Model file '%s' not found or of an unknown format."), file.GetFullPath().c_str()));
         return false;
     }
 

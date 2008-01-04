@@ -37,6 +37,7 @@ extern FILE* f_debug_relocations;
 
 #elif __WXDEBUG__
 
+#include <wx/wxprec.h>
 #include <wx/wx.h>
 #define DUMP_LOG(a, ...) wxLogDebug(wxT(a), ## __VA_ARGS__ )
 #define DUMP_RELOCATION(s, v) wxLogDebug(wxT("Relocation %08lx @ %08lx (%08lx): %s"), reinterpret_cast<unsigned long>(v), reinterpret_cast<unsigned long>(&v), reinterpret_cast<unsigned long>(v) - reinterpret_cast<unsigned long>(&v), s)

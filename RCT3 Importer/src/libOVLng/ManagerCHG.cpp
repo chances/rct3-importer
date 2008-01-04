@@ -25,6 +25,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "OVLDebug.h"
 
 #include "ManagerCHG.h"
 
@@ -33,7 +34,6 @@
 #include "ManagerSID.h"
 #include "ManagerSPL.h"
 #include "ManagerTXT.h"
-#include "OVLDebug.h"
 #include "OVLException.h"
 
 const char* ovlCHGManager::LOADER = "FGDK";

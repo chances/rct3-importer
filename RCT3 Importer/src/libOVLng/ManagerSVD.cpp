@@ -25,13 +25,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "OVLDebug.h"
 
 #include "ManagerSVD.h"
 
 #include "ManagerBAN.h"
 #include "ManagerBSH.h"
 #include "ManagerSHS.h"
-#include "OVLDebug.h"
 #include "OVLException.h"
 
 const char* ovlSVDManager::NAME = "SceneryItemVisual";

@@ -25,10 +25,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "OVLDebug.h"
 
 #include "ManagerSPL.h"
 
-#include "OVLDebug.h"
 #include "OVLException.h"
 
 const char* ovlSPLManager::LOADER = "FGDK";

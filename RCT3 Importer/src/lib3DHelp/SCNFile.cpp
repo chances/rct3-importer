@@ -2277,6 +2277,12 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                         }
                         CurrentObj++;
                     }
+//                    c_mod.bbox1.x -= 0.5;
+//                    c_mod.bbox1.y -= 0.5;
+//                    c_mod.bbox1.z -= 0.5;
+//                    c_mod.bbox2.x += 0.5;
+//                    c_mod.bbox2.y += 0.5;
+//                    c_mod.bbox2.z += 0.5;
                     c_shs->AddModel(c_mod);
                     delete object;
                 }
@@ -2408,7 +2414,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                                 matrixApplyIP(c_pfudge_normal, matrixGetFixOrientation(i_mod->usedorientation));
 
                             boundsInit(&temp_min, &temp_max);
-                            object->FetchObject(CurrentObj, i_mesh->bone, 0xff, &c_bs2, &temp_min, &temp_max,
+                            object->FetchObject(CurrentObj, i_mesh->bone, &c_bs2, &temp_min, &temp_max,
                                                       const_cast<D3DMATRIX *> ((do_transform)?(&transformMatrix):NULL),
                                                       c_pfudge_normal);
 //                            object->FetchAsAnimObject(CurrentObj, i_mesh->bone, 0xff, &c_vertexcount, &c_vertices,
@@ -2428,6 +2434,12 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                         CurrentObj++;
                     }
                     //c_bsh->SetBoundingBox(box_min, box_max);
+//                    c_bs1.bbox1.x -= 0.5;
+//                    c_bs1.bbox1.y -= 0.5;
+//                    c_bs1.bbox1.z -= 0.5;
+//                    c_bs1.bbox2.x += 0.5;
+//                    c_bs1.bbox2.y += 0.5;
+//                    c_bs1.bbox2.z += 0.5;
                     c_bsh->AddModel(c_bs1);
                     delete object;
                 }
@@ -2529,7 +2541,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
 
                     tex.flip();
 
-                    if (i_ftxfr->recolorable()) {
+                    if (i_ftxfr->recolorable() && (tex.type() != Magick::PaletteType)) {
                         memcpy(c_fts.palette.get(), cFlexiTexture::GetRGBPalette(), 256 * sizeof(RGBQUAD));
                         tex.GetAs8bitForced(c_fts.texture.get(), c_fts.palette.get(), true);
                     } else {
