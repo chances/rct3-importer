@@ -123,8 +123,6 @@
 		<Unit filename="valtexture.h" />
 		<Unit filename="wxLocalLog.h" />
 		<Unit filename="wx_pch.h">
-			<Option compile="1" />
-			<Option link="1" />
 			<Option weight="0" />
 		</Unit>
 		<Extensions>

@@ -26,11 +26,17 @@
 #ifndef _3DLOADER_H_INCLUDED
 #define _3DLOADER_H_INCLUDED
 
+#include "wx_pch.h"
+
 #include "3Dstring.h"
+
+#include <wx/filename.h>
+#include <wx/hashmap.h>
 
 #include <vector>
 
 #include "vertex.h"
+#include "counted_ptr.h"
 
 #include "3DLoaderTypes.h"
 
@@ -47,9 +53,31 @@ public:
     c3DMesh():m_name(wxT("")) {};
 };
 
-#include <wx/hashmap.h>
-class c3DLoaderCacheEntry;
-WX_DECLARE_STRING_HASH_MAP(c3DLoaderCacheEntry*, c3DLoaderCache);
+class c3DLoader;
+class c3DLoaderCacheEntry: public wxObject {
+private:
+    counted_ptr<c3DLoader> m_object;
+    wxFileName m_file;
+    wxDateTime m_mtime;
+public:
+    c3DLoaderCacheEntry(wxString filename);
+    counted_ptr<c3DLoader>& Get();
+    bool Valid() {
+        return m_object.get();
+    }
+};
+
+WX_DECLARE_STRING_HASH_MAP(counted_ptr<c3DLoaderCacheEntry>, c3DLoaderCache);
+
+class E3DLoader: public std::exception {
+protected:
+    wxString m_message;
+public:
+    E3DLoader(const wxString& message);
+    virtual const char* what() const throw();
+    virtual const wxString& wxwhat() const throw();
+    ~E3DLoader() throw() {};
+};
 
 class c3DLoader {
 friend class c3DLoaderCacheEntry;
@@ -86,9 +114,11 @@ public:
     virtual bool Failed() {
         return ((m_meshes.size()==0) && (m_warnings.size()==0));
     };
-    virtual STRINGLIST3D GetWarnings() const {return m_warnings;};
-    virtual STRING3D GetObjectName(unsigned int index) {
-        return (index>=m_meshes.size())?wxT(""):m_meshes[index].m_name;
+    virtual const wxArrayString& GetWarnings() const {return m_warnings;};
+    virtual const wxString& GetObjectName(unsigned int index) {
+        if (index>=m_meshes.size())
+            throw E3DLoader(wxT("c3DLoader::GetObjectName called with illegal index"));
+        return m_meshes[index].m_name;
     };
     virtual int GetObjectVertexCount(unsigned int index) {
         return (index>=m_meshes.size())?0:m_meshes[index].m_vertices.size();
@@ -101,9 +131,10 @@ public:
     };
     virtual VERTEX GetObjectVertex(unsigned int mesh, unsigned int vertex);
     virtual bool FetchObject(unsigned int index, unsigned long *vertexcount, VERTEX **vertices, unsigned long *index_count, unsigned long **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal = NULL);
-    virtual bool FetchAsAnimObject(unsigned int index, unsigned long bone, unsigned long *vertexcount, VERTEX2 **vertices, unsigned long *index_count, unsigned short **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal = NULL);
+    virtual bool FetchAsAnimObject(unsigned int index, char bone, unsigned long *vertexcount, VERTEX2 **vertices, unsigned long *index_count, unsigned short **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal = NULL);
     virtual bool FetchObject(unsigned int index, cStaticShape2* sh, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal = NULL);
-    virtual bool FetchObject(unsigned int index, unsigned long bone, cBoneShape2* sh, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal = NULL);
+    virtual bool FetchObject(unsigned int index, char bone, cBoneShape2* sh, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal = NULL);
+    virtual bool FetchObject(unsigned int index, cBoneShape2* sh, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal = NULL);
 
     virtual int GetType() {return C3DLOADER_GENERIC;};
     virtual STRING3D GetName() {return m_name;};
@@ -113,7 +144,7 @@ public:
     static int FlattenNormals(const unsigned long vertexcount, VERTEX2 *vertices, const D3DVECTOR& bbox_min, const D3DVECTOR& bbox_max);
     static int FlattenNormals(cStaticShape2* sh, const D3DVECTOR& bbox_min, const D3DVECTOR& bbox_max);
     static int FlattenNormals(cBoneShape2* sh, const D3DVECTOR& bbox_min, const D3DVECTOR& bbox_max);
-    static c3DLoader *LoadFile(const wxChar *filename);
+    static counted_ptr<c3DLoader>& LoadFile(const wxChar *filename);
     static void ClearCache();
 };
 

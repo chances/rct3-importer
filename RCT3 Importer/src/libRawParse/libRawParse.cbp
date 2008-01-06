@@ -101,7 +101,6 @@
 		<Unit filename="RawParse_StructParse.cpp" />
 		<Unit filename="RawParse_cpp.h" />
 		<Unit filename="wx_pch.h">
-			<Option compile="1" />
 			<Option weight="0" />
 		</Unit>
 		<Extensions>

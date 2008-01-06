@@ -50,13 +50,42 @@
 					<Add directory="$(#wx.baseansidebugstatic)" />
 				</Compiler>
 				<Linker>
+					<Add library="libRawParsed" />
+					<Add library="libOVLDumpd" />
 					<Add library="3DHelpd" />
 					<Add library="WXHelpbd" />
 					<Add library="libASE" />
 					<Add library="libOVLngd" />
 					<Add library="wx_based-2.8" />
-					<Add library="libOVLDumpd" />
+					<Add directory="..\..\bin" />
+				</Linker>
+			</Target>
+			<Target title="Debug Base (public)">
+				<Option output="..\..\bin\ovlmakedp.exe" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="..\..\bin" />
+				<Option object_output="..\..\lib\obj\ovlmake\debug" />
+				<Option external_deps="..\..\lib\lib3DHelpd.a;..\..\lib\libWXHelpbd.a;..\..\lib\libASEd.a;..\..\lib\libOVLngd.a;..\..\lib\libRawParsed.a;..\..\lib\libOVLDumpd.a;" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option use_console_runner="0" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-W" />
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add option="-DDEBUG" />
+					<Add option="-D__WXDEBUG__" />
+					<Add option="-DPUBLICDEBUG" />
+					<Add directory="$(#wx.baseansidebugstatic)" />
+				</Compiler>
+				<Linker>
 					<Add library="libRawParsed" />
+					<Add library="libOVLDumpd" />
+					<Add library="3DHelpd" />
+					<Add library="WXHelpbd" />
+					<Add library="libASE" />
+					<Add library="libOVLngd" />
+					<Add library="wx_based-2.8" />
 					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
@@ -105,13 +134,13 @@
 					<Add directory="$(#mingw.lib)\wx\include\base-unicode-debug-static-2.8" />
 				</Compiler>
 				<Linker>
+					<Add library="libRawParseud" />
+					<Add library="libOVLDumpd" />
 					<Add library="3DHelpud" />
 					<Add library="WXHelpbud" />
 					<Add library="libASE" />
 					<Add library="wx_baseud-2.8" />
 					<Add library="libOVLngud" />
-					<Add library="libOVLDumpd" />
-					<Add library="libRawParseud" />
 					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
@@ -163,7 +192,6 @@
 			<Option target="Release Base Unicode" />
 		</Unit>
 		<Unit filename="wx_pch.h">
-			<Option compile="1" />
 			<Option weight="0" />
 		</Unit>
 		<Extensions>

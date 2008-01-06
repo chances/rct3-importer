@@ -39,9 +39,16 @@ extern FILE* f_debug_relocations;
 
 #include <wx/wxprec.h>
 #include <wx/wx.h>
+
+#ifdef UNICODE
+#define UNISTR(x) wxString(x, wxConvLocal).c_str()
+#else
+#define UNISTR(x) x
+#endif
+
 #define DUMP_LOG(a, ...) wxLogDebug(wxT(a), ## __VA_ARGS__ )
-#define DUMP_RELOCATION(s, v) wxLogDebug(wxT("Relocation %08lx @ %08lx (%08lx): %s"), reinterpret_cast<unsigned long>(v), reinterpret_cast<unsigned long>(&v), reinterpret_cast<unsigned long>(v) - reinterpret_cast<unsigned long>(&v), s)
-#define DUMP_RELOCATION_STR(s, v) wxLogDebug(wxT("Relocation %08lx @ %08lx (%08lx): %s (%s)"), reinterpret_cast<unsigned long>(v), reinterpret_cast<unsigned long>(&v), reinterpret_cast<unsigned long>(v) - reinterpret_cast<unsigned long>(&v), s, v)
+#define DUMP_RELOCATION(s, v) wxLogDebug(wxT("Relocation %08lx @ %08lx (%08lx): %s"), reinterpret_cast<unsigned long>(v), reinterpret_cast<unsigned long>(&v), reinterpret_cast<unsigned long>(v) - reinterpret_cast<unsigned long>(&v), wxT(s))
+#define DUMP_RELOCATION_STR(s, v) wxLogDebug(wxT("Relocation %08lx @ %08lx (%08lx): %s (%s)"), reinterpret_cast<unsigned long>(v), reinterpret_cast<unsigned long>(&v), reinterpret_cast<unsigned long>(v) - reinterpret_cast<unsigned long>(&v), wxT(s), UNISTR(v))
 
 #else
 #define INIT_LOGGING()

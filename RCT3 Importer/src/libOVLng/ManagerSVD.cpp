@@ -49,7 +49,7 @@ ovlSVDManager::~ovlSVDManager() {
 }
 
 void ovlSVDManager::AddSVD(const char* name, unsigned long lods, unsigned long flags, float sway, float brightness, float scale) {
-    DUMP_LOG("Trace: ovlSVDManager::AddSVD(name:'%s', lods:%ld, flags:%ld, sway:%f, blightness:%f, scale:%f)", name, lods, flags, sway, brightness, scale);
+    DUMP_LOG("Trace: ovlSVDManager::AddSVD(name:'%s', lods:%ld, flags:%ld, sway:%f, blightness:%f, scale:%f)", UNISTR(name), lods, flags, sway, brightness, scale);
     Check("ovlSVDManager::AddSVD");
     if (m_lodcount)
         throw EOvl("ovlSVDManager::AddSVD called but last svd misses lods");
@@ -104,7 +104,7 @@ void ovlSVDManager::SetSVDUnknowns(float unk4, unsigned long unk6, unsigned long
 }
 
 void ovlSVDManager::AddStaticLOD(const char* name, const char* modelname, float distance, unsigned long unk2, unsigned long unk4, unsigned long unk14) {
-    DUMP_LOG("Trace: ovlSVDManager::AddStaticLOD(name:'%s', modelname:'%s', distance:%f, unk2:%ld, Unk4:%ld, unk14:%ld)", name, modelname, distance, unk2, unk4, unk14);
+    DUMP_LOG("Trace: ovlSVDManager::AddStaticLOD(name:'%s', modelname:'%s', distance:%f, unk2:%ld, Unk4:%ld, unk14:%ld)", UNISTR(name), UNISTR(modelname), distance, unk2, unk4, unk14);
     Check("ovlSVDManager::AddStaticLOD");
     if (!m_lodcount)
         throw EOvl("ovlSVDManager::AddStaticLOD called but there are no lods left");
@@ -149,7 +149,7 @@ void ovlSVDManager::AddStaticLOD(const char* name, const char* modelname, float 
 }
 
 void ovlSVDManager::OpenAnimatedLOD(const char* name, const char* modelname, unsigned long animations, float distance, unsigned long unk2, unsigned long unk4, unsigned long unk14) {
-    DUMP_LOG("Trace: ovlSVDManager::OpenAnimatedLOD(name:'%s', modelname:'%s', animations:%ld, distance:%f, unk2:%ld, Unk4:%ld, unk14:%ld)", name, modelname, animations, distance, unk2, unk4, unk14);
+    DUMP_LOG("Trace: ovlSVDManager::OpenAnimatedLOD(name:'%s', modelname:'%s', animations:%ld, distance:%f, unk2:%ld, Unk4:%ld, unk14:%ld)", UNISTR(name), UNISTR(modelname), animations, distance, unk2, unk4, unk14);
     Check("ovlSVDManager::OpenAnimatedLOD");
     if (!m_lodcount)
         throw EOvl("ovlSVDManager::OpenAnimatedLOD called but there are no lods left");
@@ -206,7 +206,7 @@ void ovlSVDManager::CloseAnimatedLOD() {
 }
 
 void ovlSVDManager::AddAnimation(const char* name) {
-    DUMP_LOG("Trace: ovlSVDManager::AddAnimation(name:'%s')", name);
+    DUMP_LOG("Trace: ovlSVDManager::AddAnimation(name:'%s')", UNISTR(name));
     Check("ovlSVDManager::AddAnimation");
     if (!m_animcount)
         throw EOvl("ovlSVDManager::AddAnimation called but no animations left");

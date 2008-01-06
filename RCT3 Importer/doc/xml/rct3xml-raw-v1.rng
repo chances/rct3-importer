@@ -618,7 +618,7 @@
     </div>
 
     <div>
-      <a:documentation>bsh tagsc </a:documentation>
+      <a:documentation>bsh tags</a:documentation>
 
       <define name="bsh">
         <element name="bsh">
@@ -700,9 +700,11 @@
                 <data type="string"></data>
               </attribute>
 
-              <attribute name="bone">
-                <data type="int"></data>
-              </attribute>
+              <optional>
+                <attribute name="bone">
+                  <data type="byte"></data>
+                </attribute>
+              </optional>
 
               <optional>
                 <attribute name="handedness">
@@ -775,7 +777,7 @@
               </attribute>
 
               <attribute name="parent">
-                <data type="int"></data>
+                <data type="byte"></data>
               </attribute>
 
               <element name="position1">

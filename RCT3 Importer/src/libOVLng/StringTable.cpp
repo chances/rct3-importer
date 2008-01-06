@@ -37,7 +37,7 @@ char* ovlStringTable::FindRawString(const std::string& findit) const {
         throw EOvl("ovlStringTable::FindRawString: Could not find '"+findit+"'");
         return NULL;
     }
-    DUMP_LOG("ovlStringTable::FindRawString '%s': %s (%x/%x)", findit.c_str(), fst->second, fst->second, m_table);
+    DUMP_LOG("ovlStringTable::FindRawString '%s': %s (%x/%x)", UNISTR(findit.c_str()), UNISTR(fst->second), fst->second, m_table);
     return fst->second;
 }
 
@@ -54,7 +54,7 @@ ovlStringTable::~ovlStringTable() {
 void ovlStringTable::AddString(const char *lstring) {
     string st = lstring;
     m_strings.push_back(st);
-    DUMP_LOG("ovlStringTable::AddString '%s'", lstring);
+    DUMP_LOG("TRACE: ovlStringTable::AddString '%s'", UNISTR(lstring));
 }
 
 void ovlStringTable::AddSymbolString(const char *lstring, const char *lextension) {
@@ -62,7 +62,7 @@ void ovlStringTable::AddSymbolString(const char *lstring, const char *lextension
     st += ':';
     st += lextension;
     m_strings.push_back(st);
-    DUMP_LOG("ovlStringTable::AddSymbolString '%s':'%s'", lstring, lextension);
+    DUMP_LOG("TRACE: ovlStringTable::AddSymbolString '%s':'%s'", UNISTR(lstring), UNISTR(lextension));
 }
 
 char* ovlStringTable::Make(cOvlInfo* info) {

@@ -12,6 +12,9 @@
 
 /* For ANSI-challenged compilers, you may want to #define
  * NO_MEMBER_TEMPLATES or explicit */
+#ifndef NO_MEMBER_TEMPLATES
+#define NO_MEMBER_TEMPLATES
+#endif
 
 template <class X> class counted_ptr
 {

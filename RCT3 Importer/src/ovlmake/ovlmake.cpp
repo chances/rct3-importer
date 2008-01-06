@@ -43,26 +43,31 @@
 #include "lib3Dconfig.h"
 #include "confhelp.h"
 
-#define VERSION_OVLMAKE "ovlmake v0.1.5"
+#ifdef UNICODE
+#define UNIPTR(s) s.mb_str(wxConvLocal).data()
+#else
+#define UNIPTR(s) s.c_str()
+#endif
 
 void printVersion() {
     wxString strdate = _("Built on ") + wxString(AutoVersion::DATE, wxConvLocal) + wxT(".")
                           + wxString(AutoVersion::MONTH, wxConvLocal) + wxT(".")
                           + wxString(AutoVersion::YEAR, wxConvLocal);
     wxString strversion = wxString::Format(wxT("ovlmake v%ld.%ld.%ld"), AutoVersion::MAJOR, AutoVersion::MINOR, AutoVersion::BUILD)+ wxString(AutoVersion::STATUS_SHORT, wxConvLocal);
-    fprintf(stderr, "\n--------------\n");
 #ifdef UNICODE
     strdate += wxT(", Unicode");
-    strdate += _(" version");
-    fprintf(stderr, "%s\n", strversion.mb_str(wxConvLocal).data());
-    fprintf(stderr, "%s", strdate.mb_str(wxConvLocal).data());
 #else
     strdate += wxT(", ANSI");
-    strdate += _(" version");
-    fprintf(stderr, "%s\n", strversion.c_str());
-    fprintf(stderr, "%s", strdate.c_str());
 #endif
-    fprintf(stderr, "\n--------------\n\n");
+#ifdef PUBLICDEBUG
+    strdate += wxT(" Debug");
+#endif
+    strdate += _(" version");
+    wxString line(wxT('-'), (strdate.size()>strversion.size())?strdate.size():strversion.size());
+    fprintf(stderr, "\n%s\n", UNIPTR(line));
+    fprintf(stderr, "%s\n", UNIPTR(strversion));
+    fprintf(stderr, "%s", UNIPTR(strdate));
+    fprintf(stderr, "\n%s\n\n", UNIPTR(line));
 }
 
 int DoCompile(const wxCmdLineParser& parser) {
@@ -291,6 +296,11 @@ int main(int argc, char **argv)
 #else // !wxUSE_UNICODE
     #define wxArgv argv
 #endif // wxUSE_UNICODE/!wxUSE_UNICODE
+
+#ifdef PUBLICDEBUG
+    if (!LoadLibrary("exchndl.dll"))
+        fprintf(stderr, "Failed to load debug library!\n");
+#endif
 
     // *&^$% GraphicsMagick
     wxFileName app = wxString(wxArgv[0]);

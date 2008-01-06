@@ -37,7 +37,7 @@ const char* ovlSHSManager::NAME = "StaticShape";
 const char* ovlSHSManager::TAG = "shs";
 
 void ovlSHSManager::AddModel(const cStaticShape1& item) {
-    DUMP_LOG("Trace: ovlSHSManager::Make(%s)", item.name.c_str());
+    DUMP_LOG("Trace: ovlSHSManager::Make(%s)", UNISTR(item.name.c_str()));
     Check("ovlSHSManager::AddModel");
     if (item.name == "")
         throw EOvl("ovlSHSManager::AddModel called without name");

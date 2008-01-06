@@ -2205,8 +2205,8 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                         }
                     }
 
-                    c3DLoader *object = c3DLoader::LoadFile(i_mod->file.GetFullPath().fn_str());
-                    if (!object) {
+                    counted_ptr<c3DLoader> object = c3DLoader::LoadFile(i_mod->file.GetFullPath().fn_str());
+                    if (!object.get()) {
                         // Poof went the model!
                         throw RCT3Exception(wxString::Format(_("Something happened to the file of model '%s'."), i_mod->name.c_str()));
                     }
@@ -2284,7 +2284,6 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
 //                    c_mod.bbox2.y += 0.5;
 //                    c_mod.bbox2.z += 0.5;
                     c_shs->AddModel(c_mod);
-                    delete object;
                 }
             }
 
@@ -2363,8 +2362,8 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                         }
                     }
 
-                    c3DLoader *object = c3DLoader::LoadFile(i_mod->file.GetFullPath().fn_str());
-                    if (!object) {
+                    counted_ptr<c3DLoader> object = c3DLoader::LoadFile(i_mod->file.GetFullPath().fn_str());
+                    if (!object.get()) {
                         // Poof went the model!
                         throw RCT3Exception(wxString::Format(_("Something happened to the file of model '%s'."), i_mod->name.c_str()));
                     }
@@ -2383,7 +2382,6 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
 
                             D3DVECTOR c_fudge_normal;
                             D3DVECTOR* c_pfudge_normal = NULL;
-                            boundsInit(&temp_min, &temp_max);
                             switch (i_mesh->fudgenormals) {
                                 case CMS_FUDGE_X:
                                     c_fudge_normal = vectorMake(1.0, 0.0, 0.0);
@@ -2441,7 +2439,6 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
 //                    c_bs1.bbox2.y += 0.5;
 //                    c_bs1.bbox2.z += 0.5;
                     c_bsh->AddModel(c_bs1);
-                    delete object;
                 }
             }
 
@@ -2554,6 +2551,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                         wxGXImage alp(i_ftxfr->alpha().GetFullPath());
                         if ((alp.GetWidth() != dimension) || (alp.GetHeight() != dimension))
                             alp.Rescale(dimension, dimension);
+                        alp.flip();
                         alp.GetGrayscale(c_fts.alpha.get());
                     }
 

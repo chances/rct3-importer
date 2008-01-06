@@ -63,67 +63,62 @@ c3DLoader* DoLoadFile(const wxChar *filename) {
     return NULL;
 }
 
-#ifndef STD_ONLY
-#include <wx/filename.h>
+c3DLoaderCacheEntry::c3DLoaderCacheEntry(wxString filename) {
+    m_object = counted_ptr<c3DLoader>(DoLoadFile(filename.fn_str()));
+    m_file = filename;
+    if (m_object.get())
+        m_mtime = m_file.GetModificationTime();
+}
 
-class c3DLoaderCacheEntry: public wxObject {
-private:
-    c3DLoader* m_object;
-    wxFileName m_file;
-    wxDateTime m_mtime;
-public:
-    c3DLoaderCacheEntry(wxString filename) {
-        m_object = DoLoadFile(filename.fn_str());
-        m_file = filename;
-        if (m_object)
-            m_mtime = m_file.GetModificationTime();
-    }
-    virtual ~c3DLoaderCacheEntry() {
-        if (m_object)
-            delete m_object;
-    }
-    c3DLoader* Get() {
-        if (m_object) {
-            wxDateTime lastmod;
-            if (!m_file.IsFileReadable()) {
-                // File poof?
-                wxLogWarning(_("Model Cache Warning: File '%s' could not be read. Using cached copy."), m_file.GetFullPath().fn_str());
-                return m_object;
-            }
-            if (!m_file.GetTimes(NULL, &lastmod, NULL)) {
-                // Huh?
-                wxLogWarning(_("Model Cache Warning: Modification time of file '%s' could not be read. Using cached copy."), m_file.GetFullPath().fn_str());
-                return m_object;
-            }
-            if (m_mtime != lastmod) {
-                wxString lfile = m_file.GetFullPath();
-                c3DLoader* reload = DoLoadFile(lfile.fn_str());
-                if (reload) {
-                    delete m_object;
-                    m_object = reload;
-                    if (m_object)
-                        m_mtime = lastmod;
-                } else {
-                    // New file kaput
-                    wxLogWarning(_("Model Cache Warning: File '%s' was modified and is now broken. Using cached copy."), m_file.GetFullPath().fn_str());
-                }
-            }
-            return m_object;
-        } else {
-            // Try again
-            m_object = DoLoadFile(m_file.GetFullPath().fn_str());
-            if (m_object)
-                m_mtime = m_file.GetModificationTime();
+counted_ptr<c3DLoader>& c3DLoaderCacheEntry::Get() {
+    if (m_object.get()) {
+        wxDateTime lastmod;
+        if (!m_file.IsFileReadable()) {
+            // File poof?
+            wxLogWarning(_("Model Cache Warning: File '%s' could not be read. Using cached copy."), m_file.GetFullPath().fn_str());
             return m_object;
         }
-    }
-    bool Valid() {
+        if (!m_file.GetTimes(NULL, &lastmod, NULL)) {
+            // Huh?
+            wxLogWarning(_("Model Cache Warning: Modification time of file '%s' could not be read. Using cached copy."), m_file.GetFullPath().fn_str());
+            return m_object;
+        }
+        if (m_mtime != lastmod) {
+            wxString lfile = m_file.GetFullPath();
+            counted_ptr<c3DLoader> reload(DoLoadFile(lfile.fn_str()));
+            if (reload.get()) {
+                m_object = reload;
+                if (m_object.get())
+                    m_mtime = lastmod;
+            } else {
+                // New file kaput
+                wxLogWarning(_("Model Cache Warning: File '%s' was modified and is now broken. Using cached copy."), m_file.GetFullPath().fn_str());
+            }
+        }
+        return m_object;
+    } else {
+        // Try again
+        m_object = counted_ptr<c3DLoader>(DoLoadFile(m_file.GetFullPath().fn_str()));
+        if (m_object.get())
+            m_mtime = m_file.GetModificationTime();
         return m_object;
     }
-};
+}
+
+E3DLoader::E3DLoader(const wxString& message) {
+    m_message = message;
+}
+
+const char* E3DLoader::what() const throw() {
+    return m_message.mb_str(wxConvLocal);
+}
+
+const wxString& E3DLoader::wxwhat() const throw() {
+    return m_message;
+}
+
 
 c3DLoaderCache c3DLoader::g_cache;
-#endif
 
 VERTEX c3DLoader::GetObjectVertex(unsigned int mesh, unsigned int vertex) {
     VERTEX res;
@@ -195,7 +190,7 @@ bool c3DLoader::FetchObject(unsigned int index, cStaticShape2* sh, D3DVECTOR *bb
     return true;
 }
 
-bool c3DLoader::FetchAsAnimObject(unsigned int index, unsigned long bone, unsigned long *vertexcount, VERTEX2 **vertices, unsigned long *index_count, unsigned short **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal) {
+bool c3DLoader::FetchAsAnimObject(unsigned int index, char bone, unsigned long *vertexcount, VERTEX2 **vertices, unsigned long *index_count, unsigned short **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal) {
     int i;
     if (m_meshes.size() <= 0)
         return false;
@@ -225,7 +220,7 @@ bool c3DLoader::FetchAsAnimObject(unsigned int index, unsigned long bone, unsign
     return true;
 }
 
-bool c3DLoader::FetchObject(unsigned int index, unsigned long bone, cBoneShape2* sh, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal) {
+bool c3DLoader::FetchObject(unsigned int index, char bone, cBoneShape2* sh, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal) {
     int i;
     if (m_meshes.size() <= 0)
         return false;
@@ -254,26 +249,50 @@ bool c3DLoader::FetchObject(unsigned int index, unsigned long bone, cBoneShape2*
     return true;
 }
 
-c3DLoader *c3DLoader::LoadFile(const wxChar *filename) {
+bool c3DLoader::FetchObject(unsigned int index, cBoneShape2* sh, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal) {
+    int i;
+    if (m_meshes.size() <= 0)
+        return false;
+
+    sh->vertices.resize(m_meshes[index].m_vertices.size());
+    sh->indices.resize(m_meshes[index].m_indices.size());
+    D3DMATRIX normaltransform;
+    if (transform)
+        normaltransform = matrixNormalTransform(*transform);
+    for (i = 0; i < m_meshes[index].m_vertices.size(); i++) {
+        if (transform)
+            sh->vertices[i] = matrixApply(m_meshes[index].m_vertices[i], *transform, normaltransform);
+        else
+            sh->vertices[i] = m_meshes[index].m_vertices[i];
+        if (fudge_normal) {
+            sh->vertices[i].normal = *fudge_normal;
+        }
+        boundsContain(&(sh->vertices[i]).position, bbox_min, bbox_max);
+    }
+    bool do_mirror = (transform)?(matrixCalcDeterminant(transform)<0.0):false;
+    for (i = 0; i < m_meshes[index].m_indices.size(); i+=3) {
+        sh->indices[i] = m_meshes[index].m_indices[i+((do_mirror)?1:0)];
+        sh->indices[i+1] = m_meshes[index].m_indices[i+((do_mirror)?0:1)];
+        sh->indices[i+2] = m_meshes[index].m_indices[i+2];
+    }
+    return true;
+}
+
+counted_ptr<c3DLoader>& c3DLoader::LoadFile(const wxChar *filename) {
 #ifdef STD_ONLY
     return DoLoadFile(filename);
 #else
     wxString fn = filename;
     c3DLoaderCache::iterator it = g_cache.find(fn);
     if (it != g_cache.end()) {
-        c3DLoader *ret = it->second->Get();
-        if (ret)
-            return new c3DLoader(ret);
-        else
-            return NULL;
+        return it->second->Get();
     } else {
-        c3DLoaderCacheEntry* nw = new c3DLoaderCacheEntry(fn);
+        counted_ptr<c3DLoaderCacheEntry> nw(new c3DLoaderCacheEntry(fn));
         if (nw->Valid()) {
             g_cache[fn] = nw;
-            return new c3DLoader(nw->Get());
+            return nw->Get();
         } else {
-            delete nw;
-            return NULL;
+            return nw->Get();
         }
     }
 #endif
@@ -360,8 +379,10 @@ int c3DLoader::FlattenNormals(cBoneShape2* sh, const D3DVECTOR& bbox_min, const 
 
 #ifndef STD_ONLY
 void c3DLoader::ClearCache() {
+    /*
     for (c3DLoaderCache::iterator it = g_cache.begin(); it != g_cache.end(); ++it)
         delete it->second;
+    */
     g_cache.clear();
 }
 #endif

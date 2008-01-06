@@ -172,7 +172,7 @@ void ovlLodSymRefManager::AddLoader(cOvlType type) {
 }
 
 LoaderStruct* ovlLodSymRefManager::OpenLoader(cOvlType type, const char* ctype, unsigned long *data, unsigned long extradatacount, SymbolStruct *sym) {
-    DUMP_LOG("Trace: ovlLodSymRefManager::OpenLoader('%s', %08lx, %ld, %08lx)", ctype, DPTR(data), extradatacount, DPTR(sym));
+    DUMP_LOG("Trace: ovlLodSymRefManager::OpenLoader('%s', %08lx, %ld, %08lx)", UNISTR(ctype), DPTR(data), extradatacount, DPTR(sym));
     if (!m_loaders[type])
         throw EOvl("ovlLodSymRefManager::OpenLoader called before assignment");
     if (!m_relman)

@@ -113,7 +113,7 @@ void ovlRelocationManager::Make() {
             }
             *relocation = fixup;
             unsigned long fixup2 = DoRelocationForSaving(relocation, common);
-            DUMP_LOG("Resolve relocated ptr %08lx @ %08lx, fixup %08lx, fixup2 %08lx stored in %s",DPTR(reloc),DPTR(relocation),fixup,fixup2,common?"common":"unique");
+            DUMP_LOG("Resolve relocated ptr %08lx @ %08lx, fixup %08lx, fixup2 %08lx stored in %s",DPTR(reloc),DPTR(relocation),fixup,fixup2,common?wxT("common"):wxT("unique"));
             //m_fixups.push(fixup2);
             if (common)
                 m_info->OpenFiles[OVLT_COMMON].fixups.insert(fixup2);

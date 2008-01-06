@@ -509,6 +509,9 @@ bool cFlexiTextureFrame::FromNode(wxXmlNode* node, const wxString& path, unsigne
         alphasource(CFTF_ALPHA_NONE);
     }
 
+    if (alphasource() != CFTF_ALPHA_EXTERNAL)
+        alpha(wxFileName());
+
     return ret;
 }
 
@@ -517,9 +520,11 @@ wxXmlNode* cFlexiTextureFrame::GetNode(const wxString& path) {
     wxFileName temp = texture();
     temp.MakeRelativeTo(path);
     node->AddProperty(wxT("texture"), temp.GetFullPath());
-    temp = alpha();
-    temp.MakeRelativeTo(path);
-    node->AddProperty(wxT("alpha"), temp.GetFullPath());
+    if (alphasource() == CFTF_ALPHA_EXTERNAL) {
+        temp = alpha();
+        temp.MakeRelativeTo(path);
+        node->AddProperty(wxT("alpha"), temp.GetFullPath());
+    }
     node->AddProperty(wxT("recolorable"), wxString::Format(wxT("%lu"), recolorable()));
     node->AddProperty(wxT("alphacutoff"), wxString::Format(wxT("%hhu"), alphacutoff()));
     node->AddProperty(wxT("alphasource"), wxString::Format(wxT("%lu"), alphasource()));
@@ -838,7 +843,7 @@ cModel::cModel(D3DMATRIX def, c3DLoaderOrientation ori): name(wxT("")), file(wxT
     transformnames.push_back(_("Default Matrix"));
 }
 
-void cModel::SetupFileProperties(cMeshStruct* ms, c3DLoader* obj, unsigned int n) {
+void cModel::SetupFileProperties(cMeshStruct* ms, const counted_ptr<c3DLoader>& obj, unsigned int n) {
     if ((obj->GetObjectName(n).CmpNoCase(wxT("root")) == 0)
             || (obj->GetObjectVertexCount(n) < 3)
             || (!obj->IsObjectValid(n))) {
@@ -858,7 +863,7 @@ void cModel::SetupFileProperties(cMeshStruct* ms, c3DLoader* obj, unsigned int n
     ms->faces = obj->GetObjectIndexCount(n) / 3;
 }
 
-cMeshStruct cModel::MakeMesh(c3DLoader* obj, unsigned int n) {
+cMeshStruct cModel::MakeMesh(const counted_ptr<c3DLoader>& obj, unsigned int n) {
     cMeshStruct ms;
     if ((obj->GetObjectName(n).CmpNoCase(wxT("root")) == 0)
             || (obj->GetObjectVertexCount(n) < 3)
@@ -880,9 +885,9 @@ cMeshStruct cModel::MakeMesh(c3DLoader* obj, unsigned int n) {
 }
 
 bool cModel::Load() {
-    c3DLoader *obj = c3DLoader::LoadFile(file.GetFullPath().fn_str());
+    counted_ptr<c3DLoader> obj = c3DLoader::LoadFile(file.GetFullPath().fn_str());
 
-    if (!obj) {
+    if (!obj.get()) {
         fatal_error = true;
         error.Add(wxString::Format(_("Couldn't load file '%s'. Wrong format or file not found."), file.GetFullPath().fn_str()));
         return false;
@@ -911,8 +916,6 @@ bool cModel::Load() {
         error.insert(error.end(), obj->GetWarnings().begin(), obj->GetWarnings().end());
     }
 
-    delete obj;
-
     return true;
 }
 
@@ -929,8 +932,8 @@ bool cModel::Sync() {
         return Load();
 
     // Load & check the object file
-    c3DLoader *obj = c3DLoader::LoadFile(file.GetFullPath().fn_str());
-    if (!obj) {
+    counted_ptr<c3DLoader> obj = c3DLoader::LoadFile(file.GetFullPath().fn_str());
+    if (!obj.get()) {
         fatal_error = true;
         error.push_back(wxString::Format(_("Model file '%s' not found or of an unknown format."), file.GetFullPath().c_str()));
         return false;
@@ -1093,7 +1096,6 @@ fixupsinglevertexmeshes:
         error.insert(error.end(), obj->GetWarnings().begin(), obj->GetWarnings().end());
     }
 
-    delete obj;
     return true;
 }
 
@@ -1112,11 +1114,10 @@ bool cModel::CheckMeshes(bool animated) {
         wxLogWarning(_("Model '%s': Model file not found."), name.c_str());
         return false;
     }
-    c3DLoader *object = c3DLoader::LoadFile(file.GetFullPath().fn_str());
-    if (!object) {
+    counted_ptr<c3DLoader> object = c3DLoader::LoadFile(file.GetFullPath().fn_str());
+    if (!object.get()) {
         fatal_error = true;
         wxLogWarning(_("Model '%s': Error loading model file."), name.c_str());
-        delete object;
         return false;
     }
 
@@ -1142,7 +1143,6 @@ bool cModel::CheckMeshes(bool animated) {
 
         if (animated) {
             if (object->GetObjectVertexCount(c_mesh)>USHRT_MAX){
-                delete object;
                 throw RCT3Exception(wxString::Format(_("Animated model '%s': Group '%s' has too many vertices for an animated mesh. This is an internal limitation, but as the limit is at %d, your object has too many faces anyways."), name.c_str(), i_mesh->Name.c_str(), USHRT_MAX));
             }
             c_mesh++;
@@ -1153,7 +1153,6 @@ bool cModel::CheckMeshes(bool animated) {
         wxLogWarning(_("Model '%s': No usable groups left. Model invalid."), name.c_str());
         return false;
     }
-    delete object;
     return true;
 }
 

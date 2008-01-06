@@ -110,7 +110,7 @@ void cOvl::Save() {
         map<string, unsigned long> c_loadertypes;
         unsigned long l = 0;
         for (map<string, ovlOVLManager*>::iterator it = m_managers.begin(); it != m_managers.end(); ++it) {
-            DUMP_LOG("Assigning loader type %ld to %s", l, it->second->Tag());
+            DUMP_LOG("Assigning loader type %ld to %s", l, UNISTR(it->second->Tag()));
             c_loadertypes[string(it->second->Tag())] = l++;
         }
 

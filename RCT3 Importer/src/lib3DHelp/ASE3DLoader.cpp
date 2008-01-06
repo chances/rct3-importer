@@ -29,7 +29,11 @@
 #include "ASE3DLoader.h"
 #include "libASE.h"
 
+#ifdef USE_3DLOADER_FILESYSTEM
 #include <wx/filesys.h>
+#else
+#include <wx/file.h>
+#endif
 #include <wx/mstream.h>
 
 #include "counted_array_ptr.h"
@@ -41,6 +45,7 @@ cASE3DLoader::cASE3DLoader(const wxChar *filename): c3DLoader(filename) {
     counted_array_ptr<char> buf;
     int len = 0;
 
+#ifdef USE_3DLOADER_FILESYSTEM
     {
         wxFileSystem fs;
         std::auto_ptr<wxFSFile> file(fs.OpenFile(filename, wxFS_READ));
@@ -62,6 +67,14 @@ cASE3DLoader::cASE3DLoader(const wxChar *filename): c3DLoader(filename) {
         std::auto_ptr<wxMemoryOutputStream> buffer(new wxMemoryOutputStream(buf.get(), len));
         buffer->Write(*filestream);
     }
+#else
+    {
+        wxFile file(filename);
+        len = file.Length();
+        buf = counted_array_ptr<char>(new char[len]);
+        file.Read(buf.get(), len);
+    }
+#endif
 
     if (!len)
         return;

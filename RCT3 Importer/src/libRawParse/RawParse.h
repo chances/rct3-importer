@@ -79,6 +79,7 @@ private:
     long ParseSigned(wxXmlNode* node, const wxString& nodes, const wxString& attribute);
     double ParseFloat(wxXmlNode* node, const wxString& nodes, const wxString& attribute);
     void ParseVector(wxXmlNode* node, D3DVECTOR& v, const wxString& nodes);
+    void ParseMatrix(wxXmlNode* node, D3DMATRIX& m, const wxString& nodes);
 
     bool MakeVariable(wxString& var);
     void PassBakeStructures(const wxSortedArrayString& bake) {

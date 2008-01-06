@@ -53,7 +53,7 @@ void ovlOVLManager::Init(cOvl* ovl) {
 void ovlOVLManager::DeferMake(ovlOVLManager* man) {
     if (!m_deferable)
         throw EOvl("ovlOVLManager("+string(Tag())+")::DeferMake called on undeferable type.");
-    DUMP_LOG("Trace: ovlOVLManager::DeferMake(%s)", man->Tag());
+    DUMP_LOG("Trace: ovlOVLManager::DeferMake(%s)", UNISTR(man->Tag()));
     if (m_defermake) {
         m_defermake->DeferMake(man);
     } else {
@@ -102,7 +102,7 @@ void ovlOVLManager::Make(cOvlInfo* info) {
     // No checking, this is done by derived objects
     //m_data = new unsigned char[m_size];
     //memset(m_data, 0, m_size);
-    DUMP_LOG("Trace: ovlOVLManager(%s)::Make", Tag());
+    DUMP_LOG("Trace: ovlOVLManager(%s)::Make", UNISTR(Tag()));
     m_made = true;
     if (m_blobs.size()) {
         for (map<string, cOvlMemBlob>::iterator it = m_blobs.begin(); it != m_blobs.end(); ++it) {
@@ -114,7 +114,7 @@ void ovlOVLManager::Make(cOvlInfo* info) {
 }
 
 void ovlOVLManager::Check(const string& err) {
-    DUMP_LOG("Trace: ovlOVLManager(%s)::Check()", err.c_str());
+    DUMP_LOG("Trace: ovlOVLManager(%s)::Check()", UNISTR(err.c_str()));
     if (!m_ovl)
         throw EOvl("ovlOVLManager("+string(Tag())+")::Check failed due to ovl class unavailable in "+err);
     if (m_data)

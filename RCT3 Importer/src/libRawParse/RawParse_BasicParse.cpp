@@ -123,6 +123,42 @@ void cRawParser::ParseVector(wxXmlNode* node, D3DVECTOR& v, const wxString& node
     v.z = ParseFloat(node, nodes, wxT("z"));
 }
 
+void cRawParser::ParseMatrix(wxXmlNode* node, D3DMATRIX& m, const wxString& nodes) {
+    m = matrixGetUnity();
+
+    bool missrow[4] = {true, true, true, true};
+    wxString temp;
+    wxXmlNode* child = node->GetChildren();
+    while(child) {
+        if (child->GetName() == wxT("row1")) {
+            missrow[0] = false;
+            temp = child->GetNodeContent();
+            if (sscanf(temp.mb_str(wxConvLocal), "%f %f %f %f", &m._11, &m._12, &m._13, &m._14) != 4)
+                throw RCT3InvalidValueException(nodes+_(" tag, row1: invalid content: ")+temp);
+        } else if (child->GetName() == wxT("row2")) {
+            missrow[1] = false;
+            temp = child->GetNodeContent();
+            if (sscanf(temp.mb_str(wxConvLocal), "%f %f %f %f", &m._21, &m._22, &m._23, &m._24) != 4)
+                throw RCT3InvalidValueException(nodes+_(" tag, row2: invalid content: ")+temp);
+        } else if (child->GetName() == wxT("row3")) {
+            missrow[2] = false;
+            temp = child->GetNodeContent();
+            if (sscanf(temp.mb_str(wxConvLocal), "%f %f %f %f", &m._31, &m._32, &m._33, &m._34) != 4)
+                throw RCT3InvalidValueException(nodes+_(" tag, row3: invalid content: ")+temp);
+        } else if (child->GetName() == wxT("row4")) {
+            missrow[3] = false;
+            temp = child->GetNodeContent();
+            if (sscanf(temp.mb_str(wxConvLocal), "%f %f %f %f", &m._41, &m._42, &m._43, &m._44) != 4)
+                throw RCT3InvalidValueException(nodes+_(" tag, row4: invalid content: ")+temp);
+        } else if COMPILER_WRONGTAG(child) {
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in %s."), child->GetName().c_str(), nodes.c_str()));
+        }
+        child = child->GetNext();
+    }
+    if (missrow[0] || missrow[1] || missrow[2] || missrow[3])
+        throw RCT3Exception(wxString::Format(_("Missing matrix row in %s."), nodes.c_str()));
+}
+
 void cRawParser::ParseSet(wxXmlNode* node, bool command, const wxString& tag) {
     wxString name = ParseString(node, tag, wxT("set"), NULL);
     if (node->HasProp(wxT("to"))) {

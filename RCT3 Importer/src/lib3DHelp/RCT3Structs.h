@@ -334,8 +334,8 @@ public:
     virtual const wxString GetTagName() const {return RCT3XML_CMODEL;};
 
 protected:
-    void SetupFileProperties(cMeshStruct* ms, c3DLoader* obj, unsigned int n);
-    cMeshStruct MakeMesh(c3DLoader* obj, unsigned int n);
+    void SetupFileProperties(cMeshStruct* ms, const counted_ptr<c3DLoader>& obj, unsigned int n);
+    cMeshStruct MakeMesh(const counted_ptr<c3DLoader>& obj, unsigned int n);
 
     bool CheckMeshes(bool animated = false);
 };

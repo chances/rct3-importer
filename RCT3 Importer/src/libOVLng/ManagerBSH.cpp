@@ -37,7 +37,7 @@ const char* ovlBSHManager::NAME = "BoneShape";
 const char* ovlBSHManager::TAG = "bsh";
 
 void ovlBSHManager::AddModel(const cBoneShape1& item) {
-    DUMP_LOG("Trace: ovlBSHManager::Make(%s)", item.name.c_str());
+    DUMP_LOG("Trace: ovlBSHManager::Make(%s)", UNISTR(item.name.c_str()));
     Check("ovlBSHManager::AddModel");
     if (item.name == "")
         throw EOvl("ovlBSHManager::AddModel called without name");
