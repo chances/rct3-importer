@@ -86,9 +86,9 @@ protected:
 
     wxMatrixListBox* m_htlbMatrix;
 
-    void AddMatrix(const wxString name, const D3DMATRIX mat, bool setcur = true);
+    void AddMatrix(const wxString name, const MATRIX mat, bool setcur = true);
     void DisplayMatrix();
-    void ShowMatrix(const D3DMATRIX m, unsigned int l = 4);
+    void ShowMatrix(const MATRIX m, unsigned int l = 4);
 
     void OnMatrixChange(wxCommandEvent& event);
     void OnMatrixContentChange(wxCommandEvent& event);
@@ -116,9 +116,9 @@ protected:
     void OnLoad(wxCommandEvent& event);
 
 private:
-    std::vector<D3DMATRIX> m_matrices;
+    std::vector<MATRIX> m_matrices;
     wxArrayString m_matrixnames;
-    std::vector<D3DVECTOR> m_points;
+    std::vector<VECTOR> m_points;
 
     void InitWidgetsFromXRC(wxWindow *parent) {
         wxXmlResource::Get()->LoadObject(this,parent,_T("dlgMatrix"), _T("wxDialog"));
@@ -173,13 +173,13 @@ private:
     DECLARE_EVENT_TABLE()
 public:
     dlgMatrix(wxWindow *parent=NULL);
-    void SetStack(const std::vector<D3DMATRIX>& mat, const wxArrayString& nam) {
+    void SetStack(const std::vector<MATRIX>& mat, const wxArrayString& nam) {
         m_matrices = mat;
         m_matrixnames = nam;
         m_htlbMatrix->UpdateContents();
         DisplayMatrix();
     };
-    std::vector<D3DMATRIX> GetMatrices() const {return m_matrices;};
+    std::vector<MATRIX> GetMatrices() const {return m_matrices;};
     wxArrayString GetMatrixNames() const {return m_matrixnames;};
 };
 

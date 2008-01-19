@@ -12,9 +12,6 @@
 
 /* For ANSI-challenged compilers, you may want to #define
  * NO_MEMBER_TEMPLATES or explicit */
-#ifndef NO_MEMBER_TEMPLATES
-#define NO_MEMBER_TEMPLATES
-#endif
 
 template <class X> class counted_ptr
 {
@@ -37,7 +34,7 @@ public:
     }
 
 #ifndef NO_MEMBER_TEMPLATES
-    template <class Y> friend class counted_ptr<Y>;
+    template <class Y> friend class counted_ptr;
     template <class Y> counted_ptr(const counted_ptr<Y>& r) throw()
         {acquire(r.itsCounter);}
     template <class Y> counted_ptr& operator=(const counted_ptr<Y>& r)

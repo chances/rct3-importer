@@ -147,7 +147,7 @@ struct SpecialAttraction
 	wchar_t* Description;
 	GUISkinItem *GSI;
 	unsigned long unk2;
-	unsigned long unk3;
+	long unk3;
 	unsigned long unk4;
 	unsigned long unk5;
 	unsigned long unk6;
@@ -155,7 +155,7 @@ struct SpecialAttraction
 	unsigned long unk7;
 	unsigned long unk8;
 	unsigned long unk9;
-	unsigned long unk10;
+	long unk10;
 	SceneryItem *SID;
 };
 

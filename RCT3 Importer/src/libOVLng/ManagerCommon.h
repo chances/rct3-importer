@@ -32,10 +32,54 @@
 #include <string>
 
 #include "stall.h"
+#include "vertex.h"
 
 #include "ManagerOVL.h"
 
 using namespace std;
+
+inline float TriMin(float a, float b, float c) {
+    return (a<b)?((a<c)?a:c):((b<c)?b:c);
+}
+
+inline float TriMax(float a, float b, float c) {
+    return (a>b)?((a>c)?a:c):((b>c)?b:c);
+}
+
+struct cTriangleSortAlgorithm {
+    enum Algorithm {
+        MIN = 0,
+        MAX,
+        MEAN,
+        MINMAX,
+        MAXMIN,
+        ANGLE45,
+        MINXZBYY,
+        MINXZBYOTHER,
+        MINYBYX,
+        MINYBYZ,
+        MININV,
+        MINMAXINV,
+        NONE,
+        EnumSize
+    };
+    enum Axis {
+        BY_X,
+        BY_Y,
+        BY_Z
+    };
+    static const Algorithm DEFAULT;
+
+    Algorithm algo;
+    Axis dir;
+    cTriangleSortAlgorithm(Algorithm algorithm, Axis direction): algo(algorithm), dir(direction) {};
+    bool operator() (const VECTOR& a1, const VECTOR& a2, const VECTOR& a3, const VECTOR& b1, const VECTOR& b2, const VECTOR& b3) const;
+
+    static Algorithm GetAlgo(const char* algoname);
+    static inline Algorithm GetDefault() { return DEFAULT; }
+    static const char* GetDefaultName();
+    static const char* GetAlgorithmName(Algorithm algo);
+};
 
 enum cAttractionType {
     ATTRACTION_TYPE_Ride_Water          = 0x00,
@@ -95,6 +139,7 @@ public:
 	}
     void Fill(Attraction* att); // Automatically casts to Attraction2 depending on type
     void Fill(Stall* sta);
+    void Fill(SpecialAttraction* sp);
 };
 
 // "Fake" classes for consistent access to file tags

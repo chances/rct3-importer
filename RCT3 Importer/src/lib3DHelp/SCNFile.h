@@ -53,7 +53,9 @@
 #define RCT3XML_CSCNFILE_REFERENCES wxT("references")
 
 class cOvl;
+class cRawParser;
 class cSCNFile: public cRCT3Xml {
+friend class cRawParser;
 public:
     wxFileName filename;
     wxFileName ovlpath;

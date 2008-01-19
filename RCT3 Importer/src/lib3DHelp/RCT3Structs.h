@@ -48,8 +48,8 @@ WX_DECLARE_STRING_HASH_MAP(int, cIntMap);
 #define RCT3XML_REFERENCE wxT("reference")
 
 #define RCT3XML_MATRIX wxT("matrix")
-bool XmlParseMatrixNode(wxXmlNode* node, D3DMATRIX* marix, wxString* name, unsigned long version);
-wxXmlNode* XmlMakeMatrixNode(const D3DMATRIX& matrix, const wxString& name);
+bool XmlParseMatrixNode(wxXmlNode* node, MATRIX* marix, wxString* name, unsigned long version);
+wxXmlNode* XmlMakeMatrixNode(const MATRIX& matrix, const wxString& name);
 
 //bool XmlParseTXYZNode(wxXmlNode* node, txyz* v, unsigned long version);
 //wxXmlNode* XmlMakeTXYZNode(const txyz& v);
@@ -88,7 +88,7 @@ public:
         return v;
     }
 
-    txyz GetFixed(c3DLoaderOrientation ori);
+    txyz GetFixed(c3DLoaderOrientation ori) const;
 
     virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);
     virtual wxXmlNode* GetNode(const wxString& path);
@@ -110,10 +110,8 @@ enum {
 
 #define RCT3XML_CMESHSTRUCT wxT("mesh")
 class cMeshStruct: public cRCT3Xml {
+DEF_RCT3_VECIT(cMeshStruct)
 public:
-    typedef std::vector<cMeshStruct>::iterator iterator;
-    typedef std::vector<cMeshStruct> vec;
-
     bool disabled;
     wxString TXS;
     wxString FTX;
@@ -130,12 +128,16 @@ public:
     bool valid;
     unsigned long faces;
     bool effectpoint;
-    D3DVECTOR effectpoint_vert;
+    VECTOR effectpoint_vert;
 
     // Helper for bone assignment
     unsigned int bone;
     // For compiler compatibility
     wxString bonename;
+
+	wxString algo_x;
+	wxString algo_y;
+	wxString algo_z;
 
     cMeshStruct() {
         Init();
@@ -238,13 +240,11 @@ DEF_RCT3_PROPERTY_F(unsigned long, AlphaSource, alphasource)
 
 #define RCT3XML_CFLEXITEXTURE wxT("texture")
 class cFlexiTexture: public cRCT3Xml {
+DEF_RCT3_VECIT(cFlexiTexture)
 private:
-    static RGBQUAD g_rgbPalette[256];
+    static COLOURQUAD g_rgbPalette[256];
     static bool g_rgbPaletteCreated;
 public:
-    typedef std::vector<cFlexiTexture>::iterator iterator;
-    typedef std::vector<cFlexiTexture> vec;
-
     wxString Name;
     unsigned long FPS;
     cFlexiTextureAnim::vec Animation;
@@ -262,19 +262,18 @@ public:
     virtual wxXmlNode* GetNode(const wxString& path);
     virtual const wxString GetTagName() const {return RCT3XML_CFLEXITEXTURE;};
 
-    static RGBQUAD* GetRGBPalette();
+    static COLOURQUAD* GetRGBPalette();
 };
 
 class cModelBone;
 //typedef std::vector<cModelBone>::iterator cModelBoneIterator;
 #define RCT3XML_CEFFECTPOINT wxT("effectpoint")
 class cEffectPoint: public cRCT3Xml {
+DEF_RCT3_VECIT(cEffectPoint)
 public:
-    typedef std::vector<cEffectPoint>::iterator iterator;
-    typedef std::vector<cEffectPoint> vec;
 
 	wxString name;
-	std::vector<D3DMATRIX> transforms;
+	std::vector<MATRIX> transforms;
 	wxArrayString transformnames;
 
 	cEffectPoint(): name(wxT("")) {};
@@ -293,7 +292,7 @@ DEF_RCT3_VECIT(cModel)
 public:
     wxString name;
     wxFileName file;
-	std::vector<D3DMATRIX> transforms;
+	std::vector<MATRIX> transforms;
 	wxArrayString transformnames;
     cMeshStruct::vec meshstructs;
     cEffectPoint::vec effectpoints;
@@ -306,7 +305,7 @@ public:
 
 	cModel(): name(wxT("")), file(wxT("")), usedorientation(ORIENTATION_UNKNOWN), fileorientation(ORIENTATION_UNKNOWN), fatal_error(false) {};
 	cModel(const cAnimatedModel& model);
-	cModel(D3DMATRIX def, c3DLoaderOrientation ori);
+	cModel(MATRIX def, c3DLoaderOrientation ori);
 	cModel(wxString filen): name(wxT("")), file(filen), usedorientation(ORIENTATION_UNKNOWN), fileorientation(ORIENTATION_UNKNOWN), fatal_error(false) {
         Load();
     };
@@ -323,6 +322,7 @@ public:
 	}
 
 	virtual bool Check(cModelMap& modnames);
+	virtual bool GetTransformationMatrices(MATRIX& transform, MATRIX& undodamage) const;
 
     virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);
     virtual wxXmlNode* AddNodeContent(wxXmlNode* node, const wxString& path, bool do_local);
@@ -347,17 +347,15 @@ WX_DECLARE_STRING_HASH_MAP(cModel *, cModelMap);
 #define RCT3XML_CMODELBONE_P2 wxT("positions2")
 #define RCT3XML_CMODELBONE_MESH wxT("bmesh")
 class cModelBone: public cRCT3Xml {
+DEF_RCT3_VECIT(cModelBone)
 public:
-    typedef std::vector<cModelBone>::iterator iterator;
-    typedef std::vector<cModelBone> vec;
-
 	wxString name;
 	wxString parent;
 	bool usepos2;
 	wxArrayString meshes;
-	std::vector<D3DMATRIX> positions1;
+	std::vector<MATRIX> positions1;
 	wxArrayString position1names;
-	std::vector<D3DMATRIX> positions2;
+	std::vector<MATRIX> positions2;
 	wxArrayString position2names;
 
 	// Parent by number
@@ -382,15 +380,13 @@ public:
 class cAnimatedModelMap;
 #define RCT3XML_CANIMATEDMODEL wxT("animatedmodel")
 class cAnimatedModel: public cModel {
+DEF_RCT3_VECIT(cAnimatedModel)
 public:
-    typedef std::vector<cAnimatedModel>::iterator iterator;
-    typedef std::vector<cAnimatedModel> vec;
-
     cModelBone::vec modelbones;
 
 	cAnimatedModel(): cModel() {};
 	cAnimatedModel(const cModel& model);
-	cAnimatedModel(D3DMATRIX def, c3DLoaderOrientation ori): cModel(def, ori) {};
+	cAnimatedModel(MATRIX def, c3DLoaderOrientation ori): cModel(def, ori) {};
 	cAnimatedModel(wxString filen): cModel() {
 	    file = filen;
         Load();
@@ -411,10 +407,8 @@ WX_DECLARE_STRING_HASH_MAP(cAnimatedModel *, cAnimatedModelMap);
 #define RCT3XML_CBONEANIMATION_TRANSLATIONS wxT("translations")
 #define RCT3XML_CBONEANIMATION_ROTATIONS wxT("rotations")
 class cBoneAnimation: public cRCT3Xml {
+DEF_RCT3_VECIT(cBoneAnimation)
 public:
-    typedef std::vector<cBoneAnimation>::iterator iterator;
-    typedef std::vector<cBoneAnimation> vec;
-
     wxString name;
     cTXYZ::vec translations;
     cTXYZ::vec rotations;
@@ -430,10 +424,8 @@ public:
 
 #define RCT3XML_CANIMATION wxT("animation")
 class cAnimation: public cRCT3Xml {
+DEF_RCT3_VECIT(cAnimation)
 public:
-    typedef std::vector<cAnimation>::iterator iterator;
-    typedef std::vector<cAnimation> vec;
-
     wxString name;
     cBoneAnimation::vec boneanimations;
     c3DLoaderOrientation usedorientation;
@@ -455,10 +447,8 @@ public:
 #define RCT3XML_CLOD wxT("lod")
 #define RCT3XML_CLOD_ANIMATION wxT("lodanim")
 class cLOD: public cRCT3Xml {
+DEF_RCT3_VECIT(cLOD)
 public:
-    typedef std::vector<cLOD>::iterator iterator;
-    typedef std::vector<cLOD> vec;
-
     wxString modelname;
     bool animated;
     wxArrayString animations;

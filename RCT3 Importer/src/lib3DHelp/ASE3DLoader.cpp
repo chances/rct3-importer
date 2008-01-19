@@ -53,9 +53,9 @@ cASE3DLoader::cASE3DLoader(const wxChar *filename): c3DLoader(filename) {
         if (!file.get())
             return;
 
-        std::auto_ptr<wxInputStream> filestream(file->GetStream());
+        wxInputStream* filestream = file->GetStream(); // Stream is destroyed by wxFSFile
 
-        if (!filestream.get())
+        if (!filestream)
             return;
 
         filestream->SeekI(0, wxFromEnd);

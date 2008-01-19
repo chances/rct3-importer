@@ -38,6 +38,22 @@
 
 using namespace std;
 
+/*
+Here is how simple flics work:
+
+Main Data:
+Stores a relocated pointer to the following FlicStruct. This is eased by the Filc struct.
+The FlicStruct is a data pointer which is 0 on disk and two unknowns. Unknown 1 is 1 and
+Unknown 2 is 1.0.
+
+Extra Data:
+Stores a FlicHeader followed by FlicMipHeader/Data Blocks. The mipcount is either 0 or
+9 (the latter for 256x256 fully mipped textures). Those have 7 mips followed by a zeroed
+FlicMipHeader.
+
+
+*/
+
 struct FlicInternal {
     FlicHeader header;
     FlicStruct flic;

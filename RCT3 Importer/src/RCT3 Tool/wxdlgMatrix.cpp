@@ -158,7 +158,7 @@ dlgMatrix::dlgMatrix(wxWindow *parent) {
 
 }
 
-void dlgMatrix::AddMatrix(const wxString name, const D3DMATRIX mat, bool setcur) {
+void dlgMatrix::AddMatrix(const wxString name, const MATRIX mat, bool setcur) {
     int sel = m_htlbMatrix->GetSelection();
     if (sel < 0)
         return;
@@ -203,7 +203,7 @@ void dlgMatrix::DisplayMatrix() {
     m_textMatrixName->Enable(matrix_enable);
 }
 
-void dlgMatrix::ShowMatrix(const D3DMATRIX m, unsigned int l) {
+void dlgMatrix::ShowMatrix(const MATRIX m, unsigned int l) {
     unsigned int i, j;
     for (i = 0; i < 4; i++)
         for (j = 0; j < 4; j++)
@@ -223,7 +223,7 @@ void dlgMatrix::OnMatrixChange(wxCommandEvent& WXUNUSED(event)) {
 void dlgMatrix::OnMatrixContentChange(wxCommandEvent& WXUNUSED(event)) {
     int sel = m_htlbMatrix->GetSelection();
     if ((sel>0) && (m_matrixnames[sel-1] != wxT("-"))) {
-        D3DMATRIX *m = &m_matrices[sel-1];
+        MATRIX *m = &m_matrices[sel-1];
         wxString t_name = m_textMatrixName->GetValue();
         if (t_name == wxT("-"))
             t_name = wxT("- ");
@@ -245,14 +245,14 @@ void dlgMatrix::OnMatrixMoveUp(wxSpinEvent& WXUNUSED(event)) {
     if (sel<=1)
         return;
     if (::wxGetKeyState(WXK_SHIFT)) {
-        D3DMATRIX temp = m_matrices[sel-1];
+        MATRIX temp = m_matrices[sel-1];
         m_matrices.erase(m_matrices.begin() + sel-1);
         matrixMultiplyIP(&m_matrices[sel-2], &temp);
         wxString temps = m_matrixnames[sel-1];
         m_matrixnames.erase(m_matrixnames.begin() + sel-1);
         m_matrixnames[sel-2] += " & " + temps;
     } else {
-        D3DMATRIX temp = m_matrices[sel-1];
+        MATRIX temp = m_matrices[sel-1];
         m_matrices.erase(m_matrices.begin() + sel-1);
         m_matrices.insert(m_matrices.begin() + sel-2, temp);
         wxString temps = m_matrixnames[sel-1];
@@ -269,7 +269,7 @@ void dlgMatrix::OnMatrixMoveDown(wxSpinEvent& WXUNUSED(event)) {
     if ((sel<=0) || (sel>=m_matrices.size()))
         return;
     if (::wxGetKeyState(WXK_SHIFT)) {
-        D3DMATRIX temp = m_matrices[sel];
+        MATRIX temp = m_matrices[sel];
         matrixMultiplyIP(&m_matrices[sel-1], &temp);
         m_matrices.erase(m_matrices.begin() + sel);
         wxString temps = m_matrixnames[sel];
@@ -278,7 +278,7 @@ void dlgMatrix::OnMatrixMoveDown(wxSpinEvent& WXUNUSED(event)) {
         m_htlbMatrix->UpdateContents();
         m_htlbMatrix->SetSelection(sel);
     } else {
-        D3DMATRIX temp = m_matrices[sel-1];
+        MATRIX temp = m_matrices[sel-1];
         m_matrices.erase(m_matrices.begin() + sel-1);
         m_matrices.insert(m_matrices.begin() + sel, temp);
         wxString temps = m_matrixnames[sel-1];
@@ -355,7 +355,7 @@ void dlgMatrix::OnTranslateChoice(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void dlgMatrix::OnTranslate(wxCommandEvent& WXUNUSED(event)) {
-    D3DVECTOR v;
+    VECTOR v;
     double d;
     if (m_textTranslationX->GetValue().ToDouble(&d))
         v.x = d;
@@ -379,7 +379,7 @@ void dlgMatrix::OnTranslate(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void dlgMatrix::OnTranslateOrigin(wxCommandEvent& WXUNUSED(event)) {
-    D3DVECTOR v;
+    VECTOR v;
     double d;
     if (m_textTranslationX->GetValue().ToDouble(&d))
         v.x = d;
@@ -429,7 +429,7 @@ void dlgMatrix::OnRotate(wxCommandEvent& event) {
 ////////////////////////////////////////////////////////////////////////
 
 void dlgMatrix::OnScale(wxCommandEvent& WXUNUSED(event)) {
-    D3DVECTOR v;
+    VECTOR v;
     double d;
     if (m_textScaleX->GetValue().ToDouble(&d))
         v.x = d;
@@ -512,7 +512,7 @@ void dlgMatrix::OnSpecialLoad(wxCommandEvent& WXUNUSED(event)) {
                 return;
             }
             wxArrayString choices;
-            std::vector<D3DMATRIX> matchoices;
+            std::vector<MATRIX> matchoices;
             for (long j = 0; j < texscn->models.size(); j++) {
                 if (texscn->models[j].transforms.size()!=0) {
                     if ((texscn->models[j].transforms.size()>1) && (!matrixIsEqual(matrixMultiply(texscn->models[j].transforms), matrixGetUnity()))) {
@@ -590,7 +590,7 @@ void dlgMatrix::OnLoad(wxCommandEvent& WXUNUSED(event)) {
                 return;
             }
             wxArrayString choices;
-            std::vector< std::vector<D3DMATRIX> > matchoices;
+            std::vector< std::vector<MATRIX> > matchoices;
             std::vector< wxArrayString > matnames;
             for (long j = 0; j < texscn->models.size(); j++) {
                 if (texscn->models[j].transforms.size()!=0) {

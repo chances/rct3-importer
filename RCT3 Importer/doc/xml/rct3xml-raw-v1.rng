@@ -5,252 +5,195 @@
          xmlns:ns="http://relaxng.org/ns/structure/1.0"
          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">
   <include href="rct3xml-shared-v1.rng"></include>
-
   <start>
     <choice>
       <ref name="rawovl"></ref>
-
       <ref name="variables"></ref>
     </choice>
   </start>
-
   <define name="rawFailModeType">
     <choice>
       <a:documentation>The options are 0 (warn on compile, fail on install)
       and 1 (fail both on compile and install)</a:documentation>
-
       <value type="unsignedInt">0</value>
-
       <value type="unsignedInt">1</value>
     </choice>
   </define>
-
   <define name="rawFileBase">
     <choice>
       <a:documentation>The options are 0 (install/compile dir, default) and 1
       (user dir, only makes files when intalling)</a:documentation>
-
       <value type="unsignedInt">0</value>
-
       <value type="unsignedInt">1</value>
     </choice>
   </define>
-
   <div>
     <a:documentation>Reference Types</a:documentation>
-
+    <define name="BANReference">
+      <a:documentation>Reference to a ced structure</a:documentation>
+      <data type="string"></data>
+    </define>
+    <define name="BSHReference">
+      <a:documentation>Reference to a ced structure</a:documentation>
+      <data type="string"></data>
+    </define>
     <define name="CEDReference">
       <a:documentation>Reference to a ced structure</a:documentation>
-
       <data type="string"></data>
     </define>
-
     <define name="CIDReference">
       <a:documentation>Reference to a cid structure</a:documentation>
-
       <data type="string"></data>
     </define>
-
     <define name="FTXReference">
       <a:documentation>Reference to a ftx structure</a:documentation>
-
       <data type="string"></data>
     </define>
-
     <define name="GSIReference">
       <a:documentation>Reference to a gsi structure</a:documentation>
-
       <data type="string"></data>
     </define>
-
     <define name="SHSReference">
       <a:documentation>Reference to a shs structure</a:documentation>
-
       <data type="string"></data>
     </define>
-
     <define name="SIDReference">
       <a:documentation>Reference to a sid structure</a:documentation>
-
       <data type="string"></data>
     </define>
-
     <define name="SVDReference">
       <a:documentation>Reference to a svd structure</a:documentation>
-
       <data type="string"></data>
     </define>
-
     <define name="SPLReference">
       <a:documentation>Reference to a spl structure</a:documentation>
-
       <data type="string"></data>
     </define>
-
     <define name="TEXReference">
       <a:documentation>Reference to a tex structure</a:documentation>
-
       <data type="string"></data>
     </define>
-
     <define name="TXSReference">
       <a:documentation>Reference to a texture style</a:documentation>
-
       <data type="string"></data>
     </define>
-
     <define name="TXTReference">
       <a:documentation>Reference to a txt structure</a:documentation>
-
       <data type="string"></data>
     </define>
   </div>
-
   <define name="baseattrs">
     <optional>
       <attribute name="comment">
+        <a:documentation>A comment that is shown when processing the
+        tag.</a:documentation>
         <data type="string"></data>
       </attribute>
     </optional>
-
     <optional>
       <attribute name="useprefix" a:defaultValue="1">
         <data type="boolean"></data>
       </attribute>
     </optional>
-
     <optional>
       <attribute name="if">
         <data type="string"></data>
       </attribute>
     </optional>
-
     <optional>
       <attribute name="ifnot">
         <data type="string"></data>
       </attribute>
     </optional>
   </define>
-
   <define name="rootattrs">
     <optional>
       <attribute name="conditions">
         <data type="string"></data>
       </attribute>
     </optional>
-
     <optional>
       <attribute name="prefix">
         <data type="string"></data>
       </attribute>
     </optional>
-
     <optional>
       <attribute name="installdir">
         <data type="string"></data>
       </attribute>
     </optional>
-
     <optional>
       <attribute name="basedir">
         <data type="string"></data>
       </attribute>
     </optional>
-
     <optional>
       <attribute name="file">
         <data type="string"></data>
       </attribute>
     </optional>
   </define>
-
   <define name="roottags">
     <choice>
       <ref name="variables"></ref>
-
       <ref name="set"></ref>
-
       <ref name="unset"></ref>
-
       <ref name="check"></ref>
     </choice>
   </define>
-
   <define name="ovltags">
     <choice>
       <ref name="section"></ref>
-
       <ref name="subovl"></ref>
-
       <ref name="copy"></ref>
-
       <ref name="patch"></ref>
-
       <ref name="write"></ref>
-
       <ref name="import"></ref>
-
       <ref name="ban"></ref>
-
+      <ref name="bsh"></ref>
       <ref name="ced"></ref>
-
       <ref name="chg"></ref>
-
       <ref name="cid"></ref>
-
       <ref name="ftx"></ref>
-
       <ref name="gsi"></ref>
-
+      <ref name="sat"></ref>
+      <ref name="shs"></ref>
       <ref name="sid"></ref>
-
       <ref name="spl"></ref>
-
       <ref name="sta"></ref>
-
+      <ref name="svd"></ref>
       <ref name="tex"></ref>
-
       <ref name="txt"></ref>
-
+      <ref name="wai"></ref>
       <ref name="reference"></ref>
-
       <ref name="symbol"></ref>
     </choice>
   </define>
-
   <div>
     <a:documentation>Structure tags</a:documentation>
-
     <define name="rawovl">
       <element name="rawovl">
         <ref name="rootattrs"></ref>
-
         <zeroOrMore>
           <ref name="roottags"></ref>
         </zeroOrMore>
-
         <oneOrMore>
           <ref name="ovltags"></ref>
         </oneOrMore>
       </element>
     </define>
-
     <define name="subovl">
       <element name="subovl">
         <ref name="rootattrs"></ref>
-
         <ref name="baseattrs"></ref>
-
         <choice>
           <attribute name="include">
             <data type="string"></data>
           </attribute>
-
           <group>
             <zeroOrMore>
               <ref name="roottags"></ref>
             </zeroOrMore>
-
             <zeroOrMore>
               <ref name="ovltags"></ref>
             </zeroOrMore>
@@ -258,27 +201,27 @@
         </choice>
       </element>
     </define>
-
     <define name="section">
       <element name="section">
         <ref name="baseattrs"></ref>
-
         <optional>
           <attribute name="prefix">
             <data type="string"></data>
           </attribute>
         </optional>
-
-        <zeroOrMore>
-          <ref name="ovltags"></ref>
-        </zeroOrMore>
+        <choice>
+          <attribute name="include">
+            <data type="string"></data>
+          </attribute>
+          <zeroOrMore>
+            <ref name="ovltags"></ref>
+          </zeroOrMore>
+        </choice>
       </element>
     </define>
   </div>
-
   <div>
     <a:documentation>Variable tags</a:documentation>
-
     <define name="variables">
       <element name="variables">
         <optional>
@@ -286,25 +229,20 @@
             <data type="string"></data>
           </attribute>
         </optional>
-
         <zeroOrMore>
           <choice>
             <ref name="variables"></ref>
-
             <ref name="set"></ref>
-
             <ref name="unset"></ref>
           </choice>
         </zeroOrMore>
       </element>
     </define>
-
     <define name="set">
       <element name="set">
         <attribute name="set">
           <data type="string"></data>
         </attribute>
-
         <optional>
           <attribute name="to">
             <data type="string"></data>
@@ -312,7 +250,6 @@
         </optional>
       </element>
     </define>
-
     <define name="unset">
       <element name="unset">
         <attribute name="unset">
@@ -320,44 +257,35 @@
         </attribute>
       </element>
     </define>
-
     <define name="check">
       <a:documentation>Check needs filename with extension. Reference checking
       needs the .common.ovl name (with extension).</a:documentation>
-
       <element name="check">
         <ref name="baseattrs"></ref>
-
         <attribute name="file">
           <data type="string"></data>
         </attribute>
-
         <choice>
           <attribute name="for">
             <value type="string">presence</value>
           </attribute>
-
           <group>
             <attribute name="for">
               <value type="string">reference</value>
             </attribute>
-
             <attribute name="parameter">
               <data type="string"></data>
             </attribute>
           </group>
         </choice>
-
         <attribute name="set">
           <data type="string"></data>
         </attribute>
-
         <optional>
           <attribute name="to">
             <data type="string"></data>
           </attribute>
         </optional>
-
         <optional>
           <attribute name="filebase">
             <ref name="rawFileBase"></ref>
@@ -366,30 +294,24 @@
       </element>
     </define>
   </div>
-
   <div>
     <a:documentation>Main content tags</a:documentation>
-
     <div>
       <define name="copy">
         <a:documentation>Copy needs filenames with
         extension.</a:documentation>
-
         <element name="copy">
           <attribute name="from">
             <data type="string"></data>
           </attribute>
-
           <attribute name="to">
             <data type="string"></data>
           </attribute>
-
           <optional>
             <attribute name="filebase">
               <ref name="rawFileBase"></ref>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="failmode">
               <ref name="rawFailModeType"></ref>
@@ -397,24 +319,19 @@
           </optional>
         </element>
       </define>
-
       <define name="patch">
         <a:documentation>Patch needs filenames with extension, .common.ovl for
         ovl files.</a:documentation>
-
         <element name="patch">
           <attribute name="file">
             <data type="string"></data>
           </attribute>
-
           <attribute name="what">
             <value type="string">addreference</value>
           </attribute>
-
           <attribute name="parameter">
             <data type="string"></data>
           </attribute>
-
           <optional>
             <attribute name="failmode">
               <ref name="rawFailModeType"></ref>
@@ -422,38 +339,31 @@
           </optional>
         </element>
       </define>
-
       <define name="write">
         <a:documentation>Copy needs filenames with
         extension.</a:documentation>
-
         <element name="write">
           <choice>
             <group>
               <attribute name="type">
                 <value type="string">file</value>
               </attribute>
-
               <data type="anyURI">
                 <param name="minLength">1</param>
               </data>
             </group>
-
             <group>
               <attribute name="type">
                 <value type="string">data</value>
               </attribute>
-
               <data type="base64Binary">
                 <param name="minLength">1</param>
               </data>
             </group>
           </choice>
-
           <attribute name="to">
             <data type="string"></data>
           </attribute>
-
           <optional>
             <attribute name="filebase">
               <ref name="rawFileBase"></ref>
@@ -462,15 +372,12 @@
         </element>
       </define>
     </div>
-
     <define name="import">
       <element name="import">
         <ref name="baseattrs"></ref>
-
         <attribute name="file">
           <data type="string"></data>
         </attribute>
-
         <optional>
           <attribute name="name">
             <data type="string"></data>
@@ -478,23 +385,19 @@
         </optional>
       </element>
     </define>
-
     <define name="attractionbase">
       <element name="attractionbase">
         <ref name="baseattrs"></ref>
-
         <optional>
           <attribute name="type">
             <data type="unsignedInt"></data>
           </attribute>
         </optional>
-
         <optional>
           <attribute name="icon">
             <ref name="GSIReference"></ref>
           </attribute>
         </optional>
-
         <optional>
           <attribute name="spline">
             <ref name="SPLReference"></ref>
@@ -502,65 +405,54 @@
         </optional>
       </element>
     </define>
-
     <define name="attractionunknowns">
       <element name="attractionunknowns">
         <ref name="baseattrs"></ref>
-
         <optional>
           <attribute name="u13">
             <data type="unsignedInt"></data>
           </attribute>
         </optional>
-
         <optional>
           <attribute name="u12">
             <data type="unsignedInt"></data>
           </attribute>
         </optional>
-
         <optional>
           <attribute name="u11">
             <data type="unsignedInt"></data>
           </attribute>
         </optional>
-
         <optional>
           <attribute name="u10">
             <data type="int"></data>
           </attribute>
         </optional>
-
         <optional>
           <attribute name="u9">
             <data type="unsignedInt"></data>
           </attribute>
         </optional>
-
         <optional>
           <attribute name="u6">
             <data type="unsignedInt"></data>
           </attribute>
         </optional>
-
         <optional>
           <attribute name="u5">
             <data type="unsignedInt"></data>
           </attribute>
         </optional>
-
         <optional>
           <attribute name="u4">
             <data type="unsignedInt"></data>
           </attribute>
         </optional>
-
         <optional>
           <attribute name="u3">
             <data type="int"></data>
           </attribute>
         </optional>
-
         <optional>
           <attribute name="u2">
             <data type="unsignedInt"></data>
@@ -568,18 +460,14 @@
         </optional>
       </element>
     </define>
-
     <div>
       <a:documentation>ban tags</a:documentation>
-
       <define name="ban">
         <element name="ban">
           <ref name="baseattrs"></ref>
-
           <attribute name="name">
             <data type="string"></data>
           </attribute>
-
           <optional>
             <attribute name="totaltime">
               <data type="float">
@@ -587,27 +475,22 @@
               </data>
             </attribute>
           </optional>
-
           <oneOrMore>
             <ref name="banbone"></ref>
           </oneOrMore>
         </element>
       </define>
-
       <define name="banbone">
         <element name="banbone">
           <ref name="baseattrs"></ref>
-
           <attribute name="name">
             <data type="string"></data>
           </attribute>
-
           <oneOrMore>
             <choice>
               <element name="translation">
                 <ref name="ovlTXYZ"></ref>
               </element>
-
               <element name="rotation">
                 <ref name="ovlTXYZ"></ref>
               </element>
@@ -616,142 +499,122 @@
         </element>
       </define>
     </div>
-
     <div>
       <a:documentation>bsh tags</a:documentation>
-
       <define name="bsh">
         <element name="bsh">
           <ref name="baseattrs"></ref>
-
           <attribute name="name">
             <data type="string"></data>
           </attribute>
-
           <optional>
             <element name="boundingboxmin">
               <ref name="ovlVector"></ref>
             </element>
-
             <element name="boundingboxmax">
               <ref name="ovlVector"></ref>
             </element>
           </optional>
-
           <interleave>
             <oneOrMore>
               <ref name="bshmesh"></ref>
             </oneOrMore>
-
-            <zeroOrMore>
+            <oneOrMore>
               <ref name="bshbone"></ref>
-            </zeroOrMore>
+            </oneOrMore>
           </interleave>
         </element>
       </define>
-
       <define name="bshmesh">
         <element name="bshmesh">
           <ref name="baseattrs"></ref>
-
           <attribute name="ftx">
             <ref name="FTXReference"></ref>
           </attribute>
-
           <attribute name="txs">
             <ref name="TXSReference"></ref>
           </attribute>
-
           <optional>
             <attribute name="placing">
               <choice>
                 <value type="unsignedInt">0</value>
-
                 <value type="unsignedInt">1</value>
-
                 <value type="unsignedInt">2</value>
               </choice>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="flags">
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="doublesided">
               <choice>
                 <value type="unsignedInt">1</value>
-
                 <value type="unsignedInt">3</value>
               </choice>
             </attribute>
           </optional>
-
           <choice>
             <group>
               <attribute name="meshname">
                 <data type="string"></data>
               </attribute>
-
               <attribute name="modelfile">
                 <data type="string"></data>
               </attribute>
-
               <optional>
                 <attribute name="bone">
                   <data type="byte"></data>
                 </attribute>
               </optional>
-
-              <optional>
-                <attribute name="handedness">
-                  <choice>
-                    <value type="string">left</value>
-
-                    <value type="string">right</value>
-                  </choice>
-                </attribute>
-              </optional>
-
-              <optional>
-                <attribute name="up">
-                  <choice>
-                    <value type="string">x</value>
-
-                    <value type="string">y</value>
-
-                    <value type="string">z</value>
-                  </choice>
-                </attribute>
-              </optional>
-
               <optional>
                 <attribute name="fudge">
                   <ref name="impFudge"></ref>
                 </attribute>
               </optional>
+              <choice>
+                <group>
+                  <optional>
+                    <attribute name="handedness">
+                      <choice>
+                        <value type="string">left</value>
+                        <value type="string">right</value>
+                      </choice>
+                    </attribute>
+                  </optional>
+                  <optional>
+                    <attribute name="up">
+                      <choice>
+                        <value type="string">x</value>
+                        <value type="string">y</value>
+                        <value type="string">z</value>
+                      </choice>
+                    </attribute>
+                  </optional>
+                </group>
+                <optional>
+                  <element name="transformation">
+                    <ref name="impMatrix"></ref>
+                  </element>
+                </optional>
+              </choice>
             </group>
-
             <interleave>
               <oneOrMore>
                 <element name="vertex2">
                   <ref name="ovlVertex2"></ref>
                 </element>
               </oneOrMore>
-
               <oneOrMore>
                 <element name="triangle">
                   <attribute name="a">
                     <data type="unsignedShort"></data>
                   </attribute>
-
                   <attribute name="b">
                     <data type="unsignedShort"></data>
                   </attribute>
-
                   <attribute name="c">
                     <data type="unsignedShort"></data>
                   </attribute>
@@ -761,29 +624,23 @@
           </choice>
         </element>
       </define>
-
       <define name="bshbone">
         <element name="bshbone">
           <ref name="baseattrs"></ref>
-
           <choice>
             <attribute name="name">
               <value type="string">Scene Root</value>
             </attribute>
-
             <group>
               <attribute name="name">
                 <data type="string"></data>
               </attribute>
-
               <attribute name="parent">
                 <data type="byte"></data>
               </attribute>
-
               <element name="position1">
                 <ref name="impMatrix"></ref>
               </element>
-
               <optional>
                 <element name="position2">
                   <ref name="impMatrix"></ref>
@@ -794,60 +651,48 @@
         </element>
       </define>
     </div>
-
     <div>
       <a:documentation>ced tags</a:documentation>
-
       <define name="ced">
         <element name="ced">
           <ref name="baseattrs"></ref>
-
           <attribute name="name">
             <data type="string"></data>
           </attribute>
-
           <attribute name="nametxt">
             <ref name="TXTReference"></ref>
           </attribute>
-
           <attribute name="icon">
             <ref name="GSIReference"></ref>
           </attribute>
-
           <optional>
             <ref name="cedmore"></ref>
           </optional>
         </element>
       </define>
-
       <define name="cedmore">
         <element name="cedmore">
           <ref name="baseattrs"></ref>
-
           <optional>
             <attribute name="u7">
               <data type="float"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="u4">
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="u1">
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="thirst">
               <data type="float"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="hunger">
               <data type="float"></data>
@@ -856,144 +701,113 @@
         </element>
       </define>
     </div>
-
     <define name="chg">
       <element name="chg">
         <attribute name="name">
           <data type="string"></data>
         </attribute>
-
         <attribute name="nametxt">
           <ref name="TXTReference"></ref>
         </attribute>
-
         <attribute name="description">
           <ref name="TXTReference"></ref>
         </attribute>
-
         <attribute name="sid">
           <ref name="SIDReference"></ref>
         </attribute>
-
         <attribute name="roomspline">
           <ref name="SPLReference"></ref>
         </attribute>
-
         <ref name="baseattrs"></ref>
-
         <interleave>
           <optional>
             <ref name="attractionbase"></ref>
           </optional>
-
           <optional>
             <ref name="attractionunknowns"></ref>
           </optional>
         </interleave>
       </element>
     </define>
-
     <div>
       <a:documentation>cid tags</a:documentation>
-
       <define name="cid">
         <element name="cid">
           <ref name="baseattrs"></ref>
-
           <attribute name="name">
             <data type="string"></data>
           </attribute>
-
           <attribute name="nametxt">
             <ref name="TXTReference"></ref>
           </attribute>
-
           <attribute name="pluralnametxt">
             <ref name="TXTReference"></ref>
           </attribute>
-
           <interleave>
             <ref name="cidshape"></ref>
-
             <optional>
               <ref name="cidmore"></ref>
             </optional>
-
             <optional>
               <ref name="cidsettings"></ref>
             </optional>
-
             <optional>
               <ref name="cidtrash"></ref>
             </optional>
-
             <optional>
               <ref name="cidsoaked"></ref>
             </optional>
-
             <optional>
               <ref name="cidsizeunknowns"></ref>
             </optional>
-
             <optional>
               <ref name="cidunknowns"></ref>
             </optional>
-
             <zeroOrMore>
               <ref name="cidextra"></ref>
             </zeroOrMore>
           </interleave>
         </element>
       </define>
-
       <define name="cidshape">
         <element name="cidshape">
           <ref name="baseattrs"></ref>
-
           <choice>
             <group>
               <attribute name="shaped">
                 <value type="boolean">0</value>
               </attribute>
-
               <attribute name="ftx">
                 <ref name="FTXReference"></ref>
               </attribute>
-
               <optional>
                 <attribute name="scalex">
                   <data type="float"></data>
                 </attribute>
               </optional>
-
               <optional>
                 <attribute name="scaley">
                   <data type="float"></data>
                 </attribute>
               </optional>
             </group>
-
             <group>
               <attribute name="shaped">
                 <value type="boolean">1</value>
               </attribute>
-
               <attribute name="shape1">
                 <ref name="SHSReference"></ref>
               </attribute>
-
               <attribute name="shape2">
                 <ref name="SHSReference"></ref>
               </attribute>
             </group>
           </choice>
-
           <optional>
             <attribute name="defaultcolour">
               <ref name="ovlDefaultColour"></ref>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="distance">
               <data type="float"></data>
@@ -1001,27 +815,22 @@
           </optional>
         </element>
       </define>
-
       <define name="cidextra">
         <element name="cidextra">
           <ref name="baseattrs"></ref>
-
           <attribute name="name">
             <ref name="CEDReference"></ref>
           </attribute>
         </element>
       </define>
-
       <define name="cidmore">
         <element name="cidmore">
           <ref name="baseattrs"></ref>
-
           <optional>
             <attribute name="icon">
               <ref name="GSIReference"></ref>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="addonpack">
               <ref name="ovlExtraPack"></ref>
@@ -1029,41 +838,34 @@
           </optional>
         </element>
       </define>
-
       <define name="cidsettings">
         <element name="cidsettings">
           <ref name="baseattrs"></ref>
-
           <optional>
             <attribute name="lightprotectionfactor">
               <data type="float"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="thirst">
               <data type="float"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="hunger">
               <data type="float"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="type">
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="ageclass">
               <data type="int"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="flags">
               <data type="unsignedInt"></data>
@@ -1071,29 +873,24 @@
           </optional>
         </element>
       </define>
-
       <define name="cidsizeunknowns">
         <element name="cidsizeunknowns">
           <ref name="baseattrs"></ref>
-
           <optional>
             <attribute name="u4">
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="u3">
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="u2">
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="u1">
               <data type="unsignedInt"></data>
@@ -1101,41 +898,34 @@
           </optional>
         </element>
       </define>
-
       <define name="cidsoaked">
         <element name="cidsoaked">
           <ref name="baseattrs"></ref>
-
           <optional>
             <attribute name="textureoption">
               <data type="string"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="unknown">
               <data type="unsignedLong"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="femalelegs">
               <data type="string"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="femalebody">
               <data type="string"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="malelegs">
               <data type="string"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="malebody">
               <data type="string"></data>
@@ -1143,23 +933,19 @@
           </optional>
         </element>
       </define>
-
       <define name="cidtrash">
         <element name="cidtrash">
           <ref name="baseattrs"></ref>
-
           <optional>
             <attribute name="wrapper">
               <ref name="CIDReference"></ref>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="trash1">
               <data type="float"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="trash2">
               <data type="int"></data>
@@ -1167,41 +953,34 @@
           </optional>
         </element>
       </define>
-
       <define name="cidunknowns">
         <element name="cidunknowns">
           <ref name="baseattrs"></ref>
-
           <optional>
             <attribute name="u33">
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="u28">
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="u27">
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="u26">
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="u3">
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="u1">
               <data type="unsignedInt"></data>
@@ -1210,45 +989,43 @@
         </element>
       </define>
     </div>
-
     <div>
       <a:documentation>ftx tags</a:documentation>
-
       <define name="ftx">
         <element name="ftx">
           <ref name="baseattrs"></ref>
-
           <attribute name="name">
             <data type="string"></data>
           </attribute>
-
           <optional>
             <attribute name="dimension">
               <ref name="ovlTextureDimension"></ref>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="recolourable">
               <ref name="ovlRecolourable"></ref>
             </attribute>
           </optional>
-
           <choice>
-            <ref name="ftxframe"></ref>
-
+            <group>
+              <interleave>
+                <optional>
+                  <ref name="ftxanimation"></ref>
+                </optional>
+                <ref name="ftxframe"></ref>
+              </interleave>
+            </group>
             <group>
               <attribute name="fps">
                 <data type="unsignedInt">
                   <param name="minInclusive">1</param>
                 </data>
               </attribute>
-
               <interleave>
                 <oneOrMore>
                   <ref name="ftxanimation"></ref>
                 </oneOrMore>
-
                 <oneOrMore>
                   <ref name="ftxframe"></ref>
                 </oneOrMore>
@@ -1257,15 +1034,12 @@
           </choice>
         </element>
       </define>
-
       <define name="ftxanimation">
         <element name="ftxanimation">
           <ref name="baseattrs"></ref>
-
           <attribute name="index">
             <data type="unsignedInt"></data>
           </attribute>
-
           <optional>
             <attribute name="repeat">
               <data type="unsignedInt">
@@ -1275,83 +1049,65 @@
           </optional>
         </element>
       </define>
-
       <define name="ftxframe">
         <element name="ftxframe">
           <ref name="baseattrs"></ref>
-
           <optional>
             <attribute name="recolourable">
               <ref name="ovlRecolourable"></ref>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="dimension">
               <ref name="ovlTextureDimension"></ref>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="alphacutoff">
               <data type="unsignedByte"></data>
             </attribute>
           </optional>
-
           <choice>
             <choice>
               <group>
                 <element name="image">
                   <ref name="baseattrs"></ref>
-
                   <optional>
                     <attribute name="usealpha">
                       <value type="boolean">0</value>
                     </attribute>
                   </optional>
-
                   <data type="string"></data>
                 </element>
-
                 <optional>
                   <element name="alpha">
                     <ref name="baseattrs"></ref>
-
                     <data type="string"></data>
                   </element>
                 </optional>
               </group>
-
               <element name="image">
                 <ref name="baseattrs"></ref>
-
                 <optional>
                   <attribute name="usealpha">
                     <value type="boolean">1</value>
                   </attribute>
                 </optional>
-
                 <data type="string"></data>
               </element>
             </choice>
-
             <group>
               <element name="palettedata">
                 <ref name="baseattrs"></ref>
-
                 <data type="base64Binary"></data>
               </element>
-
               <element name="texturedata">
                 <ref name="baseattrs"></ref>
-
                 <data type="base64Binary"></data>
               </element>
-
               <optional>
                 <element name="alphadata">
                   <ref name="baseattrs"></ref>
-
                   <data type="base64Binary"></data>
                 </element>
               </optional>
@@ -1360,148 +1116,273 @@
         </element>
       </define>
     </div>
-
     <define name="gsi">
       <element name="gsi">
         <ref name="baseattrs"></ref>
-
         <attribute name="right">
           <data type="unsignedInt"></data>
         </attribute>
-
         <attribute name="left">
           <data type="unsignedInt"></data>
         </attribute>
-
         <attribute name="bottom">
           <data type="unsignedInt"></data>
         </attribute>
-
         <attribute name="top">
           <data type="unsignedInt"></data>
         </attribute>
-
         <attribute name="tex">
           <ref name="TEXReference"></ref>
         </attribute>
-
         <attribute name="name">
           <data type="string"></data>
         </attribute>
       </element>
     </define>
-
+    <define name="sat">
+      <element name="sat">
+        <ref name="baseattrs"></ref>
+        <attribute name="name">
+          <data type="string"></data>
+        </attribute>
+        <attribute name="nametxt">
+          <ref name="TXTReference"></ref>
+        </attribute>
+        <attribute name="description">
+          <ref name="TXTReference"></ref>
+        </attribute>
+        <attribute name="sid">
+          <ref name="SIDReference"></ref>
+        </attribute>
+        <interleave>
+          <optional>
+            <ref name="attractionbase"></ref>
+          </optional>
+          <optional>
+            <ref name="attractionunknowns"></ref>
+          </optional>
+        </interleave>
+      </element>
+    </define>
     <div>
-      <a:documentation>sid tags</a:documentation>
-
-      <define name="sid">
-        <element name="sid">
+      <a:documentation>shs tags</a:documentation>
+      <define name="shs">
+        <element name="shs">
           <ref name="baseattrs"></ref>
-
           <attribute name="name">
             <data type="string"></data>
           </attribute>
-
+          <optional>
+            <element name="boundingboxmin">
+              <ref name="ovlVector"></ref>
+            </element>
+            <element name="boundingboxmax">
+              <ref name="ovlVector"></ref>
+            </element>
+          </optional>
+          <interleave>
+            <oneOrMore>
+              <ref name="shsmesh"></ref>
+            </oneOrMore>
+            <zeroOrMore>
+              <ref name="shseffect"></ref>
+            </zeroOrMore>
+          </interleave>
+        </element>
+      </define>
+      <define name="shsmesh">
+        <element name="shsmesh">
+          <ref name="baseattrs"></ref>
+          <attribute name="ftx">
+            <ref name="FTXReference"></ref>
+          </attribute>
+          <attribute name="txs">
+            <ref name="TXSReference"></ref>
+          </attribute>
+          <optional>
+            <attribute name="placing">
+              <choice>
+                <value type="unsignedInt">0</value>
+                <value type="unsignedInt">1</value>
+                <value type="unsignedInt">2</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="flags">
+              <data type="unsignedInt"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="doublesided">
+              <choice>
+                <value type="unsignedInt">1</value>
+                <value type="unsignedInt">3</value>
+              </choice>
+            </attribute>
+          </optional>
+          <choice>
+            <group>
+              <attribute name="meshname">
+                <data type="string"></data>
+              </attribute>
+              <attribute name="modelfile">
+                <data type="string"></data>
+              </attribute>
+              <optional>
+                <attribute name="fudge">
+                  <ref name="impFudge"></ref>
+                </attribute>
+              </optional>
+              <choice>
+                <group>
+                  <optional>
+                    <attribute name="handedness">
+                      <choice>
+                        <value type="string">left</value>
+                        <value type="string">right</value>
+                      </choice>
+                    </attribute>
+                  </optional>
+                  <optional>
+                    <attribute name="up">
+                      <choice>
+                        <value type="string">x</value>
+                        <value type="string">y</value>
+                        <value type="string">z</value>
+                      </choice>
+                    </attribute>
+                  </optional>
+                </group>
+                <optional>
+                  <element name="transformation">
+                    <ref name="impMatrix"></ref>
+                  </element>
+                </optional>
+              </choice>
+            </group>
+            <interleave>
+              <oneOrMore>
+                <element name="vertex">
+                  <ref name="ovlVertex"></ref>
+                </element>
+              </oneOrMore>
+              <oneOrMore>
+                <element name="triangle">
+                  <attribute name="a">
+                    <data type="unsignedInt"></data>
+                  </attribute>
+                  <attribute name="b">
+                    <data type="unsignedInt"></data>
+                  </attribute>
+                  <attribute name="c">
+                    <data type="unsignedInt"></data>
+                  </attribute>
+                </element>
+              </oneOrMore>
+            </interleave>
+          </choice>
+        </element>
+      </define>
+      <define name="shseffect">
+        <element name="shseffect">
+          <ref name="baseattrs"></ref>
+          <attribute name="name">
+            <data type="string"></data>
+          </attribute>
+          <element name="position">
+            <ref name="impMatrix"></ref>
+          </element>
+        </element>
+      </define>
+    </div>
+    <div>
+      <a:documentation>sid tags</a:documentation>
+      <define name="sid">
+        <element name="sid">
+          <ref name="baseattrs"></ref>
+          <attribute name="name">
+            <data type="string"></data>
+          </attribute>
           <attribute name="nametxt">
             <ref name="TXTReference"></ref>
           </attribute>
-
           <attribute name="icon">
             <ref name="GSIReference"></ref>
           </attribute>
-
           <attribute name="ovlpath">
             <data type="string"></data>
           </attribute>
-
           <attribute name="svd">
             <ref name="SVDReference"></ref>
           </attribute>
-
           <interleave>
             <optional>
               <ref name="sidgroup"></ref>
             </optional>
-
             <optional>
               <ref name="sidtype"></ref>
             </optional>
-
             <optional>
               <ref name="sidposition"></ref>
             </optional>
-
             <optional>
               <ref name="sidcolours"></ref>
             </optional>
-
             <optional>
               <ref name="sidimporterunknowns"></ref>
             </optional>
-
             <optional>
               <ref name="sidstallunknowns"></ref>
             </optional>
-
             <zeroOrMore>
               <ref name="sidvisual"></ref>
             </zeroOrMore>
-
             <zeroOrMore>
               <ref name="sidparameter"></ref>
             </zeroOrMore>
-
             <zeroOrMore>
               <ref name="sidsquareunknowns"></ref>
             </zeroOrMore>
           </interleave>
         </element>
       </define>
-
       <define name="sidtype">
         <element name="sidtype">
           <ref name="baseattrs"></ref>
-
           <optional>
             <attribute name="removalcost">
               <data type="int"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="cost">
               <data type="int"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="scenerytype">
               <data type="int">
                 <param name="minInclusive">0</param>
-
                 <param name="maxInclusive">46</param>
               </data>
             </attribute>
           </optional>
         </element>
       </define>
-
       <define name="sidcolours">
         <element name="sidcolours">
           <ref name="baseattrs"></ref>
-
           <optional>
             <attribute name="choice3">
               <ref name="ovlDefaultColour"></ref>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="choice2">
               <ref name="ovlDefaultColour"></ref>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="choice1">
               <ref name="ovlDefaultColour"></ref>
@@ -1509,25 +1390,20 @@
           </optional>
         </element>
       </define>
-
       <define name="sidgroup">
         <element name="sidgroup">
           <ref name="baseattrs"></ref>
-
           <attribute name="name">
             <ref name="TXTReference"></ref>
           </attribute>
-
           <attribute name="icon">
             <ref name="GSIReference"></ref>
           </attribute>
         </element>
       </define>
-
       <define name="sidimporterunknowns">
         <element name="sidimporterunknowns">
           <ref name="baseattrs"></ref>
-
           <optional>
             <attribute name="flags">
               <data type="string">
@@ -1535,13 +1411,11 @@
               </data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="u1">
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="u2">
               <data type="unsignedInt"></data>
@@ -1549,11 +1423,9 @@
           </optional>
         </element>
       </define>
-
       <define name="sidsquareunknowns">
         <element name="sidsqaureunknowns">
           <ref name="baseattrs"></ref>
-
           <optional>
             <attribute name="flags">
               <data type="string">
@@ -1561,25 +1433,21 @@
               </data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="u6">
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="u7">
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="u8">
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="u9">
               <data type="unsignedInt"></data>
@@ -1587,15 +1455,12 @@
           </optional>
         </element>
       </define>
-
       <define name="sidparameter">
         <element name="sidparameter">
           <ref name="baseattrs"></ref>
-
           <attribute name="name">
             <ref name="ovlSidParameters"></ref>
           </attribute>
-
           <optional>
             <attribute name="param">
               <data type="string"></data>
@@ -1603,69 +1468,57 @@
           </optional>
         </element>
       </define>
-
       <define name="sidposition">
         <element name="sidposition">
           <ref name="baseattrs"></ref>
-
           <optional>
             <attribute name="type">
               <data type="int">
                 <param name="minInclusive">0</param>
-
                 <param name="maxInclusive">8</param>
               </data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="xsquares">
               <data type="int"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="ysquares">
               <data type="int"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="xpos">
               <data type="float"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="ypos">
               <data type="float"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="zpos">
               <data type="float"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="xsize">
               <data type="float"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="ysize">
               <data type="float"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="zsize">
               <data type="float"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="supports">
               <ref name="ovlSidSupports"></ref>
@@ -1673,17 +1526,14 @@
           </optional>
         </element>
       </define>
-
       <define name="sidstallunknowns">
         <element name="sidstallunknowns">
           <ref name="baseattrs"></ref>
-
           <optional>
             <attribute name="u2">
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="u1">
               <data type="unsignedInt"></data>
@@ -1691,109 +1541,86 @@
           </optional>
         </element>
       </define>
-
       <define name="sidvisual">
         <element name="sidvisual">
           <ref name="baseattrs"></ref>
-
           <attribute name="name">
             <ref name="SVDReference"></ref>
           </attribute>
         </element>
       </define>
     </div>
-
     <div>
       <define name="spl">
         <element name="spl">
           <ref name="baseattrs"></ref>
-
           <optional>
             <attribute name="u6">
               <data type="float"></data>
             </attribute>
           </optional>
-
           <attribute name="u3">
             <data type="float"></data>
           </attribute>
-
           <attribute name="name">
             <data type="string"></data>
           </attribute>
-
           <interleave>
             <oneOrMore>
               <ref name="splnode"></ref>
             </oneOrMore>
-
             <oneOrMore>
               <ref name="spllength"></ref>
             </oneOrMore>
-
             <oneOrMore>
               <ref name="spldata"></ref>
             </oneOrMore>
           </interleave>
         </element>
       </define>
-
       <define name="splnode">
         <element name="splnode">
           <ref name="baseattrs"></ref>
-
           <attribute name="cp2z">
             <data type="float"></data>
           </attribute>
-
           <attribute name="cp2y">
             <data type="float"></data>
           </attribute>
-
           <attribute name="cp2x">
             <data type="float"></data>
           </attribute>
-
           <attribute name="cp1z">
             <data type="float"></data>
           </attribute>
-
           <attribute name="cp1y">
             <data type="float"></data>
           </attribute>
-
           <attribute name="cp1x">
             <data type="float"></data>
           </attribute>
-
           <attribute name="z">
             <data type="float"></data>
           </attribute>
-
           <attribute name="y">
             <data type="float"></data>
           </attribute>
-
           <attribute name="x">
             <data type="float"></data>
           </attribute>
         </element>
       </define>
-
       <define name="spllength">
         <element name="spllength">
           <ref name="baseattrs"></ref>
-
           <attribute name="length">
             <data type="float"></data>
           </attribute>
         </element>
       </define>
-
       <define name="spldata">
         <element name="spldata">
           <ref name="baseattrs"></ref>
-
           <attribute name="data">
             <data type="hexBinary">
               <param name="length">14</param>
@@ -1802,82 +1629,66 @@
         </element>
       </define>
     </div>
-
     <div>
       <define name="sta">
         <element name="sta">
           <ref name="baseattrs"></ref>
-
           <attribute name="name">
             <data type="string"></data>
           </attribute>
-
           <attribute name="nametxt">
             <ref name="TXTReference"></ref>
           </attribute>
-
           <attribute name="description">
             <ref name="TXTReference"></ref>
           </attribute>
-
           <attribute name="sid">
             <ref name="SIDReference"></ref>
           </attribute>
-
           <interleave>
             <optional>
               <ref name="attractionbase"></ref>
             </optional>
-
             <optional>
               <ref name="attractionunknowns"></ref>
             </optional>
-
             <optional>
               <ref name="stastallunknowns"></ref>
             </optional>
-
             <zeroOrMore>
               <ref name="staitem"></ref>
             </zeroOrMore>
           </interleave>
         </element>
       </define>
-
       <define name="stastallunknowns">
         <element name="stastallunknowns">
           <ref name="baseattrs"></ref>
-
           <optional>
             <attribute name="u6">
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="u5">
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="u4">
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="u3">
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="u2">
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
-
           <optional>
             <attribute name="u1">
               <data type="unsignedInt"></data>
@@ -1885,115 +1696,407 @@
           </optional>
         </element>
       </define>
-
       <define name="staitem">
         <element name="staitem">
           <ref name="baseattrs"></ref>
-
           <attribute name="cid">
             <ref name="CIDReference"></ref>
           </attribute>
-
           <attribute name="cost">
             <data type="unsignedInt"></data>
           </attribute>
         </element>
       </define>
     </div>
-
+    <div>
+      <a:documentation>svd tags</a:documentation>
+      <define name="svd">
+        <element name="svd">
+          <ref name="baseattrs"></ref>
+          <attribute name="name">
+            <data type="string"></data>
+          </attribute>
+          <optional>
+            <attribute name="flags">
+              <data type="unsignedInt"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="sway">
+              <data type="float"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="brightness">
+              <data type="float"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="scale">
+              <data type="float"></data>
+            </attribute>
+          </optional>
+          <interleave>
+            <optional>
+              <ref name="svdunknowns"></ref>
+            </optional>
+            <oneOrMore>
+              <ref name="svdlod"></ref>
+            </oneOrMore>
+          </interleave>
+        </element>
+      </define>
+      <define name="svdunknowns">
+        <element name="svdunknowns">
+          <ref name="baseattrs"></ref>
+          <optional>
+            <attribute name="u4">
+              <data type="float"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="u6">
+              <data type="unsignedInt"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="u7">
+              <data type="unsignedInt"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="u8">
+              <data type="unsignedInt"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="u9">
+              <data type="unsignedInt"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="u10">
+              <data type="unsignedInt"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="u11">
+              <data type="unsignedInt"></data>
+            </attribute>
+          </optional>
+        </element>
+      </define>
+      <define name="svdlod">
+        <element name="svdlod">
+          <ref name="baseattrs"></ref>
+          <attribute name="name">
+            <data type="string"></data>
+          </attribute>
+          <attribute name="distance">
+            <data type="float"></data>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="svdlodunknowns"></ref>
+            </optional>
+            <choice>
+              <group>
+                <attribute name="type">
+                  <value type="unsignedInt">0</value>
+                </attribute>
+                <attribute name="staticshape">
+                  <ref name="SHSReference"></ref>
+                </attribute>
+              </group>
+              <group>
+                <attribute name="type">
+                  <value type="unsignedInt">3</value>
+                </attribute>
+                <attribute name="boneshape">
+                  <ref name="BSHReference"></ref>
+                </attribute>
+                <zeroOrMore>
+                  <element name="svdlodanimation">
+                    <ref name="baseattrs"></ref>
+                    <ref name="BANReference"></ref>
+                  </element>
+                </zeroOrMore>
+              </group>
+              <group>
+                <attribute name="type">
+                  <value type="unsignedInt">4</value>
+                </attribute>
+                <attribute name="ftx">
+                  <ref name="FTXReference"></ref>
+                </attribute>
+                <attribute name="txs">
+                  <ref name="TXSReference"></ref>
+                </attribute>
+              </group>
+            </choice>
+          </interleave>
+        </element>
+      </define>
+      <define name="svdlodunknowns">
+        <element name="svdlodunknowns">
+          <ref name="baseattrs"></ref>
+          <optional>
+            <attribute name="u2">
+              <data type="unsignedInt"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="u4">
+              <data type="unsignedInt"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="u7">
+              <data type="float"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="u8">
+              <data type="float"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="u9">
+              <data type="float"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="u10">
+              <data type="float"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="u11">
+              <data type="float"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="u12">
+              <data type="float"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="u14">
+              <data type="unsignedInt"></data>
+            </attribute>
+          </optional>
+        </element>
+      </define>
+    </div>
     <define name="tex">
       <element name="tex">
         <ref name="baseattrs"></ref>
-
         <attribute name="name">
           <data type="string"></data>
         </attribute>
-
         <oneOrMore>
           <choice>
             <element name="texturefile">
               <ref name="baseattrs"></ref>
-
               <data type="string"></data>
             </element>
-
             <element name="texturedata">
               <attribute name="dimension">
                 <ref name="ovlTextureDimension"></ref>
               </attribute>
-
               <ref name="baseattrs"></ref>
-
               <data type="base64Binary"></data>
             </element>
           </choice>
         </oneOrMore>
       </element>
     </define>
-
     <define name="txt">
       <element name="txt">
         <ref name="baseattrs"></ref>
-
         <attribute name="name">
           <data type="string"></data>
         </attribute>
-
         <attribute name="type">
           <choice>
             <value type="string">raw</value>
-
             <value type="string">text</value>
           </choice>
         </attribute>
-
         <data type="string"></data>
       </element>
     </define>
-
+    <div>
+      <a:documentation>wai tags</a:documentation>
+      <define name="wai">
+        <element name="wai">
+          <ref name="baseattrs"></ref>
+          <attribute name="name">
+            <data type="string"></data>
+          </attribute>
+          <attribute name="shortname">
+            <data type="string"></data>
+          </attribute>
+          <attribute name="nametxt">
+            <ref name="TXTReference"></ref>
+          </attribute>
+          <attribute name="description">
+            <ref name="TXTReference"></ref>
+          </attribute>
+          <attribute name="icon">
+            <ref name="GSIReference"></ref>
+          </attribute>
+          <attribute name="staticshape">
+            <ref name="SHSReference"></ref>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="waiparameters"></ref>
+            </optional>
+            <optional>
+              <ref name="waiunknowns"></ref>
+            </optional>
+          </interleave>
+        </element>
+      </define>
+      <define name="waiparameters">
+        <element name="waiparameters">
+          <ref name="baseattrs"></ref>
+          <optional>
+            <attribute name="distance">
+              <data type="float"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="cost">
+              <data type="int"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="refund">
+              <data type="int"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="inversedurability">
+              <data type="float"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="xsize">
+              <data type="float"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="ysize">
+              <data type="float"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="zsize">
+              <data type="float"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="flags">
+              <data type="unsignedInt"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="weight">
+              <data type="float"></data>
+            </attribute>
+          </optional>
+        </element>
+      </define>
+      <define name="waiunknowns">
+        <element name="waiunknowns">
+          <ref name="baseattrs"></ref>
+          <optional>
+            <attribute name="u1">
+              <data type="unsignedInt"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="u2">
+              <data type="unsignedInt"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="u3">
+              <data type="unsignedInt"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="u4">
+              <data type="unsignedInt"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="u11">
+              <data type="unsignedInt"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="u17">
+              <data type="float"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="u18">
+              <data type="float"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="u19">
+              <data type="float"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="u20">
+              <data type="float"></data>
+            </attribute>
+          </optional>
+        </element>
+      </define>
+    </div>
     <div>
       <define name="reference">
         <element name="reference">
           <ref name="baseattrs"></ref>
-
-          <attribute name="path">
+          <choice>
+            <attribute name="path">
+              <data type="string"></data>
+            </attribute>
             <data type="string"></data>
-          </attribute>
+          </choice>
         </element>
       </define>
-
       <define name="symbol">
         <element name="symbol">
           <ref name="baseattrs"></ref>
-
           <attribute name="name">
             <data type="string"></data>
           </attribute>
-
           <attribute name="target">
             <choice>
               <value type="string">unique</value>
-
               <value type="string">common</value>
             </choice>
           </attribute>
-
           <choice>
             <group>
               <attribute name="type">
                 <value type="string">int</value>
               </attribute>
-
               <attribute name="data">
                 <data type="unsignedInt"></data>
               </attribute>
             </group>
-
             <group>
               <attribute name="type">
                 <value type="string">float</value>
               </attribute>
-
               <attribute name="data">
                 <data type="float"></data>
               </attribute>

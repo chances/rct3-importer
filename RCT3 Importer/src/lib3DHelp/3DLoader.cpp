@@ -131,14 +131,14 @@ VERTEX c3DLoader::GetObjectVertex(unsigned int mesh, unsigned int vertex) {
     return res;
 };
 
-bool c3DLoader::FetchObject(unsigned int index, unsigned long *vertexcount, VERTEX **vertices, unsigned long *index_count, unsigned long **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal) {
+bool c3DLoader::FetchObject(unsigned int index, unsigned long *vertexcount, VERTEX **vertices, unsigned long *index_count, unsigned long **indices, VECTOR *bbox_min, VECTOR *bbox_max, const MATRIX *transform, VECTOR *fudge_normal) {
     int i;
     if (m_meshes.size() <= 0)
         return false;
     *vertexcount = m_meshes[index].m_vertices.size();
     *index_count = m_meshes[index].m_indices.size();
     *vertices = new VERTEX[*vertexcount];
-    D3DMATRIX normaltransform;
+    MATRIX normaltransform;
     if (transform)
         normaltransform = matrixNormalTransform(*transform);
     for (i = 0; i < *vertexcount; i++) {
@@ -161,14 +161,14 @@ bool c3DLoader::FetchObject(unsigned int index, unsigned long *vertexcount, VERT
     return true;
 }
 
-bool c3DLoader::FetchObject(unsigned int index, cStaticShape2* sh, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal) {
+bool c3DLoader::FetchObject(unsigned int index, cStaticShape2* sh, VECTOR *bbox_min, VECTOR *bbox_max, const MATRIX *transform, VECTOR *fudge_normal) {
     int i;
     if (m_meshes.size() <= 0)
         return false;
 
     sh->vertices.resize(m_meshes[index].m_vertices.size());
     sh->indices.resize(m_meshes[index].m_indices.size());
-    D3DMATRIX normaltransform;
+    MATRIX normaltransform;
     if (transform)
         normaltransform = matrixNormalTransform(*transform);
     for (i = 0; i < m_meshes[index].m_vertices.size(); i++) {
@@ -190,14 +190,14 @@ bool c3DLoader::FetchObject(unsigned int index, cStaticShape2* sh, D3DVECTOR *bb
     return true;
 }
 
-bool c3DLoader::FetchAsAnimObject(unsigned int index, char bone, unsigned long *vertexcount, VERTEX2 **vertices, unsigned long *index_count, unsigned short **indices, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal) {
+bool c3DLoader::FetchAsAnimObject(unsigned int index, char bone, unsigned long *vertexcount, VERTEX2 **vertices, unsigned long *index_count, unsigned short **indices, VECTOR *bbox_min, VECTOR *bbox_max, const MATRIX *transform, VECTOR *fudge_normal) {
     int i;
     if (m_meshes.size() <= 0)
         return false;
     *vertexcount = m_meshes[index].m_vertices.size();
     *index_count = m_meshes[index].m_indices.size();
     *vertices = new VERTEX2[*vertexcount];
-    D3DMATRIX normaltransform;
+    MATRIX normaltransform;
     if (transform)
         normaltransform = matrixNormalTransform(*transform);
     for (i = 0; i < *vertexcount; i++) {
@@ -220,14 +220,14 @@ bool c3DLoader::FetchAsAnimObject(unsigned int index, char bone, unsigned long *
     return true;
 }
 
-bool c3DLoader::FetchObject(unsigned int index, char bone, cBoneShape2* sh, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal) {
+bool c3DLoader::FetchObject(unsigned int index, char bone, cBoneShape2* sh, VECTOR *bbox_min, VECTOR *bbox_max, const MATRIX *transform, VECTOR *fudge_normal) {
     int i;
     if (m_meshes.size() <= 0)
         return false;
 
     sh->vertices.resize(m_meshes[index].m_vertices.size());
     sh->indices.resize(m_meshes[index].m_indices.size());
-    D3DMATRIX normaltransform;
+    MATRIX normaltransform;
     if (transform)
         normaltransform = matrixNormalTransform(*transform);
     for (i = 0; i < m_meshes[index].m_vertices.size(); i++) {
@@ -249,14 +249,14 @@ bool c3DLoader::FetchObject(unsigned int index, char bone, cBoneShape2* sh, D3DV
     return true;
 }
 
-bool c3DLoader::FetchObject(unsigned int index, cBoneShape2* sh, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max, const D3DMATRIX *transform, D3DVECTOR *fudge_normal) {
+bool c3DLoader::FetchObject(unsigned int index, cBoneShape2* sh, VECTOR *bbox_min, VECTOR *bbox_max, const MATRIX *transform, VECTOR *fudge_normal) {
     int i;
     if (m_meshes.size() <= 0)
         return false;
 
     sh->vertices.resize(m_meshes[index].m_vertices.size());
     sh->indices.resize(m_meshes[index].m_indices.size());
-    D3DMATRIX normaltransform;
+    MATRIX normaltransform;
     if (transform)
         normaltransform = matrixNormalTransform(*transform);
     for (i = 0; i < m_meshes[index].m_vertices.size(); i++) {
@@ -308,7 +308,7 @@ counted_ptr<c3DLoader>& c3DLoader::LoadFile(const wxChar *filename) {
 #define ANGLE_LIMIT 0.5773502
 template <class T>
 void flattenNormal(T& n) {
-    D3DVECTOR temp = n.normal;
+    VECTOR temp = n.normal;
     if (n.normal.x != 0.0) {
         float x_ratio = n.normal.y / n.normal.x;
         if (!((x_ratio > ANGLE_LIMIT) || (x_ratio < -ANGLE_LIMIT))) {
@@ -329,8 +329,8 @@ void flattenNormal(T& n) {
 };
 
 
-int c3DLoader::FlattenNormals(const unsigned long vertexcount, VERTEX *vertices, const D3DVECTOR& bbox_min, const D3DVECTOR& bbox_max) {
-    D3DVECTOR min_rim, max_rim;
+void c3DLoader::FlattenNormals(const unsigned long vertexcount, VERTEX *vertices, const VECTOR& bbox_min, const VECTOR& bbox_max) {
+    VECTOR min_rim, max_rim;
     MAKE_OFFSET(min, +)
     MAKE_OFFSET(max, -)
 
@@ -341,8 +341,8 @@ int c3DLoader::FlattenNormals(const unsigned long vertexcount, VERTEX *vertices,
     }
 }
 
-int c3DLoader::FlattenNormals(const unsigned long vertexcount, VERTEX2 *vertices, const D3DVECTOR& bbox_min, const D3DVECTOR& bbox_max) {
-    D3DVECTOR min_rim, max_rim;
+void c3DLoader::FlattenNormals(const unsigned long vertexcount, VERTEX2 *vertices, const VECTOR& bbox_min, const VECTOR& bbox_max) {
+    VECTOR min_rim, max_rim;
     MAKE_OFFSET(min, +)
     MAKE_OFFSET(max, -)
 
@@ -353,8 +353,8 @@ int c3DLoader::FlattenNormals(const unsigned long vertexcount, VERTEX2 *vertices
     }
 }
 
-int c3DLoader::FlattenNormals(cStaticShape2* sh, const D3DVECTOR& bbox_min, const D3DVECTOR& bbox_max) {
-    D3DVECTOR min_rim, max_rim;
+void c3DLoader::FlattenNormals(cStaticShape2* sh, const VECTOR& bbox_min, const VECTOR& bbox_max) {
+    VECTOR min_rim, max_rim;
     MAKE_OFFSET(min, +)
     MAKE_OFFSET(max, -)
 
@@ -365,8 +365,8 @@ int c3DLoader::FlattenNormals(cStaticShape2* sh, const D3DVECTOR& bbox_min, cons
     }
 }
 
-int c3DLoader::FlattenNormals(cBoneShape2* sh, const D3DVECTOR& bbox_min, const D3DVECTOR& bbox_max) {
-    D3DVECTOR min_rim, max_rim;
+void c3DLoader::FlattenNormals(cBoneShape2* sh, const VECTOR& bbox_min, const VECTOR& bbox_max) {
+    VECTOR min_rim, max_rim;
     MAKE_OFFSET(min, +)
     MAKE_OFFSET(max, -)
 

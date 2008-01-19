@@ -32,6 +32,9 @@
 #include "ManagerCommon.h"
 #include "OVLException.h"
 
+#include <iostream>
+#include <sstream>
+
 const char* ovlFTXManager::LOADER = "FGDK";
 const char* ovlFTXManager::NAME = "FlexiTexture";
 const char* ovlFTXManager::TAG = "ftx";
@@ -52,14 +55,18 @@ void ovlFTXManager::AddTexture(const cFlexiTextureInfoStruct& item) {
     // Frames
     m_size += item.frames.size() * sizeof(FlexiTextureStruct);
 
+    int i = 0;
     for (vector<cFlexiTextureStruct>::const_iterator it = item.frames.begin(); it != item.frames.end(); ++it) {
-        m_size += 256*sizeof(RGBQUAD);
+        m_size += 256*sizeof(COLOURQUAD);
+        stringstream s;
+        s << item.name << i;
         // Texture
-        m_blobs[item.name + "_t"] = cOvlMemBlob(OVLT_COMMON, 0, it->dimension * it->dimension);
+        m_blobs[s.str() + "_t"] = cOvlMemBlob(OVLT_COMMON, 0, it->dimension * it->dimension);
         // Alpha
         if (it->alpha.get()) {
-            m_blobs[item.name + "_a"] = cOvlMemBlob(OVLT_COMMON, 0, it->dimension * it->dimension);
+            m_blobs[s.str() + "_a"] = cOvlMemBlob(OVLT_COMMON, 0, it->dimension * it->dimension);
         }
+        i++;
     }
 
     GetLSRManager()->AddSymbol(OVLT_COMMON);
@@ -91,20 +98,23 @@ void ovlFTXManager::Make(cOvlInfo* info) {
         GetRelocationManager()->AddRelocation((unsigned long *)&c_dftis->fts2);
 
         for (unsigned long i = 0; i < it->second.frames.size(); ++i) {
+            stringstream s;
+            s << it->first << i;
+
             // Palette
             c_dftis->fts2[i].palette = c_data;
-            c_data += 256*sizeof(RGBQUAD);
+            c_data += 256*sizeof(COLOURQUAD);
             GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_dftis->fts2[i].palette));
 
             // Texture
-            c_dftis->fts2[i].texture = m_blobs[it->first + "_t"].data;
+            c_dftis->fts2[i].texture = m_blobs[s.str() + "_t"].data;
             GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_dftis->fts2[i].texture));
 
             // Alpha
             if (it->second.frames[i].alpha.get()) {
-                c_dftis->fts2[i].alpha = m_blobs[it->first + "_a"].data;
+                c_dftis->fts2[i].alpha = m_blobs[s.str() + "_a"].data;
                 GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_dftis->fts2[i].alpha));
-          }
+            }
         }
         it->second.Fill(c_dftis);
 

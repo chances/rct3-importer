@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grammar datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
+         ns="http://rct3.sourceforge.net/rct3xml/installer-lists"
+         xmlns="http://relaxng.org/ns/structure/1.0"
+         xmlns:ns="http://relaxng.org/ns/structure/1.0"
+         xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">
+  <include href="rct3xml-installer-shared-v1.rng"></include>
+  <start>
+    <choice>
+      <element name="packagelist">
+        <attribute name="version">
+          <value type="unsignedInt">1</value>
+        </attribute>
+        <attribute name="releasedate">
+          <data type="date"></data>
+        </attribute>
+        <oneOrMore>
+          <element name="package">
+            <attribute name="name">
+              <data type="string"></data>
+            </attribute>
+            <optional>
+              <attribute name="shortname">
+                <data type="string"></data>
+              </attribute>
+            </optional>
+            <attribute name="guid">
+              <ref name="guid"></ref>
+            </attribute>
+            <optional>
+              <attribute name="version">
+                <ref name="version"></ref>
+              </attribute>
+            </optional>
+            <interleave>
+              <choice>
+                <attribute name="authorguid">
+                  <ref name="guid"></ref>
+                </attribute>
+                <oneOrMore>
+                  <element name="author">
+                    <attribute name="guid">
+                      <ref name="guid"></ref>
+                    </attribute>
+                  </element>
+                </oneOrMore>
+              </choice>
+              <zeroOrMore>
+                <element name="warning">
+                  <a:documentation>Optional element content gives reason for
+                  the warning</a:documentation>
+                  <attribute name="type">
+                    <data type="unsignedInt"></data>
+                  </attribute>
+                  <optional>
+                    <attribute name="version">
+                      <ref name="version"></ref>
+                    </attribute>
+                  </optional>
+                  <optional>
+                    <data type="string"></data>
+                  </optional>
+                </element>
+              </zeroOrMore>
+            </interleave>
+          </element>
+        </oneOrMore>
+      </element>
+      <element name="authorlist">
+        <attribute name="version">
+          <value type="unsignedInt">1</value>
+        </attribute>
+        <attribute name="releasedate">
+          <data type="date"></data>
+        </attribute>
+        <oneOrMore>
+          <element name="author">
+            <attribute name="name">
+              <data type="string"></data>
+            </attribute>
+            <attribute name="guid">
+              <ref name="guid"></ref>
+            </attribute>
+          </element>
+        </oneOrMore>
+      </element>
+    </choice>
+  </start>
+</grammar>

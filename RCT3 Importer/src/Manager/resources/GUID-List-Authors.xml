@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<authorlist xmlns="http://rct3.sourceforge.net/rct3xml/installer-lists" version="1" releasedate="2008-01-14">
+<author name="Aceana" guid="95a06284-4e53-4874-a2f7-029cfb529df3" />
+<author name="| Aces |" guid="2f1f751d-7218-4252-8689-81f36081e12c" />
+<author name="Adnecles" guid="2a1fccae-5d9c-414c-9d8e-181060f2483c" />
+<author name="andrewhurley13" guid="b48cf6cc-4f51-4ac2-93fd-90119a6b55f1" />
+<author name="Antrolla" guid="f82029d9-476b-4464-b4f7-63513400d6da" />
+<author name="aroundthehorn (LightGrenades)" guid="d79f1fe3-c407-4f72-87a9-6c32f164b087" />
+<author name="AvA" guid="18f125ff-8ccc-4118-b503-1ababe0ba5c0" />
+<author name="Avizzv92 (Conrail92)" guid="63784c73-aecc-40fc-9e61-3a4773a50354" />
+<author name="Bael" guid="edafb104-6338-4116-bdaf-4d54281c8d19" />
+<author name="Bafke" guid="622df187-4013-427a-bd50-7e6d9cb29e17" />
+<author name="Battor77" guid="7aff001b-5b0f-48e3-8be4-30028e5eaa17" />
+<author name="Belgabor" guid="0a737139-2693-451b-be79-777309875e85" />
+<author name="BigBurger" guid="0498c27d-bb80-4a43-aa28-600b67011a52" />
+<author name="Bio|Hazard" guid="2a360d50-90f1-497b-ba78-7510022883b4" />
+<author name="blings" guid="27ec76c4-87fb-43df-8a96-5f0fffa86517" />
+<author name="Boudreaux" guid="09c81d49-b65d-4653-b851-02eb9f48e7df" />
+<author name="Bridgepiece" guid="6e4feab3-d2ff-44c6-ad3f-7eea46b0c60f" />
+<author name="CaddyCrossover" guid="6bb79c4b-2114-4d9e-9093-bb1093ea9579" />
+<author name="Caederus" guid="0dec342f-621c-4571-bc31-c22d68d50964" />
+<author name="Caffinated (Cafeen)" guid="19f94fcc-8f32-4852-b7a9-2bcc46e9effd" />
+<author name="CDN1212" guid="fd27effb-f4fc-4762-97a6-35ed185ef6d4" />
+<author name="Coasterfreak" guid="cae587c5-92df-4283-ae75-2f6b9718717f" />
+<author name="coaster-inc" guid="a1e8bef5-b100-49bd-a47a-46ce39e60869" />
+<author name="coasterman20076" guid="bfd65699-5512-452e-b369-38252e9dafb1" />
+<author name="CoasterSim.Fan" guid="18e80cc7-f25c-416d-88ec-bf3fafa77f3a" />
+<author name="composerboy" guid="9d87cda3-6b80-4e43-9624-312d4da7c832" />
+<author name="Curtis-Rohde" guid="acdc6e97-281f-4498-80d6-2a9fd4a755d3" />
+<author name="DarkRidePerson" guid="da571050-f29f-46a2-a02a-d1e2f3febc3e" />
+<author name="DasMatze" guid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<author name="Death_slayer" guid="329d25cb-0db4-4dca-9251-a8a5225907b7" />
+<author name="Der Freak 00" guid="694c8d73-c7b0-4742-9c8d-318bee9a821c" />
+<author name="Deru (Harlekin)" guid="36f49e9e-b257-4ff3-a718-f8b9517ec191" />
+<author name="Disfan1" guid="c096b2f9-0eb2-4327-aba0-28fa2faefcba" />
+<author name="DisneyFellow" guid="88efbb7b-9807-407a-8822-22a42c67b9a8" />
+<author name="disneyfreek" guid="56656a8f-eaf6-4fe6-9e00-bfe7ca7040f6" />
+<author name="Dkimber (Dkimber1974)" guid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<author name="drucifer67" guid="6be41a99-caf7-4d8f-a3f9-c883f89e7dfe" />
+<author name="Eddi22 (Xistics)" guid="2ff36539-c66a-4638-868a-f1ee4935d915" />
+<author name="_Edward_" guid="28a45a8d-a7be-4d8b-9e77-5cd7bcbf35c8" />
+<author name="eeZee" guid="943e5141-3f6c-460c-aee0-a0d617dcde67" />
+<author name="Eletigna" guid="966fd85e-48da-4e51-8fbc-57fe13a9dead" />
+<author name="errt" guid="2dcf6c1f-fa65-4934-9f20-84bee1e5a042" />
+<author name="Eviron" guid="5782b208-b0a2-4e0c-beda-0baf05a23501" />
+<author name="fechu" guid="c54a8355-1031-468a-bd7d-f32ad2b0c72d" />
+<author name="Feutcha" guid="ee2286bd-b891-4bca-8549-78c209f0706f" />
+<author name="{Freak}Rct3" guid="d70d8dcc-e62b-4b38-8679-804a0d9d2ecf" />
+<author name="gadget" guid="d8b22ba0-e35d-4c06-894a-e1df1658723a" />
+<author name="GermanTaco" guid="9299d2df-a0ec-4c9c-91a0-cc2103755d8f" />
+<author name="GiKo" guid="d018305f-d837-4d96-b15a-57c06dee4aac" />
+<author name="Groovdafied" guid="e29d9adf-4ce0-463e-861b-31844edd83e7" />
+<author name="hag365" guid="5cc9a79f-bcf9-49e3-aae7-a4d145c895c8" />
+<author name="hiimmisterdude (THE_J3W)" guid="c748aa58-20b6-4a1c-a56a-222026961a17" />
+<author name="hotroddude" guid="f27a805c-2ab8-4336-af10-654920c5e1e1" />
+<author name="Iamok" guid="34c368d4-0535-4384-880c-d51d805ef496" />
+<author name="iceatcs" guid="118f8efd-ae1c-4368-b5f1-f4cb19c098a9" />
+<author name="ImagineerJohn" guid="70907ec0-d9f0-4481-afbf-b580137568d6" />
+<author name="invertedvertigo" guid="6f305a85-12d4-4576-b5e6-6fde5e1faf49" />
+<author name="JackyX" guid="61b1a3d8-13f4-48a6-b981-4d029669a886" />
+<author name="Janitor 06" guid="91df1590-bef0-441f-851e-c382ed469a8e" />
+<author name="Jaych4" guid="4144e9b1-5a02-4eec-a697-31be380dd4e0" />
+<author name="JaySL" guid="30096f95-f85c-4594-9f98-6f0ec63ed912" />
+<author name="JCat (Pumper)" guid="41ff492d-ba25-4f95-a405-a43d77fd5564" />
+<author name="JCRise" guid="345a7da9-dcdb-401d-8a7f-38caaad9bd75" />
+<author name="J.M.W.Thieves" guid="bf43cbf0-5f66-4580-b8c8-5b24b83fdb71" />
+<author name="joffy" guid="acfcae3c-507f-4d62-a6ad-e07b968b95a6" />
+<author name="Jonnyears" guid="a10f7d8a-31f8-45f4-bbe4-d1ca9eab59bc" />
+<author name="Jonte_The_Playe" guid="99532205-1996-4318-890d-f62a997c218b" />
+<author name="J-Playa" guid="42a2b7fb-5865-4a0e-b7cc-6fedc5b434f5" />
+<author name="KingVeveraine" guid="17007131-41da-40b0-b86e-659246dd2311" />
+<author name="Klinn" guid="4614dfda-f08a-462c-920c-3b195907cf3d" />
+<author name="kornsoadhts" guid="19235c24-5ce4-48be-9489-c9a2d4a6eb30" />
+<author name="lego3366" guid="72f23cd4-a597-4d7d-b4f5-fc555fa14eb2" />
+<author name="LittleMac" guid="fbef5f94-1938-477d-a32d-01693f3b8e63" />
+<author name="LuckyGirl" guid="d835a68b-63d2-463b-8c31-d5fa958ab2ab" />
+<author name="Lulujarre (cacheuxi)" guid="e91449d2-f883-42b7-ba66-6cc2575710ac" />
+<author name="LWR" guid="f2bdeb0c-6c03-43fc-867a-4a9c79565589" />
+<author name="Madshell" guid="a84f6c89-97af-4f91-b03b-e29a6969ff6d" />
+<author name="marnetmar" guid="5708ef3b-3d09-4c30-ab38-7e95f7c17093" />
+<author name="mattatt14" guid="1fd1b0b1-ec06-4ed5-b3b6-f3fa11f542a2" />
+<author name="MATTrct3" guid="c15574ee-f8f1-46ba-9b43-19cd5d52407f" />
+<author name="Maverick2007" guid="84ab76f5-9f78-4275-9aae-d616d1358006" />
+<author name="Maverickfan" guid="73890935-fa56-46c2-9742-dd43a2c89b6a" />
+<author name="MaxInfinity" guid="e7299434-c6ab-4ba9-b91f-436f4da0f57e" />
+<author name="Mega_Shark" guid="283b2d04-8ee7-4ae0-b912-82f1fced5836" />
+<author name="mikeyca" guid="c23cb2d1-c83f-4c94-b2b8-51d2872a6056" />
+<author name="Moby" guid="440b6e82-b032-48e4-b317-a64dd485baaf" />
+<author name="MonorailBlue" guid="474ad727-da0f-4cfe-b122-4cbfb61c4e92" />
+<author name="Mr. Jobsworth" guid="6155b55c-a647-48a1-82ea-8a82202f1caf" />
+<author name="Mr.Me101" guid="b1291a21-c3cd-4afd-98a7-3b43f6645145" />
+<author name="MrPKI" guid="4606eff0-6242-4c76-92f5-a0d3c7bdb9fa" />
+<author name="-Nuclear Fish-" guid="df354035-d70d-4e56-a552-903ed9164891" />
+<author name="NYRfan85" guid="15c5cccf-3b32-45e5-a23c-1c888d33e579" />
+<author name="obi_wan_canno" guid="fdf73296-772b-4798-9c38-3b83174faf88" />
+<author name="Old-Spice" guid="f97cafa2-b55d-44b9-be9f-703d04bb7f25" />
+<author name="osudenny" guid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<author name="Park Novice" guid="20052108-798f-4c95-b918-6e67c9a1661a" />
+<author name="PB&amp;J" guid="1a850a51-84e0-45ca-81b9-265934f2e1af" />
+<author name="penma" guid="94229819-7c6d-400d-adbf-92cf21f4aca4" />
+<author name="Phil (Froggee)" guid="412c2bc9-6a1f-4daa-91d8-8af6a61b7c57" />
+<author name="PhiWie" guid="5398a523-0ff1-4fbc-a35f-57614521f025" />
+<author name="pitchounais" guid="b9dfa54f-2e20-40b1-a0b0-11103fd2089f" />
+<author name="Plokoon111" guid="26735c75-4c19-4bef-bf34-4e6b6fab80b7" />
+<author name="Pteri3" guid="c31d2d81-68cf-4ba4-a642-6d2fba65f060" />
+<author name="PyroFREAK30001" guid="f6641a1e-78e6-4e17-84ae-2bbb20e74e0f" />
+<author name="ralfvieh" guid="32ed2cc8-2782-4ee1-88bc-5f2e95ee3ae5" />
+<author name="rct3 coasterkid" guid="c68e85d4-7fc1-436c-b307-20756f1087a9" />
+<author name="rct3m" guid="571b145d-10dd-4265-a760-5f23b499088c" />
+<author name="RCT3robin" guid="2f32d430-c8a5-433b-a823-c141650f0b6b" />
+<author name="RCT_Lego" guid="589a9b4e-158b-49c0-9b43-21088cebef6b" />
+<author name="rctlvr" guid="e9fed402-0e12-42f1-a234-4459ea700ecd" />
+<author name="rctman12" guid="412bde8f-9b06-45df-940c-1b6e61194a29" />
+<author name="rctmaniac" guid="baf8ca27-5890-4dc3-962f-1a129ee5effa" />
+<author name="rctwizzkid" guid="3edbb62d-1b04-4531-aed7-537e47ec94f1" />
+<author name="CT-Spanky" guid="82a1fce3-6a79-49f6-b8a2-e28ae06da38e" />
+<author name="Remarkable" guid="370f309b-a42f-4f27-a760-08d387730ebc" />
+<author name="ricardobugsy" guid="b3496e80-4145-4c23-a958-3a1f8ac6d98e" />
+<author name="riddl" guid="b578ec6e-40aa-4a70-b8a3-98f32f910ecf" />
+<author name="RollerCoasta" guid="d533d628-b78d-44c6-80e9-faceb0f0e551" />
+<author name="Rollermessenger" guid="b583160c-70c3-46a0-b218-2d9d5f8f2fcb" />
+<author name="shyguy" guid="5db4cdf4-d0fc-4af3-8afa-a925a9c6057c" />
+<author name="Sir Asmo (Asmodis)" guid="e4e46cec-264a-48d0-89f2-c7a745527da3" />
+<author name="Sliverfas" guid="07833652-cfbd-4916-b326-8c69a09eb852" />
+<author name="Smallish" guid="3813974b-03c6-498b-8293-9d6e680a8ea0" />
+<author name="snacker" guid="1bdc95ce-4986-44a8-8c54-2dc982dee257" />
+<author name="snailmale152" guid="0616cd7b-d59b-41cf-9e00-587c18bd94d6" />
+<author name="sober_penguin" guid="51e99d11-fb71-4d23-8b88-2eacdd3f2869" />
+<author name="SpinBack" guid="ec79083f-e1c9-4ad3-b6fa-06abe85d8670" />
+<author name="Spunkycomics" guid="df9a9797-a11c-424d-9d16-6625ff2acc7a" />
+<author name="sr3d" guid="a15332ec-6faf-4045-b259-08c974499c2d" />
+<author name="StarRngr4.0" guid="b5607957-b05c-4e48-ad3c-e978437c2a28" />
+<author name="stu-2693 (Doughnuts)" guid="ab53e6ed-abfc-438a-8d50-01b4be8d4188" />
+<author name="stuk71" guid="1cb2f784-217c-4f72-84b5-3e2812e1913c" />
+<author name="The_Cook" guid="883a9e7d-23f9-4528-8ae0-9b3f6d6aa7f7" />
+<author name="thiery" guid="6b30b560-8efe-459e-bc70-ebaf4bf7b71a" />
+<author name="thornsilvertree" guid="5aac15bf-09a2-4b89-b7a0-4a90eca0eb18" />
+<author name="TNStickboy (tnstickboy70)" guid="2018add2-0a38-4d78-8a38-f9fb4a420149" />
+<author name="toto_2" guid="f4ccfca3-aff0-43a0-83cd-148c7d9ad034" />
+<author name="Usf geek" guid="b577848c-9865-4789-ad4f-ede6c6f034b5" />
+<author name="Vodhin" guid="8a8c0dce-5bee-4e79-bed2-ce4a2261452c" />
+<author name="wardy91" guid="a92a7722-0c51-4ba7-8573-d12181f3b510" />
+<author name="weasel497" guid="1f9a0efe-b935-41a4-a3a3-68e28d332eb3" />
+<author name="xss277x" guid="5e2d288e-57e6-44c5-93c9-c538e394173d" />
+<author name="yesmydear" guid="5eac5f35-831d-4128-9059-8e4bdfbfd9f9" />
+<author name="yesnt" guid="a71f80a9-dcf3-485a-b1ab-e480f8f75a74" />
+<author name="Zeppelin" guid="23716a43-0093-4d04-8689-5a6e783a10d5" />
+<author name="zordork" guid="acfbd756-fb5b-41fb-b7f0-6730e0483cc9" />
+<author name="741852963951753 (GraphicShadow)" guid="c8fed437-8706-4777-9f5c-e9094067bd0d" />
+</authorlist>

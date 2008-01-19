@@ -31,6 +31,7 @@
 #define DEF_RCT3_VECIT(cl) \
 public: \
     typedef std::vector<cl>::iterator iterator; \
+    typedef std::vector<cl>::const_iterator const_iterator; \
     typedef std::vector<cl> vec;
 
 #define DEF_RCT3_RAW(ty, cl) \

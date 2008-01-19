@@ -11,11 +11,27 @@
 #ifndef __SCENARY_H__
 #define __SCENARY_H__
 
-#include <windows.h>
-#include <d3d9types.h>
-
 #include "guiicon.h"
 #include "sceneryvisual.h"
+#include "vertex.h"
+
+#ifndef _WAVEFORMATEX_
+#ifndef WAVEFORMATEX
+struct WAVEFORMATEX {
+	short wFormatTag;
+	short nChannels;
+	long  nSamplesPerSec;
+	long  nAvgBytesPerSec;
+	short nBlockAlign;
+	short wBitsPerSample;
+	short cbSize;
+};
+#endif
+#endif
+
+#ifndef BOOL
+#define BOOL bool
+#endif
 
 struct Scenery
 {
@@ -31,7 +47,7 @@ struct Scenery
 	long refund;
 	char *wallname;
 	char *name;
-	D3DVECTOR position;
+	VECTOR position;
 	unsigned long type;
 	BOOL flag1;
 	BOOL flag2;
@@ -66,7 +82,7 @@ struct Scenery
 	BOOL flag31;
 	BOOL flag32;
 	unsigned long unk4;
-	D3DVECTOR size;
+	VECTOR size;
 	unsigned long supportstype;
 	unsigned long unk17;
 	unsigned long sizex;
@@ -116,7 +132,7 @@ struct Scenery
 
 struct SIDData
 {
-	D3DVECTOR position;
+	VECTOR position;
 	unsigned long type;
 	BOOL flag1;
 	BOOL flag2;
@@ -151,7 +167,7 @@ struct SIDData
 	BOOL flag31;
 	BOOL flag32;
 	unsigned long unk4;
-	D3DVECTOR size;
+	VECTOR size;
 	unsigned long unk17;
 	unsigned long sizex;
 	unsigned long sizey;

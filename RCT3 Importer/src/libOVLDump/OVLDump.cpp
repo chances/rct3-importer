@@ -384,6 +384,9 @@ void cOVLDump::ReadFile(cOvlType type) {
             m_pbunknowns[type].unknownv5_postrelocationlongs.push_back(*reinterpret_cast<unsigned long*>(c_data));
             c_data += 4;
         }
+    } else if (m_header[type].version == 4) {
+        m_pbunknowns[type].unknownv4_postrelocationlong = *reinterpret_cast<unsigned long*>(c_data);
+        c_data += 4;
     }
 
     m_dataend[type] = c_data;
@@ -553,6 +556,7 @@ void cOVLDump::MakeLoaders(cOvlType type) {
                 rel->t_issymref = true;
                 rel->r_inwhat = string("SymbolReference(") + name + ")";
                 rel->t_usedfor = string("|- ") + name;
+                m_symbolreferences[rel->target] = name;
             }
         } else {
             SymbolRefStruct2* symrefs = reinterpret_cast<SymbolRefStruct2*>(m_fileblocks[type][2].blocks[2].data);
@@ -563,6 +567,7 @@ void cOVLDump::MakeLoaders(cOvlType type) {
                 rel->t_issymref = true;
                 rel->r_inwhat = string("SymbolReference(") + name + ")";
                 rel->t_usedfor = string("|- ") + name;
+                m_symbolreferences[rel->target] = name;
             }
         }
     }

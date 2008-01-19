@@ -15,7 +15,7 @@
 
 #define WIN32_MEAN_AND_LEAN
 #include <windows.h>
-#include <d3d9types.h>
+//#include <d3d9types.h>
 #include <stdio.h>
 #pragma warning (disable:4702 4701)
 #include <queue>

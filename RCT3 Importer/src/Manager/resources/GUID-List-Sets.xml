@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<packagelist xmlns="http://rct3.sourceforge.net/rct3xml/installer-lists" version="1" releasedate="2008-01-14">
+<package name="Aceana's Accents V 1.0" shortname="Accents" version="1.0" guid="8ac44d5f-ae81-4c00-a6b8-81f1baf4ca29" authorguid="95a06284-4e53-4874-a2f7-029cfb529df3"/>
+<package name="Aceana's Essentials Pavement Pack #1 And #2" shortname="Essentials Pavement Pack #1 And #2" guid="084a2eb1-cd26-46c9-a68c-ecc6c5bb3c9e" authorguid="95a06284-4e53-4874-a2f7-029cfb529df3" />
+<package name="Aceana's Pavement Essentials Expansion Pack #1 - Color" shortname="Pavement Essentials Expansion Pack #1 - Color" guid="a5104215-cde8-48de-a8b1-a3e606f6ad36" authorguid="95a06284-4e53-4874-a2f7-029cfb529df3" />
+<package name="Aceana's Pavement Essentials Expansion Pack #2 - Conforming" shortname="Pavement Essentials Expansion Pack #2 - Conforming" guid="dfe06129-f37f-4f5f-8272-28eda1a12b7a" authorguid="95a06284-4e53-4874-a2f7-029cfb529df3" />
+<package name="Aceana's Pavement Essentials Expansion Pack #3 - Walls and Railings" shortname="Pavement Essentials Expansion Pack #3 - Walls and Railings" guid="31c60505-8a75-4334-ab38-f5b448554b3f" authorguid="95a06284-4e53-4874-a2f7-029cfb529df3" />
+<package name="Aceana's Pavement Essentials Expansion Pack #4 - OutTakes" shortname="Pavement Essentials Expansion Pack #4 - OutTakes" guid="1fce72b3-7753-4218-98fd-8ccfcbea8d60" authorguid="95a06284-4e53-4874-a2f7-029cfb529df3" />
+<package name="Aceana's Rocks V1.3" shortname="Aceana's Rocks" version="1.3" guid="8993c04f-a7b6-425c-a8e3-af306d61b4b5" authorguid="95a06284-4e53-4874-a2f7-029cfb529df3" />
+<package name="Aces CCTV Cameras" guid="13abd468-1fb1-4c83-85c3-1f7fc2eb12e5" authorguid="2f1f751d-7218-4252-8689-81f36081e12c" />
+<package name="Aces Colorable ConeZ" guid="71684e1f-f496-4d35-8360-2a9d56f75f9c" authorguid="2f1f751d-7218-4252-8689-81f36081e12c" />
+<package name="Aces Construction Yard" guid="489b22b4-9832-447b-883a-a73dfc09ffe0" authorguid="2f1f751d-7218-4252-8689-81f36081e12c" />
+<package name="Aces Countertop Pack" guid="924165ff-ea37-4de1-ab12-0be1f8f1dc59" authorguid="2f1f751d-7218-4252-8689-81f36081e12c" />
+<package name="Bridge Covers v. 1.0" guid="16cfa6f1-7edb-4ba9-be0d-00db0bf17df3" authorguid="2a1fccae-5d9c-414c-9d8e-181060f2483c" />
+<package name="Castle Defense Walls" guid="d90f9952-addd-4dbb-8739-6978973de3ef" authorguid="2a1fccae-5d9c-414c-9d8e-181060f2483c" />
+<package name="Andrew's Random Mini Set V1" guid="b126419e-b24f-4853-b86a-ebd9f612e2a2" authorguid="b48cf6cc-4f51-4ac2-93fd-90119a6b55f1" />
+<package name="Atari Statues" guid="336db9a3-ef50-478e-8466-8a10429926ca" authorguid="f82029d9-476b-4464-b4f7-63513400d6da" />
+<package name="ATH Catwalk Set V1.2" guid="b0b47745-0b72-4d8a-94b5-9655ed80e998" authorguid="d79f1fe3-c407-4f72-87a9-6c32f164b087" />
+<package name="ATH Terrain Blocks" guid="0e2faee1-c3f2-4894-a65c-58df352012e7" authorguid="d79f1fe3-c407-4f72-87a9-6c32f164b087" />
+<package name="Bridge Constuction Set V2.0" guid="c8ca409b-db0e-47e9-a72f-ca7448fb1a68" authorguid="18f125ff-8ccc-4118-b503-1ababe0ba5c0" />
+<package name="Custom Mortar Set" guid="6e786cc3-7081-49e8-a3c0-b76ff109ffde" authorguid="63784c73-aecc-40fc-9e61-3a4773a50354" />
+<package name="Bael Dead Walkway" guid="091144a8-ed0d-40a2-a24d-56fadf37076e" authorguid="edafb104-6338-4116-bdaf-4d54281c8d19" />
+<package name="Bael Funeral Parlor" guid="55f444aa-2b06-406a-bf5f-bfad18189622" authorguid="edafb104-6338-4116-bdaf-4d54281c8d19" />
+<package name="Bael Funeral Parlor 2.0" guid="ddfa40dd-909e-4b5f-94f3-190123b7d5eb" authorguid="edafb104-6338-4116-bdaf-4d54281c8d19" />
+<package name="Baffies Stuccos" guid="157f41d1-21f6-4d7b-9ac0-bc4d7fc8c68b" authorguid="622df187-4013-427a-bd50-7e6d9cb29e17" />
+<package name="Disneyland Studio France (Disney Studio) v. 0.46" guid="19759349-9920-471f-9e17-abc83766bf1a" authorguid="7aff001b-5b0f-48e3-8be4-30028e5eaa17" />
+<package name="Construction Set (Pack Travaux)" guid="872f9f68-bd1e-4768-be60-a5d746040e9b" authorguid="7aff001b-5b0f-48e3-8be4-30028e5eaa17" />
+<package name="Speakers Pack (Enceintes) v. 0.5" guid="c92e495d-694c-45a0-9637-367159d07057" authorguid="7aff001b-5b0f-48e3-8be4-30028e5eaa17" />
+<package name="Spotlight Pack (Projecteurs)" guid="a9b80634-bee7-479c-96ee-c756fef52258" authorguid="7aff001b-5b0f-48e3-8be4-30028e5eaa17" />
+<package name="Belgabor's Asia Wall Set 01" shortname="Asia Wall Set 01" version="1" guid="ca1d5d38-08ad-44a8-9b03-c3bc63a2b466" authorguid="0a737139-2693-451b-be79-777309875e85" />
+<package name="Belgabor's Really Custom Generic Shop Set" shortname="Really Custom Generic Shop Set" version="1" guid="0d33a395-d5a2-4282-88ff-9b2b958af34c" authorguid="0a737139-2693-451b-be79-777309875e85" />
+<package name="Belgabor's Snowset 01" shortname="Snowset 01" version="1b" guid="3d0ec5f7-408e-4314-b699-6936d380032f" authorguid="0a737139-2693-451b-be79-777309875e85" />
+<package name="Invisible Changing Room" guid="ba74f0b2-0652-472e-88cc-04b4cb0cef8b" authorguid="0a737139-2693-451b-be79-777309875e85" />
+<package name="BigBurger's Easy Pix" guid="b6f183fa-9599-4e01-8a3f-94e31b664393" authorguid="0498c27d-bb80-4a43-aa28-600b67011a52" />
+<package name="BigBurger's Streetlife 0.1" guid="e0c8f406-a13c-4b68-b598-3ec13c0d01c2" authorguid="0498c27d-bb80-4a43-aa28-600b67011a52" />
+<package name="BigBurger's Timber" guid="7be81250-90fd-4110-9df5-121102b5cf2b" authorguid="0498c27d-bb80-4a43-aa28-600b67011a52" />
+<package name="Car Park BitZ" guid="1b213cfe-9f62-422e-9f31-53bad2545c3f" authorguid="2a360d50-90f1-497b-ba78-7510022883b4" />
+<package name="Beach Balls" guid="d3d57c51-c946-4a03-b1e7-eec7e349fa86" authorguid="27ec76c4-87fb-43df-8a96-5f0fffa86517" />
+<package name="Midway Games" guid="4122d551-1424-45c0-b7f3-23ff8abf7cc3" authorguid="09c81d49-b65d-4653-b851-02eb9f48e7df" />
+<package name="Batman Ride Logo v0.1" guid="b03deb14-dc28-446c-947b-563c39fbdbe0" authorguid="6e4feab3-d2ff-44c6-ad3f-7eea46b0c60f" />
+<package name="Superman Ride Logo v0.1" guid="f70bf5e4-0056-4f70-a2ee-1e5c7830433f" authorguid="6e4feab3-d2ff-44c6-ad3f-7eea46b0c60f" />
+<package name="Superman Ride Logo v0.2" guid="64bd6922-5130-46df-8db9-455107106c17" authorguid="6e4feab3-d2ff-44c6-ad3f-7eea46b0c60f" />
+<package name="The Sword in the Stone v. 1.1" guid="a1bf16ee-3d96-4d33-b835-eb4a77065f80" authorguid="6e4feab3-d2ff-44c6-ad3f-7eea46b0c60f" />
+<package name="Caddys Footers" guid="21d5b9fb-179d-433b-8c9a-02bfa3681757" authorguid="6bb79c4b-2114-4d9e-9093-bb1093ea9579" />
+<package name="Drehkreuze (Turnstiles) 1.7" guid="66ef8873-604f-426f-a209-aeceb5a7e433" authorguid="0dec342f-621c-4571-bc31-c22d68d50964" />
+<package name="Drehkreuz Set 2.2 (Turnstiles)" guid="51cfb157-4872-4ef4-bca9-6d94b1d490fb" authorguid="0dec342f-621c-4571-bc31-c22d68d50964" />
+<package name="Cafeen's Letters" guid="dc47008c-3d78-46bd-b0e8-58004554126e" authorguid="19f94fcc-8f32-4852-b7a9-2bcc46e9effd" />
+<package name="CDN's Scattered rocks and pebbles" guid="90dc7daf-6508-4a0f-85d7-c4ce002a8b35" authorguid="fd27effb-f4fc-4762-97a6-35ed185ef6d4" />
+<package name="Art Deco set 1" guid="3d235977-3d94-49fd-af56-366d4ab7aac8" authorguid="cae587c5-92df-4283-ae75-2f6b9718717f" />
+<package name="Coasterfreak's Crenelation Walls" guid="bdbf4e73-6aca-4720-8509-7e487796dba4" authorguid="cae587c5-92df-4283-ae75-2f6b9718717f" />
+<package name="Coasterfreak's Gothic Walls" guid="d2c8b134-03be-450d-b659-559de635d03c" authorguid="cae587c5-92df-4283-ae75-2f6b9718717f" />
+<package name="Coasterfreak's Gothic Walls V2" guid="a76bd2d1-04d1-4239-b0ea-f492a23138c9" authorguid="cae587c5-92df-4283-ae75-2f6b9718717f" />
+<package name="Coasterfreak's House Specials 1" guid="dc5fda9d-b55c-4a24-9dab-11e7065fd2ed" authorguid="cae587c5-92df-4283-ae75-2f6b9718717f" />
+<package name="Coasterfreak's House Specials 2" guid="48878c25-6a33-4b8b-8809-0fe540141a6d" authorguid="cae587c5-92df-4283-ae75-2f6b9718717f" />
+<package name="Drive-In Movies (Drive-in Theater)" guid="7734d86c-de00-4d50-990b-a013ec60bfdf" authorguid="cae587c5-92df-4283-ae75-2f6b9718717f" />
+<package name="Spooky Themed Walls" guid="e89d45b3-cd3b-4ceb-aa81-95a72eddff22" authorguid="cae587c5-92df-4283-ae75-2f6b9718717f" />
+<package name="Station Platform set" guid="c4195919-d9ff-401c-b097-a3a6ee0a72bd" authorguid="cae587c5-92df-4283-ae75-2f6b9718717f" />
+<package name="coaster-inc's Projects" guid="bd1b4749-c3f0-4811-9cc7-ade64a30f13e" authorguid="a1e8bef5-b100-49bd-a47a-46ce39e60869" />
+<package name="Colosseum (test)" guid="ccd839eb-51b3-47a0-94a4-6eef9e234640" authorguid="a1e8bef5-b100-49bd-a47a-46ce39e60869" />
+<package name="Big Building" guid="62b38241-1f70-463d-89fe-b0f9f45833b9" authorguid="a1e8bef5-b100-49bd-a47a-46ce39e60869" />
+<package name="Stage lights set" guid="c0165893-2878-4b40-a817-d47626768b45" authorguid="bfd65699-5512-452e-b369-38252e9dafb1" />
+<package name="Winterwonderland set (Winterwoundland set)" guid="01d152eb-6253-4469-8689-754422b35b98" authorguid="bfd65699-5512-452e-b369-38252e9dafb1" />
+<package name="CSF Christmas set" guid="4f64c24c-4859-43e5-8d11-93c343da1c04" authorguid="18e80cc7-f25c-416d-88ec-bf3fafa77f3a" />
+<package name="CSF Rock Set" guid="7e7dc5f2-a122-4226-b2d9-1ad5ef76f752" authorguid="18e80cc7-f25c-416d-88ec-bf3fafa77f3a" />
+<package name="CSF Steel I Beam Set" guid="e125e791-410b-4990-871b-957ad14700e7" authorguid="18e80cc7-f25c-416d-88ec-bf3fafa77f3a" />
+<package name="CSF Neon Lighting Set" guid="3c55112a-8d67-4e48-b0cb-74a0b5e7038a" authorguid="18e80cc7-f25c-416d-88ec-bf3fafa77f3a" />
+<package name="CSF Neon Lighting Set Lift Hill Expansion" guid="2d01b5b5-3ef9-4395-b8d0-a7029c094c05" authorguid="18e80cc7-f25c-416d-88ec-bf3fafa77f3a" />
+<package name="CSF Neon Lighting Set Recolorable Lighting Emitters" guid="48cce05f-ca8f-4339-8d0f-219a5660ead5" authorguid="18e80cc7-f25c-416d-88ec-bf3fafa77f3a" />
+<package name="White set" guid="550ec441-75e1-4dec-bd50-3841005b95fd" authorguid="18e80cc7-f25c-416d-88ec-bf3fafa77f3a" />
+<package name="Rockwork Set 1 (Revised)" guid="f308871f-dbb4-434c-b58e-d23d1b842d09" authorguid="9d87cda3-6b80-4e43-9624-312d4da7c832" />
+<package name="Curtis-Rohde's Monobeam Set" guid="2110b70a-577b-4444-8042-35c0b6f32eaa" authorguid="acdc6e97-281f-4498-80d6-2a9fd4a755d3" />
+<package name="DRP's Ambience (update #1)" guid="8036121e-5ce7-4129-8d15-b4bcc0de51f3" authorguid="da571050-f29f-46a2-a02a-d1e2f3febc3e" />
+<package name="DRP's Laser Fakes" guid="557f90a2-e572-45fd-af67-af521c120830" authorguid="da571050-f29f-46a2-a02a-d1e2f3febc3e" />
+<package name="DRP's Lightz V2.0" guid="611c8303-6dae-467b-a30f-ad7fff24cce6" authorguid="da571050-f29f-46a2-a02a-d1e2f3febc3e" />
+<package name="DRP's Rock 'n' Roller Coaster Theme" guid="a32202b6-4991-4f4c-8d82-2b1efd9b0258" authorguid="da571050-f29f-46a2-a02a-d1e2f3febc3e" />
+<package name="DRP's Tubes" guid="7b2029e2-331e-41bb-9f70-ed34e8120bf8" authorguid="da571050-f29f-46a2-a02a-d1e2f3febc3e" />
+<package name="Andreaskreuz" guid="7fae6861-89e2-45d0-ad49-852c39ba340b" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="Billboard Collection (Net On Exclusive)" guid="d806edb8-a07c-4d2c-a023-fc8c63fac7aa" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="Billboard Flags" guid="eb230870-99e3-4a99-88df-0d40940b89a0" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="Bridge It!" guid="fabf1584-019b-450c-a78e-44ca8426fde1" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="Covers &amp; More " guid="1698258a-39e1-4ea8-8180-df4fa7fdb0fe" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="Domes" guid="8e2b6a1b-6136-44ed-901e-c30c26158d57" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="Fences &amp; Railings V1.2" guid="fdb9ad46-4234-446c-8cf9-63a41b2aa57c" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="German Railroad Crossing" guid="d2bf828f-7e50-4506-a5c5-ce8022cf7531" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="German Railroad Crossing Kit" guid="b2eb34b0-1afd-48a0-99aa-e7e4de2cad8d" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="Industry Age (Net On Exclusive)" guid="f7286a0c-1274-4867-b21a-53fbad17ece7" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="Industry Age Additions Update" guid="e59643f7-ae36-48b7-bcc7-e3671597e3b9" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="Instant Jungle" guid="26f977d6-071e-4133-9c57-f1af3aa0ff6f" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="Instant Wood" guid="653818fe-6133-4cdc-ac35-a8eb9f1a5959" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="Invisible Entrance" guid="95ce0112-9fc9-44ae-92d9-89c1e8714447" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="Mc Connery's Fast Food Set V1.1" guid="c5fb4d4f-844b-4d16-abbf-39dcd8abe73d" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="eep Generator" guid="450523f2-493c-4c8b-8344-b82a8d459241" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="Railings v. 1.0" guid="2d64b2b3-6b00-4522-b991-654ab7ecef99" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="Random Stuff" guid="254360e0-b5d0-4baf-95cd-cd78a4680cd7" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="Ride Events Animatronics" guid="13ed61f0-1d9e-4dc0-bede-ed069fa4a4de" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="Rock The Net (Net On Exclusive)" guid="9171c8ef-0ecc-4cda-bbb4-ca8c07a685ec" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="Spikey Walls" guid="6266df6d-34b2-44cd-beeb-3fc87de5908f" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="Swizz It!" guid="2888c769-baa6-4242-a2ce-d88edc1b4738" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="Tobbogan Kit V0.9 (BETA)" guid="9f2fcfe6-fd09-4b62-89f2-4ac9be082e9f" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="Utilities V1.3" guid="2a664879-a9b7-4cfb-84d3-b128006cd038" authorguid="77bb132d-5308-43ad-84e4-32c56fc4081b" />
+<package name="Doom Fear Fall Ride set: Tower Tips" guid="1d8caf6c-3a27-477d-8fb3-021188cc427a" authorguid="329d25cb-0db4-4dca-9251-a8a5225907b7" />
+<package name="Balkon (Balcony) v1.1 (3D-Model by Eviron)" guid="bc24ebbd-336f-4f17-9799-739a6fabd778" authorguid="694c8d73-c7b0-4742-9c8d-318bee9a821c" />
+<package name="Flags Set V0.2 (3D-Model by DasMatze)" guid="2c62a554-14fd-42a6-8565-aaa95b329833" authorguid="694c8d73-c7b0-4742-9c8d-318bee9a821c" />
+<package name="Schilderset (Signs Set) v0.6 (3D-Models by Maurice10)" guid="22af68e9-6eb3-4b33-b318-cb171c974615" authorguid="694c8d73-c7b0-4742-9c8d-318bee9a821c" />
+<package name="Swiss Flag" guid="73ba2b24-19e8-4f3e-a2a1-e9892f480a3d" authorguid="694c8d73-c7b0-4742-9c8d-318bee9a821c" />
+<package name="Verschiedene Objekte V2.2 (Different Objects)" guid="076f950a-c995-4265-b65a-759d659e6a21" authorguid="694c8d73-c7b0-4742-9c8d-318bee9a821c" />
+<package name="Harlekin's Wallset 1" guid="6fb7c6c1-1ff1-430e-ba9e-980b8737e3c5" authorguid="36f49e9e-b257-4ff3-a718-f8b9517ec191" />
+<package name="Custom Dining Tables &amp; Blinds" guid="79fb9c32-346b-432f-ad31-aa9f9726f241" authorguid="c096b2f9-0eb2-4327-aba0-28fa2faefcba" />
+<package name="Custom Dining Tables (Recolorable)" guid="7e0e8a47-2632-4bbc-9061-e0a46e0a54a7" authorguid="c096b2f9-0eb2-4327-aba0-28fa2faefcba" />
+<package name="Expedition Everest" guid="483ab5c8-2ee2-450e-90ca-a3b9f17fc115" authorguid="c096b2f9-0eb2-4327-aba0-28fa2faefcba" />
+<package name="Haunted Mansion" guid="b9c92d92-883e-402f-b63d-8db9f4eaa7ab" authorguid="c096b2f9-0eb2-4327-aba0-28fa2faefcba" />
+<package name="Tower Of Terror" guid="f1469151-1f29-4216-a2b1-9252861297bc" authorguid="c096b2f9-0eb2-4327-aba0-28fa2faefcba" />
+<package name="Adventure Thru Inner Space Mighty Microscope (Disneyland)" guid="387f3908-3f88-4744-87b9-114022ac10d8" authorguid="88efbb7b-9807-407a-8822-22a42c67b9a8" />
+<package name="(mini Set) Tunnels And More!" guid="de208178-2ef2-4c4d-a5d8-2e858df5ce69" authorguid="56656a8f-eaf6-4fe6-9e00-bfe7ca7040f6" />
+<package name="1920's Car" guid="a53cf935-8829-4fad-baf0-891524cea828" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Arc de Triumph &amp; Eiffeltower" guid="6da3510c-3808-42ae-9bb1-9de5bde5abc6" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Bowling Alley Theme" guid="45a05c89-30af-4a84-9a6e-882f9e6c3fa7" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Circle Blocks" guid="778d5b8b-b2ca-4592-9742-616cf8c24aab" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Extras" guid="1bbbf555-3afb-4aa0-bf1b-34e8b98aceaa" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Gift Shop Items" guid="518067f2-f8ae-4bdf-871e-b85ddbc7f16f" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Gift Shop Items 2" guid="684d4fa2-3f24-4f3a-b4e0-32d05c7584f6" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Goliath Sign" guid="9b3f3d65-ad0c-43f5-ac85-31d32f65c56a" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Kumali Sign &amp; Cave" guid="6e77cd17-48d4-46d4-addb-52d5f5b40c02" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Lego Set 1: Bricks" guid="ffdf6546-a263-4013-bb10-3a647c1ddb48" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Lego Set 2: Gears &amp; Axles" guid="01b3a5a7-de31-40ca-9a70-41a92ad74dc7" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Low Poly Cars" guid="e2c2fb86-27b1-46fc-8ad7-092a3176aaa1" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Medieval Theme" guid="038be57f-0b9d-4c3d-96d5-6f7fa3fa52d2" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Military Theme" guid="50430b50-cb8b-4abd-b49e-9c4f96a3e0ae" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Misc Walls" guid="13cead08-8413-48da-a77d-71a668cc75e4" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Neon Signs Set 1" guid="0970372e-9433-414e-bc41-4c3afdb0cd5d" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="News Stand" guid="334e9d66-7d1c-4d09-b39f-f1ec66ec845d" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Parking Path Covers &amp; Posts" guid="07863d15-8626-4a7b-9a24-4a8bd2685e6f" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Patriotic Signs" guid="d27a0821-ac16-4827-8623-9d7a25fda701" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Pirate Walls" guid="cc2bcf90-060a-47dd-bb0a-1fe39ed03231" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Playground Set" guid="a47c6972-4e31-4292-b42d-571064972575" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Ride Signs Set 1 (Walls)" guid="74bcaae8-8f61-4e6e-bb0c-d225a9ada5ae" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Ride Signs Set 2 (Walls)" guid="56d456e2-5228-49d6-beec-d6efa05d26ec" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Ride Signs Set 1 v. 1.1 (Scenery)" guid="c2a991cc-c085-4a9a-a69a-5d176d70d50a" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Ride Signs Set 2 (Scenery)" guid="bcbc936d-458c-47b6-aef0-6ecbe48aab73" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Ride Signs Set 3 (Scenery)" guid="d9af5c2a-1794-4bc1-96a3-730258751bf7" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Ride Signs Set 4 (Scenery)" guid="d5ef3db1-c46b-4af5-84c6-a2a7e5f5b223" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="School Supplies" guid="c4fc5e7d-ce1f-41d8-b65f-36428fc7d79c" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Shooting Gallery" guid="f8d623ac-6070-4d99-9fc0-36635fcfc242" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Windmill" guid="9adbb23a-8abf-4388-8959-9f498914ee3a" authorguid="3d173290-b4a9-44e5-a97d-a428c3b18cc9" />
+<package name="Ride Backdrops" guid="f84c224b-f13d-444b-ae73-fa2d779aec08" authorguid="6be41a99-caf7-4d8f-a3f9-c883f89e7dfe" />
+<package name="Superheroes Scenery Pack" guid="314649c1-0de1-427e-9a8f-06a0a1570edb" authorguid="6be41a99-caf7-4d8f-a3f9-c883f89e7dfe" />
+<package name="Top Gun" guid="5680cc24-350a-4151-bba8-86f8ed78dd70" authorguid="6be41a99-caf7-4d8f-a3f9-c883f89e7dfe" />
+<package name="Xistics Anchor Monuments Set" guid="a3865a0e-2340-49ef-9d34-264e1a57ff7b" authorguid="2ff36539-c66a-4638-868a-f1ee4935d915" />
+<package name="Xistics Borders V.4" guid="954c6dcc-0806-41a1-9f90-3065afae7654" authorguid="2ff36539-c66a-4638-868a-f1ee4935d915" />
+<package name="Xistics Concert Wing" guid="4528c18f-279e-4e97-810e-f3d42dd6e689" authorguid="2ff36539-c66a-4638-868a-f1ee4935d915" />
+<package name="Xistics Fokker Airplane" guid="2b8541f5-1f47-42d7-9515-1aa4358307a9" authorguid="2ff36539-c66a-4638-868a-f1ee4935d915" />
+<package name="Xistics Formula One V2" guid="3a19a85f-ab03-42ac-a089-342c866b71a9" authorguid="2ff36539-c66a-4638-868a-f1ee4935d915" />
+<package name="Xistics Italy Fence V2" guid="6ee30124-ba9b-48e5-a2be-363c07c7dd58" authorguid="2ff36539-c66a-4638-868a-f1ee4935d915" />
+<package name="Xistics Italy Set 1 - Road Café v. 2" guid="6d4babce-c1dc-4431-af68-efdc53ef095d" authorguid="2ff36539-c66a-4638-868a-f1ee4935d915" />
+<package name="Xistics Italy Set II - Garden Eden V2" guid="6e2c6dda-d672-41d7-a892-c8c64c836bae" authorguid="2ff36539-c66a-4638-868a-f1ee4935d915" />
+<package name="Xistics Mickey Mouse Walls V2" guid="0ffea777-12c1-497c-9820-0aa8930e2e48" authorguid="2ff36539-c66a-4638-868a-f1ee4935d915" />
+<package name="Xistics Modern Art Blue" guid="afc2db79-8b07-4ac6-8a0b-e462409218b7" authorguid="2ff36539-c66a-4638-868a-f1ee4935d915" />
+<package name="Xistics Modern Art Recolorable" guid="6ae3a694-3df1-4e17-8797-d6f4b0325091" authorguid="2ff36539-c66a-4638-868a-f1ee4935d915" />
+<package name="Xistics Particle Strom (Net On Exclusive)" guid="5588b552-d251-465b-9fd0-7272197949d1" authorguid="2ff36539-c66a-4638-868a-f1ee4935d915" />
+<package name="Xistics Pier 6 Walls" guid="64d00257-c96c-46e2-88ed-ebd10128650a" authorguid="2ff36539-c66a-4638-868a-f1ee4935d915" />
+<package name="Xistics Office Glass Set" guid="1d644f87-148f-400b-92a4-4eba3f1b95d6" authorguid="2ff36539-c66a-4638-868a-f1ee4935d915" />
+<package name="Xistics Recolorable Furniture V2" guid="cc9f650b-281f-47f7-af44-46374edd85e8" authorguid="2ff36539-c66a-4638-868a-f1ee4935d915" />
+<package name="Xistics Volcano Vol.1" guid="ebbb8927-7584-4dc4-ae6f-bba1fc2ec0d5" authorguid="2ff36539-c66a-4638-868a-f1ee4935d915" />
+<package name="Edward's Western Add-On" guid="823563a3-50e6-4082-96d6-c2953b5701d4" authorguid="28a45a8d-a7be-4d8b-9e77-5cd7bcbf35c8" />
+<package name="Edward's Queue Screens" guid="d2d5c10e-b94e-46d8-a843-3bf57e9422be" authorguid="28a45a8d-a7be-4d8b-9e77-5cd7bcbf35c8" />
+<package name="Friction Wheels (deco)" guid="a8068c0f-7176-4669-928c-d83b4e2201ac" authorguid="28a45a8d-a7be-4d8b-9e77-5cd7bcbf35c8" />
+<package name="DLP Signage" guid="01084062-fd80-451b-ab74-39dcc5dd1186" authorguid="943e5141-3f6c-460c-aee0-a0d617dcde67" />
+<package name="European Landmarks Pt. 1 - The Eiffel Tower" guid="7ee4778b-4819-46ae-a53b-368148990ce0" authorguid="943e5141-3f6c-460c-aee0-a0d617dcde67" />
+<package name="Haunted Mansion Tombstones" guid="968168c6-ec78-4b93-bffb-da9c062ed808" authorguid="943e5141-3f6c-460c-aee0-a0d617dcde67" />
+<package name="Main Street Emporium (WDW)" guid="e7cb60c0-956d-4ddd-adf3-b50e7f82742c" authorguid="943e5141-3f6c-460c-aee0-a0d617dcde67" />
+<package name="The Haunted Mansion (WDW Orlando)" guid="e6081f5e-eb28-4f99-8cbc-2af9328d08e7" authorguid="943e5141-3f6c-460c-aee0-a0d617dcde67" />
+<package name="The Haunted Mansion (WDW Orlando) - Path Covers" guid="4ac400f3-4c76-465d-b222-2e4f72f2e4ab" authorguid="943e5141-3f6c-460c-aee0-a0d617dcde67" />
+<package name="Wall Set - Granite" guid="15763889-1256-4c51-9ea1-3534b650061c" authorguid="943e5141-3f6c-460c-aee0-a0d617dcde67" />
+<package name="WDW's Cinderella's Castle" guid="cc459986-3272-4a49-887e-7d0b6a4e00bd" authorguid="943e5141-3f6c-460c-aee0-a0d617dcde67" />
+<package name="Eletigna Creations Pack 1 (Red Dragon, Big Snowy Tree, Metallic Fence)" guid="792f77ed-0d0f-497c-868a-7cfcfd12c97a" authorguid="966fd85e-48da-4e51-8fbc-57fe13a9dead" />
+<package name="Eletigna Creations Pack 2: Dark Ride Elements" guid="edb683f5-2770-4429-b7aa-61d8e319d3f5" authorguid="966fd85e-48da-4e51-8fbc-57fe13a9dead" />
+<package name="Eletigna Creations Pack 3: New Street Elements" guid="bb5f346a-3852-49ba-96fc-cdcbbbca6f00" authorguid="966fd85e-48da-4e51-8fbc-57fe13a9dead" />
+<package name="Eletigna Creations Pack 3: Street Elements (Bonus Pack)" guid="7f9f30cf-2399-423b-9367-02ccaebb1fdc" authorguid="966fd85e-48da-4e51-8fbc-57fe13a9dead" />
+<package name="Eletigna Particle (needs to be placed in &quot;Particle Effects&quot;-folder)" guid="30c3742d-9540-4792-9fcf-17555d9c3080" authorguid="966fd85e-48da-4e51-8fbc-57fe13a9dead" />
+<package name="Eletigna Small Lamp 2 (Path-Version)" guid="06f7abd3-88b9-484e-9fd7-96306193c313" authorguid="966fd85e-48da-4e51-8fbc-57fe13a9dead" />
+<package name="Eletigna Small Lamp 2 (Scenery-Version)" guid="f6833ac5-393f-4872-84e2-9b9ef7991b66" authorguid="966fd85e-48da-4e51-8fbc-57fe13a9dead" />
+<package name="EasyLetters" guid="1277b3bb-6c9a-43b3-a27e-a84086c246be" authorguid="2dcf6c1f-fa65-4934-9f20-84bee1e5a042" />
+<package name="Easy Terrain Blocks" guid="00055bed-f5e0-4269-bebe-c07d29dbdd2d" authorguid="2dcf6c1f-fa65-4934-9f20-84bee1e5a042" />
+<package name="Errt's Goal" guid="dc919cdc-7cc9-49a0-8547-ada1d6fa578a" authorguid="2dcf6c1f-fa65-4934-9f20-84bee1e5a042" />
+<package name="Invisible Ride Entrance &amp; Exit v. 1.1" guid="da039dec-7807-4e07-a759-416db4599a3e" authorguid="2dcf6c1f-fa65-4934-9f20-84bee1e5a042" />
+<package name="Turning Doors" guid="bc963583-3a2c-44b4-b79f-7ba54d3cf601" authorguid="2dcf6c1f-fa65-4934-9f20-84bee1e5a042" />
+<package name="Flaggen Set v.1.0 (Flag Set)" guid="a7f19394-f858-427b-8be7-fa457c108b02" authorguid="5782b208-b0a2-4e0c-beda-0baf05a23501" />
+<package name="Quidditch-Ring v.1.0" guid="4f8e843d-b89f-4a76-b77c-7c3cd444dd0f" authorguid="5782b208-b0a2-4e0c-beda-0baf05a23501" />
+<package name="Saturn Wall" guid="105ddc8c-2c99-43e3-a42a-ef39034222fd" authorguid="5782b208-b0a2-4e0c-beda-0baf05a23501" />
+<package name="Turmuhr (Clock)" guid="1090e4bd-7424-41cb-805a-8ebed9b780a1" authorguid="5782b208-b0a2-4e0c-beda-0baf05a23501" />
+<package name="Fechu's Toilet Articles" guid="67a723f1-6e88-4155-9bda-66ec1c85fa7a" authorguid="c54a8355-1031-468a-bd7d-f32ad2b0c72d" />
+<package name="Railing Seat" guid="e404381a-f797-481b-b923-fc5f8953bb11" authorguid="c54a8355-1031-468a-bd7d-f32ad2b0c72d" />
+<package name="Feutcha's Pirate Loot (DEMO)" guid="0b3a8cec-5b1b-445a-bb86-ec4154f9a4ef" authorguid="ee2286bd-b891-4bca-8549-78c209f0706f" />
+<package name="Custom Entrance set BETA" guid="02dd68ba-b247-4940-96b5-7721a39a336e" authorguid="d70d8dcc-e62b-4b38-8679-804a0d9d2ecf" />
+<package name="Gadget Space Mountain (plus 3 updates)" guid="d592791b-494f-429a-9771-7d08709d489e" authorguid="d8b22ba0-e35d-4c06-894a-e1df1658723a" />
+<package name="Roller Coaster Goodies" guid="5520b54b-21d4-4313-83e0-867089257ae3" authorguid="d8b22ba0-e35d-4c06-894a-e1df1658723a" />
+<package name="GermanTaco's Islands of Adventure Set, The Lost Continent" guid="4f8cd160-b3b0-40d1-92be-ff903436f319" authorguid="9299d2df-a0ec-4c9c-91a0-cc2103755d8f" />
+<package name="GiKo's Recreational Oddities" guid="c341b949-4af5-4202-8ab6-c3ba0138df78" authorguid="d018305f-d837-4d96-b15a-57c06dee4aac" />
+<package name="Star Trek Scenery - Cargo Room v. 1" guid="c630a318-d4f7-4ae8-bfbd-c05387aa6d4b" authorguid="e29d9adf-4ce0-463e-861b-31844edd83e7" />
+<package name="Hag's Coaster Construction Odds &amp; Ends" guid="02441052-2957-4a7e-8433-411ffbdff164" authorguid="5cc9a79f-bcf9-49e3-aae7-a4d145c895c8" />
+<package name="Hag's Power Plant Smoke Stacks" guid="88688c20-8af6-4919-922d-38cb438da98c" authorguid="5cc9a79f-bcf9-49e3-aae7-a4d145c895c8" />
+<package name="Hiimmisterdude's Pool Coverings" guid="9fee9334-8de1-494d-8d9f-82cd2f9a9259" authorguid="c748aa58-20b6-4a1c-a56a-222026961a17" />
+<package name="Foot massage chair" guid="ab811ea9-e8da-4db2-9bed-93680e6ae65e" authorguid="f27a805c-2ab8-4336-af10-654920c5e1e1" />
+<package name="hotroddude's Custom Set #1" guid="f30f931a-3981-4c17-9178-0f862c8e2766" authorguid="f27a805c-2ab8-4336-af10-654920c5e1e1" />
+<package name="hotroddude's Park Xtraz" guid="b3669e9a-c687-416e-a7c0-c6ac88c5204e" authorguid="f27a805c-2ab8-4336-af10-654920c5e1e1" />
+<package name="Iamok - California Screamin' Mickey Mouse Loop" guid="dca6b304-1da1-4aa2-aac1-5968d0673650" authorguid="34c368d4-0535-4384-880c-d51d805ef496" />
+<package name="Iamok - Top Thrill Dragster Fence" guid="80baeca7-83a5-41a1-b711-fdf7dddfc44e" authorguid="34c368d4-0535-4384-880c-d51d805ef496" />
+<package name="Inverted Roller Coaster Brakes" guid="368b240e-914a-49b0-9a86-002de9ba3a40" authorguid="34c368d4-0535-4384-880c-d51d805ef496" />
+<package name="Wooden Roller Coaster Brakes" guid="8f158f8d-a80d-4961-88e6-b6ad29f3837f" authorguid="34c368d4-0535-4384-880c-d51d805ef496" />
+<package name="Iceatcs' Billboards Pack" guid="bc36fe85-bf9f-4edd-ab0d-b5f09a2c7c5a" authorguid="118f8efd-ae1c-4368-b5f1-f4cb19c098a9" />
+<package name="Iceatcs' Brand Name Logos Pack" guid="1418bbe3-e3a1-45e8-bd2d-c9524eb189b3" authorguid="118f8efd-ae1c-4368-b5f1-f4cb19c098a9" />
+<package name="Iceatcs' Custom Slide Supports" guid="53d816de-f1f9-4241-88bd-e683f1eb36b4" authorguid="118f8efd-ae1c-4368-b5f1-f4cb19c098a9" />
+<package name="Iceatcs' Hollywood Sign V3.0" guid="1d01d526-4da4-4295-b151-0d2928013dd0" authorguid="118f8efd-ae1c-4368-b5f1-f4cb19c098a9" />
+<package name="Iceatcs' &quot;Make Ya Own Logo&quot; Shop" guid="7ba31ea7-9936-45f5-91a3-c0b018bb4c80" authorguid="118f8efd-ae1c-4368-b5f1-f4cb19c098a9" />
+<package name="Iceatcs' Timber Building V3.0" guid="9ae07419-8080-4d41-8f57-89f283cddd72" authorguid="118f8efd-ae1c-4368-b5f1-f4cb19c098a9" />
+<package name="Animated Tubes" guid="d4702ca8-4e5a-4bf4-b5b0-1155216f3f21" authorguid="70907ec0-d9f0-4481-afbf-b580137568d6" />
+<package name="Finding Nemo" guid="0c639a23-f801-4e41-b738-c3e8a9877f72" authorguid="70907ec0-d9f0-4481-afbf-b580137568d6" />
+<package name="ImagineerJohn's &quot;Coaster-Kit&quot; Ride events - Beta" guid="b93237cc-e3be-4582-afb2-06e89ed6f635" authorguid="70907ec0-d9f0-4481-afbf-b580137568d6" />
+<package name="Frantic Factory" guid="e59100ff-1354-45c3-a37a-e23717e69081" authorguid="6f305a85-12d4-4576-b5e6-6fde5e1faf49" />
+<package name="Turnstyles" guid="a531084e-cdf3-468e-b9f3-afe76f5b2eab" authorguid="61b1a3d8-13f4-48a6-b981-4d029669a886" />
+<package name="Wooden Coaster Stuff" guid="4df20c62-9fe1-4800-8ca4-fbd39f3aa751" authorguid="61b1a3d8-13f4-48a6-b981-4d029669a886" />
+<package name="Atlantis (+Chinese) Roofs - v. 0.5 (beta)" guid="2918a57d-88ea-4b4a-a29c-71c36f8be97b" authorguid="91df1590-bef0-441f-851e-c382ed469a8e" />
+<package name="Jamie's Girder Extras" guid="4b37e831-4f0e-44ee-ab23-23dbcdfcbfbf" authorguid="4144e9b1-5a02-4eec-a697-31be380dd4e0" />
+<package name="JaySL's Arcades Pack" guid="5d704598-f6bb-43d6-aee9-cef28b11d9d1" authorguid="30096f95-f85c-4594-9f98-6f0ec63ed912" />
+<package name="Blox Theme Pack v. 1.1" guid="7e153d8d-f892-4dc8-8546-a1696ae73bd3" authorguid="41ff492d-ba25-4f95-a405-a43d77fd5564" />
+<package name="Dark Ride Collection" guid="9a6f9967-1e66-4e67-9842-8326d6b05604" authorguid="41ff492d-ba25-4f95-a405-a43d77fd5564" />
+<package name="Mouseworx v. 1.01" guid="4ccef432-79f2-4170-9984-92f3a42149f3" authorguid="41ff492d-ba25-4f95-a405-a43d77fd5564" />
+<package name="ScreamWorx v 1.0" guid="4d63f5b2-4971-4095-b97b-5efd12b3a000" authorguid="41ff492d-ba25-4f95-a405-a43d77fd5564" />
+<package name="SpaceWorx v. 1.2" guid="3a0a907a-7731-4a4f-95ef-1a7837f968d8" authorguid="41ff492d-ba25-4f95-a405-a43d77fd5564" />
+<package name="SteelWorx v. 1.2 (Support Killer Minor Revision)" guid="09d94a4d-b0b7-4ddb-a23c-5d820c9b9f28" authorguid="41ff492d-ba25-4f95-a405-a43d77fd5564" />
+<package name="Animated Lava 1.0" guid="43b04f2d-1502-4a61-8c9f-47f5efa3c527" authorguid="345a7da9-dcdb-401d-8a7f-38caaad9bd75" />
+<package name="Heavenly Stuff 1.0" guid="2ff52c53-c83f-4e7b-9445-8f8a8b309a8b" authorguid="345a7da9-dcdb-401d-8a7f-38caaad9bd75" />
+<package name="Hellish Stuff 1.0" guid="468461e3-cf61-4b72-a6f2-2fcfc7603f98" authorguid="345a7da9-dcdb-401d-8a7f-38caaad9bd75" />
+<package name="Swirly Tubes 0.5" guid="2fc9958d-9432-4327-ba59-3aab5180992c" authorguid="345a7da9-dcdb-401d-8a7f-38caaad9bd75" />
+<package name="Wesley's Airplane" guid="b7a472d4-4c5d-4a0b-b2bb-2f1593e3dcf5" authorguid="bf43cbf0-5f66-4580-b8c8-5b24b83fdb71" />
+<package name="Medieval Castle Walls" guid="c3d9eb1e-016b-4801-8758-8591a56eb802" authorguid="acfcae3c-507f-4d62-a6ad-e07b968b95a6" />
+<package name="Jonnyears' Dalek Ship" guid="2e139dfc-92a6-4ea4-9bc5-6c1ac3a2a9db" authorguid="a10f7d8a-31f8-45f4-bbe4-d1ca9eab59bc" />
+<package name="Jonnyears' Demon Drop" guid="e6ac1902-fe28-4dd9-b6bc-69294204a773" authorguid="a10f7d8a-31f8-45f4-bbe4-d1ca9eab59bc" />
+<package name="Jonnyears' Plinth Set" guid="ea2e4371-b171-4406-b1ce-7928585d3f5b" authorguid="a10f7d8a-31f8-45f4-bbe4-d1ca9eab59bc" />
+<package name="Jonnyears' Pylon Set" guid="6e6b42cf-9747-4420-b402-be68eb09e36b" authorguid="a10f7d8a-31f8-45f4-bbe4-d1ca9eab59bc" />
+<package name="Jonnyears' Steel-Roof" guid="d807084d-47e5-45ca-9252-bff969af052b" authorguid="a10f7d8a-31f8-45f4-bbe4-d1ca9eab59bc" />
+<package name="Jonnyears' Tesco Set - Remade" guid="3ce91333-cad6-4f1b-9b12-d0d2fbe478fb" authorguid="a10f7d8a-31f8-45f4-bbe4-d1ca9eab59bc" />
+<package name="Haunted Mansion Changing Portraits" guid="92b39e25-017d-4b0f-b8f9-bd247ec0b049" authorguid="99532205-1996-4318-890d-f62a997c218b" />
+<package name="J-Playa's Boat Set" guid="a123bc5e-fc4c-48d3-bd05-63ddfbba9c7b" authorguid="42a2b7fb-5865-4a0e-b7cc-6fedc5b434f5" />
+<package name="J-Playa's Boneyard Set" guid="fcc05ea6-73a4-4c1a-897e-1a7b0ad6c5c8" authorguid="42a2b7fb-5865-4a0e-b7cc-6fedc5b434f5" />
+<package name="The SketchUp Man!" guid="71320dcf-2620-4393-a09c-b9cbcf04509e" authorguid="17007131-41da-40b0-b86e-659246dd2311" />
+<package name="Klinn's Electro-Shock Custom Building Set" guid="73c5780e-ad33-4947-a374-14a38069baa1" authorguid="4614dfda-f08a-462c-920c-3b195907cf3d" />
+<package name="Klinn's Frameworks" guid="31b32871-44d4-4ae3-a5f2-2aec2d81fd13" authorguid="4614dfda-f08a-462c-920c-3b195907cf3d" />
+<package name="Jurassic Park Gateway Entrance and Fence Kit" guid="c2efe175-0d48-4ca9-9bdc-695c0b13ab86" authorguid="19235c24-5ce4-48be-9489-c9a2d4a6eb30" />
+<package name="L3G0s Series 1 &amp; Bonus Set" guid="cc337f4d-d811-4128-a505-f95ba9deb3ea" authorguid="72f23cd4-a597-4d7d-b4f5-fc555fa14eb2" />
+<package name="Custom Vendor Carts" guid="a055036a-de3b-483f-a8fa-fc0590f06c59" authorguid="fbef5f94-1938-477d-a32d-01693f3b8e63" />
+<package name="Diagonal Paths" guid="7fcd9378-4e22-49cd-bc3e-4a7f9db89973" authorguid="fbef5f94-1938-477d-a32d-01693f3b8e63" />
+<package name="LittleMac's RoadStuff 1.0" guid="850d0a68-5293-4fb1-a1da-df4bd6436604" authorguid="fbef5f94-1938-477d-a32d-01693f3b8e63" />
+<package name="LittleMac's TerrainStuff" guid="660cf6b6-1fda-4055-9212-ffcac5f12da7" authorguid="fbef5f94-1938-477d-a32d-01693f3b8e63" />
+<package name="Path And Train Covers" guid="3bebc059-185d-4aa1-a026-92a7a8bc4119" authorguid="fbef5f94-1938-477d-a32d-01693f3b8e63" />
+<package name="Road Lines v2" guid="757e3a9e-7af7-479c-97bf-6ff9236834b2" authorguid="fbef5f94-1938-477d-a32d-01693f3b8e63" />
+<package name="Walk Of Fame Stars" guid="342d0294-595d-45ee-8f9c-0539f6fb57cd" authorguid="fbef5f94-1938-477d-a32d-01693f3b8e63" />
+<package name="LuckyGirl's Harbour Set - Part 1 (fixed fish)" guid="f93906cc-c147-4159-8f7b-95f815455263" authorguid="d835a68b-63d2-463b-8c31-d5fa958ab2ab" />
+<package name="LuckyGirl's Harbour Set - Part 2" guid="052e6792-2db1-4e0c-a452-ee23ba696855" authorguid="d835a68b-63d2-463b-8c31-d5fa958ab2ab" />
+<package name="Phantasia Set - Arabian Walls 01" guid="31c4d6ba-479b-478d-a2f1-440e09005b67" authorguid="d835a68b-63d2-463b-8c31-d5fa958ab2ab" />
+<package name="American Western" guid="8f5ac9ec-ec02-412e-960c-a90dcde5e104" authorguid="e91449d2-f883-42b7-ba66-6cc2575710ac" />
+<package name="Bob l'éponge (Sponge-Bob)" guid="30f41ff9-277e-4e08-bba2-5b4e24d5d71e" authorguid="e91449d2-f883-42b7-ba66-6cc2575710ac" />
+<package name="Chateau Magique" guid="3fb745d4-74b5-4f3c-9a7b-d1de54bddbeb" authorguid="e91449d2-f883-42b7-ba66-6cc2575710ac" />
+<package name="Chateau Magique v2 (set 2)" guid="ef613511-c296-4fcc-abf9-3356f610c9a8" authorguid="e91449d2-f883-42b7-ba66-6cc2575710ac" />
+<package name="Objets Disney (Disney Objects)" guid="05f1a67f-0a20-4c0f-9cb6-f299362819e2" authorguid="e91449d2-f883-42b7-ba66-6cc2575710ac" />
+<package name="Pirates des Caraibes (Pirates of the Caribean)" guid="8e9e9127-8a10-4f03-a1dc-e9a5bb13578b" authorguid="e91449d2-f883-42b7-ba66-6cc2575710ac" />
+<package name="Rock 'n' Roller Coaster" guid="25a89cf1-c0cc-47dc-9ffe-ce09e00a60d3" authorguid="e91449d2-f883-42b7-ba66-6cc2575710ac" />
+<package name="Safari" guid="023afddc-3d08-4a7c-9110-c825bcd21b50" authorguid="e91449d2-f883-42b7-ba66-6cc2575710ac" />
+<package name="Star Wars" guid="0520baf1-fb23-42e9-a027-df080d2c8b2a" authorguid="e91449d2-f883-42b7-ba66-6cc2575710ac" />
+<package name="Toons" guid="4f59a6f1-d34f-4ece-9a14-f4b1cc50ba0c" authorguid="e91449d2-f883-42b7-ba66-6cc2575710ac" />
+<package name="LWR-Dome Type-A" guid="1a6f99c8-3699-4839-939c-b059d1d89f51" authorguid="f2bdeb0c-6c03-43fc-867a-4a9c79565589" />
+<package name="Madshell's Xpcot: SSE Set" guid="60e5f436-a586-4bdb-8c6a-e6f27e0dbd2b" authorguid="a84f6c89-97af-4f91-b03b-e29a6969ff6d" />
+<package name="Marnetmar's Dark Ride V1.1" guid="90eaf291-70f5-407c-b41e-a77e9643581f" authorguid="5708ef3b-3d09-4c30-ab38-7e95f7c17093" />
+<package name="Marnetmar's Egypt Theme" guid="b2335bf6-8153-466a-88bd-657734dfdaa3" authorguid="5708ef3b-3d09-4c30-ab38-7e95f7c17093" />
+<package name="Marnetmar's Leftoverz" guid="7635f0a8-cfc4-4131-abe8-c989fe49c981" authorguid="5708ef3b-3d09-4c30-ab38-7e95f7c17093" />
+<package name="Tower of Terror Hotel Sign" guid="09c3bb91-e462-4df3-bb00-dc97f3ef18ce" authorguid="5708ef3b-3d09-4c30-ab38-7e95f7c17093" />
+<package name="Mattatt14's Anaheim Space Mountain Set" guid="e0b06fb1-5869-41ed-bf48-8dd76ce209c4" authorguid="1fd1b0b1-ec06-4ed5-b3b6-f3fa11f542a2" />
+<package name="Mattatt14's Tomorrowland Sign" guid="3c2dccba-5967-4665-83a1-983c5ecb9c07" authorguid="1fd1b0b1-ec06-4ed5-b3b6-f3fa11f542a2" />
+<package name="MATTrct3's Fountain" guid="22976524-9a1e-424a-a2c2-2afb320ce398" authorguid="c15574ee-f8f1-46ba-9b43-19cd5d52407f" />
+<package name="Maverick's Water Effect Walls Update 1.1" guid="82b2115a-e55c-4fca-8811-ee89917dd7aa" authorguid="84ab76f5-9f78-4275-9aae-d616d1358006" />
+<package name="Intamin Acessory Pack - Set 2" guid="7361906d-2669-4621-840d-cec76439eb1f" authorguid="73890935-fa56-46c2-9742-dd43a2c89b6a" />
+<package name="Max DC Wall Set v. 3.0" guid="4c0aaf45-6edb-43e1-ac9a-3a932eeb3b01" authorguid="e7299434-c6ab-4ba9-b91f-436f4da0f57e" />
+<package name="Max DC Resurection" guid="2f1f8a83-4b58-4567-90b9-faaf83ca1e2c" authorguid="e7299434-c6ab-4ba9-b91f-436f4da0f57e" />
+<package name="Max Gothic Theme" guid="461cc188-11bf-4435-89af-35b1b0a13f41" authorguid="e7299434-c6ab-4ba9-b91f-436f4da0f57e" />
+<package name="Max Specials" guid="db463d33-57c4-4bf9-a958-5635319cf586" authorguid="e7299434-c6ab-4ba9-b91f-436f4da0f57e" />
+<package name="Max Old Pyramid V2" guid="980933a9-b1a5-4209-8638-461d726851b1" authorguid="e7299434-c6ab-4ba9-b91f-436f4da0f57e" />
+<package name="Max New Pyramid" guid="18fd8c58-3ff9-4163-9eee-66787c655910" authorguid="e7299434-c6ab-4ba9-b91f-436f4da0f57e" />
+<package name="Max Egyptian Set" guid="b396d7d8-6f1a-4600-bf77-de713e3e6a8e" authorguid="e7299434-c6ab-4ba9-b91f-436f4da0f57e" />
+<package name="Mammutbaum" guid="3cbf4890-0a8c-406c-b385-b449cc5089d0" authorguid="283b2d04-8ee7-4ae0-b912-82f1fced5836" />
+<package name="Rampe (Ramp)" guid="e1f32d8c-bad6-44f8-a38b-4ad3c452f3d1" authorguid="283b2d04-8ee7-4ae0-b912-82f1fced5836" />
+<package name="MikeyCA's Prison Set v. 1.0" guid="1116a454-ff8f-47b7-916e-90abbbfb1ed6" authorguid="c23cb2d1-c83f-4c94-b2b8-51d2872a6056" />
+<package name="MikeyCA's Road Signs" guid="46e81f90-7aca-4022-9718-413ba96defb9" authorguid="c23cb2d1-c83f-4c94-b2b8-51d2872a6056" />
+<package name="RCT3 Vanilla's Glass Walls (Modified) v. 2.1" guid="87d3347d-fdde-4c21-a727-7afdb2164895" authorguid="c23cb2d1-c83f-4c94-b2b8-51d2872a6056" />
+<package name="Moby's Arcade Games V1.0" guid="16aeeb39-8af7-4953-bf67-3052d7f3f1d2" authorguid="440b6e82-b032-48e4-b317-a64dd485baaf" />
+<package name="Moby's Steel Jungle v. 1" guid="4d7b2a58-25d0-46cb-8e81-1e3b4a955e3d" authorguid="440b6e82-b032-48e4-b317-a64dd485baaf" />
+<package name="Disney Set V.1.0" guid="231705f2-7ad0-4adb-9bdf-8e26fc177897" authorguid="474ad727-da0f-4cfe-b122-4cbfb61c4e92" />
+<package name="Monorail Blue's Park Necessities" guid="aad139aa-7d5c-4638-8d7c-ecdb79a71a01" authorguid="474ad727-da0f-4cfe-b122-4cbfb61c4e92" />
+<package name="Monorail Blue's VMK Set v. 1.1" guid="0a8fb543-6ad3-49e7-afb9-34e8061d53f0" authorguid="474ad727-da0f-4cfe-b122-4cbfb61c4e92" />
+<package name="Verkehrsschilder (Signs)" guid="1b00ce6e-90a8-42f0-8a94-9b575d6ae933" authorguid="6155b55c-a647-48a1-82ea-8a82202f1caf" />
+<package name="Toy Blocks" guid="8160e13b-c331-4100-a7a4-0396257a6523" authorguid="b1291a21-c3cd-4afd-98a7-3b43f6645145" />
+<package name="Coaster Tunnels v1.1" guid="e6f2bc51-3e29-4340-8d43-95ecfb42868e" authorguid="4606eff0-6242-4c76-92f5-a0d3c7bdb9fa" />
+<package name="Nuclear Fish's Particle Effects v. 1.2" guid="a6f5672c-9e52-4c7d-9585-809beb85f035" authorguid="df354035-d70d-4e56-a552-903ed9164891" />
+<package name="NYR's Pool Covers" guid="b197cdf9-c1f4-4e9e-b25b-71287f7a24d9" authorguid="15c5cccf-3b32-45e5-a23c-1c888d33e579" />
+<package name="NYR's Stadium Seating v. 2.0" guid="b204ee1b-3ba3-4a34-affa-c84b777b22ee" authorguid="15c5cccf-3b32-45e5-a23c-1c888d33e579" />
+<package name="NYR's Stucco Roofs Set 1" guid="341a9dd5-9c57-42cd-9592-dfbea9b79415" authorguid="15c5cccf-3b32-45e5-a23c-1c888d33e579" />
+<package name="NYR's Stucco Roofs Set 2" guid="3c22e4c3-43e4-42a2-b539-0d963e4c91cd" authorguid="15c5cccf-3b32-45e5-a23c-1c888d33e579" />
+<package name="Project Phobia (BETA)" guid="bc0627d7-8f20-48e6-b62b-7e6a17a5651e" authorguid="fdf73296-772b-4798-9c38-3b83174faf88" />
+<package name="Obi Wan's Iconz" guid="673e0898-d03b-4a32-b4cf-f0d691a8e849" authorguid="fdf73296-772b-4798-9c38-3b83174faf88" />
+<package name="Old-Spice's Arabian Market Set - Beta" guid="91dc7889-aef9-49cb-a79c-a05424884fdb" authorguid="f97cafa2-b55d-44b9-be9f-703d04bb7f25" />
+<package name="Old-Spice's Box Set" guid="6219655c-0730-490a-9149-11f85bf15f33" authorguid="f97cafa2-b55d-44b9-be9f-703d04bb7f25" />
+<package name="Old-Spice's Bridge Set - Beta" guid="068f4f95-7b49-4035-96ce-b3cc8604da6f" authorguid="f97cafa2-b55d-44b9-be9f-703d04bb7f25" />
+<package name="Old-Spice's King Kong Set (Stage Seats)" guid="076f9caa-fb8f-4511-a417-b28c903a2476" authorguid="f97cafa2-b55d-44b9-be9f-703d04bb7f25" />
+<package name="Old-Spice's Memorial Day Set" guid="28300dbc-5f3b-40df-94d0-3c5bea8eebe5" authorguid="f97cafa2-b55d-44b9-be9f-703d04bb7f25" />
+<package name="Old-Spice's Planet's Final" guid="e33defd3-5b73-4bf1-a5c8-c1399346dc98" authorguid="f97cafa2-b55d-44b9-be9f-703d04bb7f25" />
+<package name="Old-Spice's Planters N' Stuff" guid="04177d6f-4d77-423f-8ea9-38e36dc5f467" authorguid="f97cafa2-b55d-44b9-be9f-703d04bb7f25" />
+<package name="Buckeye cafe set" guid="195ee2b4-f11f-44ed-9d94-757fed0dbf94" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="Christmas Wonderland Part 1: Pre-made buildings" guid="a595596b-53d1-4a1f-8814-c50e22894389" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="Christmas Wonderland Part 2: Gingerbread building kit" guid="ccb1c3e5-70f1-452f-9d35-95aa3c6eaeae" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="Christmas Wonderland Part 3: Path items" guid="34f4ff0e-a3af-4114-9fc3-c33f2c72c582" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="Concrete statues" guid="7bd060fd-6509-4f0a-bd67-044bb48a2083" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="osudenny BBQ Cafe Set" guid="75cb63ef-43d4-4253-9b77-5f00f079dd7f" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="Osudenny Bridge Set" guid="c70bba41-c8ff-431c-9a50-aa889711e0c8" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="Osudenny Christmas Train Ride and things" guid="3caf84ce-45b1-4598-9dd7-1170d97ac26a" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="Osudenny dark ride set" guid="def3bc77-43b1-4e72-9cb7-26206888e17b" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="Osudenny Dragon Cafe Set" guid="ef9752fd-e7cd-467d-a780-894084000ab9" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="Osudenny fence set" guid="982007f9-ade7-45f0-882e-31c5983a1293" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="osudenny Fright Night Party set 2" guid="eaf94d11-c370-427c-a619-17773957667b" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="osudenny Fright Night Party Set 3" guid="fc9b01a4-218a-4f09-83fc-3b6d4faa7f6f" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="osudenny halloween fright night party set 1" guid="04b6fc3a-b19b-4936-8829-767c80825eb5" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="Osudenny house set (extras)" guid="d1cf70c1-b352-4cb1-b291-8f448b9d6d10" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="Osudenny house set (gazebo bar part)" guid="f9c9e791-ba93-4e9b-ac82-660a1a73b430" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="Osudenny house set (landscaping part)" guid="dd8e599e-c966-46f8-843a-6cbb299b7436" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="osudenny Macway Sub Set" guid="08333832-95e7-4f74-97b9-adc66afead0f" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="Osudenny odds and ends" guid="c7c634db-da9f-46b1-b347-8a3a68057ef6" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="osudenny pork stand set (BBQ Cafe Set 2)" guid="f9c1f53d-2b8c-40d3-97f9-3ddc16de44ab" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="Osudenny restaurant equipement" guid="a749cc12-5290-4527-a79f-929507a7dd45" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="Osudenny ride station expansion set" guid="497e547e-580e-49cb-93d3-e3244e1e35f7" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="Osudenny ride station set" guid="8e16ffde-bf8a-4058-9774-f5e304e6ed13" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="osudenny sign set 1" guid="119fcba7-f010-41ba-9d8a-78108b4053f0" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="osudenny sign set 2" guid="e8e81b47-a52f-44c6-aad2-e29ab519da05" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="osudenny Star Cafe park enterence set" guid="d905cb8a-4cad-4ea8-a886-f3b055f9179b" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="Osudenny statue set 2" guid="fa810ec2-eef1-4865-a101-4b4ac604a8f5" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="osudenny Surf Up Refreshment Set" guid="ac02e95e-19af-40ff-ad20-4a9903543aed" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="osudenny Taco Cafe Set" guid="6d7ed728-2540-4e7b-b1e4-8ad5f249ce28" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="Stone wall set" guid="5d98ca4e-1ab2-43ba-bc06-767976ddf8eb" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="Wall decoration set" guid="54a13171-9891-4557-97dc-ea56919c7ea3" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="Wall decorations 2" guid="e7359514-588e-4574-b31d-0388fa5e1a9e" authorguid="7c7ef1c9-1361-405c-88bb-15b334e69e42" />
+<package name="Park Novice Alton Towers Set v. 3.0" guid="54559b0f-92e1-4b4e-853c-177108f4480d" authorguid="20052108-798f-4c95-b918-6e67c9a1661a" />
+<package name="Park Novice Crown Leisure Logo" guid="72888192-069a-4c89-93b8-f6ff2a23ac4d" authorguid="20052108-798f-4c95-b918-6e67c9a1661a" />
+<package name="Park Novice DBSKI Ride Logos" guid="97b9b83f-1eda-4662-9a57-9e8b10d1d55a" authorguid="20052108-798f-4c95-b918-6e67c9a1661a" />
+<package name="Park Novice Foodcourt Pack" guid="5c8678b9-d8fd-4937-adbe-de52900bb7e8" authorguid="20052108-798f-4c95-b918-6e67c9a1661a" />
+<package name="Park Novice Mini Shima 2" guid="5372cf1a-5417-441a-8bbf-4bc77a9ff9a0" authorguid="20052108-798f-4c95-b918-6e67c9a1661a" />
+<package name="Park Novice Plokoon Horror Set" guid="223634b1-0cfe-4791-8ec4-e9c6ace25e35" authorguid="20052108-798f-4c95-b918-6e67c9a1661a" />
+<package name="Park Novice Star Wars Wall Set" guid="2d3b77a0-3774-4439-9509-a467a145e1b4" authorguid="20052108-798f-4c95-b918-6e67c9a1661a" />
+<package name="Park Novice Superman Wall Set" guid="b5042d85-cc76-45e5-a2fa-0ee061a309c5" authorguid="20052108-798f-4c95-b918-6e67c9a1661a" />
+<package name="Park Novice Tidus Wall Set" guid="9d6913a9-12bf-4e3f-9cc9-5882f7509710" authorguid="20052108-798f-4c95-b918-6e67c9a1661a" />
+<package name="Park Novice TMUL Wall Set" guid="d8a20def-2290-4a84-8420-6fc8936a56be" authorguid="20052108-798f-4c95-b918-6e67c9a1661a" />
+<package name="Park Novice Wall Set" guid="63eafac3-bf38-4369-855b-f3c3bb2bfc17" authorguid="20052108-798f-4c95-b918-6e67c9a1661a" />
+<package name="Park Novice Wardy91 Wall Set" guid="188d2fff-ba63-42e4-abd3-9731f001b662" authorguid="20052108-798f-4c95-b918-6e67c9a1661a" />
+<package name="Park Novice Warner Brothers Logo Set" guid="25f933ed-e253-44a0-acdc-74685f76e707" authorguid="20052108-798f-4c95-b918-6e67c9a1661a" />
+<package name="Park Novice WWE Wrestling Set" guid="3a2f67e5-d444-430b-87de-059dc1106aa8" authorguid="20052108-798f-4c95-b918-6e67c9a1661a" />
+<package name="PBJ Shack (improved)" guid="3daf78a7-5870-460b-96c0-310363e30cef" authorguid="1a850a51-84e0-45ca-81b9-265934f2e1af" />
+<package name="Extended Atlantis Walls v3" guid="61138f84-0939-465b-b25c-0063fbb7c164" authorguid="94229819-7c6d-400d-adbf-92cf21f4aca4" />
+<package name="Rock Walls" guid="0994c690-9e6b-4985-8743-b23e751c45ca" authorguid="412c2bc9-6a1f-4daa-91d8-8af6a61b7c57" />
+<package name="Wooden Coaster Triangular Supports V.2" guid="9e17263a-15e2-46ab-98f3-d9678837efc8" authorguid="412c2bc9-6a1f-4daa-91d8-8af6a61b7c57" />
+<package name="Asian Lamp" guid="ed47b9d4-57f8-4338-9554-2cb3139e3f72" authorguid="5398a523-0ff1-4fbc-a35f-57614521f025" />
+<package name="Asian Wall" guid="785f633d-0b30-4c58-a5fa-ccbeb3b46dc5" authorguid="5398a523-0ff1-4fbc-a35f-57614521f025" />
+<package name="Greece" guid="7affa542-6b73-4289-869b-ac9af3419437" authorguid="5398a523-0ff1-4fbc-a35f-57614521f025" />
+<package name="Greece 2" guid="0f27d651-8a41-422c-ac9d-4b054ee5d71c" authorguid="5398a523-0ff1-4fbc-a35f-57614521f025" />
+<package name="Holzzaun (Wooden Fence) v. 0.2" guid="f45398f1-1627-40d3-8b4b-fcd5007c19fc" authorguid="5398a523-0ff1-4fbc-a35f-57614521f025" />
+<package name="PhiWie's Lights (Net On Exclusive)" guid="c1f62a23-4cd2-4d8f-9dca-dd851580064b" authorguid="5398a523-0ff1-4fbc-a35f-57614521f025" />
+<package name="The Ring Theme" guid="537d165a-195c-4705-b27b-0be246c142b5" authorguid="5398a523-0ff1-4fbc-a35f-57614521f025" />
+<package name="Metalset" guid="7fb4103f-de6e-42fb-81d5-02c031910150" authorguid="5398a523-0ff1-4fbc-a35f-57614521f025" />
+<package name="Waterset" guid="59ea0ede-bc6b-4f3d-82c4-26b6efab181b" authorguid="5398a523-0ff1-4fbc-a35f-57614521f025" />
+<package name="JP Boxes" guid="8bab23dc-76cf-4bce-abf5-d4f1ed12eace" authorguid="b9dfa54f-2e20-40b1-a0b0-11103fd2089f" />
+<package name="JP Logos Set 1" guid="50a151f3-406a-4c60-9607-2e6bac5edbd3" authorguid="b9dfa54f-2e20-40b1-a0b0-11103fd2089f" />
+<package name="PK's Bill Tracy Madness set part 1 v1.0" guid="fc8b9713-84d4-4d3e-b891-a48a90a492ce" authorguid="26735c75-4c19-4bef-bf34-4e6b6fab80b7" />
+<package name="PK's Bill Tracy Madness Set part 2" guid="03738d5b-e885-4ef8-8436-5a347e6ecdfb" authorguid="26735c75-4c19-4bef-bf34-4e6b6fab80b7" />
+<package name="Rocks" guid="6f9a2614-b111-4683-9abf-127cec1ba8eb" authorguid="c31d2d81-68cf-4ba4-a642-6d2fba65f060" />
+<package name="Pyro's Christmas Tree Set" guid="ba82a62a-dcd5-448f-b55d-74a26ee26231" authorguid="f6641a1e-78e6-4e17-84ae-2bbb20e74e0f" />
+<package name="Pyro's Fright Fest Set" guid="4bb13a78-2e24-407b-bf59-2f110715d817" authorguid="f6641a1e-78e6-4e17-84ae-2bbb20e74e0f" />
+<package name="Pyro's Six Flags Set" guid="91af5f0c-a3fc-4468-8c29-79ac08753b0d" authorguid="f6641a1e-78e6-4e17-84ae-2bbb20e74e0f" />
+<package name="Scooby Doo Set" guid="c2431ea8-90d5-4f80-9c6e-5f166df9a30f" authorguid="f6641a1e-78e6-4e17-84ae-2bbb20e74e0f" />
+<package name="Scooby Doo Set 2" guid="0a5683f3-7ca2-4b6b-92f8-44a366eddcb6" authorguid="f6641a1e-78e6-4e17-84ae-2bbb20e74e0f" />
+<package name="Beaver Homes Set (amerikanische Hauser) - Update" guid="e29c2978-649b-4229-b86a-0f826ba05d46" authorguid="32ed2cc8-2782-4ee1-88bc-5f2e95ee3ae5" />
+<package name="McDonut's" guid="23058c51-1d56-4fd6-badb-d68ba387d57a" authorguid="32ed2cc8-2782-4ee1-88bc-5f2e95ee3ae5" />
+<package name="Ralfvieh's Attractions - WC" guid="f1f8b936-5ae8-427a-94e2-b90d7957fba5" authorguid="32ed2cc8-2782-4ee1-88bc-5f2e95ee3ae5" />
+<package name="Ralfvieh's Medieval" guid="5c9004c3-002a-4137-a12f-4f9df939eb4a" authorguid="32ed2cc8-2782-4ee1-88bc-5f2e95ee3ae5" />
+<package name="Space Mountain Hong Kong Set v. 2" guid="3916e454-dc1b-498f-8818-95208b1e40e5" authorguid="c68e85d4-7fc1-436c-b307-20756f1087a9" />
+<package name="Rct3m's Fence" guid="d32ae487-deaf-4d8a-9d5d-436cb10d2bd3" authorguid="571b145d-10dd-4265-a760-5f23b499088c" />
+<package name="RCT3robin's random wall set" guid="a0f222dd-15bf-4ebe-a687-a5264f988e83" authorguid="2f32d430-c8a5-433b-a823-c141650f0b6b" />
+<package name="Tubes v.1.0" guid="7d9f4a41-d4c1-4638-b6e0-c08a9ef374f9" authorguid="2f32d430-c8a5-433b-a823-c141650f0b6b" />
+<package name="Dark Wall Set 1.0" guid="4d0ea06b-af33-47bb-8467-5216fc476d6c" authorguid="589a9b4e-158b-49c0-9b43-21088cebef6b" />
+<package name="RCTLVR's Vending Machines V 0.5 fix" guid="c2ca89cc-7f51-4c5e-bc74-e60ea45c45aa" authorguid="e9fed402-0e12-42f1-a234-4459ea700ecd" />
+<package name="Carousel of Progress Sign" guid="373e664e-f6f9-46d8-b149-e01d70a7eee1" authorguid="412bde8f-9b06-45df-940c-1b6e61194a29" />
+<package name="WDW Space Mountain Pack 1" guid="9f3c32b9-b195-495f-99f1-380f1cf193e5" authorguid="412bde8f-9b06-45df-940c-1b6e61194a29" />
+<package name="RCTManiac's Amphitheatre Set v1" guid="e7075acd-4e42-4a4e-8cb2-7c0e4800d407" authorguid="baf8ca27-5890-4dc3-962f-1a129ee5effa" />
+<package name="RCTManiac's Billboards Set 1 v1" guid="7f87d5c0-ef48-488e-a505-08679c61b160" authorguid="baf8ca27-5890-4dc3-962f-1a129ee5effa" />
+<package name="RCTManiac's Coaster Mania" guid="d553d693-dfbe-4901-9eb9-3ca0608710d9" authorguid="baf8ca27-5890-4dc3-962f-1a129ee5effa" />
+<package name="RCTManiac's Modularz" guid="aa1bdbe6-0a67-471d-bacd-05c9a0fdbe4c" authorguid="baf8ca27-5890-4dc3-962f-1a129ee5effa" />
+<package name="RCTManiac's Oddities" guid="189b68ae-14e2-41ba-b927-ad0208d9a531" authorguid="baf8ca27-5890-4dc3-962f-1a129ee5effa" />
+<package name="RCTManiac's Path Mania" guid="974c9508-562f-4d83-a6b5-a8725f0124fd" authorguid="baf8ca27-5890-4dc3-962f-1a129ee5effa" />
+<package name="RCTManiac's Racing Mania" guid="980773d0-b9c8-41b5-905a-9b53bd6697a4" authorguid="baf8ca27-5890-4dc3-962f-1a129ee5effa" />
+<package name="RCTManiac's Restaurant Mania" guid="df434fa9-304e-42f3-9cba-87afecb81e8e" authorguid="baf8ca27-5890-4dc3-962f-1a129ee5effa" />
+<package name="RCTManiac's Shelterz Mania V1.1" guid="585f2d93-4f68-46a6-9ac0-324ea371ffe8" authorguid="baf8ca27-5890-4dc3-962f-1a129ee5effa" />
+<package name="RCTManiac's Sign Post" guid="d74879fd-e663-4f13-823d-4fc218a2140b" authorguid="baf8ca27-5890-4dc3-962f-1a129ee5effa" />
+<package name="Black Wall Set (brick)" guid="f0f1014f-ba0e-4599-8f7e-7e8473b37894" authorguid="3edbb62d-1b04-4531-aed7-537e47ec94f1" />
+<package name="Black Wall Set (rock)" guid="34ff3cf8-bf99-4e7a-b02a-5e22d1d67931" authorguid="3edbb62d-1b04-4531-aed7-537e47ec94f1" />
+<package name="Mini Town" guid="b6f178aa-1386-4a9f-9e74-35d323c2a65f" authorguid="3edbb62d-1b04-4531-aed7-537e47ec94f1" />
+<package name="Hedges &amp; Topiaries" guid="b2420094-ac23-4e6c-9cca-b635a7365c77" authorguid="82a1fce3-6a79-49f6-b8a2-e28ae06da38e" />
+<package name="Spanky's World (Custom Scenery Set)" guid="4b454ca0-1470-40ab-8f6f-58ead42eb656" authorguid="82a1fce3-6a79-49f6-b8a2-e28ae06da38e" />
+<package name="The Vodhin Community Theme Park Set" guid="3bb76bfc-5a2f-4a03-9b19-1a64d171f85c" authorguid="370f309b-a42f-4f27-a760-08d387730ebc" />
+<package name="Disco Planet" guid="8282b599-1c7d-4069-a6c1-6df24fed6ad8" authorguid="b3496e80-4145-4c23-a958-3a1f8ac6d98e" />
+<package name="RcBoats (Remote Control Boats)" guid="85fc1c5b-a896-452d-a254-a1732b42b8ac" authorguid="b578ec6e-40aa-4a70-b8a3-98f32f910ecf" />
+<package name="Launch Set" guid="c96a05f7-a124-4dce-93d0-460d815decb8" authorguid="d533d628-b78d-44c6-80e9-faceb0f0e551" />
+<package name="Stringlight (XPAG Stringlight)" guid="33bcf4d8-7a03-42a1-954d-1bbee7a0ffb3" authorguid="b583160c-70c3-46a0-b218-2d9d5f8f2fcb" />
+<package name="Alpine Village Set 1" guid="bfb5ec34-69f0-43a2-aa1a-5a4465b0a3a1" authorguid="5db4cdf4-d0fc-4af3-8afa-a925a9c6057c" />
+<package name="Alpine Village Set 2" guid="45a5cec0-98c4-42d9-a651-5126b00ebb90" authorguid="5db4cdf4-d0fc-4af3-8afa-a925a9c6057c" />
+<package name="Alpine Village Set 3" guid="caccb40f-daf9-4fff-98aa-38d3990ec82e" authorguid="5db4cdf4-d0fc-4af3-8afa-a925a9c6057c" />
+<package name="Billboard Inserts" guid="524cdacd-4962-4f19-b57f-15b4bcfec93e" authorguid="5db4cdf4-d0fc-4af3-8afa-a925a9c6057c" />
+<package name="Catfish Cove Set" guid="eb430c01-8eaf-4e72-afe9-903a469b2597" authorguid="5db4cdf4-d0fc-4af3-8afa-a925a9c6057c" />
+<package name="Circus Center Set 1" guid="98850843-12ac-422c-8331-11ddeee91cb0" authorguid="5db4cdf4-d0fc-4af3-8afa-a925a9c6057c" />
+<package name="Circus Center Set 2" guid="b044d1c8-da2a-4e07-9702-f2c43704e056" authorguid="5db4cdf4-d0fc-4af3-8afa-a925a9c6057c" />
+<package name="Expo 3000 Set" guid="344e6deb-d0e9-44c4-b873-cdd546e5b7c4" authorguid="5db4cdf4-d0fc-4af3-8afa-a925a9c6057c" />
+<package name="Main Street Set 1 v. 1.2" guid="34c52c1e-14b1-4d2b-b7df-114639196f75" authorguid="5db4cdf4-d0fc-4af3-8afa-a925a9c6057c" />
+<package name="Main Street Set 2 (Expanded!)" guid="2e0d97e6-7878-49b4-8e6b-e5b8d563aa67" authorguid="5db4cdf4-d0fc-4af3-8afa-a925a9c6057c" />
+<package name="Main Street Set 3" guid="92eb2256-a9d2-4a16-a7d5-19bb05240548" authorguid="5db4cdf4-d0fc-4af3-8afa-a925a9c6057c" />
+<package name="Main Street Set 4" guid="53f5a8a1-aaa8-4e9e-b3f3-2a0f333e5334" authorguid="5db4cdf4-d0fc-4af3-8afa-a925a9c6057c" />
+<package name="Main Street Set 5 (BETA)" guid="7bf658db-3cad-4873-9b3b-a7d4e3f724a7" authorguid="5db4cdf4-d0fc-4af3-8afa-a925a9c6057c" />
+<package name="Water World Set 1 v. 1.1" guid="30d7c226-121c-4a8d-a860-b20720932af1" authorguid="5db4cdf4-d0fc-4af3-8afa-a925a9c6057c" />
+<package name="Water World Set 2" guid="4d29a1f6-e7d8-47e3-bf04-fb3479e0587b" authorguid="5db4cdf4-d0fc-4af3-8afa-a925a9c6057c" />
+<package name="Romana Asmosia" guid="dfa757e7-7726-4de3-b1b2-b921bb43a9ad" authorguid="e4e46cec-264a-48d0-89f2-c7a745527da3" />
+<package name="SliverSpace" guid="45446720-9e47-4036-a9f6-3f5340acb2f1" authorguid="07833652-cfbd-4916-b326-8c69a09eb852" />
+<package name="Smallish's Corral" guid="0223da19-d262-4e4e-9e09-f5fb8755b478" authorguid="3813974b-03c6-498b-8293-9d6e680a8ea0" />
+<package name="Smallish's Sip It!" guid="8374d8d3-5ba3-4a40-bce1-3017abe10dfe" authorguid="3813974b-03c6-498b-8293-9d6e680a8ea0" />
+<package name="Smallish's Water Park Pieces" guid="93eb986a-e71e-4c6a-8bf4-acbec74c30ef" authorguid="3813974b-03c6-498b-8293-9d6e680a8ea0" />
+<package name="Treppe (Stairs)" guid="984c0198-0d52-4958-9128-6169ff3cc102" authorguid="1bdc95ce-4986-44a8-8c54-2dc982dee257" />
+<package name="Snailmale152's Odds &amp; Ends v. 1" guid="2eaa38cd-bfd9-4193-9357-9df60703410c" authorguid="0616cd7b-d59b-41cf-9e00-587c18bd94d6" />
+<package name="Snailmale152's Odds &amp; Ends v. 2" guid="5d369f9e-8e4d-480f-b3c8-dc1cec97633a" authorguid="0616cd7b-d59b-41cf-9e00-587c18bd94d6" />
+<package name="Snailmale152's Pillers &amp; floor covers" guid="6219d5f5-e7ec-4b07-90cf-b1069913c153" authorguid="0616cd7b-d59b-41cf-9e00-587c18bd94d6" />
+<package name="Snailmale152's Wood beams" guid="e30bf093-260c-479c-9b66-c8808ddeb3e4" authorguid="0616cd7b-d59b-41cf-9e00-587c18bd94d6" />
+<package name="Famous and Future SkyScrapers v. 1.2" guid="062b4b49-1382-4637-99c7-79505a293cfa" authorguid="51e99d11-fb71-4d23-8b88-2eacdd3f2869" />
+<package name="Life size Stratosphere" guid="c5c62e44-8d3b-4f84-8b04-632e7b006450" authorguid="51e99d11-fb71-4d23-8b88-2eacdd3f2869" />
+<package name="SpinBack's Vending Machines v.2" guid="1c827ca1-d5f4-4ffc-a3c6-cd9fe1b0043e" authorguid="ec79083f-e1c9-4ad3-b6fa-06abe85d8670" />
+<package name="Spunky - Loudspeaker Rocks v1.1" guid="ba3f245e-6d12-46fc-be38-062b7a151f76" authorguid="df9a9797-a11c-424d-9d16-6625ff2acc7a" />
+<package name="Glass Pieces Beta" guid="4283c408-c137-4d85-8c0a-13200828806f" authorguid="a15332ec-6faf-4045-b259-08c974499c2d" />
+<package name="Small Rock Loudspeaker" guid="04690811-9281-45ff-8eb2-4d8dfe071aac" authorguid="a15332ec-6faf-4045-b259-08c974499c2d" />
+<package name="Sr3d's Landscaping Beta" guid="9bf50664-5a7f-43f4-b3cd-08763ef73731" authorguid="a15332ec-6faf-4045-b259-08c974499c2d" />
+<package name="Water Works" guid="69625a4d-4bd0-48c3-b690-f16711b12a7c" authorguid="a15332ec-6faf-4045-b259-08c974499c2d" />
+<package name="Curved Concrete Walls v1.0" guid="df723fdf-7297-4c92-86c7-439d327e354d" authorguid="b5607957-b05c-4e48-ad3c-e978437c2a28" />
+<package name="Thunderbirds v1.0" guid="ec28603a-1043-477b-b16b-c32ee74daa83" authorguid="b5607957-b05c-4e48-ad3c-e978437c2a28" />
+<package name="Atomic Set" guid="32584680-4eb3-47dc-abc9-25f6b5464aa0" authorguid="ab53e6ed-abfc-438a-8d50-01b4be8d4188" />
+<package name="Doughnuts caribbean pool set BETA" guid="836aa83f-b203-48fe-b6b5-9639eb4a2686" authorguid="ab53e6ed-abfc-438a-8d50-01b4be8d4188" />
+<package name="Doughnuts neXus set v1.0" guid="81d89edb-45ac-49cc-bbd4-7fc0327f6214" authorguid="ab53e6ed-abfc-438a-8d50-01b4be8d4188" />
+<package name="Doughnuts' The Fears of RCT3 Set" guid="f7fdedf2-281b-4911-93df-2cd0cf8c9177" authorguid="ab53e6ed-abfc-438a-8d50-01b4be8d4188" />
+<package name="Doughnuts Universal Studios Globe" guid="cbf98fa5-5c53-4cf0-a3f1-8cb72afd4e75" authorguid="ab53e6ed-abfc-438a-8d50-01b4be8d4188" />
+<package name="James Hunt Set" guid="9603b468-8033-4e16-a6a8-a742cbd3a277" authorguid="ab53e6ed-abfc-438a-8d50-01b4be8d4188" />
+<package name="Junkyard Letters v3.0" guid="3a42eeb3-3090-471b-b150-b5e5ecce085e" authorguid="ab53e6ed-abfc-438a-8d50-01b4be8d4188" />
+<package name="Gravediggers" guid="57234a98-f263-415b-89bd-88321483c42b">
+	<author guid="ab53e6ed-abfc-438a-8d50-01b4be8d4188" />
+	<author guid="2018add2-0a38-4d78-8a38-f9fb4a420149" />
+</package>
+<package name="Hangar 51" guid="06056c23-3af2-4e2b-99fe-86a59c85a8ef" authorguid="1cb2f784-217c-4f72-84b5-3e2812e1913c" />
+<package name="HGR 71 v1.2" guid="bd733868-6028-40c5-af71-3929892dde36" authorguid="1cb2f784-217c-4f72-84b5-3e2812e1913c" />
+<package name="M31 Lift Hill Machinery" guid="6211fc60-b57f-4e47-97ed-4deb2dd25aa4" authorguid="1cb2f784-217c-4f72-84b5-3e2812e1913c" />
+<package name="SHR91 v. 1.0" guid="0ba9a5cd-e764-4b9a-a055-abd0bdbc7ec4" authorguid="1cb2f784-217c-4f72-84b5-3e2812e1913c" />
+<package name="Atlantis Vaulting v1.1" guid="88c585e7-231d-44e5-9035-4a6157e37033" authorguid="883a9e7d-23f9-4528-8ae0-9b3f6d6aa7f7" />
+<package name="Cliff Faces" guid="fd39cf31-c387-45f2-b48d-b1a7569d7497" authorguid="883a9e7d-23f9-4528-8ae0-9b3f6d6aa7f7" />
+<package name="Doors 1.1" guid="432359ce-5ef1-44a4-85a7-9a0e94a43bb2" authorguid="883a9e7d-23f9-4528-8ae0-9b3f6d6aa7f7" />
+<package name="Ecclesiastical Theme - Gothic Walls and Windows 1.3" guid="7aef2628-0a9f-4b8d-8661-3493f2e9e185" authorguid="883a9e7d-23f9-4528-8ae0-9b3f6d6aa7f7" />
+<package name="Ecclesiastical Theme - Vaulting 1.3" guid="67051579-2d7d-435e-950e-f856f7025864" authorguid="883a9e7d-23f9-4528-8ae0-9b3f6d6aa7f7" />
+<package name="Ecclesiastical Theme - Vines" guid="93578290-6a87-4aaa-9a3b-eb479098c0bf" authorguid="883a9e7d-23f9-4528-8ae0-9b3f6d6aa7f7" />
+<package name="Trackbeds" guid="bb67fb56-db65-45c4-8fce-cf44ca596400" authorguid="883a9e7d-23f9-4528-8ae0-9b3f6d6aa7f7" />
+<package name="Stucco &amp; Brick Walls (Unfinished)" guid="ff54cd6d-3a8c-4c12-87a9-61715501ec3e" authorguid="883a9e7d-23f9-4528-8ae0-9b3f6d6aa7f7" />
+<package name="Main Street Disneyland Resort Paris: Gazebo" guid="cdaea282-1cbf-46fe-83be-96be856f6b7f" authorguid="6b30b560-8efe-459e-bc70-ebaf4bf7b71a" />
+<package name="Main Street Disneyland Resort Paris: Ornaments" guid="448c14e6-d549-4532-a740-bc0712bffcfc" authorguid="6b30b560-8efe-459e-bc70-ebaf4bf7b71a" />
+<package name="Main Street Disneyland Resort Paris: The Bake Shop" guid="615339d0-e8f5-4324-a174-411741532b5d" authorguid="6b30b560-8efe-459e-bc70-ebaf4bf7b71a" />
+<package name="Main Street Disneyland Resort Paris: The Gibson Girl Ice Cream Parlour" guid="1a86c06a-e61c-4d92-bb98-49d3f665dc62" authorguid="6b30b560-8efe-459e-bc70-ebaf4bf7b71a" />
+<package name="Silvertree Painted Billboard 1.0 (Barnstormer Sign)" guid="5be316f8-465c-4d0b-968d-b5672c7ec1fb" authorguid="5aac15bf-09a2-4b89-b7a0-4a90eca0eb18" />
+<package name="TNS Garden Walls" guid="dfa9e512-a62d-4e4e-adbe-ae87077433a0" authorguid="2018add2-0a38-4d78-8a38-f9fb4a420149" />
+<package name="TNS-Pools-Terrain" guid="287a50b7-40de-4d53-a326-46620446d1dc" authorguid="2018add2-0a38-4d78-8a38-f9fb4a420149" />
+<package name="TNS Sit-On-It" guid="8231e667-12ec-450d-958f-3748fdadd115" authorguid="2018add2-0a38-4d78-8a38-f9fb4a420149" />
+<package name="TNS-Rockets V.1" guid="b8fac3f1-81b2-42c3-b078-f5ad470e07db" authorguid="2018add2-0a38-4d78-8a38-f9fb4a420149" />
+<package name="Big Thunder Mountain Set" guid="962e90d8-cbc6-4769-9943-84ab55cd2858" authorguid="f4ccfca3-aff0-43a0-83cd-148c7d9ad034" />
+<package name="Custom Scenery 1" guid="cfeeee3e-e729-421a-b27c-d1a14f093726" authorguid="f4ccfca3-aff0-43a0-83cd-148c7d9ad034" />
+<package name="Steps 'N' Rocks" guid="66820a2b-5923-42b3-9cc6-28be7c7eb0f6" authorguid="b577848c-9865-4789-ad4f-ede6c6f034b5" />
+<package name="USF Arch" guid="483ad70d-d6dd-47c9-b99b-1fcea99d69e4" authorguid="b577848c-9865-4789-ad4f-ede6c6f034b5" />
+<package name="Vodhin's Bench Kit v1.0" guid="fd8bf221-103e-48b8-b12c-3e9397b6b9a6" authorguid="8a8c0dce-5bee-4e79-bed2-ce4a2261452c" />
+<package name="Vodhin's Cafe Kit V.2" guid="50eb3e85-963a-40e1-b41d-50910f547002" authorguid="8a8c0dce-5bee-4e79-bed2-ce4a2261452c" />
+<package name="Vodhin's Ghoolish Goodies" guid="9ed988e5-64fc-41fe-a974-e95ffbae1077" authorguid="8a8c0dce-5bee-4e79-bed2-ce4a2261452c" />
+<package name="Vodhin's Girders n' Glass Set" guid="7c877c9b-ff75-4f68-b3c2-8b9c3e73c6ca" authorguid="8a8c0dce-5bee-4e79-bed2-ce4a2261452c" />
+<package name="Vodhin's Gizmos updated" guid="2df35ce4-5fe2-4ae8-a292-fdaf88d6f565" authorguid="8a8c0dce-5bee-4e79-bed2-ce4a2261452c" />
+<package name="Vodhin's Ironwork Trellis Set" guid="758fbfb4-2e5a-4335-83c3-0fc42882c480" authorguid="8a8c0dce-5bee-4e79-bed2-ce4a2261452c" />
+<package name="Vodhin's Lighting Kit V2" guid="dec0a67d-3efb-4450-b367-8a66c7793f2b" authorguid="8a8c0dce-5bee-4e79-bed2-ce4a2261452c" />
+<package name="Vodhin's Mill Set - Update" guid="5f509296-5c87-4beb-9089-2e1658b97dd7" authorguid="8a8c0dce-5bee-4e79-bed2-ce4a2261452c" />
+<package name="Vodhin's Neon Tribute" guid="d0dd129b-899e-4c05-9b20-688655c28467" authorguid="8a8c0dce-5bee-4e79-bed2-ce4a2261452c" />
+<package name="Vodhin's Northern Lights" guid="6fc99449-5535-47cf-80e9-9085e11ab8c7" authorguid="8a8c0dce-5bee-4e79-bed2-ce4a2261452c" />
+<package name="Vodhin's Ride Operators (Generic Entrance &amp; Exit)" guid="b4f77758-fd54-4acd-aee2-48697208c584" authorguid="8a8c0dce-5bee-4e79-bed2-ce4a2261452c" />
+<package name="Vodhin's Strip Lights" guid="55859d4a-c8c8-4be4-90da-1b1f0e94d9aa" authorguid="8a8c0dce-5bee-4e79-bed2-ce4a2261452c" />
+<package name="Vodhin's The Emerald City Of OZ" guid="7db40e4c-e737-48ab-8615-cf761264c13b" authorguid="8a8c0dce-5bee-4e79-bed2-ce4a2261452c" />
+<package name="Vodhin's Utility Poles v.1 (DEMO)" guid="9c19d22b-6be5-4c5e-82a1-190ea2822a78" authorguid="8a8c0dce-5bee-4e79-bed2-ce4a2261452c" />
+<package name="Vodhin's Vermont Scenery v. 1c" guid="9a53898b-47b2-486e-957c-a97d97928c2e" authorguid="8a8c0dce-5bee-4e79-bed2-ce4a2261452c" />
+<package name="Spinball Pinballs" guid="7a6c4272-905d-4b74-9b27-4a5c53086f0d" authorguid="a92a7722-0c51-4ba7-8573-d12181f3b510" />
+<package name="Weasel's Path/Ground Covers" guid="110709c7-5558-4a5b-bfe1-c555aaa4c800" authorguid="1f9a0efe-b935-41a4-a3a3-68e28d332eb3" />
+<package name="Weasel's Spanish Roofs v1.0" guid="e227ab20-8e18-4c52-811b-27defcc6eaaa" authorguid="1f9a0efe-b935-41a4-a3a3-68e28d332eb3" />
+<package name="xss277x's Tunnel" guid="7be09b19-d380-41c3-be93-6b20991618db" authorguid="5e2d288e-57e6-44c5-93c9-c538e394173d" />
+<package name="Titanic Set" guid="47015979-aa97-46b0-89ac-5b1694cbb386" authorguid="5eac5f35-831d-4128-9059-8e4bdfbfd9f9" />
+<package name="Yesnt's Arcade Set (BETA fixed)" guid="69b050c4-12e8-4c57-a198-3b3f21e63c12" authorguid="a71f80a9-dcf3-485a-b1ab-e480f8f75a74" />
+<package name="yesnt's Billboards 2.0" guid="0fae65f2-9040-4c72-b5b6-9bc31d8828fa" authorguid="a71f80a9-dcf3-485a-b1ab-e480f8f75a74" />
+<package name="Yesnt's Skate Park Set" guid="53a4509d-3d77-49ae-854a-264929a55595" authorguid="a71f80a9-dcf3-485a-b1ab-e480f8f75a74" />
+<package name="Yesnt's Water Fun Pack" guid="a6538d41-67a0-451d-b7b3-62ce8c30df11" authorguid="a71f80a9-dcf3-485a-b1ab-e480f8f75a74" />
+<package name="Launch Fins" guid="e9535a5c-2266-4605-b0ff-3da0d9b8cce1" authorguid="23716a43-0093-4d04-8689-5a6e783a10d5" />
+<package name="Rockwell Font" guid="ae0a3f40-860e-4f1b-9ec4-c367dd17b593" authorguid="23716a43-0093-4d04-8689-5a6e783a10d5" />
+<package name="White Picket Fence V4" guid="b9acbaa0-bec4-4938-ae4f-a5a88c739754" authorguid="acfbd756-fb5b-41fb-b7f0-6730e0483cc9" />
+<package name="Stone Formations" guid="61a08301-daec-484b-8d86-6b7091e6e21f" authorguid="acfbd756-fb5b-41fb-b7f0-6730e0483cc9" />
+<package name="ACME Set" guid="63e84c71-f4f8-44d7-bc40-00129ea46322" authorguid="c8fed437-8706-4777-9f5c-e9094067bd0d" />
+<package name="House Set" guid="4c9e6b90-ab1c-464c-9097-94804ae93646" authorguid="c8fed437-8706-4777-9f5c-e9094067bd0d" />
+<package name="Wall Set" guid="9a7d4629-204b-4fac-970b-82fd75f82e92" authorguid="c8fed437-8706-4777-9f5c-e9094067bd0d" />
+</packagelist>

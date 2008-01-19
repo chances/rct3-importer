@@ -830,13 +830,13 @@ public:
                 wxString s;
                 switch (m_value->place) {
                     case 1:
-                        s = _("Texture Only");
+                        s = _("see-through");
                         break;
                     case 2:
-                        s = _("Unknown");
+                        s = _("glass");
                         break;
                     default:
-                        s = _("Texture & Mesh");
+                        s = _("solid");
                 }
                 wxDCClipper clip(*dc, rect);
                 wxCoord w, h;
@@ -1486,7 +1486,7 @@ void dlgModel::CheckModel() {
     UpdateAll();
 };
 
-void dlgModel::FetchOneVertexMeshes(wxArrayString& names, std::vector<D3DVECTOR>& points) {
+void dlgModel::FetchOneVertexMeshes(wxArrayString& names, std::vector<VECTOR>& points) {
     for (cMeshStruct::iterator ms = m_model->meshstructs.begin();
             ms != m_model->meshstructs.end(); ms++) {
         if (ms->effectpoint) {
@@ -1497,7 +1497,7 @@ void dlgModel::FetchOneVertexMeshes(wxArrayString& names, std::vector<D3DVECTOR>
 }
 
 void dlgModel::ShowTransform(int pr) {
-    D3DMATRIX m = matrixMultiply(m_model->transforms);
+    MATRIX m = matrixMultiply(m_model->transforms);
     for (int i=0; i<4; i++)
         for (int j=0; j<4; j++)
             m_Matrix[i][j]->SetLabel(wxString::Format("%.*f", pr, m.m[i][j]));
@@ -1544,7 +1544,7 @@ void dlgModel::UpdateAll() {
     wxSize maxftx(w,h);
     dc.GetTextExtent(_("Texture Style"), &w, &h);
     wxSize maxtxs(w,h);
-    dc.GetTextExtent(_("Texture & Mesh"), &w, &h);
+    dc.GetTextExtent(_("see-through"), &w, &h);
     wxSize maxplace(w,h);
     dc.GetTextExtent(_("Water Mask Texture"), &w, &h);
     wxSize maxflags(w,h);
@@ -1576,7 +1576,7 @@ void dlgModel::UpdateAll() {
     //m_dataviewMesh->AppendTextColumn(wxT("Texture"), 2);
     m_dataviewMesh->AppendColumn(new wxDataViewColumn(_("Texture Style"), new wxMeshListTXSRenderer(this, maxtxs), 3, maxtxs.GetWidth()));
     //m_dataviewMesh->AppendTextColumn(wxT("Texture Style"), 3);
-    m_dataviewMesh->AppendColumn(new wxDataViewColumn(_("Placing"), new wxMeshListPlaceRenderer(this, maxplace), 4, maxplace.GetWidth()));
+    m_dataviewMesh->AppendColumn(new wxDataViewColumn(_("Mesh Type"), new wxMeshListPlaceRenderer(this, maxplace), 4, maxplace.GetWidth()));
     //m_dataviewMesh->AppendTextColumn(wxT("Place"), 4);
     m_dataviewMesh->AppendColumn(new wxDataViewColumn(_("Flags"), new wxMeshListFlagsRenderer(this, maxflags), 5, maxflags.GetWidth()));
     //m_dataviewMesh->AppendTextColumn(_("Flags"), 5);

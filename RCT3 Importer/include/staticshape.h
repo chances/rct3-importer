@@ -24,6 +24,12 @@ using namespace std;
 #define SS2_FACES_SINGLE_SIDED      3
 #define SS2_FACES_DOUBLE_SIDED      1
 
+struct Triangle {
+    unsigned long a;
+    unsigned long b;
+    unsigned long c;
+};
+
 struct StaticShape2 {
 	unsigned long unk1; //always 0xFFFFFFFFF
 	FlexiTextureInfoStruct *fts; //is 0 in disk files
@@ -37,15 +43,15 @@ struct StaticShape2 {
 	unsigned long *Triangles;
 };
 struct StaticShape1 {
-	D3DVECTOR BoundingBox1;
-	D3DVECTOR BoundingBox2;
+	VECTOR BoundingBox1;
+	VECTOR BoundingBox2;
 	unsigned long TotalVertexCount;
 	unsigned long TotalIndexCount;
 	unsigned long MeshCount2;
 	unsigned long MeshCount;
 	StaticShape2 **sh;
 	unsigned long EffectCount;
-	D3DMATRIX *EffectPosition;
+	MATRIX *EffectPosition;
 	char **EffectName;
 };
 

@@ -26,13 +26,23 @@
 #ifndef LIB3DCONFIG_H_INCLUDED
 #define LIB3DCONFIG_H_INCLUDED
 
-#define READ_RCT3_ORIENTATION()     wxcRead<long>(wxT("RCT3/Orientation"), ORIENTATION_LEFT_YUP)
+#define READ_RCT3_ORIENTATION()      wxcRead<long>(wxT("RCT3/Orientation"), ORIENTATION_LEFT_YUP)
 #define WRITE_RCT3_ORIENTATION(v)   wxcWrite<long>(wxT("RCT3/Orientation"), v)
 
-#define READ_RCT3_TEXTURE()     wxcRead<long>(wxT("RCT3/TextureScaling"), RCT3_TEXTURE_ERROR_OUT)
-#define WRITE_RCT3_TEXTURE(v)   wxcWrite<long>(wxT("RCT3/TextureScaling"), v)
+#define READ_RCT3_TEXTURE()          wxcRead<long>(wxT("RCT3/TextureScaling"), RCT3_TEXTURE_ERROR_OUT)
+#define WRITE_RCT3_TEXTURE(v)       wxcWrite<long>(wxT("RCT3/TextureScaling"), v)
 
-#define READ_RCT3_EXPERTMODE()     wxcRead<bool>(wxT("RCT3/ExpertMode"), false)
-#define WRITE_RCT3_EXPERTMODE(v)   wxcWrite<bool>(wxT("RCT3/ExpertMode"), v)
+#define READ_RCT3_EXPERTMODE()       wxcRead<bool>(wxT("RCT3/ExpertMode"), false)
+#define WRITE_RCT3_EXPERTMODE(v)    wxcWrite<bool>(wxT("RCT3/ExpertMode"), v)
+
+#define READ_RCT3_TRIANGLESORT_X()     wxcRead<wxString>(wxT("RCT3/TriangleSortX"), wxString(cTriangleSortAlgorithm::GetDefaultName(), wxConvLocal))
+#define WRITE_RCT3_TRIANGLESORT_X(v)  wxcWrite<wxString>(wxT("RCT3/TriangleSortX"), v)
+
+#define READ_RCT3_TRIANGLESORT_Y()     wxcRead<wxString>(wxT("RCT3/TriangleSortY"), wxString(cTriangleSortAlgorithm::GetDefaultName(), wxConvLocal))
+#define WRITE_RCT3_TRIANGLESORT_Y(v)  wxcWrite<wxString>(wxT("RCT3/TriangleSortY"), v)
+
+#define READ_RCT3_TRIANGLESORT_Z()     wxcRead<wxString>(wxT("RCT3/TriangleSortZ"), wxString(cTriangleSortAlgorithm::GetDefaultName(), wxConvLocal))
+#define WRITE_RCT3_TRIANGLESORT_Z(v)  wxcWrite<wxString>(wxT("RCT3/TriangleSortZ"), v)
+
 
 #endif

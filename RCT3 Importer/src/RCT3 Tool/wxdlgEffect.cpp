@@ -205,7 +205,7 @@ dlgEffectBase::dlgEffectBase(wxWindow *parent, bool effect) {
     dlgModel *mod = dynamic_cast<dlgModel *> (parent);
     if (mod) {
         wxArrayString names;
-        std::vector<D3DVECTOR> points;
+        std::vector<VECTOR> points;
         mod->FetchOneVertexMeshes(names, points);
         if (points.size()) {
             wxMenuItemList p1menuitems = m_menuPos1->GetMenuItems();
@@ -288,7 +288,7 @@ void dlgEffect::OnCreateClick(wxCommandEvent& WXUNUSED(event)) {
 #define XRCID2(str_id, n) \
     wxXmlResource::GetXRCID(wxString(wxT(str_id))+wxString(wxT(n)))
 
-void dlgEffectBase::DoQuickMenu(const int id, wxArrayString& names, std::vector<D3DMATRIX>& transforms, int nr) {
+void dlgEffectBase::DoQuickMenu(const int id, wxArrayString& names, std::vector<MATRIX>& transforms, int nr) {
     const char* snr[2] = {"1", "2"};
 
     if (transforms.size()) {
@@ -297,7 +297,7 @@ void dlgEffectBase::DoQuickMenu(const int id, wxArrayString& names, std::vector<
     }
 
     wxString newmatrixname;
-    D3DMATRIX newmatrix;
+    MATRIX newmatrix;
 
 //    int id = event.GetId();
     if (id == XRCID2("menu_quickeffect_pos", snr[nr])) {
@@ -306,7 +306,7 @@ void dlgEffectBase::DoQuickMenu(const int id, wxArrayString& names, std::vector<
             dialog->Destroy();
             return;
         }
-        D3DVECTOR v;
+        VECTOR v;
         v.x = dialog->x;
         v.y = dialog->y;
         v.z = dialog->z;
@@ -333,7 +333,7 @@ void dlgEffectBase::DoQuickMenu(const int id, wxArrayString& names, std::vector<
     } else {
         wxIdOVMMap::iterator vec = m_IdMap[nr].find(id);
         if (vec != m_IdMap[nr].end()) {
-            D3DVECTOR v = vec->second;
+            VECTOR v = vec->second;
             newmatrixname = wxString::Format(_("Translation by <%.4f,%.4f,%.4f> (%s)"), v.x, v.y, v.z, m_IdNameMap[nr][id].c_str());
             newmatrix = matrixGetTranslation(v);
 
@@ -499,7 +499,7 @@ dlgEffect::dlgEffect(wxWindow *parent):dlgEffectBase(parent, true) {
 }
 
 void dlgEffect::ShowTransform(int pr) {
-    D3DMATRIX m = matrixMultiply(m_ef.transforms);
+    MATRIX m = matrixMultiply(m_ef.transforms);
     for (int i=0; i<4; i++)
         for (int j=0; j<4; j++)
             m_Matrix[i][j]->SetLabel(wxString::Format("%.*f", pr, m.m[i][j]));
@@ -684,7 +684,7 @@ dlgBone::dlgBone(wxWindow *parent):dlgEffectBase(parent, false) {
 }
 
 void dlgBone::ShowTransform(int pr) {
-    D3DMATRIX m = matrixMultiply(m_bn.positions1);
+    MATRIX m = matrixMultiply(m_bn.positions1);
     for (int i=0; i<4; i++)
         for (int j=0; j<4; j++) {
             m_Matrix[i][j]->SetLabel(wxString::Format("%.*f", pr, m.m[i][j]));

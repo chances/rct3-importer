@@ -23,31 +23,46 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-
-
 #include "RawParse_cpp.h"
 
-void cRawParser::Process(const wxFileName& file, const wxFileName& outputdir, const wxFileName& output) {
+void cRawParser::FillAllBakes(wxSortedArrayString& tofill) {
+    tofill.push_back(RAWXML_VARIABLES);
+    tofill.push_back(RAWXML_IMPORT);
+    tofill.push_back(RAWXML_WRITE);
+    tofill.push_back(RAWXML_BSH);
+    tofill.push_back(RAWXML_FTX);
+    tofill.push_back(RAWXML_SHS);
+    tofill.push_back(RAWXML_TEX);
+    tofill.push_back(RAWXML_TXT);
+//    tofill.push_back(RAWBAKE_XML);
+}
+
+void cRawParser::Process(const wxFSFileName& file, const wxFileName& outputdir, const wxFileName& output) {
     m_input = file;
     m_output = output;
     if (outputdir == wxT("")) {
-        m_outputbasedir.SetPath(file.GetPathWithSep());
+        m_outputbasedir.SetPath(file.GetBasePath(wxPATH_GET_SEPARATOR));
     } else {
         m_outputbasedir.SetPath(outputdir.GetPathWithSep());
     }
     wxXmlDocument doc;
-    if (!doc.Load(file.GetFullPath()))
+    wxFileSystem fs;
+    std::auto_ptr<wxFSFile> inputfsfile(fs.OpenFile(file.GetFullPath(), wxFS_READ | wxFS_SEEKABLE));
+    if (!inputfsfile.get())
+        throw RCT3Exception(_("Cannot read input file ")+file.GetFullPath());
+
+    if (!doc.Load(*inputfsfile->GetStream()))
         throw RCT3Exception(wxT("Error loading xml file ")+file.GetFullPath());
 
     wxXmlNode* root = doc.GetRoot();
     Load(root);
 }
 
-void cRawParser::Process(wxXmlNode* root, const wxFileName& file, const wxFileName& outputdir, const wxFileName& output) {
+void cRawParser::Process(wxXmlNode* root, const wxFSFileName& file, const wxFileName& outputdir, const wxFileName& output) {
     m_input = file;
     m_output = output;
     if (outputdir == wxT("")) {
-        m_outputbasedir.SetPath(file.GetPathWithSep());
+        m_outputbasedir.SetPath(file.GetBasePath(wxPATH_GET_SEPARATOR));
     } else {
         m_outputbasedir.SetPath(outputdir.GetPathWithSep());
     }
@@ -107,6 +122,11 @@ void cRawParser::ParseConditions(const wxString& options) {
 }
 
 void cRawParser::AddBakeStructures(const wxString& structs) {
+    if (structs == wxT("all")) {
+        cRawParser::FillAllBakes(m_bake);
+        return;
+    }
+
     wxStringTokenizer tok(structs, wxT(" "));
 
     while (tok.HasMoreTokens()) {
@@ -258,14 +278,19 @@ void cRawParser::Load(wxXmlNode* root) {
 
 }
 
-void cRawParser::LoadVariables(const wxFileName& fn, bool command, wxXmlNode* target) {
+void cRawParser::LoadVariables(const wxFSFileName& fn, bool command, wxXmlNode* target) {
     wxXmlDocument doc;
-    doc.Load(fn.GetFullPath());
+    wxFileSystem fs;
+    std::auto_ptr<wxFSFile> inputfsfile(fs.OpenFile(fn.GetFullPath(), wxFS_READ | wxFS_SEEKABLE));
+    if (!inputfsfile.get())
+        throw RCT3Exception(_("Cannot read input file ")+fn.GetFullPath());
+
+    doc.Load(*inputfsfile->GetStream());
 
     wxXmlNode* root = doc.GetRoot();
 
     if (root->GetName() == RAWXML_VARIABLES) {
-        ParseVariables(root, command, fn.GetPathWithSep());
+        ParseVariables(root, command, fn.GetPath(wxPATH_GET_SEPARATOR));
         if (target && (m_mode == MODE_BAKE) && (m_bake.Index(RAWXML_VARIABLES) != wxNOT_FOUND)) {
             wxXmlNode* newvars = root->GetChildren();
             if (newvars) {

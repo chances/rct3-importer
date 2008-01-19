@@ -28,6 +28,7 @@
 #include "confhelp.h"
 #include "lib3Dconfig.h"
 #include "matrix.h"
+#include "ManagerCommon.h"
 #include "RCT3Exception.h"
 #include "texcheck.h"
 #include "gximage.h"
@@ -38,7 +39,7 @@
 //
 ///////////////////////////////////////////////////////////////
 
-bool XmlParseMatrixNode(wxXmlNode* node, D3DMATRIX* matrix, wxString* name, unsigned long version) {
+bool XmlParseMatrixNode(wxXmlNode* node, MATRIX* matrix, wxString* name, unsigned long version) {
     bool ret = true;
     if (!node)
         return false;
@@ -80,9 +81,10 @@ bool XmlParseMatrixNode(wxXmlNode* node, D3DMATRIX* matrix, wxString* name, unsi
     return ret;
 }
 
-wxXmlNode* XmlMakeMatrixNode(const D3DMATRIX& matrix, const wxString& name) {
+wxXmlNode* XmlMakeMatrixNode(const MATRIX& matrix, const wxString& name) {
     wxXmlNode* node = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, RCT3XML_MATRIX);
-    node->AddProperty(wxT("name"), name);
+    if (name != wxT(""))
+        node->AddProperty(wxT("name"), name);
     wxXmlNode* lastnode;
     //wxXmlNode* childnode = new wxXmlNode(node, wxXML_ELEMENT_NODE, wxT("row1"));
     //wxXmlNode* textnode = new wxXmlNode(childnode, wxXML_TEXT_NODE, wxT(""));
@@ -170,7 +172,7 @@ txyz& operator= (txyz& t, cTXYZ& v) {
 }
 */
 
-txyz cTXYZ::GetFixed(c3DLoaderOrientation ori) {
+txyz cTXYZ::GetFixed(c3DLoaderOrientation ori) const {
     txyz r = v;
     txyzFixOrientation(r, ori);
     return r;
@@ -208,6 +210,10 @@ void cMeshStruct::CopySettingsFrom(const cMeshStruct& from) {
 
     bone = from.bone;
     bonename = from.bonename;
+
+    algo_x = from.algo_x;
+    algo_y = from.algo_y;
+    algo_z = from.algo_z;
 }
 
 bool cMeshStruct::FromCompilerXml(wxXmlNode* node, const wxString& path) {
@@ -284,6 +290,16 @@ bool cMeshStruct::FromCompilerXml(wxXmlNode* node, const wxString& path) {
         throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Missing ftx or txs attribute."), Name.c_str()));
     }
 
+    if (node->GetPropVal(wxT("sortx"), &temp)) {
+        algo_x = temp;
+    }
+    if (node->GetPropVal(wxT("sorty"), &temp)) {
+        algo_y = temp;
+    }
+    if (node->GetPropVal(wxT("sortz"), &temp)) {
+        algo_z = temp;
+    }
+
     return true;
 }
 
@@ -350,6 +366,15 @@ bool cMeshStruct::FromNode(wxXmlNode* node, const wxString& path, unsigned long 
         Name = _("Missing!!!");
         ret = false;
     }
+    if (node->GetPropVal(wxT("sortx"), &temp)) {
+        algo_x = temp;
+    }
+    if (node->GetPropVal(wxT("sorty"), &temp)) {
+        algo_y = temp;
+    }
+    if (node->GetPropVal(wxT("sortz"), &temp)) {
+        algo_z = temp;
+    }
 
     return ret;
 }
@@ -364,6 +389,12 @@ wxXmlNode* cMeshStruct::GetNode(const wxString& path) {
     node->AddProperty(wxT("unknown"), wxString::Format(wxT("%lu"), unknown));
     node->AddProperty(wxT("fudgenormals"), wxString::Format(wxT("%lu"), fudgenormals));
     node->AddProperty(wxT("name"), Name);
+    if (!algo_x.IsEmpty())
+        node->AddProperty(wxT("sortx"), algo_x);
+    if (!algo_y.IsEmpty())
+        node->AddProperty(wxT("sorty"), algo_y);
+    if (!algo_z.IsEmpty())
+        node->AddProperty(wxT("sortz"), algo_z);
     return node;
 }
 
@@ -745,20 +776,20 @@ wxXmlNode* cFlexiTexture::GetNode(const wxString& path) {
     return node;
 }
 
-RGBQUAD cFlexiTexture::g_rgbPalette[256];
+COLOURQUAD cFlexiTexture::g_rgbPalette[256];
 bool cFlexiTexture::g_rgbPaletteCreated = false;
 
-RGBQUAD* cFlexiTexture::GetRGBPalette() {
+COLOURQUAD* cFlexiTexture::GetRGBPalette() {
     if (!g_rgbPaletteCreated) {
         ZeroMemory(&g_rgbPalette, sizeof(g_rgbPalette));
         for (int i = 1; i <= 85; i++) {
-            g_rgbPalette[i].rgbRed = ((86 - i) * 255) / 85;
-            g_rgbPalette[i + 85].rgbGreen = ((86 - i) * 255) / 85;
-            g_rgbPalette[i + 170].rgbBlue = ((86 - i) * 255) / 85;
+            g_rgbPalette[i].red = ((86 - i) * 255) / 85;
+            g_rgbPalette[i + 85].green = ((86 - i) * 255) / 85;
+            g_rgbPalette[i + 170].blue = ((86 - i) * 255) / 85;
         }
         g_rgbPaletteCreated = true;
     }
-    return reinterpret_cast<RGBQUAD*>(&g_rgbPalette);
+    return reinterpret_cast<COLOURQUAD*>(&g_rgbPalette);
 }
 
 
@@ -788,7 +819,7 @@ bool cEffectPoint::FromNode(wxXmlNode* node, const wxString& path, unsigned long
     while(child) {
         if (child->GetName() == RCT3XML_MATRIX) {
             wxString n = _("Error");
-            D3DMATRIX m;
+            MATRIX m;
             if (!XmlParseMatrixNode(child, &m, &n, version ))
                 ret = false;
             transforms.push_back(m);
@@ -838,7 +869,7 @@ cModel::cModel(const cAnimatedModel& model) {
     }
 }
 
-cModel::cModel(D3DMATRIX def, c3DLoaderOrientation ori): name(wxT("")), file(wxT("")), usedorientation(ori), fileorientation(ORIENTATION_UNKNOWN), fatal_error(false) {
+cModel::cModel(MATRIX def, c3DLoaderOrientation ori): name(wxT("")), file(wxT("")), usedorientation(ori), fileorientation(ORIENTATION_UNKNOWN), fatal_error(false) {
     transforms.push_back(def);
     transformnames.push_back(_("Default Matrix"));
 }
@@ -1099,6 +1130,29 @@ fixupsinglevertexmeshes:
     return true;
 }
 
+bool cModel::GetTransformationMatrices(MATRIX& transform, MATRIX& undodamage) const {
+    transform = matrixMultiply(matrixMultiply(transforms), matrixGetFixOrientation(usedorientation));
+
+    int m = 0;
+    for(m = transformnames.size()-1; m>=0; m--) {
+        if (transformnames[m] == wxT("-"))
+            break;
+    }
+    if (m>0) {
+        // Note: if m=0, the first is the separator, so this can fall through to no separator
+        std::vector<MATRIX> undostack;
+        for (int n = m; n < transforms.size(); n++)
+            undostack.push_back(transforms[n]);
+        undostack.push_back(matrixGetFixOrientation(usedorientation));
+        undodamage = matrixInverse(matrixMultiply(undostack));
+    } else {
+        undodamage = matrixInverse(transform);
+    }
+    return (!matrixIsEqual(transform, matrixGetUnity())) ||
+           (!matrixIsEqual(undodamage, matrixGetUnity()));
+}
+
+
 bool cModel::CheckMeshes(bool animated) {
     wxLogDebug(wxT("Trace, cModel::CheckMeshes '%s', %d"), name.c_str(), animated);
     bool warning = false;
@@ -1140,6 +1194,25 @@ bool cModel::CheckMeshes(bool animated) {
             valid_meshes++;
         // Initialize
         i_mesh->bone = 0;
+
+        if (!i_mesh->algo_x.IsEmpty()) {
+            cTriangleSortAlgorithm::Algorithm sortalgo = cTriangleSortAlgorithm::GetAlgo(i_mesh->algo_x.mb_str(wxConvLocal));
+            if (sortalgo == cTriangleSortAlgorithm::EnumSize) {
+                throw RCT3Exception(wxString::Format(_("Model '%s': Group '%s' has unknown triangle sort algorithm: %s"), name.c_str(), i_mesh->Name.c_str(), i_mesh->algo_x.c_str()));
+            }
+        }
+        if (!i_mesh->algo_y.IsEmpty()) {
+            cTriangleSortAlgorithm::Algorithm sortalgo = cTriangleSortAlgorithm::GetAlgo(i_mesh->algo_y.mb_str(wxConvLocal));
+            if (sortalgo == cTriangleSortAlgorithm::EnumSize) {
+                throw RCT3Exception(wxString::Format(_("Model '%s': Group '%s' has unknown triangle sort algorithm: %s"), name.c_str(), i_mesh->Name.c_str(), i_mesh->algo_y.c_str()));
+            }
+        }
+        if (!i_mesh->algo_z.IsEmpty()) {
+            cTriangleSortAlgorithm::Algorithm sortalgo = cTriangleSortAlgorithm::GetAlgo(i_mesh->algo_z.mb_str(wxConvLocal));
+            if (sortalgo == cTriangleSortAlgorithm::EnumSize) {
+                throw RCT3Exception(wxString::Format(_("Model '%s': Group '%s' has unknown triangle sort algorithm: %s"), name.c_str(), i_mesh->Name.c_str(), i_mesh->algo_z.c_str()));
+            }
+        }
 
         if (animated) {
             if (object->GetObjectVertexCount(c_mesh)>USHRT_MAX){
@@ -1205,7 +1278,7 @@ bool cModel::FromNode(wxXmlNode* node, const wxString& path, unsigned long versi
     while(child) {
         if (child->GetName() == RCT3XML_MATRIX) {
             wxString n = _("Error");
-            D3DMATRIX m;
+            MATRIX m;
             if (!XmlParseMatrixNode(child, &m, &n, version))
                 ret = false;
             transforms.push_back(m);
@@ -1294,7 +1367,7 @@ bool cModelBone::FromCompilerXml(wxXmlNode* node, const wxString& path) {
             if (positions1.size())
                 throw RCT3Exception(wxString::Format(_("Duplicate pos1 tag of bone '%s'."), name.c_str()));
 
-            D3DMATRIX t;
+            MATRIX t;
             if (sscanf(child->GetNodeContent().mb_str(wxConvLocal), "%f %f %f %f  %f %f %f %f  %f %f %f %f  %f %f %f %f",
                     &t._11, &t._12, &t._13, &t._14, &t._21, &t._22, &t._23, &t._24,
                     &t._31, &t._32, &t._33, &t._34, &t._41, &t._42, &t._43, &t._44) != 16) {
@@ -1306,7 +1379,7 @@ bool cModelBone::FromCompilerXml(wxXmlNode* node, const wxString& path) {
             if (positions2.size())
                 throw RCT3Exception(wxString::Format(_("Duplicate pos2 tag of bone '%s'."), name.c_str()));
 
-            D3DMATRIX t;
+            MATRIX t;
             if (sscanf(child->GetNodeContent().mb_str(wxConvLocal), "%f %f %f %f  %f %f %f %f  %f %f %f %f  %f %f %f %f",
                     &t._11, &t._12, &t._13, &t._14, &t._21, &t._22, &t._23, &t._24,
                     &t._31, &t._32, &t._33, &t._34, &t._41, &t._42, &t._43, &t._44) != 16) {
@@ -1344,7 +1417,7 @@ bool cModelBone::FromNode(wxXmlNode* node, const wxString& path, unsigned long v
             while(schild) {
                 if (schild->GetName() == RCT3XML_MATRIX) {
                     wxString n = _("Error");
-                    D3DMATRIX m;
+                    MATRIX m;
                     if (!XmlParseMatrixNode(schild, &m, &n, version))
                         ret = false;
                     positions1.push_back(m);
@@ -1357,7 +1430,7 @@ bool cModelBone::FromNode(wxXmlNode* node, const wxString& path, unsigned long v
             while(schild) {
                 if (schild->GetName() == RCT3XML_MATRIX) {
                     wxString n = _("Error");
-                    D3DMATRIX m;
+                    MATRIX m;
                     if (!XmlParseMatrixNode(schild, &m, &n, version))
                         ret = false;
                     positions2.push_back(m);
@@ -1648,7 +1721,7 @@ bool cAnimatedModel::FromNode(wxXmlNode* node, const wxString& path, unsigned lo
     while(child) {
         if (child->GetName() == RCT3XML_MATRIX) {
             wxString n = _("Error");
-            D3DMATRIX m;
+            MATRIX m;
             if (!XmlParseMatrixNode(child, &m, &n, version))
                 ret = false;
             transforms.push_back(m);

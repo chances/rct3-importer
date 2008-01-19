@@ -117,13 +117,13 @@ double cRawParser::ParseFloat(wxXmlNode* node, const wxString& nodes, const wxSt
     return i;
 }
 
-void cRawParser::ParseVector(wxXmlNode* node, D3DVECTOR& v, const wxString& nodes) {
+void cRawParser::ParseVector(wxXmlNode* node, VECTOR& v, const wxString& nodes) {
     v.x = ParseFloat(node, nodes, wxT("x"));
     v.y = ParseFloat(node, nodes, wxT("y"));
     v.z = ParseFloat(node, nodes, wxT("z"));
 }
 
-void cRawParser::ParseMatrix(wxXmlNode* node, D3DMATRIX& m, const wxString& nodes) {
+void cRawParser::ParseMatrix(wxXmlNode* node, MATRIX& m, const wxString& nodes) {
     m = matrixGetUnity();
 
     bool missrow[4] = {true, true, true, true};
@@ -190,22 +190,22 @@ void cRawParser::ParseVariables(wxXmlNode* node, bool command, const wxString& p
     wxString inc = wxT("");
     ParseStringOption(inc, node, wxT("include"), NULL);
     if (!inc.IsEmpty()) {
-        wxFileName src;
+        wxFSFileName src;
         if (path.IsEmpty()) {
-            src = wxFileName::DirName(m_input.GetPath());
+            src = m_input.GetPath();
         } else {
-            src = wxFileName::DirName(path);
+            src = wxFSFileName(path, true);
         }
-        wxFileName filename = inc;
+        wxFSFileName filename = inc;
         if (!filename.IsAbsolute())
-            filename.MakeAbsolute(src.GetPathWithSep());
+            filename.MakeAbsolute(src.GetPath(wxPATH_GET_SEPARATOR));
         LoadVariables(filename, command, (m_bake.Index(RAWXML_VARIABLES)!=wxNOT_FOUND)?node:NULL );
 
         if (m_mode == MODE_BAKE) {
             if (m_bake.Index(RAWXML_VARIABLES) == wxNOT_FOUND) {
                 wxString newfile;
                 if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
-                    filename.MakeRelativeTo(m_bakeroot.GetPathWithSep());
+                    filename.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR));
                 }
                 newfile = filename.GetFullPath();
                 node->DeleteProperty(wxT("include"));

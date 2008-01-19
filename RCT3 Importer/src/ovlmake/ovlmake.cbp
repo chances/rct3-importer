@@ -101,6 +101,7 @@
 				<Compiler>
 					<Add option="-Os" />
 					<Add option="-O2" />
+					<Add option="-DUNICODE" />
 					<Add directory="$(#mingw.lib)\wx\include\base-unicode-release-static-2.8" />
 				</Compiler>
 				<Linker>
@@ -112,7 +113,6 @@
 					<Add library="libASE" />
 					<Add library="wx_baseu-2.8" />
 					<Add library="libOVLng" />
-					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
 			<Target title="Debug Base Unicode">
@@ -131,6 +131,7 @@
 					<Add option="-g" />
 					<Add option="-DDEBUG" />
 					<Add option="-D__WXDEBUG__" />
+					<Add option="-DUNICODE" />
 					<Add directory="$(#mingw.lib)\wx\include\base-unicode-debug-static-2.8" />
 				</Compiler>
 				<Linker>
@@ -141,7 +142,6 @@
 					<Add library="libASE" />
 					<Add library="wx_baseud-2.8" />
 					<Add library="libOVLngud" />
-					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
 		</Build>
@@ -197,11 +197,29 @@
 		<Extensions>
 			<code_completion />
 			<envvars />
-			<debugger />
-			<lib_finder />
+			<debugger>
+				<remote_debugging target="Precompile XRC">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Release">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug (Public)">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Premake Resources">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug Unicode">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug (Public)">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+			</debugger>
 			<AutoVersioning>
 				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />
-				<Settings autoincrement="0" date_declarations="1" do_auto_increment="1" ask_to_increment="0" language="C++" svn="1" svn_directory="C:\Development\svn" header_path="version.h" />
+				<Settings autoincrement="0" date_declarations="1" do_auto_increment="1" ask_to_increment="0" language="C++" svn="0" svn_directory="C:\Development\svn" header_path="version.h" />
 				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
 			</AutoVersioning>
 		</Extensions>

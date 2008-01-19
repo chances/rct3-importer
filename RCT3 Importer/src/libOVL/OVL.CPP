@@ -405,7 +405,7 @@ LIBOVL_API void SaveSceneryOvl() {
         }
         for (j = 0;j < StaticShapes[i]->EffectCount;j++) {
             StaticShapeSize += 4;
-            StaticShapeSize += sizeof(D3DMATRIX);
+            StaticShapeSize += sizeof(MATRIX);
             unsigned long x = strlen(StaticShapes[i]->EffectName[j]) + 1;
             while (x % 4 != 0) {
                 x++;
@@ -434,7 +434,7 @@ LIBOVL_API void SaveSceneryOvl() {
         }
         for (j = 0;j < BoneShapes[i]->BoneCount;j++) {
 //            BoneShapeSize += 4;  // No need, name pointer is part of BoneStruct
-            BoneShapeSize += 2*sizeof(D3DMATRIX);
+            BoneShapeSize += 2*sizeof(MATRIX);
             BoneShapeSize += sizeof(BoneStruct);
             stringtable.AddString(BoneShapes[i]->Bones[j].BoneName);
 //            unsigned long x = strlen(BoneShapes[i]->Bones[j].BoneName) + 1;
@@ -566,8 +566,8 @@ LIBOVL_API void SaveSceneryOvl() {
             TempRef++;
         }
         if (StaticShapes[i]->EffectCount != 0) {
-            shs->EffectPosition = (D3DMATRIX *)TempStaticShape;
-            TempStaticShape += (StaticShapes[i]->EffectCount * sizeof(D3DMATRIX));
+            shs->EffectPosition = (MATRIX *)TempStaticShape;
+            TempStaticShape += (StaticShapes[i]->EffectCount * sizeof(MATRIX));
             shs->EffectName = (char **)TempStaticShape;
             shs->EffectCount = StaticShapes[i]->EffectCount;
             TempStaticShape += (StaticShapes[i]->EffectCount * 4);
@@ -587,7 +587,7 @@ LIBOVL_API void SaveSceneryOvl() {
                 }
                 relocations.push((unsigned long *)&shs->EffectName[j]);
                 DUMP_RELOCATION(f,"relocations: %x: &shs->EffectName[j]\n",&shs->EffectName[j]);
-                memcpy(&shs->EffectPosition[j],&StaticShapes[i]->EffectPosition[j],sizeof(D3DMATRIX));
+                memcpy(&shs->EffectPosition[j],&StaticShapes[i]->EffectPosition[j],sizeof(MATRIX));
             }
         } else {
             shs->EffectName = 0;
@@ -689,13 +689,13 @@ LIBOVL_API void SaveSceneryOvl() {
             DUMP_RELOCATION(f,"relocations: %x: &bsh->Bones\n",&bsh->Bones);
             bsh->BoneCount = BoneShapes[i]->BoneCount;
 
-            bsh->BonePositions1 = (D3DMATRIX *)TempBoneShape;
-            TempBoneShape += (BoneShapes[i]->BoneCount * sizeof(D3DMATRIX));
+            bsh->BonePositions1 = (MATRIX *)TempBoneShape;
+            TempBoneShape += (BoneShapes[i]->BoneCount * sizeof(MATRIX));
             relocations.push((unsigned long *)&bsh->BonePositions1);
             DUMP_RELOCATION(f,"relocations: %x: &bsh->BonePositions1\n",&bsh->BonePositions1);
 
-            bsh->BonePositions2 = (D3DMATRIX *)TempBoneShape;
-            TempBoneShape += (BoneShapes[i]->BoneCount * sizeof(D3DMATRIX));
+            bsh->BonePositions2 = (MATRIX *)TempBoneShape;
+            TempBoneShape += (BoneShapes[i]->BoneCount * sizeof(MATRIX));
             relocations.push((unsigned long *)&bsh->BonePositions2);
             DUMP_RELOCATION(f,"relocations: %x: &bsh->BonePositions2\n",&bsh->BonePositions2);
 
@@ -713,8 +713,8 @@ LIBOVL_API void SaveSceneryOvl() {
 //                }
                 relocations.push((unsigned long *)&bsh->Bones[j].BoneName);
                 DUMP_RELOCATION(f,"relocations: %x: &bsh->Bones[j].BoneName %s\n",&bsh->Bones[j].BoneName, bsh->Bones[j].BoneName);
-                memcpy(&bsh->BonePositions1[j],&BoneShapes[i]->BonePositions1[j],sizeof(D3DMATRIX));
-                memcpy(&bsh->BonePositions2[j],&BoneShapes[i]->BonePositions2[j],sizeof(D3DMATRIX));
+                memcpy(&bsh->BonePositions1[j],&BoneShapes[i]->BonePositions1[j],sizeof(MATRIX));
+                memcpy(&bsh->BonePositions2[j],&BoneShapes[i]->BonePositions2[j],sizeof(MATRIX));
             }
         } else {
             bsh->BoneCount = 0;

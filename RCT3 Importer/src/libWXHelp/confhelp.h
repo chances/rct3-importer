@@ -15,10 +15,11 @@
 #include "wx_pch.h"
 
 #include <wx/confbase.h>
-#ifndef DWORD
-#include <windows.h>
-#endif
-#include <d3d9types.h>
+//#ifndef DWORD
+//#include <windows.h>
+//#endif
+//#include <d3d9types.h>
+#include "vertex.h"
 
 #include "basicsize.h"
 
@@ -35,7 +36,7 @@ T wxcRead(const wxString& path, const T& def) {
 }
 
 template <>
-D3DMATRIX wxcRead(const wxString& path, const D3DMATRIX& def);
+MATRIX wxcRead(const wxString& path, const MATRIX& def);
 #if wxUSE_IMAGE
 template <>
 wxSize wxcRead(const wxString& path, const wxSize& def);
@@ -50,7 +51,7 @@ bool wxcWrite(const wxString& path, const T& val) {
 }
 
 template <>
-bool wxcWrite(const wxString& path, const D3DMATRIX& val);
+bool wxcWrite(const wxString& path, const MATRIX& val);
 #if wxUSE_IMAGE
 template <>
 bool wxcWrite(const wxString& path, const wxSize& val);

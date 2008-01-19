@@ -66,6 +66,7 @@ protected:
     unsigned long m_reloffset;
     map<unsigned long, OvlRelocation*> m_relmap;
     map<unsigned long, void*> m_targets;
+    map<void*, string> m_symbolreferences;
     map<string, map<string, OvlRelocation*> > m_structmap[2];
 
 

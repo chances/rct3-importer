@@ -100,7 +100,7 @@ typedef struct
 //Has all the names of the items in the OVL file
 extern std::vector <libOVL_Resource *> ResourceItems;
 
-D3DFORMAT RCT3DFormatToD3DFormat(unsigned long format);
+//D3DFORMAT RCT3DFormatToD3DFormat(unsigned long format);
 unsigned long DoRelocationForSaving(unsigned long *reloc);
 LIBOVL_API void AddInfo_Resource(unsigned long length, unsigned long* data);
 LIBOVL_API void DeleteInfo_Resources();

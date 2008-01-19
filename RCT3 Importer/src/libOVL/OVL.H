@@ -58,8 +58,8 @@ typedef struct
 	char* meshname;
 	char* textureIntOVLName; //Internal name of the texture, without the :ftx
 	char* textureStyle; //Texture rendering style. Present in RCT3.dgf
-	D3DVECTOR BoundingBox1;
-	D3DVECTOR BoundingBox2;
+	VECTOR BoundingBox1;
+	VECTOR BoundingBox2;
 } libOVL_MeshInfo;
 
 typedef struct
@@ -68,14 +68,14 @@ typedef struct
 	unsigned char *texturealpha;
 	FlexiTextureStruct *fts;
 	FlexiTextureInfoStruct *fti;
-	RGBQUAD *colors;
+	COLOURQUAD *colors;
 	char* textureIntOVLName; //Internal name of the texture, without the :ftx
 } libOVL_FlexiTextureInfo;
 
 struct EffectPoint
 {
 	char *Name;
-	D3DMATRIX Transform;
+	MATRIX Transform;
 };
 
 #ifdef BUILDING_DLL
@@ -85,7 +85,7 @@ std::vector <libOVL_MeshInfo *> MeshItems;
 std::vector <libOVL_FlexiTextureInfo *> FlexiTextureItems;
 #endif
 
-LIBOVL_API void AddOVLInfo_Mesh(libOVL_Mesh* mesh, char* meshname, char* textureIntOVLName,char* textureStyle,D3DVECTOR BoundingBox1,D3DVECTOR BoundingBox2);
+LIBOVL_API void AddOVLInfo_Mesh(libOVL_Mesh* mesh, char* meshname, char* textureIntOVLName,char* textureStyle,VECTOR BoundingBox1,VECTOR BoundingBox2);
 LIBOVL_API void DeleteOVLInfo_Meshes();
 LIBOVL_API void AddOVLInfo_FlexiTexture(FlexiTextureStruct *fts, FlexiTextureInfoStruct *fti,RGBQUAD * Bitmapcolors, char* textureIntOVLName);
 LIBOVL_API void DeleteOVLInfo_FlexiTextures();

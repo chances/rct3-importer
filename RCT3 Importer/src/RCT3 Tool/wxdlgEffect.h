@@ -38,7 +38,7 @@
 #include "RCT3Structs.h"
 
 class wxEffectCombo;
-WX_DECLARE_HASH_MAP( int, D3DVECTOR, wxIntegerHash, wxIntegerEqual, wxIdOVMMap );
+WX_DECLARE_HASH_MAP( int, VECTOR, wxIntegerHash, wxIntegerEqual, wxIdOVMMap );
 WX_DECLARE_HASH_MAP( int, wxString, wxIntegerHash, wxIntegerEqual, wxIdStringMap );
 
 class dlgEffectBase : public wxDialog {
@@ -100,7 +100,7 @@ protected:
 
     virtual void OnQuickMenu1(wxCommandEvent& event) = 0;
     virtual void OnQuickMenu2(wxCommandEvent& WXUNUSED(event)){};
-    void DoQuickMenu(const int id, wxArrayString& names, std::vector<D3DMATRIX>& transforms, int nr);
+    void DoQuickMenu(const int id, wxArrayString& names, std::vector<MATRIX>& transforms, int nr);
 
 private:
     void InitWidgetsFromXRCEffect(wxWindow *parent) {

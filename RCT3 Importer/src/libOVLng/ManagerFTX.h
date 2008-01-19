@@ -29,8 +29,8 @@
 #ifndef MANAGERFTX_H_INCLUDED
 #define MANAGERFTX_H_INCLUDED
 
-#define WIN32_MEAN_AND_LEAN
-#include <windows.h>
+//#define WIN32_MEAN_AND_LEAN
+//#include <windows.h>
 
 #include <string>
 #include <vector>
@@ -38,6 +38,7 @@
 #include "counted_array_ptr.h"
 
 #include "flexitexture.h"
+#include "vertex.h"
 #include "ManagerOVL.h"
 #include "rct3log.h"
 
@@ -59,7 +60,7 @@ public:
         fts->width = dimension;
         fts->height = dimension;
         fts->Recolorable = recolourable;
-        memcpy(fts->palette, palette.get(), 256 * sizeof(RGBQUAD));
+        memcpy(fts->palette, palette.get(), 256 * sizeof(COLOURQUAD));
         memcpy(fts->texture, texture.get(), dimension * dimension);
         if (alpha.get()) {
             memcpy(fts->alpha, alpha.get(), dimension * dimension);

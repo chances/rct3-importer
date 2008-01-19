@@ -36,7 +36,65 @@ void cRawParser::Parse(wxXmlNode* node) {
         DO_CONDITION_COMMENT(child);
 
         if (child->GetName() == RAWXML_SECTION) {
-            Parse(child);
+            wxString incfile = child->GetPropVal(wxT("include"), wxT(""));
+            if (incfile.IsEmpty()) {
+                Parse(child);
+            } else {
+                if (child->GetChildren())
+                    throw RCT3Exception(wxT("A section tag with include attribute may not have content"));
+
+                wxFSFileName filename = incfile;
+                wxFSFileName filenamebake = incfile;
+                if (!filename.IsAbsolute()) {
+                    filename.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR));
+                    filenamebake.MakeAbsolute(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR));
+                } else {
+                    filenamebake.MakeRelativeTo(m_input.GetPath(wxPATH_GET_SEPARATOR));
+                    filenamebake.MakeAbsolute(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR));
+                }
+
+                if (m_mode == MODE_BAKE) {
+                    if (m_bake.Index(RAWBAKE_XML) == wxNOT_FOUND) {
+                        wxString newfile;
+                        if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
+                            filename.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR));
+                        }
+                        newfile = filename.GetFullPath();
+                        child->DeleteProperty(wxT("include"));
+                        child->AddProperty(wxT("include"), newfile);
+                        child = child->GetNext();
+                        continue;
+                    }
+                }
+
+                wxXmlDocument doc;
+                wxFileSystem fs;
+                std::auto_ptr<wxFSFile> inputfsfile(fs.OpenFile(filename.GetFullPath(), wxFS_READ | wxFS_SEEKABLE));
+                if (!inputfsfile.get())
+                    throw RCT3Exception(_("Cannot read input file ")+filename.GetFullPath());
+
+                doc.Load(*inputfsfile->GetStream());
+                wxXmlNode* root = doc.GetRoot();
+
+                if (root->GetName() != RAWXML_SECTION)
+                    throw RCT3Exception(wxString::Format(_("Included section raw xml file has wrong root '%s'."), root->GetName().c_str()));
+
+                wxFSFileName bakebackup = m_bakeroot;
+                wxFSFileName inputbackup = m_input;
+                m_input = filename;
+                m_bakeroot = filenamebake;
+                Parse(root);
+                m_input = inputbackup;
+                m_bakeroot = bakebackup;
+
+                if (m_mode == MODE_BAKE) {
+                    doc.DetachRoot();
+                    root->SetName(RAWXML_SECTION);
+                    child->SetChildren(root);
+                    root->SetParent(child);
+                    child->DeleteProperty(wxT("include"));
+                }
+            }
         } else if (child->GetName() == RAWXML_SUBROOT) {
             // see above or
             // <subovl include="raw xml file" />
@@ -55,15 +113,15 @@ void cRawParser::Parse(wxXmlNode* node) {
                 if (child->GetChildren())
                     throw RCT3Exception(wxT("A subovl tag with include attribute may not have content"));
 
-                wxFileName filename = incfile;
+                wxFSFileName filename = incfile;
                 if (!filename.IsAbsolute())
-                    filename.MakeAbsolute(m_input.GetPathWithSep());
+                    filename.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR));
 
                 if (m_mode == MODE_BAKE) {
                     if (m_bake.Index(RAWBAKE_XML) == wxNOT_FOUND) {
                         wxString newfile;
                         if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
-                            filename.MakeRelativeTo(m_bakeroot.GetPathWithSep());
+                            filename.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR));
                         }
                         newfile = filename.GetFullPath();
                         child->DeleteProperty(wxT("include"));
@@ -74,7 +132,12 @@ void cRawParser::Parse(wxXmlNode* node) {
                 }
 
                 wxXmlDocument doc;
-                doc.Load(filename.GetFullPath());
+                wxFileSystem fs;
+                std::auto_ptr<wxFSFile> inputfsfile(fs.OpenFile(filename.GetFullPath(), wxFS_READ | wxFS_SEEKABLE));
+                if (!inputfsfile.get())
+                    throw RCT3Exception(_("Cannot read input file ")+filename.GetFullPath());
+
+                doc.Load(*inputfsfile->GetStream());
                 wxXmlNode* root = doc.GetRoot();
                 c_raw.Process(root, filename, m_outputbasedir);
                 if (m_mode == MODE_BAKE) {
@@ -98,6 +161,7 @@ void cRawParser::Parse(wxXmlNode* node) {
         } else if (child->GetName() == RAWXML_VARIABLES) {
             ParseVariables(child);
         } else if (child->GetName() == RAWXML_CHECK) {
+            BAKE_SKIP(child);
             bool filenamevar;
             wxFileName filename = ParseString(child, RAWXML_CHECK, wxT("file"), &filenamevar);
             wxString what = ParseString(child, RAWXML_CHECK, wxT("for"), NULL);
@@ -110,16 +174,6 @@ void cRawParser::Parse(wxXmlNode* node) {
                     filename.MakeAbsolute(m_userdir.GetPathWithSep());
                 else
                     throw RCT3Exception(wxString::Format(_("A check tag has unknown filebase attribute '%ld'"),filebase));
-            }
-            if ((m_mode == MODE_BAKE) && (!filenamevar)) {
-                wxString newfile;
-                if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
-                    filename.MakeRelativeTo(m_bakeroot.GetPathWithSep());
-                }
-                child->DeleteProperty(wxT("file"));
-                child->AddProperty(wxT("file"), filename.GetFullPath());
-                child = child->GetNext();
-                continue;
             }
             if (!filename.FileExists()) {
                 child = child->GetNext();
@@ -142,6 +196,7 @@ void cRawParser::Parse(wxXmlNode* node) {
                 throw RCT3Exception(wxString::Format(_("A check tag has unknown for attribute '%s'"), what.c_str()));
             }
         } else if (child->GetName() == RAWXML_PATCH) {
+            BAKE_SKIP(child);
             bool filenamevar;
             wxFileName filename = ParseString(child, RAWXML_PATCH, wxT("file"), &filenamevar);
             wxString what = ParseString(child, RAWXML_PATCH, wxT("what"), NULL);
@@ -150,16 +205,6 @@ void cRawParser::Parse(wxXmlNode* node) {
             if (!filename.IsAbsolute())
                 filename.MakeAbsolute(m_outputbasedir.GetPathWithSep());
             wxLogVerbose(_("Patch ") + filename.GetFullPath());
-            if ((m_mode == MODE_BAKE) && (!filenamevar)) {
-                wxString newfile;
-                if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
-                    filename.MakeRelativeTo(m_bakeroot.GetPathWithSep());
-                }
-                child->DeleteProperty(wxT("file"));
-                child->AddProperty(wxT("file"), filename.GetFullPath());
-                child = child->GetNext();
-                continue;
-            }
             if (!filename.FileExists()) {
                 if ((failmode == FAILMODE_FAIL_FAIL) || (m_mode == MODE_INSTALL))
                     throw RCT3Exception(wxString::Format(_("File '%s' to patch does not exist."), filename.GetFullPath().c_str()));
@@ -189,6 +234,7 @@ void cRawParser::Parse(wxXmlNode* node) {
                 throw RCT3Exception(wxString::Format(_("A patch tag has unknown what attribute '%s'"), what.c_str()));
             }
         } else if (child->GetName() == RAWXML_COPY) {
+            BAKE_SKIP(child);
             bool filenamevar;
             wxFileName filename = ParseString(child, RAWXML_COPY, wxT("from"), &filenamevar);
             wxFileName targetname = ParseString(child, RAWXML_COPY, wxT("to"), NULL);
@@ -213,17 +259,6 @@ void cRawParser::Parse(wxXmlNode* node) {
                     throw RCT3Exception(wxString::Format(_("A copy tag has unknown filebase attribute '%ld'"),filebase));
             }
             wxLogVerbose(_("Copy ") + filename.GetFullPath() + _(" to ") + targetname.GetFullPath());
-            if (m_mode == MODE_BAKE) {
-                if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
-                    filename.MakeRelativeTo(m_bakeroot.GetPathWithSep());
-                }
-                if (!filenamevar) {
-                    child->DeleteProperty(wxT("from"));
-                    child->AddProperty(wxT("from"), filename.GetFullPath());
-                }
-                child = child->GetNext();
-                continue;
-            }
             if (!filename.FileExists()) {
                 if ((failmode == FAILMODE_FAIL_FAIL) || (m_mode == MODE_INSTALL))
                     throw RCT3Exception(wxString::Format(_("File '%s' to copy does not exist."), filename.GetFullPath().c_str()));
@@ -279,18 +314,30 @@ void cRawParser::Parse(wxXmlNode* node) {
             if (type == wxT("file")) {
                 wxString temp = child->GetNodeContent();
                 bool filevar = MakeVariable(temp);
-                wxFileName wfile = temp;
+                wxFSFileName wfile = temp;
 
                 if (!wfile.IsAbsolute())
-                    wfile.MakeAbsolute(m_input.GetPathWithSep());
-                if (!wfile.IsFileReadable())
+                    wfile.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR));
+
+                wxFileSystem fs;
+                auto_ptr<wxFSFile> fsfile(fs.OpenFile(wfile.GetFullPath()));
+
+                if (!fsfile.get())
                     throw RCT3Exception(_("write tag: File not readable: ") + wfile.GetFullPath());
+
+                wxInputStream* filestream = fsfile->GetStream(); // Stream is destroyed by wxFSFile
+                filestream->SeekI(0, wxFromEnd);
+                int length = filestream->TellI();
+                filestream->SeekI(0);
+                counted_array_ptr<unsigned char> tempch(new unsigned char[length]);
+                std::auto_ptr<wxMemoryOutputStream> buffer(new wxMemoryOutputStream(tempch.get(), length));
+                buffer->Write(*filestream);
 
                 if (m_mode == MODE_BAKE) {
                     if (m_bake.Index(RAWXML_WRITE) == wxNOT_FOUND) {
                         if (!filevar) {
                             if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
-                                wfile.MakeRelativeTo(m_bakeroot.GetPathWithSep());
+                                wfile.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR));
                             }
                             delete child->GetChildren();
                             child->SetChildren(new wxXmlNode(NULL, wxXML_TEXT_NODE, wxT(""), wfile.GetFullPath()));
@@ -299,11 +346,6 @@ void cRawParser::Parse(wxXmlNode* node) {
                         continue;
                     }
 
-                    wxFile f(wfile.GetFullPath());
-
-                    int length = f.Length();
-                    counted_array_ptr<unsigned char> tempch(new unsigned char[length]);
-                    f.Read(tempch.get(), length);
                     counted_array_ptr<unsigned char> buf(new unsigned char[length * 4]);
                     unsigned long outlen = length * 4;
                     int bret = base64_encode(tempch.get(), length, buf.get(), &outlen);
@@ -321,7 +363,9 @@ void cRawParser::Parse(wxXmlNode* node) {
                     child->SetChildren(new wxXmlNode(NULL, wxXML_TEXT_NODE, wxT(""), wxString(reinterpret_cast<char*>(buf.get()), wxConvLocal)));
                 } else {
                     EnsureDir(targetname);
-                    ::wxCopyFile(wfile.GetFullPath(), targetname.GetFullPath());
+
+                    wxFile f(targetname.GetFullPath(), wxFile::write);
+                    f.Write(tempch.get(), length);
                 }
             } else if (type == wxT("data")) {
                 if (m_mode == MODE_BAKE) {
@@ -362,15 +406,26 @@ void cRawParser::Parse(wxXmlNode* node) {
         } else if (child->GetName() == RAWXML_IMPORT) {
             USE_PREFIX(child);
             // <import file="scenery file" (name="internal svd name") />
-            if (m_mode == MODE_BAKE) {
-                child = child->GetNext();
-                continue;
-            }
             bool filenamevar;
-            wxFileName filename = ParseString(child, RAWXML_IMPORT, wxT("file"), &filenamevar);
+            wxFSFileName filename = ParseString(child, RAWXML_IMPORT, wxT("file"), &filenamevar);
             wxString name = child->GetPropVal(wxT("name"), wxT(""));
             if (!filename.IsAbsolute())
-                filename.MakeAbsolute(m_input.GetPathWithSep());
+                filename.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR));
+
+            if (m_mode == MODE_BAKE) {
+                if (m_bake.Index(RAWXML_IMPORT) == wxNOT_FOUND) {
+                    if (!filenamevar) {
+                        if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
+                            filename.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR));
+                        }
+                        child->DeleteProperty(wxT("file"));
+                        child->AddProperty(wxT("file"), filename.GetFullPath());
+                    }
+                    child = child->GetNext();
+                    continue;
+                }
+            }
+
             cSCNFile c_scn(filename.GetFullPath());
             if (!name.IsEmpty()) {
                 if (useprefix)
@@ -378,8 +433,21 @@ void cRawParser::Parse(wxXmlNode* node) {
                 else
                     c_scn.name = name;
             }
-            wxLogVerbose(wxString::Format(_("Importing %s (%s) to %s."), filename.GetFullPath().c_str(), c_scn.name.c_str(), m_output.GetFullPath().c_str()));
-            c_scn.MakeToOvl(m_ovl);
+
+            if (m_mode == MODE_BAKE) {
+                c_scn.Check();
+                child->SetName(RAWXML_SECTION);
+                child->DeleteProperty(wxT("name"));
+                child->DeleteProperty(wxT("file"));
+                if (child->GetChildren())
+                    delete child->GetChildren();
+                child->SetChildren(NULL);
+                BakeScenery(child, *c_scn.m_work);
+                Parse(child); // Bake contained stuff
+            } else {
+                wxLogVerbose(wxString::Format(_("Importing %s (%s) to %s."), filename.GetFullPath().c_str(), c_scn.name.c_str(), m_output.GetFullPath().c_str()));
+                c_scn.MakeToOvl(m_ovl);
+            }
         } else if (child->GetName() == RAWXML_BAN) {
             BAKE_SKIP(child);
             ParseBAN(child);
@@ -410,6 +478,9 @@ void cRawParser::Parse(wxXmlNode* node) {
 
             ovlGSIManager* c_gsi = m_ovl.GetManager<ovlGSIManager>();
             c_gsi->AddItem(name.ToAscii(), tex.ToAscii(), left, top, right, bottom);
+        } else if (child->GetName() == RAWXML_SAT) {
+            BAKE_SKIP(child);
+            ParseSAT(child);
         } else if (child->GetName() == RAWXML_SID) {
             // <sid name="string" ovlpath="ovl path, relative to install dir" nametxt="txt" icon="gsi" svd="svd">
             //     (All following tags and attributes are optional, if not mentioned otherwise)
@@ -435,6 +506,8 @@ void cRawParser::Parse(wxXmlNode* node) {
             // </sid>
             BAKE_SKIP(child);
             ParseSID(child);
+        } else if (child->GetName() == RAWXML_SHS) {
+            ParseSHS(child);
         } else if (child->GetName() == RAWXML_SPL) {
             BAKE_SKIP(child);
             ParseSPL(child);
@@ -446,6 +519,9 @@ void cRawParser::Parse(wxXmlNode* node) {
             // </sta>
             BAKE_SKIP(child);
             ParseSTA(child);
+        } else if (child->GetName() == RAWXML_SVD) {
+            BAKE_SKIP(child);
+            ParseSVD(child);
         } else if (child->GetName() == RAWXML_TEX) {
             // <tex name="string" texture="texture file" />
 //            if ((m_mode == MODE_BAKE) && (m_bake.Index(RAWXML_TEX) == wxNOT_FOUND)) {
@@ -532,12 +608,21 @@ void cRawParser::Parse(wxXmlNode* node) {
                 throw RCT3Exception(wxString::Format(_("Unknown type '%s' in txt tag '%s'."), type.c_str(), name.c_str()));
             }
 
+        } else if (child->GetName() == RAWXML_WAI) {
+            BAKE_SKIP(child);
+            ParseWAI(child);
         } else if (child->GetName() == RAWXML_REFERENCE) {
             // <reference path="relative path" />
             BAKE_SKIP(child);
-            wxString ref = child->GetPropVal(wxT("path"), wxT(""));
+            wxString ref = wxT("");
+            if (child->HasProp(wxT("path"))) {
+                ref = child->GetPropVal(wxT("path"), wxT(""));
+            } else {
+                ref = child->GetNodeContent();
+                MakeVariable(ref);
+            }
             if (ref.IsEmpty())
-                throw RCT3Exception(_("REFERENCE tag misses path attribute."));
+                throw RCT3Exception(_("REFERENCE tag misses path attribute or content."));
             wxLogVerbose(wxString::Format(_("Adding reference %s to %s."), ref.c_str(), m_output.GetFullPath().c_str()));
             m_ovl.AddReference(ref.mb_str(wxConvFile));
         } else if (child->GetName() == RAWXML_SYMBOL) {

@@ -29,10 +29,12 @@
 
 #include "wx_pch.h"
 
-#include <d3d9types.h>
-
 #include <wx/filename.h>
 #include <wx/xml/xml.h>
+
+#include "vertex.h"
+
+#include "fsfilename.h"
 
 #include "OVLng.h"
 
@@ -54,11 +56,11 @@ class cRawParser {
 private:
     wxFileName m_output;
     wxFileName m_outputbasedir;
-    wxFileName m_input;  // For path relativity
+    wxFSFileName m_input;  // For path relativity
     wxFileName m_userdir;
 //    wxSortedArrayString m_options;
     wxSortedArrayString m_bake;
-    wxFileName m_bakeroot;
+    wxFSFileName m_bakeroot;
     cRawParserVars m_commandvariables;
     cRawParserVars m_variables;
     std::string m_prefix;
@@ -78,14 +80,14 @@ private:
     unsigned long ParseUnsigned(wxXmlNode* node, const wxString& nodes, const wxString& attribute);
     long ParseSigned(wxXmlNode* node, const wxString& nodes, const wxString& attribute);
     double ParseFloat(wxXmlNode* node, const wxString& nodes, const wxString& attribute);
-    void ParseVector(wxXmlNode* node, D3DVECTOR& v, const wxString& nodes);
-    void ParseMatrix(wxXmlNode* node, D3DMATRIX& m, const wxString& nodes);
+    void ParseVector(wxXmlNode* node, VECTOR& v, const wxString& nodes);
+    void ParseMatrix(wxXmlNode* node, MATRIX& m, const wxString& nodes);
 
     bool MakeVariable(wxString& var);
     void PassBakeStructures(const wxSortedArrayString& bake) {
         m_bake = bake;
     }
-    void PassBakeRoot(const wxFileName& br) {
+    void PassBakeRoot(const wxFSFileName& br) {
         m_bakeroot = br;
     }
     void PassVariables(const cRawParserVars& c, const cRawParserVars& v) {
@@ -101,10 +103,14 @@ private:
     void ParseCHG(wxXmlNode* node);
     void ParseCID(wxXmlNode* node);
     void ParseFTX(wxXmlNode* node);
+    void ParseSAT(wxXmlNode* node);
+    void ParseSHS(wxXmlNode* node);
     void ParseSID(wxXmlNode* node);
     void ParseSPL(wxXmlNode* node);
     void ParseSTA(wxXmlNode* node);
+    void ParseSVD(wxXmlNode* node);
     void ParseTEX(wxXmlNode* node);
+    void ParseWAI(wxXmlNode* node);
 
     void ParseSet(wxXmlNode* node, bool command = false, const wxString& tag = RAWXML_SET);
     void ParseUnset(wxXmlNode* node, bool command = false);
@@ -119,11 +125,11 @@ public:
     cRawParser(){
         Init();
     }
-    cRawParser(const wxFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT(""))) {
+    cRawParser(const wxFSFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT(""))) {
         Init();
         Process(file, outputdir, output);
     }
-    cRawParser(wxXmlNode* root, const wxFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT(""))) {
+    cRawParser(wxXmlNode* root, const wxFSFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT(""))) {
         Init();
         Process(root, file, outputdir, output);
     }
@@ -140,8 +146,8 @@ public:
         return m_newfiles;
     }
 
-    void Process(const wxFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT("")));
-    void Process(wxXmlNode* root, const wxFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT("")));
+    void Process(const wxFSFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT("")));
+    void Process(wxXmlNode* root, const wxFSFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT("")));
 
     void AddConditions(const wxString& options);
     void AddConditions(const wxArrayString& options);
@@ -149,7 +155,7 @@ public:
     void RemoveConditions(const wxString& options);
     void ParseConditions(const wxString& options);
 
-    void LoadVariables(const wxFileName& fn, bool command = false, wxXmlNode* target = NULL);
+    void LoadVariables(const wxFSFileName& fn, bool command = false, wxXmlNode* target = NULL);
 
     void AddBakeStructures(const wxString& structs);
 
@@ -159,6 +165,8 @@ public:
     void SetUserDir(const wxFileName& userdir) {
         m_userdir = userdir;
     }
+
+    static void FillAllBakes(wxSortedArrayString& tofill);
 };
 
 #endif

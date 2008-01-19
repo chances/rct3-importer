@@ -21,14 +21,17 @@
 
 #include "gximage.h"
 
-#ifndef RGBQUAD
-#include <windows.h>
-#endif
+struct COLOURQUAD {
+    unsigned char blue;
+    unsigned char green;
+    unsigned char red;
+    unsigned char alpha;
+};
 
 Magick::Image* LoadImageFromFileSystem(const wxFSFile* file) {
     Magick::Image* ret = NULL;
     if (file) {
-        std::auto_ptr<wxInputStream> filestream(file->GetStream());
+        wxInputStream* filestream = file->GetStream(); // Stream is destroyed by wxFSFile
         filestream->SeekI(0, wxFromEnd);
         int len = filestream->TellI();
         char* buf = new char[len];
@@ -435,7 +438,7 @@ void wxGXImage::GetGrayscale(unsigned char* data) const {
 void wxGXImage::GetAs8bit(unsigned char* data, unsigned char* palette) const {
     wxLogDebug(wxT("TRACE wxGXImage::GetAs8bit"));
     Magick::Image temp = m_image;
-    RGBQUAD* pal = reinterpret_cast<RGBQUAD*>(palette);
+    COLOURQUAD* pal = reinterpret_cast<COLOURQUAD*>(palette);
 
     if (temp.matte())
         temp.matte(false);
@@ -449,9 +452,9 @@ void wxGXImage::GetAs8bit(unsigned char* data, unsigned char* palette) const {
 
     for (unsigned int i = 0; i < temp.colorMapSize(); ++i) {
         Magick::Color col = temp.colorMap(i);
-        pal[i].rgbRed = col.redQuantum();
-        pal[i].rgbGreen = col.greenQuantum();
-        pal[i].rgbBlue = col.blueQuantum();
+        pal[i].red = col.redQuantum();
+        pal[i].green = col.greenQuantum();
+        pal[i].blue = col.blueQuantum();
     }
 
     temp.getConstPixels(0, 0, temp.columns(), temp.rows());
@@ -461,7 +464,7 @@ void wxGXImage::GetAs8bit(unsigned char* data, unsigned char* palette) const {
 
 void wxGXImage::GetAs8bitForced(unsigned char* data, unsigned char* palette, bool special) const {
     wxLogDebug(wxT("TRACE wxGXImage::GetAs8bitForced"));
-    RGBQUAD* pal = reinterpret_cast<RGBQUAD*>(palette);
+    COLOURQUAD* pal = reinterpret_cast<COLOURQUAD*>(palette);
     const Magick::PixelPacket* src = m_image.getConstPixels(0, 0, m_image.columns(), m_image.rows());
 
     unsigned int paldist, palmax;
@@ -470,9 +473,9 @@ void wxGXImage::GetAs8bitForced(unsigned char* data, unsigned char* palette, boo
     for (r = 0; r < m_image.columns() * m_image.rows(); ++r) {
         palmax = UINT_MAX;
         for (p = (special)?1:0; p < 256; p++) {
-            d1 = static_cast<int>(src[r].red) - static_cast<int>(pal[p].rgbRed);
-            d2 = static_cast<int>(src[r].green) - static_cast<int>(pal[p].rgbGreen);
-            d3 = static_cast<int>(src[r].blue) - static_cast<int>(pal[p].rgbBlue);
+            d1 = static_cast<int>(src[r].red) - static_cast<int>(pal[p].red);
+            d2 = static_cast<int>(src[r].green) - static_cast<int>(pal[p].green);
+            d3 = static_cast<int>(src[r].blue) - static_cast<int>(pal[p].blue);
             paldist = d1 * d1 + d2 * d2 + d3 * d3;
             if (paldist < palmax) {
                 palmax = paldist;

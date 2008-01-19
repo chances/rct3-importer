@@ -12,11 +12,11 @@
 #include "confhelp.h"
 
 template <>
-D3DMATRIX wxcRead(const wxString& path, const D3DMATRIX& def) {
+MATRIX wxcRead(const wxString& path, const MATRIX& def) {
     wxConfigBase* conf = wxConfigBase::Get(false);
     if (!conf)
         return def;
-    D3DMATRIX val;
+    MATRIX val;
     double v, d;
     for (int x = 0; x < 4; ++x) {
         for (int y = 0; y < 4; ++y) {
@@ -31,7 +31,7 @@ D3DMATRIX wxcRead(const wxString& path, const D3DMATRIX& def) {
 }
 
 template <>
-bool wxcWrite(const wxString& path, const D3DMATRIX& val) {
+bool wxcWrite(const wxString& path, const MATRIX& val) {
     wxConfigBase* conf = wxConfigBase::Get(false);
     if (!conf)
         return false;

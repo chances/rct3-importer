@@ -11,22 +11,48 @@
 #ifndef __VERTEX_H__
 #define __VERTEX_H__
 
-#include <windows.h>
-#include <d3d9types.h>
+#define RCT3FLOAT float
+#define COLOUR    unsigned long
+
+struct VECTOR {
+    RCT3FLOAT x;
+    RCT3FLOAT y;
+    RCT3FLOAT z;
+};
+
+struct MATRIX {
+	union {
+		struct {
+			float _11, _12, _13, _14;
+			float _21, _22, _23, _24;
+			float _31, _32, _33, _34;
+			float _41, _42, _43, _44;
+		};
+		float m[4][4];
+	};
+};
 
 struct VERTEX {
-	D3DVECTOR position;
-	D3DVECTOR normal;
-	D3DCOLOR color;
-	FLOAT tu, tv;
+	VECTOR position;
+	VECTOR normal;
+	COLOUR color;
+	RCT3FLOAT tu, tv;
 };
+
 struct VERTEX2 {
-	D3DVECTOR position;
-	D3DVECTOR normal;
+	VECTOR position;
+	VECTOR normal;
 	char bone[4];
 	unsigned char boneweight[4];
-	D3DCOLOR color;
-	FLOAT tu, tv;
+	COLOUR color;
+	RCT3FLOAT tu, tv;
+};
+
+struct COLOURQUAD {
+    unsigned char blue;
+    unsigned char green;
+    unsigned char red;
+    unsigned char alpha;
 };
 
 #endif // VERTEX_H_INCLUDED

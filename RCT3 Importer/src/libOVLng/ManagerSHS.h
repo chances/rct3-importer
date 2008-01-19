@@ -29,11 +29,13 @@
 #ifndef MANAGERSHS_H_INCLUDED
 #define MANAGERSHS_H_INCLUDED
 
+#include <algorithm>
 #include <map>
 #include <string>
 #include <vector>
 
 #include "staticshape.h"
+#include "ManagerCommon.h"
 #include "ManagerOVL.h"
 
 using namespace std;
@@ -41,10 +43,10 @@ using namespace std;
 class cEffectStruct {
 public:
     string name;
-	D3DMATRIX pos;
+	MATRIX pos;
 
     cEffectStruct() {};
-    void Fill(D3DMATRIX* m) {
+    void Fill(MATRIX* m) {
         *m = pos;
     }
 };
@@ -59,38 +61,33 @@ public:
 	vector<VERTEX> vertices;
 	vector<unsigned long> indices;
 
+#ifndef GLASS_OLD
+	cTriangleSortAlgorithm::Algorithm algo_x;
+	cTriangleSortAlgorithm::Algorithm algo_y;
+	cTriangleSortAlgorithm::Algorithm algo_z;
+#endif
+
 	cStaticShape2() {
-	    placetexturing = 1;
+	    placetexturing = 0;
 	    textureflags = 0;
 	    sides = 3;
+#ifndef GLASS_OLD
+	    algo_x = cTriangleSortAlgorithm::DEFAULT;
+	    algo_y = cTriangleSortAlgorithm::DEFAULT;
+	    algo_z = cTriangleSortAlgorithm::DEFAULT;
+#endif
 	}
-	void Fill(StaticShape2* ss2, unsigned long* vert, unsigned long* ind) {
-	    ss2->unk1 = 0xffffffff;
-	    ss2->fts = NULL;
-	    ss2->TextureData = NULL;
-	    ss2->PlaceTexturing = placetexturing;
-	    ss2->textureflags = textureflags;
-	    ss2->sides = sides;
-	    ss2->VertexCount = vertices.size();
-	    if (vert)
-            *vert += vertices.size();
-	    ss2->IndexCount = indices.size();
-	    if (ind)
-            *ind += indices.size();
-	    for(unsigned long i = 0; i < vertices.size(); ++i) {
-	        ss2->Vertexes[i] = vertices[i];
-	    }
-	    for(unsigned long i = 0; i < indices.size(); ++i) {
-	        ss2->Triangles[i] = indices[i];
-	    }
+	void Fill(StaticShape2* ss2, unsigned long* vert, unsigned long* ind);
+	bool IsAlgoNone() const {
+	    return ((algo_x == cTriangleSortAlgorithm::NONE) || (algo_y == cTriangleSortAlgorithm::NONE) || (algo_z == cTriangleSortAlgorithm::NONE));
 	}
 };
 
 class cStaticShape1 {
 public:
     string name;
-    D3DVECTOR bbox1;
-    D3DVECTOR bbox2;
+    VECTOR bbox1;
+    VECTOR bbox2;
 	vector<cStaticShape2> meshes;
     vector<cEffectStruct> effects;
 

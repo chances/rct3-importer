@@ -29,12 +29,116 @@
 
 #include "ManagerBSH.h"
 
-#include "ManagerCommon.h"
 #include "ManagerFTX.h"
 #include "OVLException.h"
 
 const char* ovlBSHManager::NAME = "BoneShape";
 const char* ovlBSHManager::TAG = "bsh";
+
+struct cVertex2Sorter {
+    bool operator() (const VERTEX2& lhs, const VERTEX2& rhs) const {
+        if (lhs.position.x == rhs.position.x)
+            return lhs.position.z > rhs.position.z;
+        else
+            return lhs.position.x > rhs.position.x;
+    }
+};
+
+struct cVertex2Comparator {
+    VERTEX2* c;
+    cVertex2Comparator(VERTEX2* t): c(t) {}
+    bool operator() (const VERTEX2& t) const {
+        return memcmp(c, &t, sizeof(VERTEX2)) == 0;
+    }
+};
+
+struct cTriangle2Sorter {
+    vector<VERTEX2>* verts;
+    cTriangleSortAlgorithm algo;
+    cTriangle2Sorter(vector<VERTEX2>* v, const cTriangleSortAlgorithm& a): verts(v), algo(a) {}
+    bool operator() (const Triangle2& lhs, const Triangle2& rhs) const {
+        return algo((*verts)[lhs.a].position, (*verts)[lhs.b].position, (*verts)[lhs.c].position,
+                    (*verts)[rhs.a].position, (*verts)[rhs.b].position, (*verts)[rhs.c].position);
+    }
+};
+
+
+void cBoneShape2::Fill(BoneShape2* bs2, unsigned long* vert, unsigned long* ind) {
+    bs2->unk1 = 0xffffffff;
+    bs2->fts = NULL;
+    bs2->TextureData = NULL;
+    bs2->PlaceTexturing = placetexturing;
+    bs2->textureflags = textureflags;
+    bs2->sides = sides;
+    bs2->VertexCount = vertices.size();
+    if (vert)
+        *vert += vertices.size();
+#ifndef GLASS_OLD
+    if ((algo_x == cTriangleSortAlgorithm::NONE) || (algo_y == cTriangleSortAlgorithm::NONE) || (algo_z == cTriangleSortAlgorithm::NONE)) {
+        algo_x = cTriangleSortAlgorithm::NONE;
+        algo_y = cTriangleSortAlgorithm::NONE;
+        algo_z = cTriangleSortAlgorithm::NONE;
+    }
+
+    if ((algo_x == cTriangleSortAlgorithm::NONE) && (placetexturing != 0))
+        bs2->IndexCount = indices.size() / 3;
+    else
+#endif
+    bs2->IndexCount = indices.size();
+    if (ind)
+        *ind += indices.size();
+#ifndef GLASS_OLD
+    if ((placetexturing != 0) && (algo_x != cTriangleSortAlgorithm::NONE)) {
+        // Sort vertices
+        vector<VERTEX2> sortvertex = vertices;
+        sort(sortvertex.begin(), sortvertex.end(), cVertex2Sorter());
+
+        // Fix indices
+        for (vector<unsigned long>::size_type i = 0; i < indices.size(); ++i) {
+            vector<VERTEX2>::iterator newind = find_if(sortvertex.begin(), sortvertex.end(), cVertex2Comparator(&vertices[indices[i]]));
+            indices[i] = newind - sortvertex.begin();
+        }
+
+        // Write back sorted
+        vertices = sortvertex;
+    }
+#endif
+    for(unsigned long i = 0; i < vertices.size(); ++i) {
+        bs2->Vertexes[i] = vertices[i];
+    }
+#ifndef GLASS_OLD
+    if ((placetexturing != 0) && (algo_x != cTriangleSortAlgorithm::NONE)) {
+        vector<Triangle2> temptri(indices.size()/3);
+        memcpy(&temptri[0], &indices[0], indices.size() * sizeof(unsigned short));
+        sort(temptri.begin(), temptri.end(), cTriangle2Sorter(&vertices, cTriangleSortAlgorithm(algo_x, cTriangleSortAlgorithm::BY_X)));
+        for(unsigned long i = 0; i < temptri.size(); ++i) {
+            bs2->Triangles[i*3] = temptri[i].a;
+            bs2->Triangles[(i*3)+1] = temptri[i].b;
+            bs2->Triangles[(i*3)+2] = temptri[i].c;
+        }
+        sort(temptri.begin(), temptri.end(), cTriangle2Sorter(&vertices, cTriangleSortAlgorithm(algo_y, cTriangleSortAlgorithm::BY_Y)));
+        for(unsigned long i = 0; i < temptri.size(); ++i) {
+            bs2->Triangles[(i*3)+indices.size()] = temptri[i].a;
+            bs2->Triangles[(i*3)+indices.size()+1] = temptri[i].b;
+            bs2->Triangles[(i*3)+indices.size()+2] = temptri[i].c;
+        }
+        sort(temptri.begin(), temptri.end(), cTriangle2Sorter(&vertices, cTriangleSortAlgorithm(algo_z, cTriangleSortAlgorithm::BY_Z)));
+        for(unsigned long i = 0; i < temptri.size(); ++i) {
+            bs2->Triangles[(i*3)+(indices.size()*2)] = temptri[i].a;
+            bs2->Triangles[(i*3)+(indices.size()*2)+1] = temptri[i].b;
+            bs2->Triangles[(i*3)+(indices.size()*2)+2] = temptri[i].c;
+        }
+    } else {
+        for(unsigned long i = 0; i < indices.size(); ++i) {
+            bs2->Triangles[i] = indices[i];
+        }
+    }
+#else
+    for(unsigned long i = 0; i < indices.size(); ++i) {
+        bs2->Triangles[i] = indices[i];
+    }
+#endif
+}
 
 void ovlBSHManager::AddModel(const cBoneShape1& item) {
     DUMP_LOG("Trace: ovlBSHManager::Make(%s)", UNISTR(item.name.c_str()));
@@ -60,7 +164,7 @@ void ovlBSHManager::AddModel(const cBoneShape1& item) {
     m_blobs[item.name].size += item.bones.size() * sizeof(BoneStruct);
     // Bone positions
     //m_size += 2 * c_bsh->BoneCount * sizeof(D3DMATRIX);
-    m_blobs[item.name].size += 2 * item.bones.size() * sizeof(D3DMATRIX);
+    m_blobs[item.name].size += 2 * item.bones.size() * sizeof(MATRIX);
 
     // Meshes
     for (vector<cBoneShape2>::const_iterator it = item.meshes.begin(); it != item.meshes.end(); ++it) {
@@ -70,6 +174,15 @@ void ovlBSHManager::AddModel(const cBoneShape1& item) {
         m_blobs[item.name].size += it->vertices.size() * sizeof(VERTEX2);
         // Indices
         m_blobs[item.name].size += it->indices.size() * sizeof(unsigned short);
+#ifndef GLASS_OLD
+        if ((it->IsAlgoNone()) && (it->placetexturing != 0)) {
+            if (it->indices.size() % 3)
+                throw EOvl("ovlSHSManager::AddModel: mesh has triangle sort algorithm none but indices aren't divisible by 3.");
+        }
+        if ((it->placetexturing != 0) && (!it->IsAlgoNone())) {
+            m_blobs[item.name].size += 2 * it->indices.size() * sizeof(unsigned short);
+        }
+#endif
 
         // Symbol Refs
         GetStringTable()->AddSymbolString(it->fts.c_str(), ovlFTXManager::TAG);
@@ -127,6 +240,11 @@ void ovlBSHManager::Make(cOvlInfo* info) {
 
             c_model->sh[s]->Triangles = reinterpret_cast<unsigned short*>(c_commondata);
             c_commondata += itb->indices.size() * sizeof(unsigned short);
+#ifndef GLASS_OLD
+            if ((itb->placetexturing != 0) && (!itb->IsAlgoNone())) {
+                c_commondata += 2 * itb->indices.size() * sizeof(unsigned short);
+            }
+#endif
             GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->sh[s]->Triangles));
             DUMP_RELOCATION("ovlBSHManager::Make, Triangles", c_model->sh[s]->Triangles);
 
@@ -142,13 +260,13 @@ void ovlBSHManager::Make(cOvlInfo* info) {
         GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->Bones));
         DUMP_RELOCATION("ovlBSHManager::Make, Bones", c_model->Bones);
 
-        c_model->BonePositions1 = reinterpret_cast<D3DMATRIX*>(c_commondata);
-        c_commondata += it->second.bones.size() * sizeof(D3DMATRIX);
+        c_model->BonePositions1 = reinterpret_cast<MATRIX*>(c_commondata);
+        c_commondata += it->second.bones.size() * sizeof(MATRIX);
         GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->BonePositions1));
         DUMP_RELOCATION("ovlBSHManager::Make, BonePositions1", c_model->BonePositions1);
 
-        c_model->BonePositions2 = reinterpret_cast<D3DMATRIX*>(c_commondata);
-        c_commondata += it->second.bones.size() * sizeof(D3DMATRIX);
+        c_model->BonePositions2 = reinterpret_cast<MATRIX*>(c_commondata);
+        c_commondata += it->second.bones.size() * sizeof(MATRIX);
         GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->BonePositions2));
         DUMP_RELOCATION("ovlBSHManager::Make, BonePositions2", c_model->BonePositions2);
 

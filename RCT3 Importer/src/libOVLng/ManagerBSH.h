@@ -34,6 +34,7 @@
 #include <vector>
 
 #include "boneshape.h"
+#include "ManagerCommon.h"
 #include "ManagerOVL.h"
 
 using namespace std;
@@ -42,8 +43,8 @@ class cBoneStruct {
 public:
     string name;
 	unsigned long parentbonenumber;
-	D3DMATRIX pos1;
-	D3DMATRIX pos2;
+	MATRIX pos1;
+	MATRIX pos2;
 
     cBoneStruct() {
         parentbonenumber = -1;
@@ -74,10 +75,10 @@ public:
     void Fill(BoneStruct* bs) {
         bs->ParentBoneNumber = parentbonenumber;
     }
-    void Fill1(D3DMATRIX* m) {
+    void Fill1(MATRIX* m) {
         *m = pos1;
     }
-    void Fill2(D3DMATRIX* m) {
+    void Fill2(MATRIX* m) {
         *m = pos2;
     }
 };
@@ -92,38 +93,33 @@ public:
 	vector<VERTEX2> vertices;
 	vector<unsigned short> indices;
 
+#ifndef GLASS_OLD
+	cTriangleSortAlgorithm::Algorithm algo_x;
+	cTriangleSortAlgorithm::Algorithm algo_y;
+	cTriangleSortAlgorithm::Algorithm algo_z;
+#endif
+
 	cBoneShape2() {
-	    placetexturing = 1;
+	    placetexturing = 0;
 	    textureflags = 0;
 	    sides = 3;
+#ifndef GLASS_OLD
+	    algo_x = cTriangleSortAlgorithm::DEFAULT;
+	    algo_y = cTriangleSortAlgorithm::DEFAULT;
+	    algo_z = cTriangleSortAlgorithm::DEFAULT;
+#endif
 	}
-	void Fill(BoneShape2* bs2, unsigned long* vert, unsigned long* ind) {
-	    bs2->unk1 = 0xffffffff;
-	    bs2->fts = NULL;
-	    bs2->TextureData = NULL;
-	    bs2->PlaceTexturing = placetexturing;
-	    bs2->textureflags = textureflags;
-	    bs2->sides = sides;
-	    bs2->VertexCount = vertices.size();
-	    if (vert)
-            *vert += vertices.size();
-	    bs2->IndexCount = indices.size();
-	    if (ind)
-            *ind += indices.size();
-	    for(unsigned long i = 0; i < vertices.size(); ++i) {
-	        bs2->Vertexes[i] = vertices[i];
-	    }
-	    for(unsigned long i = 0; i < indices.size(); ++i) {
-	        bs2->Triangles[i] = indices[i];
-	    }
+	void Fill(BoneShape2* bs2, unsigned long* vert, unsigned long* ind);
+	bool IsAlgoNone() const {
+	    return ((algo_x == cTriangleSortAlgorithm::NONE) || (algo_y == cTriangleSortAlgorithm::NONE) || (algo_z == cTriangleSortAlgorithm::NONE));
 	}
 };
 
 class cBoneShape1 {
 public:
     string name;
-    D3DVECTOR bbox1;
-    D3DVECTOR bbox2;
+    VECTOR bbox1;
+    VECTOR bbox2;
 	vector<cBoneShape2> meshes;
     vector<cBoneStruct> bones;
 

@@ -47,6 +47,8 @@
 					<Add option="-Wall" />
 					<Add option="-g" />
 					<Add option="-D__WXDEBUG__" />
+					<Add option="-DDEBUG" />
+					<Add option="-DUNICODE" />
 					<Add directory="$(#wx.include)" />
 					<Add directory="$(#mingw.lib)\wx\include\msw-unicode-debug-static-2.8" />
 				</Compiler>
@@ -87,6 +89,7 @@
 		<Unit filename="..\..\include\staticshape.h" />
 		<Unit filename="..\..\include\terraintype.h" />
 		<Unit filename="..\..\include\vertex.h" />
+		<Unit filename="..\..\include\wildanimalitem.h" />
 		<Unit filename="..\..\include\xmldefs.h" />
 		<Unit filename="LodSymRefManager.cpp" />
 		<Unit filename="LodSymRefManager.h" />
@@ -112,6 +115,8 @@
 			<Option weight="10" />
 		</Unit>
 		<Unit filename="ManagerOVL.h" />
+		<Unit filename="ManagerSAT.cpp" />
+		<Unit filename="ManagerSAT.h" />
 		<Unit filename="ManagerSHS.cpp" />
 		<Unit filename="ManagerSHS.h" />
 		<Unit filename="ManagerSID.cpp" />
@@ -126,6 +131,8 @@
 		<Unit filename="ManagerTEX.h" />
 		<Unit filename="ManagerTXT.cpp" />
 		<Unit filename="ManagerTXT.h" />
+		<Unit filename="ManagerWAI.cpp" />
+		<Unit filename="ManagerWAI.h" />
 		<Unit filename="OVLClasses.cpp" />
 		<Unit filename="OVLClasses.h" />
 		<Unit filename="OVLDebug.cpp" />
@@ -151,8 +158,31 @@
 		<Extensions>
 			<code_completion />
 			<envvars />
-			<debugger />
-			<lib_finder />
+			<debugger>
+				<remote_debugging target="Precompile XRC">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Release">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug (Public)">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Premake Resources">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug Unicode">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug (Public)">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+			</debugger>
+			<AutoVersioning>
+				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />
+				<Settings autoincrement="1" date_declarations="1" do_auto_increment="0" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="version.h" />
+				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
+			</AutoVersioning>
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

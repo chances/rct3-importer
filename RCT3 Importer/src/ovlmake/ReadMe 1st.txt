@@ -1,6 +1,7 @@
 OvlMake
 =======
-Note: OvlMake is released under the GPL. Among a lot of things mostly concerning developers, for users this means you USE IT AT YOUR OWN RISK!
+Note: OvlMake is released under the GPLv3. Among a lot of things mostly concerning developers, for users this means you USE IT AT YOUR OWN RISK!
+See License.txt for more information.
 
 Introduction
 ------------
@@ -44,9 +45,43 @@ How exactly ovlmake proceeds depends on the number of bsh tags you define.
 1 bsh tag: The single model is copied (and made static for the 4th lod if applicable).
 2 bsh tags: Not supported, treated like one and will generate a warning for the second (which isn't used).
 3 bsh tags: Used in the order they are defined. For 4 lods, the last will be copied and made static.
-4 bsh tags: Used in order, last will be made static (so no need to define bones for it). Generates a waring for 3 lods.
+4 bsh tags: Used in order, last will be made static (so no need to define bones for it). Generates a warning for 3 lods.
 More: Treated like 4, superfluous ones are ignored and yield warnings.
 If you need more fine tuning, convert to an importer xml and do it there (this much should be obvious ^.^).
+
+Proper Transparency
+-------------------
+After a very long time I now found out how to do proper transparency and, as far as possible, got rid of the X-ray effect. By "as far as possible" I mean that after lots of experiments I came to the conclusion that for some objects you cannot fully prevent X-ray (even some original game objects show X-ray if you look closely). Still I think that the X-ray left is a lot less severe than before, it seems to only affect the object itself and then (probably) only parts of the same mesh. It also seems to occur mostly looking at the object from the left, provided you didn't rotate it. Left is in relation from your original view when you start a sandbox (ie looking at the entrace from insed the park.
+As to when this X-ray occurs I can give no good explanation. In general I'd say the more complex the object is, the likelier it is to occur. It may also include some unknown voodoo. If your object shows it, I've provided a few cunstomization options that may help or not. To understand them, I first need to explain how proper transparency in RCT3 works.
+Meshes are stored in OVLs in two data chunks, one contains a list of all the vertices and the other the faces (triangles) as three indices into the vertex list. For transparent objects (geomobj tags in ovlcompiler xml files with placing texture or glass / importer scn files with meshes set to placing Texture Only or Unknown), the ovl file stores the face list three times, each one sorted along one axis. Now the crux is how the faces need to be sorted. From original ovls it seems to me that only the lowest coordinate (in the sorted direction) of the triangle matters. Still I have implemented several sorting algorithms that take other things into account.
+To set the sorting algorithm, you have several options. The first is to set default algorithms via the ovlmake command line. You can set an over all default with the -t or --trianglesort command line options. If necessary, you can set defaults for the single axis with --trianglesortx, --trianglesorty and --trianglesortz.
+The second option is to set algorithms for each mesh. You can do that with sortx, sorty and sortz attributes in geomobj tags for ovlcompiler xml files or mesh tags in importer scenery xml files. Note that these attributes supercede whatever you give with commandline options.
+Note that the axis are the in-game axis, so y is up.
+Here is a list of the sort algorithms you can use:
+min: Sorts by the lowest coordinate. Seems to be used by the game ovls.
+max: Sorts by the highest coordinate.
+mean: Sorts by the mean of the three coordinates.
+minmax: Sorts by the lowest coordinate, if those match, sub-sort by the highest. This is the default used when no algorithm is given.
+maxmin: Sorts by the highest coordinate, if those match, sub-sort by the lowest.
+The following algorithms are experimental. You are welcome to try them, but in my experiments they either worsened things or didn't help.
+angle45: Sorts as if met from a viewing angle of 45deg over ground in x and z direction, by minmax in y.
+minXZbyY: Sorts x (or z) by lowest coordinate, if those match, sub-sort by lowest y coordinate. y direction is sorted by minmax.
+minXZbyOther: Sorts x (or z) by lowest coordinate, if those match, sub-sort by the other one (z for x and x for z). y direction is sorted by minmax.
+minYbyX: Sorts y by lowest coordinate, if those match, sub-sort by lowest x coordinate. x and z are sorted by minmax.
+minYbyZ: Sorts y by lowest coordinate, if those match, sub-sort by lowest z coordinate. x and z are sorted by minmax.
+mininv: Sorts by the lowest coordinate, but in reverse direction. This usually reverses the X-ray effect (ie it now occurs from the right).
+minmaxinv: Sorts by minmax, but in reverse direction. Same effect as mininv.
+The only thing I can do is wish you luck. Remember you can convert scn files to importer scenery xml files for fine-tunig using the -c / --convert commantline switch. There is also the new -v switch to show more output. Among other things, it will tell you which algorithms were used for which mesh.
+
+Proper Transparency, a brief tutorial for the non-commandline savvy
+-------------------------------------------------------------------
+- Set up your scenery file as usual in the importer. Set placing to Unknown for "glassy" meshes (SIGlass or SIAlpha...Reflection texture styles) or Texture Only (for other SIAlpha styles). Keep at Texture&Mesh for SIAlphaMaskLow styles.
+- Create an OVL file in the importer, then save the scn file (the order is important!).
+- Import the ovl file to make sure it works in principle and you didn't ignore any important warings.
+- Read and understand the Giving no output filename section above, because that's what you'll be doing in the next step.
+- Drag and drop the scn file on the ovlmake executable, do NOT move the scn file to a new directory for that, it has to stay in the directory you saved it to.
+- The ovl files you created in the importer will be overwritten.
+- Reimport.
 
 A few final words
 -----------------

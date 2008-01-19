@@ -38,30 +38,30 @@ class wxMatrixData: public wxTreeItemData {
 public:
     wxMatrixData(): wxTreeItemData(){};
 
-    virtual D3DMATRIX GetMatrix() const = 0;
+    virtual MATRIX GetMatrix() const = 0;
     virtual wxString GetName() const = 0;
-    virtual std::vector<D3DMATRIX> GetStack() const = 0;
+    virtual std::vector<MATRIX> GetStack() const = 0;
     virtual wxArrayString GetNames() const = 0;
 };
 
 class wxStackData: public wxMatrixData {
 public:
     wxString name;
-	std::vector<D3DMATRIX> transforms;
+	std::vector<MATRIX> transforms;
 	wxArrayString transformnames;
 
-    wxStackData(const wxString& n, const std::vector<D3DMATRIX>& ts, const wxArrayString& tns): wxMatrixData() {
+    wxStackData(const wxString& n, const std::vector<MATRIX>& ts, const wxArrayString& tns): wxMatrixData() {
         name = n;
         transforms = ts;
         transformnames = tns;
     }
-    virtual D3DMATRIX GetMatrix() const {
+    virtual MATRIX GetMatrix() const {
         return matrixMultiply(transforms);
     }
     virtual wxString GetName() const {
         return wxString::Format(_("Multiplied Stack (%s)"), name.c_str());
     }
-    virtual std::vector<D3DMATRIX> GetStack() const {
+    virtual std::vector<MATRIX> GetStack() const {
         return transforms;
     }
     virtual wxArrayString GetNames() const {
@@ -72,20 +72,20 @@ public:
 class wxSingleData: public wxMatrixData {
 public:
     wxString name;
-	D3DMATRIX transform;
+	MATRIX transform;
 
-    wxSingleData(const wxString& n, const D3DMATRIX& ts): wxMatrixData() {
+    wxSingleData(const wxString& n, const MATRIX& ts): wxMatrixData() {
         name = n;
         transform = ts;
     }
-    virtual D3DMATRIX GetMatrix() const {
+    virtual MATRIX GetMatrix() const {
         return transform;
     }
     virtual wxString GetName() const {
         return name;
     }
-    virtual std::vector<D3DMATRIX> GetStack() const {
-        std::vector<D3DMATRIX> temp;
+    virtual std::vector<MATRIX> GetStack() const {
+        std::vector<MATRIX> temp;
         temp.push_back(transform);
         return temp;
     }
@@ -194,7 +194,7 @@ void dlgLoadMatrix::OnTree(wxTreeEvent& event) {
     }
     if (data) {
         m_OK->Enable(true);
-        D3DMATRIX m = data->GetMatrix();
+        MATRIX m = data->GetMatrix();
         for (int i=0; i<4; i++)
             for (int j=0; j<4; j++)
                 m_Matrix[i][j]->SetLabel(wxString::Format("%.*f", 4, m.m[i][j]));
@@ -206,14 +206,14 @@ void dlgLoadMatrix::OnTree(wxTreeEvent& event) {
     }
 }
 
-void dlgLoadMatrix::GetMatrix(wxString& name, D3DMATRIX& matrix) {
+void dlgLoadMatrix::GetMatrix(wxString& name, MATRIX& matrix) {
     if (m_md) {
         name = m_md->GetName();
         matrix = m_md->GetMatrix();
     }
 }
 
-void dlgLoadMatrix::GetStack(wxArrayString& names, std::vector<D3DMATRIX>& matrices) {
+void dlgLoadMatrix::GetStack(wxArrayString& names, std::vector<MATRIX>& matrices) {
     if (m_md) {
         if (m_choiceMatrix->GetSelection()==0) {
             names.clear();

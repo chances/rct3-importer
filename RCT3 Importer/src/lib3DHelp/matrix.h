@@ -34,19 +34,19 @@
 float Deg2Rad(float deg);
 float Rad2Deg(float rad);
 
-D3DVECTOR vectorInvert(const D3DVECTOR v);
-D3DVECTOR vectorNormalize(const float x, const float y, const float z);
-inline D3DVECTOR vectorNormalize(const D3DVECTOR v) {
+VECTOR vectorInvert(const VECTOR& v);
+VECTOR vectorNormalize(const float x, const float y, const float z);
+inline VECTOR vectorNormalize(const VECTOR& v) {
     return vectorNormalize(v.x, v.y, v.z);
 }
-inline D3DVECTOR vectorMake(const float x, const float y, const float z) {
-    D3DVECTOR v;
+inline VECTOR vectorMake(const float x, const float y, const float z) {
+    VECTOR v;
     v.x = x;
     v.y = y;
     v.z = z;
     return v;
 }
-inline VERTEX2 vertex2vertex2(VERTEX v, unsigned char bone) {
+inline VERTEX2 vertex2vertex2(const VERTEX& v, unsigned char bone) {
     VERTEX2 ret;
     ret.position = v.position;
     ret.normal = v.normal;
@@ -60,7 +60,7 @@ inline VERTEX2 vertex2vertex2(VERTEX v, unsigned char bone) {
     return ret;
 }
 
-inline VERTEX2 vertex2castrate(VERTEX2 v, unsigned char bone) {
+inline VERTEX2 vertex2castrate(const VERTEX2& v, unsigned char bone) {
     VERTEX2 ret;
     ret.position = v.position;
     ret.normal = v.normal;
@@ -82,7 +82,7 @@ inline void vertex2init(VERTEX2& v) {
     v.color = 0xffffffff;
 }
 
-inline VERTEX vertex22vertex(VERTEX2 v) {
+inline VERTEX vertex22vertex(const VERTEX2& v) {
     VERTEX ret;
     ret.position = v.position;
     ret.normal = v.normal;
@@ -92,47 +92,49 @@ inline VERTEX vertex22vertex(VERTEX2 v) {
     return ret;
 }
 
-D3DMATRIX matrixGetUnity();
-D3DMATRIX matrixGetFixOrientation(const c3DLoaderOrientation orient = ORIENTATION_RIGHT_ZUP);
+MATRIX matrixGetUnity();
+MATRIX matrixGetFixOrientation(const c3DLoaderOrientation orient = ORIENTATION_RIGHT_ZUP);
 void txyzFixOrientation(txyz& src, const c3DLoaderOrientation& orient);
-D3DMATRIX matrixGetTranslation(float x, float y, float z);
-D3DMATRIX matrixGetTranslation(D3DVECTOR v);
-D3DMATRIX matrixGetScale(float x, float y, float z);
-D3DMATRIX matrixGetScale(D3DVECTOR v);
+MATRIX matrixGetTranslation(const float x, const float y, const float z);
+MATRIX matrixGetTranslation(const VECTOR& v);
+MATRIX matrixGetScale(const float x, const float y, const float z);
+MATRIX matrixGetScale(const VECTOR& v);
 // Rotations are in a right-handed coordinate system
-D3DMATRIX matrixGetRotationX(float rad);
-D3DMATRIX matrixGetRotationY(float rad);
-D3DMATRIX matrixGetRotationZ(float rad);
+MATRIX matrixGetRotationX(const float rad);
+MATRIX matrixGetRotationY(const float rad);
+MATRIX matrixGetRotationZ(const float rad);
 
 // Note: the IP (In Place) functions return the result in the first parameter or the first
 //       member of the array. They also return a pointer to this result.
-float matrixCalcDeterminant(const D3DMATRIX *m);
-D3DMATRIX matrixMultiply(const D3DMATRIX *m1, const D3DMATRIX *m2);
-inline D3DMATRIX matrixMultiply(const D3DMATRIX& m1, const D3DMATRIX& m2) {
+float matrixCalcDeterminant(const MATRIX *m);
+MATRIX matrixMultiply(const MATRIX *m1, const MATRIX *m2);
+inline MATRIX matrixMultiply(const MATRIX& m1, const MATRIX& m2) {
     return matrixMultiply(&m1, &m2);
 }
-D3DMATRIX *matrixMultiplyIP(D3DMATRIX *m1, const D3DMATRIX *m2);
+MATRIX *matrixMultiplyIP(MATRIX *m1, const MATRIX *m2);
 // These take an array and multiply it up in order.
-D3DMATRIX matrixMultiply(D3DMATRIX *ms, unsigned int count);
-D3DMATRIX *matrixMultiplyIP(D3DMATRIX *ms, unsigned int count);
-D3DMATRIX matrixMultiply(const std::vector<D3DMATRIX> ms);
-D3DMATRIX matrixMultiply(const D3DMATRIX m, float f);
+MATRIX matrixMultiply(const MATRIX *ms, const unsigned int count);
+MATRIX *matrixMultiplyIP(MATRIX *ms, const unsigned int count);
+MATRIX matrixMultiply(const std::vector<MATRIX>& ms);
+MATRIX matrixMultiply(const MATRIX& m, const float f);
 
-D3DMATRIX matrixTranspose(const D3DMATRIX m);
-D3DMATRIX matrixInverse(const D3DMATRIX m);
+MATRIX matrixTranspose(const MATRIX& m);
+MATRIX matrixInverse(const MATRIX& m);
 #define matrixNormalTransform(m) matrixTranspose(matrixInverse( m ))
 
-D3DVECTOR matrixApply(const D3DVECTOR v, const D3DMATRIX m);
-D3DVECTOR *matrixApplyIP(D3DVECTOR *v, const D3DMATRIX m);
-VERTEX matrixApply(const VERTEX v, const D3DMATRIX m, const D3DMATRIX mnormal);
-VERTEX *matrixApplyIP(VERTEX *v, const D3DMATRIX m, const D3DMATRIX mnormal);
-VERTEX2 matrixApply(VERTEX2 v, const D3DMATRIX m, const D3DMATRIX mnormal);
-VERTEX2 *matrixApplyIP(VERTEX2 *v, const D3DMATRIX m, const D3DMATRIX mnormal);
+VECTOR matrixApply(const VECTOR& v, const MATRIX& m);
+VECTOR *matrixApplyIP(VECTOR *v, const MATRIX& m);
+VERTEX matrixApply(const VERTEX& v, const MATRIX& m, const MATRIX& mnormal);
+VERTEX *matrixApplyIP(VERTEX *v, const MATRIX& m, const MATRIX& mnormal);
+VERTEX2 matrixApply(const VERTEX2& v, const MATRIX& m, const MATRIX& mnormal);
+VERTEX2 *matrixApplyIP(VERTEX2 *v, const MATRIX& m, const MATRIX& mnormal);
 
-bool matrixIsEqual(const D3DMATRIX m1, const D3DMATRIX m2);
+bool matrixIsEqual(const MATRIX& m1, const MATRIX& m2);
 
-void boundsInit(D3DVECTOR *bbox_min, D3DVECTOR *bbox_max);
-void boundsContain(const D3DVECTOR *v, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max);
-void boundsContain(const D3DVECTOR *inner_min, const D3DVECTOR *inner_max, D3DVECTOR *bbox_min, D3DVECTOR *bbox_max);
+MATRIX matrixThereAndBackAgain(const std::vector<MATRIX>& stack, const MATRIX& transform, const MATRIX& undodamage);
+
+void boundsInit(VECTOR *bbox_min, VECTOR *bbox_max);
+void boundsContain(const VECTOR *v, VECTOR *bbox_min, VECTOR *bbox_max);
+void boundsContain(const VECTOR *inner_min, const VECTOR *inner_max, VECTOR *bbox_min, VECTOR *bbox_max);
 
 #endif // OVLMATRIX_H_INCLUDED

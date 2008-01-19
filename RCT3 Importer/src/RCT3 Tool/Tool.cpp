@@ -77,6 +77,8 @@
 
 #include "wxapp.h"
 
+#include "version.h"
+
 //////////////////////////////////
 //
 //  Globals (verified)
@@ -90,7 +92,6 @@ IMPLEMENT_APP_NO_MAIN(ToolApp)
 //  Globals (???)
 //
 //////////////////////////////////
-#define TITLE_VERSION "RCT3 Object Importer (v18alpha)"
 
 
 
@@ -1738,7 +1739,11 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
     case WM_INITDIALOG:
         save = false;
         SetMenu(hwnd, LoadMenu(hInst, MAKEINTRESOURCE(IDR_MAIN)));
-        SetWindowText(hwnd, TITLE_VERSION);
+        {
+            wxString title = wxString::Format(wxT("RCT3 Importer v%ld.%ld%s (Build %ld)"),
+                AutoVersion::MAJOR, AutoVersion::MINOR, AutoVersion::STATUS_SHORT, AutoVersion::BUILD);
+            SetWindowText(hwnd, title.c_str());
+        }
         SendDlgItemMessage(hwnd, IDC_THEME, LB_ADDSTRING, 0, (LPARAM) "Generic");
         SendDlgItemMessage(hwnd, IDC_THEME, LB_ADDSTRING, 0, (LPARAM) "Western");
         SendDlgItemMessage(hwnd, IDC_THEME, LB_ADDSTRING, 0, (LPARAM) "Spooky");

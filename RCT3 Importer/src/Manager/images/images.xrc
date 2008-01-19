@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<resource version="2.3.0.1">
+
+<object class="wxBitmap" name="minus_10x10">own/minus_10x10.png</object>
+<object class="wxBitmap" name="plus_10x10">own/plus_10x10.png</object>
+
+<!--
+<object class="wxBitmap" name="edit_add_16x16">crystal/edit_add_16x16.png</object>
+<object class="wxBitmap" name="edit_remove_16x16">crystal/edit_remove_16x16.png</object>
+<object class="wxBitmap" name="no_16x16">crystal/no_16x16.png</object>
+<object class="wxBitmap" name="ok_16x16">crystal/ok_16x16.png</object>
+-->
+</resource>

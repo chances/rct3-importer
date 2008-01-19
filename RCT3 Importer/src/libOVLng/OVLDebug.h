@@ -32,12 +32,17 @@
 #define DPTR(a) reinterpret_cast<unsigned long>(a)
 
 #if DEBUGLOG
+#define OVLDEBUG
 extern FILE* f_debug_log;
 extern FILE* f_debug_relocations;
 
 #elif __WXDEBUG__
-
+#define OVLDEBUG
+//#define WCHAR wchar_t
+//#include <windows.h>
 #include <wx/wxprec.h>
+//#include <wx/msw/gccpriv.h>
+//#include <wx/msw/winundef.h>
 #include <wx/wx.h>
 
 #ifdef UNICODE

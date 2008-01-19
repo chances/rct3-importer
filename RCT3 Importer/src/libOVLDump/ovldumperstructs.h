@@ -170,6 +170,7 @@ public:
     unsigned long unknownv4[2];
     vector<unsigned char> unknownv5_bytes;
     vector<unsigned long> unknownv5_longs;
+    unsigned long unknownv4_postrelocationlong;
     vector<unsigned long> unknownv5_postrelocationlongs;
     OvlPostBlockUnknowns() {};
 };
@@ -230,7 +231,7 @@ public:
 
 struct OvlStringTableComp {
     bool operator() (const OvlStringTableEntry& lhs, const OvlStringTableEntry& rhs) const {
-        if (lhs.entry != rhs.entry);
+        if (lhs.entry != rhs.entry)
             return lhs.entry<rhs.entry;
         return lhs.reloffset<rhs.fileoffset;
     }

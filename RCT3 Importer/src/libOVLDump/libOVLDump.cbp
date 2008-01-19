@@ -71,7 +71,7 @@
 		<VirtualTargets>
 			<Add alias="All" targets="Debug;Release;" />
 			<Add alias="Debug Base" targets="Debug;" />
-			<Add alias="Debug Base Unicode" targets="Release;" />
+			<Add alias="Debug Base Unicode" targets="Debug;" />
 			<Add alias="Debug Unicode" targets="Debug;" />
 			<Add alias="Release Base" targets="Release;" />
 			<Add alias="Release Base Unicode" targets="Release;" />

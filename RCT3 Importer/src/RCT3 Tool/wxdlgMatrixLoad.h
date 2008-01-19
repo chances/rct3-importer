@@ -86,8 +86,8 @@ public:
         return m_choiceMatrix->GetSelection()==0;
     }
 
-    void GetMatrix(wxString& name, D3DMATRIX& matrix);
-    void GetStack(wxArrayString& names, std::vector<D3DMATRIX>& matrices);
+    void GetMatrix(wxString& name, MATRIX& matrix);
+    void GetStack(wxArrayString& names, std::vector<MATRIX>& matrices);
 };
 
 #endif

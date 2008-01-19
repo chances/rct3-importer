@@ -37,7 +37,7 @@
 				</Linker>
 			</Target>
 			<Target title="Debug">
-				<Option output="..\..\bin\RCT3 Importer Debug.exe" prefix_auto="0" extension_auto="0" />
+				<Option output="..\..\bin\RCT3 Importerd.exe" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="..\..\bin" />
 				<Option object_output="..\..\lib\obj\RCT3 Importer\debug dll" />
 				<Option external_deps="..\..\lib\lib3DHelpd.a;..\..\bin\libOVLd.a;..\..\lib\libWXHelpd.a;..\..\lib\libASEd.a;..\..\lib\libOVLngd.a;" />
@@ -64,7 +64,7 @@
 				</Linker>
 			</Target>
 			<Target title="Debug (Public)">
-				<Option output="..\..\bin\RCT3 Importer PD.exe" prefix_auto="0" extension_auto="0" />
+				<Option output="..\..\bin\RCT3 Importerpd.exe" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="..\..\bin" />
 				<Option object_output="..\..\lib\obj\RCT3 Importer\debug dll pd" />
 				<Option external_deps="..\..\lib\lib3DHelpd.a;..\..\bin\libOVLd.a;..\..\lib\libWXHelpd.a;..\..\lib\libASEd.a;..\..\lib\libOVLngd.a;" />
@@ -224,13 +224,15 @@
 			<Option target="Debug" />
 			<Option target="Debug (Public)" />
 		</Unit>
+		<Unit filename="version.h">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="win_predefine.h">
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="wx_pch.h">
-			<Option compile="1" />
 			<Option weight="0" />
 			<Option virtualFolder="wx\" />
 			<Option target="Release" />
@@ -374,11 +376,13 @@
 			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="wxdlgSave.cpp">
+			<Option virtualFolder="wx\" />
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="wxdlgSave.h">
+			<Option virtualFolder="wx\" />
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Debug (Public)" />
@@ -713,8 +717,34 @@
 		<Extensions>
 			<code_completion />
 			<envvars />
-			<debugger />
-			<lib_finder />
+			<debugger>
+				<remote_debugging target="Precompile XRC">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Release">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug (Public)">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Premake Resources">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug Unicode">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug (Public)">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+			</debugger>
+			<AutoVersioning>
+				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="1" build_times_to_increment_minor="100" />
+				<Settings autoincrement="0" date_declarations="1" do_auto_increment="1" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="version.h" />
+				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
+			</AutoVersioning>
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

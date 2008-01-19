@@ -28,6 +28,8 @@
 #include "RawParse.h"
 
 #include <wx/file.h>
+#include <wx/filesys.h>
+#include <wx/mstream.h>
 #include <wx/strconv.h>
 #include <wx/tokenzr.h>
 
@@ -40,6 +42,7 @@
 #include "gximage.h"
 #include "matrix.h"
 #include "rct3log.h"
+#include "xmlhelper.h"
 
 #include "OVLDump.h"
 
@@ -56,12 +59,15 @@
 #define RAWXML_CID wxT("cid")
 #define RAWXML_FTX wxT("ftx")
 #define RAWXML_GSI wxT("gsi")
+#define RAWXML_SAT wxT("sat")
+#define RAWXML_SHS wxT("shs")
 #define RAWXML_SID wxT("sid")
 #define RAWXML_SPL wxT("spl")
 #define RAWXML_STA wxT("sta")
 #define RAWXML_SVD wxT("svd")
 #define RAWXML_TEX wxT("tex")
 #define RAWXML_TXT wxT("txt")
+#define RAWXML_WAI wxT("wai")
 
 #define RAWXML_BAN_BONE             wxT("banbone")
 #define RAWXML_BAN_BONE_TRANSLATION wxT("translation")
@@ -74,6 +80,7 @@
 #define RAWXML_BSH_MESH_VERTEX2_P   wxT("position")
 #define RAWXML_BSH_MESH_VERTEX2_N   wxT("normal")
 #define RAWXML_BSH_MESH_VERTEX2_B   wxT("boneassignment")
+#define RAWXML_BSH_MESH_TRANSFORM   wxT("transformation")
 #define RAWXML_BSH_MESH_TRIANGLE    wxT("triangle")
 #define RAWXML_BSH_BONE             wxT("bshbone")
 #define RAWXML_BSH_BONE_POS1        wxT("position1")
@@ -98,6 +105,17 @@
 #define RAWXML_FTX_FRAME_TDATA      wxT("texturedata")
 #define RAWXML_FTX_FRAME_ADATA      wxT("alphadata")
 
+#define RAWXML_SHS_BBOX1            wxT("boundingboxmin")
+#define RAWXML_SHS_BBOX2            wxT("boundingboxmax")
+#define RAWXML_SHS_MESH             wxT("shsmesh")
+#define RAWXML_SHS_MESH_VERTEX      wxT("vertex")
+#define RAWXML_SHS_MESH_VERTEX_P    wxT("position")
+#define RAWXML_SHS_MESH_VERTEX_N    wxT("normal")
+#define RAWXML_SHS_MESH_TRANSFORM   wxT("transformation")
+#define RAWXML_SHS_MESH_TRIANGLE    wxT("triangle")
+#define RAWXML_SHS_EFFECT           wxT("shseffect")
+#define RAWXML_SHS_EFFECT_POS       wxT("position")
+
 #define RAWXML_SID_GROUP            wxT("sidgroup")
 #define RAWXML_SID_TYPE             wxT("sidtype")
 #define RAWXML_SID_POSITION         wxT("sidposition")
@@ -115,8 +133,16 @@
 #define RAWXML_STA_ITEM             wxT("staitem")
 #define RAWXML_STA_STALLUNKNOWNS    wxT("stastallunknowns")
 
+#define RAWXML_SVD_UNK              wxT("svdunknowns")
+#define RAWXML_SVD_LOD              wxT("svdlod")
+#define RAWXML_SVD_LOD_ANIMATION    wxT("svdlodanimation")
+#define RAWXML_SVD_LOD_UNK          wxT("svdlodunknowns")
+
 #define RAWXML_TEX_FILE             wxT("texturefile")
 #define RAWXML_TEX_DATA             wxT("texturedata")
+
+#define RAWXML_WAI_PARAMETERS       wxT("waiparameters")
+#define RAWXML_WAI_UNKNOWNS         wxT("waiunknowns")
 
 #define RAWXML_ATTRACTION_BASE      wxT("attractionbase")
 #define RAWXML_ATTRACTION_UNKNOWNS  wxT("attractionunknowns")
@@ -209,6 +235,7 @@ enum {
 bool CanBeWrittenTo(const wxFileName& target);
 bool EnsureDir(wxFileName& target);
 unsigned char ParseDigit(char x);
+void BakeScenery(wxXmlNode* root, const cSCNFile& scn);
 
 class RCT3InvalidValueException: public RCT3Exception {
 public:

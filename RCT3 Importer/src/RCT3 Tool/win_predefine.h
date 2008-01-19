@@ -30,7 +30,7 @@
 
 #define _WIN32_WINNT 0x0500
 #include <windows.h>
-#include <d3d9types.h>
+//#include <d3d9types.h>
 
 
 #endif // WIN_PREDEFINE_H_INCLUDED

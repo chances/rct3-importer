@@ -30,3 +30,4 @@ void InitResources()
 const unsigned char* GetResource_BMYPal() {
     return (const unsigned char*) &bmy_pal;
 }
+

@@ -6,36 +6,26 @@
            xmlns:html="http://www.w3.org/1999/xhtml"
            xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty">
   <xs:include schemaLocation="http://rct3.sourceforge.net/xml/rct3xml-shared-v1.xsd"/>
-
   <xs:complexType name="impAnimatedModelType">
     <xs:sequence>
       <xs:element maxOccurs="unbounded" minOccurs="0" name="matrix"
                   type="impMatrix"/>
-
       <xs:element maxOccurs="unbounded" name="mesh" type="impMeshType"/>
-
       <xs:element maxOccurs="unbounded" minOccurs="0" name="modelbone"
                   type="impModelBoneType"/>
     </xs:sequence>
-
     <xs:attribute name="file" type="xs:string" use="required"/>
-
     <xs:attribute name="name" type="xs:string" use="required"/>
-
     <xs:attribute name="orientation" type="impOrientation"/>
   </xs:complexType>
-
   <xs:complexType name="impAnimationType">
     <xs:sequence>
       <xs:element maxOccurs="unbounded" minOccurs="0" name="boneanimation"
                   type="impBoneAnimationType"/>
     </xs:sequence>
-
     <xs:attribute name="name" type="xs:string" use="required"/>
-
     <xs:attribute name="orientation" type="impOrientation"/>
   </xs:complexType>
-
   <xs:complexType name="impBoneAnimationType">
     <xs:sequence>
       <xs:element minOccurs="0" name="translations">
@@ -46,7 +36,6 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
-
       <xs:element minOccurs="0" name="rotations">
         <xs:complexType>
           <xs:sequence>
@@ -56,19 +45,15 @@
         </xs:complexType>
       </xs:element>
     </xs:sequence>
-
     <xs:attribute name="name" type="xs:string" use="required"/>
   </xs:complexType>
-
   <xs:complexType name="impEffectPointType">
     <xs:sequence>
       <xs:element maxOccurs="unbounded" minOccurs="0" name="matrix"
                   type="impMatrix"/>
     </xs:sequence>
-
     <xs:attribute name="name" type="xs:string" use="required"/>
   </xs:complexType>
-
   <xs:complexType name="impLodType">
     <xs:sequence>
       <xs:element maxOccurs="unbounded" minOccurs="0" name="lodanim">
@@ -77,38 +62,26 @@
         </xs:complexType>
       </xs:element>
     </xs:sequence>
-
     <xs:attribute name="animated" type="xs:boolean" use="required"/>
-
     <xs:attribute name="distance" type="xs:float" use="required"/>
-
     <xs:attribute name="modelname" type="xs:string" use="required"/>
-
     <xs:attribute name="unk14" type="xs:unsignedInt"/>
-
     <xs:attribute name="unk2" type="xs:unsignedInt"/>
-
     <xs:attribute name="unk4" type="xs:unsignedInt"/>
   </xs:complexType>
-
   <xs:complexType name="impMeshType">
     <xs:attribute default="0" name="disabled" type="xs:boolean"/>
-
     <xs:attribute default="0" name="flags" type="xs:unsignedInt"/>
-
     <xs:attribute name="ftx" type="xs:string" use="required"/>
-
     <xs:attribute default="0" name="fudgenormals" type="impFudge"/>
-
     <xs:attribute name="name" type="xs:string" use="required"/>
-
     <xs:attribute default="0" name="place" type="ovlMeshPlacement"/>
-
     <xs:attribute default="SIOpaque" name="txs" type="ovlTextureStyle"/>
-
     <xs:attribute default="3" name="unknown" type="ovlMeshSides"/>
+    <xs:attribute name="sortx" type="xs:string"/>
+    <xs:attribute name="sorty" type="xs:string"/>
+    <xs:attribute name="sortz" type="xs:string"/>
   </xs:complexType>
-
   <xs:complexType name="impModelBoneType">
     <xs:sequence>
       <xs:element name="positions1">
@@ -119,7 +92,6 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
-
       <xs:element minOccurs="0" name="positions2">
         <xs:complexType>
           <xs:sequence>
@@ -128,94 +100,61 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
-
       <xs:element maxOccurs="unbounded" minOccurs="0" name="bmesh">
         <xs:complexType>
           <xs:attribute name="name" type="xs:string" use="required"/>
         </xs:complexType>
       </xs:element>
     </xs:sequence>
-
     <xs:attribute name="name" type="xs:string" use="required"/>
-
     <xs:attribute name="parent" type="xs:string"/>
-
     <xs:attribute default="0" name="usepos2" type="xs:boolean"/>
   </xs:complexType>
-
   <xs:complexType name="impModelType">
     <xs:sequence>
       <xs:element maxOccurs="unbounded" minOccurs="0" name="matrix"
                   type="impMatrix"/>
-
       <xs:element maxOccurs="unbounded" name="mesh" type="impMeshType"/>
-
       <xs:element maxOccurs="unbounded" minOccurs="0" name="effectpoint"
                   type="impEffectPointType"/>
     </xs:sequence>
-
     <xs:attribute name="file" type="xs:string" use="required"/>
-
     <xs:attribute name="name" type="xs:string" use="required"/>
-
     <xs:attribute name="orientation" type="impOrientation"/>
   </xs:complexType>
-
   <xs:complexType name="impSivType">
     <xs:attribute name="brightness" type="xs:float"/>
-
     <xs:attribute name="scale" type="xs:float"/>
-
     <xs:attribute name="sivflags" type="xs:unsignedInt"/>
-
     <xs:attribute name="sway" type="xs:float"/>
-
     <xs:attribute name="unk10" type="xs:unsignedInt"/>
-
     <xs:attribute name="unk11" type="xs:unsignedInt"/>
-
     <xs:attribute name="unk6" type="xs:unsignedInt"/>
-
     <xs:attribute name="unk7" type="xs:unsignedInt"/>
-
     <xs:attribute name="unk8" type="xs:unsignedInt"/>
-
     <xs:attribute name="unk9" type="xs:unsignedInt"/>
-
     <xs:attribute name="unknown" type="xs:float"/>
   </xs:complexType>
-
   <xs:complexType name="impTextureType">
     <xs:sequence>
       <xs:element maxOccurs="unbounded" minOccurs="0" name="textureanim"
                   type="impTextureAnimType"/>
-
       <xs:element maxOccurs="unbounded" name="textureframe"
                   type="impTextureFrameType"/>
     </xs:sequence>
-
     <xs:attribute default="0" name="fps" type="xs:unsignedInt"/>
-
     <xs:attribute name="name" type="xs:string" use="required"/>
-
     <xs:attribute default="0" name="recolorable" type="xs:unsignedInt"/>
   </xs:complexType>
-
   <xs:complexType name="impTextureAnimType">
     <xs:attribute name="frame" type="xs:unsignedInt" use="required"/>
-
     <xs:attribute default="1" name="count" type="xs:unsignedInt"/>
   </xs:complexType>
-
   <xs:complexType name="impTextureFrameType">
     <xs:attribute name="alpha" type="xs:string"/>
-
     <xs:attribute default="0" name="alphacutoff" type="xs:unsignedByte"/>
-
     <xs:attribute default="0" name="alphasource" type="impAlphaUse"/>
-
     <xs:attribute default="0" name="recolorable" type="ovlRecolourable"/>
-
     <xs:attribute name="texture" type="xs:string" use="required"/>
   </xs:complexType>
 </xs:schema>

@@ -25,11 +25,227 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "OVLDebug.h"
+
 #include "ManagerCommon.h"
+
+#include <math.h>
 
 #include "OVLException.h"
 
 const char* ovlTXSManager::TAG = "txs";
+
+const cTriangleSortAlgorithm::Algorithm cTriangleSortAlgorithm::DEFAULT = cTriangleSortAlgorithm::MINMAX;
+
+const char* algonames[cTriangleSortAlgorithm::EnumSize+1] = {
+    "min",
+    "max",
+    "mean",
+    "minmax",
+    "maxmin",
+    "angle45",
+    "minXZbyY",
+    "minXZbyOther",
+    "minYbyX",
+    "minYbyZ",
+    "mininv",
+    "minmaxinv",
+    "none",
+    "UNKNOWN!"
+};
+
+inline float TriMin(const VECTOR& a, const VECTOR& b, const VECTOR& c, cTriangleSortAlgorithm::Axis dir) {
+    switch (dir) {
+        case cTriangleSortAlgorithm::BY_X:
+            return TriMin(a.x, b.x, c.x);
+        case cTriangleSortAlgorithm::BY_Y:
+            return TriMin(a.y, b.y, c.y);
+        case cTriangleSortAlgorithm::BY_Z:
+            return TriMin(a.z, b.z, c.z);
+    }
+}
+
+inline float TriMax(const VECTOR& a, const VECTOR& b, const VECTOR& c, cTriangleSortAlgorithm::Axis dir) {
+    switch (dir) {
+        case cTriangleSortAlgorithm::BY_X:
+            return TriMax(a.x, b.x, c.x);
+        case cTriangleSortAlgorithm::BY_Y:
+            return TriMax(a.y, b.y, c.y);
+        case cTriangleSortAlgorithm::BY_Z:
+            return TriMax(a.z, b.z, c.z);
+    }
+}
+
+inline float TriSum(const VECTOR& a, const VECTOR& b, const VECTOR& c, cTriangleSortAlgorithm::Axis dir) {
+    switch (dir) {
+        case cTriangleSortAlgorithm::BY_X:
+            return a.x + b.x + c.x;
+        case cTriangleSortAlgorithm::BY_Y:
+            return a.y + b.y + c.y;
+        case cTriangleSortAlgorithm::BY_Z:
+            return a.z + b.z + c.z;
+    }
+}
+
+inline float MinDist(const VECTOR& a, const VECTOR& b, const VECTOR& c, const VECTOR& v) {
+    return TriMin(fabsf(v.x - a.x) + fabsf(v.y - a.y) + fabsf (v.z - a.z),
+                  fabsf(v.x - b.x) + fabsf(v.y - b.y) + fabsf (v.z - b.z),
+                  fabsf(v.x - c.x) + fabsf(v.y - c.y) + fabsf (v.z - c.z));
+}
+
+const char* cTriangleSortAlgorithm::GetDefaultName() {
+    return algonames[GetDefault()];
+}
+
+const char* cTriangleSortAlgorithm::GetAlgorithmName(Algorithm algo) {
+    return algonames[algo];
+}
+
+cTriangleSortAlgorithm::Algorithm cTriangleSortAlgorithm::GetAlgo(const char* algoname) {
+    for (Algorithm i = MIN; i < EnumSize; i = Algorithm(i+1)) {
+        if (!stricmp(algoname, algonames[i])) {
+            return i;
+        }
+    }
+    return EnumSize;
+}
+
+bool cTriangleSortAlgorithm::operator() (const VECTOR& a1, const VECTOR& a2, const VECTOR& a3, const VECTOR& b1, const VECTOR& b2, const VECTOR& b3) const {
+    switch(algo) {
+        case MIN:
+            return TriMin(a1, a2, a3, dir) < TriMin(b1, b2, b3, dir);
+        case MAX:
+            return TriMax(a1, a2, a3, dir) < TriMax(b1, b2, b3, dir);
+        case MEAN:
+            return TriSum(a1, a2, a3, dir) < TriSum(b1, b2, b3, dir);
+        case MINMAX: {
+                float a = TriMin(a1, a2, a3, dir);
+                float b = TriMin(b1, b2, b3, dir);
+                if (a == b) {
+                    return TriMax(a1, a2, a3, dir) < TriMax(b1, b2, b3, dir);
+                } else {
+                    return a < b;
+                }
+            }
+        case MAXMIN: {
+                float a = TriMax(a1, a2, a3, dir);
+                float b = TriMax(b1, b2, b3, dir);
+                if (a == b) {
+                    return TriMin(a1, a2, a3, dir) < TriMin(b1, b2, b3, dir);
+                } else {
+                    return a < b;
+                }
+            }
+        case ANGLE45: {
+                switch (dir) {
+                    case BY_X: {
+                        VECTOR v;
+                        v.x = -10000.0;
+                        v.y = 10000.0;
+                        v.z = 0;
+                        return  MinDist(a1, a2, a3, v) < MinDist(b1, b2, b3, v);
+                    }
+                    case BY_Y: {
+                        float a = TriMax(a1, a2, a3, dir);
+                        float b = TriMax(b1, b2, b3, dir);
+                        if (a == b) {
+                            return TriMin(a1, a2, a3, dir) < TriMin(b1, b2, b3, dir);
+                        } else {
+                            return a < b;
+                        }
+                    }
+                    case BY_Z: {
+                        VECTOR v;
+                        v.x = 0;
+                        v.y = 10000.0;
+                        v.z = -10000.0;
+                        return  MinDist(a1, a2, a3, v) < MinDist(b1, b2, b3, v);
+                    }
+                }
+            }
+        case MINXZBYY: {
+                switch (dir) {
+                    case BY_X:
+                    case BY_Z: {
+                        float a = TriMin(a1, a2, a3, dir);
+                        float b = TriMin(b1, b2, b3, dir);
+                        if (a == b) {
+                            return TriMin(a1, a2, a3, BY_Y) < TriMin(b1, b2, b3, BY_Y);
+                        } else {
+                            return a < b;
+                        }
+                    }
+                    default: {
+                        return TriMin(a1, a2, a3, dir) < TriMin(b1, b2, b3, dir);
+                    }
+                }
+            }
+        case MINXZBYOTHER: {
+                switch (dir) {
+                    case BY_X:
+                    case BY_Z: {
+                        float a = TriMin(a1, a2, a3, dir);
+                        float b = TriMin(b1, b2, b3, dir);
+                        if (a == b) {
+                            return TriMin(a1, a2, a3, (dir==BY_X)?BY_Z:BY_X) < TriMin(b1, b2, b3, (dir==BY_X)?BY_Z:BY_X);
+                        } else {
+                            return a < b;
+                        }
+                    }
+                    default: {
+                        return TriMin(a1, a2, a3, dir) < TriMin(b1, b2, b3, dir);
+                    }
+                }
+            }
+        case MINYBYX: {
+                switch (dir) {
+                    case BY_Y: {
+                        float a = TriMin(a1, a2, a3, dir);
+                        float b = TriMin(b1, b2, b3, dir);
+                        if (a == b) {
+                            return TriMin(a1, a2, a3, BY_X) < TriMin(b1, b2, b3, BY_X);
+                        } else {
+                            return a < b;
+                        }
+                    }
+                    default: {
+                        return TriMin(a1, a2, a3, dir) < TriMin(b1, b2, b3, dir);
+                    }
+                }
+            }
+        case MINYBYZ: {
+                switch (dir) {
+                    case BY_Y: {
+                        float a = TriMin(a1, a2, a3, dir);
+                        float b = TriMin(b1, b2, b3, dir);
+                        if (a == b) {
+                            return TriMin(a1, a2, a3, BY_Z) < TriMin(b1, b2, b3, BY_Z);
+                        } else {
+                            return a < b;
+                        }
+                    }
+                    default: {
+                        return TriMin(a1, a2, a3, dir) < TriMin(b1, b2, b3, dir);
+                    }
+                }
+            }
+        case MININV:
+            return TriMin(a1, a2, a3, dir) > TriMin(b1, b2, b3, dir);
+        case MINMAXINV: {
+                float a = TriMin(a1, a2, a3, dir);
+                float b = TriMin(b1, b2, b3, dir);
+                if (a == b) {
+                    return TriMax(a1, a2, a3, dir) > TriMax(b1, b2, b3, dir);
+                } else {
+                    return a > b;
+                }
+            }
+        default:
+            DUMP_LOG("Sort algorithm called with illegal algo");
+            return false;
+    }
+}
+
 
 
 void cAttraction::Fill(Attraction* att) {
@@ -87,4 +303,6 @@ void cAttraction::Fill(Stall* sta) {
     sta->unk10 = unk10;
 }
 
-
+void cAttraction::Fill(SpecialAttraction* sp) {
+    Fill(reinterpret_cast<Stall*>(sp));
+}

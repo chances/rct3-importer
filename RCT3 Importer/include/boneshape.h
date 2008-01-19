@@ -14,6 +14,12 @@
 #include "vertex.h"
 #include "flexitexture.h"
 
+struct Triangle2 {
+    unsigned short a;
+    unsigned short b;
+    unsigned short c;
+};
+
 struct BoneShape2 {
 	unsigned long unk1; //always 0xFFFFFFFFF
 	FlexiTextureInfoStruct *fts; //is 0 in disk files
@@ -31,8 +37,8 @@ struct BoneStruct {
 	unsigned long ParentBoneNumber;
 };
 struct BoneShape1 {
-	D3DVECTOR BoundingBox1;
-	D3DVECTOR BoundingBox2;
+	VECTOR BoundingBox1;
+	VECTOR BoundingBox2;
 	unsigned long TotalVertexCount;
 	unsigned long TotalIndexCount;
 	unsigned long MeshCount2;
@@ -40,8 +46,8 @@ struct BoneShape1 {
 	BoneShape2 **sh;
 	unsigned long BoneCount;
 	BoneStruct *Bones;
-	D3DMATRIX *BonePositions1;
-	D3DMATRIX *BonePositions2;
+	MATRIX *BonePositions1;
+	MATRIX *BonePositions2;
 };
 
 #endif
