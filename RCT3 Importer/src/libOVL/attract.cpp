@@ -26,7 +26,7 @@ unsigned long AttractionData::ComputeSize()
    	for (unsigned int i = 0;i < Attractions.size();i++)
 	{
 		AddStringSize(Attractions[i]->name);
-		Attractionsize += sizeof(SpecialAttraction);
+		Attractionsize += sizeof(SpecialAttractionA);
 		loadercount++;
 		symbolcount++;
 		symbolrefcount++;
@@ -63,7 +63,7 @@ void AttractionData::AddData(unsigned long *data)
 {
     char *gsi = AddString(":gsi");
     char *spl = AddString(":spl");
-    SpecialAttraction *datas = (SpecialAttraction *)data;
+    SpecialAttractionA *datas = (SpecialAttractionA *)data;
     unsigned int itempos = 0;
 	for (unsigned int i = 0;i < Attractions.size();i++)
 	{

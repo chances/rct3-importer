@@ -143,13 +143,13 @@ void cRawParser::ParseBSH(wxXmlNode* node) {
                 }
 
                 if (!modelfile.IsAbsolute())
-                    modelfile.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR));
+                    modelfile.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
 
                 if (m_mode == MODE_BAKE) {
                     if (m_bake.Index(RAWXML_BSH) == wxNOT_FOUND) {
                         if (!modelfilevar) {
                             if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
-                                modelfile.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR));
+                                modelfile.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
                             }
                             child->DeleteProperty(wxT("modelfile"));
                             child->AddProperty(wxT("modelfile"), modelfile.GetFullPath());
@@ -618,7 +618,7 @@ void cRawParser::ParseFTX(wxXmlNode* node) {
                         if (m_bake.Index(RAWXML_FTX) == wxNOT_FOUND) {
                             if (!filevar) {
                                 if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
-                                    texture.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR));
+                                    texture.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
                                 }
                                 delete subchild->GetChildren();
                                 subchild->SetChildren(new wxXmlNode(NULL, wxXML_TEXT_NODE, wxT(""), texture.GetFullPath()));
@@ -743,12 +743,12 @@ void cRawParser::ParseFTX(wxXmlNode* node) {
                     bool filevar = MakeVariable(t);
                     wxFSFileName texture = t;
                     if (!texture.IsAbsolute())
-                        texture.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR));
+                        texture.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
                     if (m_mode == MODE_BAKE) {
                         if (m_bake.Index(RAWXML_FTX) == wxNOT_FOUND) {
                             if (!filevar) {
                                 if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
-                                    texture.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR));
+                                    texture.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
                                 }
                                 delete subchild->GetChildren();
                                 subchild->SetChildren(new wxXmlNode(NULL, wxXML_TEXT_NODE, wxT(""), texture.GetFullPath()));
@@ -1035,13 +1035,13 @@ void cRawParser::ParseSHS(wxXmlNode* node) {
                 }
 
                 if (!modelfile.IsAbsolute())
-                    modelfile.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR));
+                    modelfile.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
 
                 if (m_mode == MODE_BAKE) {
                     if (m_bake.Index(RAWXML_SHS) == wxNOT_FOUND) {
                         if (!modelfilevar) {
                             if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
-                                modelfile.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR));
+                                modelfile.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
                             }
                             child->DeleteProperty(wxT("modelfile"));
                             child->AddProperty(wxT("modelfile"), modelfile.GetFullPath());
@@ -1392,6 +1392,8 @@ void cRawParser::ParseSPL(wxXmlNode* node) {
     spl.name = ParseString(node, RAWXML_SPL, wxT("name"), NULL, useprefix).ToAscii();
     spl.unk3 = ParseFloat(node, RAWXML_SPL, wxT("u3"));
     OPTION_PARSE(float, spl.unk6, ParseFloat(node, RAWXML_SPL, wxT("u6")));
+    OPTION_PARSE(unsigned long, spl.cyclic, ParseUnsigned(node, RAWXML_SPL, wxT("cyclic")));
+    OPTION_PARSE(unsigned long, spl.lengthcalcres, ParseUnsigned(node, RAWXML_SPL, wxT("autolengthres")));
     wxLogVerbose(wxString::Format(_("Adding spl %s to %s."), wxString(spl.name.c_str(), wxConvLocal).c_str(), m_output.GetFullPath().c_str()));
 
     wxXmlNode *child = node->GetChildren();
@@ -1400,15 +1402,15 @@ void cRawParser::ParseSPL(wxXmlNode* node) {
 
         if (child->GetName() == RAWXML_SPL_NODE) {
             SplineNode sp;
-            sp.x = ParseFloat(child, RAWXML_SPL_NODE, wxT("x"));
-            sp.y = ParseFloat(child, RAWXML_SPL_NODE, wxT("y"));
-            sp.z = ParseFloat(child, RAWXML_SPL_NODE, wxT("z"));
-            sp.cp1x = ParseFloat(child, RAWXML_SPL_NODE, wxT("cp1x"));
-            sp.cp1y = ParseFloat(child, RAWXML_SPL_NODE, wxT("cp1y"));
-            sp.cp1z = ParseFloat(child, RAWXML_SPL_NODE, wxT("cp1z"));
-            sp.cp2x = ParseFloat(child, RAWXML_SPL_NODE, wxT("cp2x"));
-            sp.cp2y = ParseFloat(child, RAWXML_SPL_NODE, wxT("cp2y"));
-            sp.cp2z = ParseFloat(child, RAWXML_SPL_NODE, wxT("cp2z"));
+            sp.pos.x = ParseFloat(child, RAWXML_SPL_NODE, wxT("x"));
+            sp.pos.y = ParseFloat(child, RAWXML_SPL_NODE, wxT("y"));
+            sp.pos.z = ParseFloat(child, RAWXML_SPL_NODE, wxT("z"));
+            sp.cp1.x = ParseFloat(child, RAWXML_SPL_NODE, wxT("cp1x"));
+            sp.cp1.y = ParseFloat(child, RAWXML_SPL_NODE, wxT("cp1y"));
+            sp.cp1.z = ParseFloat(child, RAWXML_SPL_NODE, wxT("cp1z"));
+            sp.cp2.x = ParseFloat(child, RAWXML_SPL_NODE, wxT("cp2x"));
+            sp.cp2.y = ParseFloat(child, RAWXML_SPL_NODE, wxT("cp2y"));
+            sp.cp2.z = ParseFloat(child, RAWXML_SPL_NODE, wxT("cp2z"));
             spl.nodes.push_back(sp);
         } else if (child->GetName() == RAWXML_SPL_LENGTH) {
             float l = ParseFloat(child, RAWXML_SPL_LENGTH, wxT("length"));
@@ -1578,6 +1580,116 @@ void cRawParser::ParseTEX(wxXmlNode* node) {
 //    if (!texture.IsAbsolute())
 //        texture.MakeAbsolute(m_input.GetPathWithSep());
     wxLogVerbose(wxString::Format(_("Adding tex %s to %s."), name.c_str(), m_output.GetFullPath().c_str()));
+
+    cTextureStruct texture;
+    texture.texture.name = name.ToAscii();
+    OPTION_PARSE(unsigned long, texture.texture.format, ParseUnsigned(node, RAWXML_TEX, wxT("format")));
+    wxGXImage mainimage;
+    unsigned long mips = 0;
+    OPTION_PARSE(unsigned long, mips, ParseUnsigned(node, RAWXML_TEX, wxT("mips")));
+    ParseStringOption(texture.texturestyle, node, wxT("txs"), NULL);
+
+    wxXmlNode* child = node->GetChildren();
+    while (child) {
+        DO_CONDITION_COMMENT(child);
+
+        if (child->GetName() == RAWXML_TEX_TEXTURE) {
+            cTextureMIP mip;
+            OPTION_PARSE(unsigned long, mip.dimension, ParseUnsigned(child, RAWXML_TEX, wxT("dimension")));
+
+            wxXmlNode* datanode = child->GetChildren();
+            while (datanode && (!datanode->GetName().IsSameAs(RAWXML_DATA)))
+                datanode = datanode->GetNext();
+
+            if (!datanode)
+                throw RCT3Exception(wxString::Format(_("Tag tex(%s)/texture misses data."), name.c_str()));
+
+            cRawDatablock data = GetDataBlock(wxString::Format(_("tag tex(%s)/texture"), name.c_str()), datanode);
+            if (data.datatype().IsEmpty()) {
+                throw RCT3Exception(wxString::Format(_("Could not determine data type in tag tex(%s)/texture."), name.c_str()));
+            } else if (data.datatype().IsSameAs(wxT("processed"))) {
+                unsigned long datadim = cTexture::GetDimension(texture.texture.format, data.datasize());
+                if (!mip.dimension)
+                    mip.dimension = datadim;
+                if (mip.dimension != datadim)
+                    throw RCT3Exception(wxString::Format(_("Dimension mismatch in tag tex(%s)/texture."), name.c_str()));
+                mip.data = data.data();
+            } else {
+                wxGXImage img;
+                img.read(data.data().get(), data.datasize(), std::string(data.datatype().mb_str(wxConvLocal)));
+                if (!img.Ok())
+                    throw RCT3Exception(wxString::Format(_("Error decoding image in tag tex(%s)/texture."), name.c_str()));
+                img.flip();
+                if (!mainimage.Ok())
+                    mainimage = img;
+                if (mip.dimension) {
+                    img.Rescale(mip.dimension, mip.dimension);
+                } else {
+                    mip.dimension = img.GetWidth();
+                }
+                mip.data = boost::shared_array<unsigned char>(new unsigned char[mip.CalcSize(cTexture::GetBlockSize(texture.texture.format))]);
+                switch (texture.texture.format) {
+                    case cTexture::FORMAT_A8R8G8B8:
+                        img.GetData("RGBA", mip.data.get(), true);
+                        break;
+                    case cTexture::FORMAT_DXT1:
+                        img.DxtCompress(mip.data.get(), wxDXT1);
+                        break;
+                    case cTexture::FORMAT_DXT3:
+                        img.DxtCompress(mip.data.get(), wxDXT3);
+                        break;
+                    case cTexture::FORMAT_DXT5:
+                        img.DxtCompress(mip.data.get(), wxDXT5);
+                        break;
+                    default:
+                        throw RCT3Exception(wxString::Format(_("Unknown format 0x%02lx in tag tex(%s)/texture."), texture.texture.format, name.c_str()));
+                }
+            }
+
+            texture.texture.mips.insert(mip);
+        } else if COMPILER_WRONGTAG(child) {
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in tex(%s) tag."), child->GetName().c_str(), name.c_str()));
+        }
+        child = child->GetNext();
+    }
+
+    if (mips) {
+        if ((texture.texture.mips.size() > 1) && (mips != texture.texture.mips.size()))
+            throw RCT3Exception(wxString::Format(_("Mip count mismatch in tag tex(%s)."), name.c_str()));
+        if ((texture.texture.mips.size() == 1) && (mips > 1)) {
+            if (!mainimage.Ok())
+                throw RCT3Exception(wxString::Format(_("Cannot auto-generate mips in tag tex(%s)."), name.c_str()));
+            for (unsigned long i = 1; i < mips; ++i) {
+                mainimage.Rescale(mainimage.GetWidth() / 2, mainimage.GetHeight() / 2);
+                if (mainimage.GetWidth() < 4) {
+                    wxLogWarning(wxString::Format(_("Too many mips requested in tag tex(%s)."), name.c_str()));
+                    break;
+                }
+                cTextureMIP mip;
+                mip.dimension = mainimage.GetWidth();
+                mip.data = boost::shared_array<unsigned char>(new unsigned char[mip.CalcSize(cTexture::GetBlockSize(texture.texture.format))]);
+                switch (texture.texture.format) {
+                    case cTexture::FORMAT_A8R8G8B8:
+                        mainimage.GetData("RGBA", mip.data.get(), true);
+                        break;
+                    case cTexture::FORMAT_DXT1:
+                        mainimage.DxtCompress(mip.data.get(), wxDXT1);
+                        break;
+                    case cTexture::FORMAT_DXT3:
+                        mainimage.DxtCompress(mip.data.get(), wxDXT3);
+                        break;
+                    case cTexture::FORMAT_DXT5:
+                        mainimage.DxtCompress(mip.data.get(), wxDXT5);
+                        break;
+                    default:
+                        throw RCT3Exception(wxString::Format(_("Unknown format 0x%02lx in tag tex(%s)."), texture.texture.format, name.c_str()));
+                }
+                texture.texture.mips.insert(mip);
+            }
+        }
+    }
+
+/*
     counted_array_ptr<unsigned char> data;
     unsigned long dimension = 0;
     unsigned long datasize = 0;
@@ -1594,13 +1706,13 @@ void cRawParser::ParseTEX(wxXmlNode* node) {
             bool filevar = MakeVariable(t);
             wxFSFileName texture = t;
             if (!texture.IsAbsolute())
-                texture.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR));
+                texture.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
 
             if (m_mode == MODE_BAKE) {
                 if (m_bake.Index(RAWXML_TEX) == wxNOT_FOUND) {
                     if (!filevar) {
                         if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
-                            texture.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR));
+                            texture.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
                         }
                         delete child->GetChildren();
                         child->SetChildren(new wxXmlNode(NULL, wxXML_TEXT_NODE, wxT(""), texture.GetFullPath()));
@@ -1687,12 +1799,14 @@ void cRawParser::ParseTEX(wxXmlNode* node) {
         }
         child = child->GetNext();
     }
+*/
 
     if (m_mode != MODE_BAKE) {
-        if (!data.get())
-            throw RCT3Exception(wxString(wxT("tex tag '"))+name+wxT("': no datasource."));
+        if (!texture.texture.mips.size())
+            throw RCT3Exception(wxString(wxT("tex tag '"))+name+wxT("': no data."));
         ovlTEXManager* c_tex = m_ovl.GetManager<ovlTEXManager>();
-        c_tex->AddTexture(std::string(name.ToAscii()), dimension, datasize, reinterpret_cast<unsigned long*>(data.get()));
+        c_tex->AddTexture(texture);
+        //c_tex->AddTexture(std::string(name.ToAscii()), dimension, datasize, reinterpret_cast<unsigned long*>(data.get()));
     }
 }
 

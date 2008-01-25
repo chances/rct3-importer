@@ -70,6 +70,8 @@
 		<Linker>
 			<Add option="--no-export-all-symbols --add-stdcall-alias" />
 		</Linker>
+		<Unit filename="..\..\include\animatedride.h" />
+		<Unit filename="..\..\include\attraction.h" />
 		<Unit filename="..\..\include\boneanim.h" />
 		<Unit filename="..\..\include\boneshape.h" />
 		<Unit filename="..\..\include\car.h" />
@@ -79,6 +81,7 @@
 		<Unit filename="..\..\include\flexitexture.h" />
 		<Unit filename="..\..\include\guiicon.h" />
 		<Unit filename="..\..\include\icontexture.h" />
+		<Unit filename="..\..\include\morphmesh.h" />
 		<Unit filename="..\..\include\ovlstructs.h" />
 		<Unit filename="..\..\include\path.h" />
 		<Unit filename="..\..\include\scenery.h" />
@@ -97,6 +100,8 @@
 		<Unit filename="ManagerBAN.h" />
 		<Unit filename="ManagerBSH.cpp" />
 		<Unit filename="ManagerBSH.h" />
+		<Unit filename="ManagerBTBL.cpp" />
+		<Unit filename="ManagerBTBL.h" />
 		<Unit filename="ManagerCED.cpp" />
 		<Unit filename="ManagerCED.h" />
 		<Unit filename="ManagerCHG.cpp" />
@@ -165,7 +170,31 @@
 				<remote_debugging target="Release">
 					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
 				</remote_debugging>
+				<remote_debugging target="Debug">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
 				<remote_debugging target="Debug (Public)">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Release">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug Unicode">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Release">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug Unicode">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Release">
 					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
 				</remote_debugging>
 				<remote_debugging target="Premake Resources">

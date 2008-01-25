@@ -26,7 +26,7 @@ unsigned long StallData::ComputeSize()
    	for (unsigned int i = 0;i < Stalls.size();i++)
 	{
 		AddStringSize(Stalls[i]->name);
-		Stallsize += sizeof(Stall);
+		Stallsize += sizeof(StallA);
 		loadercount++;
 		symbolcount++;
 		symbolrefcount++;
@@ -96,7 +96,7 @@ void StallData::AddData(unsigned long *data,unsigned long *itemdata)
 {
     char *gsi = AddString(":gsi");
     char *spl = AddString(":spl");
-    Stall *datas = (Stall *)data;
+    StallA *datas = (StallA *)data;
     StallItem *items = (StallItem *)itemdata;
     unsigned int itempos = 0;
 	for (unsigned int i = 0;i < Stalls.size();i++)

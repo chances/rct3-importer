@@ -57,9 +57,9 @@ void ovlCHGManager::AddRoom(const cChangingRoom& item) {
 
     m_size += sizeof(ChangingRoom);
     if ((item.attraction.type & ATTRACTION_TYPE_Wild) == ATTRACTION_TYPE_Wild) {
-        m_size += sizeof(Attraction2);
+        m_size += sizeof(AttractionB);
     } else {
-        m_size += sizeof(Attraction);
+        m_size += sizeof(AttractionA);
     }
 
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
@@ -94,11 +94,11 @@ void ovlCHGManager::Make(cOvlInfo* info) {
         ChangingRoom* c_item = reinterpret_cast<ChangingRoom*>(c_data);
         c_data += sizeof(ChangingRoom);
 
-        c_item->att = reinterpret_cast<Attraction*>(c_data);
+        c_item->att = reinterpret_cast<AttractionA*>(c_data);
         if ((it->second.attraction.type & ATTRACTION_TYPE_Wild) == ATTRACTION_TYPE_Wild) {
-            c_data += sizeof(Attraction2);
+            c_data += sizeof(AttractionB);
         } else {
-            c_data += sizeof(Attraction);
+            c_data += sizeof(AttractionA);
         }
         GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_item->att));
 

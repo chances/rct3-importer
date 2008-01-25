@@ -58,15 +58,15 @@ void ovlSTAManager::AddStall(const cStall& stall) {
     // The following depends on the type of stall structure we want to write
     if (stall.attraction.type & 0x200) {
         // Stall2
-        m_size += sizeof(Stall2);
+        m_size += sizeof(StallB);
         if ((stall.attraction.type & ATTRACTION_TYPE_Wild) == ATTRACTION_TYPE_Wild) {
-            m_size += sizeof(Attraction2);
+            m_size += sizeof(AttractionB);
         } else {
-            m_size += sizeof(Attraction);
+            m_size += sizeof(AttractionA);
         }
     } else {
         // Stall
-        m_size += sizeof(Stall);
+        m_size += sizeof(StallA);
     }
     // Both share items
     m_size += stall.items.size() * sizeof(StallItem);
@@ -105,14 +105,14 @@ void ovlSTAManager::Make(cOvlInfo* info) {
         if (it->second.attraction.type & 0x200) {
             // Stall2
             // Assign structs
-            Stall2* c_stall = reinterpret_cast<Stall2*>(c_data);
-            c_data += sizeof(Stall2);
+            StallB* c_stall = reinterpret_cast<StallB*>(c_data);
+            c_data += sizeof(StallB);
 
-            c_stall->att = reinterpret_cast<Attraction*>(c_data);
+            c_stall->att = reinterpret_cast<AttractionA*>(c_data);
             if ((it->second.attraction.type & ATTRACTION_TYPE_Wild) == ATTRACTION_TYPE_Wild) {
-                c_data += sizeof(Attraction2);
+                c_data += sizeof(AttractionB);
             } else {
-                c_data += sizeof(Attraction);
+                c_data += sizeof(AttractionA);
             }
             GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_stall->att));
 
@@ -153,8 +153,8 @@ void ovlSTAManager::Make(cOvlInfo* info) {
         } else {
             // Stall
             // Assign structs
-            Stall* c_stall = reinterpret_cast<Stall*>(c_data);
-            c_data += sizeof(Stall);
+            StallA* c_stall = reinterpret_cast<StallA*>(c_data);
+            c_data += sizeof(StallA);
 
             if (it->second.items.size()) {
                 c_stall->itemcount = it->second.items.size();

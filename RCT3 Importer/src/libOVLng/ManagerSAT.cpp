@@ -57,15 +57,15 @@ void ovlSATManager::AddAttraction(const cSpecialAttraction& item) {
     // The following depends on the type of stall structure we want to write
     if (item.attraction.type & 0x200) {
         // SpecialAttraction2
-        m_size += sizeof(SpecialAttraction2);
+        m_size += sizeof(SpecialAttractionB);
         if ((item.attraction.type & ATTRACTION_TYPE_Wild) == ATTRACTION_TYPE_Wild) {
-            m_size += sizeof(Attraction2);
+            m_size += sizeof(AttractionB);
         } else {
-            m_size += sizeof(Attraction);
+            m_size += sizeof(AttractionA);
         }
     } else {
         // SpecialAttraction
-        m_size += sizeof(SpecialAttraction);
+        m_size += sizeof(SpecialAttractionA);
     }
 
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
@@ -97,14 +97,14 @@ void ovlSATManager::Make(cOvlInfo* info) {
         if (it->second.attraction.type & 0x200) {
             // SpecialAttraction2
             // Assign structs
-            SpecialAttraction2* c_att = reinterpret_cast<SpecialAttraction2*>(c_data);
-            c_data += sizeof(SpecialAttraction2);
+            SpecialAttractionB* c_att = reinterpret_cast<SpecialAttractionB*>(c_data);
+            c_data += sizeof(SpecialAttractionB);
 
-            c_att->att = reinterpret_cast<Attraction*>(c_data);
+            c_att->att = reinterpret_cast<AttractionA*>(c_data);
             if ((it->second.attraction.type & ATTRACTION_TYPE_Wild) == ATTRACTION_TYPE_Wild) {
-                c_data += sizeof(Attraction2);
+                c_data += sizeof(AttractionB);
             } else {
-                c_data += sizeof(Attraction);
+                c_data += sizeof(AttractionA);
             }
             GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_att->att));
 
@@ -128,8 +128,8 @@ void ovlSATManager::Make(cOvlInfo* info) {
         } else {
             // Stall
             // Assign structs
-            SpecialAttraction* c_att = reinterpret_cast<SpecialAttraction*>(c_data);
-            c_data += sizeof(SpecialAttraction);
+            SpecialAttractionA* c_att = reinterpret_cast<SpecialAttractionA*>(c_data);
+            c_data += sizeof(SpecialAttractionA);
 
             it->second.Fill(c_att);
 

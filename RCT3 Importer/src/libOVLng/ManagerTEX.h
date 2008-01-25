@@ -29,16 +29,94 @@
 #ifndef MANAGERTEX_H_INCLUDED
 #define MANAGERTEX_H_INCLUDED
 
-#include <string>
 #include <map>
+#include <string>
 
+#include "ManagerBTBL.h"
 #include "ManagerOVL.h"
 
 #include "icontexture.h"
 
 using namespace std;
 
+/// Encapsulates a TextureStruct.
+/**
+ *  @see TextureStruct
+ */
+class cTextureStruct {
+public:
+	unsigned long unk1;
+	unsigned long unk2;
+	unsigned long unk3;
+	unsigned long unk4;
+	unsigned long unk5;
+	unsigned long unk6;
+	unsigned long unk7;
+	unsigned long unk8;
+	unsigned long unk9;
+	unsigned long unk10;
+	unsigned long unk11;
+	string texturestyle;
+	unsigned long unk12;
+
+	cTexture texture;
+
+	cTextureStruct(): unk1(0x70007), unk2(0x70007), unk3(0x70007), unk4(0x70007),
+	                  unk5(0x70007), unk6(0x70007), unk7(0x70007), unk8(0x70007),
+	                  unk9(1), unk10(8), unk11(0x10), texturestyle("GUIIcon"), unk12(1) {}
+
+    void Fill(TextureStruct* ts) {
+        ts->unk1 = unk1;
+        ts->unk2 = unk2;
+        ts->unk3 = unk3;
+        ts->unk4 = unk4;
+        ts->unk5 = unk5;
+        ts->unk6 = unk6;
+        ts->unk7 = unk7;
+        ts->unk8 = unk8;
+        ts->unk9 = unk9;
+        ts->unk10 = unk10;
+        ts->unk11 = unk11;
+        ts->TextureData = NULL;
+        ts->unk12 = unk12;
+    }
+};
+
 class ovlFLICManager;
+class ovlTEXManager: public ovlOVLManager {
+public:
+    static const char* LOADER;
+    static const char* NAME;
+    static const char* TAG;
+    static const unsigned long TYPE;
+private:
+    map<string, cTextureStruct> m_items;
+
+    ovlFLICManager* m_flicman;
+public:
+    ovlTEXManager(): ovlOVLManager() {};
+
+    virtual void Init(cOvl* ovl);
+
+    void AddTexture(const cTextureStruct& item);
+
+    virtual void Make(cOvlInfo* info);
+
+    virtual const char* Loader() const {
+        return LOADER;
+    };
+    virtual const char* Name() const {
+        return NAME;
+    };
+    virtual const char* Tag() const {
+        return TAG;
+    };
+    virtual const unsigned long Type() const {
+        return TYPE;
+    };
+};
+
+/*
 class ovlTEXManager: public ovlOVLManager {
 public:
     static const char* LOADER;
@@ -74,5 +152,5 @@ public:
         return TYPE;
     };
 };
-
+*/
 #endif

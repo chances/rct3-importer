@@ -248,9 +248,9 @@ bool cTriangleSortAlgorithm::operator() (const VECTOR& a1, const VECTOR& a2, con
 
 
 
-void cAttraction::Fill(Attraction* att) {
+void cAttraction::Fill(AttractionA* att) {
     if ((type & ATTRACTION_TYPE_Wild) == ATTRACTION_TYPE_Wild) {
-        Attraction2* att2 = reinterpret_cast<Attraction2*>(att);
+        AttractionB* att2 = reinterpret_cast<AttractionB*>(att);
         att2->type = type;
         att2->Name = NULL;
         att2->Description = NULL;
@@ -290,7 +290,7 @@ void cAttraction::Fill(Attraction* att) {
     }
 }
 
-void cAttraction::Fill(Stall* sta) {
+void cAttraction::Fill(StallA* sta) {
     sta->type = type & 0xFF; // low byte only
     sta->unk2 = unk2;
     sta->unk3 = unk3;
@@ -303,6 +303,6 @@ void cAttraction::Fill(Stall* sta) {
     sta->unk10 = unk10;
 }
 
-void cAttraction::Fill(SpecialAttraction* sp) {
-    Fill(reinterpret_cast<Stall*>(sp));
+void cAttraction::Fill(SpecialAttractionA* sp) {
+    Fill(reinterpret_cast<StallA*>(sp));
 }

@@ -65,7 +65,7 @@ public:
         unk5 = 8;
         unk6 = 9;
     }
-    void Fill(Stall* sta) {
+    void Fill(StallA* sta) {
         sta->unk11 = unk1;
         sta->unk12 = unk2;
         sta->unk13 = unk3;
@@ -73,7 +73,7 @@ public:
         sta->unk15 = unk5;
         sta->unk16 = unk6;
     }
-    void Fill(Stall2* sta) {
+    void Fill(StallB* sta) {
         sta->unk2 = unk1;
         sta->unk3 = unk2;
         sta->unk4 = unk3;
@@ -92,7 +92,7 @@ public:
     string sid;
 
     cStall() {};
-    void Fill(Stall* sta) {
+    void Fill(StallA* sta) {
         sta->Name = NULL;
         sta->Description = NULL;
         sta->GSI = NULL;
@@ -100,7 +100,7 @@ public:
         attraction.Fill(sta);
         unknowns.Fill(sta);
     }
-    void Fill(Stall2* sta) {
+    void Fill(StallB* sta) {
         attraction.Fill(sta->att);
         unknowns.Fill(sta);
     }

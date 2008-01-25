@@ -198,14 +198,14 @@ void cRawParser::ParseVariables(wxXmlNode* node, bool command, const wxString& p
         }
         wxFSFileName filename = inc;
         if (!filename.IsAbsolute())
-            filename.MakeAbsolute(src.GetPath(wxPATH_GET_SEPARATOR));
+            filename.MakeAbsolute(src.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
         LoadVariables(filename, command, (m_bake.Index(RAWXML_VARIABLES)!=wxNOT_FOUND)?node:NULL );
 
         if (m_mode == MODE_BAKE) {
             if (m_bake.Index(RAWXML_VARIABLES) == wxNOT_FOUND) {
                 wxString newfile;
                 if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
-                    filename.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR));
+                    filename.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
                 }
                 newfile = filename.GetFullPath();
                 node->DeleteProperty(wxT("include"));
@@ -230,6 +230,87 @@ void cRawParser::ParseVariables(wxXmlNode* node, bool command, const wxString& p
             throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in variables tag."), child->GetName().c_str()));
         }
         child = child->GetNext();
+    }
+}
+
+cRawDatablock cRawParser::MakeDataBlock(const wxString& ref, const wxFSFileName& input, wxXmlNode* node, wxXmlNode* refnode) {
+    wxXmlNode* activenode = refnode?refnode:node;
+    cRawDatablock block(node, refnode, refnode?NULL:m_firstchild);
+
+    wxString type = ParseString(activenode, refnode?RAWXML_DATAREF:RAWXML_DATA, wxT("type"), NULL);
+    wxString datatype;
+    ParseStringOption(datatype, activenode, wxT("datatype"), NULL);
+    block.datatype(datatype);
+
+    if (type.IsSameAs(wxT("file"))) {
+        wxString filename = node->GetNodeContent();
+        MakeVariable(filename);
+        wxFSFileName fname = filename;
+        if (!fname.IsAbsolute())
+            fname.MakeAbsolute(input.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
+        if (datatype.IsEmpty())
+            block.datatype(fname.GetExt());
+
+        wxFileSystem fs;
+        std::auto_ptr<wxFSFile> file(fs.OpenFile(fname.GetFullPath(), wxFS_READ|wxFS_SEEKABLE));
+        if (file.get()) {
+            wxInputStream* filestream = file->GetStream(); // Stream is destroyed by wxFSFile
+            filestream->SeekI(0, wxFromEnd);
+            block.datasize(filestream->TellI());
+            filestream->SeekI(0);
+            std::auto_ptr<wxMemoryOutputStream> buffer(new wxMemoryOutputStream(block.data().get(), block.datasize()));
+            buffer->Write(*filestream);
+        } else {
+            throw RCT3Exception(wxString::Format(_("File '%s' in data tag not found."), fname.GetFullPath().c_str()));
+        }
+    } else if (type.IsSameAs(wxT("binary"))) {
+        wxString tex = node->GetNodeContent();
+        MakeVariable(tex);
+
+        unsigned long outlen = tex.Length();
+        boost::shared_array<unsigned char> data(new unsigned char[tex.Length()]);
+        int bret = base64_decode(reinterpret_cast<const unsigned char*>(static_cast<const char*>(tex.ToAscii())), tex.Length(), data.get(), &outlen);
+        switch (bret) {
+            case CRYPT_OK:
+                break;
+            case CRYPT_INVALID_PACKET:
+                throw RCT3Exception(wxString(_("Decoding error in data tag ")) + ref);
+            case CRYPT_BUFFER_OVERFLOW:
+                throw RCT3Exception(wxString(_("Buffer overflow decoding tex tag ")) + ref);
+            default:
+                throw RCT3Exception(wxString(_("Unknown base64 error decoding tex tag ")) + ref);
+        }
+        block.datasize(outlen);
+        memcpy(block.data().get(), data.get(), outlen);
+    } else if (type.IsSameAs(wxT("data"))) {
+        wxString tex = node->GetNodeContent();
+        MakeVariable(tex);
+
+        const wxCharBuffer buf = tex.mb_str(wxConvUTF8);
+        block.datasize(strlen(buf.data()));
+        memcpy(block.data().get(), buf.data(), strlen(buf.data()));
+
+    } else {
+        throw RCT3Exception(wxString::Format(_("Unknown type '%s' in data tag %s."), type.c_str(), ref.c_str()));
+    }
+
+    return block;
+
+}
+
+cRawDatablock cRawParser::GetDataBlock(const wxString& ref, wxXmlNode* node) {
+    wxString type = ParseString(node, RAWXML_DATA, wxT("type"), NULL);
+    if (type.IsSameAs(wxT("reference"))) {
+        wxString guid = node->GetNodeContent();
+        MakeVariable(guid);
+        guid.MakeUpper();
+        wxFSFileName input;
+        wxXmlNode* refd = FindDataReference(guid, input);
+        if (!refd)
+            throw RCT3Exception(wxString::Format(_("GUID '%s' not found in data tag %s."), guid.c_str(), ref.c_str()));
+        return MakeDataBlock(ref, input, node, refd);
+    } else {
+        return MakeDataBlock(ref, m_input, node);
     }
 }
 

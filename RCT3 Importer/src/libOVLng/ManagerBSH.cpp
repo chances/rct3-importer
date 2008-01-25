@@ -141,7 +141,7 @@ void cBoneShape2::Fill(BoneShape2* bs2, unsigned long* vert, unsigned long* ind)
 }
 
 void ovlBSHManager::AddModel(const cBoneShape1& item) {
-    DUMP_LOG("Trace: ovlBSHManager::Make(%s)", UNISTR(item.name.c_str()));
+    DUMP_LOG("Trace: ovlBSHManager::AddModel(%s)", UNISTR(item.name.c_str()));
     Check("ovlBSHManager::AddModel");
     if (item.name == "")
         throw EOvl("ovlBSHManager::AddModel called without name");

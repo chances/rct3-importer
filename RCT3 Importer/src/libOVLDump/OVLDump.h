@@ -68,6 +68,7 @@ protected:
     map<unsigned long, void*> m_targets;
     map<void*, string> m_symbolreferences;
     map<string, map<string, OvlRelocation*> > m_structmap[2];
+    map<unsigned long, OvlFlicData> m_flics;
 
 
     void Init();
@@ -78,6 +79,7 @@ protected:
     void MakeSymbols(cOvlType type);
     void MakeLoaders(cOvlType type);
     void MakeStructureSizes(cOvlType type);
+    void MakeFlics(cOvlType type);
 public:
     cOVLDump() {Init();};
     virtual ~cOVLDump();

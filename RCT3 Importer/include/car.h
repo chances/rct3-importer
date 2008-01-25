@@ -18,7 +18,7 @@ struct RideCar
 {
     char*	     	    name;			// Possibly a language lookup
     char*		        username;
-    unsigned long		flags;			// Possibly boolean flags. Second byte seems to signify stricture version
+    unsigned long		flags;			// Possibly boolean flags. Second byte seems to signify structure version
     SceneryItemVisual*  svd;
     float		        weight1;	    // Probably weight. Can be zero (rot mouse)
     SceneryItemVisual*  seatsvd;        // If seats move in some way (rotating mouse, multidimensional)
@@ -83,7 +83,7 @@ struct RideCar2
 {
     char*	     	    name;			// Possibly a language lookup
     char*		        username;
-    unsigned long		flags;			// Possibly boolean flags. Second byte seems to signify stricture version
+    unsigned long		flags;			// Possibly boolean flags. Second byte seems to signify structure version
     SceneryItemVisual*  svd;
     float		        weight1;	    // Probably weight. Can be zero (rot mouse)
     SceneryItemVisual*  seatsvd;        // If seats move in some way (rotating mouse, multidimensional)

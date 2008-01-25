@@ -29,9 +29,12 @@
 #ifndef MANAGERFLIC_H_INCLUDED
 #define MANAGERFLIC_H_INCLUDED
 
-#include <string>
+#include <boost/shared_array.hpp>
 #include <map>
+#include <set>
+#include <string>
 
+#include "ManagerBTBL.h"
 #include "ManagerOVL.h"
 
 #include "icontexture.h"
@@ -54,6 +57,7 @@ FlicMipHeader.
 
 */
 
+/*
 struct FlicInternal {
     FlicHeader header;
     FlicStruct flic;
@@ -61,7 +65,46 @@ struct FlicInternal {
     FlicStruct** madep1;
     FlicStruct* madep2;
 };
+*/
 
+class ovlFLICManager: public ovlOVLManager {
+public:
+    static const char* LOADER;
+    static const char* NAME;
+    static const char* TAG;
+    unsigned long TYPE; // Not const, neither static!
+private:
+    map<unsigned long, cTexture> m_items;
+    map<string, unsigned long> m_itemmap;
+    ovlBTBLManager* m_btbl;
+public:
+    ovlFLICManager(): ovlOVLManager(), m_btbl(NULL) {
+        m_deferable = true;
+    };
+
+    virtual void Init(cOvl* ovl);
+
+    void AddTexture(const cTexture& item);
+
+    FlicStruct** GetPointer1(const string& name);
+    FlicStruct* GetPointer2(const string& name);
+
+    virtual void Make(cOvlInfo* info);
+
+    virtual const char* Loader() const {
+        return LOADER;
+    };
+    virtual const char* Name() const {
+        return NAME;
+    };
+    virtual const char* Tag() const {
+        return TAG;
+    };
+    virtual const unsigned long Type() const {
+        return TYPE;
+    };
+};
+/*
 class ovlFLICManager: public ovlOVLManager {
 public:
     static const char* LOADER;
@@ -97,5 +140,5 @@ public:
         return TYPE;
     };
 };
-
+*/
 #endif

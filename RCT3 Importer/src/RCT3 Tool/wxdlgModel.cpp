@@ -830,10 +830,10 @@ public:
                 wxString s;
                 switch (m_value->place) {
                     case 1:
-                        s = _("see-through");
+                        s = _("transparent");
                         break;
                     case 2:
-                        s = _("glass");
+                        s = _("glassy");
                         break;
                     default:
                         s = _("solid");

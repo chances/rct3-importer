@@ -111,6 +111,8 @@ void cOVLDump::MakeMoreInfo() {
     // Try to deduce structure sizes
     MakeStructureSizes(OVLT_COMMON);
     MakeStructureSizes(OVLT_UNIQUE);
+    MakeFlics(OVLT_COMMON);
+    MakeFlics(OVLT_UNIQUE);
 }
 
 void cOVLDump::Save() {
@@ -600,6 +602,118 @@ void cOVLDump::MakeStructureSizes(cOvlType type) {
         }
     }
 }
+
+void cOVLDump::MakeFlics(cOvlType type) {
+    unsigned long bmptablecount = 0;
+    FlicHeader* bmptableheaders = NULL;
+    unsigned char* bmptabledata = NULL;
+
+    unsigned long type_flic = -1;
+    unsigned long type_btbl = -1;
+    for (unsigned long i = 0; i < m_loaderheaders[type].size(); ++i) {
+        if (m_loaderheaders[type][i].tag == "btbl")
+            type_btbl = i;
+        if (m_loaderheaders[type][i].tag == "flic")
+            type_flic = i;
+    }
+    if (type_flic == -1)
+        return;
+    unsigned long c_flic = 0;
+    long bmptbl_index = -1;
+    unsigned long flic_index = 0;
+    map<string, map<string, OvlRelocation*> >::iterator i_tagC = m_structmap[OVLT_COMMON].find("tex");
+    map<string, map<string, OvlRelocation*> >::iterator i_tagU = m_structmap[OVLT_UNIQUE].find("tex");
+    vector<unsigned char *> datas;
+    for (std::vector<OvlLoader>::iterator it = m_loaders[type].begin(); it != m_loaders[type].end(); ++it) {
+        if (it->loadertype == type_btbl) {
+            BmpTbl* btp = reinterpret_cast<BmpTbl*>(it->data->target);
+            bmptablecount = btp->count;
+            unsigned char* tmphead = it->extradata[0].data;
+            tmphead += 8;
+            bmptableheaders = reinterpret_cast<FlicHeader*>(tmphead);
+            bmptabledata = it->extradata[1].data;
+            bmptbl_index++;
+            flic_index = 0;
+            datas.clear();
+        }
+        if (it->loadertype == type_flic) {
+            OvlFlicData fd;
+            fd.bmptable = bmptbl_index;
+            fd.index = flic_index;
+            flic_index++;
+
+            // Find texture
+            if (i_tagC != m_structmap[OVLT_COMMON].end()) {
+                for (map<string, OvlRelocation*>::iterator i_tex = i_tagC->second.begin(); i_tex != i_tagC->second.end(); ++i_tex) {
+                    TextureStruct* ts = reinterpret_cast<TextureStruct*>(i_tex->second->target);
+                    if (ts->unk9) {
+                        TextureStruct2* ts2 = reinterpret_cast<TextureStruct2*>(m_targets[reinterpret_cast<unsigned long>(ts->ts2)]);
+                        if (it->data->targetrelocation == reinterpret_cast<unsigned long>(ts2->Flic)) {
+                            fd.texture = i_tex->first;
+                        }
+                    }
+                }
+            }
+            if (i_tagU != m_structmap[OVLT_UNIQUE].end()) {
+                for (map<string, OvlRelocation*>::iterator i_tex = i_tagU->second.begin(); i_tex != i_tagU->second.end(); ++i_tex) {
+                    TextureStruct* ts = reinterpret_cast<TextureStruct*>(i_tex->second->target);
+                    if (ts->unk9) {
+                        TextureStruct2* ts2 = reinterpret_cast<TextureStruct2*>(m_targets[reinterpret_cast<unsigned long>(ts->ts2)]);
+                        if (it->data->targetrelocation == reinterpret_cast<unsigned long>(ts2->Flic)) {
+                            fd.texture = i_tex->first;
+                        }
+                    }
+                }
+            }
+            if (bmptablecount) {
+                fd.bmpindex = *reinterpret_cast<unsigned long*>(it->extradata[0].data);
+                fd.fh = bmptableheaders[fd.bmpindex];
+                if (fd.bmpindex != datas.size()) {
+                    fd.data = datas[fd.bmpindex];
+                } else {
+                    datas.push_back(bmptabledata);
+                    fd.data = bmptabledata;
+                    unsigned long w = fd.fh.Width;
+                    unsigned long h = fd.fh.Height;
+                    for (unsigned long i = 0; i < fd.fh.Mipcount; ++i) {
+                        switch (fd.fh.Format) {
+                            case 0x02: // 32-bit RGBA
+                                bmptabledata += w * h * 4;
+                                break;
+                            case 0x12: // Dxt1
+                                bmptabledata += ((w * h)>=16)?((w * h) / 2):8;
+                                break;
+                            case 0x13: // Dxt3
+                            case 0x14: // Dxt5
+                                bmptabledata += ((w * h)>=16)?(w * h):16;
+                                break;
+                            default: {
+                                stringstream str;
+                                str << "Unknown texture format: " << fd.fh.Format;
+                                throw EOvlD(str.str());
+                            }
+                        }
+                        w = w / 2;
+                        h = h / 2;
+    //                    if ((w == 2) || (h == 2))
+    //                        break;
+                    }
+                }
+
+                m_flics[it->data->targetrelocation] = fd;
+            } else {
+                unsigned char* tmpdata = it->extradata[0].data;
+                fd.fh = *reinterpret_cast<FlicHeader*>(tmpdata);
+                tmpdata += sizeof(FlicHeader);
+                tmpdata += sizeof(FlicMipHeader);
+                fd.data = tmpdata;
+
+                m_flics[it->data->targetrelocation] = fd;
+            }
+        }
+    }
+}
+
 
 unsigned long cOVLDump::GetBlockCount(cOvlType type, int file) {
     return m_fileblocks[type][file].count;

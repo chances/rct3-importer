@@ -46,18 +46,18 @@ void cRawParser::Parse(wxXmlNode* node) {
                 wxFSFileName filename = incfile;
                 wxFSFileName filenamebake = incfile;
                 if (!filename.IsAbsolute()) {
-                    filename.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR));
-                    filenamebake.MakeAbsolute(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR));
+                    filename.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
+                    filenamebake.MakeAbsolute(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
                 } else {
-                    filenamebake.MakeRelativeTo(m_input.GetPath(wxPATH_GET_SEPARATOR));
-                    filenamebake.MakeAbsolute(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR));
+                    filenamebake.MakeRelativeTo(m_input.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
+                    filenamebake.MakeAbsolute(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
                 }
 
                 if (m_mode == MODE_BAKE) {
                     if (m_bake.Index(RAWBAKE_XML) == wxNOT_FOUND) {
                         wxString newfile;
                         if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
-                            filename.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR));
+                            filename.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
                         }
                         newfile = filename.GetFullPath();
                         child->DeleteProperty(wxT("include"));
@@ -101,6 +101,7 @@ void cRawParser::Parse(wxXmlNode* node) {
             wxString incfile = child->GetPropVal(wxT("include"), wxT(""));
 
             cRawParser c_raw;
+            c_raw.SetParent(this);
             c_raw.SetPrefix(m_prefix);
             c_raw.SetOptions(m_mode, m_dryrun);
             c_raw.PassBakeStructures(m_bake);
@@ -115,13 +116,13 @@ void cRawParser::Parse(wxXmlNode* node) {
 
                 wxFSFileName filename = incfile;
                 if (!filename.IsAbsolute())
-                    filename.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR));
+                    filename.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
 
                 if (m_mode == MODE_BAKE) {
                     if (m_bake.Index(RAWBAKE_XML) == wxNOT_FOUND) {
                         wxString newfile;
                         if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
-                            filename.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR));
+                            filename.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
                         }
                         newfile = filename.GetFullPath();
                         child->DeleteProperty(wxT("include"));
@@ -154,6 +155,10 @@ void cRawParser::Parse(wxXmlNode* node) {
             for (std::vector<wxFileName>::const_iterator it = c_raw.GetNewFiles().begin(); it != c_raw.GetNewFiles().end(); ++it) {
                 m_newfiles.push_back(*it);
             }
+        } else if (child->GetName() == RAWXML_DATAREF) {
+            wxString guid = ParseString(child, RAWXML_DATAREF, wxT("guid"), NULL);
+            guid.MakeUpper();
+            m_datareferences[guid] = child;
         } else if (child->GetName() == RAWXML_SET) {
             ParseSet(child);
         } else if (child->GetName() == RAWXML_UNSET) {
@@ -317,7 +322,7 @@ void cRawParser::Parse(wxXmlNode* node) {
                 wxFSFileName wfile = temp;
 
                 if (!wfile.IsAbsolute())
-                    wfile.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR));
+                    wfile.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
 
                 wxFileSystem fs;
                 auto_ptr<wxFSFile> fsfile(fs.OpenFile(wfile.GetFullPath()));
@@ -337,7 +342,7 @@ void cRawParser::Parse(wxXmlNode* node) {
                     if (m_bake.Index(RAWXML_WRITE) == wxNOT_FOUND) {
                         if (!filevar) {
                             if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
-                                wfile.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR));
+                                wfile.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
                             }
                             delete child->GetChildren();
                             child->SetChildren(new wxXmlNode(NULL, wxXML_TEXT_NODE, wxT(""), wfile.GetFullPath()));
@@ -409,14 +414,15 @@ void cRawParser::Parse(wxXmlNode* node) {
             bool filenamevar;
             wxFSFileName filename = ParseString(child, RAWXML_IMPORT, wxT("file"), &filenamevar);
             wxString name = child->GetPropVal(wxT("name"), wxT(""));
-            if (!filename.IsAbsolute())
-                filename.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR));
+            if (!filename.IsAbsolute()) {
+                filename.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
+            }
 
             if (m_mode == MODE_BAKE) {
                 if (m_bake.Index(RAWXML_IMPORT) == wxNOT_FOUND) {
                     if (!filenamevar) {
                         if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
-                            filename.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR));
+                            filename.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
                         }
                         child->DeleteProperty(wxT("file"));
                         child->AddProperty(wxT("file"), filename.GetFullPath());
@@ -453,6 +459,9 @@ void cRawParser::Parse(wxXmlNode* node) {
             ParseBAN(child);
         } else if (child->GetName() == RAWXML_BSH) {
             ParseBSH(child);
+        } else if (child->GetName() == RAWXML_BTBL) {
+            BAKE_SKIP(child);
+            m_ovl.GetManager<ovlBTBLManager>();
         } else if (child->GetName() == RAWXML_CED) {
             BAKE_SKIP(child);
             ParseCED(child);

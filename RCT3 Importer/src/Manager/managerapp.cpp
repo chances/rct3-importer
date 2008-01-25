@@ -110,7 +110,7 @@ public:
             }
         }
 
-        temp.MakeRelativeTo(m_root.GetPath(wxPATH_GET_SEPARATOR));
+        temp.MakeRelativeTo(m_root.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
         m_buf.Format("insert into vanilla values ('%q', '%q', %d, %lld, %ld);", temp.GetFullPath().mb_str(wxConvUTF8).data(), shastr.mb_str(wxConvUTF8).data(), modtime, size, ovlversion);
         m_db->ExecuteUpdate(m_buf);
         m_pd.Pulse(temp.GetFullPath());
@@ -138,12 +138,12 @@ bool ManagerApp::OnInit() {
 
     wxBZipClassFactory cf;
 
-    m_appdir = wxFileName(argv[0]).GetPath(wxPATH_GET_SEPARATOR);
+    m_appdir = wxFileName(argv[0]).GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME);
 
-    wxFileConfig::Set(new wxFileConfig(wxT("RCT3 Manager"), wxT("Freeware"), m_appdir.GetPath(wxPATH_GET_SEPARATOR)+wxT("RCT3 Manager.conf"), wxT(""), wxCONFIG_USE_LOCAL_FILE));
+    wxFileConfig::Set(new wxFileConfig(wxT("RCT3 Manager"), wxT("Freeware"), m_appdir.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME)+wxT("RCT3 Manager.conf"), wxT(""), wxCONFIG_USE_LOCAL_FILE));
 
     // *&^$% GraphicsMagick
-    wxString appenv = wxT("MAGICK_CONFIGURE_PATH=") + m_appdir.GetPath(wxPATH_GET_SEPARATOR);
+    wxString appenv = wxT("MAGICK_CONFIGURE_PATH=") + m_appdir.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME);
     putenv(appenv.mb_str(wxConvLocal));
 
     if (!CheckInstallDir())
@@ -257,7 +257,7 @@ bool ManagerApp::CheckManagerDB() {
     int version_packagelist_warnings = DB_MANAGER_VERSION_PACKAGELIST_WARNINGS;
     wxSQLite3StatementBuffer temp;
 
-    m_managerdb.Open(m_appdir.GetPath(wxPATH_GET_SEPARATOR) + wxT("manager.db"));
+    m_managerdb.Open(m_appdir.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME) + wxT("manager.db"));
     if (!m_managerdb.TableExists(wxT("versions"))) {
         m_managerdb.ExecuteUpdate(wxT("create table versions(tablename char[30], version int);"));
         temp.Format("insert into versions values ('groups', %d);", version_groups);
@@ -434,7 +434,7 @@ bool ManagerApp::CheckFilesDB() {
     int version_settings = DB_FILES_VERSION_SETTINGS;
     wxSQLite3StatementBuffer temp;
 
-    m_filesdb.Open(m_appdir.GetPath(wxPATH_GET_SEPARATOR) + wxT("files.db"));
+    m_filesdb.Open(m_appdir.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME) + wxT("files.db"));
     if (!m_filesdb.TableExists(wxT("versions"))) {
         m_filesdb.ExecuteUpdate(wxT("create table versions(tablename char[20], version int);"));
         temp.Format("insert into versions values ('vanilla', %d);", version_vanilla);
@@ -475,7 +475,7 @@ bool ManagerApp::ScanRCT3Directory() {
     m_filesdb.ExecuteUpdate(wxT("delete from vanilla;"));
 
     wxDateTime start = wxDateTime::Now();
-    wxDir rct3dir(m_installdir.GetPath(wxPATH_GET_SEPARATOR));
+    wxDir rct3dir(m_installdir.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
     wxRCT3Filler rct3fill(&m_filesdb, rct3dir);
     rct3dir.Traverse(rct3fill);
     wxTimeSpan took = wxDateTime::Now().Subtract(start);

@@ -137,9 +137,9 @@ public:
 	    unk12 = 2;
 	    unk13 = 0;
 	}
-    void Fill(Attraction* att); // Automatically casts to Attraction2 depending on type
-    void Fill(Stall* sta);
-    void Fill(SpecialAttraction* sp);
+    void Fill(AttractionA* att); // Automatically casts to Attraction2 depending on type
+    void Fill(StallA* sta);
+    void Fill(SpecialAttractionA* sp);
 };
 
 // "Fake" classes for consistent access to file tags

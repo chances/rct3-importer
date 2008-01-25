@@ -46,6 +46,12 @@ friend class wxGXImageCacheEntry;
 public:
 #ifdef CACHE_GXIMAGE
     explicit wxGXImage(bool docache = true) {Init(docache);}
+    explicit wxGXImage(unsigned int width, unsigned int height, bool docache = false) {
+        Init(docache);
+        m_image = Magick::Image(Magick::Geometry(width, height), Magick::Color(0, 0, 0));
+        m_valid = true;
+    }
+
     wxGXImage(const wxString& filename, bool docache = true) {
         Init(docache);
         FromFileSystem(filename);
@@ -62,9 +68,14 @@ public:
  #endif
 #else
     wxGXImage() {Init();}
+    wxGXImage(unsigned int width, unsigned int height) {
+        Init();
+        m_image = Magick::Image(Magick::Geometry(width, height), Magick::Color(0, 0, 0));
+        m_valid = true;
+    }
     wxGXImage(const wxString& filename) {
         Init();
-        FromFile(filename);
+        FromFileSystem(filename);
     }
  #if wxUSE_IMAGE
     wxGXImage(const wxImage& image) {
@@ -108,6 +119,14 @@ public:
 #endif
     void FromFileSystem(const wxString& filename);
 
+    void FromData(int width, int height, const char* channelmap, const void* data);
+    void GetData(const char* channelmap, void* data, bool swapalpha = false);
+    void FromPaletteData(int width, int height, const void* palette, const void* data);
+
+    bool SaveFile(const wxString& name, int type);
+    bool SaveFile(const wxString& name, const wxString& magick);
+    bool SaveFile(const wxString& name);
+
     bool Ok() const {
         return m_valid;
     }
@@ -132,14 +151,81 @@ public:
     }
 
     void GetAlpha(unsigned char* data) const;
+    void SetAlpha(const void* data);
+    void InvertAlpha();
     void GetGrayscale(unsigned char* data) const;
     void GetAs8bit(unsigned char* data, unsigned char* palette) const;
     void GetAs8bitForced(unsigned char* data, unsigned char* palette, bool special = false) const;
 
     // GraphicsMagick++ functions
+/*
+    // FloodFill doesn't work for some reason -.-
+    void colorFuzz(double _fuzz) { m_image.colorFuzz(_fuzz); }
+    double colorFuzz() const { return m_image.colorFuzz(); }
+    void floodFillTexture(unsigned int x, unsigned int y, const wxGXImage& texture) {
+        m_image.floodFillTexture(x, y, texture.m_image);
+    }
+*/
     void flip() {m_image.flip();}
     void flop() {m_image.flop();}
     Magick::ImageType type() {return m_image.type();}
+    void read(const Magick::Blob& blob) {
+#ifdef CACHE_GXIMAGE
+        m_cache = false;
+#endif
+        m_valid = true;
+        try {
+            m_image.read(blob);
+        } catch(...) {
+            m_valid = false;
+            throw;
+        }
+    }
+    void read(const Magick::Blob& blob, std::string magick) {
+#ifdef CACHE_GXIMAGE
+        m_cache = false;
+#endif
+        m_valid = true;
+        try {
+            m_image.magick(magick);
+            m_image.read(blob);
+        } catch(...) {
+            m_valid = false;
+            throw;
+        }
+    }
+    void read(const void* blob, unsigned long size, std::string magick = "") {
+        if (magick == "")
+            read(Magick::Blob(blob, size));
+        else
+            read(Magick::Blob(blob, size), magick);
+    }
+    void write(Magick::Blob& blob) {m_image.write(&blob);}
+    void write(Magick::Blob& blob, std::string magick) {m_image.write(&blob, magick);}
+
+    // Operators
+    wxGXImage& operator+= (const wxGXImage& rhs) {
+        m_image.composite(rhs.m_image, (m_image.columns() - rhs.m_image.columns())/2, (m_image.rows() - rhs.m_image.rows())/2, Magick::OverCompositeOp);
+        return *this;
+    }
+    wxGXImage operator+ (const wxGXImage& rhs) const {
+        wxGXImage ret = *this;
+        ret += rhs;
+        return ret;
+    }
+    wxGXImage& operator*= (const wxGXImage& rhs) {
+        for (unsigned int x = 0; x < m_image.columns(); x += rhs.m_image.columns()) {
+            for (unsigned int y = 0; y < m_image.rows(); y += rhs.m_image.rows()) {
+                m_image.composite(rhs.m_image, x, y, Magick::OverCompositeOp);
+            }
+        }
+        return *this;
+    }
+    wxGXImage operator* (const wxGXImage& rhs) const {
+        wxGXImage ret = *this;
+        ret *= rhs;
+        return ret;
+    }
 
 #ifdef USE_SQUISH
     const int GetDxtBufferSize(const int dxt) const {
@@ -152,6 +238,7 @@ public:
         m_dxtCompressionMethod = method;
     }
     void DxtCompress(void* buffer, const int dxt);
+    void FromDxtCompressed(int width, int height, const void* buffer, const int dxt);
 #endif
 
 #ifdef CACHE_GXIMAGE

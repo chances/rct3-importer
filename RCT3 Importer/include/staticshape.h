@@ -31,12 +31,22 @@ struct Triangle {
 };
 
 struct StaticShape2 {
-	unsigned long unk1; //always 0xFFFFFFFFF
-	FlexiTextureInfoStruct *fts; //is 0 in disk files
-	unsigned long *TextureData; //is 0 in disk files
-	unsigned long PlaceTexturing; //0 = dont see texturing on things when being placed, 1 = see texturing on things when being placed
-	unsigned long textureflags;
-	unsigned long sides; //seen values of 3 or 1 for this, 3 is more common
+	unsigned long unk1; ///< always 0xFFFFFFFFF
+	FlexiTextureInfoStruct *fts; ///< is 0 in disk files
+	unsigned long *TextureData; ///< is 0 in disk files
+	unsigned long PlaceTexturing; ///< 0 = dont see texturing on things when being placed, 1 = see texturing on things when being placed
+	unsigned long textureflags; ///< Texture flags
+                                /**<
+                                 * Values:
+                                 *   - 0: None
+                                 *   - 12: Scrolling Sign (SIOpaqueUnlit)
+                                 *   - 20: Running Water (SIAlpha)
+                                 *   - 12288: Terrain (useterraintexture/SIOpaque)
+                                 *   - 20480: Cliff (useclifftexture/SIOpaque)
+                                 *   - 32788: Billboard (UseAdTexture/SIOpaque)
+                                 *   - 32768: Animated Billboard (UseAdTexture/SIOpaque)
+                                 */
+	unsigned long sides; ///< seen values of 3 or 1 for this, 3 is more common
 	unsigned long VertexCount;
 	unsigned long IndexCount;
 	VERTEX *Vertexes;

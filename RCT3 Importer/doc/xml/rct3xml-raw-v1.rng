@@ -5,9 +5,11 @@
          xmlns:ns="http://relaxng.org/ns/structure/1.0"
          xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">
   <include href="rct3xml-shared-v1.rng"></include>
+  <include href="rct3xml-installer-shared-v1.rng"></include>
   <start>
     <choice>
       <ref name="rawovl"></ref>
+      <ref name="section"></ref>
       <ref name="variables"></ref>
     </choice>
   </start>
@@ -139,6 +141,7 @@
       <ref name="set"></ref>
       <ref name="unset"></ref>
       <ref name="check"></ref>
+      <ref name="dataref"></ref>
     </choice>
   </define>
   <define name="ovltags">
@@ -150,6 +153,7 @@
       <ref name="write"></ref>
       <ref name="import"></ref>
       <ref name="ban"></ref>
+      <ref name="btbl"></ref>
       <ref name="bsh"></ref>
       <ref name="ced"></ref>
       <ref name="chg"></ref>
@@ -168,6 +172,86 @@
       <ref name="reference"></ref>
       <ref name="symbol"></ref>
     </choice>
+  </define>
+  <define name="data">
+    <element name="data">
+      <choice>
+        <group>
+          <attribute name="type">
+            <value type="string">file</value>
+          </attribute>
+          <optional>
+            <attribute name="datatype">
+              <data type="string"></data>
+            </attribute>
+          </optional>
+          <data type="string"></data>
+        </group>
+        <group>
+          <attribute name="type">
+            <value type="string">data</value>
+          </attribute>
+          <attribute name="datatype">
+            <data type="string"></data>
+          </attribute>
+          <data type="string"></data>
+        </group>
+        <group>
+          <attribute name="type">
+            <value type="string">binary</value>
+          </attribute>
+          <attribute name="datatype">
+            <data type="string"></data>
+          </attribute>
+          <data type="base64Binary"></data>
+        </group>
+        <group>
+          <attribute name="type">
+            <value type="string">reference</value>
+          </attribute>
+          <ref name="guid"></ref>
+        </group>
+      </choice>
+    </element>
+  </define>
+  <define name="dataref">
+    <element name="dataref">
+      <ref name="baseattrs"></ref>
+      <attribute name="guid">
+        <ref name="guid"></ref>
+      </attribute>
+      <choice>
+        <group>
+          <attribute name="type">
+            <value type="string">file</value>
+          </attribute>
+          <optional>
+            <attribute name="datatype">
+              <data type="string"></data>
+            </attribute>
+          </optional>
+          <data type="string"></data>
+        </group>
+        <group>
+          <attribute name="type">
+            <value type="string">data</value>
+          </attribute>
+          <attribute name="datatype">
+            <data type="string"></data>
+          </attribute>
+          <data type="string"></data>
+        </group>
+        <group>
+          <attribute name="type">
+            <value type="string">binary</value>
+          </attribute>
+          <attribute name="datatype">
+            <data type="string"></data>
+          </attribute>
+          <data type="base64Binary"></data>
+        </group>
+      </choice>
+    </element>
   </define>
   <div>
     <a:documentation>Structure tags</a:documentation>
@@ -499,6 +583,11 @@
         </element>
       </define>
     </div>
+    <define name="btbl">
+      <element name="btbl">
+        <ref name="baseattrs"></ref>
+      </element>
+    </define>
     <div>
       <a:documentation>bsh tags</a:documentation>
       <define name="bsh">
@@ -1565,16 +1654,28 @@
           <attribute name="name">
             <data type="string"></data>
           </attribute>
+          <optional>
+            <attribute name="cyclic">
+              <data type="boolean"></data>
+            </attribute>
+          </optional>
           <interleave>
             <oneOrMore>
               <ref name="splnode"></ref>
             </oneOrMore>
-            <oneOrMore>
-              <ref name="spllength"></ref>
-            </oneOrMore>
-            <oneOrMore>
+            <choice>
+              <optional>
+                <attribute name="autolengthres">
+                  <data type="unsignedInt"></data>
+                </attribute>
+              </optional>
+              <zeroOrMore>
+                <ref name="spllength"></ref>
+              </zeroOrMore>
+            </choice>
+            <zeroOrMore>
               <ref name="spldata"></ref>
-            </oneOrMore>
+            </zeroOrMore>
           </interleave>
         </element>
       </define>
@@ -1894,20 +1995,37 @@
         <attribute name="name">
           <data type="string"></data>
         </attribute>
+        <optional>
+          <attribute name="format">
+            <choice>
+              <value>2</value>
+              <value>18</value>
+              <value>19</value>
+              <value>20</value>
+              <data type="unsignedInt"></data>
+            </choice>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="txs">
+            <ref name="TXSReference"></ref>
+          </attribute>
+        </optional>
+        <optional>
+          <attribute name="mips">
+            <data type="unsignedInt"></data>
+          </attribute>
+        </optional>
         <oneOrMore>
-          <choice>
-            <element name="texturefile">
-              <ref name="baseattrs"></ref>
-              <data type="string"></data>
-            </element>
-            <element name="texturedata">
+          <element name="texture">
+            <ref name="baseattrs"></ref>
+            <optional>
               <attribute name="dimension">
                 <ref name="ovlTextureDimension"></ref>
               </attribute>
-              <ref name="baseattrs"></ref>
-              <data type="base64Binary"></data>
-            </element>
-          </choice>
+            </optional>
+            <ref name="data"></ref>
+          </element>
         </oneOrMore>
       </element>
     </define>

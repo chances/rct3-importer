@@ -121,7 +121,7 @@ public:
     bool IsAbsolute(wxPathFormat format = wxPATH_NATIVE) const;
     bool IsRelative(wxPathFormat format = wxPATH_NATIVE) const
         { return !IsAbsolute(format); }
-    bool MakeAbsolute(const wxString& cwd);
+    bool MakeAbsolute(const wxString& cwd = wxEmptyString);
     bool MakeRelativeTo(const wxString& pathBase);
 
     wxString GetExt() const                     { return GetLastComponent().GetExt(); }

@@ -31,6 +31,7 @@
 
 #include <wx/filename.h>
 #include <wx/xml/xml.h>
+#include <boost/shared_array.hpp>
 
 #include "vertex.h"
 
@@ -43,6 +44,7 @@
 #define RAWXML_SET       wxT("set")
 #define RAWXML_UNSET     wxT("unset")
 #define RAWXML_VARIABLES wxT("variables")
+#define RAWXML_DATAREF   wxT("dataref")
 
 WX_DECLARE_STRING_HASH_MAP(wxString, cRawParserVars);
 
@@ -52,11 +54,36 @@ enum eRawOvlMode {
     MODE_BAKE = 2
 };
 
+class cRawDatablock {
+private:
+    boost::shared_array<unsigned char> m_data;
+    wxString m_datatype;
+    unsigned long m_datasize;
+    wxXmlNode* m_node;
+    wxXmlNode* m_refnode;
+    wxXmlNode* m_insertbefore;
+public:
+    cRawDatablock(wxXmlNode* node, wxXmlNode* refnode, wxXmlNode* insertbefore):
+        m_datasize(0), m_node(node), m_refnode(refnode), m_insertbefore(insertbefore) {};
+
+    unsigned long datasize() const { return m_datasize; };
+    void datasize(unsigned long _datasize) {
+        m_data = boost::shared_array<unsigned char>(new unsigned char[_datasize]);
+        m_datasize = _datasize;
+    }
+    const boost::shared_array<unsigned char>& data() const { return m_data; }
+    boost::shared_array<unsigned char>& data() { return m_data; }
+    const wxString& datatype() const { return m_datatype; }
+    void datatype(const wxString& _datatype) {
+        m_datatype = _datatype;
+    }
+};
+
 class cRawParser {
 private:
     wxFileName m_output;
     wxFileName m_outputbasedir;
-    wxFSFileName m_input;  // For path relativity
+    wxFSFileName m_input;  ///< For path relativity
     wxFileName m_userdir;
 //    wxSortedArrayString m_options;
     wxSortedArrayString m_bake;
@@ -69,6 +96,10 @@ private:
     bool m_dryrun;
     std::vector<wxFileName> m_modifiedfiles;
     std::vector<wxFileName> m_newfiles;
+
+    cRawParser* m_parent;
+    wxXmlNode* m_firstchild; ///< For making new data references.
+    std::map<wxString, wxXmlNode*> m_datareferences;
 
     cOvl m_ovl;
 
@@ -117,9 +148,14 @@ private:
     void ParseVariables(wxXmlNode* node, bool command = false, const wxString& path = wxT(""));
     void Parse(wxXmlNode* node);
 
+    wxXmlNode* FindDataReference(const wxString& guid, wxFSFileName& input) const;
+    cRawDatablock MakeDataBlock(const wxString& ref, const wxFSFileName& input, wxXmlNode* node, wxXmlNode* refnode = NULL);
+    cRawDatablock GetDataBlock(const wxString& ref, wxXmlNode* node);
+
     void Init() {
         m_mode = MODE_COMPILE;
         m_dryrun = false;
+        m_parent = NULL;
     }
 public:
     cRawParser(){
@@ -164,6 +200,9 @@ public:
     }
     void SetUserDir(const wxFileName& userdir) {
         m_userdir = userdir;
+    }
+    void SetParent(cRawParser* parent) {
+        m_parent = parent;
     }
 
     static void FillAllBakes(wxSortedArrayString& tofill);

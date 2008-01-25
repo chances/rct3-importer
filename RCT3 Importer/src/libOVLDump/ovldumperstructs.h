@@ -33,6 +33,7 @@
 #include <string>
 #include <vector>
 
+#include "icontexture.h"
 #include "ovlstructs.h"
 
 using namespace std;
@@ -235,6 +236,15 @@ struct OvlStringTableComp {
             return lhs.entry<rhs.entry;
         return lhs.reloffset<rhs.fileoffset;
     }
+};
+
+struct OvlFlicData {
+    FlicHeader fh;
+    long bmptable;
+    unsigned long index;
+    unsigned long bmpindex;
+    unsigned char* data;
+    std::string texture;
 };
 
 

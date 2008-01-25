@@ -13,6 +13,7 @@
 
 #include "guiicon.h"
 #include "sceneryrevised.h"
+#include "attraction.h"
 
 #include "spline.h"
 
@@ -20,45 +21,6 @@ struct StallItem
 {
 	char *CID;
 	unsigned long cost;
-};
-struct Attraction
-{
-	unsigned long type; // second byte 02
-	wchar_t* Name;
-	wchar_t* Description;
-	GUISkinItem *GSI;
-	unsigned long unk2;
-	long unk3;
-	unsigned long unk4;
-	unsigned long unk5;
-	unsigned long unk6;
-	Spline* spline;             // A loop on flat rides
-	unsigned long pathcount;    // Count for the next struct
-	Spline** paths;             // splines for peep paths. Last is the mechanic's path
-	unsigned long unk9;
-	long unk10;
-	unsigned long unk11;
-	unsigned long unk12;
-};
-struct Attraction2
-{
-	unsigned long type; // second byte 03
-	wchar_t* Name;
-	wchar_t* Description;
-	GUISkinItem *GSI;
-	unsigned long unk2;
-	long unk3;
-	unsigned long unk4;
-	unsigned long unk5;
-	unsigned long unk6;
-	Spline* spline;             // A loop on flat rides
-	unsigned long pathcount;    // Count for the next struct
-	Spline** paths;             // splines for peep paths. Last is the mechanic's path
-	unsigned long unk9;
-	long unk10;
-	unsigned long unk11;
-	unsigned long unk12;
-	unsigned long unk13;
 };
 struct StallStr
 {
@@ -88,7 +50,7 @@ struct AttractionStr
     long Unk3;
     char *SID;
 };
-struct Stall
+struct StallA
 {
 	unsigned long type; //7 = food, 8 = drinks, 9 = misc, 14 = info/umbrella
 	wchar_t* Name;
@@ -114,7 +76,7 @@ struct Stall
 	unsigned long unk15;
 	unsigned long unk16;
 };
-struct Stall2
+struct StallB
 {
 	unsigned long unk1;
 	unsigned long itemcount;
@@ -125,22 +87,22 @@ struct Stall2
 	unsigned long unk5;
 	unsigned long unk6;
 	unsigned long unk7;
-	Attraction *att;
+	AttractionA *att;
 	SceneryItem *SID;
 };
 struct ChangingRoom
 {
-	Attraction *att;
+	AttractionA *att;
 	SceneryItem *SID;
 	unsigned char *spline;
 };
-struct SpecialAttraction2
+struct SpecialAttractionB
 {
 	unsigned long unk;
-	Attraction *att;
+	AttractionA *att;
 	SceneryItem *SID;
 };
-struct SpecialAttraction
+struct SpecialAttractionA
 {
 	unsigned long AttractionType; //13 = 1st aid, 12 = ATM, 11 = toilet
 	wchar_t* Name;

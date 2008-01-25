@@ -29,12 +29,133 @@
 #include "ManagerFLIC.h"
 
 #include "OVLException.h"
+#include "OVLng.h"
 
 const char* ovlFLICManager::LOADER = "FGDK";
 const char* ovlFLICManager::NAME = "Flic";
 const char* ovlFLICManager::TAG = "flic";
-const unsigned long ovlFLICManager::TYPE = 2;
+//const unsigned long ovlFLICManager::TYPE = 2;
 
+void ovlFLICManager::Init(cOvl* ovl) {
+    ovlOVLManager::Init(ovl);
+    if (ovl->HasManager<ovlBTBLManager>()) {
+        TYPE = 3;
+        m_btbl = ovl->GetManager<ovlBTBLManager>();
+    } else {
+        TYPE = 2;
+    }
+}
+
+void ovlFLICManager::AddTexture(const cTexture& item) {
+    Check("ovlFLICManager::AddTexture");
+    item.Check();
+
+    unsigned long index;
+    if (m_btbl) {
+        index = m_btbl->AddTexture(item);
+    } else {
+        index = m_items.size();
+    }
+    m_items[index] = item;
+    m_itemmap[item.name] = index;
+
+    // FlicStruct and a pointer. Rest goes to extradata
+    m_size += sizeof(Flic); //sizeof(FlicStruct) + 4;
+
+    GetLSRManager()->AddLoader(OVLT_COMMON);
+}
+
+FlicStruct** ovlFLICManager::GetPointer1(const string& name) {
+    if (!IsMade())
+        throw EOvl("ovlFLICManager::GetPointer1 called in unmade state");
+
+    map<string, unsigned long>::iterator it = m_itemmap.find(name);
+    if (it == m_itemmap.end())
+        throw EOvl("ovlFLICManager::GetPointer1 called with unknown texture name");
+    map<unsigned long, cTexture>::iterator it2 = m_items.find(it->second);
+
+    return it2->second.madep1;
+}
+
+FlicStruct* ovlFLICManager::GetPointer2(const string& name) {
+    if (!IsMade())
+        throw EOvl("ovlFLICManager::GetPointer2 called in unmade state");
+
+    map<string, unsigned long>::iterator it = m_itemmap.find(name);
+    if (it == m_itemmap.end())
+        throw EOvl("ovlFLICManager::GetPointer2 called with unknown texture name");
+    map<unsigned long, cTexture>::iterator it2 = m_items.find(it->second);
+
+    return it2->second.madep2;
+}
+
+void ovlFLICManager::Make(cOvlInfo* info) {
+    Check("ovlFLICManager::Make");
+    if (!info)
+        throw EOvl("ovlFLICManager::Make called without valid info");
+
+    m_blobs[""] = cOvlMemBlob(OVLT_COMMON, 2, m_size);
+    ovlOVLManager::Make(info);
+    unsigned char* c_data = m_blobs[""].data;
+
+    for (map<unsigned long, cTexture>::iterator it = m_items.begin(); it != m_items.end(); ++it) {
+        Flic* c_flic = reinterpret_cast<Flic*>(c_data);
+        c_data += sizeof(Flic);
+        c_flic->fl = &c_flic->fl2;
+        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_flic->fl));
+
+        // Fill FlicStruct
+        c_flic->fl2.FlicDataPtr = 0;
+        c_flic->fl2.unk1 = it->second.flic.unk1;
+        c_flic->fl2.unk2 = it->second.flic.unk2;
+
+        // Strore pointers for texture reference
+        it->second.madep1 = &c_flic->fl;
+        it->second.madep2 = &c_flic->fl2;
+
+        GetLSRManager()->OpenLoader(OVLT_COMMON, TAG, reinterpret_cast<unsigned long*>(&c_flic->fl2), 1, NULL);
+
+        // Extra Data
+        if (m_btbl) {
+            // easy
+            unsigned long* index = new unsigned long[1];
+            *index = it->first;
+            GetLSRManager()->AddExtraData(OVLT_COMMON, 4, reinterpret_cast<unsigned char*>(index));
+        } else {
+            unsigned long c_extrasize = sizeof(FlicHeader) + (it->second.mips.size() * sizeof(FlicMipHeader)) + it->second.CalcSize() + sizeof(FlicMipHeader);
+            unsigned char* c_extradata = new unsigned char[c_extrasize];
+            unsigned char* c_extra = c_extradata;
+            FlicHeader* c_header = reinterpret_cast<FlicHeader*>(c_extra);
+            c_extra += sizeof(FlicHeader);
+            it->second.FillHeader(c_header);
+
+            FlicMipHeader* c_mip;
+            for (set<cTextureMIP>::iterator i_mip = it->second.mips.begin(); i_mip != it->second.mips.end(); ++i_mip) {
+                c_mip = reinterpret_cast<FlicMipHeader*>(c_extra);
+                c_extra += sizeof(FlicMipHeader);
+                i_mip->FillHeader(cTexture::GetBlockSize(it->second.format), c_mip);
+
+                c_extra += i_mip->FillRawData(cTexture::GetBlockSize(it->second.format), c_extra);
+            }
+
+            c_mip = reinterpret_cast<FlicMipHeader*>(c_extra);
+            c_mip->MHeight = 0;
+            c_mip->MWidth = 0;
+            c_mip->Pitch = 0;
+            c_mip->Blocks = 0;
+
+            GetLSRManager()->AddExtraData(OVLT_COMMON, c_extrasize, c_extradata);
+        }
+        GetLSRManager()->CloseLoader(OVLT_COMMON);
+    }
+
+    if (m_defermake) {
+        m_defermake->Make(info);
+    }
+}
+
+
+/*
 ovlFLICManager::~ovlFLICManager() {
     for (map<string, FlicInternal>::iterator it = m_flics.begin(); it != m_flics.end(); ++it) {
         delete[] reinterpret_cast<unsigned char*>(it->second.flic.FlicDataPtr);
@@ -159,3 +280,4 @@ void ovlFLICManager::Make(cOvlInfo* info) {
         m_defermake->Make(info);
     }
 }
+*/

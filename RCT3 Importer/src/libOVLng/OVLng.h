@@ -41,6 +41,13 @@
 
 using namespace std;
 
+/// Ovl creation class
+/**
+ * This class is responsible for creating ovl files. It needs to be initialized before using by either calling the Init
+ * method or using the cOvl(std::string file) constructor. Data is added by requesting manager instances via the
+ * GetManager() template method and adding data to them. Finally the ovl is created/saved via the Save() method.
+ */
+
 class cOvl {
 friend class ovlOVLManager;
 private:
@@ -57,23 +64,40 @@ private:
     ovlOVLManager* GetManager(const char* tag);
     void InitAndAddManager(ovlOVLManager* man);
 public:
-    cOvl(){
+    /// Non-initializing default constructor.
+    cOvl() {
         m_init = false;
     };
+    /// Initializing constructor.
+    /**
+     * Creates a cOvl instance and initializes it.
+     * @param file Ovl base file name.
+     * @see Init()
+     */
     cOvl(string file);
     virtual ~cOvl();
 
+    /// Initialize a cOvl instance
+    /**
+     * Initializes a cOvl instance created via the default constructor.
+     * @param file Ovl base file name (without .common.ovl or .unique.ovl extension).
+     * @see cOvl()
+     */
     void Init(string file);
 
+    /// Add a reference to the ovl.
     void AddReference(const char* ref);
+    /// Add a simple data symol to the ovl.
     void AddDataSymbol(cOvlType type, const char *symbol, unsigned long data) {
         if (!m_init)
             throw EOvl("cOvl::AddDataSymbol called uninitialized");
         m_lsrmanager.AddSymbol(type, symbol, data);
     }
 
+    /// Create and save the ovl files.
     void Save();
 
+    /// Request a data manager pointer.
     template <class M>
     M* GetManager() {
         if (!m_init)
@@ -84,6 +108,12 @@ public:
             InitAndAddManager(ret);
         }
         return ret;
+    }
+
+    /// Detect whether a certain manager is present.
+    template <class M>
+    bool HasManager() {
+        return m_managers.find(M::TAG) != m_managers.end();
     }
 };
 

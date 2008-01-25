@@ -3260,6 +3260,7 @@ bool ReadIconTexture(HWND hwnd, IconTexture * t) {
         t->fmh.MHeight = height;
         t->fmh.MWidth = width;
         t->data = data;
+
     } catch (Magick::Exception& e) {
         MessageBox(hwnd, e.what(), "Error", MB_OK);
         return false;

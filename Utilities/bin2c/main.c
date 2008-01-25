@@ -17,6 +17,8 @@
  #include <stdio.h>
  #include <stdlib.h>
  #include <string.h>
+ #include <sys/stat.h>
+ #include <sys/utime.h>
 
  #ifndef PATH_MAX
  #define PATH_MAX 1024
@@ -77,6 +79,13 @@
 
  	fclose(ifile);
  	fclose(ofile);
+
+ 	struct stat s;
+ 	struct utimbuf u;
+ 	stat(ifname, &s);
+ 	u.actime = s.st_atime;
+ 	u.modtime = s.st_mtime;
+ 	utime(ofname, &u);
  }
 
  void usage(void)

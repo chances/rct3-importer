@@ -41,7 +41,7 @@ void cRawParser::Process(const wxFSFileName& file, const wxFileName& outputdir, 
     m_input = file;
     m_output = output;
     if (outputdir == wxT("")) {
-        m_outputbasedir.SetPath(file.GetBasePath(wxPATH_GET_SEPARATOR));
+        m_outputbasedir.SetPath(file.GetBasePath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
     } else {
         m_outputbasedir.SetPath(outputdir.GetPathWithSep());
     }
@@ -60,9 +60,11 @@ void cRawParser::Process(const wxFSFileName& file, const wxFileName& outputdir, 
 
 void cRawParser::Process(wxXmlNode* root, const wxFSFileName& file, const wxFileName& outputdir, const wxFileName& output) {
     m_input = file;
+    if (!m_input.IsAbsolute())
+        m_input.MakeAbsolute();
     m_output = output;
     if (outputdir == wxT("")) {
-        m_outputbasedir.SetPath(file.GetBasePath(wxPATH_GET_SEPARATOR));
+        m_outputbasedir.SetPath(file.GetBasePath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
     } else {
         m_outputbasedir.SetPath(outputdir.GetPathWithSep());
     }
@@ -183,6 +185,8 @@ void cRawParser::Load(wxXmlNode* root) {
     if (m_bakeroot == wxT(""))
         m_bakeroot = m_input;
 
+    m_firstchild = root->GetChildren();
+
     if (m_mode != MODE_BAKE) {
         if (root->HasProp(wxT("conditions"))) {
             wxString cond = root->GetPropVal(wxT("conditions"), wxT(""));
@@ -290,7 +294,7 @@ void cRawParser::LoadVariables(const wxFSFileName& fn, bool command, wxXmlNode* 
     wxXmlNode* root = doc.GetRoot();
 
     if (root->GetName() == RAWXML_VARIABLES) {
-        ParseVariables(root, command, fn.GetPath(wxPATH_GET_SEPARATOR));
+        ParseVariables(root, command, fn.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
         if (target && (m_mode == MODE_BAKE) && (m_bake.Index(RAWXML_VARIABLES) != wxNOT_FOUND)) {
             wxXmlNode* newvars = root->GetChildren();
             if (newvars) {
@@ -313,5 +317,19 @@ void cRawParser::LoadVariables(const wxFSFileName& fn, bool command, wxXmlNode* 
         }
     } else {
         throw RCT3Exception(wxT("cRawParser::LoadVariables, wrong root"));
+    }
+}
+
+wxXmlNode* cRawParser::FindDataReference(const wxString& guid, wxFSFileName& input) const {
+    std::map<wxString, wxXmlNode*>::const_iterator it = m_datareferences.find(guid);
+    if (it != m_datareferences.end()) {
+        input = m_input;
+        return it->second;
+    } else {
+        if (m_parent) {
+            return m_parent->FindDataReference(guid, input);
+        } else {
+            return NULL;
+        }
     }
 }

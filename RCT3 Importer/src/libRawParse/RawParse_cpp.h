@@ -51,9 +51,11 @@
 #define RAWXML_COPY    wxT("copy")
 #define RAWXML_PATCH   wxT("patch")
 #define RAWXML_WRITE   wxT("write")
+#define RAWXML_DATA    wxT("data")
 
 #define RAWXML_BAN wxT("ban")
 #define RAWXML_BSH wxT("bsh")
+#define RAWXML_BTBL wxT("btbl")
 #define RAWXML_CED wxT("ced")
 #define RAWXML_CHG wxT("chg")
 #define RAWXML_CID wxT("cid")
@@ -138,8 +140,7 @@
 #define RAWXML_SVD_LOD_ANIMATION    wxT("svdlodanimation")
 #define RAWXML_SVD_LOD_UNK          wxT("svdlodunknowns")
 
-#define RAWXML_TEX_FILE             wxT("texturefile")
-#define RAWXML_TEX_DATA             wxT("texturedata")
+#define RAWXML_TEX_TEXTURE          wxT("texture")
 
 #define RAWXML_WAI_PARAMETERS       wxT("waiparameters")
 #define RAWXML_WAI_UNKNOWNS         wxT("waiunknowns")

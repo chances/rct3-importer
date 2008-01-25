@@ -49,7 +49,7 @@ public:
         }
     }
     void MakeStrange() {
-        for (unsigned char i = 1; i < 15; ++i) {
+        for (unsigned char i = 1; i <= 15; ++i) {
             data[i-1] = (i * 16) + i;
         }
     }
@@ -64,6 +64,7 @@ public:
     bool calc_length;
     float unk3;
     vector<float> lengths;
+    unsigned long lengthcalcres;
     vector<cSplineData> unknowndata;
     float unk6;
 
@@ -71,34 +72,13 @@ public:
         cyclic = 0;
         totallength = 0.0;
         calc_length = true;
+        lengthcalcres = 10;
         unk3 = 0.0;
         unk6 = 0.0;
     };
-    void Fill(Spline* spl) {
-        spl->count = nodes.size();
-        spl->cyclic = cyclic;
-        if (calc_length)
-            spl->totallength = 0.0;
-        else
-            spl->totallength = totallength;
-        spl->unk3 = unk3;
-        spl->unk6 = unk6;
-        for (unsigned int i = 0; i < nodes.size(); ++i) {
-            spl->nodes[i] = nodes[i];
-        }
-        for (unsigned int i = 0; i < lengths.size(); ++i) {
-            spl->lengths[i] = lengths[i];
-            if (calc_length)
-                spl->totallength += lengths[i];
-        }
-        unsigned long c = 0;
-        for (vector<cSplineData>::iterator it = unknowndata.begin(); it != unknowndata.end(); ++it) {
-            for (int i = 0; i < 14; ++i) {
-                spl->unk5[c] = it->data[i];
-                c++;
-            }
-        }
-    }
+    void CalcLengths();
+    void AssignData();
+    void Fill(Spline* spl);
 };
 
 class ovlSPLManager: public ovlOVLManager {

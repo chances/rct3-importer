@@ -25,6 +25,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "OVLDebug.h"
 
 #include "ManagerTEX.h"
 
@@ -38,8 +39,70 @@ const char* ovlTEXManager::NAME = "Texture";
 const char* ovlTEXManager::TAG = "tex";
 const unsigned long ovlTEXManager::TYPE = 2;
 
-#define GUIICON "GUIIcon"
+//#define GUIICON "GUIIcon"
 
+void ovlTEXManager::Init(cOvl* ovl) {
+    ovlOVLManager::Init(ovl);
+    m_flicman = ovl->GetManager<ovlFLICManager>();
+}
+
+void ovlTEXManager::AddTexture(const cTextureStruct& item) {
+    DUMP_LOG("Trace: ovlTEXManager::AddTexture(%s)", UNISTR(item.texture.name.c_str()));
+    Check("ovlTEXManager::AddTexture");
+    if (item.texture.name == "")
+        throw EOvl("ovlTEXManager::AddTexture called without name");
+    if (m_items.find(item.texture.name) != m_items.end())
+        throw EOvl("ovlTEXManager::AddTexture: Item with name '"+item.texture.name+"' already exists");
+
+    m_items[item.texture.name] = item;
+    m_flicman->AddTexture(item.texture);
+
+    // TextureStruct + TextureStruct2
+    m_size += sizeof(Tex);
+
+    GetLSRManager()->AddLoader(OVLT_UNIQUE);
+    GetLSRManager()->AddSymbol(OVLT_UNIQUE);
+    GetLSRManager()->AddSymRef(OVLT_UNIQUE);
+    GetStringTable()->AddSymbolString(item.texture.name.c_str(), Tag());
+    GetStringTable()->AddSymbolString(item.texturestyle.c_str(), ovlTXSManager::TAG);
+}
+
+void ovlTEXManager::Make(cOvlInfo* info) {
+    Check("ovlTEXManager::Make");
+    if (!info)
+        throw EOvl("ovlTEXManager::Make called without valid info");
+
+    if (!m_flicman->IsMade()) {
+        m_flicman->DeferMake(this);
+        return;
+    }
+
+    m_blobs[""] = cOvlMemBlob(OVLT_UNIQUE, 2, m_size);
+    ovlOVLManager::Make(info);
+    unsigned char* c_data = m_blobs[""].data;
+
+    for (map<string, cTextureStruct>::iterator it = m_items.begin(); it != m_items.end(); ++it) {
+        Tex* c_tex = reinterpret_cast<Tex*>(c_data);
+        c_data += sizeof(Tex);
+        it->second.Fill(&c_tex->t1);
+        c_tex->t1.ts2 = &c_tex->t2;
+        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_tex->t1.ts2));
+        c_tex->t1.Flic = m_flicman->GetPointer1(it->first);
+        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_tex->t1.Flic));
+
+        c_tex->t2.Texture = &c_tex->t1;
+        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_tex->t2.Texture));
+        c_tex->t2.Flic = m_flicman->GetPointer2(it->first);
+        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_tex->t2.Flic));
+
+        SymbolStruct* s_tex = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), Tag()), reinterpret_cast<unsigned long*>(c_tex));
+        GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_tex), 0, s_tex);
+        GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.texturestyle.c_str(), ovlTXSManager::TAG), reinterpret_cast<unsigned long*>(&c_tex->t1.TextureData));
+        GetLSRManager()->CloseLoader(OVLT_UNIQUE);
+    }
+}
+
+/*
 void ovlTEXManager::Init(cOvl* ovl) {
     ovlOVLManager::Init(ovl);
     GetStringTable()->AddSymbolString(GUIICON, ovlTXSManager::TAG);
@@ -143,3 +206,4 @@ void ovlTEXManager::Make(cOvlInfo* info) {
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
     }
 }
+*/

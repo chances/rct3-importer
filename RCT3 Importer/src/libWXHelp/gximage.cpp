@@ -14,6 +14,7 @@
 #include "wx/wxprec.h"
 #include "wx/defs.h"
 
+#include <boost/shared_array.hpp>
 #include <memory>
 
 #include <wx/filesys.h>
@@ -413,6 +414,87 @@ void wxGXImage::FromFileSystem(const wxString& filename) {
 */
 }
 
+void wxGXImage::FromData(int width, int height, const char* channelmap, const void* data) {
+    try {
+        m_valid = true;
+        m_image.read(width, height, channelmap, Magick::CharPixel, data);
+        m_cache = false;
+    } catch (Magick::Exception e) {
+        m_valid = false;
+        m_error = wxString(e.what(), wxConvLocal);
+        wxLogDebug(wxT("Error in wxGXImage::FromData: %s"), e.what());
+    }
+}
+
+void wxGXImage::GetData(const char* channelmap, void* data, bool swapalpha) {
+    if (swapalpha) {
+        wxGXImage temp = *this;
+        temp.InvertAlpha();
+        temp.GetData(channelmap, data);
+    } else {
+        m_image.write(0, 0, m_image.columns(), m_image.rows(), channelmap, Magick::CharPixel, data);
+    }
+}
+
+void wxGXImage::FromPaletteData(int width, int height, const void* palette, const void* data) {
+    const COLOURQUAD* pal = reinterpret_cast<const COLOURQUAD*>(palette);
+    const unsigned char* source = reinterpret_cast<const unsigned char*>(data);
+    int datasize = 3*width*height;
+    boost::shared_array<unsigned char> tempdata(new unsigned char[datasize]);
+
+    for (int i = 0; i < width*height; ++i) {
+        tempdata[(i*3)] = pal[source[i]].red;
+        tempdata[(i*3)+1] = pal[source[i]].green;
+        tempdata[(i*3)+2] = pal[source[i]].blue;
+    }
+    FromData(width, height, "RGB", tempdata.get());
+}
+
+bool wxGXImage::SaveFile(const wxString& name, int type) {
+    switch (type) {
+        wxBITMAP_TYPE_BMP:
+            return SaveFile(name, wxT("bmp"));
+        wxBITMAP_TYPE_JPEG:
+            return SaveFile(name, wxT("jpg"));
+        wxBITMAP_TYPE_PNG:
+            return SaveFile(name, wxT("png"));
+        wxBITMAP_TYPE_PCX:
+            return SaveFile(name, wxT("pcx"));
+        wxBITMAP_TYPE_PNM:
+            return SaveFile(name, wxT("pnm"));
+        wxBITMAP_TYPE_TIFF:
+            return SaveFile(name, wxT("tiff"));
+        wxBITMAP_TYPE_XPM:
+            return SaveFile(name, wxT("xpm"));
+        wxBITMAP_TYPE_ICO:
+            return SaveFile(name, wxT("ico"));
+        wxBITMAP_TYPE_CUR:
+            return SaveFile(name, wxT("cur"));
+        default: {
+            m_error = _("Unrecognized image type.");
+            return false;
+        }
+    }
+}
+
+bool wxGXImage::SaveFile(const wxString& name, const wxString& magick) {
+    try {
+        Magick::Image temp = m_image;
+        temp.magick(std::string(magick.mb_str(wxConvLocal)));
+        temp.write(std::string(name.mb_str(wxConvFile)));
+        return true;
+    } catch (Magick::Exception e) {
+        m_error = wxString(e.what(), wxConvLocal);
+        wxLogDebug(wxT("Error in wxGXImage::SaveFile: %s"), e.what());
+        return false;
+    }
+}
+
+bool wxGXImage::SaveFile(const wxString& name) {
+    wxFileName fname(name);
+    return SaveFile(name, fname.GetExt());
+}
+
 void wxGXImage::GetAlpha(unsigned char* data) const {
     wxLogDebug(wxT("TRACE wxGXImage::GetAlpha"));
     if (m_image.matte()) {
@@ -421,6 +503,38 @@ void wxGXImage::GetAlpha(unsigned char* data) const {
             data[i] = 255 - data[i];
     } else {
         memset(data, 0, m_image.columns()*m_image.rows());
+    }
+}
+
+void wxGXImage::SetAlpha(const void* data) {
+    wxLogDebug(wxT("TRACE wxGXImage::SetAlpha"));
+    if (data) {
+        try {
+            const unsigned char* datat = reinterpret_cast<const unsigned char*>(data);
+            m_image.matte(true);
+            Magick::PixelPacket* pixels = m_image.getPixels(0, 0, m_image.columns(), m_image.rows());
+            for (int i = 0; i < m_image.columns() * m_image.rows(); ++i) {
+                pixels[i].opacity = 255 - datat[i];
+            }
+            m_image.syncPixels();
+        } catch (Magick::Exception e) {
+            m_error = wxString(e.what(), wxConvLocal);
+            wxLogDebug(wxT("Error in wxGXImage::SetAlpha: %s"), e.what());
+        }
+    } else {
+        m_image.opacity(0);
+        m_image.matte(false);
+    }
+}
+
+void wxGXImage::InvertAlpha() {
+    if (HasAlpha()) {
+        wxLogDebug(wxT("TRACE wxGXImage::InvertAlpha"));
+        Magick::PixelPacket* pixels = m_image.getPixels(0, 0, m_image.columns(), m_image.rows());
+        for (int i = 0; i < m_image.columns() * m_image.rows(); ++i) {
+            pixels[i].opacity = 255 - pixels[i].opacity;
+        }
+        m_image.syncPixels();
     }
 }
 
@@ -489,10 +603,10 @@ void wxGXImage::GetAs8bitForced(unsigned char* data, unsigned char* palette, boo
 void wxGXImage::DxtCompress(void* buffer, const int dxt) {
     wxLogDebug(wxT("TRACE wxGXImage::DxtCompress"));
     int datasize = 4*m_image.rows()*m_image.columns();
-    squish::u8* data = new squish::u8[datasize];
+    boost::shared_array<squish::u8> data(new squish::u8[datasize]);
     Magick::Image temp = m_image;
     temp.matte(true);
-    temp.write(0, 0, m_image.columns(), m_image.rows(), "RGBA", Magick::CharPixel, data);
+    temp.write(0, 0, m_image.columns(), m_image.rows(), "RGBA", Magick::CharPixel, data.get());
     for (int i = 3; i < datasize; i+=4)
         data[i] = 255 - data[i];
 #ifdef __WXDEBUG__
@@ -500,9 +614,30 @@ void wxGXImage::DxtCompress(void* buffer, const int dxt) {
     ofs *= 4;
     wxLogDebug(wxT("Trace, DxtCompress %hhx %hhx %hhx %hhx"), data[ofs+0], data[ofs+1], data[ofs+2], data[ofs+3]);
 #endif
-    squish::CompressImage(data, m_image.columns(), m_image.rows(), buffer, dxt | m_dxtCompressionMethod);
-    delete[] data;
+    squish::CompressImage(data.get(), m_image.columns(), m_image.rows(), buffer, dxt | m_dxtCompressionMethod);
 }
+
+void wxGXImage::FromDxtCompressed(int width, int height, const void* buffer, const int dxt) {
+    try {
+        m_valid = true;
+        int datasize = 4*width*height;
+        boost::shared_array<squish::u8> data(new squish::u8[datasize]);
+        squish::DecompressImage(data.get(), width, height, buffer, dxt);
+
+        // Fix alpha channel
+        for (int i = 3; i < datasize; i+=4)
+            data[i] = 255 - data[i];
+
+        m_image.matte(true);
+        m_image.read(width, height, "RGBA", Magick::CharPixel, data.get());
+        m_cache = false;
+    } catch (Magick::Exception e) {
+        m_valid = false;
+        m_error = wxString(e.what(), wxConvLocal);
+        wxLogDebug(wxT("Error in wxGXImage::FromDxtCompressed: %s"), e.what());
+    }
+}
+
 #endif
 
 #ifdef CACHE_GXIMAGE

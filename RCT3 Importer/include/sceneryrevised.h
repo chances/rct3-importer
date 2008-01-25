@@ -30,7 +30,7 @@ struct WAVEFORMATEX {
 #endif
 
 #ifndef BOOL
-#define BOOL bool
+#define BOOL unsigned long
 #endif
 
 struct Scenery

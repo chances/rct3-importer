@@ -109,9 +109,12 @@ bool wxFSFileName::IsAbsolute(wxPathFormat format) const {
 bool wxFSFileName::MakeAbsolute(const wxString& cwd) {
     wxFSFileName temp(cwd);
     if (IsRelative()) {
+        if ((m_components.size() == 1) && cwd.IsEmpty()) {
+            return GetLastComponent().GetFileName().MakeAbsolute();
+        }
         wxFSFileNameComponent me = m_components[0];
-        wxString tempstr = temp.GetLastComponent().GetFileName().GetPath(wxPATH_GET_SEPARATOR) + me.GetFileName().GetFullPath();
-//        bool ret = me.GetFileName().MakeAbsolute(temp.GetLastComponent().GetFileName().GetPath(wxPATH_GET_SEPARATOR));
+        wxString tempstr = temp.GetLastComponent().GetFileName().GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME) + me.GetFileName().GetFullPath();
+//        bool ret = me.GetFileName().MakeAbsolute(temp.GetLastComponent().GetFileName().GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
         m_components = temp.m_components;
         GetLastComponent().GetFileName() = tempstr;
         return GetLastComponent().GetFileName().Normalize(wxPATH_NORM_DOTS);
@@ -119,7 +122,7 @@ bool wxFSFileName::MakeAbsolute(const wxString& cwd) {
     } else {
         if (!SameRootAs(cwd))
             return false;
-        return GetLastComponent().GetFileName().MakeAbsolute(temp.GetLastComponent().GetFileName().GetPath(wxPATH_GET_SEPARATOR));
+        return GetLastComponent().GetFileName().MakeAbsolute(temp.GetLastComponent().GetFileName().GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
     }
 }
 
@@ -133,7 +136,7 @@ bool wxFSFileName::MakeRelativeTo(const wxString& pathBase) {
         return false;
 
     wxFSFileNameComponent t = GetLastComponent();
-    bool ret = t.GetFileName().MakeRelativeTo(temp.GetLastComponent().GetFileName().GetPath(wxPATH_GET_SEPARATOR));
+    bool ret = t.GetFileName().MakeRelativeTo(temp.GetLastComponent().GetFileName().GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
     m_components.clear();
     m_components.push_back(t);
     return ret;

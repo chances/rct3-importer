@@ -51,14 +51,14 @@ public:
 	    attraction.unk6 = 4960;
 	    attraction.unk12 = 0;
     };
-    void Fill(SpecialAttraction* sp) {
+    void Fill(SpecialAttractionA* sp) {
         sp->Name = NULL;
         sp->Description = NULL;
         sp->GSI = NULL;
         sp->spline = NULL;
         attraction.Fill(sp);
     }
-    void Fill(SpecialAttraction2* sp) {
+    void Fill(SpecialAttractionB* sp) {
         attraction.Fill(sp->att);
     }
 };

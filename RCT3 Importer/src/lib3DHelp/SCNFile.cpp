@@ -171,6 +171,7 @@ bool cSCNFile::Load() {
         ovlpath = ovlname.GetPathWithSep();
         name = ovlname.GetName();
     }
+    wxLogVerbose(_("Loading %s from SCN file."), name.c_str());
 
     // Read sivsettings
     fread(&sivsettings.sivflags, sizeof(unsigned int), 1, f);
@@ -212,6 +213,7 @@ void cSCNFile::LoadTextures(FILE *f) {
             ft.Name = wxString(tmp, wxConvLocal);
             delete[] tmp;
         }
+        wxLogVerbose(_("  Loading texture %s from SCN file."), ft.Name.c_str());
 
         fread(&ft.Recolorable, sizeof(ft.Recolorable), 1, f);
         fread(&ft.FPS, sizeof(ft.FPS), 1, f);
@@ -246,11 +248,12 @@ void cSCNFile::LoadTextures(FILE *f) {
             if (texturelen) {
                 tmp = new char[texturelen];
                 fread(tmp, texturelen, 1, f);
-                ftfr.texture(wxString(tmp, wxConvFile));
+                ftfr.texture(wxString(tmp, wxConvLocal));
                 if (strlen(tmp)) {
                     if (!ftfr.texture().IsAbsolute()) {
                         ftfr.texture_nc().MakeAbsolute(filename.GetPath());
                     }
+                    wxLogVerbose(_("    Frame: %s"), ftfr.texture().GetFullPath().c_str());
                 }
                 delete[] tmp;
             }
@@ -265,6 +268,7 @@ void cSCNFile::LoadTextures(FILE *f) {
                     if (!ftfr.alpha().IsAbsolute()) {
                         ftfr.alpha_nc().MakeAbsolute(filename.GetPath());
                     }
+                    wxLogVerbose(_("      Alpha: %s"), ftfr.alpha().GetFullPath().c_str());
                 }
                 delete[] tmp;
             }
@@ -303,6 +307,7 @@ bool cSCNFile::LoadModels(FILE *f) {
             mod.name = wxString(tmp, wxConvLocal);
             delete[] tmp;
         }
+        wxLogVerbose(_("  Loading model %s from SCN file."), mod.name.c_str());
 
         // Read model filename
         count = 0;
@@ -315,6 +320,7 @@ bool cSCNFile::LoadModels(FILE *f) {
                 if (!mod.file.IsAbsolute()) {
                     mod.file.MakeAbsolute(filename.GetPath());
                 }
+                wxLogVerbose(_("    Model file: %s"), mod.file.GetFullPath().c_str());
             }
             delete[] tmp;
         }
@@ -374,9 +380,10 @@ bool cSCNFile::LoadModels(FILE *f) {
             }
 
             // Enabled or disabled
-            BOOL dis;
-            fread(&dis, sizeof(BOOL), 1, f);
+            unsigned long dis;
+            fread(&dis, sizeof(unsigned long), 1, f);
             ms.disabled = dis;
+            wxLogVerbose(_("    Mesh: %s, %s"), ms.Name.c_str(), dis?wxT("disabled"):wxT("enabled"));
 
             fread(&ms.flags, sizeof(ms.flags), 1, f);
             fread(&ms.place, sizeof(ms.place), 1, f);
@@ -489,7 +496,7 @@ void cSCNFile::LoadLODs(FILE *f) {
         fread(&lod.unk2, sizeof(lod.unk2), 1, f);
         fread(&lod.unk4, sizeof(lod.unk4), 1, f);
         fread(&lod.unk14, sizeof(lod.unk14), 1, f);
-
+        wxLogVerbose(_("Loaded LOD %s, %.1f from SCN file."), lod.modelname.c_str(), lod.distance);
         lods.push_back(lod);
     }
 }
@@ -506,7 +513,9 @@ void cSCNFile::LoadReferences(FILE *f) {
         if (count) {
             tmp = new char[count];
             fread(tmp, count, 1, f);
-            references.push_back(wxString(tmp, wxConvLocal));
+            wxString ref = wxString(tmp, wxConvLocal);
+            wxLogVerbose(_("  Loading reference '%s' from SCN file."), ref.c_str());
+            references.push_back(ref);
             delete[] tmp;
         }
     }
@@ -535,7 +544,7 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
     models[0].meshstructs.clear();
     for (i = 0; i < meshcount; i++) {
         cMeshStruct ms;
-        BOOL dis;
+        unsigned long dis;
         fread(&dis, sizeof(dis), 1, f);
         ms.disabled = dis;
         if (ms.disabled == false) {
@@ -2623,7 +2632,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                 continue;
 
             cFlexiTextureInfoStruct c_ftis;
-            wxLogVerbose(_("Adding textrue: ") + i_ftx->Name);
+            wxLogVerbose(_("Adding texture: ") + i_ftx->Name);
             c_ftis.name = i_ftx->Name.ToAscii();
             c_ftis.fps = i_ftx->FPS;
             c_ftis.recolourable = i_ftx->Recolorable;
