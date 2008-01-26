@@ -37,6 +37,8 @@
 
 #include "fsfilename.h"
 
+#include "3DLoaderTypes.h"
+
 #include "OVLng.h"
 
 #define RAWXML_ROOT      wxT("rawovl")
@@ -113,6 +115,7 @@ private:
     double ParseFloat(wxXmlNode* node, const wxString& nodes, const wxString& attribute);
     void ParseVector(wxXmlNode* node, VECTOR& v, const wxString& nodes);
     void ParseMatrix(wxXmlNode* node, MATRIX& m, const wxString& nodes);
+    c3DLoaderOrientation ParseOrientation(wxXmlNode* node, const wxString& nodes);
 
     bool MakeVariable(wxString& var);
     void PassBakeStructures(const wxSortedArrayString& bake) {

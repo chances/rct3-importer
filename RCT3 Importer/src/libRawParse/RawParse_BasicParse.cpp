@@ -159,6 +159,36 @@ void cRawParser::ParseMatrix(wxXmlNode* node, MATRIX& m, const wxString& nodes) 
         throw RCT3Exception(wxString::Format(_("Missing matrix row in %s."), nodes.c_str()));
 }
 
+c3DLoaderOrientation cRawParser::ParseOrientation(wxXmlNode* node, const wxString& nodes) {
+    c3DLoaderOrientation ori = ORIENTATION_LEFT_YUP;
+    wxString hand = node->GetPropVal(wxT("handedness"), wxT("left"));
+    wxString up = node->GetPropVal(wxT("up"), wxT("y"));
+    if (hand == wxT("left")) {
+        if (up == wxT("x")) {
+            ori = ORIENTATION_LEFT_XUP;
+        } else if (up == wxT("y")) {
+            ori = ORIENTATION_LEFT_YUP;
+        } else if (up == wxT("z")) {
+            ori = ORIENTATION_LEFT_ZUP;
+        } else {
+            throw RCT3Exception(wxString::Format(_("Unknown value '%s' for up attribute in %s."), up.c_str(), nodes.c_str()));
+        }
+    } else if (hand == wxT("right")) {
+        if (up == wxT("x")) {
+            ori = ORIENTATION_RIGHT_XUP;
+        } else if (up == wxT("y")) {
+            ori = ORIENTATION_RIGHT_YUP;
+        } else if (up == wxT("z")) {
+            ori = ORIENTATION_RIGHT_ZUP;
+        } else {
+            throw RCT3Exception(wxString::Format(_("Unknown value '%s' for up attribute in %s."), up.c_str(), nodes.c_str()));
+        }
+    } else {
+        throw RCT3Exception(wxString::Format(_("Unknown value '%s' for handedness attribute in %s."), up.c_str(), nodes.c_str()));
+    }
+    return ori;
+}
+
 void cRawParser::ParseSet(wxXmlNode* node, bool command, const wxString& tag) {
     wxString name = ParseString(node, tag, wxT("set"), NULL);
     if (node->HasProp(wxT("to"))) {

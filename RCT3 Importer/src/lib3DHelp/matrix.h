@@ -129,6 +129,21 @@ VERTEX *matrixApplyIP(VERTEX *v, const MATRIX& m, const MATRIX& mnormal);
 VERTEX2 matrixApply(const VERTEX2& v, const MATRIX& m, const MATRIX& mnormal);
 VERTEX2 *matrixApplyIP(VERTEX2 *v, const MATRIX& m, const MATRIX& mnormal);
 
+template <class T>
+inline void doFixOrientation(T& v, const c3DLoaderOrientation& orient) {
+    matrixApplyIP(&v, matrixGetFixOrientation(orient));
+}
+template <>
+inline void doFixOrientation(txyz& v, const c3DLoaderOrientation& orient) {
+    txyzFixOrientation(v, orient);
+}
+/*
+template <class T>
+inline T max(const T& a, const T& b) {
+    return (a>b)?a:b;
+}
+*/
+
 bool matrixIsEqual(const MATRIX& m1, const MATRIX& m2);
 
 MATRIX matrixThereAndBackAgain(const std::vector<MATRIX>& stack, const MATRIX& transform, const MATRIX& undodamage);

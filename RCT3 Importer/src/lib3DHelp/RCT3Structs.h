@@ -105,7 +105,8 @@ enum {
     CMS_FUDGE_XM       = 4,
     CMS_FUDGE_YM       = 5,
     CMS_FUDGE_ZM       = 6,
-    CMS_FUDGE_RIM      = 7
+    CMS_FUDGE_RIM      = 7,
+    CMS_FUDGE_ENUMSIZE
 };
 
 #define RCT3XML_CMESHSTRUCT wxT("mesh")

@@ -113,14 +113,20 @@ public:
 	void MakeToOvl(cOvl& c_ovl);
 	void CleanWork();
 
+	/// Determines if the ovl is a texture ovl.
+	/**
+	 * Ovly valid after calling Check()!
+	 */
+	bool IsTextureOVL() {return m_textureovl;}
+
     virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);
     virtual wxXmlNode* GetNode(const wxString& path);
     virtual const wxString GetTagName() const {return RCT3XML_CSCNFILE;};
 private:
     cSCNFile* m_work;
-    bool m_textureovl;
     int m_meshes;
     int m_textures;
+    bool m_textureovl;
 //    cMeshStruct MakeMeshStruct(c3DLoader *obj, unsigned int j);
 //    void ResetAndReload(c3DLoader *obj);
 //    void Fixup(c3DLoader *obj);

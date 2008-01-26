@@ -2091,6 +2091,22 @@ bool cSCNFile::Check() {
 //            }
         }
 
+        // Warn if neither textures nor references are given
+        if ((!flexitextures.size()) && (!references.size()) && (!READ_RCT3_EXPERTMODE())) {
+            warning = true;
+            wxLogWarning(_("You defined neither textures nor references, are you sure that's ok?"));
+        }
+
+        // Warn if overwriting
+        if (READ_RCT3_WARNOVERWRITE()) {
+            wxFileName ovlfile = ovlpath;
+            ovlfile.SetName(name);
+            ovlfile.SetExt(wxT("common.ovl"));
+            if (ovlfile.FileExists()) {
+                warning = true;
+                wxLogWarning(wxString::Format(_("Ovl file '%s' already exists"), ovlfile.GetFullPath().c_str()));
+            }
+        }
     }
     return !warning;
 }

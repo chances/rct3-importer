@@ -63,30 +63,31 @@ The following is an example of the XML that ovlcompiler understands
 ovl:        ovl is the root node and must always be present.
 fix:        Describes coordinate system fixing for the models, matrices and keyframes.
             handedness:     Whether your source coordinate system is "left"- or "right"handed. In almost all cases, "right" is the correct choice.
-	    up:             Determines which axis ("x", "y" or "z") points up in your source coordinate system. "z" for most modellers (Blender, SketchUp), "y" for Milkshape.
-	Important: The default is to use RCT3's system ("left", "y"), which in most user cases is wrong.
-		   There currently is no automatic fixing for ms3d files! You need to add this tag.
-		   The setting is global for the file, the fix tag is a direct child of ovl.
-	Quick:
-	  <fix handedness="right" up="z" /> for Blender & Sketchup,
-	  <fix handedness="right" up="y" /> for Milkshape
+            up:             Determines which axis ("x", "y" or "z") points up in your source coordinate system. "z" for most modellers (Blender, SketchUp), "y" for Milkshape.
+            Important: The default is to use RCT3's system ("left", "y"), which in most user cases is wrong.
+            There currently is no automatic fixing for ms3d files! You need to add this tag.
+            The setting is global for the file, the fix tag is a direct child of ovl.
+            Quick:
+              <fix handedness="right" up="z" /> for Blender & Sketchup,
+              <fix handedness="right" up="y" /> for Milkshape
 bsh:        bsh describes the bone meshes, a child of ovl
             name:           The name of the object. Should match both the name in the ban node and the name used for the outputfile.
-            model:	    The path of the .ase or .ms3d file that contains the mesh data.
+            model:          The path of the .ase or .ms3d file that contains the mesh data.
 geomobj:    geomobj describes the mappings between meshes in the model file, bone numbers and textures. Geomobj elements are children of bsh elements, there should be at least one geomobj.
             name:           The name of the mesh as given in the model file. This is case sensitive.
             bone:           The number of the bone to which this mesh is to be assigned. If the attribute is not specified then the root bone 0 is used. The root bone is generated automatically by the compiler.
             ftx:            The name of the texture to use. Textures are specified using "ftx" elements at the "ovl" level.
             txs:            The style with which the texture should be applied to the model.
-	    placing:        The texture placing setting. Optional. Can be "both" (default), "texture" or "glass" (the latter is called 'Unknown' in the Importer).
-	    flags:          The texture flags setting. Optional. Can be "none" (default), "sign", "terrain", "cliff", "water", "watermask", "billboard" or "animatedbillboard"
-	                    Note: If you set this to "sign", the txs attribute will be ignored (and you can leave it out).
-			          If you set it to something else (not "sign" or "none"), both ftx and txs attributes will be ignored (and you can leave them out).
-	    doublesided:    Determines wether faces are textured on one side (0, default) or both sides (1). Optional.
+            placing:        The texture placing setting. Optional. Can be "both" (default), "texture" or "glass" (the latter is called 'Unknown' in the Importer).
+                            New in ovlmake 0.3: you can alternatively use "solid", "transparent" or "glassy" respectively. Those reflect better what this setting actually means.
+            flags:          The texture flags setting. Optional. Can be "none" (default), "sign", "terrain", "cliff", "water", "watermask", "billboard" or "animatedbillboard"
+                            Note: If you set this to "sign", the txs attribute will be ignored (and you can leave it out).
+                                  If you set it to something else (not "sign" or "none"), both ftx and txs attributes will be ignored (and you can leave them out).
+            doublesided:    Determines wether faces are textured on one side (0, default) or both sides (1). Optional.
 bone:       Describes the bones in the object. A child of bsh. There can be many bones in an object.
             name:           The name of the bone. This is matched against bone names in the ban element.
             parent:         The bone that is the parent of this bone.
-pos1:	    The position and orientation of the bone. The 16 floats represent a 4x4 matrix, expressed row by row. A child of bone.
+pos1:       The position and orientation of the bone. The 16 floats represent a 4x4 matrix, expressed row by row. A child of bone.
 pos2:       Typically identical to the pos1.
 ban:        ban describe the bone animations, a child of ovl.
             name:           The name of the animation. Should match both the name in the bsh node and the name used for the outputfile.

@@ -354,6 +354,7 @@ int main(int argc, char **argv)
     wxBZipClassFactory cf;
 
     wxConfig::Set(new wxConfig(wxT("ovlmake")));
+    WRITE_RCT3_WARNOVERWRITE(false);
 
     wxInitializer initializer;
     if ( !initializer )

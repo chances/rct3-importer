@@ -35,6 +35,9 @@
 #define READ_RCT3_EXPERTMODE()       wxcRead<bool>(wxT("RCT3/ExpertMode"), false)
 #define WRITE_RCT3_EXPERTMODE(v)    wxcWrite<bool>(wxT("RCT3/ExpertMode"), v)
 
+#define READ_RCT3_WARNOVERWRITE()       wxcRead<bool>(wxT("RCT3/WarnOverwrite"), true)
+#define WRITE_RCT3_WARNOVERWRITE(v)    wxcWrite<bool>(wxT("RCT3/WarnOverwrite"), v)
+
 #define READ_RCT3_TRIANGLESORT_X()     wxcRead<wxString>(wxT("RCT3/TriangleSortX"), wxString(cTriangleSortAlgorithm::GetDefaultName(), wxConvLocal))
 #define WRITE_RCT3_TRIANGLESORT_X(v)  wxcWrite<wxString>(wxT("RCT3/TriangleSortX"), v)
 

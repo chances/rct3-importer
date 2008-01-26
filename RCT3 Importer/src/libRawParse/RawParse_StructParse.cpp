@@ -35,6 +35,7 @@ void cRawParser::ParseBAN(wxXmlNode* node) {
     OPTION_PARSE(float, ban.totaltime, ParseFloat(node, RAWXML_BAN, wxT("totaltime")));
     if (ban.totaltime != 0.0)
         ban.calc_time = false;
+    c3DLoaderOrientation ori = ParseOrientation(node, wxString::Format(wxT("ban(%s) tag"), name.c_str()));
     wxLogVerbose(wxString::Format(_("Adding ban %s to %s."), name.c_str(), m_output.GetFullPath().c_str()));
 
     wxXmlNode *child = node->GetChildren();
@@ -55,6 +56,8 @@ void cRawParser::ParseBAN(wxXmlNode* node) {
                     frame.X = ParseFloat(subchild, RAWXML_BAN_BONE_TRANSLATION, wxT("x"));
                     frame.Y = ParseFloat(subchild, RAWXML_BAN_BONE_TRANSLATION, wxT("y"));
                     frame.Z = ParseFloat(subchild, RAWXML_BAN_BONE_TRANSLATION, wxT("z"));
+                    if (ori != ORIENTATION_LEFT_YUP)
+                        doFixOrientation(frame, ori);
                     banim.translations.insert(frame);
                 } else if (subchild->GetName() == RAWXML_BAN_BONE_ROTATION) {
                     txyz frame;
@@ -62,6 +65,8 @@ void cRawParser::ParseBAN(wxXmlNode* node) {
                     frame.X = ParseFloat(subchild, RAWXML_BAN_BONE_ROTATION, wxT("x"));
                     frame.Y = ParseFloat(subchild, RAWXML_BAN_BONE_ROTATION, wxT("y"));
                     frame.Z = ParseFloat(subchild, RAWXML_BAN_BONE_ROTATION, wxT("z"));
+                    if (ori != ORIENTATION_LEFT_YUP)
+                        doFixOrientation(frame, ori);
                     banim.rotations.insert(frame);
                 } else if COMPILER_WRONGTAG(subchild) {
                     throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ban(%s)/banbone(%s)."), subchild->GetName().c_str(), name.c_str(), bonename.c_str()));
@@ -1389,11 +1394,17 @@ void cRawParser::ParseSID(wxXmlNode* node) {
 void cRawParser::ParseSPL(wxXmlNode* node) {
     USE_PREFIX(node);
     cSpline spl;
-    spl.name = ParseString(node, RAWXML_SPL, wxT("name"), NULL, useprefix).ToAscii();
-    spl.unk3 = ParseFloat(node, RAWXML_SPL, wxT("u3"));
-    OPTION_PARSE(float, spl.unk6, ParseFloat(node, RAWXML_SPL, wxT("u6")));
+    wxString name = ParseString(node, RAWXML_SPL, wxT("name"), NULL, useprefix);
+    spl.name = name.ToAscii();
+    if (node->HasProp(wxT("totallength"))) {
+        spl.calc_length = false;
+        spl.totallength = ParseFloat(node, RAWXML_SPL, wxT("totallength"));
+        spl.inv_totallength = ParseFloat(node, RAWXML_SPL, wxT("inv_totallength"));
+    }
+    OPTION_PARSE(float, spl.max_y, ParseFloat(node, RAWXML_SPL, wxT("max_y")));
     OPTION_PARSE(unsigned long, spl.cyclic, ParseUnsigned(node, RAWXML_SPL, wxT("cyclic")));
     OPTION_PARSE(unsigned long, spl.lengthcalcres, ParseUnsigned(node, RAWXML_SPL, wxT("autolengthres")));
+    c3DLoaderOrientation ori = ParseOrientation(node, wxString::Format(wxT("spl(%s) tag"), name.c_str()));
     wxLogVerbose(wxString::Format(_("Adding spl %s to %s."), wxString(spl.name.c_str(), wxConvLocal).c_str(), m_output.GetFullPath().c_str()));
 
     wxXmlNode *child = node->GetChildren();
@@ -1411,6 +1422,11 @@ void cRawParser::ParseSPL(wxXmlNode* node) {
             sp.cp2.x = ParseFloat(child, RAWXML_SPL_NODE, wxT("cp2x"));
             sp.cp2.y = ParseFloat(child, RAWXML_SPL_NODE, wxT("cp2y"));
             sp.cp2.z = ParseFloat(child, RAWXML_SPL_NODE, wxT("cp2z"));
+            if (ori != ORIENTATION_LEFT_YUP) {
+                doFixOrientation(sp.pos, ori);
+                doFixOrientation(sp.cp1, ori);
+                doFixOrientation(sp.cp2, ori);
+            }
             spl.nodes.push_back(sp);
         } else if (child->GetName() == RAWXML_SPL_LENGTH) {
             float l = ParseFloat(child, RAWXML_SPL_LENGTH, wxT("length"));
@@ -1419,23 +1435,23 @@ void cRawParser::ParseSPL(wxXmlNode* node) {
             cSplineData dt;
             wxString datastr = ParseString(child, RAWXML_SPL_DATA, wxT("data"), NULL);
             if (datastr.Length() != 28)
-                throw RCT3InvalidValueException(_("The data attribute of a spldata tag is of invalid length"));
+                throw RCT3InvalidValueException(wxString::Format(_("The data attribute of a spl(%s)/spldata tag is of invalid length"), name.c_str()));
             const char* d = datastr.ToAscii();
             for (int i = 0; i < 28; i+=2) {
                 unsigned char dta = 0;
                 unsigned char t = ParseDigit(d[i]);
                 if (t >= 16)
-                    throw RCT3InvalidValueException(_("The data attribute of a spldata tag has an invalid character"));
+                    throw RCT3InvalidValueException(wxString::Format(_("The data attribute of a spl(%s)/spldata tag has an invalid character"), name.c_str()));
                 dta += t * 16;
                 t = ParseDigit(d[i+1]);
                 if (t >= 16)
-                    throw RCT3InvalidValueException(_("The data attribute of a spldata tag has an invalid character"));
+                    throw RCT3InvalidValueException(wxString::Format(_("The data attribute of a spl(%s)/spldata tag has an invalid character"), name.c_str()));
                 dta += t;
                 dt.data[i/2] = dta;
             }
-            spl.unknowndata.push_back(dt);
+            spl.datas.push_back(dt);
         } else if COMPILER_WRONGTAG(child) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ced tag."), child->GetName().c_str()));
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in spl(%s) tag."), child->GetName().c_str(), name.c_str()));
         }
         child = child->GetNext();
     }

@@ -50,13 +50,13 @@ struct Spline {
     SplineNode*      nodes;           ///< Pointer to a list of SplineNode structures.
     unsigned long    cyclic;          ///< 0 for open spliens, 1 for cyclic splines
     float            totallength;
-    float            unk3;
+    float            inv_totallength; ///< Inverse of total length
     float*           lengths;         ///< The distance between each spline node point.
                                       /**
                                        * number of lengths is nodecount - 1 for open and nodecount for cyclic splines
                                        */
     SplineData*      datas;               ///< Pointer to SplineData, 14 bytes/length
-    float            unk6;
+    float            max_y;
 };
 
 

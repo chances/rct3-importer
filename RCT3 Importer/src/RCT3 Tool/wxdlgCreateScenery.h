@@ -109,6 +109,7 @@ protected:
     wxButton* m_btAnimationClear;
 
     wxTextCtrl* m_textName;
+    wxButton* m_btAutoName;
     wxFileSelectorCombo<wxDirDialog>* m_textPath;
     wxButton* m_btCheck;
     wxButton* m_btCreate;
@@ -191,6 +192,7 @@ protected:
     void OnAnimationDel(wxCommandEvent& event);
     void OnAnimationClear(wxCommandEvent& event);
 
+    void OnAutoName(wxCommandEvent& event);
     void OnCheck(wxCommandEvent& event);
     void OnCreate(wxCommandEvent& event);
 
@@ -270,6 +272,7 @@ private:
 
         m_textName = XRCCTRL(*this,"m_textName",wxTextCtrl);
         //m_textPath = XRCCTRL(*this,"m_textPath",wxTextCtrl);
+        m_btAutoName = XRCCTRL(*this,"m_btAutoName",wxButton);
         m_btCheck = XRCCTRL(*this,"m_btCheck",wxButton);
         m_btCreate = XRCCTRL(*this,"m_btCreate",wxButton);
     }

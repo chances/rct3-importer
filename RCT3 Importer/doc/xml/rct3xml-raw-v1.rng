@@ -135,6 +135,25 @@
       </attribute>
     </optional>
   </define>
+  <define name="orientationattrs">
+    <optional>
+      <attribute name="handedness">
+        <choice>
+          <value type="string">left</value>
+          <value type="string">right</value>
+        </choice>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="up">
+        <choice>
+          <value type="string">x</value>
+          <value type="string">y</value>
+          <value type="string">z</value>
+        </choice>
+      </attribute>
+    </optional>
+  </define>
   <define name="roottags">
     <choice>
       <ref name="variables"></ref>
@@ -549,6 +568,7 @@
       <define name="ban">
         <element name="ban">
           <ref name="baseattrs"></ref>
+          <ref name="orientationattrs"></ref>
           <attribute name="name">
             <data type="string"></data>
           </attribute>
@@ -1643,14 +1663,20 @@
       <define name="spl">
         <element name="spl">
           <ref name="baseattrs"></ref>
+          <ref name="orientationattrs"></ref>
           <optional>
-            <attribute name="u6">
+            <attribute name="max_y">
               <data type="float"></data>
             </attribute>
           </optional>
-          <attribute name="u3">
-            <data type="float"></data>
-          </attribute>
+          <optional>
+            <attribute name="totallength">
+              <data type="float"></data>
+            </attribute>
+            <attribute name="inv_totallength">
+              <data type="float"></data>
+            </attribute>
+          </optional>
           <attribute name="name">
             <data type="string"></data>
           </attribute>

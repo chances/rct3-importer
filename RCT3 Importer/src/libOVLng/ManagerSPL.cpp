@@ -61,7 +61,7 @@ inline VECTOR addVec(const VECTOR& f, const VECTOR& t) {
 /**
  * http://en.wikipedia.org/wiki/B%C3%A9zier_curve
  */
-inline float calcSplineLength(const VECTOR& p1, const VECTOR& p2, const VECTOR& p3, const VECTOR& p4, unsigned long segments) {
+inline float calcSplineLength(const VECTOR& p1, const VECTOR& p2, const VECTOR& p3, const VECTOR& p4, cSplineData& cdata) {
     float len = 0.0;
     VECTOR p12;
     VECTOR p23;
@@ -70,8 +70,9 @@ inline float calcSplineLength(const VECTOR& p1, const VECTOR& p2, const VECTOR& 
     VECTOR p234;
     VECTOR p1234;
     VECTOR o1234 = p1;
-    for (unsigned long  k = 1; k <= segments; ++k) {
-        float p = static_cast<float>(k) / static_cast<float>(segments);
+    vector<float> datadist;
+    for (unsigned long  k = 1; k <= 15; ++k) {
+        float p = static_cast<float>(k) / static_cast<float>(15);
         calcExtraVec(p, p1, p2, p12);
         calcExtraVec(p, p2, p3, p23);
         calcExtraVec(p, p3, p4, p34);
@@ -79,7 +80,12 @@ inline float calcSplineLength(const VECTOR& p1, const VECTOR& p2, const VECTOR& 
         calcExtraVec(p, p23, p34, p234);
         calcExtraVec(p, p123, p234, p1234);
         len += calcVecDist(o1234, p1234);
+        datadist.push_back(len);
         o1234 = p1234;
+    }
+    for (unsigned long k = 1; k < 15; ++k) {
+        float c = (static_cast<float>(k) * 16.0) + static_cast<float>(k);
+        cdata.data[k-1] = roundf((2*c) - (255.0 * datadist.at(k-1) / len));
     }
     return len;
 }
@@ -87,24 +93,35 @@ inline float calcSplineLength(const VECTOR& p1, const VECTOR& p2, const VECTOR& 
 void cSpline::CalcLengths() {
     if (!lengths.size()) {
         lengths.clear();
+        datas.clear();
+        max_y = 0;
         for (int i = 1; i < nodes.size(); ++i) {
-            lengths.push_back(calcSplineLengthAdd(nodes[i - 1].pos, nodes[i - 1].cp2, nodes[i].cp1, nodes[i].pos, lengthcalcres));
+            cSplineData cdata;
+            lengths.push_back(calcSplineLengthAdd(nodes[i - 1].pos, nodes[i - 1].cp2, nodes[i].cp1, nodes[i].pos, cdata));
+            datas.push_back(cdata);
+            if (nodes[i - 1].pos.y > max_y)
+                max_y = nodes[i - 1].pos.y;
         }
-        if (cyclic)
-            lengths.push_back(calcSplineLengthAdd(nodes[nodes.size() - 1].pos, nodes[nodes.size() - 1].cp2, nodes[0].cp1, nodes[0].pos, lengthcalcres));
+        if (cyclic) {
+            cSplineData cdata;
+            lengths.push_back(calcSplineLengthAdd(nodes[nodes.size() - 1].pos, nodes[nodes.size() - 1].cp2, nodes[0].cp1, nodes[0].pos, cdata));
+            datas.push_back(cdata);
+        }
+        if (nodes[nodes.size() - 1].pos.y > max_y)
+            max_y = nodes[nodes.size() - 1].pos.y;
     }
 }
 
 void cSpline::AssignData() {
-    unsigned long datas = nodes.size() - (cyclic?0:1);
-    if (!unknowndata.size()) {
+    unsigned long datacount = nodes.size() - (cyclic?0:1);
+    if (!datas.size()) {
         cSplineData sd;
         sd.MakeStrange();
-        unknowndata.push_back(sd);
+        datas.push_back(sd);
     }
-    if (unknowndata.size() < datas) {
-        for (unsigned long i = unknowndata.size(); i < datas; ++i) {
-            unknowndata.push_back(unknowndata[0]);
+    if (datas.size() < datacount) {
+        for (unsigned long i = datas.size(); i < datacount; ++i) {
+            datas.push_back(datas[0]);
         }
     }
 }
@@ -116,8 +133,8 @@ void cSpline::Fill(Spline* spl) {
         spl->totallength = 0.0;
     else
         spl->totallength = totallength;
-    spl->unk3 = unk3;
-    spl->unk6 = unk6;
+    spl->inv_totallength = inv_totallength;
+    spl->max_y = max_y;
     for (unsigned int i = 0; i < nodes.size(); ++i) {
         spl->nodes[i] = nodes[i];
     }
@@ -126,8 +143,10 @@ void cSpline::Fill(Spline* spl) {
         if (calc_length)
             spl->totallength += lengths[i];
     }
+    if (calc_length)
+        spl->inv_totallength = 1.0 / spl->totallength;
     unsigned long c = 0;
-    for (vector<cSplineData>::iterator it = unknowndata.begin(); it != unknowndata.end(); ++it) {
+    for (vector<cSplineData>::iterator it = datas.begin(); it != datas.end(); ++it) {
         for (int i = 0; i < 14; ++i) {
             spl->datas[c].data[i] = it->data[i];
         }
@@ -153,13 +172,13 @@ void ovlSPLManager::AddSpline(const cSpline& item) {
 
     if (m_items[item.name].lengths.size() != item.nodes.size() - (item.cyclic?0:1))
         throw EOvl("ovlSPLManager::AddSpline called with wrong number of lengths");
-    if (m_items[item.name].unknowndata.size() != item.nodes.size() - (item.cyclic?0:1))
+    if (m_items[item.name].datas.size() != item.nodes.size() - (item.cyclic?0:1))
         throw EOvl("ovlSPLManager::AddSpline called with wrong number of data items");
 
     m_size += sizeof(Spline);
     m_size += m_items[item.name].nodes.size() * sizeof(SplineNode);
     m_size += m_items[item.name].lengths.size() * sizeof(float);
-    m_size += m_items[item.name].unknowndata.size() * 14;
+    m_size += m_items[item.name].datas.size() * 14;
 
     GetLSRManager()->AddSymbol(OVLT_COMMON);
     GetLSRManager()->AddLoader(OVLT_COMMON);
@@ -189,7 +208,7 @@ void ovlSPLManager::Make(cOvlInfo* info) {
         GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_item->lengths));
 
         c_item->datas = reinterpret_cast<SplineData*>(c_data);
-        c_data += it->second.unknowndata.size() * 14;
+        c_data += it->second.datas.size() * 14;
         GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_item->datas));
 
         it->second.Fill(c_item);

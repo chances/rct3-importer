@@ -62,19 +62,19 @@ public:
     unsigned long cyclic;
     float totallength;
     bool calc_length;
-    float unk3;
+    float inv_totallength;
     vector<float> lengths;
     unsigned long lengthcalcres;
-    vector<cSplineData> unknowndata;
-    float unk6;
+    vector<cSplineData> datas;
+    float max_y;
 
     cSpline() {
         cyclic = 0;
         totallength = 0.0;
         calc_length = true;
         lengthcalcres = 10;
-        unk3 = 0.0;
-        unk6 = 0.0;
+        inv_totallength = 1.0;
+        max_y = 0.0;
     };
     void CalcLengths();
     void AssignData();

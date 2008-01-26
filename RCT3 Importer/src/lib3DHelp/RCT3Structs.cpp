@@ -249,6 +249,12 @@ bool cMeshStruct::FromCompilerXml(wxXmlNode* node, const wxString& path) {
         place = 2;
     } else if (placing.IsSameAs(wxT("both"))) {
         place = 0;
+    } else if (placing.IsSameAs(wxT("transparent"))) {
+        place = 1;
+    } else if (placing.IsSameAs(wxT("glassy"))) {
+        place = 2;
+    } else if (placing.IsSameAs(wxT("solid"))) {
+        place = 0;
     } else {
         throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Unknown placing value '%s'."), Name.c_str(), placing.c_str()));
     }
@@ -352,7 +358,7 @@ bool cMeshStruct::FromNode(wxXmlNode* node, const wxString& path, unsigned long 
             fudgenormals = 0;
             ret = false;
         } else {
-            if (fudgenormals > 3) {
+            if (fudgenormals >= CMS_FUDGE_ENUMSIZE) {
                 fudgenormals = 0;
                 ret = false;
             }

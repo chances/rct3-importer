@@ -75,7 +75,10 @@ The only thing I can do is wish you luck. Remember you can convert scn files to 
 
 Proper Transparency, a brief tutorial for the non-commandline savvy
 -------------------------------------------------------------------
-- Set up your scenery file as usual in the importer. Set placing to Unknown for "glassy" meshes (SIGlass or SIAlpha...Reflection texture styles) or Texture Only (for other SIAlpha styles). Keep at Texture&Mesh for SIAlphaMaskLow styles.
+- Set up your scenery file as usual in the importer. In the group/mesh settings set "placing" to
+  - "Unknown" for 'glassy' meshes (SIGlass, SIWater or SIAlpha...Reflection texture styles)
+  - "Texture Only" (for other SIAlpha styles).
+  - Keep at Texture&Mesh other styles.
 - Create an OVL file in the importer, then save the scn file (the order is important!).
 - Import the ovl file to make sure it works in principle and you didn't ignore any important warings.
 - Read and understand the Giving no output filename section above, because that's what you'll be doing in the next step.
@@ -85,7 +88,7 @@ Proper Transparency, a brief tutorial for the non-commandline savvy
 
 A few final words
 -----------------
-I've put considearble efford into finally understanding how ovl files work. While I have not yet understood all, I was able to rewrite the creation code in a much cleaner fashion. This also leads to the creation of cleaner ovl files by ovlmake. Therefore it may be a good idea to use ovlmake to compile your scn files for static scenery as well.
+I've put considerable efford into finally understanding how ovl files work. While I have not yet understood all, I was able to rewrite the creation code in a much cleaner fashion. This also leads to the creation of cleaner ovl files by ovlmake. Therefore it may be a good idea to use ovlmake to compile your scn files for static scenery as well.
 I will not explain the new importer xml format here in detail. As I've said above, it was not made to be human read/writable. Currently there is only one thing where you might be tempted to use it: using multiple lods with animation. I guess anyone who may be inclined to do so is adventerous enough to figure it out for himself from converting scn and ovlcompiler xml files =)
 
 

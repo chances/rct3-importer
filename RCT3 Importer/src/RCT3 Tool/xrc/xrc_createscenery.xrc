@@ -663,11 +663,30 @@
 											</object>
 											<object class="sizeritem">
 												<option>1</option>
-												<flag>wxALL|wxEXPAND</flag>
+												<flag>wxEXPAND</flag>
 												<border>5</border>
-												<object class="wxTextCtrl" name="m_textName">
-													<value></value>
-													<maxlength>0</maxlength>
+												<object class="wxBoxSizer">
+													<orient>wxHORIZONTAL</orient>
+													<object class="sizeritem">
+														<option>1</option>
+														<flag>wxALL|wxEXPAND</flag>
+														<border>5</border>
+														<object class="wxTextCtrl" name="m_textName">
+															<value></value>
+															<maxlength>0</maxlength>
+														</object>
+													</object>
+													<object class="sizeritem">
+														<option>0</option>
+														<flag>wxTOP|wxBOTTOM|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btAutoName">
+															<size>22,22</size>
+															<tooltip>Auto-create ovl file name</tooltip>
+															<label>A</label>
+															<default>0</default>
+														</object>
+													</object>
 												</object>
 											</object>
 											<object class="sizeritem">
@@ -763,6 +782,7 @@
 														<border>5</border>
 														<object class="wxChoice" name="m_choiceExpansion">
 															<tooltip>Set the expansion flag. No known effect in game.</tooltip>
+															<selection>0</selection>
 															<content>
 																<item>None</item>
 																<item>Soaked!</item>
@@ -1113,7 +1133,7 @@
 														<object class="wxSpinButton" name="m_spinAnimation">
 															<size>20,40</size>
 															<enabled>0</enabled>
-															<tooltip>Move texture up/down</tooltip>
+															<tooltip>Move animation up/down</tooltip>
 														</object>
 													</object>
 													<object class="sizeritem">
@@ -1122,7 +1142,7 @@
 														<border>5</border>
 														<object class="wxButton" name="m_btAnimationAdd">
 															<size>20,20</size>
-															<tooltip>Add Texture</tooltip>
+															<tooltip>Add Animation</tooltip>
 															<label>+</label>
 															<default>0</default>
 														</object>
@@ -1134,7 +1154,7 @@
 														<object class="wxButton" name="m_btAnimationEdit">
 															<size>20,20</size>
 															<enabled>0</enabled>
-															<tooltip>Edit Texture</tooltip>
+															<tooltip>Edit Animation</tooltip>
 															<label>E</label>
 															<default>0</default>
 														</object>
@@ -1146,7 +1166,7 @@
 														<object class="wxButton" name="m_btAnimationCopy">
 															<size>20,20</size>
 															<enabled>0</enabled>
-															<tooltip>Copy Texture</tooltip>
+															<tooltip>Copy Animation</tooltip>
 															<label>C</label>
 															<default>0</default>
 														</object>
@@ -1158,7 +1178,7 @@
 														<object class="wxButton" name="m_btAnimationDel">
 															<size>20,20</size>
 															<enabled>0</enabled>
-															<tooltip>Delete Texture</tooltip>
+															<tooltip>Delete Animation</tooltip>
 															<label>-</label>
 															<default>0</default>
 														</object>
@@ -1189,7 +1209,7 @@
 															<style>wxNO_BORDER</style>
 															<size>20,20</size>
 															<enabled>0</enabled>
-															<tooltip>Delete all textures</tooltip>
+															<tooltip>Delete all Animations</tooltip>
 															<label>C</label>
 															<default>0</default>
 														</object>

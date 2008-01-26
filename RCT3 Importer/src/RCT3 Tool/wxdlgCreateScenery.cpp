@@ -36,8 +36,10 @@
 #include <wx/progdlg.h>
 #include <wx/valgen.h>
 
-#include <IL/il.h>
-#include <IL/ilu.h>
+#include <algorithm>
+
+//#include <IL/il.h>
+//#include <IL/ilu.h>
 
 #include "auipicfiledlg.h"
 #include "confhelp.h"
@@ -493,6 +495,7 @@ EVT_BUTTON(XRCID("m_btAnimationAddToLod"), dlgCreateScenery::OnAnimationAddToLod
 EVT_BUTTON(XRCID("m_btAnimationClear"), dlgCreateScenery::OnAnimationClear)
 
 EVT_TEXT(XRCID("m_textName"), dlgCreateScenery::OnMakeDirty)
+EVT_BUTTON(XRCID("m_btAutoName"), dlgCreateScenery::OnAutoName)
 EVT_COMBOBOX(XRCID("m_textPath"), dlgCreateScenery::OnMakeDirty)
 EVT_BUTTON(XRCID("m_btCheck"), dlgCreateScenery::OnCheck)
 EVT_BUTTON(XRCID("m_btCreate"), dlgCreateScenery::OnCreate)
@@ -964,7 +967,7 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
                                          _T("Open Scenery File (Load textures into cache)"),
                                          wxEmptyString,
                                          wxEmptyString,
-                                         _T("Scenery Files (*.scn)|*.scn"),
+                                         _("Scenery Files (*.scn, *.xml)|*.scn;*.xml"),
                                          wxFD_FILE_MUST_EXIST|wxFD_CHANGE_DIR,
                                          wxDefaultPosition,
                                          wxSize(600,400)
@@ -1031,7 +1034,10 @@ void dlgCreateScenery::OnShowUnknowns(wxCommandEvent& WXUNUSED(event)) {
 //    bool savedirty = m_dirtyfile;
 //    TransferDataFromWindow();
     m_panelUnknown->Show( m_checkShowUnknown->IsChecked());
-    Fit();
+    //Fit();
+    wxSize best = GetBestSize();
+    wxSize now = GetClientSize();
+    SetClientSize(std::max(best.GetWidth(), now.GetWidth()), std::max(best.GetHeight(), now.GetHeight()));
     Layout();
 //    TransferDataToWindow();
 //    MakeDirty(savedirty);
@@ -1156,7 +1162,7 @@ void dlgCreateScenery::OnTextureAdd(wxCommandEvent& WXUNUSED(event)) {
                 }
             }
         } else {
-            ILinfo info;
+//            ILinfo info;
             int succeeded = 0;
             for (wxArrayString::iterator it = t_paths.begin(); it != t_paths.end(); it++) {
                 cFlexiTexture ftx;
@@ -1922,6 +1928,8 @@ void dlgCreateScenery::OnAnimationAddToLod(wxCommandEvent& WXUNUSED(event)) {
         plod->animations.Add(pani->name);
         m_htlbLOD->UpdateContents();
     }
+    MakeDirty();
+    UpdateControlState();
 }
 
 void dlgCreateScenery::OnAnimationClear(wxCommandEvent& WXUNUSED(event)) {
@@ -1946,6 +1954,23 @@ void dlgCreateScenery::OnAnimationClear(wxCommandEvent& WXUNUSED(event)) {
 
 WX_DECLARE_STRING_HASH_MAP(char *, ovlNameLookup);
 
+void dlgCreateScenery::OnAutoName(wxCommandEvent& event) {
+    int textures = m_SCN.flexitextures.size();
+    int other = m_SCN.models.size() + m_SCN.animatedmodels.size() + m_SCN.lods.size() + m_SCN.animations.size();
+    if (textures && (!other)) {
+        m_textName->SetValue(m_prefix + m_theme + wxT("-texture"));
+    } else if (other) {
+        wxString name = m_SCN.filename.GetName();
+        if (name.IsEmpty()) {
+            ::wxMessageBox(_("Cannot autoname in unsaved state."), _("Error"), wxOK | wxICON_ERROR, this);
+            return;
+        }
+        m_textName->SetValue(m_prefix + name);
+    } else {
+        ::wxMessageBox(_("Cannot autoname as long as you didn't add any data."), _("Error"), wxOK | wxICON_ERROR, this);
+    }
+}
+
 void dlgCreateScenery::OnCheck(wxCommandEvent& WXUNUSED(event)) {
     bool all_ok = true;
     bool cont = true;
@@ -1966,8 +1991,12 @@ void dlgCreateScenery::OnCheck(wxCommandEvent& WXUNUSED(event)) {
         wxLogError(_("Unknown exception during check: %s"), e.what());
         all_ok = false;
     }
-    if (all_ok)
-        wxLogMessage(_("All data seems to be ok."));
+    if (all_ok) {
+        if (m_SCN.IsTextureOVL())
+            wxLogMessage(_("All data seems to be ok (texture ovl)."));
+        else
+            wxLogMessage(_("All data seems to be ok (scenery ovl)."));
+    }
     wxLog::FlushActive();
 
 #ifndef __WXDEBUG__
