@@ -15,7 +15,7 @@
 				<Option output="..\..\bin\manager\RCT3 Manager.exe" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="..\..\bin\manager" />
 				<Option object_output="..\..\lib\obj\RCT3 Manager\release" />
-				<Option external_deps="..\..\lib\lib3DHelp.a;..\..\lib\libWXHelp.a;..\..\lib\libASE.a;..\..\lib\libOVLng.a;..\..\lib\libOVLDump.a;..\..\lib\libRawParseu.a;" />
+				<Option external_deps="..\..\lib\lib3DHelp.a;..\..\lib\libWXHelp.a;..\..\lib\libASE.a;..\..\lib\libOVLng.a;..\..\lib\libOVLDump.a;..\..\lib\libRawParseu.a;..\..\lib\libXmlCppu.a;" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -35,6 +35,7 @@
 					<Add library="OVLng" />
 					<Add library="sqlite3" />
 					<Add library="OVLDump" />
+					<Add library="XmlCppu" />
 					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
@@ -42,7 +43,7 @@
 				<Option output="..\..\bin\manager\RCT3 Managerd.exe" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="..\..\bin\manager" />
 				<Option object_output="..\..\lib\obj\RCT3 Manager\debug" />
-				<Option external_deps="..\..\lib\lib3DHelpd.a;..\..\lib\libWXHelpd.a;..\..\lib\libASEd.a;..\..\lib\libOVLngd.a;..\..\lib\libOVLDumpd.a;..\..\lib\libRawParseud.a;" />
+				<Option external_deps="..\..\lib\lib3DHelpd.a;..\..\lib\libWXHelpd.a;..\..\lib\libASEd.a;..\..\lib\libOVLngd.a;..\..\lib\libOVLDumpd.a;..\..\lib\libRawParseud.a;..\..\lib\libXmlCppud.a;" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -64,33 +65,7 @@
 					<Add library="OVLngud" />
 					<Add library="sqlite3" />
 					<Add library="OVLDumpd" />
-					<Add directory="..\..\bin" />
-				</Linker>
-			</Target>
-			<Target title="Debug (Public)">
-				<Option output="..\..\bin\manager\RCT3 Managerpd.exe" prefix_auto="0" extension_auto="0" />
-				<Option working_dir="..\..\bin\manager" />
-				<Option object_output="..\..\lib\obj\RCT3 Manager\debugpd" />
-				<Option external_deps="..\..\lib\lib3DHelpd.a;..\..\bin\libOVLd.a;..\..\lib\libWXHelpd.a;..\..\lib\libASEd.a;..\..\lib\libOVLngd.a;" />
-				<Option type="0" />
-				<Option compiler="gcc" />
-				<Option projectLinkerOptionsRelation="2" />
-				<Compiler>
-					<Add option="-W" />
-					<Add option="-Wall" />
-					<Add option="-g" />
-					<Add option="-DDEBUG" />
-					<Add option="-D__WXDEBUG__" />
-					<Add option="-DPUBLICDEBUG" />
-					<Add directory="$(#mingw.lib)\wx\include\msw-unicode-debug-static-2.8" />
-				</Compiler>
-				<Linker>
-					<Add library="libOVLd" />
-					<Add library="3DHelpd" />
-					<Add library="WXHelpd" />
-					<Add library="libASE" />
-					<Add library="libOVLngd" />
-					<Add library="wx_mswd-2.8" />
+					<Add library="XmlCppud" />
 					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
@@ -112,6 +87,9 @@
 			<Add option="-DUSE_SQUISH" />
 			<Add option="-DCACHE_GXIMAGE" />
 			<Add option="-DUNICODE" />
+			<Add option="-DLIBXML_STATIC" />
+			<Add option="-DXMLCPP_USE_XSLT" />
+			<Add option="-DXMLCPP_USE_WXWIDGETS" />
 			<Add directory="$(#wx.include)" />
 			<Add directory="..\lib3DHelp" />
 			<Add directory="..\..\include" />
@@ -121,10 +99,15 @@
 			<Add directory="..\libOVLng" />
 			<Add directory="..\libOVLDump" />
 			<Add directory="..\libRawParse" />
+			<Add directory="..\libXmlCpp" />
+			<Add directory="$(#mingw.include)\libxml2" />
 		</Compiler>
 		<Linker>
 			<Add library="GraphicsMagick++" />
 			<Add library="GraphicsMagick" />
+			<Add library="exslt" />
+			<Add library="xslt" />
+			<Add library="xml2" />
 			<Add library="png" />
 			<Add library="tiff" />
 			<Add library="jpeg" />
@@ -161,65 +144,53 @@
 		<Unit filename="managerabout.cpp">
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="managerabout.h">
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="managerapp.cpp">
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="managerapp.h">
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="managerconfig.h">
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="managermain.cpp">
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="managermain.h">
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="managerresourcefiles.h">
 			<Option virtualFolder="resources\" />
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="managerresources.cpp">
 			<Option virtualFolder="resources\" />
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="managerresources.h">
 			<Option virtualFolder="resources\" />
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="packagelistbox.cpp">
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="packagelistbox.h">
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="resources\GUID-List-Authors.xml">
 			<Option compile="1" />
@@ -252,32 +223,26 @@
 		<Unit filename="sha1.cpp">
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="sha1.h">
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="version.h">
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="wx_pch.h">
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="wxsha1.cpp">
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="wxsha1.h">
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="xrc\about.fbp">
 			<Option compile="1" />
@@ -285,7 +250,6 @@
 			<Option compiler="gcc" use="0" buildCommand="wxFormBuilder -g $file_name.fbp" />
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="xrc\main.fbp">
 			<Option compile="1" />
@@ -293,7 +257,6 @@
 			<Option compiler="gcc" use="0" buildCommand="wxFormBuilder -g $file" />
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="xrc\progress.fbp">
 			<Option compile="1" />
@@ -301,7 +264,6 @@
 			<Option compiler="gcc" use="0" buildCommand="wxFormBuilder -g $file" />
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="xrc_images.cpp">
 			<Option compile="0" />
@@ -309,37 +271,16 @@
 			<Option virtualFolder="resources\" />
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="xrc_images.h">
 			<Option virtualFolder="resources\" />
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Extensions>
 			<code_completion />
 			<envvars />
-			<debugger>
-				<remote_debugging target="Precompile XRC">
-					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
-				</remote_debugging>
-				<remote_debugging target="Release">
-					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
-				</remote_debugging>
-				<remote_debugging target="Debug (Public)">
-					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
-				</remote_debugging>
-				<remote_debugging target="Premake Resources">
-					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
-				</remote_debugging>
-				<remote_debugging target="Debug Unicode">
-					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
-				</remote_debugging>
-				<remote_debugging target="Debug (Public)">
-					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
-				</remote_debugging>
-			</debugger>
+			<debugger />
 			<AutoVersioning>
 				<Scheme minor_max="1" build_max="0" rev_max="0" rev_rand_max="1" build_times_to_increment_minor="100" />
 				<Settings autoincrement="0" date_declarations="1" do_auto_increment="1" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="version.h" />

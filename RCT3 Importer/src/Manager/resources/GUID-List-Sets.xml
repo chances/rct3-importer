@@ -459,6 +459,7 @@
 <package name="Gravediggers" guid="57234a98-f263-415b-89bd-88321483c42b">
 	<author guid="ab53e6ed-abfc-438a-8d50-01b4be8d4188" />
 	<author guid="2018add2-0a38-4d78-8a38-f9fb4a420149" />
+	<warning type="Test">Blah Blah</warning>
 </package>
 <package name="Hangar 51" guid="06056c23-3af2-4e2b-99fe-86a59c85a8ef" authorguid="1cb2f784-217c-4f72-84b5-3e2812e1913c" />
 <package name="HGR 71 v1.2" guid="bd733868-6028-40c5-af71-3929892dde36" authorguid="1cb2f784-217c-4f72-84b5-3e2812e1913c" />

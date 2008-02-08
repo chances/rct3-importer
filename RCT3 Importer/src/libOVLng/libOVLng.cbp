@@ -5,6 +5,7 @@
 		<Option title="libOVLng" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
+		<Option virtualFolders="Structure Managers\;" />
 		<Build>
 			<Target title="Release">
 				<Option output="..\..\lib\libOVLng.a" prefix_auto="0" extension_auto="0" />
@@ -87,6 +88,7 @@
 		<Unit filename="..\..\include\scenery.h" />
 		<Unit filename="..\..\include\sceneryrevised.h" />
 		<Unit filename="..\..\include\sceneryvisual.h" />
+		<Unit filename="..\..\include\sharedride.h" />
 		<Unit filename="..\..\include\spline.h" />
 		<Unit filename="..\..\include\stall.h" />
 		<Unit filename="..\..\include\staticshape.h" />
@@ -96,48 +98,133 @@
 		<Unit filename="..\..\include\xmldefs.h" />
 		<Unit filename="LodSymRefManager.cpp" />
 		<Unit filename="LodSymRefManager.h" />
-		<Unit filename="ManagerBAN.cpp" />
-		<Unit filename="ManagerBAN.h" />
-		<Unit filename="ManagerBSH.cpp" />
-		<Unit filename="ManagerBSH.h" />
-		<Unit filename="ManagerBTBL.cpp" />
-		<Unit filename="ManagerBTBL.h" />
-		<Unit filename="ManagerCED.cpp" />
-		<Unit filename="ManagerCED.h" />
-		<Unit filename="ManagerCHG.cpp" />
-		<Unit filename="ManagerCHG.h" />
-		<Unit filename="ManagerCID.cpp" />
-		<Unit filename="ManagerCID.h" />
-		<Unit filename="ManagerCommon.cpp" />
-		<Unit filename="ManagerCommon.h" />
-		<Unit filename="ManagerFLIC.cpp" />
-		<Unit filename="ManagerFLIC.h" />
-		<Unit filename="ManagerFTX.cpp" />
-		<Unit filename="ManagerFTX.h" />
-		<Unit filename="ManagerGSI.cpp" />
-		<Unit filename="ManagerGSI.h" />
+		<Unit filename="ManagerBAN.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerBAN.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerBSH.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerBSH.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerBTBL.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerBTBL.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerCED.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerCED.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerCHG.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerCHG.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerCID.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerCID.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerCommon.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerCommon.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerFLIC.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerFLIC.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerFTX.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerFTX.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerGSI.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerGSI.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
 		<Unit filename="ManagerOVL.cpp">
 			<Option weight="10" />
+			<Option virtualFolder="Structure Managers\" />
 		</Unit>
-		<Unit filename="ManagerOVL.h" />
-		<Unit filename="ManagerSAT.cpp" />
-		<Unit filename="ManagerSAT.h" />
-		<Unit filename="ManagerSHS.cpp" />
-		<Unit filename="ManagerSHS.h" />
-		<Unit filename="ManagerSID.cpp" />
-		<Unit filename="ManagerSID.h" />
-		<Unit filename="ManagerSPL.cpp" />
-		<Unit filename="ManagerSPL.h" />
-		<Unit filename="ManagerSTA.cpp" />
-		<Unit filename="ManagerSTA.h" />
-		<Unit filename="ManagerSVD.cpp" />
-		<Unit filename="ManagerSVD.h" />
-		<Unit filename="ManagerTEX.cpp" />
-		<Unit filename="ManagerTEX.h" />
-		<Unit filename="ManagerTXT.cpp" />
-		<Unit filename="ManagerTXT.h" />
-		<Unit filename="ManagerWAI.cpp" />
-		<Unit filename="ManagerWAI.h" />
+		<Unit filename="ManagerOVL.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerPTD.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerPTD.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerSAT.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerSAT.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerSHS.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerSHS.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerSID.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerSID.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerSPL.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerSPL.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerSTA.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerSTA.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerSVD.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerSVD.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerTEX.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerTEX.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerTXT.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerTXT.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerWAI.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerWAI.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
 		<Unit filename="OVLClasses.cpp" />
 		<Unit filename="OVLClasses.h" />
 		<Unit filename="OVLDebug.cpp" />
@@ -197,6 +284,15 @@
 				<remote_debugging target="Release">
 					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
 				</remote_debugging>
+				<remote_debugging target="Debug">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Release">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug Unicode">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
 				<remote_debugging target="Premake Resources">
 					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
 				</remote_debugging>
@@ -204,6 +300,12 @@
 					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
 				</remote_debugging>
 				<remote_debugging target="Debug (Public)">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Release">
 					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
 				</remote_debugging>
 			</debugger>

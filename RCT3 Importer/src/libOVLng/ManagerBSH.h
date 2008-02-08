@@ -85,6 +85,7 @@ public:
 
 class cBoneShape2 {
 public:
+    long support;
 	string fts; //is 0 in disk files
 	string texturestyle; //is 0 in disk files
 	unsigned long placetexturing; //0 = dont see texturing on things when being placed, 1 = see texturing on things when being placed
@@ -103,6 +104,7 @@ public:
 	    placetexturing = 0;
 	    textureflags = 0;
 	    sides = 3;
+	    support = SharedShape::Supports::None;
 #ifndef GLASS_OLD
 	    algo_x = cTriangleSortAlgorithm::DEFAULT;
 	    algo_y = cTriangleSortAlgorithm::DEFAULT;
@@ -129,9 +131,11 @@ public:
 	    bs1->BoundingBox2 = bbox2;
 	    bs1->TotalVertexCount = 0;
 	    bs1->TotalIndexCount = 0;
-	    bs1->MeshCount2 = meshes.size();
+	    bs1->MeshCount2 = 0;
 	    bs1->MeshCount = meshes.size();
 	    for(unsigned long i = 0; i < meshes.size(); ++i) {
+	        if (meshes[i].support == SharedShape::Supports::None)
+                bs1->MeshCount2++;
             meshes[i].Fill(bs1->sh[i], &bs1->TotalVertexCount, &bs1->TotalIndexCount);
 	    }
 	    bs1->BoneCount = bones.size();

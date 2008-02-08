@@ -30,7 +30,10 @@
 #include <wx/snglinst.h>
 #include <wx/wxsqlite3.h>
 
-class ManagerApp : public wxApp {
+#include "cXmlInitHandler.h"
+#include "wxXmlInputCallbackFileSystem.h"
+
+class ManagerApp : public wxApp, public xmlcpp::cXmlInitHandler {
 private:
     wxSingleInstanceChecker* m_checker;
     wxFileName m_appdir;

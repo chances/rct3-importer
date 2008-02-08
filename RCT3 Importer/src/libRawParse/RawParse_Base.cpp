@@ -156,6 +156,7 @@ bool cRawParser::MakeVariable(wxString& var) {
             }
             repl = it->second;
         }
+        wxLogVerbose(_("Found variable: ") + varname + wxT(" --> ") + repl);
         var.Replace(wxT("$")+varname+wxT("$"), repl, false);
         return true;
     }
@@ -182,6 +183,13 @@ void cRawParser::Load(wxXmlNode* root) {
         throw RCT3Exception(wxT("cRawParser::Load, root is null"));
     bool subonly = false;
 
+    fprintf(stderr, "\n");
+    wxLogVerbose(wxString::Format(_("Parsing from raw xml %s."), m_input.GetFullPath().c_str()));
+
+    for (cRawParserVars::iterator it = m_variables.begin(); it != m_variables.end(); ++it) {
+        wxLogVerbose(wxString::Format(_("  var '%s'->'%s'."), it->first.c_str(), it->second.c_str()));
+    }
+
     if (m_bakeroot == wxT(""))
         m_bakeroot = m_input;
 
@@ -190,6 +198,7 @@ void cRawParser::Load(wxXmlNode* root) {
     if (m_mode != MODE_BAKE) {
         if (root->HasProp(wxT("conditions"))) {
             wxString cond = root->GetPropVal(wxT("conditions"), wxT(""));
+            MakeVariable(cond);
             ParseConditions(cond);
         }
     }
@@ -198,6 +207,7 @@ void cRawParser::Load(wxXmlNode* root) {
         // <rawovl|subovl file="outputfile" basedir="dir outputfile is relative to">
         {
             wxString basedir = root->GetPropVal(wxT("basedir"), wxT(""));
+            MakeVariable(basedir);
             if ((m_mode == MODE_INSTALL) && root->HasProp(wxT("installdir"))) {
                 basedir = root->GetPropVal(wxT("installdir"), wxT(""));
             }
@@ -223,7 +233,9 @@ void cRawParser::Load(wxXmlNode* root) {
                 throw RCT3Exception(_("Failed to create directory: ")+m_outputbasedir.GetPathWithSep());
         }
         if (m_output == wxT("")) {
-            m_output = root->GetPropVal(wxT("file"), wxT(""));
+            wxString output = root->GetPropVal(wxT("file"), wxT(""));
+            MakeVariable(output);
+            m_output = output;
         }
 
         if (m_output != wxT("")) {

@@ -64,7 +64,7 @@ struct cTriangle2Sorter {
 
 
 void cBoneShape2::Fill(BoneShape2* bs2, unsigned long* vert, unsigned long* ind) {
-    bs2->unk1 = 0xffffffff;
+    bs2->unk1 = support;
     bs2->fts = NULL;
     bs2->TextureData = NULL;
     bs2->PlaceTexturing = placetexturing;

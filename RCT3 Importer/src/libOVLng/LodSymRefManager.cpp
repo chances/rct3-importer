@@ -109,7 +109,7 @@ void ovlLodSymRefManager::Assign(cOvlInfo* info) {
             m_csymbol[i]++;
         }
     }
-
+    m_assigned = true;
 }
 
 void ovlLodSymRefManager::Make(const map<string, unsigned long>& loadernumbers) {
@@ -117,7 +117,7 @@ void ovlLodSymRefManager::Make(const map<string, unsigned long>& loadernumbers) 
         throw EOvl("ovlLodSymRefManager::Make called twice");
     if (!m_relman)
         throw EOvl("ovlLodSymRefManager::Make called with unassigned relocation manager");
-    if (!(m_loaders[0] || m_symbols[0] || m_symrefs[0] || m_loaders[1] || m_symbols[1] || m_symrefs[1]))
+    if (!m_assigned)
         throw EOvl("ovlLodSymRefManager::Make called before assignment");
     if (m_uloadercount[0] < m_loadercount[0])
         throw EOvl("ovlLodSymRefManager::Make called with unassigned common loader(s)");

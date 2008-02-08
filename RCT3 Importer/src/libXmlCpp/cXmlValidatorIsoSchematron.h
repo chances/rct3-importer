@@ -1,0 +1,63 @@
+///////////////////////////////////////////////////////////////////////////////
+//
+// libXmlCpp
+// A light C++ wrapper for libxml2, libxslt and libexslt
+// Copyright (C) 2008 Tobias Minch
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 3
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, <http://www.gnu.org/licenses/>.
+//
+// Written by
+//   Tobias Minich - belgabor@gmx.de
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef CXMLVALIDATORISOSCHEMATRON_H_INCLUDED
+#define CXMLVALIDATORISOSCHEMATRON_H_INCLUDED
+
+#ifdef XMLCPP_USE_XSLT
+
+#include <map>
+#include <string>
+
+#include "cXmlValidator.h"
+#include "cXsltStylesheet.h"
+
+namespace xmlcpp {
+
+class cXmlValidatorIsoSchematron: public cXmlValidator {
+private:
+    static bool g_resinit;
+    cXsltStylesheet m_transform;
+
+    void Init();
+    //void DeInit();
+    //void Parse(int options);
+public:
+    cXmlValidatorIsoSchematron():cXmlValidator() { Init(); }
+    virtual ~cXmlValidatorIsoSchematron();
+
+    bool read(cXmlDoc& doc, const std::map<std::string, std::string>& options = (std::map<std::string, std::string>()) );
+    bool read(const std::string& buffer, const std::map<std::string, std::string>& options = (std::map<std::string, std::string>()) );
+    bool read(const char* URL, const std::map<std::string, std::string>& options = (std::map<std::string, std::string>()) );
+
+    virtual int validate(boost::shared_ptr<xmlDoc>& doc, int options = OPT_NONE);
+
+    virtual bool ok() const { return m_transform.ok(); }
+};
+
+} // Namespace
+
+#endif
+
+#endif // CXMLVALIDATORISOSCHEMATRON_H_INCLUDED

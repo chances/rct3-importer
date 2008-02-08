@@ -113,7 +113,7 @@ struct cTriangleSorter {
 
 
 void cStaticShape2::Fill(StaticShape2* ss2, unsigned long* vert, unsigned long* ind) {
-    ss2->unk1 = 0xffffffff;
+    ss2->unk1 = support;
     ss2->fts = NULL;
     ss2->TextureData = NULL;
     ss2->PlaceTexturing = placetexturing;

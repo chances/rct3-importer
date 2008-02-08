@@ -44,16 +44,16 @@ private:
     int m_size;
     char* m_table;
 
-    char* FindRawString(const std::string& findit) const;
+    char* FindRawString(const string& findit) const;
 public:
     ovlStringTable();
     ~ovlStringTable();
 
-    void AddString(const char *lstring);
-    void AddSymbolString(const char *lstring, const char *lextension);
+    void AddString(const string& lstring);
+    void AddSymbolString(const string& lstring, const string& lextension);
     char* Make(cOvlInfo* info);
-    char* FindString(const char *lstring) const;
-    char* FindSymbolString(const char *lstring, const char *lextension) const;
+    char* FindString(const string& lstring) const;
+    char* FindSymbolString(const string& lstring, const string& lextension) const;
     int GetSize() const;
 };
 

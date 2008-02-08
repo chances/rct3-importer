@@ -8,6 +8,7 @@
 //#include "ManagerFLIC.h"  // Not meant for direct access
 #include "ManagerFTX.h"
 #include "ManagerGSI.h"
+#include "ManagerPTD.h"
 #include "ManagerSAT.h"
 #include "ManagerSHS.h"
 #include "ManagerSPL.h"

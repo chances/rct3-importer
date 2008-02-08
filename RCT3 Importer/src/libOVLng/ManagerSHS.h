@@ -53,6 +53,7 @@ public:
 
 class cStaticShape2 {
 public:
+    long support;
 	string fts; //is 0 in disk files
 	string texturestyle; //is 0 in disk files
 	unsigned long placetexturing; //0 = dont see texturing on things when being placed, 1 = see texturing on things when being placed
@@ -71,6 +72,7 @@ public:
 	    placetexturing = 0;
 	    textureflags = 0;
 	    sides = 3;
+	    support = SharedShape::Supports::None;
 #ifndef GLASS_OLD
 	    algo_x = cTriangleSortAlgorithm::DEFAULT;
 	    algo_y = cTriangleSortAlgorithm::DEFAULT;
@@ -97,9 +99,11 @@ public:
 	    ss1->BoundingBox2 = bbox2;
 	    ss1->TotalVertexCount = 0;
 	    ss1->TotalIndexCount = 0;
-	    ss1->MeshCount2 = meshes.size();
+	    ss1->MeshCount2 = 0;
 	    ss1->MeshCount = meshes.size();
 	    for(unsigned long i = 0; i < meshes.size(); ++i) {
+	        if (meshes[i].support == SharedShape::Supports::None)
+                ss1->MeshCount2++;
             meshes[i].Fill(ss1->sh[i], &ss1->TotalVertexCount, &ss1->TotalIndexCount);
 	    }
 	    ss1->EffectCount = effects.size();

@@ -487,6 +487,9 @@ void cRawParser::Parse(wxXmlNode* node) {
 
             ovlGSIManager* c_gsi = m_ovl.GetManager<ovlGSIManager>();
             c_gsi->AddItem(name.ToAscii(), tex.ToAscii(), left, top, right, bottom);
+        } else if (child->GetName() == RAWXML_PTD) {
+            BAKE_SKIP(child);
+            ParsePTD(child);
         } else if (child->GetName() == RAWXML_SAT) {
             BAKE_SKIP(child);
             ParseSAT(child);

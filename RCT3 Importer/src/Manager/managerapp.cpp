@@ -31,11 +31,14 @@
 #include <wx/fs_filter.h>
 #include <wx/fs_mem.h>
 #include <wx/link.h>
-#include <wx/xrc/xmlres.h>
-#include <wx/xrc/xh_all.h>
+//#include <wx/xrc/xmlres.h>
+//#include <wx/xrc/xh_all.h>
 
 #include "bzipstream.h"
 #include "counted_array_ptr.h"
+#include "cXmlDoc.h"
+#include "cXmlNode.h"
+#include "wxXmlInputCallbackFileSystem.h"
 #include "managerconfig.h"
 #include "managermain.h"
 #include "managerresourcefiles.h"
@@ -137,6 +140,8 @@ bool ManagerApp::OnInit() {
     wxFileSystem::AddHandler(new wxMemoryFSHandler);
 
     wxBZipClassFactory cf;
+
+    xmlcpp::wxXmlInputCallbackFileSystem::Init();
 
     m_appdir = wxFileName(argv[0]).GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME);
 
@@ -301,6 +306,33 @@ bool ManagerApp::CheckManagerDB() {
 
         m_managerdb.Begin();
 
+        try {
+            xmlcpp::cXmlDoc xdoc(wxString(MEMORY_PREFIX RES_XML_AUTHORS).mb_str(wxConvUTF8), NULL);
+            if (xdoc.ok()) {
+                xmlcpp::cXmlNode child(xdoc.getRoot().children());
+                while (child.ok()) {
+                    if (child.name() == "author") {
+                        wxString name(child.getProp("name", "").c_str(), wxConvUTF8);
+                        name.Trim();
+                        name.Trim(true);
+                        wxString guid(child.getProp("guid", "").c_str(), wxConvUTF8);
+                        guid.Trim();
+                        guid.Trim(true);
+                        if (name.IsEmpty() || guid.IsEmpty()) {
+                            m_managerdb.Rollback();
+                            wxLogError(_("Error in author list xml."));
+                            return false;
+                        }
+                        temp.Format("insert into authorlist values ('%q', '%q', 1);", name.mb_str(wxConvUTF8).data(), guid.mb_str(wxConvUTF8).data());
+                        m_managerdb.ExecuteUpdate(temp);
+                    }
+                    child.go_next();
+                }
+            }
+        } catch (std::exception& e) {
+            wxLogError(wxString(e.what(), wxConvUTF8));
+        }
+/*
         std::auto_ptr<wxFSFile> inputfsfile(fs.OpenFile(MEMORY_PREFIX RES_XML_AUTHORS, wxFS_READ));
 
         wxXmlDocument doc(*inputfsfile->GetStream());
@@ -324,6 +356,7 @@ bool ManagerApp::CheckManagerDB() {
             }
             child = child->GetNext();
         }
+*/
         m_managerdb.Commit();
     }
     if (!m_managerdb.TableExists(wxT("packagelist"))) {
@@ -340,6 +373,97 @@ bool ManagerApp::CheckManagerDB() {
 
         m_managerdb.Begin();
 
+        try {
+            xmlcpp::cXmlDoc xdoc(wxString(MEMORY_PREFIX RES_XML_PACKAGES).mb_str(wxConvUTF8), NULL);
+            if (xdoc.ok()) {
+                xmlcpp::cXmlNode child(xdoc.getRoot().children());
+                while (child.ok()) {
+                    if (child.name() == "package") {
+                        wxString name(child.getProp("name", "").c_str(), wxConvUTF8);
+                        name.Trim();
+                        name.Trim(true);
+                        wxString shortname(child.getProp("shortname", "").c_str(), wxConvUTF8);
+                        shortname.Trim();
+                        shortname.Trim(true);
+                        wxString guid(child.getProp("guid", "").c_str(), wxConvUTF8);
+                        guid.Trim();
+                        guid.Trim(true);
+                        wxString version(child.getProp("version", "").c_str(), wxConvUTF8);
+                        version.Trim();
+                        version.Trim(true);
+                        if (name.IsEmpty() || guid.IsEmpty()) {
+                            m_managerdb.Rollback();
+                            wxLogError(_("Error in package list xml (name and/or guid missing)."));
+                            return false;
+                        }
+                        temp.Format("insert into packagelist values ('%q', '%q', '%q', '%q', 1);", name.mb_str(wxConvUTF8).data(),
+                                    shortname.mb_str(wxConvUTF8).data(), guid.mb_str(wxConvUTF8).data(), version.mb_str(wxConvUTF8).data());
+                        m_managerdb.ExecuteUpdate(temp);
+
+                        bool haveauthor = false;
+                        if (child.hasProp("authorguid")) {
+                            wxString authorguid(child.getProp("authorguid", "").c_str(), wxConvUTF8);
+                            authorguid.Trim();
+                            authorguid.Trim(true);
+                            if (authorguid.IsEmpty()) {
+                                m_managerdb.Rollback();
+                                wxLogError(_("Error in package list xml (authorguid empty)."));
+                                return false;
+                            }
+                            temp.Format("insert into packagelist_authors values ('%q', '%q');", guid.mb_str(wxConvUTF8).data(), authorguid.mb_str(wxConvUTF8).data());
+                            m_managerdb.ExecuteUpdate(temp);
+                            haveauthor  = true;
+                        }
+
+                        xmlcpp::cXmlNode subchild(child.children());
+                        while(subchild.ok()) {
+                            if (subchild.name() == "author") {
+                                wxString authorguid(subchild.getProp("guid", "").c_str(), wxConvUTF8);
+                                authorguid.Trim();
+                                authorguid.Trim(true);
+                                if (authorguid.IsEmpty()) {
+                                    m_managerdb.Rollback();
+                                    wxLogError(_("Error in package list xml (author[guid] empty)."));
+                                    return false;
+                                }
+                                temp.Format("insert into packagelist_authors values ('%q', '%q');", guid.mb_str(wxConvUTF8).data(), authorguid.mb_str(wxConvUTF8).data());
+                                m_managerdb.ExecuteUpdate(temp);
+                                haveauthor  = true;
+                            } else if (subchild.name() == "warning") {
+                                wxString wtype(subchild.getProp("type", "").c_str(), wxConvUTF8);
+                                wtype.Trim();
+                                wtype.Trim(true);
+                                if (wtype.IsEmpty()) {
+                                    m_managerdb.Rollback();
+                                    wxLogError(_("Error in package list xml (warning[type] empty)."));
+                                    return false;
+                                }
+                                wxString desc(subchild.content().c_str(), wxConvUTF8);
+                                desc.Trim();
+                                desc.Trim(true);
+                                temp.Format("insert into packagelist_warnings values ('%q', '%q', '%q');", guid.mb_str(wxConvUTF8).data(), wtype.mb_str(wxConvUTF8).data(), desc.mb_str(wxConvUTF8).data());
+                                m_managerdb.ExecuteUpdate(temp);
+                            }
+                            subchild.go_next();
+                        }
+                        if (!haveauthor) {
+                            m_managerdb.Rollback();
+                            wxLogError(_("Error in package list xml (author missing)."));
+                            return false;
+                        }
+                    }
+                    child.go_next();
+                }
+            } else {
+                wxLogError(_("Failed to open package list xml."));
+                for (std::vector<xmlcpp::cXmlStructuredError>::const_iterator it = xdoc.getStructuredErrors().begin(); it != xdoc.getStructuredErrors().end(); ++it)
+                    wxLogError(wxString(it->message.c_str(), wxConvUTF8));
+            }
+        } catch (std::exception& e) {
+            wxLogError(wxString(e.what(), wxConvUTF8));
+        }
+
+/*
         std::auto_ptr<wxFSFile> inputfsfile(fs.OpenFile(MEMORY_PREFIX RES_XML_PACKAGES, wxFS_READ));
 
         wxXmlDocument doc(*inputfsfile->GetStream());
@@ -422,6 +546,7 @@ bool ManagerApp::CheckManagerDB() {
             }
             child = child->GetNext();
         }
+*/
         m_managerdb.Commit();
     }
     return true;

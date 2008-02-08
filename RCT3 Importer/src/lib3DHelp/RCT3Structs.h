@@ -151,6 +151,8 @@ public:
 
     bool FromCompilerXml(wxXmlNode* node, const wxString& path);
 
+    void Check(const wxString& modelname);
+
     virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);
     virtual wxXmlNode* GetNode(const wxString& path);
     virtual const wxString GetTagName() const {return RCT3XML_CMESHSTRUCT;};

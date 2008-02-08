@@ -79,6 +79,7 @@ private:
     int m_usymbolcount[2];
     int m_usymrefcount[2];
 
+    bool m_assigned;
     bool m_made;
     bool m_loaderopen[2];
     unsigned long m_loaderextracount[2];
@@ -88,6 +89,7 @@ public:
     ovlLodSymRefManager() {
         m_relman = NULL;
         m_stable = NULL;
+        m_assigned = false;
         m_made = false;
         m_loaderopen[0] = false;
         m_loaderopen[1] = false;

@@ -35,6 +35,7 @@
 #include <wx/artprov.h>
 #include <wx/progdlg.h>
 #include <wx/valgen.h>
+#include <wx/tooltip.h>
 
 #include <algorithm>
 
@@ -596,6 +597,8 @@ dlgCreateScenery::dlgCreateScenery(wxWindow *parent) {
 
     SetSize(READ_APP_SIZE("CreateSceney", GetSize()));
     Center();
+
+    wxToolTip::Enable(READ_APP_TOOLTIPS());
 
     m_dirtyfile = false;
 }

@@ -99,7 +99,11 @@
 		<Unit filename="RawParse_BasicParse.cpp" />
 		<Unit filename="RawParse_Extra.cpp" />
 		<Unit filename="RawParse_MainParse.cpp" />
-		<Unit filename="RawParse_StructParse.cpp" />
+		<Unit filename="RawParse_StructParse_BAN_BSH_CED.cpp" />
+		<Unit filename="RawParse_StructParse_CHG_CID_FTX.cpp" />
+		<Unit filename="RawParse_StructParse_PTD_SAT_SHS.cpp" />
+		<Unit filename="RawParse_StructParse_SID_SPL_STA.cpp" />
+		<Unit filename="RawParse_StructParse_SVD_TEX_WAI.cpp" />
 		<Unit filename="RawParse_cpp.h" />
 		<Unit filename="wx_pch.h">
 			<Option weight="0" />
@@ -107,8 +111,59 @@
 		<Extensions>
 			<code_completion />
 			<envvars />
-			<debugger />
-			<lib_finder />
+			<debugger>
+				<remote_debugging target="Release">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Precompile XRC">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug (Public)">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Release">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug Unicode">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Release">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug Unicode">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Release">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Release">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug Unicode">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Premake Resources">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug Unicode">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+				<remote_debugging target="Debug (Public)">
+					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
+				</remote_debugging>
+			</debugger>
 			<AutoVersioning>
 				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />
 				<Settings autoincrement="1" date_declarations="1" do_auto_increment="0" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="version.h" />

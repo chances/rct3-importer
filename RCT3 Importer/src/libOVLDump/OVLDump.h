@@ -63,6 +63,8 @@ protected:
     vector<OvlLoader> m_loaders[2];
     set<OvlStringTableEntry, OvlStringTableComp> m_strings;
 
+    unsigned long m_crc[2];
+
     unsigned long m_reloffset;
     map<unsigned long, OvlRelocation*> m_relmap;
     map<unsigned long, void*> m_targets;
@@ -80,6 +82,8 @@ protected:
     void MakeLoaders(cOvlType type);
     void MakeStructureSizes(cOvlType type);
     void MakeFlics(cOvlType type);
+    void MakeCRC(cOvlType type);
+
 public:
     cOVLDump() {Init();};
     virtual ~cOVLDump();
@@ -95,6 +99,11 @@ public:
     string GetFilename(cOvlType type) {
         return m_file[type];
     }
+
+    unsigned long GetCRC(cOvlType type) {
+        return m_crc[type];
+    }
+    unsigned long calcCRC(unsigned char* pdata, unsigned long len, bool padded);
 
     void InjectReference(cOvlType type, const char* ref) {
         m_injectreferences[type].push_back(ref);
@@ -122,8 +131,14 @@ public:
     const OvlStringTableEntry& GetString(unsigned long id);
     void SetString(unsigned long id, const char* newstr);
 
-    const map<string, map<string, OvlRelocation*> >& GetStructures(cOvlType type) {
+    const map<string, map<string, OvlRelocation*> >& GetStructures(cOvlType type) const {
         return m_structmap[type];
+    }
+    map<unsigned long, void*>& GetTargets() {
+        return m_targets;
+    }
+    map<void*, string>& GetSymbolReferences() {
+        return m_symbolreferences;
     }
 };
 

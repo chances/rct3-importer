@@ -42,7 +42,7 @@
 #include "OVLng.h"
 
 #define RAWXML_ROOT      wxT("rawovl")
-#define RAWXML_SUBROOT   wxT("subovl")
+#define RAWXML_SUBROOT   wxT("rawovl")
 #define RAWXML_SET       wxT("set")
 #define RAWXML_UNSET     wxT("unset")
 #define RAWXML_VARIABLES wxT("variables")
@@ -137,6 +137,7 @@ private:
     void ParseCHG(wxXmlNode* node);
     void ParseCID(wxXmlNode* node);
     void ParseFTX(wxXmlNode* node);
+    void ParsePTD(wxXmlNode* node);
     void ParseSAT(wxXmlNode* node);
     void ParseSHS(wxXmlNode* node);
     void ParseSID(wxXmlNode* node);

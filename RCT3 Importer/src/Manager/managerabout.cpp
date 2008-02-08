@@ -24,7 +24,7 @@
 
 #include "managerabout.h"
 
-#include <wx/xrc/xmlres.h>
+//#include <wx/xrc/xmlres.h>
 
 #include "managerapp.h"
 #include "managerresourcefiles.h"

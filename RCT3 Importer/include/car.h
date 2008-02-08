@@ -14,11 +14,13 @@
 #ifndef __car_h__
 #define __car_h__
 
-struct RideCar
+struct RideCarA
 {
     char*	     	    name;			// Possibly a language lookup
     char*		        username;
-    unsigned long		flags;			// Possibly boolean flags. Second byte seems to signify structure version
+    unsigned char       seating;        ///< Seating type (@see RCT3_Seating)
+    unsigned char       version;        ///< Structure version
+    unsigned short		unused;
     SceneryItemVisual*  svd;
     float		        weight1;	    // Probably weight. Can be zero (rot mouse)
     SceneryItemVisual*  seatsvd;        // If seats move in some way (rotating mouse, multidimensional)
@@ -79,11 +81,13 @@ struct RideCar
     float               unk60;          // Seen -1.0
 };
 
-struct RideCar2
+struct RideCarB
 {
     char*	     	    name;			// Possibly a language lookup
     char*		        username;
-    unsigned long		flags;			// Possibly boolean flags. Second byte seems to signify structure version
+    unsigned char       seating;        ///< Seating type (@see RCT3_Seating)
+    unsigned char       version;        ///< Structure version
+    unsigned short		unused;
     SceneryItemVisual*  svd;
     float		        weight1;	    // Probably weight. Can be zero (rot mouse)
     SceneryItemVisual*  seatsvd;        // If seats move in some way (rotating mouse, multidimensional)
@@ -154,14 +158,16 @@ struct RideCar2
     unsigned long       unk70;
     unsigned long       unk71;
     unsigned long       unk72;          // Seen 0
-    float               unk73;          // Seen -9999.9
+    float               unk73;          // Seen -9999.9 (0xc61c3f9a)
 };
 
-struct RideCar3
+struct RideCarC
 {
     char*	     	    name;			// Possibly a language lookup
     char*		        username;
-    unsigned long		flags;			// Possibly boolean flags. Second byte seems to signify stricture version
+    unsigned char       seating;        ///< Seating type (@see RCT3_Seating)
+    unsigned char       version;        ///< Structure version
+    unsigned short		unused;
     SceneryItemVisual*  svd;
     float		        weight1;	    // Probably weight. Can be zero (rot mouse)
     SceneryItemVisual*  seatsvd;        // If seats move in some way (rotating mouse, multidimensional)
@@ -201,28 +207,55 @@ struct RideCar3
     long                unk39;          // Seen -1
     unsigned long       unk40;
     unsigned long       unk41;
-    unsigned long       unk42;
+    SceneryItemVisual*  wheelR1;
     unsigned long       unk43;
-    unsigned long       unk44;
+    SceneryItemVisual*  wheelL1;
     unsigned long       unk45;
-    unsigned long       unk46;
+    SceneryItemVisual*  wheelR2;
     unsigned long       unk47;
-    unsigned long       unk48;
+    SceneryItemVisual*  wheelL2;
     unsigned long       unk49;
-    unsigned long       unk50;
+    SceneryItemVisual*  axelsvd;
     unsigned long       unk51;
-    unsigned long       unk52;          // Seen 4
-    unsigned long       unk53;          // Seen 4
+    unsigned long       unk52;          // Seen 1, 4
+    unsigned long       unk53;          // Seen 4, 1 (for rear car)
     unsigned long       unk54;
-    float               unk55;          // Seen -1.0
-    long                unk56;          // Seen -1
+    float               unk55;          // Seen 0
+    long                unk56;          // Seen 0
     float               unk57;          // Seen -1.0
-    float               unk58;          // Seen -1.0
-    float               unk59;          // Seen -1.0
+    float               unk58;          // Seen 4.0
+    float               unk59;          // Seen 0
     float               unk60;          // Seen -1.0
+    float               unk61;          // Seen 0.1
+    unsigned long       unk62;
+    unsigned long       unk63;
+    float               unk64;          // Seen -1.0
+    unsigned long       unk65;
+    unsigned long       unk66;          // Seen 1
+    unsigned long       unk67;
+    unsigned long       unk68;
+    unsigned long       unk69;          // Seen 1
+    unsigned long       unk70;
+    unsigned long       unk71;
+    unsigned long       unk72;          // Seen 0
+    float               unk73;          // Seen -9999.9 (0xc61c3f9a)
+    unsigned long       unk74;          // Seen 1
+    unsigned long       unk75;          // Seen 0
+    unsigned long       unk76;          // Seen 0
+    unsigned long       unk77;          // Seen 0
+    float               unk78;          // Seen 1.0
+    float               unk79;          // Seen 1.0
+    void*               unk80;          ///< Symbol reference to a was (WildAnimalSpecies)
+                                        /**
+                                         * Used for Elephant transport
+                                         */
+    float               unk81;          // Seen 4.1
+    unsigned long       unk82;          // Seen 0
+    long                unk83;          // Seen -1
+    unsigned long       unk84;          // Seen 0
 };
 
-struct RideTrain3 // ?
+struct RideTrainC // ?
 {
     unsigned long    	unk1;              	// -1 on the structures that I've looked at.
     char*            	name;              	//  probably user visible text, ie. spaces and stuff rather than an internal name
@@ -253,7 +286,7 @@ struct RideTrain3 // ?
     float           	unk22;              // Seen 0.0, 90.0 on FrequentFaller
 };
 
-struct RideTrain2
+struct RideTrainB
 {
     unsigned long    	unk1;              	// -1 on the structures that I've looked at.
     char*            	name;              	//  probably user visible text, ie. spaces and stuff rather than an internal name
@@ -274,9 +307,9 @@ struct RideTrain2
     unsigned long    	unk12;              // Seen 0
 };
 
-struct RideTrain1
+struct RideTrainA
 {
-    char*           	name;              	// txt for train name. 0xFFFFFFFF for RideTrain2
+    char*           	name;              	// txt for train name. 0xFFFFFFFF for RideTrainB/C
     char*            	description;        // txt for train description.
     RideCar*         	frontcar;
     RideCar*         	secondcar;

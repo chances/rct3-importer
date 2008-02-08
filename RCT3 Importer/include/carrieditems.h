@@ -24,7 +24,7 @@ struct CarriedItemExtra
 	unsigned long unk4; // 0 usually, 4 for Mustard
 	float hunger;         // >= 0.0, <= 0.3   Probably influences hunger
 	float thirst;         // >= -0.3, <=0.3   Probably influences thirst, negative increases, positive quenches
-	float unk7;         // 0.0 usually, 0.3 for Parmesan, Chilli, ChilliSauce and Marshmellow
+	float unk7;         // 0.0 usually, 0.3 for Parmesan, Chilli, ChilliSauce and Marshmellow. Nausea?
 };
 
 // Carrieditem flags

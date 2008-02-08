@@ -41,6 +41,15 @@
       </attribute>
     </element>
   </define>
+  <define name="ovlMeshSupport">
+    <choice>
+      <value type="int">-1</value>
+      <value type="int">1</value>
+      <value type="int">2</value>
+      <value type="int">4</value>
+      <value type="int">8</value>
+    </choice>
+  </define>
   <define name="ovlTXYZ">
     <attribute name="time">
       <data type="float"></data>

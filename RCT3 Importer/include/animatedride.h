@@ -14,6 +14,7 @@
 #define ANIMATEDRIDE_H_INCLUDED
 
 #include "attraction.h"
+#include "sharedride.h"
 
 /// Animated ride structure
 /**
@@ -35,8 +36,8 @@ struct AnimatedRideA {
 	unsigned long unk13;        ///< Seen 0, 1, 2
 	long unk14;                 ///< Seen 12, 16
 	unsigned long unk15;        ///< Seen 20, 24, 35, 45, 50
-	unsigned long unk16;        ///< Seen 0, 5, 6, 9, 10, 11, 12, 13, 14, 18, 25
-    unsigned long **bytecodes;
+	unsigned long seating;      ///< Seen 0, 5, 6, 9, 10, 11, 12, 13, 14, 18, 25
+    RideOption** options;       ///< List terminated by a unrelocated zero pointer
 	unsigned long unk18;        ///< Seen 1
 	long unk19;                 ///< Seen -1
 	unsigned long entryfee;     ///< Default entry fee
@@ -47,18 +48,31 @@ struct AnimatedRideA {
 	unsigned long unk25;        ///< Seen 10
 };
 
+
+struct AnimatedRideExtra {
+    unsigned long index;
+    unsigned long unk2;
+    unsigned long unk3;
+    unsigned long unk3;
+};
+
+struct ShowItem {
+    unsigned long index;
+    char* animname;
+};
+
 /// Secondary structure for AnimatedRideB
 struct AnimatedRideB2 {
     unsigned long unk1; ///< always 0xFFFFFFFF
     unsigned long unk2;
-    unsigned long **bytecodes;
+    RideOption** options;       ///< List terminated by a unrelocated zero pointer
     unsigned long unk4;
     long unk5;
     unsigned long unk6;
     AttractionA* att;
     unsigned long unk8;
-    unsigned long unk9;
-    unsigned long unk10;
+    unsigned long extracount;
+    AnimatedRideExtra* extras;
     unsigned long unk11;
     unsigned long unk12;
     unsigned long unk13;
@@ -73,18 +87,18 @@ struct AnimatedRideB2 {
  * This is the animated ride structure used in Soaked and Wild
  */
 struct AnimatedRideB {
-        unsigned long unk1; ///< always 0xFFFFFFFF, signifies AnimatedRideB
-        unsigned long unk2;
-        unsigned long unk3;
-        unsigned long unk4;
-        unsigned long unk5;
-        AnimatedRideB2* ride2;
-        SceneryItem* SID;
-        unsigned long unk6;
-        unsigned long unk7;
-        unsigned long unk8;
-        unsigned long unk9;
-        unsigned long unk10;
+    unsigned long unk1; ///< always 0xFFFFFFFF, signifies AnimatedRideB
+    unsigned long unk2;
+    unsigned long unk3;
+    unsigned long unk4;
+    unsigned long unk5;
+    AnimatedRideB2* ride2;
+    SceneryItem* SID;
+    unsigned long unk6;
+    unsigned long unk7;
+    unsigned long unk8;
+    unsigned long showitemcount;
+    ShowItem* showitems;
 };
 
 

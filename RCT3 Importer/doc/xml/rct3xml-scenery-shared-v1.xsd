@@ -75,7 +75,7 @@
     <xs:attribute name="ftx" type="xs:string" use="required"/>
     <xs:attribute default="0" name="fudgenormals" type="impFudge"/>
     <xs:attribute name="name" type="xs:string" use="required"/>
-    <xs:attribute default="0" name="place" type="ovlMeshPlacement"/>
+    <xs:attribute default="0" name="transparency" type="ovlMeshTransparency"/>
     <xs:attribute default="SIOpaque" name="txs" type="ovlTextureStyle"/>
     <xs:attribute default="3" name="unknown" type="ovlMeshSides"/>
     <xs:attribute name="sortx" type="xs:string"/>

@@ -40,7 +40,14 @@
  void process(const char *ifname, const char *ofname)
  {
  	FILE *ifile, *ofile;
- 	ifile = fopen(ifname, "rb");
+ 	const char *usename = ifname;
+
+ 	if (!strcmp(ifname, "-")) {
+        ifile = stdin;
+        usename = ofname;
+    } else {
+        ifile = fopen(ifname, "rb");
+    }
  	if (ifile == NULL) {
  		fprintf(stderr, "cannot open %s for reading\n", ifname);
  		exit(1);
@@ -52,13 +59,14 @@
  	}
  	char buf[PATH_MAX], *p;
  	const char *cp;
- 	if ((cp = strrchr(ifname, '/')) != NULL)
+
+ 	if ((cp = strrchr(usename, '/')) != NULL)
  		++cp;
  	else {
- 		if ((cp = strrchr(ifname, '\\')) != NULL)
+ 		if ((cp = strrchr(usename, '\\')) != NULL)
  			++cp;
  		else
- 			cp = ifname;
+ 			cp = usename;
  	}
  	strcpy(buf, cp);
  	for (p = buf; *p != '\0'; ++p)

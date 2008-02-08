@@ -188,9 +188,9 @@ void cMeshStruct::Init() {
     disabled = true;
     TXS = wxT("SIOpaque");
     FTX = wxT("");
-    place = SS2_PLACE_TEXTURE_AND_MESH;
+    place = SharedShape::Transparency::None;
     flags = 0;
-    unknown = SS2_FACES_SINGLE_SIDED;
+    unknown = SharedShape::Sides::Singlesided;
     Name = wxT("");
     fudgenormals = 0;
     valid = false;
@@ -242,22 +242,6 @@ bool cMeshStruct::FromCompilerXml(wxXmlNode* node, const wxString& path) {
     }
 
     unknown = node->GetPropVal(wxT("doublesided"),wxT("0")).IsSameAs(wxT("1"))?1:3;
-    wxString placing = node->GetPropVal(wxT("placing"),wxT("both")).Lower();
-    if (placing.IsSameAs(wxT("texture"))) {
-        place = 1;
-    } else if (placing.IsSameAs(wxT("glass"))) {
-        place = 2;
-    } else if (placing.IsSameAs(wxT("both"))) {
-        place = 0;
-    } else if (placing.IsSameAs(wxT("transparent"))) {
-        place = 1;
-    } else if (placing.IsSameAs(wxT("glassy"))) {
-        place = 2;
-    } else if (placing.IsSameAs(wxT("solid"))) {
-        place = 0;
-    } else {
-        throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Unknown placing value '%s'."), Name.c_str(), placing.c_str()));
-    }
 
     wxString sflags = node->GetPropVal(wxT("flags"),wxT("")).Lower();
     FTX = node->GetPropVal(wxT("ftx"),wxT(""));
@@ -296,6 +280,46 @@ bool cMeshStruct::FromCompilerXml(wxXmlNode* node, const wxString& path) {
         throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Missing ftx or txs attribute."), Name.c_str()));
     }
 
+    if (node->HasProp(wxT("placing"))) {
+        wxString placing = node->GetPropVal(wxT("placing"),wxT("both")).Lower();
+        if (placing.IsSameAs(wxT("texture"))) {
+            place = 1;
+        } else if (placing.IsSameAs(wxT("glass"))) {
+            place = 2;
+        } else if (placing.IsSameAs(wxT("both"))) {
+            place = 0;
+        } else if (placing.IsSameAs(wxT("transparent"))) {
+            place = 1;
+        } else if (placing.IsSameAs(wxT("glassy"))) {
+            place = 2;
+        } else if (placing.IsSameAs(wxT("solid"))) {
+            place = 0;
+        } else {
+            throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Unknown placing value '%s'."), Name.c_str(), placing.c_str()));
+        }
+        wxLogWarning(_("The 'placing' attribute is deprecated. Please use 'transparency'."));
+    } else {
+        if (node->HasProp(wxT("transparency"))) {
+            wxString placing = node->GetPropVal(wxT("transparency"),wxT("none")).Lower();
+            if (placing.IsSameAs(wxT("masked"))) {
+                place = 1;
+            } else if (placing.IsSameAs(wxT("regular"))) {
+                place = 2;
+            } else if (placing.IsSameAs(wxT("none"))) {
+                place = 0;
+            } else {
+                throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Unknown transparency value '%s'."), Name.c_str(), placing.c_str()));
+            }
+        } else {
+            unsigned long right_value = 0;
+            if (TXS.StartsWith(wxT("SIAlphaMask")))
+                right_value = 1;
+            else if (TXS.StartsWith(wxT("SIAlpha")) || TXS.IsSameAs(wxT("SIGlass")) || TXS.IsSameAs(wxT("SIGlass")))
+                right_value = 2;
+            place = right_value;
+        }
+    }
+
     if (node->GetPropVal(wxT("sortx"), &temp)) {
         algo_x = temp;
     }
@@ -307,6 +331,16 @@ bool cMeshStruct::FromCompilerXml(wxXmlNode* node, const wxString& path) {
     }
 
     return true;
+}
+
+void cMeshStruct::Check(const wxString& modelname) {
+    unsigned long right_value = 0;
+    if (TXS.StartsWith(wxT("SIAlphaMask")))
+        right_value = 1;
+    else if (TXS.StartsWith(wxT("SIAlpha")) || TXS.IsSameAs(wxT("SIGlass")) || TXS.IsSameAs(wxT("SIGlass")))
+        right_value = 2;
+    if ((place != right_value) && (!READ_RCT3_EXPERTMODE()))
+        wxLogWarning(wxString::Format(_("Model '%s', Group '%s': Texture style %s and transparency setting do not match."), modelname.c_str(), Name.c_str(), TXS.c_str()));
 }
 
 bool cMeshStruct::FromNode(wxXmlNode* node, const wxString& path, unsigned long version) {
@@ -321,16 +355,29 @@ bool cMeshStruct::FromNode(wxXmlNode* node, const wxString& path, unsigned long 
     FTX = node->GetPropVal(wxT("ftx"), wxT(""));
     if (node->GetPropVal(wxT("place"), &temp)) {
         if (!temp.ToULong(&place)) {
-            place = SS2_PLACE_TEXTURE_AND_MESH;
+            place = SharedShape::Transparency::None;
             ret = false;
         } else {
-            if (place > SS2_PLACE_UNKNOWN) {
-                place = SS2_PLACE_TEXTURE_AND_MESH;
+            if (place > SharedShape::Transparency::Complex) {
+                place = SharedShape::Transparency::None;
                 ret = false;
             }
         }
     } else {
-        place = SS2_PLACE_TEXTURE_AND_MESH;
+        place = SharedShape::Transparency::None;
+    }
+    if (node->GetPropVal(wxT("transparency"), &temp)) {
+        if (!temp.ToULong(&place)) {
+            place = SharedShape::Transparency::None;
+            ret = false;
+        } else {
+            if (place > SharedShape::Transparency::Complex) {
+                place = SharedShape::Transparency::None;
+                ret = false;
+            }
+        }
+    } else {
+        place = SharedShape::Transparency::None;
     }
     if (node->GetPropVal(wxT("flags"), &temp)) {
         if (!temp.ToULong(&flags)) {
@@ -342,16 +389,16 @@ bool cMeshStruct::FromNode(wxXmlNode* node, const wxString& path, unsigned long 
     }
     if (node->GetPropVal(wxT("unknown"), &temp)) {
         if (!temp.ToULong(&unknown)) {
-            unknown = SS2_FACES_SINGLE_SIDED;
+            unknown = SharedShape::Sides::Singlesided;
             ret = false;
         } else {
-            if ((unknown != SS2_FACES_SINGLE_SIDED) && (unknown != SS2_FACES_DOUBLE_SIDED)) {
-                unknown = SS2_FACES_SINGLE_SIDED;
+            if ((unknown != SharedShape::Sides::Singlesided) && (unknown != SharedShape::Sides::Doublesided)) {
+                unknown = SharedShape::Sides::Singlesided;
                 ret = false;
             }
         }
     } else {
-        unknown = SS2_FACES_SINGLE_SIDED;
+        unknown = SharedShape::Sides::Singlesided;
     }
     if (node->GetPropVal(wxT("fudgenormals"), &temp)) {
         if (!temp.ToULong(&fudgenormals)) {
@@ -390,7 +437,7 @@ wxXmlNode* cMeshStruct::GetNode(const wxString& path) {
     node->AddProperty(wxT("disabled"), disabled?wxT("1"):wxT("0"));
     node->AddProperty(wxT("txs"), TXS);
     node->AddProperty(wxT("ftx"), FTX);
-    node->AddProperty(wxT("place"), wxString::Format(wxT("%lu"), place));
+    node->AddProperty(wxT("transparency"), wxString::Format(wxT("%lu"), place));
     node->AddProperty(wxT("flags"), wxString::Format(wxT("%lu"), flags));
     node->AddProperty(wxT("unknown"), wxString::Format(wxT("%lu"), unknown));
     node->AddProperty(wxT("fudgenormals"), wxString::Format(wxT("%lu"), fudgenormals));
@@ -1184,6 +1231,9 @@ bool cModel::CheckMeshes(bool animated) {
     int valid_meshes = 0;
     int c_mesh = 0;
     for (cMeshStruct::iterator i_mesh = meshstructs.begin(); i_mesh != meshstructs.end(); ++i_mesh) {
+        if (i_mesh->disabled)
+            continue;
+
         if ((!i_mesh->disabled) && (!i_mesh->valid)) {
             i_mesh->disabled = true;
             warning = true;
@@ -1196,6 +1246,9 @@ bool cModel::CheckMeshes(bool animated) {
             wxLogWarning(_("Model '%s': Group '%s' deactivated due to missing data."), name.c_str(), i_mesh->Name.c_str());
             continue;
         }
+
+        i_mesh->Check(name);
+
         if (!i_mesh->disabled)
             valid_meshes++;
         // Initialize

@@ -9,7 +9,6 @@
   <xs:simpleType name="genFloatList">
     <xs:list itemType="xs:float"/>
   </xs:simpleType>
-
   <xs:simpleType name="impAlphaUse">
     <xs:restriction base="xs:unsignedInt">
       <xs:enumeration value="0">
@@ -17,13 +16,11 @@
           <xs:documentation>No alpha</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="1">
         <xs:annotation>
           <xs:documentation>Internal alpha channel</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="2">
         <xs:annotation>
           <xs:documentation>External alpha channel</xs:documentation>
@@ -31,7 +28,6 @@
       </xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
-
   <xs:simpleType name="impFudge">
     <xs:restriction base="xs:unsignedInt">
       <xs:enumeration value="0">
@@ -39,43 +35,36 @@
           <xs:documentation>No normal fudgeing</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="1">
         <xs:annotation>
           <xs:documentation>Fudge all normals to positive X</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="2">
         <xs:annotation>
           <xs:documentation>Fudge all normals to positive Y</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="3">
         <xs:annotation>
           <xs:documentation>Fudge all normals to positive Z</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="4">
         <xs:annotation>
           <xs:documentation>Fudge all normals to negative X</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="5">
         <xs:annotation>
           <xs:documentation>Fudge all normals to negative Y</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="6">
         <xs:annotation>
           <xs:documentation>Fudge all normals to negative Z</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="7">
         <xs:annotation>
           <xs:documentation>Fudge rim normals straight</xs:documentation>
@@ -83,27 +72,20 @@
       </xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
-
   <xs:complexType name="impMatrix">
     <xs:sequence>
       <xs:element name="row1" type="impMatrixRow"/>
-
       <xs:element name="row2" type="impMatrixRow"/>
-
       <xs:element name="row3" type="impMatrixRow"/>
-
       <xs:element name="row4" type="impMatrixRow"/>
     </xs:sequence>
-
     <xs:attribute name="name" type="xs:string"/>
   </xs:complexType>
-
   <xs:simpleType name="impMatrixRow">
     <xs:restriction base="genFloatList">
       <xs:length value="4"/>
     </xs:restriction>
   </xs:simpleType>
-
   <xs:simpleType name="impOrientation">
     <xs:restriction base="xs:unsignedInt">
       <xs:enumeration value="0">
@@ -111,37 +93,31 @@
           <xs:documentation>Unknown</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="1">
         <xs:annotation>
           <xs:documentation>Right, X-up</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="2">
         <xs:annotation>
           <xs:documentation>Right, Y-up</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="3">
         <xs:annotation>
           <xs:documentation>Right, Z-up</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="4">
         <xs:annotation>
           <xs:documentation>Left, X-up</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="5">
         <xs:annotation>
           <xs:documentation>Left, Y-up</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="6">
         <xs:annotation>
           <xs:documentation>Left, Z-up</xs:documentation>
@@ -149,59 +125,46 @@
       </xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
-
   <xs:complexType name="impTXYZ">
     <xs:attribute name="time" type="xs:float" use="required"/>
-
     <xs:attribute name="x" type="xs:float" use="required"/>
-
     <xs:attribute name="y" type="xs:float" use="required"/>
-
     <xs:attribute name="z" type="xs:float" use="required"/>
   </xs:complexType>
-
   <xs:simpleType name="ovlAttractionType">
     <xs:restriction base="xs:unsignedInt"/>
   </xs:simpleType>
-
   <xs:simpleType name="ovlColour">
     <xs:restriction base="xs:unsignedInt">
       <xs:minInclusive value="0"/>
-
       <xs:maxInclusive value="31"/>
     </xs:restriction>
   </xs:simpleType>
-
   <xs:simpleType name="ovlFile">
     <xs:restriction base="xs:string">
       <xs:enumeration value="common"/>
-
       <xs:enumeration value="unique"/>
     </xs:restriction>
   </xs:simpleType>
-
-  <xs:simpleType name="ovlMeshPlacement">
+  <xs:simpleType name="ovlMeshTransparency">
     <xs:restriction base="xs:unsignedInt">
       <xs:enumeration value="0">
         <xs:annotation>
-          <xs:documentation>Texture &amp; Mesh</xs:documentation>
+          <xs:documentation>none</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="1">
         <xs:annotation>
-          <xs:documentation>Texture only</xs:documentation>
+          <xs:documentation>masked</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="2">
         <xs:annotation>
-          <xs:documentation>Glass</xs:documentation>
+          <xs:documentation>full range</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
-
   <xs:simpleType name="ovlMeshSides">
     <xs:restriction base="xs:unsignedInt">
       <xs:enumeration value="1">
@@ -209,7 +172,6 @@
           <xs:documentation>Double sided</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="3">
         <xs:annotation>
           <xs:documentation>Single sided</xs:documentation>
@@ -217,63 +179,47 @@
       </xs:enumeration>
     </xs:restriction>
   </xs:simpleType>
-
   <xs:simpleType name="ovlRecolourable">
     <xs:restriction base="xs:unsignedInt">
       <xs:minInclusive value="0"/>
-
       <xs:maxInclusive value="7"/>
     </xs:restriction>
   </xs:simpleType>
-
   <xs:simpleType name="ovlSidParameters">
     <xs:restriction base="xs:string">
       <xs:enumeration value="GuestInjectionPoint"/>
-
       <xs:enumeration value="LitterBin">
         <xs:annotation>
           <xs:documentation>Typical Parameter is ' Capacity
           4.0'.</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="ParkBench"/>
-
       <xs:enumeration value="ParkEntrance"/>
-
       <xs:enumeration value="QueueLineEntertainer"/>
-
       <xs:enumeration value="RideEvent">
         <xs:annotation>
           <xs:documentation>Can have parameter. Seen ' Shark' and something
           else.</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="Sign">
         <xs:annotation>
           <xs:documentation>Can have parameter '
           EnableNoEntry'.</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="VistaPoint"/>
-
       <xs:enumeration value="Waterable">
         <xs:annotation>
           <xs:documentation>Typical parameter is ' Capacity
           300.0'.</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="PathFountain"/>
-
       <xs:enumeration value="LoudSpeaker"/>
-
       <xs:enumeration value="PassportPost"/>
-
       <xs:enumeration value="WaterCannon"/>
-
       <xs:enumeration value="PoolExtra">
         <xs:annotation>
           <xs:documentation>Has a space-delimitered list of parameters. As
@@ -284,193 +230,103 @@
           'WaveMachine'.</xs:documentation>
         </xs:annotation>
       </xs:enumeration>
-
       <xs:enumeration value="LifeguardChair"/>
     </xs:restriction>
   </xs:simpleType>
-
   <xs:simpleType name="ovlSidSupports">
     <xs:restriction base="xs:string">
       <xs:enumeration value="adventure"/>
-
       <xs:enumeration value="crazygolf"/>
-
       <xs:enumeration value="crazygolfholes"/>
-
       <xs:enumeration value="girder"/>
-
       <xs:enumeration value="ornate"/>
-
       <xs:enumeration value="pathasphalt"/>
-
       <xs:enumeration value="pathcrazy"/>
-
       <xs:enumeration value="pathdirt"/>
-
       <xs:enumeration value="pathleafy"/>
-
       <xs:enumeration value="marble"/>
-
       <xs:enumeration value="pathtarmac"/>
-
       <xs:enumeration value="flatqueueset1"/>
-
       <xs:enumeration value="romanpillar"/>
-
       <xs:enumeration value="scaffolding"/>
-
       <xs:enumeration value="space"/>
-
       <xs:enumeration value="spooky"/>
-
       <xs:enumeration value="steel"/>
-
       <xs:enumeration value="ts1"/>
-
       <xs:enumeration value="ts2"/>
-
       <xs:enumeration value="ts3"/>
-
       <xs:enumeration value="ts4"/>
-
       <xs:enumeration value="ts5"/>
-
       <xs:enumeration value="flatwildwest"/>
-
       <xs:enumeration value="aquarium"/>
-
       <xs:enumeration value="aquariumcorner"/>
-
       <xs:enumeration value="defaultpool"/>
-
       <xs:enumeration value="defaultpoolpath"/>
-
       <xs:enumeration value="defaultpoolsmall"/>
-
       <xs:enumeration value="sand"/>
-
       <xs:enumeration value="pathunderwater"/>
-
       <xs:enumeration value="ts1a"/>
-
       <xs:enumeration value="ts6"/>
-
       <xs:enumeration value="ts7"/>
-
       <xs:enumeration value="ts8"/>
     </xs:restriction>
   </xs:simpleType>
-
   <xs:simpleType name="ovlTextureStyle">
     <xs:restriction base="xs:string">
       <xs:enumeration value="SIOpaque"/>
-
       <xs:enumeration value="SIOpaqueDS"/>
-
       <xs:enumeration value="SIAlpha"/>
-
       <xs:enumeration value="SIAlphaDS"/>
-
       <xs:enumeration value="SIAlphaMask"/>
-
       <xs:enumeration value="SIAlphaMaskDS"/>
-
       <xs:enumeration value="SIAlphaMaskLow"/>
-
       <xs:enumeration value="SIEmissiveMask"/>
-
       <xs:enumeration value="SIGlass"/>
-
       <xs:enumeration value="SIWater"/>
-
       <xs:enumeration value="SIOpaqueCaustics"/>
-
       <xs:enumeration value="SIOpaqueCausticsGlossSpecular100"/>
-
       <xs:enumeration value="SIOpaqueCausticsReflection"/>
-
       <xs:enumeration value="SIOpaqueCausticsSpecular50"/>
-
       <xs:enumeration value="SIOpaqueCausticsSpecular100"/>
-
       <xs:enumeration value="SIOpaqueChrome"/>
-
       <xs:enumeration value="SIOpaqueChromeModulate"/>
-
       <xs:enumeration value="SIOpaqueGlossReflection"/>
-
       <xs:enumeration value="SIOpaqueGlossSpecular50"/>
-
       <xs:enumeration value="SIOpaqueGlossSpecular100"/>
-
       <xs:enumeration value="SIOpaqueReflection"/>
-
       <xs:enumeration value="SIOpaqueSpecular50"/>
-
       <xs:enumeration value="SIOpaqueSpecular50Reflection"/>
-
       <xs:enumeration value="SIOpaqueSpecular100"/>
-
       <xs:enumeration value="SIOpaqueSpecular100Reflection"/>
-
       <xs:enumeration value="SIOpaqueText"/>
-
       <xs:enumeration value="SIOpaqueUnlit"/>
-
       <xs:enumeration value="SIAlphaChrome"/>
-
       <xs:enumeration value="SIAlphaReflection"/>
-
       <xs:enumeration value="SIAlphaSpecular50"/>
-
       <xs:enumeration value="SIAlphaSpecular50Reflection"/>
-
       <xs:enumeration value="SIAlphaSpecular100"/>
-
       <xs:enumeration value="SIAlphaSpecular100Reflection"/>
-
       <xs:enumeration value="SIAlphaText"/>
-
       <xs:enumeration value="SIAlphaUnlit"/>
-
       <xs:enumeration value="SIAlphaMaskCaustics"/>
-
       <xs:enumeration value="SIAlphaMaskChrome"/>
-
       <xs:enumeration value="SIAlphaMaskReflection"/>
-
       <xs:enumeration value="SIAlphaMaskSpecular50"/>
-
       <xs:enumeration value="SIAlphaMaskSpecular50Reflection"/>
-
       <xs:enumeration value="SIAlphaMaskSpecular100"/>
-
       <xs:enumeration value="SIAlphaMaskSpecular100Reflection"/>
-
       <xs:enumeration value="SIAlphaMaskUnlit"/>
-
       <xs:enumeration value="SIAlphaMaskLowCaustics"/>
-
       <xs:enumeration value="SIAlphaMaskLowSpecular50"/>
-
       <xs:enumeration value="SIAlphaMaskLowSpecular50Reflection"/>
-
       <xs:enumeration value="SIAlphaMaskLowSpecular100"/>
-
       <xs:enumeration value="SIAlphaMaskLowSpecular100Reflection"/>
-
       <xs:enumeration value="SIAlphaMaskUnlitLow"/>
-
       <xs:enumeration value="SIEmissiveMaskReflection"/>
-
       <xs:enumeration value="SIEmissiveMaskSpecular50"/>
-
       <xs:enumeration value="SIEmissiveMaskSpecular50Reflection"/>
-
       <xs:enumeration value="SIEmissiveMaskSpecular100"/>
-
       <xs:enumeration value="SIEmissiveMaskSpecular100Reflection"/>
-
       <xs:enumeration value="SIFillZ"/>
     </xs:restriction>
   </xs:simpleType>

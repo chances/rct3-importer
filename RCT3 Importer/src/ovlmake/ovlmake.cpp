@@ -32,12 +32,24 @@
 #include <wx/filesys.h>
 #include <wx/fs_arc.h>
 #include <wx/fs_filter.h>
+#include <wx/mstream.h>
 //#include <wx/fs_zip.h>
 #include <wx/stdpaths.h>
 #include <exception>
 #include <stdlib.h>
 
 #include "version.h"
+
+#ifdef LIBXMLTEST
+#include "cXmlDoc.h"
+#include "cXmlInputOutputCallbackString.h"
+#include "cXmlNode.h"
+#include "cXmlValidatorRelaxNG.h"
+#include "cXmlValidatorRNVRelaxNG.h"
+#include "cXmlValidatorIsoSchematron.h"
+#include "cXsltStylesheet.h"
+#include "wxXmlInputCallbackFileSystem.h"
+#endif
 
 #include "SCNFile.h"
 #include "RCT3Exception.h"
@@ -171,6 +183,147 @@ int DoCompile(const wxCmdLineParser& parser) {
         cSCNFile c_scn;
         if (inputfile.GetExt().Lower() == wxT("xml")) {
             wxXmlDocument doc;
+
+#ifdef LIBXMLTEST
+            {
+                xmlcpp::cXmlDoc doc2;
+                xmlcpp::cXmlInputOutputCallbackString::Init();
+                xmlcpp::wxXmlInputCallbackFileSystem::Init();
+                doc2 = xmlcpp::cXmlDoc("testa.xml");
+//                doc2 = xmlcpp::cXmlDoc("stalltest_baked.xml");
+//                doc2.write("string:test");
+//                fprintf(stderr, "%s", xmlcpp::cXmlInputOutputCallbackString::get("test").c_str());
+                //xmlcpp::cXmlValidatorRelaxNG val;
+                //xmlcpp::cXsltStylesheet sht;
+
+                //sht.read("C:\\Download\\Development\\iso_simple.xsl");
+                //if (sht.ok()) {
+                //    xmlcpp::cXmlDoc docs = sht.getDoc();
+                //    docs.write("simpletest.xsl");
+                //}
+
+                //val.read("C:\\Development\\svn\\RCT3 Importer\\doc\\xml\\rct3xml-raw-v1.rng");
+                xmlcpp::cXmlValidatorIsoSchematron val;
+                //xmlcpp::cXmlValidatorRNVRelaxNG val;
+                std::string st =
+                   "<schema xmlns=\"http://www.ascc.net/xml/schematron\" >\
+                      <pattern name=\"Test\">\
+                        <rule context=\"rawovl\">\
+                          <assert test=\"@version\">Version missing</assert>\
+                          <report test=\"@version\">Version present</report>\
+                          <assert test=\"@bogus\">Bogus missing</assert>\
+                          <report test=\"@version\">Bogus present</report>\
+                        </rule>\
+                      </pattern>\
+                    </schema>\
+                    ";
+                //val.read("schematron.xml");
+                val.read("C:\\Development\\svn\\RCT3 Importer\\doc\\xml\\rct3xml-raw-v1.sch");
+                //val.read("test.rnc");
+                //val.read("docbook.rnc");
+                fprintf(stderr, "Validator parsing errors\n");
+                for (std::vector<xmlcpp::cXmlStructuredError>::const_iterator it = val.getStructuredErrors().begin(); it != val.getStructuredErrors().end(); ++it)
+                    wxLogError(wxString(it->message.c_str(), wxConvUTF8).Trim(true));
+                val.clearStructuredErrors();
+/*
+                if (false) {
+                    if (val.ok()) {
+                        wxDateTime start = wxDateTime::Now();
+
+                        for (int p = 0; p < 100; ++p) {
+                            val.reparse();
+                        }
+
+                        wxTimeSpan took = wxDateTime::Now().Subtract(start);
+                        wxLogError(wxString::Format(_("Took %s for rnc performance test."), took.Format(wxT("%H:%M:%S")).c_str()));
+                    }
+                    fprintf(stderr, "Validator parsing errors (after test)\n");
+                    for (std::vector<xmlcpp::cXmlStructuredError>::const_iterator it = val.getStructuredErrors().begin(); it != val.getStructuredErrors().end(); ++it)
+                        wxLogError(wxString(it->message.c_str(), wxConvUTF8).Trim(true));
+                    val.clearStructuredErrors();
+
+                    {
+                        xmlcpp::cXmlDoc doct("c:\\Development\\docbook-rng-1.0b1\\docbook.rng");
+                        xmlcpp::cXsltStylesheet sht("c:\\Development\\rng-incelim-1.2\\incelim.xsl");
+
+                        if (sht.ok() && doct.ok()) {
+                            wxDateTime start = wxDateTime::Now();
+
+                            for (int p = 0; p < 1; ++p) {
+                                sht.transform(doct);
+                            }
+
+                            wxTimeSpan took = wxDateTime::Now().Subtract(start);
+                            wxLogError(wxString::Format(_("Took %s for include performance test."), took.Format(wxT("%H:%M:%S")).c_str()));
+
+                            xmlcpp::cXmlDoc doct2(sht.transform(doct));
+                            xmlcpp::cXsltStylesheet sht2("c:\\Development\\RngToRnc-1_4\\RngToRncClassic.xsl");
+                            if (sht2.ok() && doct2.ok()) {
+                                wxDateTime start = wxDateTime::Now();
+
+                                for (int p = 0; p < 1; ++p) {
+                                    sht2.transformToString(doct2);
+                                }
+
+                                wxTimeSpan took = wxDateTime::Now().Subtract(start);
+                                wxLogError(wxString::Format(_("Took %s for transform performance test."), took.Format(wxT("%H:%M:%S")).c_str()));
+                            }
+                        }
+                    }
+                } // Performane test
+*/
+
+//                val.read("test.rnc");
+//                fprintf(stderr, "Validator parsing errors\n");
+//                for (std::vector<xmlcpp::cXmlStructuredError>::const_iterator it = val.getStructuredErrors().begin(); it != val.getStructuredErrors().end(); ++it)
+//                    wxLogError(wxString(it->message.c_str(), wxConvUTF8).Trim(true));
+//                doc2.validate(val);
+//                fprintf(stderr, "Validator errors\n");
+//                for (std::vector<xmlcpp::cXmlStructuredError>::const_iterator it = val.getStructuredErrors().begin(); it != val.getStructuredErrors().end(); ++it)
+//                    wxLogError(wxString(it->message.c_str(), wxConvUTF8).Trim(true));
+//                val.clearStructuredErrors();
+//
+
+/*
+                wxInputStream* filestream = inputfsfile->GetStream(); // Stream is destroyed by wxFSFile
+                filestream->SeekI(0, wxFromEnd);
+
+                int datasize = filestream->TellI();
+                boost::shared_array<unsigned char> buf(new unsigned char[datasize]);
+                filestream->SeekI(0);
+                std::auto_ptr<wxMemoryOutputStream> buffer(new wxMemoryOutputStream(buf.get(), datasize));
+                buffer->Write(*filestream);
+                filestream->SeekI(0);
+*/
+//                if (doc2.read(buf.get(), inputfilestr.mb_str(wxConvUTF8), NULL, XML_PARSE_DTDLOAD)) {
+                if (doc2.read(inputfilestr.mb_str(wxConvUTF8), NULL, XML_PARSE_DTDLOAD)) {
+                    wxLogMessage(wxT("xml2 ok"));
+
+                    wxLogMessage(wxT("%d"), doc2.validate(val));
+                    fprintf(stderr, "Validation errors\n");
+                    for (std::vector<xmlcpp::cXmlStructuredError>::const_iterator it = val.getStructuredErrors().begin(); it != val.getStructuredErrors().end(); ++it) {
+                        fprintf(stderr, "Line: %d\n", it->line);
+                        wxLogError(wxString(it->message.c_str(), wxConvUTF8).Trim(true));
+                        wxLogError(wxT("Path: ") + wxString(it->getPath().c_str(), wxConvUTF8).Trim(true));
+                    }
+                    for (std::vector<std::string>::const_iterator it = val.getGenericErrors().begin(); it != val.getGenericErrors().end(); ++it)
+                        wxLogError(wxString(it->c_str(), wxConvUTF8));
+                    //doc2.write("string:test");
+                    //fprintf(stderr, "%s", xmlcpp::cXmlOutputCallbackString::get("test").c_str());
+
+                } else {
+                    wxLogMessage(wxT("xml2 kaput"));
+                    fprintf(stderr, "Document parsing errors\n");
+                    for (std::vector<xmlcpp::cXmlStructuredError>::const_iterator it = doc2.getStructuredErrors().begin(); it != doc2.getStructuredErrors().end(); ++it)
+                        wxLogError(wxString(it->message.c_str(), wxConvUTF8).Trim(true));
+                    for (std::vector<std::string>::const_iterator it = doc2.getGenericErrors().begin(); it != doc2.getGenericErrors().end(); ++it)
+                        wxLogError(wxString(it->c_str(), wxConvUTF8));
+//                    xmlErrorPtr err = xmlGetLastError();
+//                    wxLogError(wxT("%s in line %d. Error %d"), wxString(err->message, wxConvUTF8).c_str(), err->line, err->code);
+                }
+            }
+#endif
+
 //            if (doc.Load(inputfile.GetFullPath())) {
             if (doc.Load(*inputfsfile->GetStream())) {
                 wxXmlNode* root = doc.GetRoot();

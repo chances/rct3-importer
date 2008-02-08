@@ -76,8 +76,8 @@ The only thing I can do is wish you luck. Remember you can convert scn files to 
 Proper Transparency, a brief tutorial for the non-commandline savvy
 -------------------------------------------------------------------
 - Set up your scenery file as usual in the importer. In the group/mesh settings set "placing" to
-  - "Unknown" for 'glassy' meshes (SIGlass, SIWater or SIAlpha...Reflection texture styles)
-  - "Texture Only" (for other SIAlpha styles).
+  - "Texture Only" maked transparency (for SIAlphaMask... styles).
+  - "Unknown" for full range transparency meshes (SIGlass, SIWater or SIAlpha... texture styles)
   - Keep at Texture&Mesh other styles.
 - Create an OVL file in the importer, then save the scn file (the order is important!).
 - Import the ovl file to make sure it works in principle and you didn't ignore any important warings.

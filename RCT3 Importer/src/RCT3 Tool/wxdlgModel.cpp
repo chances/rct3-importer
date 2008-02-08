@@ -194,6 +194,14 @@ bool wxMeshListModel::SetValue( wxVariant &variant, unsigned int col, unsigned i
                 break;
             case 3:
                 m_content->meshstructs[row].TXS = variant.GetString();
+                {
+                    unsigned long right_value = 0;
+                    if (m_content->meshstructs[row].TXS.StartsWith(wxT("SIAlphaMask")))
+                        right_value = 1;
+                    else if (m_content->meshstructs[row].TXS.StartsWith(wxT("SIAlpha")) || m_content->meshstructs[row].TXS.IsSameAs(wxT("SIGlass")) || m_content->meshstructs[row].TXS.IsSameAs(wxT("SIGlass")))
+                        right_value = 2;
+                    m_content->meshstructs[row].place = right_value;
+                }
                 RowChanged(row);
 /*
                 for(int i = 0; i < 7; i++)
@@ -830,13 +838,13 @@ public:
                 wxString s;
                 switch (m_value->place) {
                     case 1:
-                        s = _("transparent");
+                        s = _("masked");
                         break;
                     case 2:
-                        s = _("glassy");
+                        s = _("regular");
                         break;
                     default:
-                        s = _("solid");
+                        s = _("none");
                 }
                 wxDCClipper clip(*dc, rect);
                 wxCoord w, h;
@@ -845,7 +853,15 @@ public:
                 if (m_value->disabled) {
                     dc->SetTextForeground(GetStateColour(wxColor(wxT("#808080")), state));
                 } else {
-                    dc->SetTextForeground(GetStateColour(wxColor(wxT("#000000")), state));
+                    unsigned long right_value = 0;
+                    if (m_value->TXS.StartsWith(wxT("SIAlphaMask")))
+                        right_value = 1;
+                    else if (m_value->TXS.StartsWith(wxT("SIAlpha")) || m_value->TXS.IsSameAs(wxT("SIGlass")) || m_value->TXS.IsSameAs(wxT("SIGlass")))
+                        right_value = 2;
+                    if (m_value->place != right_value)
+                        dc->SetTextForeground(GetStateColour(wxColor(wxT("#CC0000")), state));
+                    else
+                        dc->SetTextForeground(GetStateColour(wxColor(wxT("#000000")), state));
                 }
                 dc->DrawText( s, rect.x+5, rect.y + top );
             }
@@ -1576,13 +1592,14 @@ void dlgModel::UpdateAll() {
     //m_dataviewMesh->AppendTextColumn(wxT("Texture"), 2);
     m_dataviewMesh->AppendColumn(new wxDataViewColumn(_("Texture Style"), new wxMeshListTXSRenderer(this, maxtxs), 3, maxtxs.GetWidth()));
     //m_dataviewMesh->AppendTextColumn(wxT("Texture Style"), 3);
-    m_dataviewMesh->AppendColumn(new wxDataViewColumn(_("Mesh Type"), new wxMeshListPlaceRenderer(this, maxplace), 4, maxplace.GetWidth()));
+//    m_dataviewMesh->AppendColumn(new wxDataViewColumn(_("Transparency"), new wxMeshListPlaceRenderer(this, maxplace), 4, maxplace.GetWidth()));
     //m_dataviewMesh->AppendTextColumn(wxT("Place"), 4);
     m_dataviewMesh->AppendColumn(new wxDataViewColumn(_("Flags"), new wxMeshListFlagsRenderer(this, maxflags), 5, maxflags.GetWidth()));
     //m_dataviewMesh->AppendTextColumn(_("Flags"), 5);
     m_dataviewMesh->AppendColumn(new wxDataViewColumn(_("Faces"), new wxMeshListUnknownRenderer(this, maxunk), 6, maxunk.GetWidth()));
     //m_dataviewMesh->AppendTextColumn(_("Unknown"), 6);
     m_dataviewMesh->AppendColumn(new wxDataViewColumn(_("Normals"), new wxMeshListFudgeRenderer(this, maxfudge), 7, maxfudge.GetWidth()));
+    m_dataviewMesh->AppendColumn(new wxDataViewColumn(_("Transparency"), new wxMeshListPlaceRenderer(this, maxplace), 4, maxplace.GetWidth()));
     m_dataviewMesh->GetChildren()[0]->Connect(wxEVT_KEY_UP, wxKeyEventHandler(dlgModel::OnChar));
 
     m_dataviewMesh->Refresh();

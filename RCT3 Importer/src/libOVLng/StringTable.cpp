@@ -31,7 +31,9 @@
 #include "OVLDebug.h"
 #include "OVLException.h"
 
-char* ovlStringTable::FindRawString(const std::string& findit) const {
+using namespace std;
+
+char* ovlStringTable::FindRawString(const string& findit) const {
     map<string, char*>::const_iterator fst = m_ptrmap.find(findit);
     if (fst == m_ptrmap.end()) {
         throw EOvl("ovlStringTable::FindRawString: Could not find '"+findit+"'");
@@ -51,18 +53,14 @@ ovlStringTable::~ovlStringTable() {
 //        delete[] m_table;
 }
 
-void ovlStringTable::AddString(const char *lstring) {
-    string st = lstring;
-    m_strings.push_back(st);
-    DUMP_LOG("TRACE: ovlStringTable::AddString '%s'", UNISTR(lstring));
+void ovlStringTable::AddString(const string& lstring) {
+    m_strings.push_back(lstring);
+    DUMP_LOG("TRACE: ovlStringTable::AddString '%s'", UNISTR(lstring.c_str()));
 }
 
-void ovlStringTable::AddSymbolString(const char *lstring, const char *lextension) {
-    string st = lstring;
-    st += ':';
-    st += lextension;
-    m_strings.push_back(st);
-    DUMP_LOG("TRACE: ovlStringTable::AddSymbolString '%s':'%s'", UNISTR(lstring), UNISTR(lextension));
+void ovlStringTable::AddSymbolString(const string& lstring, const string& lextension) {
+    m_strings.push_back(lstring + ':' + lextension);
+    DUMP_LOG("TRACE: ovlStringTable::AddSymbolString '%s':'%s'", UNISTR(lstring.c_str()), UNISTR(lextension.c_str()));
 }
 
 char* ovlStringTable::Make(cOvlInfo* info) {
@@ -89,16 +87,12 @@ char* ovlStringTable::Make(cOvlInfo* info) {
     return m_table;
 }
 
-char* ovlStringTable::FindString(const char *lstring) const {
-    string st = lstring;
-    return FindRawString(st);
+char* ovlStringTable::FindString(const string& lstring) const {
+    return FindRawString(lstring);
 }
 
-char* ovlStringTable::FindSymbolString(const char *lstring, const char *lextension) const {
-    string st = lstring;
-    st += ':';
-    st += lextension;
-    return FindRawString(st);
+char* ovlStringTable::FindSymbolString(const string& lstring, const string& lextension) const {
+    return FindRawString(lstring + ':' + lextension);
 }
 
 int ovlStringTable::GetSize() const {

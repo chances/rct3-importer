@@ -77,7 +77,117 @@
     </define>
     <define name="TXSReference">
       <a:documentation>Reference to a texture style</a:documentation>
-      <data type="string"></data>
+      <choice>
+        <choice>
+          <a:documentation>FTX Styles</a:documentation>
+          <value type="string">SIOpaque</value>
+          <value type="string">SIOpaqueDS</value>
+          <value type="string">SIAlpha</value>
+          <value type="string">SIAlphaDS</value>
+          <value type="string">SIAlphaMask</value>
+          <value type="string">SIAlphaMaskDS</value>
+          <value type="string">SIAlphaMaskLow</value>
+          <value type="string">SIEmissiveMask</value>
+          <value type="string">SIGlass</value>
+          <value type="string">SIWater</value>
+          <value type="string">SIOpaqueCaustics</value>
+          <value type="string">SIOpaqueCausticsGlossSpecular100</value>
+          <value type="string">SIOpaqueCausticsReflection</value>
+          <value type="string">SIOpaqueCausticsSpecular50</value>
+          <value type="string">SIOpaqueCausticsSpecular100</value>
+          <value type="string">SIOpaqueChrome</value>
+          <value type="string">SIOpaqueChromeModulate</value>
+          <value type="string">SIOpaqueGlossReflection</value>
+          <value type="string">SIOpaqueGlossSpecular50</value>
+          <value type="string">SIOpaqueGlossSpecular100</value>
+          <value type="string">SIOpaqueReflection</value>
+          <value type="string">SIOpaqueSpecular50</value>
+          <value type="string">SIOpaqueSpecular50Reflection</value>
+          <value type="string">SIOpaqueSpecular100</value>
+          <value type="string">SIOpaqueSpecular100Reflection</value>
+          <value type="string">SIOpaqueText</value>
+          <value type="string">SIOpaqueUnlit</value>
+          <value type="string">SIAlphaChrome</value>
+          <value type="string">SIAlphaReflection</value>
+          <value type="string">SIAlphaSpecular50</value>
+          <value type="string">SIAlphaSpecular50Reflection</value>
+          <value type="string">SIAlphaSpecular100</value>
+          <value type="string">SIAlphaSpecular100Reflection</value>
+          <value type="string">SIAlphaText</value>
+          <value type="string">SIAlphaUnlit</value>
+          <value type="string">SIAlphaMaskCaustics</value>
+          <value type="string">SIAlphaMaskChrome</value>
+          <value type="string">SIAlphaMaskReflection</value>
+          <value type="string">SIAlphaMaskSpecular50</value>
+          <value type="string">SIAlphaMaskSpecular50Reflection</value>
+          <value type="string">SIAlphaMaskSpecular100</value>
+          <value type="string">SIAlphaMaskSpecular100Reflection</value>
+          <value type="string">SIAlphaMaskUnlit</value>
+          <value type="string">SIAlphaMaskLowCaustics</value>
+          <value type="string">SIAlphaMaskLowSpecular50</value>
+          <value type="string">SIAlphaMaskLowSpecular50Reflection</value>
+          <value type="string">SIAlphaMaskLowSpecular100</value>
+          <value type="string">SIAlphaMaskLowSpecular100Reflection</value>
+          <value type="string">SIAlphaMaskUnlitLow</value>
+          <value type="string">SIEmissiveMaskReflection</value>
+          <value type="string">SIEmissiveMaskSpecular50</value>
+          <value type="string">SIEmissiveMaskSpecular50Reflection</value>
+          <value type="string">SIEmissiveMaskSpecular100</value>
+          <value type="string">SIEmissiveMaskSpecular100Reflection</value>
+          <value type="string">SIFillZ</value>
+        </choice>
+        <choice>
+          <a:documentation>TXS Styles</a:documentation>
+          <choice>
+            <a:documentation>Common</a:documentation>
+            <value type="string">GUIIcon</value>
+            <value type="string">PathGround</value>
+            <value type="string">TerrainBlending</value>
+            <value type="string">TerrainCliff</value>
+          </choice>
+          <choice>
+            <a:documentation>Rare</a:documentation>
+            <value type="string">EnvMap</value>
+            <value type="string">GUIRendererBitmap</value>
+            <value type="string">GUIRendererColour</value>
+            <value type="string">GUIRendererZMask</value>
+            <value type="string">GUISkin</value>
+            <value type="string">GUISkinTile</value>
+            <value type="string">GUISolidColour</value>
+            <value type="string">GUISolidColourOpaque</value>
+            <value type="string">HorizonShadowUV</value>
+            <value type="string">LaserTS</value>
+            <value type="string">LaserCapTS</value>
+            <value type="string">PoolPreviewGrid</value>
+            <value type="string">PoolPreviewGrid2</value>
+            <value type="string">Rope</value>
+            <value type="string">ShapeStandard</value>
+            <value type="string">SolidColourFont</value>
+            <value type="string">SystemFont</value>
+            <value type="string">TerrainCircleBack</value>
+            <value type="string">TerrainCircleFront</value>
+            <value type="string">TerrainCliffTransparent</value>
+            <value type="string">TerrainContour</value>
+            <value type="string">TerrainDebug</value>
+            <value type="string">TerrainDetail</value>
+            <value type="string">TerrainDetailAndLightmap</value>
+            <value type="string">TerrainFakeUp</value>
+            <value type="string">TerrainFog</value>
+            <value type="string">TerrainGrid</value>
+            <value type="string">TerrainGrid2StageDummy</value>
+            <value type="string">TerrainHighlight</value>
+            <value type="string">TerrainHole</value>
+            <value type="string">TerrainPosition</value>
+            <value type="string">TerrainPositionNoZ</value>
+            <value type="string">TerrainTransparent</value>
+            <value type="string">TerrainZRender</value>
+            <value type="string">VisibleFootprint</value>
+            <value type="string">Underground</value>
+            <value type="string">WaypointHighlight</value>
+            <value type="string">ZFillAlpha</value>
+          </choice>
+        </choice>
+      </choice>
     </define>
     <define name="TXTReference">
       <a:documentation>Reference to a txt structure</a:documentation>
@@ -179,6 +289,7 @@
       <ref name="cid"></ref>
       <ref name="ftx"></ref>
       <ref name="gsi"></ref>
+      <ref name="ptd"></ref>
       <ref name="sat"></ref>
       <ref name="shs"></ref>
       <ref name="sid"></ref>
@@ -286,7 +397,7 @@
       </element>
     </define>
     <define name="subovl">
-      <element name="subovl">
+      <element name="rawovl">
         <ref name="rootattrs"></ref>
         <ref name="baseattrs"></ref>
         <choice>
@@ -655,6 +766,11 @@
           <optional>
             <attribute name="flags">
               <data type="unsignedInt"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="support">
+              <ref name="ovlMeshSupport"></ref>
             </attribute>
           </optional>
           <optional>
@@ -1248,6 +1364,158 @@
         </attribute>
       </element>
     </define>
+    <define name="ptd">
+      <element name="ptd">
+        <ref name="baseattrs"></ref>
+        <attribute name="name">
+          <data type="string"></data>
+        </attribute>
+        <optional>
+          <attribute name="internalname">
+            <data type="string"></data>
+          </attribute>
+        </optional>
+        <attribute name="nametxt">
+          <ref name="TXTReference"></ref>
+        </attribute>
+        <attribute name="icon">
+          <ref name="GSIReference"></ref>
+        </attribute>
+        <optional>
+          <attribute name="underwater">
+            <data type="boolean"></data>
+          </attribute>
+        </optional>
+        <interleave>
+          <element name="texture_a">
+            <data type="string"></data>
+          </element>
+          <element name="texture_b">
+            <data type="string"></data>
+          </element>
+          <element name="flat">
+            <data type="string"></data>
+          </element>
+          <element name="straight_a">
+            <data type="string"></data>
+          </element>
+          <element name="straight_b">
+            <data type="string"></data>
+          </element>
+          <element name="turn_u">
+            <data type="string"></data>
+          </element>
+          <element name="turn_la">
+            <data type="string"></data>
+          </element>
+          <element name="turn_lb">
+            <data type="string"></data>
+          </element>
+          <element name="turn_ta">
+            <data type="string"></data>
+          </element>
+          <element name="turn_tb">
+            <data type="string"></data>
+          </element>
+          <element name="turn_tc">
+            <data type="string"></data>
+          </element>
+          <element name="turn_x">
+            <data type="string"></data>
+          </element>
+          <element name="corner_a">
+            <data type="string"></data>
+          </element>
+          <element name="corner_b">
+            <data type="string"></data>
+          </element>
+          <element name="corner_c">
+            <data type="string"></data>
+          </element>
+          <element name="corner_d">
+            <data type="string"></data>
+          </element>
+          <element name="slope">
+            <data type="string"></data>
+          </element>
+          <element name="slopestraight">
+            <data type="string"></data>
+          </element>
+          <element name="slopestraightleft">
+            <data type="string"></data>
+          </element>
+          <element name="slopestraightright">
+            <data type="string"></data>
+          </element>
+          <element name="slopemid">
+            <data type="string"></data>
+          </element>
+          <choice>
+            <attribute name="extended">
+              <value type="boolean">0</value>
+            </attribute>
+            <group>
+              <attribute name="extended">
+                <value type="boolean">1</value>
+              </attribute>
+              <optional>
+                <element name="flat_fc">
+                  <data type="string"></data>
+                </element>
+                <element name="slope_fc">
+                  <data type="string"></data>
+                </element>
+                <element name="slope_bc">
+                  <data type="string"></data>
+                </element>
+                <element name="slope_tc">
+                  <data type="string"></data>
+                </element>
+                <element name="slopestraight_fc">
+                  <data type="string"></data>
+                </element>
+                <element name="slopestraight_bc">
+                  <data type="string"></data>
+                </element>
+                <element name="slopestraight_tc">
+                  <data type="string"></data>
+                </element>
+                <element name="slopestraightleft_fc">
+                  <data type="string"></data>
+                </element>
+                <element name="slopestraightleft_bc">
+                  <data type="string"></data>
+                </element>
+                <element name="slopestraightleft_tc">
+                  <data type="string"></data>
+                </element>
+                <element name="slopestraightright_fc">
+                  <data type="string"></data>
+                </element>
+                <element name="slopestraightright_bc">
+                  <data type="string"></data>
+                </element>
+                <element name="slopestraightright_tc">
+                  <data type="string"></data>
+                </element>
+                <element name="slopemid_fc">
+                  <data type="string"></data>
+                </element>
+                <element name="slopemid_bc">
+                  <data type="string"></data>
+                </element>
+                <element name="slopemid_tc">
+                  <data type="string"></data>
+                </element>
+                <element name="paving">
+                  <data type="string"></data>
+                </element>
+              </optional>
+            </group>
+          </choice>
+        </interleave>
+      </element>
+    </define>
     <define name="sat">
       <element name="sat">
         <ref name="baseattrs"></ref>
@@ -1320,6 +1588,11 @@
           <optional>
             <attribute name="flags">
               <data type="unsignedInt"></data>
+            </attribute>
+          </optional>
+          <optional>
+            <attribute name="support">
+              <ref name="ovlMeshSupport"></ref>
             </attribute>
           </optional>
           <optional>
@@ -1533,7 +1806,7 @@
         </element>
       </define>
       <define name="sidsquareunknowns">
-        <element name="sidsqaureunknowns">
+        <element name="sidsquareunknowns">
           <ref name="baseattrs"></ref>
           <optional>
             <attribute name="flags">
