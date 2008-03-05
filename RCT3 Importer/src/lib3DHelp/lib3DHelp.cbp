@@ -16,7 +16,8 @@
 					<Add option="-Wall" />
 					<Add option="-g" />
 					<Add option="-D__WXDEBUG__" />
-					<Add directory="$(#wx.ansidebugstatic)" />
+					<Add directory="$(#wx.include)" />
+					<Add directory="$(#wx.lib)\msw-ansi-debug-static-2.8" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -30,7 +31,8 @@
 				<Compiler>
 					<Add option="-Os" />
 					<Add option="-O2" />
-					<Add directory="$(#wx.ansireleasestatic)" />
+					<Add directory="$(#wx.include)" />
+					<Add directory="$(#wx.lib)\msw-ansi-release-static-2.8" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -47,7 +49,8 @@
 				<Compiler>
 					<Add option="-Os" />
 					<Add option="-O2" />
-					<Add directory="$(#mingw.lib)\wx\include\msw-unicode-release-static-2.8" />
+					<Add directory="$(#wx3.include)" />
+					<Add directory="$(#wx3.lib)\msw-unicode-release-static-2.9" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -65,7 +68,8 @@
 					<Add option="-Wall" />
 					<Add option="-g" />
 					<Add option="-D__WXDEBUG__" />
-					<Add directory="$(#mingw.lib)\wx\include\msw-unicode-debug-static-2.8" />
+					<Add directory="$(#wx3.include)" />
+					<Add directory="$(#wx3.lib)\msw-unicode-debug-static-2.9" />
 				</Compiler>
 			</Target>
 		</Build>
@@ -84,12 +88,15 @@
 			<Add option="-DIL_STATIC_LIB" />
 			<Add option="-DUSE_SQUISH" />
 			<Add option="-DCACHE_GXIMAGE" />
-			<Add directory="$(#wx.include)" />
+			<Add option="-DXMLCPP_USE_XSLT" />
+			<Add option="-DXMLCPP_USE_WXWIDGETS" />
 			<Add directory="..\libASE-1.0" />
 			<Add directory="..\..\include" />
 			<Add directory="..\libWXHelp" />
 			<Add directory="$(#mingw.include)\GraphicsMagick" />
 			<Add directory="..\libOVLng" />
+			<Add directory="..\libXmlCpp" />
+			<Add directory="$(#mingw.include)\libxml2" />
 		</Compiler>
 		<Unit filename="3DLoader.cpp" />
 		<Unit filename="3DLoader.h" />
@@ -125,12 +132,12 @@
 		<Unit filename="wx_pch.h">
 			<Option weight="0" />
 		</Unit>
+		<Unit filename="xmlhelper.cpp" />
 		<Unit filename="xmlhelper.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />
 			<debugger />
-			<lib_finder />
 			<AutoVersioning>
 				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />
 				<Settings autoincrement="1" date_declarations="1" do_auto_increment="0" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="version.h" />

@@ -72,4 +72,15 @@ struct SceneryItemVisual
 	unsigned long unk11; //seen 0 so far
 };
 
+struct SceneryItemVisualB {
+    SceneryItemVisual vA;
+    unsigned long unk12;
+};
+
+struct SceneryItemVisualC {
+    SceneryItemVisual vA;
+    unsigned long unk12;
+    unsigned long unk13;
+};
+
 #endif

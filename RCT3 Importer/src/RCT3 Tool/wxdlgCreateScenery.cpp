@@ -38,6 +38,7 @@
 #include <wx/tooltip.h>
 
 #include <algorithm>
+#include <exception>
 
 //#include <IL/il.h>
 //#include <IL/ilu.h>
@@ -773,13 +774,14 @@ bool dlgCreateScenery::Save(bool as) {
                     return false;
                 }
             }
-            if (!m_SCN.Save()) {
-                ::wxMessageBox(_("Saving scenery file failed. You will be asked for a new file name now."), _("Error"), wxOK|wxICON_ERROR, this);
-                // fall through
-            } else {
+            try {
+                if (!m_SCN.Save())
+                    throw RCT3Exception(_("Saving scenery file failed. You will be asked for a new file name now."));
                 MakeDirty(false);
                 UpdateControlState();
                 return true;
+            } catch (std::exception& e) {
+                ::wxMessageBox(wxString(e.what(), wxConvLocal), _("Error"), wxOK|wxICON_ERROR, this);
             }
         }
     }
@@ -804,11 +806,14 @@ bool dlgCreateScenery::Save(bool as) {
     if (dialog->ShowModal() == wxID_OK) {
         ::wxGetApp().g_workdir.AssignDir(wxFileName(dialog->GetPath()).GetPath());
         m_SCN.filename = dialog->GetPath();
-        if (!m_SCN.Save()) {
-            ::wxMessageBox(_("Error saving SCN file."), _("Error"), wxOK | wxICON_ERROR, this);
-        } else {
+        try {
+            if (!m_SCN.Save())
+                throw RCT3Exception(_("Error saving SCN file."));
             MakeDirty(false);
             UpdateControlState();
+            return true;
+        } catch (std::exception& e) {
+            ::wxMessageBox(wxString(e.what(), wxConvLocal), _("Error"), wxOK|wxICON_ERROR, this);
         }
     } else {
         dialog->Destroy();

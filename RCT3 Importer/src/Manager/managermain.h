@@ -26,7 +26,7 @@
 #define MANAGERMAIN_H_INCLUDED
 
 #include "wx_pch.h"
-#include "xrc\xrc_main.h"
+#include "xrc/res_main.h"
 
 #include <wx/aui/aui.h>
 //#include <ifm/ifm.h>

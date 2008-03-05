@@ -52,6 +52,7 @@ cXmlInitHandler::cXmlInitHandler():m_singleton(false) {
     if (!g_use) {
         LIBXML_TEST_VERSION
         xmlInitParser();
+        xmlKeepBlanksDefault(0);
         xmlSubstituteEntitiesDefault(1); // For xslt
         xmlLoadExtDtdDefaultValue = 1;
 #ifdef XMLCPP_USE_XSLT

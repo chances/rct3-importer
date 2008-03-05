@@ -27,187 +27,186 @@
 
 #include "RawParse_cpp.h"
 
-void cRawParser::ParseCHG(wxXmlNode* node) {
+void cRawParser::ParseCHG(cXmlNode& node) {
     USE_PREFIX(node);
     cChangingRoom room;
-    room.name = ParseString(node, RAWXML_CHG, wxT("name"), NULL, useprefix).ToAscii();
-    room.attraction.name = ParseString(node, RAWXML_CHG, wxT("nametxt"), NULL, useprefix).ToAscii();
-    room.attraction.description = ParseString(node, RAWXML_CHG, wxT("description"), NULL, useprefix).ToAscii();
-    room.sid = ParseString(node, RAWXML_CHG, wxT("sid"), NULL, useprefix).ToAscii();
-    room.spline = ParseString(node, RAWXML_CHG, wxT("roomspline"), NULL, useprefix).ToAscii();
+    room.name = ParseString(node, wxT(RAWXML_CHG), wxT("name"), NULL, useprefix).ToAscii();
+    room.attraction.name = ParseString(node, wxT(RAWXML_CHG), wxT("nametxt"), NULL, useprefix).ToAscii();
+    room.attraction.description = ParseString(node, wxT(RAWXML_CHG), wxT("description"), NULL, useprefix).ToAscii();
+    room.sid = ParseString(node, wxT(RAWXML_CHG), wxT("sid"), NULL, useprefix).ToAscii();
+    room.spline = ParseString(node, wxT(RAWXML_CHG), wxT("roomspline"), NULL, useprefix).ToAscii();
     wxLogVerbose(wxString::Format(_("Adding chg %s to %s."), wxString(room.name.c_str(), wxConvLocal).c_str(), m_output.GetFullPath().c_str()));
 
-    wxXmlNode *child = node->GetChildren();
+    cXmlNode child(node.children());
     while (child) {
         DO_CONDITION_COMMENT(child);
 
-        if (child->GetName() == RAWXML_ATTRACTION_BASE) {
+        if (child(RAWXML_ATTRACTION_BASE)) {
             USE_PREFIX(child);
-            OPTION_PARSE(unsigned long, room.attraction.type, ParseUnsigned(child, RAWXML_ATTRACTION_BASE, wxT("type")));
+            OPTION_PARSE(unsigned long, room.attraction.type, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_BASE), wxT("type")));
             ParseStringOption(room.attraction.icon, child, wxT("icon"), NULL, useprefix);
             ParseStringOption(room.spline, child, wxT("attractionspline"), NULL, useprefix);
-        } else if (child->GetName() == RAWXML_ATTRACTION_UNKNOWNS) {
-            OPTION_PARSE(unsigned long, room.attraction.unk2, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u2")));
-            OPTION_PARSE(long, room.attraction.unk3, ParseSigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u3")));
-            OPTION_PARSE(unsigned long, room.attraction.unk4, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u4")));
-            OPTION_PARSE(unsigned long, room.attraction.unk5, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u5")));
-            OPTION_PARSE(unsigned long, room.attraction.unk6, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u6")));
-            OPTION_PARSE(unsigned long, room.attraction.unk9, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u9")));
-            OPTION_PARSE(long, room.attraction.unk10, ParseSigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u10")));
-            OPTION_PARSE(unsigned long, room.attraction.unk11, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u11")));
-            OPTION_PARSE(unsigned long, room.attraction.unk12, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u12")));
-            OPTION_PARSE(unsigned long, room.attraction.unk13, ParseUnsigned(child, RAWXML_ATTRACTION_UNKNOWNS, wxT("u13")));
-        } else if COMPILER_WRONGTAG(child) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in sta tag."), child->GetName().c_str()));
+        } else if (child(RAWXML_ATTRACTION_UNKNOWNS)) {
+            OPTION_PARSE(unsigned long, room.attraction.unk2, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u2")));
+            OPTION_PARSE(long, room.attraction.unk3, ParseSigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u3")));
+            OPTION_PARSE(unsigned long, room.attraction.unk4, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u4")));
+            OPTION_PARSE(unsigned long, room.attraction.unk5, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u5")));
+            OPTION_PARSE(unsigned long, room.attraction.unk6, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u6")));
+            OPTION_PARSE(unsigned long, room.attraction.unk9, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u9")));
+            OPTION_PARSE(long, room.attraction.unk10, ParseSigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u10")));
+            OPTION_PARSE(unsigned long, room.attraction.unk11, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u11")));
+            OPTION_PARSE(unsigned long, room.attraction.unk12, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u12")));
+            OPTION_PARSE(unsigned long, room.attraction.unk13, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u13")));
+        } else if (child.element()) {
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in sta tag."), STRING_FOR_FORMAT(child.name())));
         }
 
-        child = child->GetNext();
+        child.go_next();
     }
 
     ovlCHGManager* c_chg = m_ovl.GetManager<ovlCHGManager>();
     c_chg->AddRoom(room);
 }
 
-void cRawParser::ParseCID(wxXmlNode* node) {
+void cRawParser::ParseCID(cXmlNode& node) {
     USE_PREFIX(node);
     cCarriedItem cid;
-    cid.name = ParseString(node, RAWXML_CID, wxT("name"), NULL, useprefix).ToAscii();
-    cid.nametxt = ParseString(node, RAWXML_CID, wxT("nametxt"), NULL, useprefix).ToAscii();
-    cid.pluralnametxt = ParseString(node, RAWXML_CID, wxT("pluralnametxt"), NULL, useprefix).ToAscii();
+    cid.name = ParseString(node, wxT(RAWXML_CID), wxT("name"), NULL, useprefix).ToAscii();
+    cid.nametxt = ParseString(node, wxT(RAWXML_CID), wxT("nametxt"), NULL, useprefix).ToAscii();
+    cid.pluralnametxt = ParseString(node, wxT(RAWXML_CID), wxT("pluralnametxt"), NULL, useprefix).ToAscii();
     wxLogVerbose(wxString::Format(_("Adding cid %s to %s."), wxString(cid.name.c_str(), wxConvLocal).c_str(), m_output.GetFullPath().c_str()));
 
-    wxXmlNode *child = node->GetChildren();
+    cXmlNode child(node.children());
     while (child) {
         DO_CONDITION_COMMENT(child);
 
-        if (child->GetName() == RAWXML_CID_SHAPE) {
+        if (child(RAWXML_CID_SHAPE)) {
             USE_PREFIX(child);
-            cid.shape.shaped = ParseUnsigned(child, RAWXML_CID_SHAPE, wxT("shaped"));
+            cid.shape.shaped = ParseUnsigned(child, wxT(RAWXML_CID_SHAPE), wxT("shaped"));
             if (cid.shape.shaped) {
-                cid.shape.shape1 = ParseString(child, RAWXML_CID_SHAPE, wxT("shape1"), NULL, useprefix).ToAscii();
-                cid.shape.shape2 = ParseString(child, RAWXML_CID_SHAPE, wxT("shape1"), NULL, useprefix).ToAscii();
+                cid.shape.shape1 = ParseString(child, wxT(RAWXML_CID_SHAPE), wxT("shape1"), NULL, useprefix).ToAscii();
+                cid.shape.shape2 = ParseString(child, wxT(RAWXML_CID_SHAPE), wxT("shape1"), NULL, useprefix).ToAscii();
             } else {
                 cid.shape.MakeBillboard();
-                cid.shape.fts = ParseString(child, RAWXML_CID_SHAPE, wxT("ftx"), NULL, useprefix).ToAscii();
+                cid.shape.fts = ParseString(child, wxT(RAWXML_CID_SHAPE), wxT("ftx"), NULL, useprefix).ToAscii();
             }
-            OPTION_PARSE(float, cid.shape.unk9, ParseFloat(child, RAWXML_CID_SHAPE, wxT("distance")));
-            OPTION_PARSE(unsigned long, cid.shape.defaultcolour, ParseUnsigned(child, RAWXML_CID_SHAPE, wxT("defaultcolour")));
-            OPTION_PARSE(float, cid.shape.scalex, ParseFloat(child, RAWXML_CID_SHAPE, wxT("scalex")));
-            OPTION_PARSE(float, cid.shape.scaley, ParseFloat(child, RAWXML_CID_SHAPE, wxT("scaley")));
-        } else if (child->GetName() == RAWXML_CID_MORE) {
+            OPTION_PARSE(float, cid.shape.unk9, ParseFloat(child, wxT(RAWXML_CID_SHAPE), wxT("distance")));
+            OPTION_PARSE(unsigned long, cid.shape.defaultcolour, ParseUnsigned(child, wxT(RAWXML_CID_SHAPE), wxT("defaultcolour")));
+            OPTION_PARSE(float, cid.shape.scalex, ParseFloat(child, wxT(RAWXML_CID_SHAPE), wxT("scalex")));
+            OPTION_PARSE(float, cid.shape.scaley, ParseFloat(child, wxT(RAWXML_CID_SHAPE), wxT("scaley")));
+        } else if (child(RAWXML_CID_MORE)) {
             USE_PREFIX(child);
-            OPTION_PARSE(unsigned long, cid.addonpack, ParseUnsigned(child, RAWXML_CID_MORE, wxT("addonpack")));
+            OPTION_PARSE(unsigned long, cid.addonpack, ParseUnsigned(child, wxT(RAWXML_CID_MORE), wxT("addonpack")));
             ParseStringOption(cid.icon, child, wxT("icon"), NULL, useprefix);
-        } else if (child->GetName() == RAWXML_CID_EXTRA) {
+        } else if (child(RAWXML_CID_EXTRA)) {
             USE_PREFIX(child);
-            wxString extra = ParseString(child, RAWXML_CID_EXTRA, wxT("name"), NULL, useprefix);
+            wxString extra = ParseString(child, wxT(RAWXML_CID_EXTRA), wxT("name"), NULL, useprefix);
             cid.extras.push_back(std::string(extra.ToAscii()));
-        } else if (child->GetName() == RAWXML_CID_SETTINGS) {
-            OPTION_PARSE(unsigned long, cid.settings.flags, ParseUnsigned(child, RAWXML_CID_SETTINGS, wxT("flags")));
-            OPTION_PARSE(long, cid.settings.ageclass, ParseSigned(child, RAWXML_CID_SETTINGS, wxT("ageclass")));
-            OPTION_PARSE(unsigned long, cid.settings.type, ParseUnsigned(child, RAWXML_CID_SETTINGS, wxT("type")));
-            OPTION_PARSE(float, cid.settings.hunger, ParseFloat(child, RAWXML_CID_SETTINGS, wxT("hunger")));
-            OPTION_PARSE(float, cid.settings.thirst, ParseFloat(child, RAWXML_CID_SETTINGS, wxT("thirst")));
-            OPTION_PARSE(float, cid.settings.lightprotectionfactor, ParseFloat(child, RAWXML_CID_SETTINGS, wxT("lightprotectionfactor")));
-        } else if (child->GetName() == RAWXML_CID_TRASH) {
+        } else if (child(RAWXML_CID_SETTINGS)) {
+            OPTION_PARSE(unsigned long, cid.settings.flags, ParseUnsigned(child, wxT(RAWXML_CID_SETTINGS), wxT("flags")));
+            OPTION_PARSE(long, cid.settings.ageclass, ParseSigned(child, wxT(RAWXML_CID_SETTINGS), wxT("ageclass")));
+            OPTION_PARSE(unsigned long, cid.settings.type, ParseUnsigned(child, wxT(RAWXML_CID_SETTINGS), wxT("type")));
+            OPTION_PARSE(float, cid.settings.hunger, ParseFloat(child, wxT(RAWXML_CID_SETTINGS), wxT("hunger")));
+            OPTION_PARSE(float, cid.settings.thirst, ParseFloat(child, wxT(RAWXML_CID_SETTINGS), wxT("thirst")));
+            OPTION_PARSE(float, cid.settings.lightprotectionfactor, ParseFloat(child, wxT(RAWXML_CID_SETTINGS), wxT("lightprotectionfactor")));
+        } else if (child(RAWXML_CID_TRASH)) {
             USE_PREFIX(child);
             ParseStringOption(cid.trash.wrapper, child, wxT("wrapper"), NULL, useprefix);
-            OPTION_PARSE(float, cid.trash.trash1, ParseFloat(child, RAWXML_CID_TRASH, wxT("trash1")));
-            OPTION_PARSE(long, cid.trash.trash2, ParseSigned(child, RAWXML_CID_TRASH, wxT("trash2")));
-        } else if (child->GetName() == RAWXML_CID_SOAKED) {
+            OPTION_PARSE(float, cid.trash.trash1, ParseFloat(child, wxT(RAWXML_CID_TRASH), wxT("trash1")));
+            OPTION_PARSE(long, cid.trash.trash2, ParseSigned(child, wxT(RAWXML_CID_TRASH), wxT("trash2")));
+        } else if (child(RAWXML_CID_SOAKED)) {
             ParseStringOption(cid.soaked.male_morphmesh_body, child, wxT("malebody"), NULL, false);
             ParseStringOption(cid.soaked.male_morphmesh_legs, child, wxT("malelegs"), NULL, false);
             ParseStringOption(cid.soaked.female_morphmesh_body, child, wxT("femalebody"), NULL, false);
             ParseStringOption(cid.soaked.female_morphmesh_legs, child, wxT("femalelegs"), NULL, false);
-            OPTION_PARSE(unsigned long, cid.soaked.unk38, ParseUnsigned(child, RAWXML_CID_SOAKED, wxT("unknown")));
+            OPTION_PARSE(unsigned long, cid.soaked.unk38, ParseUnsigned(child, wxT(RAWXML_CID_SOAKED), wxT("unknown")));
             ParseStringOption(cid.soaked.textureoption, child, wxT("textureoption"), NULL, false);
-        } else if (child->GetName() == RAWXML_CID_SIZEUNK) {
-            OPTION_PARSE(unsigned long, cid.size.unk17, ParseUnsigned(child, RAWXML_CID_SIZEUNK, wxT("u1")));
-            OPTION_PARSE(unsigned long, cid.size.unk18, ParseUnsigned(child, RAWXML_CID_SIZEUNK, wxT("u2")));
-            OPTION_PARSE(unsigned long, cid.size.unk19, ParseUnsigned(child, RAWXML_CID_SIZEUNK, wxT("u3")));
-            OPTION_PARSE(unsigned long, cid.size.unk20, ParseUnsigned(child, RAWXML_CID_SIZEUNK, wxT("u4")));
-        } else if (child->GetName() == RAWXML_CID_UNK) {
-            OPTION_PARSE(unsigned long, cid.unknowns.unk1, ParseUnsigned(child, RAWXML_CID_UNK, wxT("u1")));
-            OPTION_PARSE(unsigned long, cid.unknowns.unk3, ParseUnsigned(child, RAWXML_CID_UNK, wxT("u3")));
-            OPTION_PARSE(unsigned long, cid.unknowns.unk26, ParseUnsigned(child, RAWXML_CID_UNK, wxT("u26")));
-            OPTION_PARSE(unsigned long, cid.unknowns.unk27, ParseUnsigned(child, RAWXML_CID_UNK, wxT("u27")));
-            OPTION_PARSE(unsigned long, cid.unknowns.unk28, ParseUnsigned(child, RAWXML_CID_UNK, wxT("u28")));
-            OPTION_PARSE(unsigned long, cid.unknowns.unk33, ParseUnsigned(child, RAWXML_CID_UNK, wxT("u33")));
-        } else if COMPILER_WRONGTAG(child) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in cid tag."), child->GetName().c_str()));
+        } else if (child(RAWXML_CID_SIZEUNK)) {
+            OPTION_PARSE(unsigned long, cid.size.unk17, ParseUnsigned(child, wxT(RAWXML_CID_SIZEUNK), wxT("u1")));
+            OPTION_PARSE(unsigned long, cid.size.unk18, ParseUnsigned(child, wxT(RAWXML_CID_SIZEUNK), wxT("u2")));
+            OPTION_PARSE(unsigned long, cid.size.unk19, ParseUnsigned(child, wxT(RAWXML_CID_SIZEUNK), wxT("u3")));
+            OPTION_PARSE(unsigned long, cid.size.unk20, ParseUnsigned(child, wxT(RAWXML_CID_SIZEUNK), wxT("u4")));
+        } else if (child(RAWXML_CID_UNK)) {
+            OPTION_PARSE(unsigned long, cid.unknowns.unk1, ParseUnsigned(child, wxT(RAWXML_CID_UNK), wxT("u1")));
+            OPTION_PARSE(unsigned long, cid.unknowns.unk3, ParseUnsigned(child, wxT(RAWXML_CID_UNK), wxT("u3")));
+            OPTION_PARSE(unsigned long, cid.unknowns.unk26, ParseUnsigned(child, wxT(RAWXML_CID_UNK), wxT("u26")));
+            OPTION_PARSE(unsigned long, cid.unknowns.unk27, ParseUnsigned(child, wxT(RAWXML_CID_UNK), wxT("u27")));
+            OPTION_PARSE(unsigned long, cid.unknowns.unk28, ParseUnsigned(child, wxT(RAWXML_CID_UNK), wxT("u28")));
+            OPTION_PARSE(unsigned long, cid.unknowns.unk33, ParseUnsigned(child, wxT(RAWXML_CID_UNK), wxT("u33")));
+        } else if (child.element()) {
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in cid tag."), STRING_FOR_FORMAT(child.name())));
         }
-        child = child->GetNext();
+        child.go_next();
     }
 
     ovlCIDManager* c_cid = m_ovl.GetManager<ovlCIDManager>();
     c_cid->AddItem(cid);
 }
 
-void cRawParser::ParseFTX(wxXmlNode* node) {
+void cRawParser::ParseFTX(cXmlNode& node) {
     USE_PREFIX(node);
     cFlexiTextureInfoStruct c_fti;
 
-    wxString name = ParseString(node, RAWXML_FTX, wxT("name"), NULL, useprefix);
+    wxString name = ParseString(node, wxT(RAWXML_FTX), wxT("name"), NULL, useprefix);
     c_fti.name = name.ToAscii();
-    OPTION_PARSE(unsigned long, c_fti.dimension, ParseUnsigned(node, RAWXML_FTX, wxT("dimension")));
-    OPTION_PARSE(unsigned long, c_fti.recolourable, ParseUnsigned(node, RAWXML_FTX, wxT("recolourable")));
-    OPTION_PARSE(unsigned long, c_fti.fps, ParseUnsigned(node, RAWXML_FTX, wxT("fps")));
+    OPTION_PARSE(unsigned long, c_fti.dimension, ParseUnsigned(node, wxT(RAWXML_FTX), wxT("dimension")));
+    OPTION_PARSE(unsigned long, c_fti.recolourable, ParseUnsigned(node, wxT(RAWXML_FTX), wxT("recolourable")));
+    OPTION_PARSE(unsigned long, c_fti.fps, ParseUnsigned(node, wxT(RAWXML_FTX), wxT("fps")));
 //    wxFileName texture = ParseString(node, RAWXML_TEX, wxT("texture"));
 //    if (!texture.IsAbsolute())
 //        texture.MakeAbsolute(m_input.GetPathWithSep());
     wxLogVerbose(wxString::Format(_("Adding ftx %s to %s."), name.c_str(), m_output.GetFullPath().c_str()));
     counted_array_ptr<unsigned char> data;
 
-    wxXmlNode* child = node->GetChildren();
+    cXmlNode child(node.children());
     while (child) {
         DO_CONDITION_COMMENT(child);
 
-        if (child->GetName() == RAWXML_FTX_ANIMATION) {
+        if (child(RAWXML_FTX_ANIMATION)) {
             if (m_mode == MODE_BAKE) {
-                child = child->GetNext();
+                child.go_next();
                 continue;
             }
-            unsigned long frame = ParseUnsigned(child, RAWXML_FTX_ANIMATION, wxT("index"));
+            unsigned long frame = ParseUnsigned(child, wxT(RAWXML_FTX_ANIMATION), wxT("index"));
             unsigned long rep = 1;
-            OPTION_PARSE(unsigned long, rep, ParseUnsigned(child, RAWXML_FTX_ANIMATION, wxT("repeat")));
+            OPTION_PARSE(unsigned long, rep, ParseUnsigned(child, wxT(RAWXML_FTX_ANIMATION), wxT("repeat")));
             for (unsigned long i = 0; i < rep; ++i)
                 c_fti.animation.push_back(frame);
-        } else if (child->GetName() == RAWXML_FTX_FRAME) {
+        } else if (child(RAWXML_FTX_FRAME)) {
             cFlexiTextureStruct c_fts;
             c_fts.recolourable = -1;
-            OPTION_PARSE(unsigned long, c_fts.dimension, ParseUnsigned(child, RAWXML_FTX_FRAME, wxT("dimension")));
-            OPTION_PARSE(unsigned long, c_fts.recolourable, ParseUnsigned(child, RAWXML_FTX_FRAME, wxT("recolourable")));
+            OPTION_PARSE(unsigned long, c_fts.dimension, ParseUnsigned(child, wxT(RAWXML_FTX_FRAME), wxT("dimension")));
+            OPTION_PARSE(unsigned long, c_fts.recolourable, ParseUnsigned(child, wxT(RAWXML_FTX_FRAME), wxT("recolourable")));
             unsigned char alphacutoff = 0;
-            OPTION_PARSE(unsigned long, alphacutoff, ParseUnsigned(child, RAWXML_FTX_FRAME_IMAGE, wxT("alphacutoff")));
+            OPTION_PARSE(unsigned long, alphacutoff, ParseUnsigned(child, wxT(RAWXML_FTX_FRAME), wxT("alphacutoff")));
             if (c_fts.recolourable == -1)
                 c_fts.recolourable = c_fti.recolourable;
             if (c_fts.dimension == 0)
                 c_fts.dimension = c_fti.dimension;
 
-            wxXmlNode* subchild = child->GetChildren();
+            cXmlNode subchild(child.children());
             while (subchild) {
                 DO_CONDITION_COMMENT(subchild);
 
-                if (subchild->GetName() == RAWXML_FTX_FRAME_IMAGE) {
+                if (subchild(RAWXML_FTX_FRAME_IMAGE)) {
                     if ((c_fts.palette.get() || c_fts.texture.get()) && (m_mode != MODE_BAKE))
                         throw RCT3Exception(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe/image: multiple datasources."));
 
                     bool usealpha = false;
-                    OPTION_PARSE(unsigned long, usealpha, ParseUnsigned(subchild, RAWXML_FTX_FRAME_IMAGE, wxT("usealpha")));
+                    OPTION_PARSE(unsigned long, usealpha, ParseUnsigned(subchild, wxT(RAWXML_FTX_FRAME_IMAGE), wxT("usealpha")));
 
-                    wxString t = subchild->GetNodeContent();
+                    wxString t = UTF8STRINGWRAP(subchild.content());
                     bool filevar = MakeVariable(t);
                     wxFSFileName texture = t;
                      if (m_mode == MODE_BAKE) {
-                        if (m_bake.Index(RAWXML_FTX) == wxNOT_FOUND) {
+                        if (m_bake.Index(wxT(RAWXML_FTX)) == wxNOT_FOUND) {
                             if (!filevar) {
-                                if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
+                                if (m_bake.Index(wxT(RAWBAKE_ABSOLUTE)) == wxNOT_FOUND) {
                                     texture.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
                                 }
-                                delete subchild->GetChildren();
-                                subchild->SetChildren(new wxXmlNode(NULL, wxXML_TEXT_NODE, wxT(""), texture.GetFullPath()));
+                                subchild.content(texture.GetFullPath().mb_str(wxConvUTF8));
                             }
-                            subchild = subchild->GetNext();
+                            subchild.go_next();
                             continue;
                         }
                     }
@@ -271,10 +270,10 @@ void cRawParser::ParseFTX(wxXmlNode* node) {
                                 default:
                                     throw RCT3Exception(wxString(_("Unknown base64 error baking palette '")) + texture.GetFullPath() + _("' in tex tag ") + name);
                             }
-                            subchild->SetName(RAWXML_FTX_FRAME_PDATA);
-                            subchild->DeleteProperty(wxT("usealpha"));
-                            delete subchild->GetChildren();
-                            subchild->SetChildren(new wxXmlNode(NULL, wxXML_TEXT_NODE, wxT(""), wxString(outbuf.get(), wxConvLocal)));
+                            subchild.name(RAWXML_FTX_FRAME_PDATA);
+                            subchild.delProp("usealpha");
+                            //delete subchild->GetChildren();
+                            subchild.content(outbuf.get());
 
                             outlen = outsize;
                             bret = base64_encode(c_fts.texture.get(), c_fts.dimension * c_fts.dimension, reinterpret_cast<unsigned char*>(outbuf.get()), &outlen);
@@ -286,12 +285,10 @@ void cRawParser::ParseFTX(wxXmlNode* node) {
                                 default:
                                     throw RCT3Exception(wxString(_("Unknown base64 error baking texture '")) + texture.GetFullPath() + _("' in tex tag ") + name);
                             }
-                            wxXmlNode* newnode = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, RAWXML_FTX_FRAME_TDATA);
+                            cXmlNode newnode(RAWXML_FTX_FRAME_TDATA);
                             CopyBaseAttributes(subchild, newnode);
-                            newnode->SetChildren(new wxXmlNode(NULL, wxXML_TEXT_NODE, wxT(""), wxString(outbuf.get(), wxConvLocal)));
-                            newnode->SetNext(subchild->GetNext());
-                            subchild->SetNext(newnode);
-                            subchild = newnode;
+                            newnode.content(outbuf.get());
+                            subchild = subchild.insertNodeAfter(newnode);
 
                             if (usealpha) {
                                 outlen = outsize;
@@ -304,40 +301,36 @@ void cRawParser::ParseFTX(wxXmlNode* node) {
                                     default:
                                         throw RCT3Exception(wxString(_("Unknown base64 error baking alpha '")) + texture.GetFullPath() + _("' in tex tag ") + name);
                                 }
-                                wxXmlNode* newnode = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, RAWXML_FTX_FRAME_ADATA);
+                                cXmlNode newnode(RAWXML_FTX_FRAME_ADATA);
                                 CopyBaseAttributes(subchild, newnode);
-                                newnode->SetChildren(new wxXmlNode(NULL, wxXML_TEXT_NODE, wxT(""), wxString(outbuf.get(), wxConvLocal)));
-                                newnode->SetNext(subchild->GetNext());
-                                subchild->SetNext(newnode);
-                                subchild = newnode;
+                                newnode.content(outbuf.get());
+                                subchild = subchild.insertNodeAfter(newnode);
                             }
-                            child->DeleteProperty(wxT("dimension"));
-                            child->AddProperty(wxT("dimension"), wxString::Format(wxT("%ld"), c_fts.dimension));
+                            child.prop("dimension", wxString::Format(wxT("%ld"), c_fts.dimension));
                         }
 
                     } catch (Magick::Exception& e) {
                         throw RCT3Exception(wxString::Format(_("ftx/ftxframe tag: GarphicsMagik exception: %s"), e.what()));
                     }
 
-                } else if (subchild->GetName() == RAWXML_FTX_FRAME_ALPHA) {
+                } else if (subchild(RAWXML_FTX_FRAME_ALPHA)) {
                     if (c_fts.alpha.get() && (m_mode != MODE_BAKE))
                         throw RCT3Exception(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe/alpha: multiple datasources."));
 
-                    wxString t = subchild->GetNodeContent();
+                    wxString t = UTF8STRINGWRAP(subchild.content());
                     bool filevar = MakeVariable(t);
                     wxFSFileName texture = t;
                     if (!texture.IsAbsolute())
                         texture.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
                     if (m_mode == MODE_BAKE) {
-                        if (m_bake.Index(RAWXML_FTX) == wxNOT_FOUND) {
+                        if (m_bake.Index(wxT(RAWXML_FTX)) == wxNOT_FOUND) {
                             if (!filevar) {
-                                if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
+                                if (m_bake.Index(wxT(RAWBAKE_ABSOLUTE)) == wxNOT_FOUND) {
                                     texture.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
                                 }
-                                delete subchild->GetChildren();
-                                subchild->SetChildren(new wxXmlNode(NULL, wxXML_TEXT_NODE, wxT(""), texture.GetFullPath()));
+                                subchild.content(texture.GetFullPath().mb_str(wxConvUTF8));
                             }
-                            subchild = subchild->GetNext();
+                            subchild.go_next();
                             continue;
                         }
                     }
@@ -385,23 +378,21 @@ void cRawParser::ParseFTX(wxXmlNode* node) {
                                 default:
                                     throw RCT3Exception(wxString(_("Unknown base64 error baking alpha '")) + texture.GetFullPath() + _("' in tex tag ") + name);
                             }
-                            subchild->SetName(RAWXML_FTX_FRAME_ADATA);
-                            delete subchild->GetChildren();
-                            subchild->SetChildren(new wxXmlNode(NULL, wxXML_TEXT_NODE, wxT(""), wxString(outbuf.get(), wxConvLocal)));
-                            child->DeleteProperty(wxT("dimension"));
-                            child->AddProperty(wxT("dimension"), wxString::Format(wxT("%ld"), c_fts.dimension));
+                            subchild.name(RAWXML_FTX_FRAME_ADATA);
+                            subchild.content(outbuf.get());
+                            child.prop("dimension", wxString::Format(wxT("%ld"), c_fts.dimension));
                         }
 
                     } catch (Magick::Exception& e) {
                         throw RCT3Exception(wxString::Format(_("ftx/ftxframe tag: GarphicsMagik exception: %s"), e.what()));
                     }
-                } else if (subchild->GetName() == RAWXML_FTX_FRAME_PDATA) {
+                } else if (subchild(RAWXML_FTX_FRAME_PDATA)) {
                     if (c_fts.palette.get() && (m_mode != MODE_BAKE))
                         throw RCT3Exception(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe/palettedata: multiple datasources."));
 
                     BAKE_SKIP(subchild);
 
-                    wxString tex = subchild->GetNodeContent();
+                    wxString tex = UTF8STRINGWRAP(subchild.content());
                     MakeVariable(tex);
                     c_fts.palette = counted_array_ptr<unsigned char>(new unsigned char[256 * sizeof(RGBQUAD)]);
                     unsigned long outlen = 256 * sizeof(RGBQUAD);
@@ -422,11 +413,11 @@ void cRawParser::ParseFTX(wxXmlNode* node) {
                     }
                     if (outlen != 256 * sizeof(RGBQUAD))
                         throw RCT3Exception(wxString::Format(_("Datasize mismatch (%ld/%d) error in ftx('%s')/ftxframe/palettedata tag."), outlen, 256 * sizeof(RGBQUAD),name.c_str()));
-                } else if (subchild->GetName() == RAWXML_FTX_FRAME_TDATA) {
+                } else if (subchild(RAWXML_FTX_FRAME_TDATA)) {
                     if (c_fts.texture.get() && (m_mode != MODE_BAKE))
                         throw RCT3Exception(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe/texturedata: multiple datasources."));
                     if (m_mode == MODE_BAKE) {
-                        subchild = subchild->GetNext();
+                        subchild.go_next();
                         continue;
                     }
 
@@ -436,7 +427,7 @@ void cRawParser::ParseFTX(wxXmlNode* node) {
                     if (!c_fti.dimension)
                         c_fti.dimension = c_fts.dimension;
 
-                    wxString tex = subchild->GetNodeContent();
+                    wxString tex = UTF8STRINGWRAP(subchild.content());
                     MakeVariable(tex);
                     c_fts.texture = counted_array_ptr<unsigned char>(new unsigned char[c_fts.dimension * c_fts.dimension]);
                     unsigned long outlen = c_fts.dimension * c_fts.dimension;
@@ -457,19 +448,19 @@ void cRawParser::ParseFTX(wxXmlNode* node) {
                     }
                     if (outlen != c_fts.dimension * c_fts.dimension)
                         throw RCT3Exception(wxString(_("Datasize mismatch error in ftx/ftxframe/texturedata tag ")) + name);
-                } else if (subchild->GetName() == RAWXML_FTX_FRAME_ADATA) {
+                } else if (subchild(RAWXML_FTX_FRAME_ADATA)) {
                     if (c_fts.alpha.get() && (m_mode != MODE_BAKE))
                         throw RCT3Exception(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe/alphadata: multiple datasources."));
 
                     if (m_mode == MODE_BAKE) {
-                        subchild = subchild->GetNext();
+                        subchild.go_next();
                         continue;
                     }
 
                     if (!c_fts.dimension)
                         throw RCT3Exception(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe: dimension missing for decoding alphadata."));
 
-                    wxString tex = subchild->GetNodeContent();
+                    wxString tex = UTF8STRINGWRAP(subchild.content());
                     MakeVariable(tex);
                     c_fts.alpha = counted_array_ptr<unsigned char>(new unsigned char[c_fts.dimension * c_fts.dimension]);
                     unsigned long outlen = c_fts.dimension * c_fts.dimension;
@@ -490,11 +481,11 @@ void cRawParser::ParseFTX(wxXmlNode* node) {
                     }
                     if (outlen != c_fts.dimension * c_fts.dimension)
                         throw RCT3Exception(wxString(_("Datasize mismatch error in ftx/ftxframe/alphadata tag ")) + name);
-                } else if COMPILER_WRONGTAG(subchild) {
-                    throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ftx/ftxframe tag."), child->GetName().c_str()));
+                } else if (subchild.element()) {
+                    throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ftx/ftxframe tag."), STRING_FOR_FORMAT(child.name())));
                 }
 
-                subchild = subchild->GetNext();
+                subchild.go_next();
             }
 
             if (m_mode != MODE_BAKE) {
@@ -504,10 +495,10 @@ void cRawParser::ParseFTX(wxXmlNode* node) {
                     throw RCT3Exception(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe: texture data missing."));
                 c_fti.frames.push_back(c_fts);
             }
-        } else if COMPILER_WRONGTAG(child) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ftx tag."), child->GetName().c_str()));
+        } else if (child.element()) {
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ftx tag."), STRING_FOR_FORMAT(child.name())));
         }
-        child = child->GetNext();
+        child.go_next();
 
     }
 

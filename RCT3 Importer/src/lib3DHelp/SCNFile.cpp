@@ -28,6 +28,7 @@
 
 #include "SCNFile.h"
 
+#include <boost/format.hpp>
 #include <sstream>
 #include <stdio.h>
 
@@ -42,6 +43,9 @@
 #include "rct3log.h"
 #include "texcheck.h"
 #include "xmldefs.h"
+#include "xmlhelper.h"
+
+using namespace xmlcpp;
 
 bool cSCNFile::CheckForModelNameDuplicates() {
     for (cModel::iterator moda = models.begin(); moda != models.end(); moda++) {
@@ -99,14 +103,18 @@ bool cSCNFile::Load() {
     }
 
     if (filename.GetExt().Lower() == wxT("xml")) {
-        wxXmlDocument doc;
-        if (doc.Load(filename.GetFullPath())) {
-            ret = LoadXML(&doc);
+        cXmlDoc doc;
+        if (doc.read(filename.GetFullPath(), wxString(), XML_PARSE_DTDLOAD)) {
+            ret = LoadXML(doc);
             if (!ret)
                 wxLogWarning(_("There were warnings or errors loading the xml file.\nIf they concern models, they will be shown to you when you open the respective settings."));
             return ret;
         } else {
-            // wxXmlDocument reports errors
+            wxLogError(_("XML error(s) loading file '%s':"), filename.GetFullPath().c_str());
+            for (vector<cXmlStructuredError>::const_iterator it = doc.getStructuredErrors().begin(); it != doc.getStructuredErrors().end(); ++it)
+                wxLogError(UTF8STRINGWRAP(it->message).Trim(true));
+            for (vector<string>::const_iterator it = doc.getGenericErrors().begin(); it != doc.getGenericErrors().end(); ++it)
+                wxLogError(UTF8STRINGWRAP((*it)));
             return false;
         }
     }
@@ -1464,29 +1472,24 @@ bool cSCNFile::Save() {
 void cSCNFile::SaveXML() {
     wxString xmlfile = filename.GetFullPath();
     //xmlfile += wxT(".xml");
-    wxXmlDocument doc;
-    doc.SetFileEncoding(wxT("UTF-8"));
-    doc.SetRoot(GetNode(filename.GetPath()));
-    doc.Save(xmlfile, 2);
+    cXmlDoc doc(true);
+    //doc.SetFileEncoding(wxT("UTF-8"));
+    cXmlNode root = GetNode(filename.GetPath());
+    doc.root(root);
+    doc.write(xmlfile, true, wxString(wxT("UTF-8")));
 }
 
-bool cSCNFile::LoadXML(wxXmlDocument* doc) {
-    wxString temp;
-/*
-    wxXmlDocument doc;
-    if (!doc.Load(filename.GetFullPath()))
-        throw RCT3Exception(wxString::Format(_("Error loading xml file '%s'."), filename.GetFullPath().fn_str()));
-*/
+bool cSCNFile::LoadXML(cXmlDoc& doc) {
     // start processing the XML file
-    wxXmlNode* root = doc->GetRoot();
-    if (root->GetName() != RCT3XML_CSCNFILE) {
-        throw RCT3Exception(wxString::Format(_("Error loading xml file '%s'. Wrong root tag. Probably you tried to load a xml file made for a different purpose."), filename.GetFullPath().fn_str()));
+    cXmlNode root = doc.root();
+    if (!root(RCT3XML_CSCNFILE)) {
+        throw RCT3Exception(wxString::Format(_("Error loading xml file '%s'. Wrong root tag '%s'. Probably you tried to load a xml file made for a different purpose."), filename.GetFullPath().c_str(), STRING_FOR_FORMAT(root.name())));
     }
 
     wxString path = filename.GetPath();
 
     // Peak at version to detect ovlcompiler xml
-    if (root->GetPropVal(wxT("version"), &temp)) {
+    if (root.hasProp("version")) {
         return FromNode(root, path, 0);
     } else {
         version = VERSION_CSCNFILE_FIRSTXML;
@@ -1496,51 +1499,51 @@ bool cSCNFile::LoadXML(wxXmlDocument* doc) {
 
 }
 
-#define COMPILER_BSH wxT("bsh")
-#define COMPILER_BAN wxT("ban")
-#define COMPILER_FTX wxT("ftx")
-#define COMPILER_FIX wxT("fix")
-#define COMPILER_REFERENCE wxT("reference")
-#define COMPILER_OPTIONS wxT("options")
+#define COMPILER_BSH "bsh"
+#define COMPILER_BAN "ban"
+#define COMPILER_FTX "ftx"
+#define COMPILER_FIX "fix"
+#define COMPILER_REFERENCE "reference"
+#define COMPILER_OPTIONS "options"
 
-bool cSCNFile::FromCompilerXml(wxXmlNode* node, const wxString& path) {
-    wxXmlNode *child = node->GetChildren();
+bool cSCNFile::FromCompilerXml(cXmlNode& node, const wxString& path) {
+    cXmlNode child = node.children();
     c3DLoaderOrientation ori = ORIENTATION_UNKNOWN;
     bool ret = true;
     int option_lods = 1;
 
-    name = node->GetPropVal(wxT("name"), name);
+    name = node.wxgetPropVal("name", name);
 
     // Read ovl file
-    ovlpath = node->GetPropVal(wxT("file"), wxT(".\\"));
+    ovlpath = node.wxgetPropVal("file", ".\\");
     if (!ovlpath.IsAbsolute()) {
         ovlpath.MakeAbsolute(path);
     }
 
     while (child) {
 
-        if (child->GetName() == COMPILER_BSH) {
+        if (child(COMPILER_BSH)) {
             cAnimatedModel nmodel;
             if (!nmodel.FromCompilerXml(child, path))
                 ret = false;
             animatedmodels.push_back(nmodel);
-        } else if (child->GetName() == COMPILER_BAN) {
+        } else if (child(COMPILER_BAN)) {
             cAnimation anim;
             if (!anim.FromCompilerXml(child, path))
                 ret = false;
             animations.push_back(anim);
-        } else if (child->GetName() == COMPILER_FTX) {
+        } else if (child(COMPILER_FTX)) {
             cFlexiTexture ftx;
             if (!ftx.FromCompilerXml(child, path))
                 ret = false;
             flexitextures.push_back(ftx);
-        } else if (child->GetName() == COMPILER_FIX) {
+        } else if (child(COMPILER_FIX)) {
             if (ori != ORIENTATION_UNKNOWN) {
                 throw RCT3Exception(_("Second fix tag found."));
             }
-            wxString hand = child->GetPropVal(wxT("handedness"), wxT("left"));
+            wxString hand = child.wxgetPropVal("handedness", "left");
             hand.MakeLower();
-            wxString up = child->GetPropVal(wxT("up"), wxT("y"));
+            wxString up = child.wxgetPropVal("up", "y");
             up.MakeLower();
             if (hand == wxT("left")) {
                 if (up == wxT("x")) {
@@ -1566,13 +1569,13 @@ bool cSCNFile::FromCompilerXml(wxXmlNode* node, const wxString& path) {
                 throw RCT3Exception(wxString::Format(_("Unknown value '%s' for handedness attribute in fix tag."), hand.c_str()));
             }
             wxLogDebug(wxT("Fix tag found: %s %s (%d)"), hand.c_str(), up.c_str(), static_cast<unsigned int>(ori));
-        } else if (child->GetName() == COMPILER_REFERENCE) {
-            wxString ref = child->GetPropVal(wxT("path"), wxT(""));
+        } else if (child(COMPILER_REFERENCE)) {
+            wxString ref = child.wxgetPropVal("path");
             if (ref.IsEmpty())
                 throw RCT3Exception(_("REFERENCE tag misses path attribute."));
             references.Add(ref);
-        } else if (child->GetName() == COMPILER_OPTIONS) {
-            wxString te = child->GetPropVal(wxT("lods"), wxT("1"));
+        } else if (child(COMPILER_OPTIONS)) {
+            wxString te = child.wxgetPropVal("lods", "1");
             if (te == wxT("1")) {
                 option_lods = 1;
             } else if (te == wxT("3")) {
@@ -1582,11 +1585,11 @@ bool cSCNFile::FromCompilerXml(wxXmlNode* node, const wxString& path) {
             } else {
                 throw RCT3Exception(wxString::Format(_("Unknown lod option '%s'."), te.c_str()));
             }
-        } else if COMPILER_WRONGTAG(child) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ovl tag."), child->GetName().c_str()));
+        } else if (child.element()) {
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ovl tag."), STRING_FOR_FORMAT(child.name())));
         }
 
-        child = child->GetNext();
+        ++child;
     }
 
     if (ori == ORIENTATION_UNKNOWN)
@@ -1697,37 +1700,37 @@ bool cSCNFile::FromCompilerXml(wxXmlNode* node, const wxString& path) {
 }
 
 #define CSCNFILE_READVECTOR(vec, itype, itag, tag) \
-    } else if (child->GetName() == tag) { \
-        wxXmlNode* subchild = child->GetChildren(); \
+    } else if (child(tag)) { \
+        cXmlNode subchild = child.children(); \
         while (subchild) { \
-            if (subchild->GetName() == itag) { \
+            if (subchild(itag)) { \
                 itype item; \
                 if (!item.FromNode(subchild, path, version)) \
                     ret = false; \
                 vec.push_back(item); \
             } \
-            subchild = subchild->GetNext(); \
+            ++subchild; \
         }
 
-bool cSCNFile::FromNode(wxXmlNode* node, const wxString& path, unsigned long version) {
+bool cSCNFile::FromNode(cXmlNode& node, const wxString& path, unsigned long version) {
     bool ret = true;
-    wxString temp;
+    std::string temp;
     if (!node)
         return false;
-    if (!node->GetName().IsSameAs(RCT3XML_CSCNFILE))
+    if (!node(RCT3XML_CSCNFILE))
         return false;
 
-    name = node->GetPropVal(wxT("name"), wxT(""));
+    name = node.wxgetPropVal("name");
 
     // Read ovl file
-    ovlpath = node->GetPropVal(wxT("file"), wxT(".\\"));
+    ovlpath = node.wxgetPropVal("file", ".\\");
     if (!ovlpath.IsAbsolute()) {
         ovlpath.MakeAbsolute(path);
     }
 
     // Read version
-    if (node->GetPropVal(wxT("version"), &temp)) {
-        if (!temp.ToULong(&version)) {
+    if (node.getPropVal("version", &temp)) {
+        if (!parseULong(temp, version)) {
             version = VERSION_CSCNFILE_FIRSTXML;
             ret = false;
         }
@@ -1744,10 +1747,10 @@ bool cSCNFile::FromNode(wxXmlNode* node, const wxString& path, unsigned long ver
     }
 
 
-    wxXmlNode *child = node->GetChildren();
+    cXmlNode child = node.children();
     while (child) {
 
-        if (child->GetName() == RCT3XML_CSIVSETTINGS) {
+        if (child(RCT3XML_CSIVSETTINGS)) {
             if (!sivsettings.FromNode(child, path, version))
                 ret = false;
         CSCNFILE_READVECTOR(flexitextures, cFlexiTexture, RCT3XML_CFLEXITEXTURE, RCT3XML_CSCNFILE_FLEXITEXTURES)
@@ -1755,19 +1758,19 @@ bool cSCNFile::FromNode(wxXmlNode* node, const wxString& path, unsigned long ver
         CSCNFILE_READVECTOR(animatedmodels, cAnimatedModel, RCT3XML_CANIMATEDMODEL, RCT3XML_CSCNFILE_ANIMATEDMODELS)
         CSCNFILE_READVECTOR(animations, cAnimation, RCT3XML_CANIMATION, RCT3XML_CSCNFILE_ANIMATIONS)
         CSCNFILE_READVECTOR(lods, cLOD, RCT3XML_CLOD, RCT3XML_CSCNFILE_LODS)
-        } else if (child->GetName() == RCT3XML_CSCNFILE_REFERENCES) {
-            wxXmlNode* subchild = child->GetChildren();
+        } else if (child(RCT3XML_CSCNFILE_REFERENCES)) {
+            cXmlNode subchild = child.children();
             while (subchild) {
-                if (subchild->GetName() == RCT3XML_REFERENCE) {
-                    wxString ref = subchild->GetPropVal(wxT("path"), wxT(""));
+                if (subchild(RCT3XML_REFERENCE)) {
+                    wxString ref = subchild.wxgetPropVal("path");
                     if (!ref.IsEmpty())
                         references.push_back(ref);
                 }
-                subchild = subchild->GetNext();
+                ++subchild;
             }
         }
 
-        child = child->GetNext();
+        ++child;
     }
     return ret;
 }
@@ -1776,38 +1779,24 @@ bool cSCNFile::FromNode(wxXmlNode* node, const wxString& path, unsigned long ver
 //        newchild->SetParent(parent);
 
 #define CSCNFILE_WRITEVECTOR(vec, iter, tag) \
-    parent = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, tag); \
+    tempnode = cXmlNode(tag); \
     for (iter it = vec.begin(); it != vec.end(); it++) { \
-        wxXmlNode* newchild = it->GetNode(path); \
-        if (lastchild) \
-            lastchild->SetNext(newchild); \
-        else \
-            parent->SetChildren(newchild); \
-        lastchild = newchild; \
+        cXmlNode newchild = it->GetNode(path); \
+        tempnode.appendChildren(newchild); \
     } \
-    lastparent->SetNext(parent); \
-    lastparent = parent; \
-    lastchild = NULL;
+    node.appendChildren(tempnode);
 
-wxXmlNode* cSCNFile::GetNode(const wxString& path) {
-    wxXmlNode* node = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, RCT3XML_CSCNFILE);
-    wxXmlNode* lastchild = NULL;
-    wxXmlNode* lastparent = NULL;
-
-    node->AddProperty(wxT("name"), name);
+cXmlNode cSCNFile::GetNode(const wxString& path) {
+    cXmlNode node(RCT3XML_CSCNFILE);
+    node.prop("name", name);
     wxFileName temp = ovlpath;
     temp.MakeRelativeTo(path);
-    node->AddProperty(wxT("file"), temp.GetPathWithSep());
-    node->AddProperty(wxT("version"), wxString::Format(wxT("%lu"), version));
-    node->AddProperty(wxT("xmlns"), WXW(XML_NAMESPACE_SCENERY));
-    //node->AddProperty(wxT("xmlns:xsi"), WXW(XML_NAMESPACE_SCHEMAINSTANCE));
-    //node->AddProperty(wxT("xsi:schemaLocation"), WXW(XML_NAMESPACE_SCENERY)+wxT(" ")+WXW(XML_SCHEMALOCATION_SCENERY));
+    node.prop("file", temp.GetPathWithSep());
+    node.prop("version", boost::str(boost::format("%lu") % version).c_str());
+    node.prop("xmlns", XML_NAMESPACE_SCENERY);
 
-    lastparent = sivsettings.GetNode(path);
-    //lastparent->SetParent(node);
-    node->SetChildren(lastparent);
-
-    wxXmlNode* parent;
+    cXmlNode tempnode = sivsettings.GetNode(path);
+    node.appendChildren(tempnode);
 
     CSCNFILE_WRITEVECTOR(flexitextures, cFlexiTexture::iterator, RCT3XML_CSCNFILE_FLEXITEXTURES)
     CSCNFILE_WRITEVECTOR(models, cModel::iterator, RCT3XML_CSCNFILE_MODELS)
@@ -1816,18 +1805,14 @@ wxXmlNode* cSCNFile::GetNode(const wxString& path) {
     CSCNFILE_WRITEVECTOR(lods, cLOD::iterator, RCT3XML_CSCNFILE_LODS)
 
     //parent = new wxXmlNode(node, wxXML_ELEMENT_NODE, RCT3XML_CSCNFILE_REFERENCES);
-    parent = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, RCT3XML_CSCNFILE_REFERENCES);
+    tempnode = cXmlNode(RCT3XML_CSCNFILE_REFERENCES);
     for (cStringIterator it = references.begin(); it != references.end(); it++) {
         //wxXmlNode* newchild = new wxXmlNode(parent, wxXML_ELEMENT_NODE, RCT3XML_REFERENCE);
-        wxXmlNode* newchild = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, RCT3XML_REFERENCE);
-        newchild->AddProperty(wxT("path"), *it);
-        if (lastchild)
-            lastchild->SetNext(newchild);
-        else
-            parent->SetChildren(newchild);
-        lastchild = newchild;
+        cXmlNode newchild(RCT3XML_REFERENCE);
+        newchild.prop("path", *it);
+        tempnode.appendChildren(newchild);
     }
-    lastparent->SetNext(parent);
+    node.appendChildren(tempnode);
 
     return node;
 }

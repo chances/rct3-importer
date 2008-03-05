@@ -7,12 +7,12 @@
         <property name="code_generation">C++</property>
         <property name="encoding">UTF-8</property>
         <property name="event_generation">connect</property>
-        <property name="file">xrc_about</property>
+        <property name="file">res_about</property>
         <property name="first_id">1000</property>
         <property name="help_provider">none</property>
         <property name="icons"></property>
         <property name="internationalize">1</property>
-        <property name="name">xrc_about</property>
+        <property name="name">res_about</property>
         <property name="namespace"></property>
         <property name="path">.</property>
         <property name="precompiled_header"></property>

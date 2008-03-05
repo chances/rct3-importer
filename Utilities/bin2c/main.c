@@ -88,12 +88,14 @@
  	fclose(ifile);
  	fclose(ofile);
 
- 	struct stat s;
- 	struct utimbuf u;
- 	stat(ifname, &s);
- 	u.actime = s.st_atime;
- 	u.modtime = s.st_mtime;
- 	utime(ofname, &u);
+    if (strcmp(ifname, "-")) {
+        struct stat s;
+        struct utimbuf u;
+        stat(ifname, &s);
+        u.actime = s.st_atime;
+        u.modtime = s.st_mtime;
+        utime(ofname, &u);
+    }
  }
 
  void usage(void)

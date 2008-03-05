@@ -608,6 +608,9 @@ void dlgEffect::OnEditClick(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void dlgEffect::OnQuickClick(wxCommandEvent& WXUNUSED(event)) {
+    wxMenuItem* calc = m_menuPos1->FindItem(XRCID("menu_quickeffect_calculate"));
+    if (calc)
+        calc->Enable(false);
     PopupMenu(m_menuPos1);
 }
 
@@ -646,6 +649,7 @@ EVT_CHECKBOX(XRCID("m_cbUsePos2"), dlgBone::OnUse2Click)
 
 EVT_BUTTON(XRCID("m_btLoad"), dlgBone::OnLoad)
 
+EVT_MENU(XRCID("menu_quickeffect_calculate"), dlgBone::OnQuickMenu1)
 EVT_MENU(XRCID("menu_quickeffect_pos2"), dlgBone::OnQuickMenu2)
 EVT_MENU(XRCID("menu_quickeffect_pos12"), dlgBone::OnQuickMenu2)
 EVT_MENU(XRCID("menu_quickeffect_this2"), dlgBone::OnQuickMenu2)
@@ -871,7 +875,39 @@ void dlgBone::OnClearMeshClick(wxCommandEvent& WXUNUSED(event)) {
 ////////////////////////////////////////////////////////////////////////
 
 void dlgBone::OnQuickMenu1(wxCommandEvent& event) {
-    DoQuickMenu(event.GetId(), m_bn.position1names, m_bn.positions1, 0);
+    if (event.GetId() == XRCID("menu_quickeffect_calculate")) {
+        if (m_bn.positions1.size()) {
+            if (::wxMessageBox(_("Do you really want to replace all matrix entries?"), _("Question"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this)==wxNO)
+                return;
+        }
+        MATRIX pos2 = matrixMultiply(m_bn.positions2);
+        MATRIX ppos2;
+        wxString parnt = m_choiceParent->GetStringSelection();
+        bool found = false;
+        if (m_model) {
+            for (cModelBone::iterator it = m_model->modelbones.begin(); it != m_model->modelbones.end(); it++) {
+                if (it->name.IsSameAs(parnt)) {
+                    found = true;
+                    if (it->usepos2) {
+                        ppos2 = matrixMultiply(it->positions2);
+                    } else {
+                        ppos2 = matrixMultiply(it->positions1);
+                    }
+                    break;
+                }
+            }
+        }
+        if (!found) {
+            ::wxMessageBox(_("Could not identify parent bone"), _("Error"), wxOK|wxICON_ERROR, this);
+            return;
+        }
+        m_bn.positions1.clear();
+        m_bn.position1names.clear();
+        m_bn.positions1.push_back(matrixMultiply(pos2, matrixInverse(ppos2)));
+        m_bn.position1names.push_back(wxString::Format(_("Calculated from parent '%s'."), parnt.c_str()));
+        ShowTransform();
+    } else
+        DoQuickMenu(event.GetId(), m_bn.position1names, m_bn.positions1, 0);
 }
 
 void dlgBone::OnEditClick(wxCommandEvent& WXUNUSED(event)) {
@@ -886,6 +922,9 @@ void dlgBone::OnEditClick(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void dlgBone::OnQuickClick(wxCommandEvent& WXUNUSED(event)) {
+    wxMenuItem* calc = m_menuPos1->FindItem(XRCID("menu_quickeffect_calculate"));
+    if (calc)
+        calc->Enable(m_bn.usepos2 && (!m_choiceParent->GetStringSelection().IsSameAs("-")));
     PopupMenu(m_menuPos1);
 }
 

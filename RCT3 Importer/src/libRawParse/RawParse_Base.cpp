@@ -26,15 +26,15 @@
 #include "RawParse_cpp.h"
 
 void cRawParser::FillAllBakes(wxSortedArrayString& tofill) {
-    tofill.push_back(RAWXML_VARIABLES);
-    tofill.push_back(RAWXML_IMPORT);
-    tofill.push_back(RAWXML_WRITE);
-    tofill.push_back(RAWXML_BSH);
-    tofill.push_back(RAWXML_FTX);
-    tofill.push_back(RAWXML_SHS);
-    tofill.push_back(RAWXML_TEX);
-    tofill.push_back(RAWXML_TXT);
-//    tofill.push_back(RAWBAKE_XML);
+    tofill.push_back(wxT(RAWXML_VARIABLES));
+    tofill.push_back(wxT(RAWXML_IMPORT));
+    tofill.push_back(wxT(RAWXML_WRITE));
+    tofill.push_back(wxT(RAWXML_BSH));
+    tofill.push_back(wxT(RAWXML_FTX));
+    tofill.push_back(wxT(RAWXML_SHS));
+    tofill.push_back(wxT(RAWXML_TEX));
+    tofill.push_back(wxT(RAWXML_TXT));
+//    tofill.push_back(wxT(RAWBAKE_XML));
 }
 
 void cRawParser::Process(const wxFSFileName& file, const wxFileName& outputdir, const wxFileName& output) {
@@ -45,7 +45,8 @@ void cRawParser::Process(const wxFSFileName& file, const wxFileName& outputdir, 
     } else {
         m_outputbasedir.SetPath(outputdir.GetPathWithSep());
     }
-    wxXmlDocument doc;
+    cXmlDoc doc;
+/*
     wxFileSystem fs;
     std::auto_ptr<wxFSFile> inputfsfile(fs.OpenFile(file.GetFullPath(), wxFS_READ | wxFS_SEEKABLE));
     if (!inputfsfile.get())
@@ -53,12 +54,15 @@ void cRawParser::Process(const wxFSFileName& file, const wxFileName& outputdir, 
 
     if (!doc.Load(*inputfsfile->GetStream()))
         throw RCT3Exception(wxT("Error loading xml file ")+file.GetFullPath());
+*/
+    if (!doc.read(file.GetFullPath().mb_str(wxConvUTF8), NULL, XML_PARSE_DTDLOAD))
+        throw RCT3Exception(wxT("Error loading xml file ")+file.GetFullPath());
 
-    wxXmlNode* root = doc.GetRoot();
+    cXmlNode root(doc.root());
     Load(root);
 }
 
-void cRawParser::Process(wxXmlNode* root, const wxFSFileName& file, const wxFileName& outputdir, const wxFileName& output) {
+void cRawParser::Process(cXmlNode& root, const wxFSFileName& file, const wxFileName& outputdir, const wxFileName& output) {
     m_input = file;
     if (!m_input.IsAbsolute())
         m_input.MakeAbsolute();
@@ -163,24 +167,24 @@ bool cRawParser::MakeVariable(wxString& var) {
     return false;
 }
 
-void cRawParser::CopyBaseAttributes(const wxXmlNode* from, wxXmlNode* to) {
-    if (from->HasProp(wxT("comment"))) {
-        to->AddProperty(wxT("comment"), from->GetPropVal(wxT("comment"), wxT("")));
+void cRawParser::CopyBaseAttributes(const cXmlNode& from, cXmlNode& to) {
+    if (from.hasProp("comment")) {
+        to.addProp("comment", from.getPropVal("comment", ""));
     }
-    if (from->HasProp(wxT("if"))) {
-        to->AddProperty(wxT("if"), from->GetPropVal(wxT("if"), wxT("")));
+    if (from.hasProp("if")) {
+        to.addProp("if", from.getPropVal("if", ""));
     }
-    if (from->HasProp(wxT("ifnot"))) {
-        to->AddProperty(wxT("ifnot"), from->GetPropVal(wxT("ifnot"), wxT("")));
+    if (from.hasProp("ifnot")) {
+        to.addProp("ifnot", from.getPropVal("ifnot", ""));
     }
-    if (from->HasProp(wxT("useprefix"))) {
-        to->AddProperty(wxT("useprefix"), from->GetPropVal(wxT("useprefix"), wxT("")));
+    if (from.hasProp("useprefix")) {
+        to.addProp("useprefix", from.getPropVal("useprefix", ""));
     }
 }
 
-void cRawParser::Load(wxXmlNode* root) {
+void cRawParser::Load(cXmlNode& root) {
     if (!root)
-        throw RCT3Exception(wxT("cRawParser::Load, root is null"));
+        throw RCT3Exception(wxT("cRawParser::Load, root is broken"));
     bool subonly = false;
 
     fprintf(stderr, "\n");
@@ -193,23 +197,23 @@ void cRawParser::Load(wxXmlNode* root) {
     if (m_bakeroot == wxT(""))
         m_bakeroot = m_input;
 
-    m_firstchild = root->GetChildren();
+    m_firstchild = root.children();
 
     if (m_mode != MODE_BAKE) {
-        if (root->HasProp(wxT("conditions"))) {
-            wxString cond = root->GetPropVal(wxT("conditions"), wxT(""));
+        if (root.hasProp("conditions")) {
+            wxString cond(root.getPropVal("conditions", "").c_str(), wxConvUTF8);
             MakeVariable(cond);
             ParseConditions(cond);
         }
     }
 
-    if ((root->GetName() == RAWXML_ROOT) || (root->GetName() == RAWXML_SUBROOT)) {
+    if (root(RAWXML_ROOT) || root(RAWXML_SUBROOT)) {
         // <rawovl|subovl file="outputfile" basedir="dir outputfile is relative to">
         {
-            wxString basedir = root->GetPropVal(wxT("basedir"), wxT(""));
+            wxString basedir(root.getPropVal("basedir").c_str(), wxConvUTF8);
             MakeVariable(basedir);
-            if ((m_mode == MODE_INSTALL) && root->HasProp(wxT("installdir"))) {
-                basedir = root->GetPropVal(wxT("installdir"), wxT(""));
+            if ((m_mode == MODE_INSTALL) && root.hasProp("installdir")) {
+                basedir = wxString(root.getPropVal("installdir").c_str(), wxConvUTF8);
             }
             if (!basedir.IsEmpty()) {
                 wxFileName temp;
@@ -233,7 +237,7 @@ void cRawParser::Load(wxXmlNode* root) {
                 throw RCT3Exception(_("Failed to create directory: ")+m_outputbasedir.GetPathWithSep());
         }
         if (m_output == wxT("")) {
-            wxString output = root->GetPropVal(wxT("file"), wxT(""));
+            wxString output(root.getPropVal("file").c_str(), wxConvUTF8);
             MakeVariable(output);
             m_output = output;
         }
@@ -294,7 +298,8 @@ void cRawParser::Load(wxXmlNode* root) {
 
 }
 
-void cRawParser::LoadVariables(const wxFSFileName& fn, bool command, wxXmlNode* target) {
+void cRawParser::LoadVariables(const wxFSFileName& fn, bool command, cXmlNode* target) {
+/*
     wxXmlDocument doc;
     wxFileSystem fs;
     std::auto_ptr<wxFSFile> inputfsfile(fs.OpenFile(fn.GetFullPath(), wxFS_READ | wxFS_SEEKABLE));
@@ -302,28 +307,25 @@ void cRawParser::LoadVariables(const wxFSFileName& fn, bool command, wxXmlNode* 
         throw RCT3Exception(_("Cannot read input file ")+fn.GetFullPath());
 
     doc.Load(*inputfsfile->GetStream());
+*/
+    cXmlDoc doc(fn.GetFullPath().mb_str(wxConvUTF8), NULL, XML_PARSE_DTDLOAD);
+    if (!doc) {
+        throw RCT3Exception(_("Cannot read input file ")+fn.GetFullPath());
+    }
+    cXmlNode root(doc.root());
 
-    wxXmlNode* root = doc.GetRoot();
-
-    if (root->GetName() == RAWXML_VARIABLES) {
+    if (root(RAWXML_VARIABLES)) {
         ParseVariables(root, command, fn.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
-        if (target && (m_mode == MODE_BAKE) && (m_bake.Index(RAWXML_VARIABLES) != wxNOT_FOUND)) {
-            wxXmlNode* newvars = root->GetChildren();
+        if (target && target->ok() && (m_mode == MODE_BAKE) && (m_bake.Index(wxT(RAWXML_VARIABLES)) != wxNOT_FOUND)) {
+            cXmlNode newvars(root.children());
             if (newvars) {
-                root->SetChildren(NULL);
-                wxXmlNode* oldvars = target->GetChildren();
+                newvars.detach();
+                cXmlNode oldvars(target->children());
                 if (oldvars)
-                    oldvars->SetParent(NULL);
-                target->SetChildren(newvars);
+                    oldvars.detach();
+                target->appendChildren(newvars);
                 if (oldvars) {
-                    wxXmlNode* child = newvars;
-                    wxXmlNode* lastchild = newvars;
-                    while (child) {
-                        child = child->GetNext();
-                        if (child)
-                            lastchild = child;
-                    }
-                    lastchild->SetNext(oldvars);
+                    target->appendChildren(oldvars);
                 }
             }
         }
@@ -332,16 +334,3 @@ void cRawParser::LoadVariables(const wxFSFileName& fn, bool command, wxXmlNode* 
     }
 }
 
-wxXmlNode* cRawParser::FindDataReference(const wxString& guid, wxFSFileName& input) const {
-    std::map<wxString, wxXmlNode*>::const_iterator it = m_datareferences.find(guid);
-    if (it != m_datareferences.end()) {
-        input = m_input;
-        return it->second;
-    } else {
-        if (m_parent) {
-            return m_parent->FindDataReference(guid, input);
-        } else {
-            return NULL;
-        }
-    }
-}

@@ -25,7 +25,7 @@
 #ifndef MANAGERABOUT_H_INCLUDED
 #define MANAGERABOUT_H_INCLUDED
 
-#include "xrc\xrc_about.h"
+#include "xrc/res_about.h"
 
 class dlgAbout: public rcdlgAbout {
 protected:

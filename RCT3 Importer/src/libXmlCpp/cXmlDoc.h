@@ -30,6 +30,10 @@
 #include <libxml/parser.h>
 #include <boost/shared_ptr.hpp>
 
+#ifdef XMLCPP_USE_WXWIDGETS
+#include <wx/string.h>
+#endif
+
 #include "cXmlClasses.h"
 #include "cXmlInitHandler.h"
 #include "cXmlErrorHandler.h"
@@ -50,12 +54,15 @@ namespace xmlcpp {
 
     public:
         cXmlDoc();
-        cXmlDoc(xmlDocPtr doc, bool grab = true);
-        cXmlDoc(const boost::shared_ptr<xmlDoc>& sharedoc);
-        cXmlDoc(const char* filename, const char* encoding = NULL, int options = 0);
-        cXmlDoc(const std::string& buffer, const char* URL = NULL, const char* encoding = NULL, int options = 0);
+        explicit cXmlDoc(bool asempty);
+        explicit cXmlDoc(xmlDocPtr doc, bool grab);
+        explicit cXmlDoc(const boost::shared_ptr<xmlDoc>& sharedoc);
+        explicit cXmlDoc(const char* filename, const char* encoding = NULL, int options = 0);
+        explicit cXmlDoc(const std::string& buffer, const char* URL = NULL, const char* encoding = NULL, int options = 0);
 
         virtual ~cXmlDoc();
+
+        void empty(const char* xmlver = "1.0");
 
         bool read(const xmlChar* cur, const char* URL, const char* encoding, int options = 0);
         inline bool read(const std::string& buffer, const char* URL = NULL, const char* encoding = NULL, int options = 0) {
@@ -68,20 +75,36 @@ namespace xmlcpp {
         /// Share the document from another source
         bool share(const boost::shared_ptr<xmlDoc>& doc);
 
-        int write(const char* filename);
+        int write(const char* filename, bool indent = false, const char* encoding = NULL);
         int dump(FILE* f);
 
-        cXmlNode getRoot();
+        cXmlNode root();
+        cXmlNode root(cXmlNode& newroot);
+
+        std::string searchNs(const std::string& prefix = "", xmlNodePtr node = NULL);
+        xmlNsPtr getNs(const std::string& prefix = "", xmlNodePtr node = NULL);
+        inline xmlNsPtr defaultNs(xmlNodePtr node = NULL) { return getNs("", node); }
 
         int validate(cXmlValidator& val);
+        int validate(cXmlValidator& val, int options);
         int xInclude();
 
         inline bool ok() const { return m_doc.get(); }
+        inline bool operator!() const { return !ok(); }
+        typedef std::string cXmlDoc::*unspecified_bool_type;
+        inline operator unspecified_bool_type() const { return ok()?(&cXmlDoc::m_file):NULL; }
+
         inline xmlDocPtr getRaw() { return m_doc.get(); }
         inline const xmlDocPtr getRaw() const { return m_doc.get(); }
         inline boost::shared_ptr<xmlDoc>& get() { return m_doc; }
         inline const boost::shared_ptr<xmlDoc>& get() const { return m_doc; }
 
+#ifdef XMLCPP_USE_WXWIDGETS
+        inline bool read(const wxString& filename, const wxString& encoding = wxT(""), int options = 0) { return read(filename.utf8_str(), encoding.IsEmpty()?NULL:encoding.utf8_str().data(), options); }
+        int write(const wxString& filename, bool indent = false, const wxString& encoding = wxString()) {
+            return write(filename.utf8_str().data(), indent, encoding.IsSameAs(wxString())?NULL:encoding.utf8_str().data());
+        }
+#endif
     };
 
 } // Namespace

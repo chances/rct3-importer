@@ -30,6 +30,7 @@
 
 #include "RCT3Structs.h"
 //#include "3DLoader.h"
+#include "cXmlDoc.h"
 
 #define VERSION_CSCNFILE 5
 #define VERSION_CSCNFILE_FIRSTXML 5
@@ -44,13 +45,13 @@
 #define CSCNFILE_MAGIC                  "RCT3SCN"
 #define CSCNFILE_XMLFILE                0x6D783F3C  // "<?xm"
 
-#define RCT3XML_CSCNFILE wxT("ovl")
-#define RCT3XML_CSCNFILE_FLEXITEXTURES wxT("textures")
-#define RCT3XML_CSCNFILE_MODELS wxT("models")
-#define RCT3XML_CSCNFILE_ANIMATEDMODELS wxT("animatedmodels")
-#define RCT3XML_CSCNFILE_ANIMATIONS wxT("animations")
-#define RCT3XML_CSCNFILE_LODS wxT("lods")
-#define RCT3XML_CSCNFILE_REFERENCES wxT("references")
+#define RCT3XML_CSCNFILE "ovl"
+#define RCT3XML_CSCNFILE_FLEXITEXTURES "textures"
+#define RCT3XML_CSCNFILE_MODELS "models"
+#define RCT3XML_CSCNFILE_ANIMATEDMODELS "animatedmodels"
+#define RCT3XML_CSCNFILE_ANIMATIONS "animations"
+#define RCT3XML_CSCNFILE_LODS "lods"
+#define RCT3XML_CSCNFILE_REFERENCES "references"
 
 class cOvl;
 class cRawParser;
@@ -82,9 +83,9 @@ public:
 
 
 	cSCNFile(): filename(wxT("")),version(VERSION_CSCNFILE),save_relative_paths(true),m_work(NULL) {};
-	cSCNFile(wxString l_filename, wxXmlDocument* doc = NULL): filename(l_filename),save_relative_paths(true),m_work(NULL) {
+	cSCNFile(wxString l_filename, xmlcpp::cXmlDoc* doc = NULL): filename(l_filename),save_relative_paths(true),m_work(NULL) {
 	    if (doc) {
-	        LoadXML(doc);
+	        LoadXML(*doc);
 	    } else {
             Load();
 	    }
@@ -96,7 +97,7 @@ public:
 	void LoadLODs(FILE *f);
 	void LoadReferences(FILE *f);
 	bool LoadLegacy(unsigned long objlen, FILE *f);
-	bool LoadXML(wxXmlDocument* doc);
+	bool LoadXML(xmlcpp::cXmlDoc& doc);
 //	bool LoadObject(bool reset = true);
 	bool Save();
 //	void SaveTextures(FILE *f);
@@ -119,9 +120,9 @@ public:
 	 */
 	bool IsTextureOVL() {return m_textureovl;}
 
-    virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);
-    virtual wxXmlNode* GetNode(const wxString& path);
-    virtual const wxString GetTagName() const {return RCT3XML_CSCNFILE;};
+    virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
+    virtual xmlcpp::cXmlNode GetNode(const wxString& path);
+    virtual const std::string GetTagName() const {return RCT3XML_CSCNFILE;};
 private:
     cSCNFile* m_work;
     int m_meshes;
@@ -130,7 +131,7 @@ private:
 //    cMeshStruct MakeMeshStruct(c3DLoader *obj, unsigned int j);
 //    void ResetAndReload(c3DLoader *obj);
 //    void Fixup(c3DLoader *obj);
-    bool FromCompilerXml(wxXmlNode* node, const wxString& path);
+    bool FromCompilerXml(xmlcpp::cXmlNode& node, const wxString& path);
 };
 
 #endif // SCNFILE_H_INCLUDED

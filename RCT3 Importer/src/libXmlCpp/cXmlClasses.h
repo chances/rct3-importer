@@ -27,7 +27,6 @@
 
 namespace xmlcpp {
 
-class cXmlAttr;
 class cXmlDoc;
 class cXmlErrorHandler;
 class cXmlInitHandler;
@@ -35,6 +34,8 @@ class cXmlInputCallback;
 class cXmlNode;
 class cXmlValidator;
 class cXmlValidatorRelaxNG;
+class cXmlXPath;
+class cXmlXPathResult;
 
 } // Namespace
 

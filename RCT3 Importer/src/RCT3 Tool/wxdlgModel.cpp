@@ -1932,6 +1932,7 @@ void dlgModel::OnBoneDown(wxSpinEvent& WXUNUSED(event)) {
 
 void dlgModel::OnBoneAdd(wxCommandEvent& WXUNUSED(event)) {
     dlgBone *dialog = new dlgBone(this);
+    dialog->SetBone(cModelBone());
     if (dialog->ShowModal() == wxID_OK) {
         cAnimatedModel* amodel = dynamic_cast<cAnimatedModel*>(m_model);
         amodel->modelbones.push_back(dialog->GetBone());

@@ -24,7 +24,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "wx_pch.h"
+#include <wx/wxprec.h>
 
 #include <wx/config.h>
 #include <wx/cmdline.h>
@@ -40,16 +40,18 @@
 
 #include "version.h"
 
-#ifdef LIBXMLTEST
+//#define LIBXMLTEST
+
 #include "cXmlDoc.h"
 #include "cXmlInputOutputCallbackString.h"
 #include "cXmlNode.h"
 #include "cXmlValidatorRelaxNG.h"
 #include "cXmlValidatorRNVRelaxNG.h"
 #include "cXmlValidatorIsoSchematron.h"
+#include "cXmlXPath.h"
+#include "cXmlXPathResult.h"
 #include "cXsltStylesheet.h"
 #include "wxXmlInputCallbackFileSystem.h"
-#endif
 
 #include "SCNFile.h"
 #include "RCT3Exception.h"
@@ -64,6 +66,8 @@
 #else
 #define UNIPTR(s) s.c_str()
 #endif
+
+using namespace xmlcpp;
 
 void printVersion() {
     wxString strdate = _("Built on ") + wxString(AutoVersion::DATE, wxConvLocal) + wxT(".")
@@ -182,7 +186,8 @@ int DoCompile(const wxCmdLineParser& parser) {
 
         cSCNFile c_scn;
         if (inputfile.GetExt().Lower() == wxT("xml")) {
-            wxXmlDocument doc;
+            //wxXmlDocument doc;
+            cXmlDoc doc;
 
 #ifdef LIBXMLTEST
             {
@@ -225,8 +230,26 @@ int DoCompile(const wxCmdLineParser& parser) {
                 for (std::vector<xmlcpp::cXmlStructuredError>::const_iterator it = val.getStructuredErrors().begin(); it != val.getStructuredErrors().end(); ++it)
                     wxLogError(wxString(it->message.c_str(), wxConvUTF8).Trim(true));
                 val.clearStructuredErrors();
-/*
-                if (false) {
+
+#if 1
+                // XPath tests
+                {
+                    xmlcpp::cXmlXPath xpath(doc2);
+                    xpath.registerNs("rct3", "http://rct3.sourceforge.net/rct3xml/raw");
+                    xmlcpp::cXmlXPathResult xres = xpath("//rct3:rawovl");
+                    for (int i = 0; i < xres.size(); ++i) {
+                        fprintf(stderr, "%d, %s, %s\n", i, xres[i].name().c_str(), xres[i].path().c_str());
+                    }
+                    xpath.setNodeContext(xres[1]);
+                    xres = xpath("@comment");
+                    for (int i = 0; i < xres.size(); ++i) {
+                        fprintf(stderr, "%d, %s %s\n", i, xres[i].name().c_str(), xres[i].content().c_str());
+                    }
+                }
+#endif
+
+#if 0
+                {
                     if (val.ok()) {
                         wxDateTime start = wxDateTime::Now();
 
@@ -270,8 +293,8 @@ int DoCompile(const wxCmdLineParser& parser) {
                             }
                         }
                     }
-                } // Performane test
-*/
+                } // Performance test
+#endif
 
 //                val.read("test.rnc");
 //                fprintf(stderr, "Validator parsing errors\n");
@@ -299,7 +322,7 @@ int DoCompile(const wxCmdLineParser& parser) {
                 if (doc2.read(inputfilestr.mb_str(wxConvUTF8), NULL, XML_PARSE_DTDLOAD)) {
                     wxLogMessage(wxT("xml2 ok"));
 
-                    wxLogMessage(wxT("%d"), doc2.validate(val));
+                    wxLogMessage(wxT("%d"), doc2.validate(val, xmlcpp::cXmlValidator::OPT_DETERMINE_NODE_BY_XPATH));
                     fprintf(stderr, "Validation errors\n");
                     for (std::vector<xmlcpp::cXmlStructuredError>::const_iterator it = val.getStructuredErrors().begin(); it != val.getStructuredErrors().end(); ++it) {
                         fprintf(stderr, "Line: %d\n", it->line);
@@ -325,9 +348,9 @@ int DoCompile(const wxCmdLineParser& parser) {
 #endif
 
 //            if (doc.Load(inputfile.GetFullPath())) {
-            if (doc.Load(*inputfsfile->GetStream())) {
-                wxXmlNode* root = doc.GetRoot();
-                if (root->GetName() == RAWXML_ROOT) {
+            if (doc.read(inputfilestr.mb_str(wxConvUTF8), NULL, XML_PARSE_DTDLOAD)) {
+                cXmlNode root(doc.getRoot());
+                if (root(RAWXML_ROOT)) {
                     if (convert)
                         throw RCT3Exception(_("You cannot convert raw xml files"));
 
@@ -361,7 +384,7 @@ int DoCompile(const wxCmdLineParser& parser) {
                             outputfile = parser.GetParam(1);
                         }
                         wxLogMessage(_("Writing baked raw xml file ") + outputfile.GetFullPath());
-                        doc.Save(outputfile.GetFullPath(), 4);
+                        doc.write(outputfile.GetFullPath().mb_str(wxConvUTF8), true);
                     }
                     if (dryrun) {
                         fprintf(stderr, "\nDryrun results:\n");
@@ -383,7 +406,8 @@ int DoCompile(const wxCmdLineParser& parser) {
                     return ret;
                 } else {
                     c_scn.filename = inputfile.GetFullPath();
-                    c_scn.LoadXML(&doc);
+                    //c_scn.LoadXML(&doc);
+                    c_scn.Load();
                 }
             } else {
                 throw RCT3Exception(_("Error in xml file"));
@@ -519,50 +543,50 @@ int main(int argc, char **argv)
 
     static const wxCmdLineEntryDesc cmdLineDesc[] =
     {
-        { wxCMD_LINE_SWITCH, wxT("h"), wxT("help"), _("show this help message"),
+        { wxCMD_LINE_SWITCH, "h", "help", "show this help message",
             wxCMD_LINE_VAL_NONE, wxCMD_LINE_OPTION_HELP },
-        { wxCMD_LINE_SWITCH, wxT("c"), wxT("convert"), _("convert the input file to new importer xml format (instead of creating ovl)") },
-        { wxCMD_LINE_SWITCH, NULL, wxT("ignore"), _("ignore warnings durnig the sanity check and compile nevertheless") },
-        { wxCMD_LINE_SWITCH, NULL, wxT("check"), _("only check the input file, do not actually write output") },
-        { wxCMD_LINE_OPTION, wxT("t"), wxT("trianglesort"), _("choose triangle sort algorithm (min, max, mean, minmax or maxmin. Default: minmax).") },
-        { wxCMD_LINE_OPTION, NULL, wxT("trianglesortx"), _("choose triangle sort algorithm in x-direction.") },
-        { wxCMD_LINE_OPTION, NULL, wxT("trianglesorty"), _("choose triangle sort algorithm in y-direction.") },
-        { wxCMD_LINE_OPTION, NULL, wxT("trianglesortz"), _("choose triangle sort algorithm in z-direction.") },
-        { wxCMD_LINE_SWITCH, wxT("v"), wxT("verbose"), _("enable verbose logging") },
-        { wxCMD_LINE_SWITCH, wxT("q"), wxT("quiet"), _("in quiet mode only warnings and errors are shown") },
-        { wxCMD_LINE_SWITCH, wxT("s"), wxT("silent"), _("in silent mode only errors are shown") },
+        { wxCMD_LINE_SWITCH, "c", "convert", "convert the input file to new importer xml format (instead of creating ovl)" },
+        { wxCMD_LINE_SWITCH, NULL, "ignore", "ignore warnings durnig the sanity check and compile nevertheless" },
+        { wxCMD_LINE_SWITCH, NULL, "check", "only check the input file, do not actually write output" },
+        { wxCMD_LINE_OPTION, "t", "trianglesort", "choose triangle sort algorithm (min, max, mean, minmax or maxmin. Default: minmax)." },
+        { wxCMD_LINE_OPTION, NULL, "trianglesortx", "choose triangle sort algorithm in x-direction." },
+        { wxCMD_LINE_OPTION, NULL, "trianglesorty", "choose triangle sort algorithm in y-direction." },
+        { wxCMD_LINE_OPTION, NULL, "trianglesortz", "choose triangle sort algorithm in z-direction." },
+        { wxCMD_LINE_SWITCH, "v", "verbose", "enable verbose logging" },
+        { wxCMD_LINE_SWITCH, "q", "quiet", "in quiet mode only warnings and errors are shown" },
+        { wxCMD_LINE_SWITCH, "s", "silent", "in silent mode only errors are shown" },
 
-        { wxCMD_LINE_PARAM,  NULL, NULL, _("input file"), wxCMD_LINE_VAL_STRING },
-        { wxCMD_LINE_PARAM,  NULL, NULL, _("output file"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
+        { wxCMD_LINE_PARAM,  NULL, NULL, "input file", wxCMD_LINE_VAL_STRING },
+        { wxCMD_LINE_PARAM,  NULL, NULL, "output file", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
 
-        { wxCMD_LINE_NONE }
+        wxCMD_LINE_DESC_END
     };
 
     static const wxCmdLineEntryDesc cmdLineRealDesc[] =
     {
-        { wxCMD_LINE_SWITCH, NULL, wxT("realhelp"), _("show this help message"),
+        { wxCMD_LINE_SWITCH, NULL, "realhelp", "show this help message",
             wxCMD_LINE_VAL_NONE, wxCMD_LINE_OPTION_HELP },
-        { wxCMD_LINE_SWITCH, wxT("c"), wxT("convert"), _("convert the input file to new importer xml format (instead of creating ovl)") },
-        { wxCMD_LINE_SWITCH, NULL, wxT("ignore"), _("ignore warnings durnig the sanity check and compile nevertheless") },
-        { wxCMD_LINE_SWITCH, NULL, wxT("check"), _("only check the input file, do not actually write output") },
-        { wxCMD_LINE_OPTION, wxT("t"), wxT("trianglesort"), _("choose triangle sort algorithm (min, max, mean, minmax or maxmin. Default: minmax).") },
-        { wxCMD_LINE_OPTION, NULL, wxT("trianglesortx"), _("choose triangle sort algorithm in x-direction.") },
-        { wxCMD_LINE_OPTION, NULL, wxT("trianglesorty"), _("choose triangle sort algorithm in y-direction.") },
-        { wxCMD_LINE_OPTION, NULL, wxT("trianglesortz"), _("choose triangle sort algorithm in z-direction.") },
-        { wxCMD_LINE_SWITCH, wxT("v"), wxT("verbose"), _("enable verbose logging") },
-        { wxCMD_LINE_SWITCH, wxT("q"), wxT("quiet"), _("in quiet mode only warnings and errors are shown") },
-        { wxCMD_LINE_SWITCH, wxT("s"), wxT("silent"), _("in silent mode only errors are shown") },
-        { wxCMD_LINE_SWITCH, NULL, wxT("dryrun"), _("only show which files would be generated, do not actually write output") },
-        { wxCMD_LINE_SWITCH, NULL, wxT("install"), _("install ovls to RCT3 (output file is ignored)") },
-        { wxCMD_LINE_OPTION, NULL, wxT("installdir"), _("name install directory (implies --install)") },
-        { wxCMD_LINE_OPTION, NULL, wxT("bake"), _("bake included data into a new xml file. Space delimitered list.") },
-        { wxCMD_LINE_SWITCH, NULL, wxT("bakehelp"), _("show what structures can be baked."),
+        { wxCMD_LINE_SWITCH, "c", "convert", "convert the input file to new importer xml format (instead of creating ovl)" },
+        { wxCMD_LINE_SWITCH, NULL, "ignore", "ignore warnings durnig the sanity check and compile nevertheless" },
+        { wxCMD_LINE_SWITCH, NULL, "check", "only check the input file, do not actually write output" },
+        { wxCMD_LINE_OPTION, "t", "trianglesort", "choose triangle sort algorithm (min, max, mean, minmax or maxmin. Default: minmax)." },
+        { wxCMD_LINE_OPTION, NULL, "trianglesortx", "choose triangle sort algorithm in x-direction." },
+        { wxCMD_LINE_OPTION, NULL, "trianglesorty", "choose triangle sort algorithm in y-direction." },
+        { wxCMD_LINE_OPTION, NULL, "trianglesortz", "choose triangle sort algorithm in z-direction." },
+        { wxCMD_LINE_SWITCH, "v", "verbose", "enable verbose logging" },
+        { wxCMD_LINE_SWITCH, "q", "quiet", "in quiet mode only warnings and errors are shown" },
+        { wxCMD_LINE_SWITCH, "s", "silent", "in silent mode only errors are shown" },
+        { wxCMD_LINE_SWITCH, NULL, "dryrun", "only show which files would be generated, do not actually write output" },
+        { wxCMD_LINE_SWITCH, NULL, "install", "install ovls to RCT3 (output file is ignored)" },
+        { wxCMD_LINE_OPTION, NULL, "installdir", "name install directory (implies --install)" },
+        { wxCMD_LINE_OPTION, NULL, "bake", "bake included data into a new xml file. Space delimitered list." },
+        { wxCMD_LINE_SWITCH, NULL, "bakehelp", "show what structures can be baked.",
             wxCMD_LINE_VAL_NONE, wxCMD_LINE_OPTION_HELP },
 
-        { wxCMD_LINE_PARAM,  NULL, NULL, _("input file"), wxCMD_LINE_VAL_STRING },
-        { wxCMD_LINE_PARAM,  NULL, NULL, _("output file"), wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
+        { wxCMD_LINE_PARAM,  NULL, NULL, "input file", wxCMD_LINE_VAL_STRING },
+        { wxCMD_LINE_PARAM,  NULL, NULL, "output file", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
 
-        { wxCMD_LINE_NONE }
+        wxCMD_LINE_DESC_END
     };
 
     wxCmdLineParser parser(cmdLineDesc, argc, wxArgv);

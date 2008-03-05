@@ -26,3 +26,6 @@ wxColour wxColourHtmlListBox::GetSelectedTextColour(const wxColour& colFg) const
     }
 }
 
+//wxColour wxColourHtmlListBox::GetSelectedTextBgColour(const wxColour& colFg) const {
+//    return GetSelectionBackground();
+//}

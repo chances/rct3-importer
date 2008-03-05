@@ -27,74 +27,74 @@
 
 #include "RawParse_cpp.h"
 
-#define XML_ADD(base, node) \
-    if (base ## lastchild) \
-        base ## lastchild->SetNext(node); \
-    else \
-        base->SetChildren(node); \
-    base ## lastchild = node;
-
-inline wxXmlNode* makeTXYZ(const wxString& name, const txyz& t) {
-    wxXmlNode* ret = makeElementNode(name);
-    ret->AddProperty(wxT("time"), wxString::Format(wxT("%f"), t.Time));
-    ret->AddProperty(wxT("x"), wxString::Format(wxT("%f"), t.X));
-    ret->AddProperty(wxT("y"), wxString::Format(wxT("%f"), t.Y));
-    ret->AddProperty(wxT("z"), wxString::Format(wxT("%f"), t.Z));
-    return ret;
+inline void makeTXYZ(cXmlNode& parent, const wxString& name, const txyz& t) {
+    cXmlNode ret = parent.newChild(name.mb_str(wxConvUTF8));
+    ret.addProp("time", wxString::Format(wxT("%f"), t.Time).mb_str(wxConvUTF8));
+    ret.addProp("x", wxString::Format(wxT("%f"), t.X).mb_str(wxConvUTF8));
+    ret.addProp("y", wxString::Format(wxT("%f"), t.Y).mb_str(wxConvUTF8));
+    ret.addProp("z", wxString::Format(wxT("%f"), t.Z).mb_str(wxConvUTF8));
 }
 
-void BakeScenery(wxXmlNode* root, const cSCNFile& scn) {
-    wxXmlNode* rootlastchild = NULL;
+cXmlNode XmlMakeMatrixNode(cXmlNode& parent, const MATRIX& matrix, const wxString& name, const wxString& matrixname = wxT("")) {
+    cXmlNode node(parent.newChild(name.mb_str(wxConvUTF8)));
+    if (name != wxT(""))
+        node.addProp("name", matrixname.mb_str(wxConvUTF8));
+    //wxXmlNode* childnode = new wxXmlNode(node, wxXML_ELEMENT_NODE, wxT("row1"));
+    //wxXmlNode* textnode = new wxXmlNode(childnode, wxXML_TEXT_NODE, wxT(""));
+    node.newTextChild("row1", wxString::Format(wxT("%8f %8f %8f %8f"), matrix._11, matrix._12, matrix._13, matrix._14).mb_str(wxConvUTF8));
+    node.newTextChild("row2", wxString::Format(wxT("%8f %8f %8f %8f"), matrix._21, matrix._22, matrix._23, matrix._24).mb_str(wxConvUTF8));
+    node.newTextChild("row3", wxString::Format(wxT("%8f %8f %8f %8f"), matrix._31, matrix._32, matrix._33, matrix._34).mb_str(wxConvUTF8));
+    node.newTextChild("row4", wxString::Format(wxT("%8f %8f %8f %8f"), matrix._41, matrix._42, matrix._43, matrix._44).mb_str(wxConvUTF8));
+
+    return node;
+}
+
+void BakeScenery(cXmlNode& root, const cSCNFile& scn) {
 
     for (wxArrayString::const_iterator its = scn.references.begin(); its != scn.references.end(); ++its) {
-        XML_ADD(root, makeContentNode(RAWXML_REFERENCE, *its));
+        //XML_ADD(root, makeContentNode(RAWXML_REFERENCE, *its));
+        root.newTextChild(RAWXML_REFERENCE, its->mb_str(wxConvUTF8));
     }
 
     if (scn.lods.size()) {
-        wxXmlNode* svd = makeElementNode(RAWXML_SVD);
-        svd->AddProperty(wxT("name"), scn.name);
-        svd->AddProperty(wxT("flags"), wxString::Format(wxT("%lu"), scn.sivsettings.sivflags));
-        svd->AddProperty(wxT("sway"), wxString::Format(wxT("%f"), scn.sivsettings.sway));
-        svd->AddProperty(wxT("brightness"), wxString::Format(wxT("%f"), scn.sivsettings.brightness));
-        svd->AddProperty(wxT("scale"), wxString::Format(wxT("%f"), scn.sivsettings.scale));
-        wxXmlNode* svdunk = makeElementNode(RAWXML_SVD_UNK);
-        svd->SetChildren(svdunk);
-        svdunk->AddProperty(wxT("u4"), wxString::Format(wxT("%f"), scn.sivsettings.unknown));
-        svdunk->AddProperty(wxT("u6"), wxString::Format(wxT("%lu"), scn.sivsettings.unk6));
-        svdunk->AddProperty(wxT("u7"), wxString::Format(wxT("%lu"), scn.sivsettings.unk7));
-        svdunk->AddProperty(wxT("u8"), wxString::Format(wxT("%lu"), scn.sivsettings.unk8));
-        svdunk->AddProperty(wxT("u9"), wxString::Format(wxT("%lu"), scn.sivsettings.unk9));
-        svdunk->AddProperty(wxT("u10"), wxString::Format(wxT("%lu"), scn.sivsettings.unk10));
-        svdunk->AddProperty(wxT("u11"), wxString::Format(wxT("%lu"), scn.sivsettings.unk11));
-        wxXmlNode* svdlastchild = svdunk;
+        cXmlNode svd(root.newChild(RAWXML_SVD));
+        svd.addProp("name", scn.name.mb_str(wxConvUTF8));
+        svd.addProp("flags", wxString::Format(wxT("%lu"), scn.sivsettings.sivflags).mb_str(wxConvUTF8));
+        svd.addProp("sway", wxString::Format(wxT("%f"), scn.sivsettings.sway).mb_str(wxConvUTF8));
+        svd.addProp("brightness", wxString::Format(wxT("%f"), scn.sivsettings.brightness).mb_str(wxConvUTF8));
+        svd.addProp("scale", wxString::Format(wxT("%f"), scn.sivsettings.scale).mb_str(wxConvUTF8));
+        cXmlNode svdunk(svd.newChild(RAWXML_SVD_UNK));
+        svdunk.addProp("u4", wxString::Format(wxT("%f"), scn.sivsettings.unknown).mb_str(wxConvUTF8));
+        svdunk.addProp("u6", wxString::Format(wxT("%lu"), scn.sivsettings.unk6).mb_str(wxConvUTF8));
+        svdunk.addProp("u7", wxString::Format(wxT("%lu"), scn.sivsettings.unk7).mb_str(wxConvUTF8));
+        svdunk.addProp("u8", wxString::Format(wxT("%lu"), scn.sivsettings.unk8).mb_str(wxConvUTF8));
+        svdunk.addProp("u9", wxString::Format(wxT("%lu"), scn.sivsettings.unk9).mb_str(wxConvUTF8));
+        svdunk.addProp("u10", wxString::Format(wxT("%lu"), scn.sivsettings.unk10).mb_str(wxConvUTF8));
+        svdunk.addProp("u11", wxString::Format(wxT("%lu"), scn.sivsettings.unk11).mb_str(wxConvUTF8));
         for (cLOD::const_iterator it = scn.lods.begin(); it != scn.lods.end(); ++it) {
-            wxXmlNode* lod = makeElementNode(RAWXML_SVD_LOD);
-            lod->AddProperty(wxT("name"), it->modelname);
-            lod->AddProperty(wxT("distance"), wxString::Format(wxT("%f"), it->distance));
-            wxXmlNode* lodunk = makeElementNode(RAWXML_SVD_LOD_UNK);
-            lod->SetChildren(lodunk);
-            lodunk->AddProperty(wxT("u2"), wxString::Format(wxT("%lu"), it->unk2));
-            lodunk->AddProperty(wxT("u4"), wxString::Format(wxT("%lu"), it->unk4));
-            lodunk->AddProperty(wxT("u14"), wxString::Format(wxT("%lu"), it->unk14));
-            wxXmlNode* lodlastchild = lodunk;
+            cXmlNode lod(svd.newChild(RAWXML_SVD_LOD));
+            lod.addProp("name", it->modelname.mb_str(wxConvUTF8));
+            lod.addProp("distance", wxString::Format(wxT("%f"), it->distance).mb_str(wxConvUTF8));
+            cXmlNode lodunk(lod.newChild(RAWXML_SVD_LOD_UNK));
+            lodunk.addProp("u2", wxString::Format(wxT("%lu"), it->unk2).mb_str(wxConvUTF8));
+            lodunk.addProp("u4", wxString::Format(wxT("%lu"), it->unk4).mb_str(wxConvUTF8));
+            lodunk.addProp("u14", wxString::Format(wxT("%lu"), it->unk14).mb_str(wxConvUTF8));
             if (it->animated) {
-                lod->AddProperty(wxT("type"), wxString::Format(wxT("%u"), SVDLOD_MESHTYPE_ANIMATED));
-                lod->AddProperty(wxT("boneshape"), it->modelname);
+                lod.addProp("type", wxString::Format(wxT("%u"), SVDLOD_MESHTYPE_ANIMATED).mb_str(wxConvUTF8));
+                lod.addProp("boneshape", it->modelname.mb_str(wxConvUTF8));
                 for (wxArrayString::const_iterator its = it->animations.begin(); its != it->animations.end(); ++its) {
-                    XML_ADD(lod, makeContentNode(RAWXML_SVD_LOD_ANIMATION, *its));
+                    //XML_ADD(lod, makeContentNode(RAWXML_SVD_LOD_ANIMATION, *its));
+                    lod.newTextChild(RAWXML_SVD_LOD_ANIMATION, its->mb_str(wxConvUTF8));
                 }
             } else {
-                lod->AddProperty(wxT("type"), wxString::Format(wxT("%u"), SVDLOD_MESHTYPE_STATIC));
-                lod->AddProperty(wxT("staticshape"), it->modelname);
+                lod.addProp("type", wxString::Format(wxT("%u"), SVDLOD_MESHTYPE_STATIC).mb_str(wxConvUTF8));
+                lod.addProp("staticshape", it->modelname.mb_str(wxConvUTF8));
             }
-            XML_ADD(svd, lod);
         }
-        XML_ADD(root, svd);
     }
 
     for (cModel::const_iterator it = scn.models.begin(); it != scn.models.end(); ++it) {
-        wxXmlNode* shs = makeElementNode(RAWXML_SHS);
-        wxXmlNode* shslastchild = NULL;
+        cXmlNode shs(root.newChild(RAWXML_SHS));
         wxString hand = wxT("left");
         wxString up = wxT("y");
         switch (it->usedorientation) {
@@ -120,44 +120,36 @@ void BakeScenery(wxXmlNode* root, const cSCNFile& scn) {
         MATRIX undoDamage;
         bool do_transform = it->GetTransformationMatrices(transformMatrix, undoDamage);
 
-        shs->AddProperty(wxT("name"), it->name);
+        shs.addProp("name", it->name.mb_str(wxConvUTF8));
         for (cMeshStruct::const_iterator itm = it->meshstructs.begin(); itm != it->meshstructs.end(); ++itm) {
             if (itm->disabled)
                 continue;
-            wxXmlNode* mesh = makeElementNode(RAWXML_SHS_MESH);
-            mesh->AddProperty(wxT("ftx"), itm->FTX);
-            mesh->AddProperty(wxT("txs"), itm->TXS);
-            mesh->AddProperty(wxT("placing"), wxString::Format(wxT("%lu"), itm->place));
-            mesh->AddProperty(wxT("flags"), wxString::Format(wxT("%lu"), itm->flags));
-            mesh->AddProperty(wxT("doublesided"), wxString::Format(wxT("%lu"), itm->unknown));
+            cXmlNode mesh(shs.newChild(RAWXML_SHS_MESH));
+            mesh.addProp("ftx", itm->FTX.mb_str(wxConvUTF8));
+            mesh.addProp("txs", itm->TXS.mb_str(wxConvUTF8));
+            mesh.addProp("placing", wxString::Format(wxT("%lu"), itm->place).mb_str(wxConvUTF8));
+            mesh.addProp("flags", wxString::Format(wxT("%lu"), itm->flags).mb_str(wxConvUTF8));
+            mesh.addProp("doublesided", wxString::Format(wxT("%lu"), itm->unknown).mb_str(wxConvUTF8));
             if ((!do_transform) || (itm->fudgenormals != CMS_FUDGE_NONE)) {
-                mesh->AddProperty(wxT("handedness"), hand);
-                mesh->AddProperty(wxT("up"), up);
+                mesh.addProp("handedness", hand.mb_str(wxConvUTF8));
+                mesh.addProp("up", up.mb_str(wxConvUTF8));
             }
-            mesh->AddProperty(wxT("meshname"), itm->Name);
-            mesh->AddProperty(wxT("modelfile"), it->file.GetFullPath());
-            mesh->AddProperty(wxT("fudge"), wxString::Format(wxT("%lu"), itm->fudgenormals));
+            mesh.addProp("meshname", itm->Name.mb_str(wxConvUTF8));
+            mesh.addProp("modelfile", it->file.GetFullPath().mb_str(wxConvUTF8));
+            mesh.addProp("fudge", wxString::Format(wxT("%lu"), itm->fudgenormals).mb_str(wxConvUTF8));
             if (do_transform) {
-                wxXmlNode* pos = XmlMakeMatrixNode(transformMatrix, wxT(""));
-                pos->SetName(RAWXML_SHS_MESH_TRANSFORM);
-                mesh->SetChildren(pos);
+                XmlMakeMatrixNode(mesh, transformMatrix, wxT(RAWXML_SHS_MESH_TRANSFORM));
             }
-            XML_ADD(shs, mesh);
         }
         for (cEffectPoint::const_iterator itb = it->effectpoints.begin(); itb != it->effectpoints.end(); ++itb) {
-            wxXmlNode* effect = makeElementNode(RAWXML_SHS_EFFECT);
-            effect->AddProperty(wxT("name"), itb->name);
-            wxXmlNode* pos = XmlMakeMatrixNode(matrixThereAndBackAgain(itb->transforms, transformMatrix, undoDamage), wxT(""));
-            pos->SetName(RAWXML_SHS_EFFECT_POS);
-            effect->SetChildren(pos);
-            XML_ADD(shs, effect);
+            cXmlNode effect(shs.newChild(RAWXML_SHS_EFFECT));
+            effect.addProp("name", itb->name.mb_str(wxConvUTF8));
+            XmlMakeMatrixNode(effect, matrixThereAndBackAgain(itb->transforms, transformMatrix, undoDamage), wxT(RAWXML_SHS_EFFECT_POS));
         }
-        XML_ADD(root, shs);
     }
 
     for (cAnimatedModel::const_iterator it = scn.animatedmodels.begin(); it != scn.animatedmodels.end(); ++it) {
-        wxXmlNode* bsh = makeElementNode(RAWXML_BSH);
-        wxXmlNode* bshlastchild = NULL;
+        cXmlNode bsh(root.newChild(RAWXML_BSH));
         wxString hand = wxT("left");
         wxString up = wxT("y");
         switch (it->usedorientation) {
@@ -183,103 +175,82 @@ void BakeScenery(wxXmlNode* root, const cSCNFile& scn) {
         MATRIX undoDamage;
         bool do_transform = it->GetTransformationMatrices(transformMatrix, undoDamage);
 
-        bsh->AddProperty(wxT("name"), it->name);
+        bsh.addProp("name", it->name.mb_str(wxConvUTF8));
         for (cMeshStruct::const_iterator itm = it->meshstructs.begin(); itm != it->meshstructs.end(); ++itm) {
             if (itm->disabled)
                 continue;
-            wxXmlNode* mesh = makeElementNode(RAWXML_BSH_MESH);
-            mesh->AddProperty(wxT("ftx"), itm->FTX);
-            mesh->AddProperty(wxT("txs"), itm->TXS);
-            mesh->AddProperty(wxT("placing"), wxString::Format(wxT("%lu"), itm->place));
-            mesh->AddProperty(wxT("flags"), wxString::Format(wxT("%lu"), itm->flags));
-            mesh->AddProperty(wxT("doublesided"), wxString::Format(wxT("%lu"), itm->unknown));
+            cXmlNode mesh(bsh.newChild(RAWXML_BSH_MESH));
+            mesh.addProp("ftx", itm->FTX.mb_str(wxConvUTF8));
+            mesh.addProp("txs", itm->TXS.mb_str(wxConvUTF8));
+            mesh.addProp("placing", wxString::Format(wxT("%lu"), itm->place).mb_str(wxConvUTF8));
+            mesh.addProp("flags", wxString::Format(wxT("%lu"), itm->flags).mb_str(wxConvUTF8));
+            mesh.addProp("doublesided", wxString::Format(wxT("%lu"), itm->unknown).mb_str(wxConvUTF8));
             if ((!do_transform) || (itm->fudgenormals != CMS_FUDGE_NONE)) {
-                mesh->AddProperty(wxT("handedness"), hand);
-                mesh->AddProperty(wxT("up"), up);
+                mesh.addProp("handedness", hand.mb_str(wxConvUTF8));
+                mesh.addProp("up", up.mb_str(wxConvUTF8));
             }
-            mesh->AddProperty(wxT("meshname"), itm->Name);
-            mesh->AddProperty(wxT("modelfile"), it->file.GetFullPath());
-            mesh->AddProperty(wxT("bone"), wxString::Format(wxT("%ld"), itm->bone));
-            mesh->AddProperty(wxT("fudge"), wxString::Format(wxT("%lu"), itm->fudgenormals));
+            mesh.addProp("meshname", itm->Name.mb_str(wxConvUTF8));
+            mesh.addProp("modelfile", it->file.GetFullPath().mb_str(wxConvUTF8));
+            mesh.addProp("bone", wxString::Format(wxT("%ld"), itm->bone).mb_str(wxConvUTF8));
+            mesh.addProp("fudge", wxString::Format(wxT("%lu"), itm->fudgenormals).mb_str(wxConvUTF8));
             if (do_transform) {
-                wxXmlNode* pos = XmlMakeMatrixNode(transformMatrix, wxT(""));
-                pos->SetName(RAWXML_BSH_MESH_TRANSFORM);
-                mesh->SetChildren(pos);
+                XmlMakeMatrixNode(mesh, transformMatrix, wxT(RAWXML_SHS_MESH_TRANSFORM));
             }
-            XML_ADD(bsh, mesh);
         }
-        wxXmlNode* rootbone = makeElementNode(RAWXML_BSH_BONE);
-        rootbone->AddProperty(wxT("name"), wxT("Scene Root"));
-        XML_ADD(bsh, rootbone);
+        cXmlNode rootbone(bsh.newChild(RAWXML_BSH_BONE));
+        rootbone.addProp("name", "Scene Root");
         for (cModelBone::const_iterator itb = it->modelbones.begin(); itb != it->modelbones.end(); ++itb) {
-            wxXmlNode* bone = makeElementNode(RAWXML_BSH_BONE);
-            bone->AddProperty(wxT("name"), itb->name);
-            bone->AddProperty(wxT("parent"), wxString::Format(wxT("%ld"), itb->nparent));
-            wxXmlNode* pos1 = XmlMakeMatrixNode(matrixThereAndBackAgain(itb->positions1, transformMatrix, undoDamage), wxT(""));
-            pos1->SetName(RAWXML_BSH_BONE_POS1);
-            bone->SetChildren(pos1);
+            cXmlNode bone(bsh.newChild(RAWXML_BSH_BONE));
+            bone.addProp("name", itb->name.mb_str(wxConvUTF8));
+            bone.addProp("parent", wxString::Format(wxT("%ld"), itb->nparent).mb_str(wxConvUTF8));
+            XmlMakeMatrixNode(bone, matrixThereAndBackAgain(itb->positions1, transformMatrix, undoDamage), wxT(RAWXML_BSH_BONE_POS1));
             if (itb->usepos2) {
-                wxXmlNode* pos2 = XmlMakeMatrixNode(matrixThereAndBackAgain(itb->positions2, transformMatrix, undoDamage), wxT(""));
-                pos2->SetName(RAWXML_BSH_BONE_POS2);
-                pos1->SetNext(pos2);
+                XmlMakeMatrixNode(bone, matrixThereAndBackAgain(itb->positions2, transformMatrix, undoDamage), wxT(RAWXML_BSH_BONE_POS2));
             }
-            XML_ADD(bsh, bone);
         }
-        XML_ADD(root, bsh);
     }
 
     for (cAnimation::const_iterator it = scn.animations.begin(); it != scn.animations.end(); ++it) {
-        wxXmlNode* ban = makeElementNode(RAWXML_BAN);
-        wxXmlNode* banlastchild = NULL;
-        ban->AddProperty(wxT("name"), it->name);
+        cXmlNode ban(root.newChild(RAWXML_BAN));
+        ban.addProp("name", it->name.mb_str(wxConvUTF8));
         for (cBoneAnimation::const_iterator itb = it->boneanimations.begin(); itb != it->boneanimations.end(); ++itb) {
-            wxXmlNode* bone = makeElementNode(RAWXML_BAN_BONE);
-            wxXmlNode* bonelastchild = NULL;
-            bone->AddProperty(wxT("name"), itb->name);
+            cXmlNode bone(ban.newChild(RAWXML_BAN_BONE));
+            bone.addProp("name", itb->name.mb_str(wxConvUTF8));
             for (cTXYZ::const_iterator itt = itb->translations.begin(); itt != itb->translations.end(); ++itt) {
                 txyz t = itt->GetFixed(it->usedorientation);
-                wxXmlNode* frame = makeTXYZ(RAWXML_BAN_BONE_TRANSLATION, t);
-                XML_ADD(bone, frame);
+                makeTXYZ(bone, wxT(RAWXML_BAN_BONE_TRANSLATION), t);
             }
             for (cTXYZ::const_iterator itt = itb->rotations.begin(); itt != itb->rotations.end(); ++itt) {
                 txyz t = itt->GetFixed(it->usedorientation);
-                wxXmlNode* frame = makeTXYZ(RAWXML_BAN_BONE_ROTATION, t);
-                XML_ADD(bone, frame);
+                makeTXYZ(bone, wxT(RAWXML_BAN_BONE_ROTATION), t);
             }
-            XML_ADD(ban, bone);
         }
-        XML_ADD(root, ban);
     }
 
     for (cFlexiTexture::const_iterator it = scn.flexitextures.begin(); it != scn.flexitextures.end(); ++it) {
-        wxXmlNode* ftx = makeElementNode(RAWXML_FTX);
-        wxXmlNode* ftxlastchild = NULL;
+        cXmlNode ftx(root.newChild(RAWXML_FTX));
 
-        ftx->AddProperty(wxT("name"), it->Name);
-        ftx->AddProperty(wxT("recolourable"), wxString::Format(wxT("%ld"), it->Recolorable));
+        ftx.addProp("name", it->Name.mb_str(wxConvUTF8));
+        ftx.addProp("recolourable", wxString::Format(wxT("%ld"), it->Recolorable).mb_str(wxConvUTF8));
         if (it->FPS) {
-            ftx->AddProperty(wxT("fps"), wxString::Format(wxT("%ld"), it->FPS));
+            ftx.addProp("fps", wxString::Format(wxT("%ld"), it->FPS).mb_str(wxConvUTF8));
         }
         for(cFlexiTextureAnim::const_iterator ita = it->Animation.begin(); ita != it->Animation.end(); ++ita) {
-            wxXmlNode* ftxanim = makeElementNode(RAWXML_FTX_ANIMATION);
-            ftxanim->AddProperty(wxT("index"), wxString::Format(wxT("%lu"), ita->frame()));
-            ftxanim->AddProperty(wxT("repeat"), wxString::Format(wxT("%lu"), ita->count()));
-            XML_ADD(ftx, ftxanim);
+            cXmlNode ftxanim(ftx.newChild(RAWXML_FTX_ANIMATION));
+            ftxanim.addProp("index", wxString::Format(wxT("%lu"), ita->frame()).mb_str(wxConvUTF8));
+            ftxanim.addProp("repeat", wxString::Format(wxT("%lu"), ita->count()).mb_str(wxConvUTF8));
         }
         for(cFlexiTextureFrame::const_iterator itf = it->Frames.begin(); itf != it->Frames.end(); ++itf) {
-            wxXmlNode* ftxframe = makeElementNode(RAWXML_FTX_FRAME);
-            ftxframe->AddProperty(wxT("recolourable"), wxString::Format(wxT("%lu"), itf->recolorable()));
-            ftxframe->AddProperty(wxT("alphacutoff"), wxString::Format(wxT("%hhu"), itf->alphacutoff()));
-            wxXmlNode* ftximage = makeContentNode(RAWXML_FTX_FRAME_IMAGE, itf->texture().GetFullPath());
+            cXmlNode ftxframe(ftx.newChild(RAWXML_FTX_FRAME));
+            ftxframe.addProp("recolourable", wxString::Format(wxT("%lu"), itf->recolorable()).mb_str(wxConvUTF8));
+            ftxframe.addProp("alphacutoff", wxString::Format(wxT("%hhu"), itf->alphacutoff()).mb_str(wxConvUTF8));
+            cXmlNode ftximage(ftxframe.newTextChild(RAWXML_FTX_FRAME_IMAGE, itf->texture().GetFullPath().mb_str(wxConvUTF8)));
             if (itf->alphasource() == CFTF_ALPHA_INTERNAL) {
-                ftximage->AddProperty(wxT("usealpha"), wxT("1"));
+                ftximage.addProp("usealpha", "1");
             } else if (itf->alphasource() == CFTF_ALPHA_EXTERNAL) {
-                ftximage->SetNext(makeContentNode(RAWXML_FTX_FRAME_ALPHA, itf->alpha().GetFullPath()));
+                ftxframe.newTextChild(RAWXML_FTX_FRAME_ALPHA, itf->alpha().GetFullPath().mb_str(wxConvUTF8));
             }
-            ftxframe->SetChildren(ftximage);
-            XML_ADD(ftx, ftxframe);
         }
-        XML_ADD(root, ftx);
     }
 
 }

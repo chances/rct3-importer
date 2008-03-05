@@ -29,10 +29,12 @@
 #include "wx_pch.h"
 
 #include <wx/filename.h>
-#include <wx/xml/xml.h>
+#include <string>
 #include <vector>
 
 #include "sceneryvisual.h"
+
+#include "cXmlNode.h"
 
 #include "3DLoader.h"
 #include "RCT3Macros.h"
@@ -45,11 +47,11 @@ enum {
 
 WX_DECLARE_STRING_HASH_MAP(int, cIntMap);
 
-#define RCT3XML_REFERENCE wxT("reference")
+#define RCT3XML_REFERENCE "reference"
 
-#define RCT3XML_MATRIX wxT("matrix")
-bool XmlParseMatrixNode(wxXmlNode* node, MATRIX* marix, wxString* name, unsigned long version);
-wxXmlNode* XmlMakeMatrixNode(const MATRIX& matrix, const wxString& name);
+#define RCT3XML_MATRIX "matrix"
+bool XmlParseMatrixNode(xmlcpp::cXmlNode& node, MATRIX* marix, wxString* name, unsigned long version);
+xmlcpp::cXmlNode XmlMakeMatrixNode(const MATRIX& matrix, const wxString& name);
 
 //bool XmlParseTXYZNode(wxXmlNode* node, txyz* v, unsigned long version);
 //wxXmlNode* XmlMakeTXYZNode(const txyz& v);
@@ -64,12 +66,12 @@ struct cText {
 
 class cRCT3Xml {
 public:
-    virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version) = 0;
-    virtual wxXmlNode* GetNode(const wxString& path) = 0;
-    virtual const wxString GetTagName() const = 0;
+    virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version) = 0;
+    virtual xmlcpp::cXmlNode GetNode(const wxString& path) = 0;
+    virtual const std::string GetTagName() const = 0;
 };
 
-#define RCT3XML_CTXYZ wxT("txyz")
+#define RCT3XML_CTXYZ "txyz"
 class cTXYZ: public cRCT3Xml {
 DEF_RCT3_VECIT(cTXYZ)
 public:
@@ -90,9 +92,9 @@ public:
 
     txyz GetFixed(c3DLoaderOrientation ori) const;
 
-    virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);
-    virtual wxXmlNode* GetNode(const wxString& path);
-    virtual const wxString GetTagName() const {return RCT3XML_CTXYZ;};
+    virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
+    virtual xmlcpp::cXmlNode GetNode(const wxString& path);
+    virtual const std::string GetTagName() const {return RCT3XML_CTXYZ;};
 };
 
 //txyz operator= (cTXYZ& v);
@@ -109,7 +111,7 @@ enum {
     CMS_FUDGE_ENUMSIZE
 };
 
-#define RCT3XML_CMESHSTRUCT wxT("mesh")
+#define RCT3XML_CMESHSTRUCT "mesh"
 class cMeshStruct: public cRCT3Xml {
 DEF_RCT3_VECIT(cMeshStruct)
 public:
@@ -143,19 +145,19 @@ public:
     cMeshStruct() {
         Init();
     };
-    cMeshStruct(wxXmlNode* node, const wxString& path, unsigned long version) {
+    cMeshStruct(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version) {
         Init();
         FromNode(node, path, version);
     }
     void CopySettingsFrom(const cMeshStruct& from);
 
-    bool FromCompilerXml(wxXmlNode* node, const wxString& path);
+    bool FromCompilerXml(xmlcpp::cXmlNode& node, const wxString& path);
 
     void Check(const wxString& modelname);
 
-    virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);
-    virtual wxXmlNode* GetNode(const wxString& path);
-    virtual const wxString GetTagName() const {return RCT3XML_CMESHSTRUCT;};
+    virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
+    virtual xmlcpp::cXmlNode GetNode(const wxString& path);
+    virtual const std::string GetTagName() const {return RCT3XML_CMESHSTRUCT;};
 private:
     void Init();
 };
@@ -165,7 +167,7 @@ WX_DECLARE_STRING_HASH_MAP(cMeshStruct *, cMeshStructMap);
 #define CFTF_ALPHA_INTERNAL 1
 #define CFTF_ALPHA_EXTERNAL 2
 
-#define RCT3XML_CFLEXITEXTUREANIM wxT("textureanim")
+#define RCT3XML_CFLEXITEXTUREANIM "textureanim"
 class cFlexiTextureAnim: public cRCT3Xml {
 DEF_RCT3_VECIT(cFlexiTextureAnim)
 private:
@@ -178,15 +180,15 @@ public:
         frame(fr);
         count(co);
     };
-    virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);
-    virtual wxXmlNode* GetNode(const wxString& path);
-    virtual const wxString GetTagName() const {return RCT3XML_CFLEXITEXTUREANIM;};
+    virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
+    virtual xmlcpp::cXmlNode GetNode(const wxString& path);
+    virtual const std::string GetTagName() const {return RCT3XML_CFLEXITEXTUREANIM;};
 DEF_RCT3_D_PROPERTY(unsigned long, m_frame, frame)
 DEF_RCT3_D_PROPERTY(unsigned long, m_count, count)
 };
 
 class cFlexiTexture;
-#define RCT3XML_CFLEXITEXTUREFRAME wxT("textureframe")
+#define RCT3XML_CFLEXITEXTUREFRAME "textureframe"
 struct sFlexiTextureFrame {
     wxFileName Texture;
     wxFileName Alpha;
@@ -226,9 +228,9 @@ public:
 
 	bool Check(cFlexiTexture* parent);
 
-    virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);
-    virtual wxXmlNode* GetNode(const wxString& path);
-    virtual const wxString GetTagName() const {return RCT3XML_CFLEXITEXTUREFRAME;};
+    virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
+    virtual xmlcpp::cXmlNode GetNode(const wxString& path);
+    virtual const std::string GetTagName() const {return RCT3XML_CFLEXITEXTUREFRAME;};
 DEF_RCT3_PROPERTY(wxFileName, Texture, texture)
 DEF_RCT3_PROPERTY_NC(wxFileName, Texture, texture)
 DEF_RCT3_PROPERTY(wxFileName, Alpha, alpha)
@@ -241,7 +243,7 @@ DEF_RCT3_PROPERTY(unsigned long, AlphaSource, alphasource)
 DEF_RCT3_PROPERTY_F(unsigned long, AlphaSource, alphasource)
 };
 
-#define RCT3XML_CFLEXITEXTURE wxT("texture")
+#define RCT3XML_CFLEXITEXTURE "texture"
 class cFlexiTexture: public cRCT3Xml {
 DEF_RCT3_VECIT(cFlexiTexture)
 private:
@@ -259,18 +261,18 @@ public:
 
 	bool Check();
 
-    bool FromCompilerXml(wxXmlNode* node, const wxString& path);
+    bool FromCompilerXml(xmlcpp::cXmlNode& node, const wxString& path);
 
-    virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);
-    virtual wxXmlNode* GetNode(const wxString& path);
-    virtual const wxString GetTagName() const {return RCT3XML_CFLEXITEXTURE;};
+    virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
+    virtual xmlcpp::cXmlNode GetNode(const wxString& path);
+    virtual const std::string GetTagName() const {return RCT3XML_CFLEXITEXTURE;};
 
     static COLOURQUAD* GetRGBPalette();
 };
 
 class cModelBone;
 //typedef std::vector<cModelBone>::iterator cModelBoneIterator;
-#define RCT3XML_CEFFECTPOINT wxT("effectpoint")
+#define RCT3XML_CEFFECTPOINT "effectpoint"
 class cEffectPoint: public cRCT3Xml {
 DEF_RCT3_VECIT(cEffectPoint)
 public:
@@ -282,14 +284,15 @@ public:
 	cEffectPoint(): name(wxT("")) {};
 	cEffectPoint(const cModelBone& bone);
 
-    virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);
-    virtual wxXmlNode* GetNode(const wxString& path);
-    virtual const wxString GetTagName() const {return RCT3XML_CEFFECTPOINT;};
+    virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
+    virtual xmlcpp::cXmlNode GetNode(const wxString& path);
+    virtual const std::string GetTagName() const {return RCT3XML_CEFFECTPOINT;};
 };
 
 class cAnimatedModel;
-class cModelMap;
-#define RCT3XML_CMODEL wxT("model")
+class cModel;
+WX_DECLARE_STRING_HASH_MAP(cModel *, cModelMap);
+#define RCT3XML_CMODEL "model"
 class cModel: public cRCT3Xml {
 DEF_RCT3_VECIT(cModel)
 public:
@@ -327,14 +330,14 @@ public:
 	virtual bool Check(cModelMap& modnames);
 	virtual bool GetTransformationMatrices(MATRIX& transform, MATRIX& undodamage) const;
 
-    virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);
-    virtual wxXmlNode* AddNodeContent(wxXmlNode* node, const wxString& path, bool do_local);
-    virtual wxXmlNode* GetNode(const wxString& path) {
-        wxXmlNode* node = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, GetTagName());
+    virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
+    virtual void AddNodeContent(xmlcpp::cXmlNode& node, const wxString& path, bool do_local);
+    virtual xmlcpp::cXmlNode GetNode(const wxString& path) {
+        xmlcpp::cXmlNode node(GetTagName());
         AddNodeContent(node, path, true);
         return node;
     }
-    virtual const wxString GetTagName() const {return RCT3XML_CMODEL;};
+    virtual const std::string GetTagName() const {return RCT3XML_CMODEL;};
 
 protected:
     void SetupFileProperties(cMeshStruct* ms, const counted_ptr<c3DLoader>& obj, unsigned int n);
@@ -343,12 +346,11 @@ protected:
     bool CheckMeshes(bool animated = false);
 };
 
-WX_DECLARE_STRING_HASH_MAP(cModel *, cModelMap);
 
-#define RCT3XML_CMODELBONE wxT("modelbone")
-#define RCT3XML_CMODELBONE_P1 wxT("positions1")
-#define RCT3XML_CMODELBONE_P2 wxT("positions2")
-#define RCT3XML_CMODELBONE_MESH wxT("bmesh")
+#define RCT3XML_CMODELBONE "modelbone"
+#define RCT3XML_CMODELBONE_P1 "positions1"
+#define RCT3XML_CMODELBONE_P2 "positions2"
+#define RCT3XML_CMODELBONE_MESH "bmesh"
 class cModelBone: public cRCT3Xml {
 DEF_RCT3_VECIT(cModelBone)
 public:
@@ -371,17 +373,18 @@ public:
 	    position1names = p.transformnames;
 	};
 
-    bool FromCompilerXml(wxXmlNode* node, const wxString& path);
+    bool FromCompilerXml(xmlcpp::cXmlNode& node, const wxString& path);
 
-    virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);
-    virtual wxXmlNode* GetNode(const wxString& path);
-    virtual const wxString GetTagName() const {return RCT3XML_CMODELBONE;};
+    virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
+    virtual xmlcpp::cXmlNode GetNode(const wxString& path);
+    virtual const std::string GetTagName() const {return RCT3XML_CMODELBONE;};
 };
 
 // typedef std::vector<cModelBone>::iterator cModelBoneIterator; // Advance above
 
-class cAnimatedModelMap;
-#define RCT3XML_CANIMATEDMODEL wxT("animatedmodel")
+class cAnimatedModel;
+WX_DECLARE_STRING_HASH_MAP(cAnimatedModel *, cAnimatedModelMap);
+#define RCT3XML_CANIMATEDMODEL "animatedmodel"
 class cAnimatedModel: public cModel {
 DEF_RCT3_VECIT(cAnimatedModel)
 public:
@@ -397,18 +400,17 @@ public:
 
 	bool Check(cAnimatedModelMap& amodnames);
 
-    bool FromCompilerXml(wxXmlNode* node, const wxString& path);
+    bool FromCompilerXml(xmlcpp::cXmlNode& node, const wxString& path);
 
-    virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);
-    virtual wxXmlNode* AddNodeContent(wxXmlNode* node, const wxString& path, bool do_local);
-    virtual const wxString GetTagName() const {return RCT3XML_CANIMATEDMODEL;};
+    virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
+    virtual void AddNodeContent(xmlcpp::cXmlNode& node, const wxString& path, bool do_local);
+    virtual const std::string GetTagName() const {return RCT3XML_CANIMATEDMODEL;};
 };
 
-WX_DECLARE_STRING_HASH_MAP(cAnimatedModel *, cAnimatedModelMap);
 
-#define RCT3XML_CBONEANIMATION wxT("boneanimation")
-#define RCT3XML_CBONEANIMATION_TRANSLATIONS wxT("translations")
-#define RCT3XML_CBONEANIMATION_ROTATIONS wxT("rotations")
+#define RCT3XML_CBONEANIMATION "boneanimation"
+#define RCT3XML_CBONEANIMATION_TRANSLATIONS "translations"
+#define RCT3XML_CBONEANIMATION_ROTATIONS "rotations"
 class cBoneAnimation: public cRCT3Xml {
 DEF_RCT3_VECIT(cBoneAnimation)
 public:
@@ -418,14 +420,14 @@ public:
 
     cBoneAnimation(): name(wxT("")) {};
 
-    bool FromCompilerXml(wxXmlNode* node, const wxString& path);
+    bool FromCompilerXml(xmlcpp::cXmlNode& node, const wxString& path);
 
-    virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);
-    virtual wxXmlNode* GetNode(const wxString& path);
-    virtual const wxString GetTagName() const {return RCT3XML_CBONEANIMATION;};
+    virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
+    virtual xmlcpp::cXmlNode GetNode(const wxString& path);
+    virtual const std::string GetTagName() const {return RCT3XML_CBONEANIMATION;};
 };
 
-#define RCT3XML_CANIMATION wxT("animation")
+#define RCT3XML_CANIMATION "animation"
 class cAnimation: public cRCT3Xml {
 DEF_RCT3_VECIT(cAnimation)
 public:
@@ -439,16 +441,16 @@ public:
     cAnimation(): name(wxT("")), usedorientation(ORIENTATION_UNKNOWN), totaltime(0.0) {};
     cAnimation(c3DLoaderOrientation ori): name(wxT("")), usedorientation(ori), totaltime(0.0) {};
 
-    bool FromCompilerXml(wxXmlNode* node, const wxString& path);
+    bool FromCompilerXml(xmlcpp::cXmlNode& node, const wxString& path);
     bool Check(const wxSortedArrayString& presentbones);
 
-    virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);
-    virtual wxXmlNode* GetNode(const wxString& path);
-    virtual const wxString GetTagName() const {return RCT3XML_CANIMATION;};
+    virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
+    virtual xmlcpp::cXmlNode GetNode(const wxString& path);
+    virtual const std::string GetTagName() const {return RCT3XML_CANIMATION;};
 };
 
-#define RCT3XML_CLOD wxT("lod")
-#define RCT3XML_CLOD_ANIMATION wxT("lodanim")
+#define RCT3XML_CLOD "lod"
+#define RCT3XML_CLOD_ANIMATION "lodanim"
 class cLOD: public cRCT3Xml {
 DEF_RCT3_VECIT(cLOD)
 public:
@@ -462,12 +464,12 @@ public:
 
     cLOD() : modelname(wxT("")), animated(false), distance(0.0), unk2(0), unk4(0), unk14(0) {};
 
-    virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);
-    virtual wxXmlNode* GetNode(const wxString& path);
-    virtual const wxString GetTagName() const {return RCT3XML_CLOD;};
+    virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
+    virtual xmlcpp::cXmlNode GetNode(const wxString& path);
+    virtual const std::string GetTagName() const {return RCT3XML_CLOD;};
 };
 
-#define RCT3XML_CSIVSETTINGS wxT("siv")
+#define RCT3XML_CSIVSETTINGS "siv"
 class cSIVSettings: public cRCT3Xml {
 public:
     unsigned int sivflags;
@@ -502,9 +504,9 @@ public:
         unk10 = 0;
         unk11 = 0;
     };
-    virtual bool FromNode(wxXmlNode* node, const wxString& path, unsigned long version);
-    virtual wxXmlNode* GetNode(const wxString& path);
-    virtual const wxString GetTagName() const {return RCT3XML_CSIVSETTINGS;};
+    virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
+    virtual xmlcpp::cXmlNode GetNode(const wxString& path);
+    virtual const std::string GetTagName() const {return RCT3XML_CSIVSETTINGS;};
 };
 
 #endif // RCT3STRUCTS_H_INCLUDED

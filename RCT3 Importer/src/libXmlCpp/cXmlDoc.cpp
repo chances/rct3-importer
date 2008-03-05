@@ -68,6 +68,16 @@ fprintf(stderr, "cXmlDoc()\n");
     Init();
 }
 
+cXmlDoc::cXmlDoc(bool asempty) {
+#ifdef DUMPINIT
+fprintf(stderr, "cXmlDoc(), asempty\n");
+#endif
+    if (asempty)
+        empty();
+    else
+        Init();
+}
+
 cXmlDoc::cXmlDoc(xmlDocPtr doc, bool grab) {
 #ifdef DUMPINIT
 fprintf(stderr, "cXmlDoc(), docptr\n");
@@ -108,6 +118,7 @@ fprintf(stderr, "~cXmlDoc() / ");
 }
 
 void cXmlDoc::Init() {
+    m_file = "";
     m_doc.reset();
 }
 
@@ -124,6 +135,11 @@ void cXmlDoc::Init() {
 //        m_doc = NULL;
 //    }
 //}
+
+void cXmlDoc::empty(const char* xmlver) {
+    Init();
+    assignDoc(xmlNewDoc(reinterpret_cast<const xmlChar*>(xmlver)));
+}
 
 bool cXmlDoc::read(const xmlChar* cur, const char* URL, const char* encoding, int options) {
 //    DeInit();
@@ -169,11 +185,15 @@ bool cXmlDoc::share(const boost::shared_ptr<xmlDoc>& doc) {
     return ok();
 }
 
-int cXmlDoc::write(const char* filename) {
+int cXmlDoc::write(const char* filename, bool indent, const char* encoding) {
     if (!m_doc)
         throw eXmlInvalid("Tried to write bad document");
 
-    return xmlSaveFile(filename, m_doc.get());
+    if (indent) {
+        return xmlSaveFormatFileEnc(filename, m_doc.get(), encoding, 1);
+    } else {
+        return xmlSaveFileEnc(filename, m_doc.get(), encoding);
+    }
 }
 
 int cXmlDoc::dump(FILE* f) {
@@ -183,16 +203,45 @@ int cXmlDoc::dump(FILE* f) {
     return xmlDocDump(f, m_doc.get());
 }
 
-cXmlNode cXmlDoc::getRoot() {
+cXmlNode cXmlDoc::root() {
     if (!m_doc)
         throw eXmlInvalid("Tried to get root for bad document");
     return cXmlNode(xmlDocGetRootElement(m_doc.get()), m_doc);
 }
 
+cXmlNode cXmlDoc::root(cXmlNode& newroot) {
+    if (!m_doc)
+        throw eXmlInvalid("Tried to set root for bad document");
+    return cXmlNode(xmlDocSetRootElement(m_doc.get(), newroot.getRaw(m_doc)), true);
+}
+
+std::string cXmlDoc::searchNs(const std::string& prefix, xmlNodePtr node) {
+    if (!m_doc)
+        throw eXmlInvalid("Tried to search namespace for bad document");
+
+    xmlNsPtr ns = xmlSearchNs(m_doc.get(), node?node:xmlDocGetRootElement(m_doc.get()), (prefix=="")?NULL:reinterpret_cast<const xmlChar*>(prefix.c_str()));
+    if (ns) {
+        return ns->href?string(reinterpret_cast<const char*>(ns->href)):"";
+    } else {
+        return "";
+    }
+}
+
+xmlNsPtr cXmlDoc::getNs(const std::string& prefix, xmlNodePtr node) {
+    if (!m_doc)
+        throw eXmlInvalid("Tried to search namespace for bad document");
+
+    return xmlSearchNs(m_doc.get(), node?node:xmlDocGetRootElement(m_doc.get()), (prefix=="")?NULL:reinterpret_cast<const xmlChar*>(prefix.c_str()));
+}
+
 int cXmlDoc::validate(cXmlValidator& val) {
+    return val.validate(m_doc, cXmlValidator::OPT_NONE);
+}
+
+int cXmlDoc::validate(cXmlValidator& val, int options) {
     if (!m_doc)
         throw eXmlInvalid("Tried to validate bad document");
-    return val.validate(m_doc);
+    return val.validate(m_doc, options);
 }
 
 int cXmlDoc::xInclude() {

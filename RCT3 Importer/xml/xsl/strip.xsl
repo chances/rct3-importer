@@ -16,7 +16,7 @@
     </xsl:copy>
   </xsl:template>
 
-  <xsl:template match="processing-instruction()|text()">
+  <xsl:template match="processing-instruction()|text()|xsl:message">
     <xsl:copy/>
   </xsl:template>
 </xsl:stylesheet>

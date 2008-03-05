@@ -31,6 +31,8 @@
 #include "cXmlException.h"
 #include "cXmlInputOutputCallbackString.h"
 #include "cXmlNode.h"
+#include "cXmlXPath.h"
+#include "cXmlXPathResult.h"
 
 #include "xsl/iso_simple.xsl.h"
 #include "xsl/iso_schematron_skeleton.xsl.h"
@@ -153,10 +155,19 @@ int cXmlValidatorIsoSchematron::validate(boost::shared_ptr<xmlDoc>& doc, int opt
     if (!doc)
         throw eXml("Tried to validate broken document");
 
+    cXmlXPath path;
+    string ns;
+    if (options & OPT_DETERMINE_NODE_BY_XPATH) {
+        path.assign(doc);
+        ns = cXmlDoc(doc).searchNs();
+        if (ns != "")
+            path.registerNs("utterridiculousxpathns", ns);
+    }
+
     cXmlDoc result = m_transform.transform(doc.get());
     int errors = 0;
 
-    cXmlNode root(result.getRoot());
+    cXmlNode root(result.root());
     if (!root.ok())
         return -1;
 
@@ -164,20 +175,49 @@ int cXmlValidatorIsoSchematron::validate(boost::shared_ptr<xmlDoc>& doc, int opt
     string pattern = "Unnamed pattern";
     while (child.ok()) {
         if (child.name() == "pattern") {
-            pattern = child.getProp("name", "Unnamed pattern");
+            pattern = child.getPropVal("name", "Unnamed pattern");
         } else if ((child.name() == "failed-assert") || (child.name() == "successful-report")) {
             cXmlStructuredError error;
             error.domain = XML_FROM_SCHEMATRONV;
             error.code = (child.name() == "failed-assert")?XML_SCHEMATRONV_ASSERT:XML_SCHEMATRONV_REPORT;
             error.message = child.content();
             error.level = XML_ERR_ERROR;
-            error.path = child.getProp("brieflocation", "");
+            error.path = child.getPropVal("brieflocation", "");
             error.str1 = pattern;
-            error.str2 = child.getProp("location", "");
-            error.str3 = child.getProp("id", "");
+            error.str2 = child.getPropVal("location", "");
+            error.str3 = child.getPropVal("id", "");
             if (child.hasProp("role")) {
-                sscanf(child.getProp("role", "0").c_str(), "%d", &error.int1);
+                string role = child.getPropVal("role", "0");
+                if (role == "none") {
+                    error.level = XML_ERR_NONE;
+                    errors--; // Will be upped down below
+                } else if (role == "warning") {
+                    error.level = XML_ERR_WARNING;
+                } else if (role == "fatal") {
+                    error.level = XML_ERR_FATAL;
+                } else {
+                    sscanf(role.c_str(), "%d", &error.int1);
+                }
             }
+
+            if (path) {
+                string elempath = (ns == "")?error.path:cXmlXPath::decorateWithNsPrefix(error.path, "utterridiculousxpathns", true);
+                cXmlXPathResult res = path(elempath, true);
+                if (res.size()) {
+                    error.node = res[0].getRaw();
+                    if (error.node) {
+                        xmlNodePtr errnode = reinterpret_cast<xmlNodePtr>(error.node);
+                        if (errnode->type == XML_ATTRIBUTE_NODE) {
+                            if (errnode->parent) {
+                                error.line = errnode->parent->line;
+                            }
+                        } else {
+                            error.line = errnode->line;
+                        }
+                    }
+                }
+            }
+
             addStructuredError(error);
             errors++;
         }

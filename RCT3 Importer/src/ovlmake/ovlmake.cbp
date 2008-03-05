@@ -6,89 +6,6 @@
 		<Option default_target="Debug DLL" />
 		<Option compiler="gcc" />
 		<Build>
-			<Target title="Release Base">
-				<Option output="..\..\bin\ovlmake.exe" prefix_auto="0" extension_auto="0" />
-				<Option working_dir="..\..\bin" />
-				<Option object_output="..\..\lib\obj\ovlmake\release" />
-				<Option external_deps="..\..\lib\lib3DHelp.a;..\..\lib\libASE.a;..\..\lib\libOVLDump.a;..\..\lib\libOVLng.a;..\..\lib\libRawParse.a;..\..\lib\libWXHelpb.a;..\..\lib\libXmlCpp.a;" />
-				<Option type="1" />
-				<Option compiler="gcc" />
-				<Option use_console_runner="0" />
-				<Option projectLinkerOptionsRelation="2" />
-				<Compiler>
-					<Add option="-Os" />
-					<Add option="-O2" />
-					<Add directory="$(#mingw.lib)\wx\include\base-ansi-release-static-2.8" />
-				</Compiler>
-				<Linker>
-					<Add option="-s" />
-					<Add library="libRawParse" />
-					<Add library="libOVLDump" />
-					<Add library="3DHelp" />
-					<Add library="WXHelpb" />
-					<Add library="libASE" />
-					<Add library="wx_base-2.8" />
-					<Add library="libOVLng" />
-					<Add directory="..\..\bin" />
-				</Linker>
-			</Target>
-			<Target title="Debug Base">
-				<Option output="..\..\bin\ovlmaked.exe" prefix_auto="0" extension_auto="0" />
-				<Option working_dir="..\..\bin" />
-				<Option object_output="..\..\lib\obj\ovlmake\debug" />
-				<Option external_deps="..\..\lib\lib3DHelpd.a;..\..\lib\libWXHelpbd.a;..\..\lib\libASEd.a;..\..\lib\libOVLngd.a;..\..\lib\libRawParsed.a;..\..\lib\libOVLDumpd.a;..\..\lib\libXmlCppd.a;" />
-				<Option type="1" />
-				<Option compiler="gcc" />
-				<Option use_console_runner="0" />
-				<Option projectLinkerOptionsRelation="2" />
-				<Compiler>
-					<Add option="-W" />
-					<Add option="-Wall" />
-					<Add option="-g" />
-					<Add option="-DDEBUG" />
-					<Add option="-D__WXDEBUG__" />
-					<Add directory="$(#wx.baseansidebugstatic)" />
-				</Compiler>
-				<Linker>
-					<Add library="libRawParsed" />
-					<Add library="libOVLDumpd" />
-					<Add library="3DHelpd" />
-					<Add library="WXHelpbd" />
-					<Add library="libASE" />
-					<Add library="libOVLngd" />
-					<Add library="wx_based-2.8" />
-					<Add directory="..\..\bin" />
-				</Linker>
-			</Target>
-			<Target title="Debug Base (public)">
-				<Option output="..\..\bin\ovlmakedp.exe" prefix_auto="0" extension_auto="0" />
-				<Option working_dir="..\..\bin" />
-				<Option object_output="..\..\lib\obj\ovlmake\debug" />
-				<Option external_deps="..\..\lib\lib3DHelpd.a;..\..\lib\libWXHelpbd.a;..\..\lib\libASEd.a;..\..\lib\libOVLngd.a;..\..\lib\libRawParsed.a;..\..\lib\libOVLDumpd.a;..\..\lib\libXmlCppd.a;" />
-				<Option type="1" />
-				<Option compiler="gcc" />
-				<Option use_console_runner="0" />
-				<Option projectLinkerOptionsRelation="2" />
-				<Compiler>
-					<Add option="-W" />
-					<Add option="-Wall" />
-					<Add option="-g" />
-					<Add option="-DDEBUG" />
-					<Add option="-D__WXDEBUG__" />
-					<Add option="-DPUBLICDEBUG" />
-					<Add directory="$(#wx.baseansidebugstatic)" />
-				</Compiler>
-				<Linker>
-					<Add library="libRawParsed" />
-					<Add library="libOVLDumpd" />
-					<Add library="3DHelpd" />
-					<Add library="WXHelpbd" />
-					<Add library="libASE" />
-					<Add library="libOVLngd" />
-					<Add library="wx_based-2.8" />
-					<Add directory="..\..\bin" />
-				</Linker>
-			</Target>
 			<Target title="Release Base Unicode">
 				<Option output="..\..\bin\ovlmake.exe" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="..\..\bin" />
@@ -102,7 +19,7 @@
 					<Add option="-Os" />
 					<Add option="-O2" />
 					<Add option="-DUNICODE" />
-					<Add directory="$(#mingw.lib)\wx\include\base-unicode-release-static-2.8" />
+					<Add directory="$(#wx3.lib)\base-unicode-release-static-2.9" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -111,7 +28,7 @@
 					<Add library="3DHelpu" />
 					<Add library="WXHelpbu" />
 					<Add library="libASE" />
-					<Add library="wx_baseu-2.8" />
+					<Add library="wx_baseu-2.9" />
 					<Add library="libOVLng" />
 					<Add library="XmlCppu" />
 				</Linker>
@@ -133,7 +50,7 @@
 					<Add option="-DDEBUG" />
 					<Add option="-D__WXDEBUG__" />
 					<Add option="-DUNICODE" />
-					<Add directory="$(#mingw.lib)\wx\include\base-unicode-debug-static-2.8" />
+					<Add directory="$(#wx3.lib)\base-unicode-debug-static-2.9" />
 				</Compiler>
 				<Linker>
 					<Add library="libRawParseud" />
@@ -141,7 +58,7 @@
 					<Add library="3DHelpud" />
 					<Add library="WXHelpbud" />
 					<Add library="libASE" />
-					<Add library="wx_baseud-2.8" />
+					<Add library="wx_baseud-2.9" />
 					<Add library="libOVLngud" />
 					<Add library="XmlCppud" />
 				</Linker>
@@ -163,7 +80,7 @@
 			<Add option="-DCACHE_GXIMAGE" />
 			<Add option="-DXMLCPP_USE_XSLT" />
 			<Add option="-DXMLCPP_USE_WXWIDGETS" />
-			<Add directory="$(#wx.include)" />
+			<Add directory="$(#wx3.include)" />
 			<Add directory="..\lib3DHelp" />
 			<Add directory="..\..\include" />
 			<Add directory="..\libWXHelp" />

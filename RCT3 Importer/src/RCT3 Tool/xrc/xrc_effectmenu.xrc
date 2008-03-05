@@ -6,6 +6,9 @@
       <object class="wxMenuItem" name="menu_quickeffect_pos1">
         <label>_Enter position...</label>
       </object>
+      <object class="wxMenuItem" name="menu_quickeffect_calculate">
+        <label>_Calculate</label>
+      </object>
       <object class="wxMenu" name="menu_quickeffect_ovm1">
         <label>From one-_vertex mesh...</label>
       </object>

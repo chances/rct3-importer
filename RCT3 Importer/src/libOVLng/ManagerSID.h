@@ -251,7 +251,7 @@ public:
 	unsigned long AddonPack;       // 0 = Vanilla, 1 = Soaked, 2 = Wild
 	unsigned long GenericAddon;
 	float unkf;                    // So far seen 1.0
-	unsigned long unk3;            // So far seen 0xFFFFFFFF
+	unsigned long billboardaspect;            // So far seen 0xFFFFFFFF
 
     cSidExtra() {
         version = 0;
@@ -260,7 +260,7 @@ public:
         AddonPack = 0;
         GenericAddon = 0;
         unkf = 1.0;
-        unk3 = 0xFFFFFFFF;
+        billboardaspect = -1;
     }
     void Fill(SceneryItem* i) {
         i->extraversion = version;
@@ -274,7 +274,7 @@ public:
     void FillExtra2(SceneryItemExtra2* e) {
         FillExtra1(reinterpret_cast<SceneryItemExtra1*>(e));
         e->unkf = unkf;
-        e->unk3 = unk3;
+        e->billboardaspect = billboardaspect;
     }
 };
 

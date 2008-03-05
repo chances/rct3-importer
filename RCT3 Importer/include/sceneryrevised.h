@@ -501,7 +501,17 @@ struct SceneryItemExtra2
 	unsigned long AddonPack;       // 0 = Vanilla, 1 = Soaked, 2 = Wild
 	unsigned long GenericAddon;
 	float unkf;                    // So far seen 1.0
-	unsigned long unk3;            // So far seen 0xFFFFFFFF
+	long billboardaspect;          ///< Seems to indicate aspect ratio of billboards
+                                   /**
+                                    * -1: non-billboards
+                                    *  0: 8x1
+                                    *  1: 4x1
+                                    *  2: 2x1
+                                    *  3: 1x1
+                                    *  4: 1x2
+                                    *  5: 1x4
+                                    *  6: 1x8
+                                    */
 };
 
 #endif

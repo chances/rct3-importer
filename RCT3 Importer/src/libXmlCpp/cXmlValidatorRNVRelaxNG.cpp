@@ -25,7 +25,6 @@
 
 #include "cXmlValidatorRNVRelaxNG.h"
 
-#include "cXmlAttr.h"
 #include "cXmlDoc.h"
 #include "cXmlException.h"
 #include "cXmlInputOutputCallbackString.h"
@@ -663,7 +662,7 @@ void do_node(cXmlNode& node, RNVValidationContext& ctx) {
         cXmlValidatorRNVRelaxNG::g_nodecontext = node.getRaw();
         string name = node.nsname();
         ctx.start_tag_open(name);
-        cXmlAttr attr(node.properties());
+        cXmlNode attr(node.properties());
         while (attr.ok()) {
             ctx.attribute(attr.name(), attr.content());
             attr.go_next();
@@ -697,7 +696,7 @@ int cXmlValidatorRNVRelaxNG::validate(boost::shared_ptr<xmlDoc>& doc, int option
     //cXmlDoc result = m_transform.transform(doc.get());
     cXmlDoc work(doc);
 
-    cXmlNode root(work.getRoot());
+    cXmlNode root(work.root());
     if (!root.ok())
         return -1;
 

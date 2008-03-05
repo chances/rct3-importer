@@ -22,9 +22,11 @@ public:
     wxColourHtmlListBox(wxWindow* parent, wxWindowID id = wxID_ANY, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, long style = 0, const wxString& name = wxVListBoxNameStr):
         wxHtmlListBox(parent, id, pos, size, style, name) {
         SetSelectionBackground(wxColour(0x00, 0x33, 0x66));
+        //SetSelectionBackground(wxColour(0xEE, 0xCC, 0xAA));
     };
 protected:
     virtual wxColour GetSelectedTextColour(const wxColour& colFg) const;
+    //virtual wxColour GetSelectedTextBgColour(const wxColour& colFg) const;
 };
 
 #endif // COLHTMLLBOX_H_INCLUDED

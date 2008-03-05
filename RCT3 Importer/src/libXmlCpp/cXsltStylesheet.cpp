@@ -119,7 +119,7 @@ cXmlDoc cXsltStylesheet::transform(xmlDocPtr doc) {
         params[(i*2)] = it->first.c_str();
         params[(i*2)+1] = it->second.c_str();
     }
-    return cXmlDoc(xsltApplyStylesheet(m_sheet.get(), doc, params));
+    return cXmlDoc(xsltApplyStylesheet(m_sheet.get(), doc, params), true);
 }
 
 string cXsltStylesheet::transformToString(cXmlDoc& doc) {

@@ -265,12 +265,14 @@
     </optional>
   </define>
   <define name="roottags">
+  	<optional>
+      <ref name="datarefblock"></ref>
+    </optional>
     <choice>
       <ref name="variables"></ref>
       <ref name="set"></ref>
       <ref name="unset"></ref>
       <ref name="check"></ref>
-      <ref name="dataref"></ref>
     </choice>
   </define>
   <define name="ovltags">
@@ -382,6 +384,14 @@
         </group>
       </choice>
     </element>
+  </define>
+  <define name="datarefblock">
+  	<element name="datarefblock">
+  		<ref name="baseattrs" />
+  		<zeroOrMore>
+  			<ref name="dataref" />
+  		</zeroOrMore>
+  	</element>
   </define>
   <div>
     <a:documentation>Structure tags</a:documentation>

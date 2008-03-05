@@ -22,16 +22,16 @@
 				<Compiler>
 					<Add option="-Os" />
 					<Add option="-O2" />
-					<Add directory="$(#mingw.lib)\wx\include\msw-unicode-release-static-2.8" />
+					<Add directory="$(#wx3.lib)\msw-unicode-release-static-2.9" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 					<Add library="3DHelpu" />
 					<Add library="WXHelpu" />
 					<Add library="ASE" />
-					<Add library="wxcode_u_wxsqlite3-2.8" />
-					<Add library="wx_mswu_propgrid-2.8" />
-					<Add library="wx_mswu-2.8" />
+					<Add library="wxcode_u_wxsqlite3-2.9" />
+					<Add library="wx_mswu_propgrid-2.9" />
+					<Add library="wx_mswu-2.9" />
 					<Add library="OVLng" />
 					<Add library="sqlite3" />
 					<Add library="OVLDump" />
@@ -53,15 +53,15 @@
 					<Add option="-g" />
 					<Add option="-DDEBUG" />
 					<Add option="-D__WXDEBUG__" />
-					<Add directory="$(#mingw.lib)\wx\include\msw-unicode-debug-static-2.8" />
+					<Add directory="$(#wx3.lib)\msw-unicode-debug-static-2.9" />
 				</Compiler>
 				<Linker>
 					<Add library="3DHelpud" />
 					<Add library="WXHelpud" />
 					<Add library="ASEd" />
-					<Add library="wxcode_ud_wxsqlite3-2.8" />
-					<Add library="wx_mswud_propgrid-2.8" />
-					<Add library="wx_mswud-2.8" />
+					<Add library="wxcode_ud_wxsqlite3-2.9" />
+					<Add library="wx_mswud_propgrid-2.9" />
+					<Add library="wx_mswud-2.9" />
 					<Add library="OVLngud" />
 					<Add library="sqlite3" />
 					<Add library="OVLDumpd" />
@@ -90,7 +90,7 @@
 			<Add option="-DLIBXML_STATIC" />
 			<Add option="-DXMLCPP_USE_XSLT" />
 			<Add option="-DXMLCPP_USE_WXWIDGETS" />
-			<Add directory="$(#wx.include)" />
+			<Add directory="$(#wx3.include)" />
 			<Add directory="..\lib3DHelp" />
 			<Add directory="..\..\include" />
 			<Add directory="..\libWXHelp" />
@@ -120,6 +120,7 @@
 			<Add library="comctl32" />
 			<Add library="expat" />
 			<Add library="squish" />
+			<Add library="bz2" />
 			<Add directory="..\..\lib" />
 		</Linker>
 		<Unit filename="images\images.xrc">

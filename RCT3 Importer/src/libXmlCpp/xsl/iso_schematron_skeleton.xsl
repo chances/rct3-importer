@@ -1,4 +1,5 @@
 <?xml version="1.0"?><?xar XSLT?>
+
 <!-- 
    OVERVIEW
    
@@ -51,6 +52,7 @@
    from that directory, as many XSLT implementations have ideosyncratic
    handling of URLs: keep it simple.
 -->
+ 
 
 <!--
   INVOCATION INFORMATION
@@ -61,7 +63,15 @@
     allow-foreign   "true" | "false" (default)   Pass non-Schematron elements to the generated stylesheet
     sch.exslt.imports semi-colon delimited string of filenames for some EXSLT implementations  
     message-newline "true" (default) | "false"   Generate an extra newline at the end of messages
-    optimize        "visit-no-attributes"     Use only when the schema has no attributes as the context nodes
+    optimize        "visit-no-attributes"     
+    debug	    "true" | "false" (default)  Debug mode lets compilation continue despite problems
+    attributes "true" | "false"  (Autodetecting) Use only when the schema has no attributes as the context nodes
+    only-child-elements "true" | "false" (Autodetecting) Use only when the schema has no comments
+    or PI  as the context nodes
+    
+ Experimental: USE AT YOUR OWN RISK   
+    visit-text "true" "false"   Also visist text nodes for context. WARNING: NON_STARDARD.
+    select-contents '' | 'key' | '//'   Select different implementation strategies
  
 -->
 
@@ -144,6 +154,14 @@
   This version has so far been tested with
      Saxon 8
      MSXML 4 (or 6?)   
+
+ Please note that if you are using SAXON and JAXP, then you should use 
+  System.setProperty("javax.xml.transform.TransformerFactory",
+                          "net.sf.saxon.TransformerFactoryImpl");
+ rather than 
+  System.setProperty("javax.xml.xpath.TransformerFactory",
+                           "net.sf.saxon.TransformerFactoryImpl");
+ which is does not work, at least for the versions of SAXON we tried.
 -->
 <!--
  LEGAL INFORMATION
@@ -170,6 +188,43 @@
 -->
 <!--
   VERSION INFORMATION
+   Version: 2007-10-17
+     From this version on I am forking XSLT2 support to a different version of the script.
+     This is due to the increasingly horrible state of the namespace handling code as well
+     as other inconsistencies between the major implementations of different versions.
+     The intent is that future versions of this will have XSLT2 isms removed and be simplified
+     to cope with only XSLT1 and EXLST. Note that though this version is called
+     iso_schematron_skeleton_for_xslt1, the various meta-stylesheets will continue to just call
+     iso_schematron_skeleton: it is up to you to rename the stylesheet to the one you want to
+     use.
+
+       * RJ fix FULL-PATH problem with attribute names
+
+
+   Version: 2007-07-19
+     Accept most changes in David Carlisle's fork, but continue as XSLT1 script: 
+    	http://dpcarlisle.blogspot.com/search/label/schematron
+    	* DPC Remove "optimize" parameter
+    	* DPC Add autodetecting optimize parameter attribute to skip checking attribute
+    	context
+    	* DPC Add autodetecting optimize parameter only-child-elements turn off checking for 
+    	comments and PIs
+    	* DPC (Experimental: NON_STANDARD DANGER!) Add param visit-text to viist text
+    	nodes too for context 
+    	* DPC Fix inclusion syntax to allow #
+    	* DPC Priorities count up from 1000 not down from 4000 to allow more rules
+        * RJ Add new template for titles of schemas, with existing behaviour.  
+        Override process-schema-title for custom processing of title
+    		
+    
+   Version: 2007-04-04
+   	* RJ debug mode param
+	* RJ alter mixed test to only test mixed branches, so the same document
+	could have old and new namespaces schemas in it, but each schema must
+	be distinct, just so as not to overconstrain things.
+   	* KH zero-length include/@href is fatal error, but allow debug mode
+	* SB add hint on SAXON and JAXP
+	* DC generate-full-path-1 generates XLST1 code by default
    Version: 2007-03-05
       	* AS Typo for EXSLT randome, improve comment
       	* KH get-schematron-full-path-2 needs to apply to attributes too
@@ -351,20 +406,85 @@
 
 <xsl:param name="message-newline">true</xsl:param>
 
-<xsl:param name="optimize" />
+<!-- DPC set to true if contexts should be checked on attribute nodes
+         defaults to true if there is any possibility that a context could match an attribute,
+         err on the side if caution, a context of *[.='@'] would cause this param to defualt to true
+         even though @ is in a string
+-->
+<xsl:param name="attributes">
+  <xsl:choose>
+    <xsl:when test="//iso:rule[contains(@context,'@') or contains(@context,'attribute')]">true</xsl:when>
+    <xsl:otherwise>false</xsl:otherwise>
+  </xsl:choose>
+</xsl:param>
+
+<!-- DPC set to true if contexts should be checked on just elements in the child axis
+         defaults to true if there is any possibility that a context could match an comment or PI
+         err on the side if caution, a context of *[.='('] would cause this param to defualt to true
+         even though ( is in a string, but node() comment() and processing-instruction()  all have a (
+-->
+<xsl:param name="only-child-elements">
+  <xsl:choose>
+    <xsl:when test="//iso:rule[contains(@context,'(')]">true</xsl:when>
+    <xsl:otherwise>false</xsl:otherwise>
+  </xsl:choose>
+</xsl:param>
+
+<!-- DPC set to true if contexts should be checked on text nodes nodes (if only-child-elements is false)
+         THIS IS NON CONFORMANT BEHAVIOUR JUST FOR DISCUSSION OF A POSSIBLE CHANGE TO THE
+         SPECIFICATION. THIS PARAM SHOULD GO IF THE FINAL DECISION IS THAT THE SPEC DOES NOT CHANGE.
+	 Always defaults to false
+-->
+<xsl:param name="visit-text" select="'false'"/>
+
+<!-- DPC
+  When selecting contexts the specified behaviour is
+    @*|node()[not(self::text())]
+    The automatic settings may use
+      node()[not(self::text())]
+      @*|*
+      *
+  instead for schema for which they are equivalent.
+  If the params are set explictly the above may be used, and also either if
+      @*
+      @*|node()
+   in all cases the result may not be equivalent, for example if you specify no attributes and the schema 
+   does have attribute contexts they will be silently ignored.
+
+  after testing it turns out that
+  node()[not(self::text())] is slower in saxon than *|comment()|processing-instruction() 
+  which I find a bit surprising but anyway I'll use the longr faster version.
+-->
+<xsl:variable name="context-xpath">
+  <xsl:if test="$attributes='true'">@*|</xsl:if>
+  <xsl:choose>
+    <xsl:when test="$only-child-elements='true'">*</xsl:when>
+    <xsl:when test="$visit-text='true'">node()</xsl:when>
+    <xsl:otherwise>*|comment()|processing-instruction()</xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- DPC if this is set to 
+    '' use recursive templates to iterate over document tree,
+    'key' select  all contexts with a key rather than walking the tree explictly in each mode
+    '//' select all contexts with // a key rather than walking the tree explictly in each mode (XSLT2 only)
+-->
+<xsl:param name="select-contexts" select="''"/>
+
 
 <!-- e.g. saxon file.xml file.xsl "sch.exslt.imports=.../string.xsl;.../math.xsl" -->
 <xsl:param name="sch.exslt.imports"/>
 
-
+<xsl:param name="debug">false</xsl:param>
 
 <!-- Simple namespace check -->
 <xsl:template match="/">
-	<xsl:if  test="//sch:* and //iso:*">
+    <xsl:if  test="//sch:*[ancestor::iso:* or descendant::iso:*]">
 	<xsl:message>Schema error: Schematron elements in old and new namespaces found</xsl:message>
-           </xsl:if>
+	<xsl:if test=" $debug = 'false' " />
+    </xsl:if>
 
-           <xsl:apply-templates />
+    <xsl:apply-templates />
 </xsl:template>
 
 
@@ -455,7 +575,8 @@
     <xsl:text>&#10;&#10;</xsl:text><xsl:comment>SCHEMA METADATA</xsl:comment><xsl:text>&#10;</xsl:text>
     <xsl:call-template name="handle-root"/>
     <xsl:text>&#10;&#10;</xsl:text><xsl:comment>SCHEMATRON PATTERNS</xsl:comment><xsl:text>&#10;</xsl:text>
-	<xsl:apply-templates select="*[not(self::iso:ns)]  "/>
+ 
+	<xsl:apply-templates select="*[not(self::iso:ns)] " />
 </xsl:template>
  
     <xsl:template name="iso:exslt.add.imports">
@@ -464,8 +585,7 @@
         <xsl:when test="contains($imports, ';')">
           <axsl:import href="{ substring-before($imports, ';') }"/>
           <xsl:call-template name="iso:exslt.add.imports">
-            <xsl:with-param name="imports" select="
-                substring-after($imports, ';')"/>
+            <xsl:with-param name="imports"  select="substring-after($imports, ';')"/>
           </xsl:call-template>
         </xsl:when>
         <xsl:when test="$imports">
@@ -488,8 +608,10 @@
 		<xsl:comment>MODE: SCHEMATRON-FULL-PATH</xsl:comment><xsl:text>&#10;</xsl:text>
 		<xsl:comment>This mode can be used to generate an ugly though full XPath for locators</xsl:comment><xsl:text>&#10;</xsl:text>
    		<axsl:template match="*" mode="schematron-get-full-path">
-
 			<axsl:apply-templates select="parent::*" mode="schematron-get-full-path"/>
+			<xsl:choose>
+				<xsl:when test="/iso:schema[@queryBinding='xslt2']">
+					<!-- XSLT2 syntax -->
 			<axsl:text>/</axsl:text>		
 			<axsl:choose>
       			<axsl:when test="namespace-uri()=''"><axsl:value-of select="name()"/></axsl:when>
@@ -507,14 +629,46 @@
 			<axsl:text>[</axsl:text>
 	  		<axsl:value-of select="1+ $preceding"/>
 	  		<axsl:text>]</axsl:text>
+		</xsl:when>
+
+		<xsl:otherwise>
+			<!-- XSLT1 syntax -->
+
+			<axsl:text>/</axsl:text>
+			<axsl:choose>
+			<axsl:when test="namespace-uri()=''">
+			<axsl:value-of select="name()"/>
+			<axsl:variable name="p" select="1+
+			count(preceding-sibling::*[name()=name(current())])" />
+		<axsl:if test="$p&gt;1 or following-sibling::*[name()=name(current())]">
+		  <xsl:text/>[<axsl:value-of select="$p"/>]<xsl:text/>
+		</axsl:if>
+		</axsl:when>
+		<axsl:otherwise>
+		<axsl:text>*[local-name()='</axsl:text>
+		<axsl:value-of select="local-name()"/>
+		<axsl:text>']</axsl:text>
+		<axsl:variable name="p" select="1+
+		count(preceding-sibling::*[local-name()=local-name(current())])" />
+		<axsl:if test="$p&gt;1 or following-sibling::*[local-name()=local-name(current())]">
+		  <xsl:text/>[<axsl:value-of select="$p"/>]<xsl:text/>
+		</axsl:if>
+		</axsl:otherwise>
+		</axsl:choose> 
+		</xsl:otherwise>
+
+	</xsl:choose>
        	 	</axsl:template>
        	 	
        	 	
 		<axsl:template match="@*" mode="schematron-get-full-path">
+			<xsl:choose>
+				<xsl:when test="/iso:schema[@queryBinding='xslt2']">
+					<!-- XSLT2 syntax -->
 			<axsl:apply-templates select="parent::*" mode="schematron-get-full-path"/>
       		<axsl:text>/</axsl:text>
 			<axsl:choose>
-      			<axsl:when test="namespace-uri()=''">@<xsl:value-of select="name()"/></axsl:when>
+      			<axsl:when test="namespace-uri()=''">@<axsl:value-of select="name()"/></axsl:when>
       			<axsl:otherwise>
       				<axsl:text>@*[local-name()='</axsl:text>
       				<axsl:value-of select="local-name()"/>
@@ -523,6 +677,25 @@
       				<axsl:text>']</axsl:text>
       			</axsl:otherwise>
     		</axsl:choose>
+	</xsl:when>
+
+		<xsl:otherwise>
+			<!-- XSLT1 syntax -->
+		<axsl:text>/</axsl:text>
+		<axsl:choose>
+		<axsl:when test="namespace-uri()=''">@<axsl:value-of
+		select="name()"/></axsl:when>
+		<axsl:otherwise>
+		<axsl:text>@*[local-name()='</axsl:text>
+		<axsl:value-of select="local-name()"/>
+		<axsl:text>' and namespace-uri()='</axsl:text>
+		<axsl:value-of select="namespace-uri()"/>
+		<axsl:text>']</axsl:text>
+		</axsl:otherwise>
+		</axsl:choose> 
+
+			</xsl:otherwise>
+			</xsl:choose>
 		</axsl:template>
 	
 	<xsl:text>&#10;&#10;</xsl:text>
@@ -578,15 +751,19 @@
 		<axsl:template match="*" mode="generate-id-from-path" priority="-0.5">
 			<axsl:apply-templates select="parent::*" mode="generate-id-from-path"/>
 			<axsl:text>.</axsl:text>
+<!--
 			<axsl:choose>
 				<axsl:when test="count(. | ../namespace::*) = count(../namespace::*)">
 					<axsl:value-of select="concat('.namespace::-',1+count(namespace::*),'-')"/>
 				</axsl:when>
 				<axsl:otherwise>
+-->
 				<axsl:value-of 
 				select="concat('.',name(),'-',1+count(preceding-sibling::*[name()=name(current())]),'-')"/>
+<!--
 				</axsl:otherwise>
 			</axsl:choose>
+-->
 		</axsl:template>
 		
 		
@@ -618,7 +795,7 @@
 		<axsl:text>_</axsl:text>
 		<axsl:value-of select="translate(name(),':','.')"/>
 	</axsl:template> 
-		
+
 
 		<xsl:comment>Strip characters</xsl:comment>
 		<axsl:template match="text()" priority="-1" />
@@ -842,20 +1019,33 @@
     </xsl:template>
 
    <!-- ISO INCLUDE -->
+
+
+   <xsl:template match="iso:include[not(normalize-space(@href))]"
+	   priority="1">
+	<xsl:if test=" $debug = 'false' ">
+		<xsl:message terminate="yes">Schema error: Empty href= attribute for include directive.</xsl:message>
+	</xsl:if>
+
+   </xsl:template>
+
    <!-- Extend the URI syntax to allow # refererences -->
    <xsl:template match="iso:include">
-       <xsl:variable name="document-uri" select="substring-before(@href, '#')"/>
+       <xsl:variable name="document-uri" select="substring-before(concat(@href,'#'), '#')"/>
        <xsl:variable name="fragment-id" select="substring-after(@href, '#')"/>
        
        <xsl:choose> 
-          <xsl:when test="string-length( $fragment-id ) != 0">
-              <xsl:apply-templates select="document( $document-uri )//iso:*[@id= $fragment-id ]"/>
+          <xsl:when test="$fragment-id">
+<xsl:message>frag</xsl:message>
+              <xsl:apply-templates select="document( $document-uri,/ )//iso:*[@id= $fragment-id ]"/>
 		   </xsl:when>
 		   <xsl:otherwise>
-       		<xsl:apply-templates select="document( $document-uri )/*"/>
+<xsl:message>no frag
+<xsl:copy-of select="document( $document-uri,/ )/*"/>
+</xsl:message>
+       		<xsl:apply-templates select="document( $document-uri,/ )/*"/>
        	   </xsl:otherwise>
        </xsl:choose>
-       	
    </xsl:template>
 
 	<!-- ISO LET -->
@@ -872,7 +1062,6 @@
 		<xsl:if test="@path">
 			<xsl:call-template name="process-name">
 				<xsl:with-param name="name" select="concat('name(',@path,')')"/>
-					<!-- SAXON needs that instead of  select="'name({@path})'"  -->
 			</xsl:call-template>
 		</xsl:if>
 		<xsl:if test="not(@path)">
@@ -945,7 +1134,29 @@
 					<xsl:with-param name="see" select="@see" />
 					<xsl:with-param name="space" select="@xml:space" />
 		</xsl:call-template>
-		<axsl:apply-templates select="/" mode="M{count(preceding-sibling::*)}"/>
+		<xsl:choose>
+		  <xsl:when test="$select-contexts='key'">
+		    <axsl:apply-templates select="key('M','M{count(preceding-sibling::*)}')" mode="M{count(preceding-sibling::*)}"/>
+		  </xsl:when>
+		  <xsl:when test="$select-contexts='//'">
+		    <axsl:apply-templates mode="M{count(preceding-sibling::*)}">
+		      <xsl:attribute name="select">
+			<xsl:text>//(</xsl:text>
+			<xsl:for-each select="iso:rule/@context">
+			  <xsl:text>(</xsl:text>
+			  <xsl:value-of select="."/>
+			  <xsl:text>)</xsl:text>
+			  <xsl:if test="position()!=last()">|</xsl:if>
+			</xsl:for-each>
+			<xsl:text>)</xsl:text>
+			<xsl:if test="$visit-text='false'">[not(self::text())]</xsl:if>
+		      </xsl:attribute>
+		    </axsl:apply-templates>
+		  </xsl:when>
+		  <xsl:otherwise>
+		    <axsl:apply-templates select="/" mode="M{count(preceding-sibling::*)}"/>
+		  </xsl:otherwise>
+		</xsl:choose>
         </xsl:if>
 	</xsl:template>
 	
@@ -958,47 +1169,31 @@
     <!-- Here is the template for the normal case of patterns -->
 	<xsl:template match="iso:pattern[not(@abstract='true')]">
     
+<xsl:message>
+here
+</xsl:message>
       <xsl:if test="($phase = '#ALL') 
 	          or (../iso:phase[@id= $phase]/iso:active[@pattern= current()/@id])">
-	    
+<xsl:message>
+2
+</xsl:message>
 		<xsl:text>&#10;&#10;</xsl:text>
 		<xsl:comment>PATTERN <xsl:value-of select="@id" /> <xsl:value-of select="iso:title" /> </xsl:comment><xsl:text>&#10;</xsl:text>      
 		<xsl:apply-templates />
 		
-		<axsl:template match="text()" priority="-1" mode="M{count(preceding-sibling::*)}">
-			<!-- strip characters -->
-		</axsl:template>
-		 <xsl:choose>
-		    <!-- UNTESTED: simple test for when there are no attribute tests needed -->
-		    <xsl:when test=" $optimize = 'visit-no-attributes' ">
-    		   <axsl:template match="node()"
-                   priority="-2"
-                   mode="M{ count(preceding-sibling::*) }">
-      					<axsl:apply-templates select="node()"
-                            mode="M{ count(preceding-sibling::*) }"/>
-    			</axsl:template>
-			</xsl:when>
-			<xsl:otherwise>
-			   
-    		   <axsl:template match="@*|node()"
-                   priority="-2"
-                   mode="M{ count(preceding-sibling::*) }">
-                       <axsl:choose>
-                           <xsl:comment>Housekeeping: SAXON warns if attempting to find the attribute
-                           of an attribute</xsl:comment>
-                          <axsl:when test="not(@*)">
-      							<axsl:apply-templates select="node()"
-                            		mode="M{ count(preceding-sibling::*) }"/>
-                           </axsl:when>
-                           <axsl:otherwise>
-      							<axsl:apply-templates select="@*|node()"
-                            		mode="M{ count(preceding-sibling::*) }"/>
-                           </axsl:otherwise>
-                       </axsl:choose>
-    			</axsl:template>
-			</xsl:otherwise>
-		</xsl:choose>
-
+		<!-- DPC select-contexts test -->
+		<xsl:if test="not($select-contexts)">
+		  <axsl:template match="text()" priority="-1" mode="M{count(preceding-sibling::*)}">
+		    <!-- strip characters -->
+		  </axsl:template>
+		  
+		  <!-- DPC introduce context-xpath variable -->
+		  <axsl:template match="@*|node()"
+				 priority="-2"
+				 mode="M{ count(preceding-sibling::*) }">
+		    <axsl:apply-templates select="{$context-xpath}" mode="M{count(preceding-sibling::*)}"/>
+		  </axsl:template>
+		</xsl:if>
       </xsl:if>
 	</xsl:template>
 
@@ -1016,10 +1211,19 @@
                     <xsl:message>Markup Error: no context attribute in &lt;rule></xsl:message>
                 </xsl:if>
         <xsl:text>&#10;&#10;	</xsl:text>
-		<xsl:comment>RULE <xsl:value-of select="@id" /> </xsl:comment><xsl:text>&#10;</xsl:text>      
+		<xsl:comment>RULE <xsl:value-of select="@id" /> </xsl:comment><xsl:text>&#10;</xsl:text>   
+
+		<!-- DPC select-contexts -->
+		<xsl:if test="$select-contexts='key'">
+		    <axsl:key name="M"
+			      match="{@context}" 
+			      use="'M{count(../preceding-sibling::*)}'"/>
+		</xsl:if>
+   
 	
-		<axsl:template match="{@context}" 
-		priority="{4000 - count(preceding-sibling::*)}" mode="M{count(../preceding-sibling::*)}">
+<!-- DPC priorities count up from 1000 not down from 4000 (templates in same priority order as before) -->
+		<axsl:template match="{@context}"
+		priority="{1000 + count(following-sibling::*)}" mode="M{count(../preceding-sibling::*)}">
 			<xsl:call-template name="process-rule">
 				<xsl:with-param name="context" select="@context"/>
 				
@@ -1036,8 +1240,10 @@
 					<xsl:with-param name="subject" select="@subject" />
 			</xsl:call-template>
 			<xsl:apply-templates/>
-			<!-- RJ: is this really what we want to do here? -->
-			<axsl:apply-templates select="@*|*|comment()|processing-instruction()" mode="M{count(../preceding-sibling::*)}"/>
+			<!-- DPC introduce context-xpath and select-contexts variables -->
+			<xsl:if test="not($select-contexts)">
+			  <axsl:apply-templates select="{$context-xpath}" mode="M{count(../preceding-sibling::*)}"/>
+			</xsl:if>
 		</axsl:template>
 	</xsl:template>
 
@@ -1068,6 +1274,12 @@
 	</xsl:template>
 
 	<!-- ISO TITLE -->
+	
+	<xsl:template match="iso:schema/iso:title"  priority="1">
+	     <xsl:call-template name="process-schema-title" />
+	</xsl:template>
+ 
+	
 	<xsl:template match="iso:title" >
 	     <xsl:call-template name="process-title" />
 	</xsl:template>
@@ -1191,13 +1403,25 @@
        <!-- Handle namespaces differently for exslt systems, msxml, and default, only using XSLT1 syntax -->
        <!-- For more info see  http://fgeorges.blogspot.com/2007/01/creating-namespace-nodes-in-xslt-10.html -->
        <xsl:choose>
-       
-         <!-- Untested -->
-         <!--xsl:when test="/iso:schema/@queryBinding = 'xslt2'">
-             <xsl:namespace name="{@prefix}" select="@uri"  version="2.0" />
-         </xsl:when-->
+          <!-- The following code works for XSLT1 -->
+        <xsl:when test="function-available('exsl:node-set')">
+           <xsl:variable name="ns-dummy-elements">
+             <xsl:element name="{@prefix}:dummy" namespace="{@uri}"/>
+           </xsl:variable>
+       	   <xsl:variable name="p" select="@prefix"/>
+           <xsl:copy-of select="exsl:node-set($ns-dummy-elements)
+                                  /*/namespace::*[local-name()=$p]"/>
+         </xsl:when>        
+
+   			<!-- End XSLT1  code -->
+   			<!-- The following code workds for XSLT2 -->
+  <!-- 			
+         <xsl:when test="element-available('xsl:namespace')">
+             <xsl:namespace name="{@prefix}" select="@uri" />
+	 </xsl:when>
  
-         <xsl:when test="function-available('exsl:node-set')">
+	 <xsl:when use-when="not(element-available('xsl:namespace'))" 
+		   test="function-available('exsl:node-set')">
            <xsl:variable name="ns-dummy-elements">
              <xsl:element name="{@prefix}:dummy" namespace="{@uri}"/>
            </xsl:variable>
@@ -1205,7 +1429,8 @@
            <xsl:copy-of select="exsl:node-set($ns-dummy-elements)
                                   /*/namespace::*[local-name()=$p]"/>
          </xsl:when>
-
+ -->
+           <!-- End XSLT2 code -->
         <!-- Not tested yet       
     	<xsl:when test="function-available('msxsl:node-set')">
       		<xsl:variable name="ns-dummy-elements">
@@ -1461,6 +1686,13 @@
 		<xsl:param name="class" />
 	   <xsl:call-template name="process-p">
 	      <xsl:with-param  name="class">title</xsl:with-param>
+	   </xsl:call-template>
+	</xsl:template>
+		
+	<xsl:template name="process-schema-title" >
+		<xsl:param name="class" />
+	   <xsl:call-template name="process-title">
+	      <xsl:with-param  name="class">schema-title</xsl:with-param>
 	   </xsl:call-template>
 	</xsl:template>
 

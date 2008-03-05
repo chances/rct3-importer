@@ -27,102 +27,102 @@
 
 #include "RawParse_cpp.h"
 
-void cRawParser::ParseBAN(wxXmlNode* node) {
+void cRawParser::ParseBAN(cXmlNode& node) {
     USE_PREFIX(node);
     cBoneAnim ban;
-    wxString name = ParseString(node, RAWXML_BAN, wxT("name"), NULL, useprefix);
+    wxString name = ParseString(node, wxT(RAWXML_BAN), wxT("name"), NULL, useprefix);
     ban.name = name.ToAscii();
-    OPTION_PARSE(float, ban.totaltime, ParseFloat(node, RAWXML_BAN, wxT("totaltime")));
+    OPTION_PARSE(float, ban.totaltime, ParseFloat(node, wxT(RAWXML_BAN), wxT("totaltime")));
     if (ban.totaltime != 0.0)
         ban.calc_time = false;
     c3DLoaderOrientation ori = ParseOrientation(node, wxString::Format(wxT("ban(%s) tag"), name.c_str()));
     wxLogVerbose(wxString::Format(_("Adding ban %s to %s."), name.c_str(), m_output.GetFullPath().c_str()));
 
-    wxXmlNode *child = node->GetChildren();
+    cXmlNode child(node.children());
     while (child) {
         DO_CONDITION_COMMENT(child);
 
-        if (child->GetName() == RAWXML_BAN_BONE) {
+        if (child(RAWXML_BAN_BONE)) {
             cBoneAnimBone banim;
-            wxString bonename = ParseString(child, RAWXML_BAN_BONE, wxT("name"), NULL);
+            wxString bonename = ParseString(child, wxT(RAWXML_BAN_BONE), wxT("name"), NULL);
             banim.name = bonename.ToAscii();
-            wxXmlNode *subchild = child->GetChildren();
+            cXmlNode subchild(child.children());
             while (subchild) {
                 DO_CONDITION_COMMENT(subchild);
 
-                if (subchild->GetName() == RAWXML_BAN_BONE_TRANSLATION) {
+                if (subchild(RAWXML_BAN_BONE_TRANSLATION)) {
                     txyz frame;
-                    frame.Time = ParseFloat(subchild, RAWXML_BAN_BONE_TRANSLATION, wxT("time"));
-                    frame.X = ParseFloat(subchild, RAWXML_BAN_BONE_TRANSLATION, wxT("x"));
-                    frame.Y = ParseFloat(subchild, RAWXML_BAN_BONE_TRANSLATION, wxT("y"));
-                    frame.Z = ParseFloat(subchild, RAWXML_BAN_BONE_TRANSLATION, wxT("z"));
+                    frame.Time = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_TRANSLATION), wxT("time"));
+                    frame.X = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_TRANSLATION), wxT("x"));
+                    frame.Y = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_TRANSLATION), wxT("y"));
+                    frame.Z = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_TRANSLATION), wxT("z"));
                     if (ori != ORIENTATION_LEFT_YUP)
                         doFixOrientation(frame, ori);
                     banim.translations.insert(frame);
-                } else if (subchild->GetName() == RAWXML_BAN_BONE_ROTATION) {
+                } else if (subchild(RAWXML_BAN_BONE_ROTATION)) {
                     txyz frame;
-                    frame.Time = ParseFloat(subchild, RAWXML_BAN_BONE_ROTATION, wxT("time"));
-                    frame.X = ParseFloat(subchild, RAWXML_BAN_BONE_ROTATION, wxT("x"));
-                    frame.Y = ParseFloat(subchild, RAWXML_BAN_BONE_ROTATION, wxT("y"));
-                    frame.Z = ParseFloat(subchild, RAWXML_BAN_BONE_ROTATION, wxT("z"));
+                    frame.Time = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_ROTATION), wxT("time"));
+                    frame.X = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_ROTATION), wxT("x"));
+                    frame.Y = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_ROTATION), wxT("y"));
+                    frame.Z = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_ROTATION), wxT("z"));
                     if (ori != ORIENTATION_LEFT_YUP)
                         doFixOrientation(frame, ori);
                     banim.rotations.insert(frame);
-                } else if COMPILER_WRONGTAG(subchild) {
-                    throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ban(%s)/banbone(%s)."), subchild->GetName().c_str(), name.c_str(), bonename.c_str()));
+                } else if (subchild.element()) {
+                    throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ban(%s)/banbone(%s)."), STRING_FOR_FORMAT(subchild.name()), name.c_str(), bonename.c_str()));
                 }
 
-                subchild = subchild->GetNext();
+                subchild.go_next();
             }
 
             ban.bones.push_back(banim);
-        } else if COMPILER_WRONGTAG(child) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ban tag '%s'."), child->GetName().c_str(), name.c_str()));
+        } else if (child.element()) {
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ban tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()));
         }
 
-        child = child->GetNext();
+        child.go_next();
     }
 
     ovlBANManager* c_ban = m_ovl.GetManager<ovlBANManager>();
     c_ban->AddAnimation(ban);
 }
 
-void cRawParser::ParseBSH(wxXmlNode* node) {
+void cRawParser::ParseBSH(cXmlNode& node) {
     USE_PREFIX(node);
     cBoneShape1 bsh1;
-    wxString name = ParseString(node, RAWXML_BSH, wxT("name"), NULL, useprefix);
+    wxString name = ParseString(node, wxT(RAWXML_BSH), wxT("name"), NULL, useprefix);
     bsh1.name = name.ToAscii();
     boundsInit(&bsh1.bbox1, &bsh1.bbox2);
-    wxXmlNode* bb1 = NULL;
-    wxXmlNode* bb2 = NULL;
+    cXmlNode bb1;
+    cXmlNode bb2;
     wxLogVerbose(wxString::Format(_("Adding bsh %s to %s."), name.c_str(), m_output.GetFullPath().c_str()));
 
-    wxXmlNode *child = node->GetChildren();
+    cXmlNode child(node.children());
     while (child) {
         DO_CONDITION_COMMENT(child);
 
-        if (child->GetName() == RAWXML_BSH_BBOX1) {
+        if (child(RAWXML_BSH_BBOX1)) {
             bb1 = child;
-            ParseVector(child, bsh1.bbox1, RAWXML_BSH_BBOX1);
-        } else if (child->GetName() == RAWXML_BSH_BBOX2) {
+            ParseVector(child, bsh1.bbox1, wxT(RAWXML_BSH_BBOX1));
+        } else if (child(RAWXML_BSH_BBOX2)) {
             bb2 = child;
-            ParseVector(child, bsh1.bbox2, RAWXML_BSH_BBOX2);
-        } else if (child->GetName() == RAWXML_BSH_MESH) {
+            ParseVector(child, bsh1.bbox2, wxT(RAWXML_BSH_BBOX2));
+        } else if (child(RAWXML_BSH_MESH)) {
             USE_PREFIX(child);
             cBoneShape2 bsh2;
-            bsh2.fts = ParseString(child, RAWXML_BSH_MESH, wxT("ftx"), NULL, useprefix).ToAscii();
-            bsh2.texturestyle = ParseString(child, RAWXML_BSH_MESH, wxT("txs"), NULL).ToAscii();
-            OPTION_PARSE(unsigned long, bsh2.placetexturing, ParseUnsigned(child, RAWXML_BSH_MESH, wxT("placing")));
-            OPTION_PARSE(unsigned long, bsh2.textureflags, ParseUnsigned(child, RAWXML_BSH_MESH, wxT("flags")));
-            OPTION_PARSE(unsigned long, bsh2.sides, ParseUnsigned(child, RAWXML_BSH_MESH, wxT("sides")));
-            OPTION_PARSE(long, bsh2.support, ParseSigned(child, RAWXML_BSH_MESH, wxT("support")));
+            bsh2.fts = ParseString(child, wxT(RAWXML_BSH_MESH), wxT("ftx"), NULL, useprefix).ToAscii();
+            bsh2.texturestyle = ParseString(child, wxT(RAWXML_BSH_MESH), wxT("txs"), NULL).ToAscii();
+            OPTION_PARSE(unsigned long, bsh2.placetexturing, ParseUnsigned(child, wxT(RAWXML_BSH_MESH), wxT("placing")));
+            OPTION_PARSE(unsigned long, bsh2.textureflags, ParseUnsigned(child, wxT(RAWXML_BSH_MESH), wxT("flags")));
+            OPTION_PARSE(unsigned long, bsh2.sides, ParseUnsigned(child, wxT(RAWXML_BSH_MESH), wxT("sides")));
+            OPTION_PARSE(long, bsh2.support, ParseSigned(child, wxT(RAWXML_BSH_MESH), wxT("support")));
 
-            if (child->HasProp(wxT("meshname"))) {
-                wxString meshname = ParseString(child, RAWXML_BSH_MESH, wxT("meshname"), NULL);
+            if (child.hasProp("meshname")) {
+                wxString meshname = ParseString(child, wxT(RAWXML_BSH_MESH), wxT("meshname"), NULL);
                 bool modelfilevar = false;
-                wxFSFileName modelfile = ParseString(child, RAWXML_BSH_MESH, wxT("modelfile"), &modelfilevar);
-                wxString hand = child->GetPropVal(wxT("handedness"), wxT("left"));
-                wxString up = child->GetPropVal(wxT("up"), wxT("y"));
+                wxFSFileName modelfile = ParseString(child, wxT(RAWXML_BSH_MESH), wxT("modelfile"), &modelfilevar);
+                wxString hand = UTF8STRINGWRAP(child.getPropVal("handedness", "left"));
+                wxString up = UTF8STRINGWRAP(child.getPropVal("up", "y"));
                 c3DLoaderOrientation ori = ORIENTATION_LEFT_YUP;
                 if (hand == wxT("left")) {
                     if (up == wxT("x")) {
@@ -152,15 +152,14 @@ void cRawParser::ParseBSH(wxXmlNode* node) {
                     modelfile.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
 
                 if (m_mode == MODE_BAKE) {
-                    if (m_bake.Index(RAWXML_BSH) == wxNOT_FOUND) {
+                    if (m_bake.Index(wxT(RAWXML_BSH)) == wxNOT_FOUND) {
                         if (!modelfilevar) {
-                            if (m_bake.Index(RAWBAKE_ABSOLUTE) == wxNOT_FOUND) {
+                            if (m_bake.Index(wxT(RAWBAKE_ABSOLUTE)) == wxNOT_FOUND) {
                                 modelfile.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
                             }
-                            child->DeleteProperty(wxT("modelfile"));
-                            child->AddProperty(wxT("modelfile"), modelfile.GetFullPath());
+                            child.prop("modelfile", modelfile.GetFullPath());
                         }
-                        child = child->GetNext();
+                        child.go_next();
                         continue;
                     }
                 }
@@ -183,7 +182,7 @@ void cRawParser::ParseBSH(wxXmlNode* node) {
                     throw RCT3Exception(wxString::Format(_("bsh tag: Model file '%s' does not contain a mesh called '%s'."), modelfile.GetFullPath().c_str(), meshname.c_str()));
 
                 unsigned long fudgenormals = CMS_FUDGE_NONE;
-                OPTION_PARSE(unsigned long, fudgenormals, ParseUnsigned(child, RAWXML_BSH_MESH, wxT("fudge")));
+                OPTION_PARSE(unsigned long, fudgenormals, ParseUnsigned(child, wxT(RAWXML_BSH_MESH), wxT("fudge")));
 
                 VECTOR temp_min;
                 VECTOR temp_max;
@@ -221,22 +220,22 @@ void cRawParser::ParseBSH(wxXmlNode* node) {
                 MATRIX m = matrixGetFixOrientation(ori);
                 bool do_matrix = ori != ORIENTATION_LEFT_YUP;
 
-                wxXmlNode *subchild = child->GetChildren();
+                cXmlNode subchild(child.children());
                 while (subchild) {
-                    if (subchild->GetName() == RAWXML_BSH_MESH_TRANSFORM) {
+                    if (subchild(RAWXML_BSH_MESH_TRANSFORM)) {
                         if ((ori != ORIENTATION_LEFT_YUP) && (m_mode != MODE_INSTALL))
                             wxLogWarning(_("You've set handedness and up as well as giving a transformation matrix. The handedness/up is ignored for transforming the mesh."));
-                        ParseMatrix(subchild, m, RAWXML_BSH_MESH_TRANSFORM);
+                        ParseMatrix(subchild, m, wxT(RAWXML_BSH_MESH_TRANSFORM));
                         do_matrix = true;
-                    } else if COMPILER_WRONGTAG(subchild) {
-                        throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in bsh(%s)/bshmesh."), subchild->GetName().c_str(), name.c_str()));
+                    } else if (subchild.element()) {
+                        throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in bsh(%s)/bshmesh."), STRING_FOR_FORMAT(subchild.name()), name.c_str()));
                     }
-                    subchild = subchild->GetNext();
+                    subchild.go_next();
                 }
 
                 boundsInit(&temp_min, &temp_max);
-                if (child->HasProp(wxT("bone"))) {
-                    char bone = ParseSigned(child, RAWXML_BSH_MESH, wxT("bone"));
+                if (child.hasProp("bone")) {
+                    char bone = ParseSigned(child, wxT(RAWXML_BSH_MESH), wxT("bone"));
                     model->FetchObject(meshnr, bone, &bsh2, &temp_min, &temp_max,
                                               do_matrix?&m:NULL,
                                               c_pfudge_normal);
@@ -251,69 +250,56 @@ void cRawParser::ParseBSH(wxXmlNode* node) {
                     c3DLoader::FlattenNormals(&bsh2, temp_min, temp_max);
                 }
                 if (m_mode == MODE_BAKE) {
-                    child->DeleteProperty(wxT("meshname"));
-                    child->DeleteProperty(wxT("modelfile"));
-                    child->DeleteProperty(wxT("handedness"));
-                    child->DeleteProperty(wxT("up"));
-                    child->DeleteProperty(wxT("bone"));
-                    child->DeleteProperty(wxT("fudge"));
-                    delete child->GetChildren();
-                    child->SetChildren(NULL);
+                    child.delProp("meshname");
+                    child.delProp("modelfile");
+                    child.delProp("handedness");
+                    child.delProp("up");
+                    child.delProp("bone");
+                    child.delProp("fudge");
+                    if (child.children())
+                        child.children().detach();
 
-                    wxXmlNode* lastchild = NULL;
+                    //wxXmlNode* lastchild = NULL;
                     for(std::vector<VERTEX2>::iterator it = bsh2.vertices.begin(); it != bsh2.vertices.end(); ++it) {
-                        wxXmlNode* vert = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, RAWXML_BSH_MESH_VERTEX2);
-                        vert->AddProperty(wxT("u"), wxString::Format(wxT("%8f"), it->tu));
-                        vert->AddProperty(wxT("v"), wxString::Format(wxT("%8f"), it->tv));
-                        vert->AddProperty(wxT("colour"), wxString::Format(wxT("%08lX"), it->color));
-                        wxXmlNode* pos = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, RAWXML_BSH_MESH_VERTEX2_P);
-                        vert->SetChildren(pos);
-                        pos->AddProperty(wxT("x"), wxString::Format(wxT("%f"), it->position.x));
-                        pos->AddProperty(wxT("y"), wxString::Format(wxT("%f"), it->position.y));
-                        pos->AddProperty(wxT("z"), wxString::Format(wxT("%f"), it->position.z));
-                        wxXmlNode* normal = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, RAWXML_BSH_MESH_VERTEX2_N);
-                        pos->SetNext(normal);
-                        normal->AddProperty(wxT("x"), wxString::Format(wxT("%8f"), it->normal.x));
-                        normal->AddProperty(wxT("y"), wxString::Format(wxT("%8f"), it->normal.y));
-                        normal->AddProperty(wxT("z"), wxString::Format(wxT("%8f"), it->normal.z));
-                        wxXmlNode* lastvertchild = normal;
+                        cXmlNode vert(child.newChild(RAWXML_BSH_MESH_VERTEX2));
+                        vert.addProp("u", wxString::Format(wxT("%8f"), it->tu).mb_str(wxConvUTF8));
+                        vert.addProp("v", wxString::Format(wxT("%8f"), it->tv).mb_str(wxConvUTF8));
+                        vert.addProp("colour", wxString::Format(wxT("%08lX"), it->color).mb_str(wxConvUTF8));
+                        cXmlNode pos(vert.newChild(RAWXML_BSH_MESH_VERTEX2_P));
+                        pos.addProp("x", wxString::Format(wxT("%f"), it->position.x).mb_str(wxConvUTF8));
+                        pos.addProp("y", wxString::Format(wxT("%f"), it->position.y).mb_str(wxConvUTF8));
+                        pos.addProp("z", wxString::Format(wxT("%f"), it->position.z).mb_str(wxConvUTF8));
+                        cXmlNode normal(vert.newChild(RAWXML_BSH_MESH_VERTEX2_N));
+                        normal.addProp("x", wxString::Format(wxT("%8f"), it->normal.x).mb_str(wxConvUTF8));
+                        normal.addProp("y", wxString::Format(wxT("%8f"), it->normal.y).mb_str(wxConvUTF8));
+                        normal.addProp("z", wxString::Format(wxT("%8f"), it->normal.z).mb_str(wxConvUTF8));
                         for (int i = 0; i < 4; ++i) {
                             if (it->boneweight[i] > 0) {
-                                wxXmlNode* bonenode = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, RAWXML_BSH_MESH_VERTEX2_B);
-                                bonenode->AddProperty(wxT("bone"), wxString::Format(wxT("%hhd"), it->bone[i]));
-                                bonenode->AddProperty(wxT("weight"), wxString::Format(wxT("%hhu"), it->boneweight[i]));
-                                lastvertchild->SetNext(bonenode);
-                                lastvertchild = bonenode;
+                                cXmlNode bonenode(vert.newChild(RAWXML_BSH_MESH_VERTEX2_B));
+                                bonenode.addProp("bone", wxString::Format(wxT("%hhd"), it->bone[i]).mb_str(wxConvUTF8));
+                                bonenode.addProp("weight", wxString::Format(wxT("%hhu"), it->boneweight[i]).mb_str(wxConvUTF8));
                             }
                         }
-                        if (lastchild) {
-                            lastchild->SetNext(vert);
-                        } else {
-                            child->SetChildren(vert);
-                        }
-                        lastchild = vert;
                     }
                     for(int l = 0; l < bsh2.indices.size(); l+=3) {
-                        wxXmlNode* tri = new wxXmlNode(NULL, wxXML_ELEMENT_NODE, RAWXML_BSH_MESH_TRIANGLE);
-                        tri->AddProperty(wxT("a"), wxString::Format(wxT("%hu"), bsh2.indices[l]));
-                        tri->AddProperty(wxT("b"), wxString::Format(wxT("%hu"), bsh2.indices[l+1]));
-                        tri->AddProperty(wxT("c"), wxString::Format(wxT("%hu"), bsh2.indices[l+2]));
-                        lastchild->SetNext(tri);
-                        lastchild = tri;
+                        cXmlNode tri(child.newChild(RAWXML_BSH_MESH_TRIANGLE));
+                        tri.addProp("a", wxString::Format(wxT("%hu"), bsh2.indices[l]).mb_str(wxConvUTF8));
+                        tri.addProp("b", wxString::Format(wxT("%hu"), bsh2.indices[l+1]).mb_str(wxConvUTF8));
+                        tri.addProp("c", wxString::Format(wxT("%hu"), bsh2.indices[l+2]).mb_str(wxConvUTF8));
                     }
                 }
             } else {
                 BAKE_SKIP(child);
-                wxXmlNode *subchild = child->GetChildren();
+                cXmlNode subchild(child.children());
                 while (subchild) {
                     DO_CONDITION_COMMENT(subchild);
-                    if (subchild->GetName() == RAWXML_BSH_MESH_VERTEX2) {
+                    if (subchild(RAWXML_BSH_MESH_VERTEX2)) {
                         VERTEX2 v;
                         vertex2init(v);
-                        v.tu = ParseFloat(subchild, RAWXML_BSH_MESH_VERTEX2, wxT("u"));
-                        v.tv = ParseFloat(subchild, RAWXML_BSH_MESH_VERTEX2, wxT("v"));
-                        if (subchild->HasProp(wxT("colour"))) {
-                            wxString scol = subchild->GetPropVal(wxT("colour"), wxT(""));
+                        v.tu = ParseFloat(subchild, wxT(RAWXML_BSH_MESH_VERTEX2), wxT("u"));
+                        v.tv = ParseFloat(subchild, wxT(RAWXML_BSH_MESH_VERTEX2), wxT("v"));
+                        if (subchild.hasProp("colour")) {
+                            wxString scol = UTF8STRINGWRAP(subchild.getPropVal("colour"));
                             unsigned long lcol = 0;
                             if (sscanf(scol.ToAscii(), "%lx", &lcol))
                                 v.color = lcol;
@@ -323,24 +309,24 @@ void cRawParser::ParseBSH(wxXmlNode* node) {
                         bool nonorm = true;
                         int bone = 0;
 
-                        wxXmlNode *thirdchild = subchild->GetChildren();
+                        cXmlNode thirdchild(subchild.children());
                         while (thirdchild) {
-                            if (thirdchild->GetName() == RAWXML_BSH_MESH_VERTEX2_P) {
+                            if (thirdchild(RAWXML_BSH_MESH_VERTEX2_P)) {
                                 nopos = false;
-                                ParseVector(thirdchild, v.position, RAWXML_BSH_MESH_VERTEX2_P);
-                            } else if (thirdchild->GetName() == RAWXML_BSH_MESH_VERTEX2_N) {
+                                ParseVector(thirdchild, v.position, wxT(RAWXML_BSH_MESH_VERTEX2_P));
+                            } else if (thirdchild(RAWXML_BSH_MESH_VERTEX2_N)) {
                                 nonorm = false;
-                                ParseVector(thirdchild, v.normal, RAWXML_BSH_MESH_VERTEX2_N);
-                            } else if (thirdchild->GetName() == RAWXML_BSH_MESH_VERTEX2_B) {
+                                ParseVector(thirdchild, v.normal, wxT(RAWXML_BSH_MESH_VERTEX2_N));
+                            } else if (thirdchild(RAWXML_BSH_MESH_VERTEX2_B)) {
                                 if (bone == 3)
                                     throw RCT3Exception(wxString::Format(_("Too many boneassignments in bsh(%s)/bshmesh/vertex2."), name.c_str()));
-                                v.bone[bone] = ParseSigned(thirdchild, RAWXML_BSH_MESH_VERTEX2_B, wxT("bone"));
-                                v.boneweight[bone] = ParseUnsigned(thirdchild, RAWXML_BSH_MESH_VERTEX2_B, wxT("weight"));
+                                v.bone[bone] = ParseSigned(thirdchild, wxT(RAWXML_BSH_MESH_VERTEX2_B), wxT("bone"));
+                                v.boneweight[bone] = ParseUnsigned(thirdchild, wxT(RAWXML_BSH_MESH_VERTEX2_B), wxT("weight"));
                                 bone++;
-                            } else if COMPILER_WRONGTAG(thirdchild) {
-                                throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in bsh(%s)/bshmesh/vertex2."), thirdchild->GetName().c_str(), name.c_str()));
+                            } else if (thirdchild.element()) {
+                                throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in bsh(%s)/bshmesh/vertex2."), STRING_FOR_FORMAT(thirdchild.name()), name.c_str()));
                             }
-                            thirdchild = thirdchild->GetNext();
+                            thirdchild.go_next();
                         }
 
                         if (nopos || nonorm)
@@ -350,44 +336,44 @@ void cRawParser::ParseBSH(wxXmlNode* node) {
                             boundsContain(&v.position, &bsh1.bbox1, &bsh1.bbox2);
 
                         bsh2.vertices.push_back(v);
-                    } else if (subchild->GetName() == RAWXML_BSH_MESH_TRIANGLE) {
-                        unsigned short index = ParseUnsigned(subchild, RAWXML_BSH_MESH_TRIANGLE, wxT("a"));
+                    } else if (subchild(RAWXML_BSH_MESH_TRIANGLE)) {
+                        unsigned short index = ParseUnsigned(subchild, wxT(RAWXML_BSH_MESH_TRIANGLE), wxT("a"));
                         bsh2.indices.push_back(index);
-                        index = ParseUnsigned(subchild, RAWXML_BSH_MESH_TRIANGLE, wxT("b"));
+                        index = ParseUnsigned(subchild, wxT(RAWXML_BSH_MESH_TRIANGLE), wxT("b"));
                         bsh2.indices.push_back(index);
-                        index = ParseUnsigned(subchild, RAWXML_BSH_MESH_TRIANGLE, wxT("c"));
+                        index = ParseUnsigned(subchild, wxT(RAWXML_BSH_MESH_TRIANGLE), wxT("c"));
                         bsh2.indices.push_back(index);
-                    } else if COMPILER_WRONGTAG(subchild) {
-                        throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in bsh(%s)/bshmesh."), subchild->GetName().c_str(), name.c_str()));
+                    } else if (subchild.element()) {
+                        throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in bsh(%s)/bshmesh."), STRING_FOR_FORMAT(subchild.name()), name.c_str()));
                     }
-                    subchild = subchild->GetNext();
+                    subchild.go_next();
                 }
             }
             bsh1.meshes.push_back(bsh2);
-        } else if (child->GetName() == RAWXML_BSH_BONE) {
+        } else if (child(RAWXML_BSH_BONE)) {
             BAKE_SKIP(child);
             cBoneStruct bones;
-            wxString bonename = ParseString(child, RAWXML_BSH_BONE, wxT("name"), NULL);
+            wxString bonename = ParseString(child, wxT(RAWXML_BSH_BONE), wxT("name"), NULL);
             if (bonename == wxT("Scene Root")) {
                 bones = cBoneStruct(true);
             } else {
                 bones.name = bonename.ToAscii();
-                bones.parentbonenumber = ParseSigned(child, RAWXML_BSH_BONE, wxT("parent"));
+                bones.parentbonenumber = ParseSigned(child, wxT(RAWXML_BSH_BONE), wxT("parent"));
                 bool missp1 = true;
                 bool missp2 = true;
-                wxXmlNode *subchild = child->GetChildren();
+                cXmlNode subchild(child.children());
                 while (subchild) {
                     DO_CONDITION_COMMENT(subchild);
-                    if (subchild->GetName() == RAWXML_BSH_BONE_POS1) {
+                    if (subchild(RAWXML_BSH_BONE_POS1)) {
                         missp1 = false;
-                        ParseMatrix(subchild, bones.pos1, RAWXML_BSH_BONE_POS1);
-                    } else if (subchild->GetName() == RAWXML_BSH_BONE_POS2) {
+                        ParseMatrix(subchild, bones.pos1, wxT(RAWXML_BSH_BONE_POS1));
+                    } else if (subchild(RAWXML_BSH_BONE_POS2)) {
                         missp2 = false;
-                        ParseMatrix(subchild, bones.pos2, RAWXML_BSH_BONE_POS2);
-                    } else if COMPILER_WRONGTAG(subchild) {
-                        throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in bsh(%s)/bshbone(%s)."), subchild->GetName().c_str(), name.c_str(), bonename.c_str()));
+                        ParseMatrix(subchild, bones.pos2, wxT(RAWXML_BSH_BONE_POS2));
+                    } else if (subchild.element()) {
+                        throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in bsh(%s)/bshbone(%s)."), STRING_FOR_FORMAT(subchild.name()), name.c_str(), bonename.c_str()));
                     }
-                    subchild = subchild->GetNext();
+                    subchild.go_next();
                 }
                 if (missp1)
                     throw RCT3Exception(wxString::Format(_("Missing position1 in bsh(%s)/bshbone(%s)."), name.c_str(), bonename.c_str()));
@@ -395,54 +381,54 @@ void cRawParser::ParseBSH(wxXmlNode* node) {
                     bones.pos2 = bones.pos1;
             }
             bsh1.bones.push_back(bones);
-        } else if COMPILER_WRONGTAG(child) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in bsh tag '%s'."), child->GetName().c_str(), name.c_str()));
+        } else if (child.element()) {
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in bsh tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()));
         }
-        child = child->GetNext();
+        child.go_next();
     }
 
     if (m_mode != MODE_BAKE) {
         ovlBSHManager* c_bsh = m_ovl.GetManager<ovlBSHManager>();
         c_bsh->AddModel(bsh1);
     } else if ((!bb1) && (!bb2)) {
-        if (m_bake.Index(RAWXML_BSH) != wxNOT_FOUND) {
-            wxXmlNode* bb = makeElementNode(RAWXML_BSH_BBOX2);
-            bb->AddProperty(wxT("x"), wxString::Format(wxT("%f"), bsh1.bbox2.x));
-            bb->AddProperty(wxT("y"), wxString::Format(wxT("%f"), bsh1.bbox2.y));
-            bb->AddProperty(wxT("z"), wxString::Format(wxT("%f"), bsh1.bbox2.z));
-            node->InsertChild(bb, NULL);
+        if (m_bake.Index(wxT(RAWXML_BSH)) != wxNOT_FOUND) {
+            cXmlNode bb(RAWXML_BSH_BBOX2);
+            bb.addProp("x", wxString::Format(wxT("%f"), bsh1.bbox2.x).mb_str(wxConvUTF8));
+            bb.addProp("y", wxString::Format(wxT("%f"), bsh1.bbox2.y).mb_str(wxConvUTF8));
+            bb.addProp("z", wxString::Format(wxT("%f"), bsh1.bbox2.z).mb_str(wxConvUTF8));
+            node.insertNodeAsFirstChild(bb);
 
-            bb = makeElementNode(RAWXML_BSH_BBOX1);
-            bb->AddProperty(wxT("x"), wxString::Format(wxT("%f"), bsh1.bbox1.x));
-            bb->AddProperty(wxT("y"), wxString::Format(wxT("%f"), bsh1.bbox1.y));
-            bb->AddProperty(wxT("z"), wxString::Format(wxT("%f"), bsh1.bbox1.z));
-            node->InsertChild(bb, NULL);
+            bb = cXmlNode(RAWXML_BSH_BBOX1);
+            bb.addProp("x", wxString::Format(wxT("%f"), bsh1.bbox1.x).mb_str(wxConvUTF8));
+            bb.addProp("y", wxString::Format(wxT("%f"), bsh1.bbox1.y).mb_str(wxConvUTF8));
+            bb.addProp("z", wxString::Format(wxT("%f"), bsh1.bbox1.z).mb_str(wxConvUTF8));
+            node.insertNodeAsFirstChild(bb);
         }
     }
 }
 
-void cRawParser::ParseCED(wxXmlNode* node) {
+void cRawParser::ParseCED(cXmlNode& node) {
     USE_PREFIX(node);
     cCarriedItemExtra ced;
-    ced.name = ParseString(node, RAWXML_CED, wxT("name"), NULL, useprefix).ToAscii();
-    ced.nametxt = ParseString(node, RAWXML_CED, wxT("nametxt"), NULL, useprefix).ToAscii();
-    ced.icon = ParseString(node, RAWXML_CED, wxT("icon"), NULL, useprefix).ToAscii();
+    ced.name = ParseString(node, wxT(RAWXML_CED), wxT("name"), NULL, useprefix).ToAscii();
+    ced.nametxt = ParseString(node, wxT(RAWXML_CED), wxT("nametxt"), NULL, useprefix).ToAscii();
+    ced.icon = ParseString(node, wxT(RAWXML_CED), wxT("icon"), NULL, useprefix).ToAscii();
     wxLogVerbose(wxString::Format(_("Adding ced %s to %s."), wxString(ced.name.c_str(), wxConvLocal).c_str(), m_output.GetFullPath().c_str()));
 
-    wxXmlNode *child = node->GetChildren();
+    cXmlNode child(node.children());
     while (child) {
         DO_CONDITION_COMMENT(child);
 
-        if (child->GetName() == RAWXML_CED_MORE) {
-            OPTION_PARSE(float, ced.hunger, ParseFloat(child, RAWXML_CED_MORE, wxT("hunger")));
-            OPTION_PARSE(float, ced.thirst, ParseFloat(child, RAWXML_CED_MORE, wxT("thirst")));
-            OPTION_PARSE(unsigned long, ced.unk1, ParseUnsigned(child, RAWXML_CED_MORE, wxT("u1")));
-            OPTION_PARSE(unsigned long, ced.unk4, ParseUnsigned(child, RAWXML_CED_MORE, wxT("u4")));
-            OPTION_PARSE(float, ced.unk7, ParseFloat(child, RAWXML_CED_MORE, wxT("u7")));
-        } else if COMPILER_WRONGTAG(child) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ced tag."), child->GetName().c_str()));
+        if (child(RAWXML_CED_MORE)) {
+            OPTION_PARSE(float, ced.hunger, ParseFloat(child, wxT(RAWXML_CED_MORE), wxT("hunger")));
+            OPTION_PARSE(float, ced.thirst, ParseFloat(child, wxT(RAWXML_CED_MORE), wxT("thirst")));
+            OPTION_PARSE(unsigned long, ced.unk1, ParseUnsigned(child, wxT(RAWXML_CED_MORE), wxT("u1")));
+            OPTION_PARSE(unsigned long, ced.unk4, ParseUnsigned(child, wxT(RAWXML_CED_MORE), wxT("u4")));
+            OPTION_PARSE(float, ced.unk7, ParseFloat(child, wxT(RAWXML_CED_MORE), wxT("u7")));
+        } else if (child.element()) {
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ced tag."), STRING_FOR_FORMAT(child.name())));
         }
-        child = child->GetNext();
+        child.go_next();
     }
 
     ovlCEDManager* c_ced = m_ovl.GetManager<ovlCEDManager>();

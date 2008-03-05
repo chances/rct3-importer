@@ -45,7 +45,7 @@
 #include "managerresources.h"
 #include "OVLDump.h"
 #include "wxsha1.h"
-#include "xrc\xrc_progress.h"
+#include "xrc/res_progress.h"
 
 IMPLEMENT_APP(ManagerApp);
 
@@ -312,10 +312,10 @@ bool ManagerApp::CheckManagerDB() {
                 xmlcpp::cXmlNode child(xdoc.getRoot().children());
                 while (child.ok()) {
                     if (child.name() == "author") {
-                        wxString name(child.getProp("name", "").c_str(), wxConvUTF8);
+                        wxString name(child.getPropVal("name").c_str(), wxConvUTF8);
                         name.Trim();
                         name.Trim(true);
-                        wxString guid(child.getProp("guid", "").c_str(), wxConvUTF8);
+                        wxString guid(child.getPropVal("guid").c_str(), wxConvUTF8);
                         guid.Trim();
                         guid.Trim(true);
                         if (name.IsEmpty() || guid.IsEmpty()) {
@@ -379,16 +379,16 @@ bool ManagerApp::CheckManagerDB() {
                 xmlcpp::cXmlNode child(xdoc.getRoot().children());
                 while (child.ok()) {
                     if (child.name() == "package") {
-                        wxString name(child.getProp("name", "").c_str(), wxConvUTF8);
+                        wxString name(child.getPropVal("name").c_str(), wxConvUTF8);
                         name.Trim();
                         name.Trim(true);
-                        wxString shortname(child.getProp("shortname", "").c_str(), wxConvUTF8);
+                        wxString shortname(child.getPropVal("shortname").c_str(), wxConvUTF8);
                         shortname.Trim();
                         shortname.Trim(true);
-                        wxString guid(child.getProp("guid", "").c_str(), wxConvUTF8);
+                        wxString guid(child.getPropVal("guid").c_str(), wxConvUTF8);
                         guid.Trim();
                         guid.Trim(true);
-                        wxString version(child.getProp("version", "").c_str(), wxConvUTF8);
+                        wxString version(child.getPropVal("version").c_str(), wxConvUTF8);
                         version.Trim();
                         version.Trim(true);
                         if (name.IsEmpty() || guid.IsEmpty()) {
@@ -402,7 +402,7 @@ bool ManagerApp::CheckManagerDB() {
 
                         bool haveauthor = false;
                         if (child.hasProp("authorguid")) {
-                            wxString authorguid(child.getProp("authorguid", "").c_str(), wxConvUTF8);
+                            wxString authorguid(child.getPropVal("authorguid").c_str(), wxConvUTF8);
                             authorguid.Trim();
                             authorguid.Trim(true);
                             if (authorguid.IsEmpty()) {
@@ -418,7 +418,7 @@ bool ManagerApp::CheckManagerDB() {
                         xmlcpp::cXmlNode subchild(child.children());
                         while(subchild.ok()) {
                             if (subchild.name() == "author") {
-                                wxString authorguid(subchild.getProp("guid", "").c_str(), wxConvUTF8);
+                                wxString authorguid(subchild.getPropVal("guid").c_str(), wxConvUTF8);
                                 authorguid.Trim();
                                 authorguid.Trim(true);
                                 if (authorguid.IsEmpty()) {
@@ -430,7 +430,7 @@ bool ManagerApp::CheckManagerDB() {
                                 m_managerdb.ExecuteUpdate(temp);
                                 haveauthor  = true;
                             } else if (subchild.name() == "warning") {
-                                wxString wtype(subchild.getProp("type", "").c_str(), wxConvUTF8);
+                                wxString wtype(subchild.getPropVal("type").c_str(), wxConvUTF8);
                                 wtype.Trim();
                                 wtype.Trim(true);
                                 if (wtype.IsEmpty()) {

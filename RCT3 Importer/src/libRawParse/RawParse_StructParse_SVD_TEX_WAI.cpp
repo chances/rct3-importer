@@ -27,85 +27,85 @@
 
 #include "RawParse_cpp.h"
 
-void cRawParser::ParseSVD(wxXmlNode* node) {
+void cRawParser::ParseSVD(cXmlNode& node) {
     USE_PREFIX(node);
     cSceneryItemVisual svd;
-    wxString name = ParseString(node, RAWXML_SVD, wxT("name"), NULL, useprefix);
+    wxString name = ParseString(node, wxT(RAWXML_SVD), wxT("name"), NULL, useprefix);
     svd.name = name.ToAscii();
-    OPTION_PARSE(unsigned long, svd.sivflags, ParseFloat(node, RAWXML_SVD, wxT("flags")));
-    OPTION_PARSE(float, svd.sway, ParseFloat(node, RAWXML_SVD, wxT("sway")));
-    OPTION_PARSE(float, svd.brightness, ParseFloat(node, RAWXML_SVD, wxT("brightness")));
-    OPTION_PARSE(float, svd.scale, ParseFloat(node, RAWXML_SVD, wxT("scale")));
+    OPTION_PARSE(unsigned long, svd.sivflags, ParseFloat(node, wxT(RAWXML_SVD), wxT("flags")));
+    OPTION_PARSE(float, svd.sway, ParseFloat(node, wxT(RAWXML_SVD), wxT("sway")));
+    OPTION_PARSE(float, svd.brightness, ParseFloat(node, wxT(RAWXML_SVD), wxT("brightness")));
+    OPTION_PARSE(float, svd.scale, ParseFloat(node, wxT(RAWXML_SVD), wxT("scale")));
     wxLogVerbose(wxString::Format(_("Adding svd %s to %s."), name.c_str(), m_output.GetFullPath().c_str()));
 
-    wxXmlNode *child = node->GetChildren();
+    cXmlNode child(node.children());
     while (child) {
         DO_CONDITION_COMMENT(child);
 
-        if (child->GetName() == RAWXML_SVD_UNK) {
-            OPTION_PARSE(float, svd.unk4, ParseFloat(child, RAWXML_SVD_UNK, wxT("u4")));
-            OPTION_PARSE(unsigned long, svd.unk6, ParseUnsigned(child, RAWXML_SVD_UNK, wxT("u6")));
-            OPTION_PARSE(unsigned long, svd.unk7, ParseUnsigned(child, RAWXML_SVD_UNK, wxT("u7")));
-            OPTION_PARSE(unsigned long, svd.unk8, ParseUnsigned(child, RAWXML_SVD_UNK, wxT("u8")));
-            OPTION_PARSE(unsigned long, svd.unk9, ParseUnsigned(child, RAWXML_SVD_UNK, wxT("u9")));
-            OPTION_PARSE(unsigned long, svd.unk10, ParseUnsigned(child, RAWXML_SVD_UNK, wxT("u10")));
-            OPTION_PARSE(unsigned long, svd.unk11, ParseUnsigned(child, RAWXML_SVD_UNK, wxT("u11")));
-        } else if (child->GetName() == RAWXML_SVD_LOD) {
+        if (child(RAWXML_SVD_UNK)) {
+            OPTION_PARSE(float, svd.unk4, ParseFloat(child, wxT(RAWXML_SVD_UNK), wxT("u4")));
+            OPTION_PARSE(unsigned long, svd.unk6, ParseUnsigned(child, wxT(RAWXML_SVD_UNK), wxT("u6")));
+            OPTION_PARSE(unsigned long, svd.unk7, ParseUnsigned(child, wxT(RAWXML_SVD_UNK), wxT("u7")));
+            OPTION_PARSE(unsigned long, svd.unk8, ParseUnsigned(child, wxT(RAWXML_SVD_UNK), wxT("u8")));
+            OPTION_PARSE(unsigned long, svd.unk9, ParseUnsigned(child, wxT(RAWXML_SVD_UNK), wxT("u9")));
+            OPTION_PARSE(unsigned long, svd.unk10, ParseUnsigned(child, wxT(RAWXML_SVD_UNK), wxT("u10")));
+            OPTION_PARSE(unsigned long, svd.unk11, ParseUnsigned(child, wxT(RAWXML_SVD_UNK), wxT("u11")));
+        } else if (child(RAWXML_SVD_LOD)) {
             USE_PREFIX(child);
             cSceneryItemVisualLOD lod;
-            wxString lodname = ParseString(child, RAWXML_SVD_LOD, wxT("name"), NULL);
+            wxString lodname = ParseString(child, wxT(RAWXML_SVD_LOD), wxT("name"), NULL);
             lod.name = lodname.ToAscii();
-            lod.meshtype = ParseUnsigned(child, RAWXML_SVD_LOD, wxT("type"));
-            lod.distance = ParseFloat(child, RAWXML_SVD_LOD, wxT("distance"));
+            lod.meshtype = ParseUnsigned(child, wxT(RAWXML_SVD_LOD), wxT("type"));
+            lod.distance = ParseFloat(child, wxT(RAWXML_SVD_LOD), wxT("distance"));
             ParseStringOption(lod.staticshape, child, wxT("staticshape"), NULL, useprefix);
             ParseStringOption(lod.boneshape, child, wxT("boneshape"), NULL, useprefix);
             ParseStringOption(lod.fts, child, wxT("ftx"), NULL, useprefix);
             ParseStringOption(lod.txs, child, wxT("txs"), NULL);
 
-            wxXmlNode *subchild = child->GetChildren();
+            cXmlNode subchild(child.children());
             while (subchild) {
                 DO_CONDITION_COMMENT(subchild);
 
-                if (subchild->GetName() == RAWXML_SVD_LOD_UNK) {
-                    OPTION_PARSE(unsigned long, lod.unk2, ParseUnsigned(child, RAWXML_SVD_LOD_UNK, wxT("u2")));
-                    OPTION_PARSE(unsigned long, lod.unk4, ParseUnsigned(child, RAWXML_SVD_LOD_UNK, wxT("u4")));
-                    OPTION_PARSE(float, lod.unk7, ParseFloat(child, RAWXML_SVD_LOD_UNK, wxT("u7")));
-                    OPTION_PARSE(float, lod.unk8, ParseFloat(child, RAWXML_SVD_LOD_UNK, wxT("u8")));
-                    OPTION_PARSE(float, lod.unk9, ParseFloat(child, RAWXML_SVD_LOD_UNK, wxT("u9")));
-                    OPTION_PARSE(float, lod.unk10, ParseFloat(child, RAWXML_SVD_LOD_UNK, wxT("u10")));
-                    OPTION_PARSE(float, lod.unk11, ParseFloat(child, RAWXML_SVD_LOD_UNK, wxT("u11")));
-                    OPTION_PARSE(float, lod.unk12, ParseFloat(child, RAWXML_SVD_LOD_UNK, wxT("u12")));
-                    OPTION_PARSE(unsigned long, lod.unk14, ParseUnsigned(child, RAWXML_SVD_LOD_UNK, wxT("u14")));
-                } else if (subchild->GetName() == RAWXML_SVD_LOD_ANIMATION) {
+                if (subchild(RAWXML_SVD_LOD_UNK)) {
+                    OPTION_PARSE(unsigned long, lod.unk2, ParseUnsigned(child, wxT(RAWXML_SVD_LOD_UNK), wxT("u2")));
+                    OPTION_PARSE(unsigned long, lod.unk4, ParseUnsigned(child, wxT(RAWXML_SVD_LOD_UNK), wxT("u4")));
+                    OPTION_PARSE(float, lod.unk7, ParseFloat(child, wxT(RAWXML_SVD_LOD_UNK), wxT("u7")));
+                    OPTION_PARSE(float, lod.unk8, ParseFloat(child, wxT(RAWXML_SVD_LOD_UNK), wxT("u8")));
+                    OPTION_PARSE(float, lod.unk9, ParseFloat(child, wxT(RAWXML_SVD_LOD_UNK), wxT("u9")));
+                    OPTION_PARSE(float, lod.unk10, ParseFloat(child, wxT(RAWXML_SVD_LOD_UNK), wxT("u10")));
+                    OPTION_PARSE(float, lod.unk11, ParseFloat(child, wxT(RAWXML_SVD_LOD_UNK), wxT("u11")));
+                    OPTION_PARSE(float, lod.unk12, ParseFloat(child, wxT(RAWXML_SVD_LOD_UNK), wxT("u12")));
+                    OPTION_PARSE(unsigned long, lod.unk14, ParseUnsigned(child, wxT(RAWXML_SVD_LOD_UNK), wxT("u14")));
+                } else if (subchild(RAWXML_SVD_LOD_ANIMATION)) {
                     USE_PREFIX(subchild);
-                    wxString anim = subchild->GetNodeContent();
+                    wxString anim = UTF8STRINGWRAP(subchild.content());
                     MakeVariable(anim);
                     if (useprefix)
                         lod.animations.push_back(m_prefix + std::string(anim.ToAscii()));
                     else
                         lod.animations.push_back(std::string(anim.ToAscii()));
-                } else if COMPILER_WRONGTAG(subchild) {
-                    throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in svd(%s)/svdlod(%s)."), subchild->GetName().c_str(), name.c_str(), lodname.c_str()));
+                } else if (subchild.element()) {
+                    throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in svd(%s)/svdlod(%s)."), STRING_FOR_FORMAT(subchild.name()), name.c_str(), lodname.c_str()));
                 }
 
-                subchild = subchild->GetNext();
+                subchild.go_next();
             }
 
             svd.lods.push_back(lod);
-        } else if COMPILER_WRONGTAG(child) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in svd tag '%s'."), child->GetName().c_str(), name.c_str()));
+        } else if (child.element()) {
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in svd tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()));
         }
 
-        child = child->GetNext();
+        child.go_next();
     }
 
     ovlSVDManager* c_svd = m_ovl.GetManager<ovlSVDManager>();
     c_svd->AddSVD(svd);
 }
 
-void cRawParser::ParseTEX(wxXmlNode* node) {
+void cRawParser::ParseTEX(cXmlNode& node) {
     USE_PREFIX(node);
-    wxString name = ParseString(node, RAWXML_TEX, wxT("name"), NULL, useprefix);
+    wxString name = ParseString(node, wxT(RAWXML_TEX), wxT("name"), NULL, useprefix);
 //    wxFileName texture = ParseString(node, RAWXML_TEX, wxT("texture"));
 //    if (!texture.IsAbsolute())
 //        texture.MakeAbsolute(m_input.GetPathWithSep());
@@ -113,23 +113,23 @@ void cRawParser::ParseTEX(wxXmlNode* node) {
 
     cTextureStruct texture;
     texture.texture.name = name.ToAscii();
-    OPTION_PARSE(unsigned long, texture.texture.format, ParseUnsigned(node, RAWXML_TEX, wxT("format")));
+    OPTION_PARSE(unsigned long, texture.texture.format, ParseUnsigned(node, wxT(RAWXML_TEX), wxT("format")));
     wxGXImage mainimage;
     unsigned long mips = 0;
-    OPTION_PARSE(unsigned long, mips, ParseUnsigned(node, RAWXML_TEX, wxT("mips")));
+    OPTION_PARSE(unsigned long, mips, ParseUnsigned(node, wxT(RAWXML_TEX), wxT("mips")));
     ParseStringOption(texture.texturestyle, node, wxT("txs"), NULL);
 
-    wxXmlNode* child = node->GetChildren();
+    cXmlNode child(node.children());
     while (child) {
         DO_CONDITION_COMMENT(child);
 
-        if (child->GetName() == RAWXML_TEX_TEXTURE) {
+        if (child(RAWXML_TEX_TEXTURE)) {
             cTextureMIP mip;
-            OPTION_PARSE(unsigned long, mip.dimension, ParseUnsigned(child, RAWXML_TEX, wxT("dimension")));
+            OPTION_PARSE(unsigned long, mip.dimension, ParseUnsigned(child, wxT(RAWXML_TEX_TEXTURE), wxT("dimension")));
 
-            wxXmlNode* datanode = child->GetChildren();
-            while (datanode && (!datanode->GetName().IsSameAs(RAWXML_DATA)))
-                datanode = datanode->GetNext();
+            cXmlNode datanode(child.children());
+            while (datanode && (!datanode(RAWXML_DATA)))
+                datanode.go_next();
 
             if (!datanode)
                 throw RCT3Exception(wxString::Format(_("Tag tex(%s)/texture misses data."), name.c_str()));
@@ -177,10 +177,10 @@ void cRawParser::ParseTEX(wxXmlNode* node) {
             }
 
             texture.texture.mips.insert(mip);
-        } else if COMPILER_WRONGTAG(child) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in tex(%s) tag."), child->GetName().c_str(), name.c_str()));
+        } else if (child.element()) {
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in tex(%s) tag."), STRING_FOR_FORMAT(child.name()), name.c_str()));
         }
-        child = child->GetNext();
+        child.go_next();
     }
 
     if (mips) {
@@ -340,47 +340,47 @@ void cRawParser::ParseTEX(wxXmlNode* node) {
     }
 }
 
-void cRawParser::ParseWAI(wxXmlNode* node) {
+void cRawParser::ParseWAI(cXmlNode& node) {
     USE_PREFIX(node);
     cWildAnimalItem wai;
-    wxString name = ParseString(node, RAWXML_WAI, wxT("name"), NULL, useprefix);
+    wxString name = ParseString(node, wxT(RAWXML_WAI), wxT("name"), NULL, useprefix);
     wai.name = name.ToAscii();
-    wai.shortname = ParseString(node, RAWXML_WAI, wxT("shortname"), NULL).ToAscii();
-    wai.nametxt = ParseString(node, RAWXML_WAI, wxT("nametxt"), NULL, useprefix).ToAscii();
-    wai.description = ParseString(node, RAWXML_WAI, wxT("description"), NULL, useprefix).ToAscii();
-    wai.icon = ParseString(node, RAWXML_WAI, wxT("icon"), NULL, useprefix).ToAscii();
-    wai.staticshape = ParseString(node, RAWXML_WAI, wxT("staticshape"), NULL, useprefix).ToAscii();
+    wai.shortname = ParseString(node, wxT(RAWXML_WAI), wxT("shortname"), NULL).ToAscii();
+    wai.nametxt = ParseString(node, wxT(RAWXML_WAI), wxT("nametxt"), NULL, useprefix).ToAscii();
+    wai.description = ParseString(node, wxT(RAWXML_WAI), wxT("description"), NULL, useprefix).ToAscii();
+    wai.icon = ParseString(node, wxT(RAWXML_WAI), wxT("icon"), NULL, useprefix).ToAscii();
+    wai.staticshape = ParseString(node, wxT(RAWXML_WAI), wxT("staticshape"), NULL, useprefix).ToAscii();
     wxLogVerbose(wxString::Format(_("Adding wai %s to %s."), name.c_str(), m_output.GetFullPath().c_str()));
 
-    wxXmlNode *child = node->GetChildren();
+    cXmlNode child(node.children());
     while (child) {
         DO_CONDITION_COMMENT(child);
 
-        if (child->GetName() == RAWXML_WAI_PARAMETERS) {
-            OPTION_PARSE(float, wai.distance, ParseFloat(child, RAWXML_WAI_PARAMETERS, wxT("distance")));
-            OPTION_PARSE(long, wai.cost, ParseSigned(child, RAWXML_WAI_PARAMETERS, wxT("cost")));
-            OPTION_PARSE(long, wai.refund, ParseSigned(child, RAWXML_WAI_PARAMETERS, wxT("refund")));
-            OPTION_PARSE(float, wai.invdurability, ParseFloat(child, RAWXML_WAI_PARAMETERS, wxT("inversedurability")));
-            OPTION_PARSE(float, wai.x_size, ParseFloat(child, RAWXML_WAI_PARAMETERS, wxT("xsize")));
-            OPTION_PARSE(float, wai.y_size, ParseFloat(child, RAWXML_WAI_PARAMETERS, wxT("ysize")));
-            OPTION_PARSE(float, wai.z_size, ParseFloat(child, RAWXML_WAI_PARAMETERS, wxT("zsize")));
-            OPTION_PARSE(unsigned long, wai.flags, ParseUnsigned(child, RAWXML_WAI_PARAMETERS, wxT("flags")));
-            OPTION_PARSE(float, wai.weight, ParseFloat(child, RAWXML_WAI_PARAMETERS, wxT("weight")));
-        } else if (child->GetName() == RAWXML_WAI_UNKNOWNS) {
-            OPTION_PARSE(unsigned long, wai.unk1, ParseUnsigned(child, RAWXML_WAI_UNKNOWNS, wxT("u1")));
-            OPTION_PARSE(unsigned long, wai.unk2, ParseUnsigned(child, RAWXML_WAI_UNKNOWNS, wxT("u2")));
-            OPTION_PARSE(unsigned long, wai.unk3, ParseUnsigned(child, RAWXML_WAI_UNKNOWNS, wxT("u3")));
-            OPTION_PARSE(unsigned long, wai.unk4, ParseUnsigned(child, RAWXML_WAI_UNKNOWNS, wxT("u4")));
-            OPTION_PARSE(unsigned long, wai.unk11, ParseUnsigned(child, RAWXML_WAI_UNKNOWNS, wxT("u11")));
-            OPTION_PARSE(float, wai.unk17, ParseFloat(child, RAWXML_WAI_UNKNOWNS, wxT("u17")));
-            OPTION_PARSE(float, wai.unk18, ParseFloat(child, RAWXML_WAI_UNKNOWNS, wxT("u18")));
-            OPTION_PARSE(float, wai.unk19, ParseFloat(child, RAWXML_WAI_UNKNOWNS, wxT("u19")));
-            OPTION_PARSE(float, wai.unk20, ParseFloat(child, RAWXML_WAI_UNKNOWNS, wxT("u20")));
-        } else if COMPILER_WRONGTAG(child) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in wai tag '%s'."), child->GetName().c_str(), name.c_str()));
+        if (child(RAWXML_WAI_PARAMETERS)) {
+            OPTION_PARSE(float, wai.distance, ParseFloat(child, wxT(RAWXML_WAI_PARAMETERS), wxT("distance")));
+            OPTION_PARSE(long, wai.cost, ParseSigned(child, wxT(RAWXML_WAI_PARAMETERS), wxT("cost")));
+            OPTION_PARSE(long, wai.refund, ParseSigned(child, wxT(RAWXML_WAI_PARAMETERS), wxT("refund")));
+            OPTION_PARSE(float, wai.invdurability, ParseFloat(child, wxT(RAWXML_WAI_PARAMETERS), wxT("inversedurability")));
+            OPTION_PARSE(float, wai.x_size, ParseFloat(child, wxT(RAWXML_WAI_PARAMETERS), wxT("xsize")));
+            OPTION_PARSE(float, wai.y_size, ParseFloat(child, wxT(RAWXML_WAI_PARAMETERS), wxT("ysize")));
+            OPTION_PARSE(float, wai.z_size, ParseFloat(child, wxT(RAWXML_WAI_PARAMETERS), wxT("zsize")));
+            OPTION_PARSE(unsigned long, wai.flags, ParseUnsigned(child, wxT(RAWXML_WAI_PARAMETERS), wxT("flags")));
+            OPTION_PARSE(float, wai.weight, ParseFloat(child, wxT(RAWXML_WAI_PARAMETERS), wxT("weight")));
+        } else if (child(RAWXML_WAI_UNKNOWNS)) {
+            OPTION_PARSE(unsigned long, wai.unk1, ParseUnsigned(child, wxT(RAWXML_WAI_UNKNOWNS), wxT("u1")));
+            OPTION_PARSE(unsigned long, wai.unk2, ParseUnsigned(child, wxT(RAWXML_WAI_UNKNOWNS), wxT("u2")));
+            OPTION_PARSE(unsigned long, wai.unk3, ParseUnsigned(child, wxT(RAWXML_WAI_UNKNOWNS), wxT("u3")));
+            OPTION_PARSE(unsigned long, wai.unk4, ParseUnsigned(child, wxT(RAWXML_WAI_UNKNOWNS), wxT("u4")));
+            OPTION_PARSE(unsigned long, wai.unk11, ParseUnsigned(child, wxT(RAWXML_WAI_UNKNOWNS), wxT("u11")));
+            OPTION_PARSE(float, wai.unk17, ParseFloat(child, wxT(RAWXML_WAI_UNKNOWNS), wxT("u17")));
+            OPTION_PARSE(float, wai.unk18, ParseFloat(child, wxT(RAWXML_WAI_UNKNOWNS), wxT("u18")));
+            OPTION_PARSE(float, wai.unk19, ParseFloat(child, wxT(RAWXML_WAI_UNKNOWNS), wxT("u19")));
+            OPTION_PARSE(float, wai.unk20, ParseFloat(child, wxT(RAWXML_WAI_UNKNOWNS), wxT("u20")));
+        } else if (child.element()) {
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in wai tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()));
         }
 
-        child = child->GetNext();
+        child.go_next();
     }
 
     ovlWAIManager* c_wai = m_ovl.GetManager<ovlWAIManager>();

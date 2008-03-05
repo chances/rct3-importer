@@ -54,6 +54,9 @@ public:
     virtual int validate(boost::shared_ptr<xmlDoc>& doc, int options = OPT_NONE);
 
     virtual bool ok() const { return m_transform.ok(); }
+    inline bool operator!() const { return !ok(); }
+    typedef cXsltStylesheet cXmlValidatorIsoSchematron::*unspecified_bool_type;
+    inline operator unspecified_bool_type() const { return ok()?(&cXmlValidatorIsoSchematron::m_transform):NULL; }
 };
 
 } // Namespace

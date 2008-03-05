@@ -47,11 +47,11 @@ struct SharedRide {
 struct RideOptionOption {
     unsigned short suboption;
     unsigned short group;       ///< Seen 0x0000, 0x0100, 0x0200
-}
+};
 
 struct RideOption {
     unsigned long type;
-    union {
+    union data {
         struct type_00 {
         };
         struct type_02 {

@@ -61,6 +61,9 @@ public:
     cXmlDoc getDoc();
 
     inline bool ok() const { return m_sheet.get(); }
+    inline bool operator!() const { return !ok(); }
+    typedef boost::shared_ptr<xsltStylesheet> cXsltStylesheet::*unspecified_bool_type;
+    inline operator unspecified_bool_type() const { return ok()?(&cXsltStylesheet::m_sheet):NULL; }
 protected:
 private:
     boost::shared_ptr<xsltStylesheet> m_sheet;

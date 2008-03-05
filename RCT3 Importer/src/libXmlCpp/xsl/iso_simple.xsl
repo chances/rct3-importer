@@ -144,7 +144,9 @@
 <xsl:param name="sch.exslt.imports"/>
 
 <!-- Experimental: If this file called, then must be generating svrl -->
+<!--
 <xsl:variable name="svrlTest" select="true()" />
+-->
 
 <!-- ================================================================ -->
 

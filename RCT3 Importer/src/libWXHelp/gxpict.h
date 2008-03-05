@@ -65,6 +65,21 @@ public:
                 pos, size, style, name );
     }
 
+#ifdef CACHE_GXIMAGE
+    wxGXPicture( wxWindow* parent, wxWindowID id,
+        const wxBitmap& label,
+        const wxPoint& pos = wxDefaultPosition,
+        const wxSize& size = wxDefaultSize,
+        long style = 0,
+        const wxString& name = wxT("ilPicture") )
+    {
+        Init();
+        Create( parent, id, label, wxT(""),
+                false,
+                pos, size, style, name );
+    }
+#endif
+
     wxGXPicture( wxWindow* parent, wxWindowID id,
         const wxString& filename,
 #ifdef CACHE_GXIMAGE

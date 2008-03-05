@@ -30,7 +30,7 @@
 #include "wx_pch.h"
 
 #include <wx/filename.h>
-#include <wx/xml/xml.h>
+//#include <wx/xml/xml.h>
 #include <boost/shared_array.hpp>
 
 #include "vertex.h"
@@ -41,12 +41,14 @@
 
 #include "OVLng.h"
 
-#define RAWXML_ROOT      wxT("rawovl")
-#define RAWXML_SUBROOT   wxT("rawovl")
-#define RAWXML_SET       wxT("set")
-#define RAWXML_UNSET     wxT("unset")
-#define RAWXML_VARIABLES wxT("variables")
-#define RAWXML_DATAREF   wxT("dataref")
+#include "cXmlNode.h"
+
+#define RAWXML_ROOT      "rawovl"
+#define RAWXML_SUBROOT   "rawovl"
+#define RAWXML_SET       "set"
+#define RAWXML_UNSET     "unset"
+#define RAWXML_VARIABLES "variables"
+#define RAWXML_DATAREF   "dataref"
 
 WX_DECLARE_STRING_HASH_MAP(wxString, cRawParserVars);
 
@@ -61,11 +63,11 @@ private:
     boost::shared_array<unsigned char> m_data;
     wxString m_datatype;
     unsigned long m_datasize;
-    wxXmlNode* m_node;
-    wxXmlNode* m_refnode;
-    wxXmlNode* m_insertbefore;
+    xmlcpp::cXmlNode m_node;
+    xmlcpp::cXmlNode m_refnode;
+    xmlcpp::cXmlNode m_insertbefore;
 public:
-    cRawDatablock(wxXmlNode* node, wxXmlNode* refnode, wxXmlNode* insertbefore):
+    cRawDatablock(const xmlcpp::cXmlNode& node, const xmlcpp::cXmlNode& refnode, const xmlcpp::cXmlNode& insertbefore):
         m_datasize(0), m_node(node), m_refnode(refnode), m_insertbefore(insertbefore) {};
 
     unsigned long datasize() const { return m_datasize; };
@@ -100,22 +102,22 @@ private:
     std::vector<wxFileName> m_newfiles;
 
     cRawParser* m_parent;
-    wxXmlNode* m_firstchild; ///< For making new data references.
-    std::map<wxString, wxXmlNode*> m_datareferences;
+    xmlcpp::cXmlNode m_firstchild; ///< For making new data references.
+    std::map<wxString, xmlcpp::cXmlNode> m_datareferences;
 
     cOvl m_ovl;
 
-    void Load(wxXmlNode* root);
-    cOvlType ParseType(wxXmlNode* node, const wxString& nodes, const wxString& attribute = wxT("target"));
-    wxString ParseString(wxXmlNode* node, const wxString& nodes, const wxString& attribute, bool* variable, bool addprefix = false);
-    void ParseStringOption(std::string& str, wxXmlNode* node, const wxString& attribute, bool* variable, bool addprefix = false);
-    void ParseStringOption(wxString& str, wxXmlNode* node, const wxString& attribute, bool* variable, bool addprefix = false);
-    unsigned long ParseUnsigned(wxXmlNode* node, const wxString& nodes, const wxString& attribute);
-    long ParseSigned(wxXmlNode* node, const wxString& nodes, const wxString& attribute);
-    double ParseFloat(wxXmlNode* node, const wxString& nodes, const wxString& attribute);
-    void ParseVector(wxXmlNode* node, VECTOR& v, const wxString& nodes);
-    void ParseMatrix(wxXmlNode* node, MATRIX& m, const wxString& nodes);
-    c3DLoaderOrientation ParseOrientation(wxXmlNode* node, const wxString& nodes);
+    void Load(xmlcpp::cXmlNode& root);
+    cOvlType ParseType(const xmlcpp::cXmlNode& node, const wxString& nodes, const wxString& attribute = wxT("target"));
+    wxString ParseString(const xmlcpp::cXmlNode& node, const wxString& nodes, const wxString& attribute, bool* variable, bool addprefix = false);
+    void ParseStringOption(std::string& str, const xmlcpp::cXmlNode& node, const wxString& attribute, bool* variable, bool addprefix = false);
+    void ParseStringOption(wxString& str, const xmlcpp::cXmlNode& node, const wxString& attribute, bool* variable, bool addprefix = false);
+    unsigned long ParseUnsigned(const xmlcpp::cXmlNode& node, const wxString& nodes, const wxString& attribute);
+    long ParseSigned(const xmlcpp::cXmlNode& node, const wxString& nodes, const wxString& attribute);
+    double ParseFloat(const xmlcpp::cXmlNode& node, const wxString& nodes, const wxString& attribute);
+    void ParseVector(const xmlcpp::cXmlNode& node, VECTOR& v, const wxString& nodes);
+    void ParseMatrix(const xmlcpp::cXmlNode& node, MATRIX& m, const wxString& nodes);
+    c3DLoaderOrientation ParseOrientation(const xmlcpp::cXmlNode& node, const wxString& nodes);
 
     bool MakeVariable(wxString& var);
     void PassBakeStructures(const wxSortedArrayString& bake) {
@@ -129,32 +131,32 @@ private:
         m_variables = v;
     }
 
-    void CopyBaseAttributes(const wxXmlNode* from, wxXmlNode* to);
+    void CopyBaseAttributes(const xmlcpp::cXmlNode& from, xmlcpp::cXmlNode& to);
 
-    void ParseBAN(wxXmlNode* node);
-    void ParseBSH(wxXmlNode* node);
-    void ParseCED(wxXmlNode* node);
-    void ParseCHG(wxXmlNode* node);
-    void ParseCID(wxXmlNode* node);
-    void ParseFTX(wxXmlNode* node);
-    void ParsePTD(wxXmlNode* node);
-    void ParseSAT(wxXmlNode* node);
-    void ParseSHS(wxXmlNode* node);
-    void ParseSID(wxXmlNode* node);
-    void ParseSPL(wxXmlNode* node);
-    void ParseSTA(wxXmlNode* node);
-    void ParseSVD(wxXmlNode* node);
-    void ParseTEX(wxXmlNode* node);
-    void ParseWAI(wxXmlNode* node);
+    void ParseBAN(xmlcpp::cXmlNode& node);
+    void ParseBSH(xmlcpp::cXmlNode& node);
+    void ParseCED(xmlcpp::cXmlNode& node);
+    void ParseCHG(xmlcpp::cXmlNode& node);
+    void ParseCID(xmlcpp::cXmlNode& node);
+    void ParseFTX(xmlcpp::cXmlNode& node);
+    void ParsePTD(xmlcpp::cXmlNode& node);
+    void ParseSAT(xmlcpp::cXmlNode& node);
+    void ParseSHS(xmlcpp::cXmlNode& node);
+    void ParseSID(xmlcpp::cXmlNode& node);
+    void ParseSPL(xmlcpp::cXmlNode& node);
+    void ParseSTA(xmlcpp::cXmlNode& node);
+    void ParseSVD(xmlcpp::cXmlNode& node);
+    void ParseTEX(xmlcpp::cXmlNode& node);
+    void ParseWAI(xmlcpp::cXmlNode& node);
 
-    void ParseSet(wxXmlNode* node, bool command = false, const wxString& tag = RAWXML_SET);
-    void ParseUnset(wxXmlNode* node, bool command = false);
-    void ParseVariables(wxXmlNode* node, bool command = false, const wxString& path = wxT(""));
-    void Parse(wxXmlNode* node);
+    void ParseSet(const xmlcpp::cXmlNode& node, bool command = false, const wxString& tag = wxT(RAWXML_SET));
+    void ParseUnset(const xmlcpp::cXmlNode& node, bool command = false);
+    void ParseVariables(xmlcpp::cXmlNode& node, bool command = false, const wxString& path = wxT(""));
+    void Parse(xmlcpp::cXmlNode& node);
 
-    wxXmlNode* FindDataReference(const wxString& guid, wxFSFileName& input) const;
-    cRawDatablock MakeDataBlock(const wxString& ref, const wxFSFileName& input, wxXmlNode* node, wxXmlNode* refnode = NULL);
-    cRawDatablock GetDataBlock(const wxString& ref, wxXmlNode* node);
+    xmlcpp::cXmlNode* FindDataReference(const wxString& guid, wxFSFileName& input);
+    cRawDatablock MakeDataBlock(const wxString& ref, const wxFSFileName& input, const xmlcpp::cXmlNode& node, const xmlcpp::cXmlNode& refnode = xmlcpp::cXmlNode());
+    cRawDatablock GetDataBlock(const wxString& ref, const xmlcpp::cXmlNode& node);
 
     void Init() {
         m_mode = MODE_COMPILE;
@@ -169,7 +171,7 @@ public:
         Init();
         Process(file, outputdir, output);
     }
-    cRawParser(wxXmlNode* root, const wxFSFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT(""))) {
+    cRawParser(xmlcpp::cXmlNode& root, const wxFSFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT(""))) {
         Init();
         Process(root, file, outputdir, output);
     }
@@ -187,7 +189,7 @@ public:
     }
 
     void Process(const wxFSFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT("")));
-    void Process(wxXmlNode* root, const wxFSFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT("")));
+    void Process(xmlcpp::cXmlNode& root, const wxFSFileName& file, const wxFileName& outputdir = wxString(wxT("")), const wxFileName& output = wxString(wxT("")));
 
     void AddConditions(const wxString& options);
     void AddConditions(const wxArrayString& options);
@@ -195,7 +197,7 @@ public:
     void RemoveConditions(const wxString& options);
     void ParseConditions(const wxString& options);
 
-    void LoadVariables(const wxFSFileName& fn, bool command = false, wxXmlNode* target = NULL);
+    void LoadVariables(const wxFSFileName& fn, bool command = false, xmlcpp::cXmlNode* target = NULL);
 
     void AddBakeStructures(const wxString& structs);
 

@@ -17,7 +17,8 @@
 					<Add option="-Wall" />
 					<Add option="-g" />
 					<Add option="-D__WXDEBUG__" />
-					<Add directory="$(#wx.ansidebugstatic)" />
+					<Add directory="$(#wx.include)" />
+					<Add directory="$(#wx.lib)\msw-ansi-debug-static-2.8" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -30,41 +31,12 @@
 				<Compiler>
 					<Add option="-Os" />
 					<Add option="-O2" />
-					<Add directory="$(#mingw.lib)\wx\include\msw-ansi-release-static-2.8" />
+					<Add directory="$(#wx.include)" />
+					<Add directory="$(#wx.lib)\msw-ansi-release-static-2.8" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 				</Linker>
-			</Target>
-			<Target title="Release Base">
-				<Option output="..\..\lib\libWXHelpb" prefix_auto="0" extension_auto="1" />
-				<Option working_dir="" />
-				<Option object_output="..\..\lib\obj\libWXHelp\releasebase" />
-				<Option type="2" />
-				<Option compiler="gcc" />
-				<Option createDefFile="1" />
-				<Compiler>
-					<Add option="-Os" />
-					<Add option="-O2" />
-					<Add directory="$(#mingw.lib)\wx\include\base-ansi-release-static-2.8" />
-				</Compiler>
-				<Linker>
-					<Add option="-s" />
-				</Linker>
-			</Target>
-			<Target title="Debug Base">
-				<Option output="..\..\lib\libWXHelpbd" prefix_auto="0" extension_auto="1" />
-				<Option working_dir="" />
-				<Option object_output="..\..\lib\obj\libWXHelp\debugbase" />
-				<Option type="2" />
-				<Option compiler="gcc" />
-				<Option createDefFile="1" />
-				<Compiler>
-					<Add option="-Wall" />
-					<Add option="-g" />
-					<Add option="-D__WXDEBUG__" />
-					<Add directory="$(#mingw.lib)\wx\include\base-ansi-debug-static-2.8" />
-				</Compiler>
 			</Target>
 			<Target title="Release Unicode">
 				<Option output="..\..\lib\libWXHelpu" prefix_auto="0" extension_auto="1" />
@@ -76,7 +48,8 @@
 				<Compiler>
 					<Add option="-Os" />
 					<Add option="-O2" />
-					<Add directory="$(#mingw.lib)\wx\include\msw-unicode-release-static-2.8" />
+					<Add directory="$(#wx3.include)" />
+					<Add directory="$(#wx3.lib)\msw-unicode-release-static-2.9" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -93,7 +66,8 @@
 					<Add option="-Wall" />
 					<Add option="-g" />
 					<Add option="-D__WXDEBUG__" />
-					<Add directory="$(#mingw.lib)\wx\include\msw-unicode-debug-static-2.8" />
+					<Add directory="$(#wx3.include)" />
+					<Add directory="$(#wx3.lib)\msw-unicode-debug-static-2.9" />
 				</Compiler>
 			</Target>
 			<Target title="Release Base Unicode">
@@ -106,7 +80,8 @@
 				<Compiler>
 					<Add option="-Os" />
 					<Add option="-O2" />
-					<Add directory="$(#mingw.lib)\wx\include\base-unicode-release-static-2.8" />
+					<Add directory="$(#wx3.include)" />
+					<Add directory="$(#wx3.lib)\base-unicode-release-static-2.9" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -123,13 +98,14 @@
 					<Add option="-Wall" />
 					<Add option="-g" />
 					<Add option="-D__WXDEBUG__" />
-					<Add directory="$(#mingw.lib)\wx\include\base-unicode-debug-static-2.8" />
+					<Add directory="$(#wx3.include)" />
+					<Add directory="$(#wx3.lib)\base-unicode-debug-static-2.9" />
 				</Compiler>
 			</Target>
 		</Build>
 		<VirtualTargets>
-			<Add alias="All" targets="Debug;Release;Release Base;Debug Base;Release Unicode;Debug Unicode;Release Base Unicode;Debug Base Unicode;" />
-			<Add alias="All Ansi" targets="Debug;Release;Release Base;Debug Base;" />
+			<Add alias="All" targets="Debug;Release;Release Unicode;Debug Unicode;Release Base Unicode;Debug Base Unicode;" />
+			<Add alias="All Ansi" targets="Debug;Release;" />
 			<Add alias="All Unicode" targets="Release Unicode;Debug Unicode;Release Base Unicode;Debug Base Unicode;" />
 		</VirtualTargets>
 		<Compiler>
@@ -142,7 +118,6 @@
 			<Add option="-DIL_STATIC_LIB" />
 			<Add option="-DUSE_SQUISH" />
 			<Add option="-DCACHE_GXIMAGE" />
-			<Add directory="$(#wx.include)" />
 			<Add directory="..\libASE-1.0" />
 			<Add directory="..\..\include" />
 			<Add directory="$(#mingw.include)\GraphicsMagick" />
@@ -182,15 +157,11 @@
 			<Option virtualFolder="wrapper\" />
 			<Option target="Debug" />
 			<Option target="Release" />
-			<Option target="Release Unicode" />
-			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="choicewrapper.h">
 			<Option virtualFolder="wrapper\" />
 			<Option target="Debug" />
 			<Option target="Release" />
-			<Option target="Release Unicode" />
-			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="colhtmllbox.cpp">
 			<Option virtualFolder="wrapper\" />
@@ -210,43 +181,31 @@
 			<Option virtualFolder="wrapper\" />
 			<Option target="Debug" />
 			<Option target="Release" />
-			<Option target="Release Unicode" />
-			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="comboboxwrapper.h">
 			<Option virtualFolder="wrapper\" />
 			<Option target="Debug" />
 			<Option target="Release" />
-			<Option target="Release Unicode" />
-			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="comboctrlwrapper.cpp">
 			<Option virtualFolder="wrapper\" />
 			<Option target="Debug" />
 			<Option target="Release" />
-			<Option target="Release Unicode" />
-			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="comboctrlwrapper.h">
 			<Option virtualFolder="wrapper\" />
 			<Option target="Debug" />
 			<Option target="Release" />
-			<Option target="Release Unicode" />
-			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="confhelp.cpp" />
 		<Unit filename="confhelp.h" />
 		<Unit filename="exdataview.cpp">
 			<Option target="Debug" />
 			<Option target="Release" />
-			<Option target="Release Unicode" />
-			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="exdataview.h">
 			<Option target="Debug" />
 			<Option target="Release" />
-			<Option target="Release Unicode" />
-			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="filedlgg.cpp">
 			<Option virtualFolder="filedlg\" />
@@ -313,14 +272,10 @@
 		<Unit filename="logext.cpp">
 			<Option target="Debug" />
 			<Option target="Release" />
-			<Option target="Release Unicode" />
-			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="logext.h">
 			<Option target="Debug" />
 			<Option target="Release" />
-			<Option target="Release Unicode" />
-			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="popupmessagewin.cpp">
 			<Option target="Debug" />
@@ -379,14 +334,10 @@
 		<Unit filename="wrappereditevent.cpp">
 			<Option target="Debug" />
 			<Option target="Release" />
-			<Option target="Release Unicode" />
-			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="wrappereditevent.h">
 			<Option target="Debug" />
 			<Option target="Release" />
-			<Option target="Release Unicode" />
-			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="wxInputBox.cpp">
 			<Option virtualFolder="validators\" />
@@ -407,29 +358,22 @@
 		</Unit>
 		<Unit filename="wxgmagick.cpp" />
 		<Unit filename="wxgmagick.h" />
+		<Unit filename="wxutilityfunctions.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
+		</Unit>
+		<Unit filename="wxutilityfunctions.h">
+			<Option target="Debug" />
+			<Option target="Release" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<envvars />
-			<debugger>
-				<remote_debugging target="Precompile XRC">
-					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
-				</remote_debugging>
-				<remote_debugging target="Release">
-					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
-				</remote_debugging>
-				<remote_debugging target="Debug (Public)">
-					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
-				</remote_debugging>
-				<remote_debugging target="Premake Resources">
-					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
-				</remote_debugging>
-				<remote_debugging target="Debug Unicode">
-					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
-				</remote_debugging>
-				<remote_debugging target="Debug (Public)">
-					<options conn_type="0" serial_port="" serial_baud="115200" ip_address="" ip_port="" additional_cmds="" additional_cmds_before="" skip_ld_path="0" />
-				</remote_debugging>
-			</debugger>
+			<debugger />
 			<AutoVersioning>
 				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="10" build_times_to_increment_minor="100" />
 				<Settings autoincrement="1" date_declarations="1" do_auto_increment="0" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="version.h" />

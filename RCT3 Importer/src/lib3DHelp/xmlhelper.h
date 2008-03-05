@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 // 3D Utility Library
-// Xml helper functions
-// Copyright (C) 2006 Tobias Minch
+// Xml helper functions & macros
+// Copyright (C) 2006-2008 Tobias Minch
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -29,18 +29,24 @@
 #ifndef _XMLHELPER_H_
 #define _XMLHELPER_H_
 
-inline wxXmlNode* makeElementNode(const wxString& name) {
-    return new wxXmlNode(NULL, wxXML_ELEMENT_NODE, name);
-}
+bool parseFloat(std::string& str, float& a);
+bool parseULong(std::string& str, unsigned long& a);
+bool parseMatrixRow(std::string& str, float& a, float& b, float& c, float& d);
+bool parseMatrix(std::string& str, MATRIX& m);
+bool parseCompilerVector(std::string& str, txyz& v);
 
-inline wxXmlNode* makeTextNode(const wxString& text) {
-    return new wxXmlNode(NULL, wxXML_TEXT_NODE, wxT(""), text);
-}
-
-inline wxXmlNode* makeContentNode(const wxString& name, const wxString& text) {
-    wxXmlNode* t = makeElementNode(name);
-    t->SetChildren(makeTextNode(text));
-    return t;
-}
+//inline wxXmlNode* makeElementNode(const wxString& name) {
+//    return new wxXmlNode(NULL, wxXML_ELEMENT_NODE, name);
+//}
+//
+//inline wxXmlNode* makeTextNode(const wxString& text) {
+//    return new wxXmlNode(NULL, wxXML_TEXT_NODE, wxT(""), text);
+//}
+//
+//inline wxXmlNode* makeContentNode(const wxString& name, const wxString& text) {
+//    wxXmlNode* t = makeElementNode(name);
+//    t->SetChildren(makeTextNode(text));
+//    return t;
+//}
 
 #endif
