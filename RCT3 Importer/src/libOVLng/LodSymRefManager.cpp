@@ -34,7 +34,7 @@
 #include "StringTable.h"
 
 int comparesymbols(const void *s1,const void *s2) {
-	return stricmp(((SymbolStruct *)s1)->Symbol,((SymbolStruct *)s2)->Symbol);
+	return strcasecmp(((SymbolStruct *)s1)->Symbol,((SymbolStruct *)s2)->Symbol);
 }
 
 ovlLodSymRefManager::~ovlLodSymRefManager() {

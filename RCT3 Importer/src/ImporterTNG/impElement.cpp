@@ -24,6 +24,8 @@
 
 #include "impElement.h"
 
+#include <wx/intl.h>
+
 #include "importerresourcefiles.h"
 
 using namespace std;

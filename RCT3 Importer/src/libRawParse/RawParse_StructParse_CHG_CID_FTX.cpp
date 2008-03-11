@@ -237,14 +237,14 @@ void cRawParser::ParseFTX(cXmlNode& node) {
                             c_fti.dimension = c_fts.dimension;
 
                         img.flip();
-                        c_fts.palette = counted_array_ptr<unsigned char>(new unsigned char[256 * sizeof(RGBQUAD)]);
-                        memset(c_fts.palette.get(), 0, 256 * sizeof(RGBQUAD));
+                        c_fts.palette = counted_array_ptr<unsigned char>(new unsigned char[256 * sizeof(COLOURQUAD)]);
+                        memset(c_fts.palette.get(), 0, 256 * sizeof(COLOURQUAD));
                         c_fts.texture = counted_array_ptr<unsigned char>(new unsigned char[c_fts.dimension * c_fts.dimension]);
                         if (usealpha)
                             c_fts.alpha = counted_array_ptr<unsigned char>(new unsigned char[c_fts.dimension * c_fts.dimension]);
 
                         if (c_fts.recolourable && (img.type() != Magick::PaletteType)) {
-                            memcpy(c_fts.palette.get(), cFlexiTexture::GetRGBPalette(), 256 * sizeof(RGBQUAD));
+                            memcpy(c_fts.palette.get(), cFlexiTexture::GetRGBPalette(), 256 * sizeof(COLOURQUAD));
                             img.GetAs8bitForced(c_fts.texture.get(), c_fts.palette.get(), true);
                         } else {
                             img.GetAs8bit(c_fts.texture.get(), c_fts.palette.get());
@@ -255,13 +255,13 @@ void cRawParser::ParseFTX(cXmlNode& node) {
                         }
 
                         for (unsigned int j = 0; j < 256; j++)
-                            reinterpret_cast<RGBQUAD*>(c_fts.palette.get())[j].rgbReserved = alphacutoff;
+                            reinterpret_cast<COLOURQUAD*>(c_fts.palette.get())[j].alpha = alphacutoff;
 
                         if (m_mode == MODE_BAKE) {
-                            unsigned long outsize = 4 * ((c_fts.dimension * c_fts.dimension > 256 * sizeof(RGBQUAD))?c_fts.dimension * c_fts.dimension:256 * sizeof(RGBQUAD));
+                            unsigned long outsize = 4 * ((c_fts.dimension * c_fts.dimension > 256 * sizeof(COLOURQUAD))?c_fts.dimension * c_fts.dimension:256 * sizeof(COLOURQUAD));
                             unsigned long outlen = outsize;
                             counted_array_ptr<char> outbuf(new char[outsize]) ;
-                            int bret = base64_encode(c_fts.palette.get(), 256 * sizeof(RGBQUAD), reinterpret_cast<unsigned char*>(outbuf.get()), &outlen);
+                            int bret = base64_encode(c_fts.palette.get(), 256 * sizeof(COLOURQUAD), reinterpret_cast<unsigned char*>(outbuf.get()), &outlen);
                             switch (bret) {
                                 case CRYPT_OK:
                                     break;
@@ -394,8 +394,8 @@ void cRawParser::ParseFTX(cXmlNode& node) {
 
                     wxString tex = UTF8STRINGWRAP(subchild.content());
                     MakeVariable(tex);
-                    c_fts.palette = counted_array_ptr<unsigned char>(new unsigned char[256 * sizeof(RGBQUAD)]);
-                    unsigned long outlen = 256 * sizeof(RGBQUAD);
+                    c_fts.palette = counted_array_ptr<unsigned char>(new unsigned char[256 * sizeof(COLOURQUAD)]);
+                    unsigned long outlen = 256 * sizeof(COLOURQUAD);
 #ifdef UNICODE
                     int bret = base64_decode(reinterpret_cast<const unsigned char*>(tex.ToAscii().data()), tex.Length(), c_fts.palette.get(), &outlen);
 #else
@@ -411,8 +411,8 @@ void cRawParser::ParseFTX(cXmlNode& node) {
                         default:
                             throw RCT3Exception(wxString(_("Unknown base64 error decoding ftx/ftxframe/palettedata tag ")) + name);
                     }
-                    if (outlen != 256 * sizeof(RGBQUAD))
-                        throw RCT3Exception(wxString::Format(_("Datasize mismatch (%ld/%d) error in ftx('%s')/ftxframe/palettedata tag."), outlen, 256 * sizeof(RGBQUAD),name.c_str()));
+                    if (outlen != 256 * sizeof(COLOURQUAD))
+                        throw RCT3Exception(wxString::Format(_("Datasize mismatch (%ld/%d) error in ftx('%s')/ftxframe/palettedata tag."), outlen, 256 * sizeof(COLOURQUAD),name.c_str()));
                 } else if (subchild(RAWXML_FTX_FRAME_TDATA)) {
                     if (c_fts.texture.get() && (m_mode != MODE_BAKE))
                         throw RCT3Exception(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe/texturedata: multiple datasources."));

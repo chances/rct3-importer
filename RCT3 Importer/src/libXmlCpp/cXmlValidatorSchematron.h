@@ -25,9 +25,13 @@
 #ifndef CXMLVALIDATORSCHEMATRON_H_INCLUDED
 #define CXMLVALIDATORSCHEMATRON_H_INCLUDED
 
+#ifdef XMLCPP_USE_SCHEMATRON_PATCHED_LIBXML
+
 #include "cXmlValidator.h"
 
 #include <libxml/schematron.h>
+
+#define XML_SCHEMATRON_OUT_ERROR (1 << 3)
 
 namespace xmlcpp {
 
@@ -57,5 +61,7 @@ public:
 };
 
 } // Namespace
+
+#endif
 
 #endif // CXMLVALIDATORRLEAXNG_H_INCLUDED

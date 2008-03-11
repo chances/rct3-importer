@@ -22,6 +22,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifdef XMLCPP_USE_SCHEMATRON_PATCHED_LIBXML
+
 
 #include "cXmlValidatorSchematron.h"
 
@@ -115,3 +117,4 @@ int cXmlValidatorSchematron::validate(boost::shared_ptr<xmlDoc>& doc, int option
 
 } // Namespace
 
+#endif

@@ -60,8 +60,8 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
                 ms3d_vertex_ex_t *vertexex = NULL;
                 ms3d_triangle_t *face;
 
-                UINT index = i / 3;
-                BOOL add;
+                unsigned int index = i / 3;
+                bool add;
 
                 word i_triangle = group->triangleIndices[index];
                 if (i_triangle >= ms3df->GetNumTriangles()) {

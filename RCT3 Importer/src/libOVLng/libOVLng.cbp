@@ -5,12 +5,12 @@
 		<Option title="libOVLng" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="Structure Managers\;" />
+		<Option virtualFolders="Structure Managers/;" />
 		<Build>
 			<Target title="Release">
-				<Option output="..\..\lib\libOVLng.a" prefix_auto="0" extension_auto="0" />
+				<Option output="../../lib/libOVLng.a" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="" />
-				<Option object_output="..\..\lib\obj\libOVLng\release" />
+				<Option object_output="../../lib/obj/libOVLng/release" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -23,9 +23,9 @@
 				</Linker>
 			</Target>
 			<Target title="Debug">
-				<Option output="..\..\lib\libOVLngd.a" prefix_auto="0" extension_auto="0" />
+				<Option output="../../lib/libOVLngd.a" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="" />
-				<Option object_output="..\..\lib\obj\libOVLng\debug" />
+				<Option object_output="../../lib/obj/libOVLng/debug" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -38,9 +38,9 @@
 				</Compiler>
 			</Target>
 			<Target title="Debug Unicode">
-				<Option output="..\..\lib\libOVLngud.a" prefix_auto="0" extension_auto="0" />
+				<Option output="../../lib/libOVLngud.a" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="" />
-				<Option object_output="..\..\lib\obj\libOVLng\debuguni" />
+				<Option object_output="../../lib/obj/libOVLng/debuguni" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -51,7 +51,8 @@
 					<Add option="-DDEBUG" />
 					<Add option="-DUNICODE" />
 					<Add directory="$(#wx3.include)" />
-					<Add directory="$(#wx3.lib)\msw-unicode-debug-static-2.9" />
+					<Add directory="$(#wx3.lib)/wx/include/msw-unicode-debug-static-2.9" />
+					<Add directory="$(#wx3.lib)/wx/include/gtk2-unicode-debug-static-2.9" />
 				</Compiler>
 			</Target>
 		</Build>
@@ -65,165 +66,172 @@
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-fno-strict-aliasing" />
-			<Add directory="..\..\include" />
-			<Add directory="..\lib3DHelp" />
+			<Add option="[[" />
+			<Add option='if ((PLATFORM == PLATFORM_MSW) &amp;&amp; (GetCompilerFactory().GetCompilerVersionString(_T(&quot;gcc&quot;)) &gt;= _T(&quot;4.0.0&quot;))) {' />
+			<Add option='print(_T(&quot;-Wno-attributes -mthreads&quot;));' />
+			<Add option="} else {" />
+			<Add option='print(_T(&quot;-pthread -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -D__WXGTK__&quot;));' />
+			<Add option="}" />
+			<Add option="]]" />
+			<Add directory="../../include" />
+			<Add directory="../lib3DHelp" />
 		</Compiler>
 		<Linker>
 			<Add option="--no-export-all-symbols --add-stdcall-alias" />
 		</Linker>
-		<Unit filename="..\..\include\animatedride.h" />
-		<Unit filename="..\..\include\attraction.h" />
-		<Unit filename="..\..\include\boneanim.h" />
-		<Unit filename="..\..\include\boneshape.h" />
-		<Unit filename="..\..\include\car.h" />
-		<Unit filename="..\..\include\carrieditems.h" />
-		<Unit filename="..\..\include\counted_array_ptr.h" />
-		<Unit filename="..\..\include\counted_ptr.h" />
-		<Unit filename="..\..\include\flexitexture.h" />
-		<Unit filename="..\..\include\guiicon.h" />
-		<Unit filename="..\..\include\icontexture.h" />
-		<Unit filename="..\..\include\morphmesh.h" />
-		<Unit filename="..\..\include\ovlstructs.h" />
-		<Unit filename="..\..\include\path.h" />
-		<Unit filename="..\..\include\scenery.h" />
-		<Unit filename="..\..\include\sceneryrevised.h" />
-		<Unit filename="..\..\include\sceneryvisual.h" />
-		<Unit filename="..\..\include\sharedride.h" />
-		<Unit filename="..\..\include\spline.h" />
-		<Unit filename="..\..\include\stall.h" />
-		<Unit filename="..\..\include\staticshape.h" />
-		<Unit filename="..\..\include\terraintype.h" />
-		<Unit filename="..\..\include\vertex.h" />
-		<Unit filename="..\..\include\wildanimalitem.h" />
-		<Unit filename="..\..\include\xmldefs.h" />
+		<Unit filename="../../include/animatedride.h" />
+		<Unit filename="../../include/attraction.h" />
+		<Unit filename="../../include/boneanim.h" />
+		<Unit filename="../../include/boneshape.h" />
+		<Unit filename="../../include/car.h" />
+		<Unit filename="../../include/carrieditems.h" />
+		<Unit filename="../../include/counted_array_ptr.h" />
+		<Unit filename="../../include/counted_ptr.h" />
+		<Unit filename="../../include/flexitexture.h" />
+		<Unit filename="../../include/guiicon.h" />
+		<Unit filename="../../include/icontexture.h" />
+		<Unit filename="../../include/morphmesh.h" />
+		<Unit filename="../../include/ovlstructs.h" />
+		<Unit filename="../../include/path.h" />
+		<Unit filename="../../include/scenery.h" />
+		<Unit filename="../../include/sceneryrevised.h" />
+		<Unit filename="../../include/sceneryvisual.h" />
+		<Unit filename="../../include/sharedride.h" />
+		<Unit filename="../../include/spline.h" />
+		<Unit filename="../../include/stall.h" />
+		<Unit filename="../../include/staticshape.h" />
+		<Unit filename="../../include/terraintype.h" />
+		<Unit filename="../../include/vertex.h" />
+		<Unit filename="../../include/wildanimalitem.h" />
+		<Unit filename="../../include/xmldefs.h" />
 		<Unit filename="LodSymRefManager.cpp" />
 		<Unit filename="LodSymRefManager.h" />
 		<Unit filename="ManagerBAN.cpp">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerBAN.h">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerBSH.cpp">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerBSH.h">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerBTBL.cpp">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerBTBL.h">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerCED.cpp">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerCED.h">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerCHG.cpp">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerCHG.h">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerCID.cpp">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerCID.h">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerCommon.cpp">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerCommon.h">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerFLIC.cpp">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerFLIC.h">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerFTX.cpp">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerFTX.h">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerGSI.cpp">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerGSI.h">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerOVL.cpp">
 			<Option weight="10" />
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerOVL.h">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerPTD.cpp">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerPTD.h">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerSAT.cpp">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerSAT.h">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerSHS.cpp">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerSHS.h">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerSID.cpp">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerSID.h">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerSPL.cpp">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerSPL.h">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerSTA.cpp">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerSTA.h">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerSVD.cpp">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerSVD.h">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerTEX.cpp">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerTEX.h">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerTXT.cpp">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerTXT.h">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerWAI.cpp">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="ManagerWAI.h">
-			<Option virtualFolder="Structure Managers\" />
+			<Option virtualFolder="Structure Managers/" />
 		</Unit>
 		<Unit filename="OVLClasses.cpp" />
 		<Unit filename="OVLClasses.h" />

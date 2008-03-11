@@ -64,7 +64,7 @@ c3DLoader* DoLoadFile(const wxChar *filename) {
 }
 
 c3DLoaderCacheEntry::c3DLoaderCacheEntry(wxString filename) {
-    m_object = counted_ptr<c3DLoader>(DoLoadFile(filename.fn_str()));
+    m_object = counted_ptr<c3DLoader>(DoLoadFile(filename.c_str()));
     m_file = filename;
     if (m_object.get())
         m_mtime = m_file.GetModificationTime();
@@ -85,7 +85,7 @@ counted_ptr<c3DLoader>& c3DLoaderCacheEntry::Get() {
         }
         if (m_mtime != lastmod) {
             wxString lfile = m_file.GetFullPath();
-            counted_ptr<c3DLoader> reload(DoLoadFile(lfile.fn_str()));
+            counted_ptr<c3DLoader> reload(DoLoadFile(lfile.c_str()));
             if (reload.get()) {
                 m_object = reload;
                 if (m_object.get())
@@ -98,7 +98,7 @@ counted_ptr<c3DLoader>& c3DLoaderCacheEntry::Get() {
         return m_object;
     } else {
         // Try again
-        m_object = counted_ptr<c3DLoader>(DoLoadFile(m_file.GetFullPath().fn_str()));
+        m_object = counted_ptr<c3DLoader>(DoLoadFile(m_file.GetFullPath().c_str()));
         if (m_object.get())
             m_mtime = m_file.GetModificationTime();
         return m_object;

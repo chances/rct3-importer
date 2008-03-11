@@ -86,6 +86,8 @@ public:
     inline static void ClearGlobalStructuredErrors() { g_structurederrors.clear(); }
     inline static const std::vector<std::string>& GetGlobalGenericErrors() { return g_genericerrors; }
     inline static void ClearGlobalGenericErrors() { g_genericerrors.clear(); }
+
+    virtual ~cXmlErrorHandler() {}
 };
 
 } // Namespace

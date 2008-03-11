@@ -23,7 +23,7 @@
 //#pragma once
 
 //#include "main include file.h"
-#include <windef.h>
+//#include <windef.h>
 #include <vector>
 #include <string>
 
@@ -34,6 +34,42 @@ typedef unsigned char byte;
 #ifndef word
 typedef unsigned short word;
 #endif // word
+
+#ifndef UINT
+typedef unsigned int UINT;
+#endif
+
+#ifndef DWORD
+typedef unsigned long DWORD;
+#endif
+
+#ifndef WORD
+typedef unsigned short WORD;
+#endif
+
+#ifndef LONG
+typedef long LONG;
+#endif
+
+#ifndef MAKELONG
+#define MAKELONG(a,b)   ((LONG)(((WORD)(a))|(((DWORD)((WORD)(b)))<<16)))
+#endif
+
+#ifndef LOWORD
+#define LOWORD(l)       ((WORD)((DWORD)(l)))
+#endif
+
+#ifndef HIWORD
+#define HIWORD(l)       ((WORD)(((DWORD)(l)>>16)&0xFFFF))
+#endif
+
+#ifndef FALSE
+#define FALSE false
+#endif
+
+#ifndef TRUE
+#define TRUE true
+#endif
 
 #if defined( _MSC_VER ) || defined( __BORLANDC__ )
 #	include <pshpack1.h>

@@ -25,7 +25,7 @@
 #include "impRawovlFileManager.h"
 
 #include <boost/shared_ptr.hpp>
-#include <cryptopp/osrng.h>
+#include <crypto++/osrng.h>
 
 #include "xmldefs.h"
 #include "cXmlDoc.h"

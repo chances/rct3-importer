@@ -252,28 +252,28 @@ public:
     inline wxString wxcontent() const { return wxString::FromUTF8(content_internal(true).c_str()); }
     inline void wxcontent(const wxString& cont, bool encode_spchars = true) { content(cont.utf8_str(), encode_spchars); }
 
-    inline cXmlNode wxprop(const wxString& nprop, const wxString& val, bool encode_spchars = true) { return prop(nprop.utf8_str().data(), val.utf8_str().data(), encode_spchars); }
-    inline cXmlNode wxprop(const char* nprop, const wxString& val, bool encode_spchars = true) { return prop(nprop, val.utf8_str().data(), encode_spchars); }
-    inline cXmlNode wxprop(const wxString& nprop, const char* val, bool encode_spchars = true) { return prop(nprop.utf8_str().data(), val, encode_spchars); }
+    inline cXmlNode wxprop(const wxString& nprop, const wxString& val, bool encode_spchars = true) { return prop(static_cast<const char*>(nprop.utf8_str()), static_cast<const char*>(val.utf8_str()), encode_spchars); }
+    inline cXmlNode wxprop(const char* nprop, const wxString& val, bool encode_spchars = true) { return prop(nprop, static_cast<const char*>(val.utf8_str()), encode_spchars); }
+    inline cXmlNode wxprop(const wxString& nprop, const char* val, bool encode_spchars = true) { return prop(static_cast<const char*>(nprop.utf8_str()), val, encode_spchars); }
 
     inline wxString wxgetPropVal(const wxString& nprop, const wxString& def) const {
-        return wxString::FromUTF8(getPropVal(nprop.utf8_str().data(), def.utf8_str().data()).c_str());
+        return wxString::FromUTF8(getPropVal(static_cast<const char*>(nprop.utf8_str()), static_cast<const char*>(def.utf8_str())).c_str());
     }
     inline wxString wxgetPropVal(const char* nprop, const wxString& def) const {
-        return wxString::FromUTF8(getPropVal(nprop, def.utf8_str().data()).c_str());
+        return wxString::FromUTF8(getPropVal(nprop, static_cast<const char*>(def.utf8_str())).c_str());
     }
     inline wxString wxgetPropVal(const char* nprop, const char* def) const {
         return wxString::FromUTF8(getPropVal(nprop, def).c_str());
     }
     inline wxString wxgetPropVal(const wxString& nprop) const {
-        return wxString::FromUTF8(getPropVal(nprop.utf8_str().data(), NULL).c_str());
+        return wxString::FromUTF8(getPropVal(static_cast<const char*>(nprop.utf8_str()), NULL).c_str());
     }
     inline wxString wxgetPropVal(const char* nprop) const {
         return wxString::FromUTF8(getPropVal(nprop, NULL).c_str());
     }
     inline bool wxgetPropVal(const wxString& nprop, wxString* val) const {
         std::string temp;
-        if (getPropVal(nprop.utf8_str().data(), &temp)) {
+        if (getPropVal(static_cast<const char*>(nprop.utf8_str()), &temp)) {
             *val = wxString::FromUTF8(temp.c_str());
             return true;
         }

@@ -36,7 +36,7 @@
 #include "gximage.h"
 #include "lib3Dconfig.h"
 #include "matrix.h"
-#include "OVLEXception.h"
+#include "OVLException.h"
 #include "OVLManagers.h"
 #include "OVLng.h"
 #include "RCT3Exception.h"
@@ -44,6 +44,10 @@
 #include "texcheck.h"
 #include "xmldefs.h"
 #include "xmlhelper.h"
+
+#ifndef MAX_PATH
+#define MAX_PATH 256
+#endif
 
 using namespace xmlcpp;
 
@@ -2309,7 +2313,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                     }
                 }
 
-                counted_ptr<c3DLoader> object = c3DLoader::LoadFile(i_mod->file.GetFullPath().fn_str());
+                counted_ptr<c3DLoader> object = c3DLoader::LoadFile(i_mod->file.GetFullPath().c_str());
                 if (!object.get()) {
                     // Poof went the model!
                     throw RCT3Exception(wxString::Format(_("Something happened to the file of model '%s'."), i_mod->name.c_str()));
@@ -2498,7 +2502,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                     }
                 }
 
-                counted_ptr<c3DLoader> object = c3DLoader::LoadFile(i_mod->file.GetFullPath().fn_str());
+                counted_ptr<c3DLoader> object = c3DLoader::LoadFile(i_mod->file.GetFullPath().c_str());
                 if (!object.get()) {
                     // Poof went the model!
                     throw RCT3Exception(wxString::Format(_("Something happened to the file of model '%s'."), i_mod->name.c_str()));
@@ -2686,8 +2690,8 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                 c_fts.recolourable = i_ftxfr->recolorable();
 
                 wxGXImage tex(i_ftxfr->texture().GetFullPath());
-                c_fts.palette = counted_array_ptr<unsigned char>(new unsigned char[256 * sizeof(RGBQUAD)]);
-                memset(c_fts.palette.get(), 0, 256 * sizeof(RGBQUAD));
+                c_fts.palette = counted_array_ptr<unsigned char>(new unsigned char[256 * sizeof(COLOURQUAD)]);
+                memset(c_fts.palette.get(), 0, 256 * sizeof(COLOURQUAD));
 
                 if ((tex.GetWidth() != dimension) || (tex.GetHeight() != dimension))
                     tex.Rescale(dimension, dimension);
@@ -2698,7 +2702,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                 tex.flip();
 
                 if (i_ftxfr->recolorable() && (tex.type() != Magick::PaletteType)) {
-                    memcpy(c_fts.palette.get(), cFlexiTexture::GetRGBPalette(), 256 * sizeof(RGBQUAD));
+                    memcpy(c_fts.palette.get(), cFlexiTexture::GetRGBPalette(), 256 * sizeof(COLOURQUAD));
                     tex.GetAs8bitForced(c_fts.texture.get(), c_fts.palette.get(), true);
                 } else {
                     tex.GetAs8bit(c_fts.texture.get(), c_fts.palette.get());
@@ -2715,7 +2719,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                 }
 
                 for (unsigned int j = 0; j < 256; j++)
-                    reinterpret_cast<RGBQUAD*>(c_fts.palette.get())[j].rgbReserved = i_ftxfr->alphacutoff();
+                    reinterpret_cast<COLOURQUAD*>(c_fts.palette.get())[j].alpha = i_ftxfr->alphacutoff();
 
                 c_ftis.frames.push_back(c_fts);
 //                    c_ftx->AddTextureFrame(dimension, i_ftxfr->recolorable(),

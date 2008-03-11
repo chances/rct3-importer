@@ -887,7 +887,7 @@ bool cFlexiTexture::g_rgbPaletteCreated = false;
 
 COLOURQUAD* cFlexiTexture::GetRGBPalette() {
     if (!g_rgbPaletteCreated) {
-        ZeroMemory(&g_rgbPalette, sizeof(g_rgbPalette));
+        memset(&g_rgbPalette, 0, sizeof(g_rgbPalette));
         for (int i = 1; i <= 85; i++) {
             g_rgbPalette[i].red = ((86 - i) * 255) / 85;
             g_rgbPalette[i + 85].green = ((86 - i) * 255) / 85;
@@ -1016,11 +1016,11 @@ cMeshStruct cModel::MakeMesh(const counted_ptr<c3DLoader>& obj, unsigned int n) 
 }
 
 bool cModel::Load() {
-    counted_ptr<c3DLoader> obj = c3DLoader::LoadFile(file.GetFullPath().fn_str());
+    counted_ptr<c3DLoader> obj = c3DLoader::LoadFile(file.GetFullPath().c_str());
 
     if (!obj.get()) {
         fatal_error = true;
-        error.Add(wxString::Format(_("Couldn't load file '%s'. Wrong format or file not found."), file.GetFullPath().fn_str()));
+        error.Add(wxString::Format(_("Couldn't load file '%s'. Wrong format or file not found."), file.GetFullPath().c_str()));
         return false;
     }
 
@@ -1063,7 +1063,7 @@ bool cModel::Sync() {
         return Load();
 
     // Load & check the object file
-    counted_ptr<c3DLoader> obj = c3DLoader::LoadFile(file.GetFullPath().fn_str());
+    counted_ptr<c3DLoader> obj = c3DLoader::LoadFile(file.GetFullPath().c_str());
     if (!obj.get()) {
         fatal_error = true;
         error.push_back(wxString::Format(_("Model file '%s' not found or of an unknown format."), file.GetFullPath().c_str()));
@@ -1268,7 +1268,7 @@ bool cModel::CheckMeshes(bool animated) {
         wxLogWarning(_("Model '%s': Model file not found."), name.c_str());
         return false;
     }
-    counted_ptr<c3DLoader> object = c3DLoader::LoadFile(file.GetFullPath().fn_str());
+    counted_ptr<c3DLoader> object = c3DLoader::LoadFile(file.GetFullPath().c_str());
     if (!object.get()) {
         fatal_error = true;
         wxLogWarning(_("Model '%s': Error loading model file."), name.c_str());

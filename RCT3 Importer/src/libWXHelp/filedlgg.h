@@ -268,6 +268,12 @@ private:
 //  wxFileCtrl
 //-----------------------------------------------------------------------------
 
+#ifdef __WXGTK__
+
+#include <wx/gtk/filectrl.h>
+
+#else
+
 class WXDLLEXPORT wxFileCtrl : public wxListCtrl
 {
 public:
@@ -324,5 +330,7 @@ private:
     DECLARE_DYNAMIC_CLASS(wxFileCtrl)
     DECLARE_EVENT_TABLE()
 };
+
+#endif
 
 #endif // _WX_FILEDLGG_H_

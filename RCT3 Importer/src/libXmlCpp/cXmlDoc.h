@@ -100,9 +100,9 @@ namespace xmlcpp {
         inline const boost::shared_ptr<xmlDoc>& get() const { return m_doc; }
 
 #ifdef XMLCPP_USE_WXWIDGETS
-        inline bool read(const wxString& filename, const wxString& encoding = wxT(""), int options = 0) { return read(filename.utf8_str(), encoding.IsEmpty()?NULL:encoding.utf8_str().data(), options); }
+        inline bool read(const wxString& filename, const wxString& encoding = wxT(""), int options = 0) { return read(filename.utf8_str(), encoding.IsEmpty()?NULL:static_cast<const char*>(encoding.utf8_str()), options); }
         int write(const wxString& filename, bool indent = false, const wxString& encoding = wxString()) {
-            return write(filename.utf8_str().data(), indent, encoding.IsSameAs(wxString())?NULL:encoding.utf8_str().data());
+            return write(static_cast<const char*>(filename.utf8_str()), indent, encoding.IsSameAs(wxString())?NULL:static_cast<const char*>(encoding.utf8_str()));
         }
 #endif
     };

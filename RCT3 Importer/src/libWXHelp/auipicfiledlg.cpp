@@ -76,7 +76,11 @@ bool wxAUIPicFileDialog::Create( wxWindow *parent,
 
 
 void wxAUIPicFileDialog::HandleFilenameChange() {
+#ifdef __WXGTK__
+    wxString fullname = m_list->GetDirectory() + wxFILE_SEP_PATH + m_text->GetValue();
+#else
     wxString fullname = m_list->GetDir() + wxFILE_SEP_PATH + m_text->GetValue();
+#endif
     if (wxFileExists(fullname)) {
         m_picFileName->SetLabel(m_text->GetValue());
         wxSize imgsize = getBitmapSize(fullname.mb_str(wxConvFile));

@@ -32,7 +32,9 @@
 #include <expat.h>
 #endif
 #ifdef INFOTAG_JPEG
+#ifdef __WXWIN__
 #define HAVE_BOOLEAN
+#endif
 #include <jpeglib.h>
 #endif
 #ifdef INFOTAG_GMAGICK
@@ -49,6 +51,9 @@
 #include <tiffio.h>
 #endif
 #ifdef INFOTAG_XML2
+#ifdef XMLCALL
+#undef XMLCALL
+#endif
 #include <libxml/xmlversion.h>
 #endif
 #ifdef INFOTAG_XSLT

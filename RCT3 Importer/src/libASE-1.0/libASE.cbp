@@ -7,8 +7,8 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Release DLL">
-				<Option output="..\..\bin\libASE.dll" prefix_auto="0" extension_auto="0" />
-				<Option object_output="..\..\lib\obj\libASE\release dll" />
+				<Option output="../../bin/libASE.dll" prefix_auto="0" extension_auto="0" />
+				<Option object_output="../../lib/obj/libASE/release dll" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -23,8 +23,8 @@
 				</Linker>
 			</Target>
 			<Target title="Debug DLL">
-				<Option output="..\..\bin\libASEd.dll" prefix_auto="0" extension_auto="0" />
-				<Option object_output="..\..\lib\obj\libASE\debug dll" />
+				<Option output="../../bin/libASEd.dll" prefix_auto="0" extension_auto="0" />
+				<Option object_output="../../lib/obj/libASE/debug dll" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -41,9 +41,9 @@
 				</Linker>
 			</Target>
 			<Target title="Release">
-				<Option output="..\..\lib\libASE.a" prefix_auto="0" extension_auto="0" />
+				<Option output="../../lib/libASE.a" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="" />
-				<Option object_output="..\..\lib\obj\libASE\release" />
+				<Option object_output="../../lib/obj/libASE/release" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -56,9 +56,9 @@
 				</Linker>
 			</Target>
 			<Target title="Debug">
-				<Option output="..\..\lib\libASEd.a" prefix_auto="0" extension_auto="0" />
+				<Option output="../../lib/libASEd.a" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="" />
-				<Option object_output="..\..\lib\obj\libASE\debug" />
+				<Option object_output="../../lib/obj/libASE/debug" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -83,6 +83,13 @@
 			<Add alias="Release Unicode" targets="Release;" />
 		</VirtualTargets>
 		<Compiler>
+			<Add option="[[" />
+			<Add option='if ((PLATFORM == PLATFORM_MSW) &amp;&amp; (GetCompilerFactory().GetCompilerVersionString(_T(&quot;gcc&quot;)) &gt;= _T(&quot;4.0.0&quot;))) {' />
+			<Add option='print(_T(&quot;-Wno-attributes -mthreads&quot;));' />
+			<Add option="} else {" />
+			<Add option='print(_T(&quot;-pthread&quot;));' />
+			<Add option="}" />
+			<Add option="]]" />
 			<Add option="-D_WIN32=1" />
 		</Compiler>
 		<Linker>
@@ -100,7 +107,6 @@
 			<code_completion />
 			<envvars />
 			<debugger />
-			<lib_finder />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

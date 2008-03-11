@@ -25,7 +25,7 @@
 #include "importermain.h"
 
 #include <wx/aboutdlg.h>
-#include <wx/propgrid/propgrid.h>
+//#include <wx/propgrid/propgrid.h>
 
 #include "cLogListCtrl.h"
 

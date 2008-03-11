@@ -28,7 +28,7 @@
 
 #include "wx_pch.h"
 
-#include "resources\res_misc.h"
+#include "resources/res_misc.h"
 
 class dlgSave : public rcdlgSave {
 protected:

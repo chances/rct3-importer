@@ -440,6 +440,8 @@ void wxFileData::MakeItem( wxListItem &item )
 
 static bool ignoreChanges = false;
 
+#ifndef __WXGTK__
+
 IMPLEMENT_DYNAMIC_CLASS(wxFileCtrl,wxListCtrl)
 
 BEGIN_EVENT_TABLE(wxFileCtrl,wxListCtrl)
@@ -921,6 +923,8 @@ wxFileCtrl::~wxFileCtrl()
     FreeAllItemsData();
 }
 
+#endif
+
 //-----------------------------------------------------------------------------
 // wxGenericFileDialog
 //-----------------------------------------------------------------------------
@@ -1138,10 +1142,16 @@ void wxGenericFileDialog::CreateDefaultControls(wxWindow *parent, const wxString
     style2 |= wxSUNKEN_BORDER;
 #endif
 
+#ifdef __WXGTK__
+    m_list = new wxFileCtrl( parent, ID_LIST_CTRL,
+                             wxEmptyString, wxEmptyString, wxFileSelectorDefaultWildcardStr, style2,
+                             wxDefaultPosition, wxSize(540,200));
+#else
     m_list = new wxFileCtrl( parent, ID_LIST_CTRL,
                              wxEmptyString, ms_lastShowHidden,
                              wxDefaultPosition, wxSize(540,200),
                              style2);
+#endif
 
     m_text = new wxTextCtrl(parent, ID_TEXT, m_fileName,
                             wxDefaultPosition, wxDefaultSize,
@@ -1239,7 +1249,11 @@ int wxGenericFileDialog::ShowModal()
 {
     ignoreChanges = true;
 
+#ifdef __WXGTK__
+    m_list->SetDirectory(m_dir);
+#else
     m_list->GoToDir(m_dir);
+#endif
     UpdateControls();
     m_text->SetValue(m_fileName);
 
@@ -1254,7 +1268,11 @@ bool wxGenericFileDialog::Show( bool show )
 #ifndef __WIN32__
     if (show)
     {
+#ifdef __WXGTK__
+        m_list->SetDirectory(m_dir);
+#else
         m_list->GoToDir(m_dir);
+#endif
         UpdateControls();
         m_text->SetValue(m_fileName);
     }
@@ -1266,7 +1284,11 @@ bool wxGenericFileDialog::Show( bool show )
 void wxGenericFileDialog::DoSetFilterIndex(int filterindex)
 {
     wxString *str = (wxString*) m_choice->GetClientData( filterindex );
+#ifdef __WXGTK__
+    m_list->SetWildcard( *str );
+#else
     m_list->SetWild( *str );
+#endif
     m_filterIndex = filterindex;
     if ( str->Left(2) == wxT("*.") )
     {
@@ -1338,6 +1360,8 @@ void wxGenericFileDialog::OnTextChange( wxCommandEvent &WXUNUSED(event) )
     {
         // Clear selections.  Otherwise when the user types in a value they may
         // not get the file whose name they typed.
+
+#ifndef __WXGTK__
         if (m_list->GetSelectedItemCount() > 0)
         {
             long item = m_list->GetNextItem(-1, wxLIST_NEXT_ALL,
@@ -1348,6 +1372,7 @@ void wxGenericFileDialog::OnTextChange( wxCommandEvent &WXUNUSED(event) )
                 item = m_list->GetNextItem(item, wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED);
             }
         }
+#endif
     }
     // Don't care if the changes should be ignored, the filename changed!
     HandleFilenameChange();
@@ -1373,7 +1398,11 @@ void wxGenericFileDialog::OnSelected( wxListEvent &event )
         return;
     }
 
+#ifdef __WXGTK__
+    wxString dir = m_list->GetDirectory();
+#else
     wxString dir = m_list->GetDir();
+#endif
     if (!IsTopMostDir(dir))
         dir += wxFILE_SEP_PATH;
     dir += filename;
@@ -1405,7 +1434,11 @@ void wxGenericFileDialog::HandleAction( const wxString &fn )
     }
     if (filename == wxT(".")) return;
 
+#ifdef __WXGTK__
+    wxString dir = m_list->GetDirectory();
+#else
     wxString dir = m_list->GetDir();
+#endif
 
     // "some/place/" means they want to chdir not try to load "place"
     bool want_dir = filename.Last() == wxFILE_SEP_PATH;
@@ -1415,7 +1448,13 @@ void wxGenericFileDialog::HandleAction( const wxString &fn )
     if (filename == wxT(".."))
     {
         ignoreChanges = true;
+#ifdef __WXGTK__
+        wxFileName temp = wxFileName::DirName(m_list->GetDirectory());
+        temp.RemoveLastDir();
+        m_list->SetDirectory(temp.GetPathWithSep());
+#else
         m_list->GoToParentDir();
+#endif
         m_list->SetFocus();
         UpdateControls();
         ignoreChanges = false;
@@ -1426,7 +1465,11 @@ void wxGenericFileDialog::HandleAction( const wxString &fn )
     if (filename == wxT("~"))
     {
         ignoreChanges = true;
+#ifdef __WXGTK__
+        m_list->SetDirectory(wxFileName::GetHomeDir());
+#else
         m_list->GoToHomeDir();
+#endif
         m_list->SetFocus();
         UpdateControls();
         ignoreChanges = false;
@@ -1449,7 +1492,11 @@ void wxGenericFileDialog::HandleAction( const wxString &fn )
                 wxMessageBox(_("Illegal file specification."), _("Error"), wxOK | wxICON_ERROR );
                 return;
             }
+#ifdef __WXGTK__
+            m_list->SetWildcard( filename );
+#else
             m_list->SetWild( filename );
+#endif
             return;
         }
     }
@@ -1465,7 +1512,11 @@ void wxGenericFileDialog::HandleAction( const wxString &fn )
     if (wxDirExists(filename))
     {
         ignoreChanges = true;
+#ifdef __WXGTK__
+        m_list->SetDirectory( filename );
+#else
         m_list->GoToDir( filename );
+#endif
         UpdateControls();
         ignoreChanges = false;
         return;
@@ -1531,7 +1582,9 @@ void wxGenericFileDialog::OnListOk( wxCommandEvent &WXUNUSED(event) )
 void wxGenericFileDialog::OnList( wxCommandEvent &WXUNUSED(event) )
 {
     ignoreChanges = true;
+#ifndef __WXGTK__
     m_list->ChangeToListMode();
+#endif
     ms_lastViewStyle = wxLC_LIST;
     m_list->SetFocus();
     ignoreChanges = false;
@@ -1540,7 +1593,9 @@ void wxGenericFileDialog::OnList( wxCommandEvent &WXUNUSED(event) )
 void wxGenericFileDialog::OnReport( wxCommandEvent &WXUNUSED(event) )
 {
     ignoreChanges = true;
+#ifndef __WXGTK__
     m_list->ChangeToReportMode();
+#endif
     ms_lastViewStyle = wxLC_REPORT;
     m_list->SetFocus();
     ignoreChanges = false;
@@ -1549,7 +1604,13 @@ void wxGenericFileDialog::OnReport( wxCommandEvent &WXUNUSED(event) )
 void wxGenericFileDialog::OnUp( wxCommandEvent &WXUNUSED(event) )
 {
     ignoreChanges = true;
+#ifdef __WXGTK__
+    wxFileName temp = wxFileName::DirName(m_list->GetDirectory());
+    temp.RemoveLastDir();
+    m_list->SetDirectory(temp.GetPathWithSep());
+#else
     m_list->GoToParentDir();
+#endif
     m_list->SetFocus();
     UpdateControls();
     ignoreChanges = false;
@@ -1558,7 +1619,11 @@ void wxGenericFileDialog::OnUp( wxCommandEvent &WXUNUSED(event) )
 void wxGenericFileDialog::OnHome( wxCommandEvent &WXUNUSED(event) )
 {
     ignoreChanges = true;
+#ifdef __WXGTK__
+    m_list->SetDirectory(wxFileName::GetHomeDir());
+#else
     m_list->GoToHomeDir();
+#endif
     m_list->SetFocus();
     UpdateControls();
     ignoreChanges = false;
@@ -1568,7 +1633,9 @@ void wxGenericFileDialog::OnNew( wxCommandEvent &WXUNUSED(event) )
 {
     ignoreChanges = true;
 
+#ifndef __WXGTK__
     m_list->MakeDir();
+#endif
 
     ignoreChanges = false;
 }
@@ -1597,6 +1664,9 @@ void wxGenericFileDialog::SetPath( const wxString& path )
 
 void wxGenericFileDialog::GetPaths( wxArrayString& paths ) const
 {
+#ifdef __WXGTK__
+    m_list->GetPaths(paths);
+#else
     paths.Empty();
     if (m_list->GetSelectedItemCount() == 0)
     {
@@ -1626,10 +1696,14 @@ void wxGenericFileDialog::GetPaths( wxArrayString& paths ) const
         item.m_itemId = m_list->GetNextItem( item.m_itemId,
             wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
     }
+#endif
 }
 
 void wxGenericFileDialog::GetFilenames(wxArrayString& files) const
 {
+#ifdef __WXGTK__
+    m_list->GetFilenames(files);
+#else
     files.Empty();
     if (m_list->GetSelectedItemCount() == 0)
     {
@@ -1649,11 +1723,16 @@ void wxGenericFileDialog::GetFilenames(wxArrayString& files) const
         item.m_itemId = m_list->GetNextItem( item.m_itemId,
             wxLIST_NEXT_ALL, wxLIST_STATE_SELECTED );
     }
+#endif
 }
 
 void wxGenericFileDialog::UpdateControls()
 {
+#ifdef __WXGTK__
+    wxString dir = m_list->GetDirectory();
+#else
     wxString dir = m_list->GetDir();
+#endif
     m_static->SetLabel(dir);
 
     bool enable = !IsTopMostDir(dir);

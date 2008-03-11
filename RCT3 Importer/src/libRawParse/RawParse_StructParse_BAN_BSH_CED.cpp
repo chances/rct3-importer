@@ -167,7 +167,7 @@ void cRawParser::ParseBSH(cXmlNode& node) {
                 if (!modelfile.IsFileReadable())
                     throw RCT3Exception(_("bsh tag: Model file not readable: ") + modelfile.GetFullPath());
 */
-                counted_ptr<c3DLoader> model(c3DLoader::LoadFile(modelfile.GetFullPath().fn_str()));
+                counted_ptr<c3DLoader> model(c3DLoader::LoadFile(modelfile.GetFullPath().c_str()));
                 if (!model.get())
                     throw RCT3Exception(_("bsh tag: Model file cannot be read or has unknown format: ") + modelfile.GetFullPath());
 

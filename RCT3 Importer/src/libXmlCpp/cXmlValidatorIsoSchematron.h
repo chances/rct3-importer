@@ -33,6 +33,10 @@
 #include "cXmlValidator.h"
 #include "cXsltStylesheet.h"
 
+#define XML_FROM_SCHEMATRONV static_cast<xmlErrorDomain>(30)
+#define XML_SCHEMATRONV_ASSERT 4000
+#define XML_SCHEMATRONV_REPORT 4001
+
 namespace xmlcpp {
 
 class cXmlValidatorIsoSchematron: public cXmlValidator {

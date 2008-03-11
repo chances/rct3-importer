@@ -6,9 +6,9 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="..\..\lib\libOVLDumpd" prefix_auto="1" extension_auto="1" />
+				<Option output="../../lib/libOVLDumpd" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="..\..\lib\obj\libOVLDump\Debug" />
+				<Option object_output="../../lib/obj/libOVLDump/Debug" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -16,13 +16,13 @@
 					<Add option="-g" />
 				</Compiler>
 				<Linker>
-					<Add directory="C:\Development\wxWidgets\lib\gcc_lib" />
+					<Add directory="C:/Development/wxWidgets/lib/gcc_lib" />
 				</Linker>
 			</Target>
 			<Target title="Release">
-				<Option output="..\..\lib\libOVLDump" prefix_auto="1" extension_auto="1" />
+				<Option output="../../lib/libOVLDump" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="..\..\lib\obj\libOVLDump\Release\" />
+				<Option object_output="../../lib/obj/libOVLDump/Release/" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -31,13 +31,13 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add directory="C:\Development\wxWidgets\lib\gcc_lib" />
+					<Add directory="C:/Development/wxWidgets/lib/gcc_lib" />
 				</Linker>
 			</Target>
 			<Target title="Debug DLL">
-				<Option output="..\..\bin\OVLDumpd" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="..\..\bin" />
-				<Option object_output="..\..\lib\obj\libOVLDump\DebugDLL" />
+				<Option output="../../bin/OVLDumpd" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../bin" />
+				<Option object_output="../../lib/obj/libOVLDump/DebugDLL" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -47,13 +47,13 @@
 					<Add option="-DOVLDUMP_DLL_BUILDING" />
 				</Compiler>
 				<Linker>
-					<Add directory="C:\Development\wxWidgets\lib\gcc_lib" />
+					<Add directory="C:/Development/wxWidgets/lib/gcc_lib" />
 				</Linker>
 			</Target>
 			<Target title="Release DLL">
-				<Option output="..\..\bin\OVLDump" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="..\..\bin" />
-				<Option object_output="..\..\lib\obj\libOVLDump\ReleaseDLL" />
+				<Option output="../../bin/OVLDump" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../bin" />
+				<Option object_output="../../lib/obj/libOVLDump/ReleaseDLL" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -64,7 +64,7 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add directory="C:\Development\wxWidgets\lib\gcc_lib" />
+					<Add directory="C:/Development/wxWidgets/lib/gcc_lib" />
 				</Linker>
 			</Target>
 		</Build>
@@ -80,25 +80,30 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-pipe" />
-			<Add option="-mthreads" />
-			<Add option='[[if (PLATFORM == PLATFORM_MSW &amp;&amp; (GetCompilerFactory().GetCompilerVersionString(_T(&quot;gcc&quot;)) &gt;= _T(&quot;4.0.0&quot;))) print(_T(&quot;-Wno-attributes&quot;));]]' />
 			<Add option="-fno-strict-aliasing" />
+			<Add option="[[" />
+			<Add option='if ((PLATFORM == PLATFORM_MSW) &amp;&amp; (GetCompilerFactory().GetCompilerVersionString(_T(&quot;gcc&quot;)) &gt;= _T(&quot;4.0.0&quot;))) {' />
+			<Add option='print(_T(&quot;-Wno-attributes -mthreads&quot;));' />
+			<Add option="} else {" />
+			<Add option='print(_T(&quot;-pthread -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -D__WXGTK__&quot;));' />
+			<Add option="}" />
+			<Add option="]]" />
 			<Add option="-D__GNUWIN32__" />
-			<Add directory="..\..\include" />
+			<Add directory="../../include" />
 		</Compiler>
-		<Unit filename="..\..\include\boneanim.h" />
-		<Unit filename="..\..\include\boneshape.h" />
-		<Unit filename="..\..\include\flexitexture.h" />
-		<Unit filename="..\..\include\guiicon.h" />
-		<Unit filename="..\..\include\icontexture.h" />
-		<Unit filename="..\..\include\ovlstructs.h" />
-		<Unit filename="..\..\include\path.h" />
-		<Unit filename="..\..\include\sceneryrevised.h" />
-		<Unit filename="..\..\include\sceneryvisual.h" />
-		<Unit filename="..\..\include\stall.h" />
-		<Unit filename="..\..\include\staticshape.h" />
-		<Unit filename="..\..\include\terraintype.h" />
-		<Unit filename="..\..\include\vertex.h" />
+		<Unit filename="../../include/boneanim.h" />
+		<Unit filename="../../include/boneshape.h" />
+		<Unit filename="../../include/flexitexture.h" />
+		<Unit filename="../../include/guiicon.h" />
+		<Unit filename="../../include/icontexture.h" />
+		<Unit filename="../../include/ovlstructs.h" />
+		<Unit filename="../../include/path.h" />
+		<Unit filename="../../include/sceneryrevised.h" />
+		<Unit filename="../../include/sceneryvisual.h" />
+		<Unit filename="../../include/stall.h" />
+		<Unit filename="../../include/staticshape.h" />
+		<Unit filename="../../include/terraintype.h" />
+		<Unit filename="../../include/vertex.h" />
 		<Unit filename="OVLDException.cpp" />
 		<Unit filename="OVLDException.h" />
 		<Unit filename="OVLDump.cpp" />
@@ -123,7 +128,6 @@
 					<wxDialog wxs="wxsmith/RCT3_Dumper_NGdialog.wxs" src="RCT3_Dumper_NGMain.cpp" hdr="RCT3_Dumper_NGMain.h" name="RCT3_Dumper_NGDialog" language="CPP" />
 				</resources>
 			</wxsmith>
-			<lib_finder />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

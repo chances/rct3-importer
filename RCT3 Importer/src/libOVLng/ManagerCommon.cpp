@@ -103,7 +103,7 @@ const char* cTriangleSortAlgorithm::GetAlgorithmName(Algorithm algo) {
 
 cTriangleSortAlgorithm::Algorithm cTriangleSortAlgorithm::GetAlgo(const char* algoname) {
     for (Algorithm i = MIN; i < EnumSize; i = Algorithm(i+1)) {
-        if (!stricmp(algoname, algonames[i])) {
+        if (!strcasecmp(algoname, algonames[i])) {
             return i;
         }
     }

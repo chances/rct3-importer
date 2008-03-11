@@ -24,7 +24,7 @@
 
 #include "cXmlOutputCallback.h"
 
-#include <libxml/xmlio.h>
+#include <libxml/xmlIO.h>
 
 #include "cXmlException.h"
 

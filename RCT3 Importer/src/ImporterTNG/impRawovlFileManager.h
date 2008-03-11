@@ -32,6 +32,7 @@
 #include <sigc++/signal.h>
 #include <sigc++/trackable.h>
 #include <wx/aui/aui.h>
+#include <wx/log.h>
 
 #include <vector>
 

@@ -69,6 +69,8 @@ public:
     virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version) = 0;
     virtual xmlcpp::cXmlNode GetNode(const wxString& path) = 0;
     virtual const std::string GetTagName() const = 0;
+
+    virtual ~cRCT3Xml() {}
 };
 
 #define RCT3XML_CTXYZ "txyz"

@@ -71,8 +71,10 @@ bool ImporterApp::OnInit() {
     wxFileConfig::Set(new wxFileConfig(wxT("RCT3 Importer TNG"), wxT("Freeware"), m_appdir.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME)+wxT("RCT3 Manager.conf"), wxT(""), wxCONFIG_USE_LOCAL_FILE));
 
     // *&^$% GraphicsMagick
+#ifdef __WXMSW__
     wxString appenv = wxT("MAGICK_CONFIGURE_PATH=") + m_appdir.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME);
     putenv(appenv.mb_str(wxConvLocal));
+#endif
 
     InitElements();
     InitResources();

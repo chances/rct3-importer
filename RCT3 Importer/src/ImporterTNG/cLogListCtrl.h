@@ -25,6 +25,7 @@
 #ifndef CLOGLISTCTRL_H
 #define CLOGLISTCTRL_H
 
+#include <wx/imaglist.h>
 #include <wx/listctrl.h>
 #include <wx/log.h>
 #include <sigc++/trackable.h>

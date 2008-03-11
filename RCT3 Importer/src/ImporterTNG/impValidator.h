@@ -26,6 +26,7 @@
 #define IMPVALIDATOR_H_INCLUDED
 
 #include <boost/shared_ptr.hpp>
+#include <wx/string.h>
 
 class impControl;
 class impValidator {

@@ -87,7 +87,6 @@ public:
             }
         }
         impRawovlFileManagerBaseConnecter::attachConnection(parent);
-        itemAdded(wxDataViewItem(m_parent), wxDataViewItem(this));
         update(wxT("/"));
 //wxLogMessage(wxT("Created %d, path %s"), m_type, m_path.c_str());
     }
@@ -176,7 +175,9 @@ protected:
             if (!m_children.size()) {
                 const impTypes::ELEMENTTYPE* t = impElements[m_type].children;
                 while (*t) {
-                    Append(new impViewTreeModelNode(this, *t));
+                    impViewTreeModelNode* newnode = new impViewTreeModelNode(this, *t);
+                    Append(newnode);
+                    itemAdded(wxDataViewItem(this), wxDataViewItem(newnode));
                     ++t;
                 }
                 itemChanged(wxDataViewItem(this));
@@ -426,7 +427,7 @@ public:
     }
 
     const wxDataViewItem getRootItem() {
-        return wxDataViewItem(reinterpret_cast<void*>(m_root));
+        return wxDataViewItem(m_root);
     }
 //    void Delete( const wxDataViewItem &item ) {
 //        MyMusicModelNode *node = (MyMusicModelNode*) item.GetID();

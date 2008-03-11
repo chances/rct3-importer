@@ -26,7 +26,7 @@
 #define IMPORTERMAIN_H_INCLUDED
 
 #include "wx_pch.h"
-#include "resources\res_main.h"
+#include "resources/res_main.h"
 
 #include <wx/aui/aui.h>
 #include <sigc++/signal.h>

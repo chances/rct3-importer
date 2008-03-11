@@ -18,7 +18,13 @@
  #include <stdlib.h>
  #include <string.h>
  #include <sys/stat.h>
+
+ #if (__WINDOWS__ || __WIN32__ || __GNUWIN32__)
  #include <sys/utime.h>
+ #else
+ #include <sys/types.h>
+ #include <utime.h>
+ #endif
 
  #ifndef PATH_MAX
  #define PATH_MAX 1024

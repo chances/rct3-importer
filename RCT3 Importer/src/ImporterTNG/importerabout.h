@@ -25,7 +25,7 @@
 #ifndef IMPORTERABOUT_H_INCLUDED
 #define IMPORTERABOUT_H_INCLUDED
 
-#include "resources\res_about.h"
+#include "resources/res_about.h"
 
 class dlgAbout: public rcdlgAbout {
 public:

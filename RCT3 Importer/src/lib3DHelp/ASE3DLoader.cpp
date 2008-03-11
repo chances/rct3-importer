@@ -138,9 +138,9 @@ cASE3DLoader::cASE3DLoader(const wxChar *filename): c3DLoader(filename) {
                 }
             } else
                 for (i = 0; i < (unsigned long) mesh->faceCount * 3; i += 3) {
-                    UINT index = i / 3;
-                    UINT tvs, tts;
-                    BOOL add;
+                    unsigned int index = i / 3;
+                    unsigned int tvs, tts;
+                    bool add;
 
                     tvs = mesh->faces[index].vertex[0];
                     tts = mesh->faces[index].texture_coordinates[0];
@@ -152,7 +152,7 @@ cASE3DLoader::cASE3DLoader(const wxChar *filename): c3DLoader(filename) {
                     tv.normal.x = mesh->vertex_normals[tvs].x;
                     tv.normal.y = mesh->vertex_normals[tvs].y;
                     tv.normal.z = mesh->vertex_normals[tvs].z;
-                    if (tts>=(UINT) mesh->textureCoordinateCount) {
+                    if (tts>=(unsigned int) mesh->textureCoordinateCount) {
                         cmesh.m_flag = C3DMESH_INVALID;
                         tv.tu = 0.0;
                         tv.tv = 0.0;
@@ -188,7 +188,7 @@ cASE3DLoader::cASE3DLoader(const wxChar *filename): c3DLoader(filename) {
                     tv.normal.x = mesh->vertex_normals[tvs].x;
                     tv.normal.y = mesh->vertex_normals[tvs].y;
                     tv.normal.z = mesh->vertex_normals[tvs].z;
-                    if (tts>=(UINT) mesh->textureCoordinateCount) {
+                    if (tts>=(unsigned int) mesh->textureCoordinateCount) {
                         cmesh.m_flag = C3DMESH_INVALID;
                         tv.tu = 0.0;
                         tv.tv = 0.0;
@@ -224,7 +224,7 @@ cASE3DLoader::cASE3DLoader(const wxChar *filename): c3DLoader(filename) {
                     tv.normal.x = mesh->vertex_normals[tvs].x;
                     tv.normal.y = mesh->vertex_normals[tvs].y;
                     tv.normal.z = mesh->vertex_normals[tvs].z;
-                    if (tts>=(UINT) mesh->textureCoordinateCount) {
+                    if (tts>=(unsigned int) mesh->textureCoordinateCount) {
                         cmesh.m_flag = C3DMESH_INVALID;
                         tv.tu = 0.0;
                         tv.tv = 0.0;
