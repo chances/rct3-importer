@@ -19,7 +19,7 @@
 					<Add option="-Os" />
 					<Add option="-O2" />
 					<Add option="-DUNICODE" />
-					<Add directory="$(#wx3.lib)\base-unicode-release-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\base-unicode-release-static-2.9" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />

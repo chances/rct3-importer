@@ -349,7 +349,7 @@ int DoCompile(const wxCmdLineParser& parser) {
 
 //            if (doc.Load(inputfile.GetFullPath())) {
             if (doc.read(inputfilestr.mb_str(wxConvUTF8), NULL, XML_PARSE_DTDLOAD)) {
-                cXmlNode root(doc.getRoot());
+                cXmlNode root(doc.root());
                 if (root(RAWXML_ROOT)) {
                     if (convert)
                         throw RCT3Exception(_("You cannot convert raw xml files"));
@@ -384,7 +384,7 @@ int DoCompile(const wxCmdLineParser& parser) {
                             outputfile = parser.GetParam(1);
                         }
                         wxLogMessage(_("Writing baked raw xml file ") + outputfile.GetFullPath());
-                        doc.write(outputfile.GetFullPath().mb_str(wxConvUTF8), true);
+                        doc.write(outputfile.GetFullPath(), true);
                     }
                     if (dryrun) {
                         fprintf(stderr, "\nDryrun results:\n");

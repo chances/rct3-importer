@@ -26,13 +26,13 @@
 #include <bzlib.h>
 #endif
 #ifdef INFOTAG_CRYPTOPP
-#include <cryptopp/config.h>
+#include <crypto++/config.h>
 #endif
 #ifdef INFOTAG_EXPAT
 #include <expat.h>
 #endif
 #ifdef INFOTAG_JPEG
-#ifdef __WXWIN__
+#ifdef __WXMSW__
 #define HAVE_BOOLEAN
 #endif
 #include <jpeglib.h>

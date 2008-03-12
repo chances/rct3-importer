@@ -3,53 +3,45 @@
 	<FileVersion major="1" minor="6" />
 	<Project>
 		<Option title="ImporterTNG" />
-		<Option default_target="Debug Unicode Linux" />
+		<Option default_target="Debug Unicode" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="resources/;views/;controls/;" />
+		<Option virtualFolders="resources\;views\;controls\;" />
 		<Build>
 			<Target title="Premake Resources">
 				<Option type="4" />
 				<Option compiler="gcc" />
 			</Target>
-			<Target title="Release Unicode WIN">
-				<Option platforms="Windows;" />
-				<Option output="../../bin/importer/RCT3 Importer TNG.exe" prefix_auto="0" extension_auto="0" />
-				<Option working_dir="../../bin/importer" />
-				<Option object_output="../../lib/obj/Importer/release" />
-				<Option external_deps="../../lib/lib3DHelp.a;../../lib/libWXHelp.a;../../lib/libASE.a;../../lib/libOVLng.a;../../lib/libOVLDump.a;../../lib/libRawParseu.a;../../lib/libXmlCppu.a;" />
+			<Target title="Release Unicode">
+				<Option output="..\..\bin\importer\RCT3 Importer TNG.exe" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="..\..\bin\importer" />
+				<Option object_output="..\..\lib\obj\Importer\release" />
+				<Option external_deps="..\..\lib\lib3DHelp.a;..\..\lib\libWXHelp.a;..\..\lib\libASE.a;..\..\lib\libOVLng.a;..\..\lib\libOVLDump.a;..\..\lib\libRawParseu.a;..\..\lib\libXmlCppu.a;" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
 					<Add option="-Os" />
 					<Add option="-O2" />
-					<Add directory="$(#wx3.lib)/wx/include/msw-unicode-release-static-2.9" />
-					<Add directory="$(#wx3.lib)/wx/include/gtk2-unicode-release-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\msw-unicode-release-static-2.9" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 					<Add library="3DHelpu" />
 					<Add library="WXHelpu" />
 					<Add library="ASE" />
+					<Add library="wx_mswu_propgrid-2.9" />
 					<Add library="wx_mswu-2.9" />
 					<Add library="OVLng" />
 					<Add library="OVLDump" />
 					<Add library="XmlCppu" />
-					<Add library="shell32" />
-					<Add library="ole32" />
-					<Add library="wsock32" />
-					<Add library="oleaut32" />
-					<Add library="uuid" />
-					<Add library="comctl32" />
-					<Add directory="../../bin" />
+					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
-			<Target title="Debug Unicode WIN">
-				<Option platforms="Windows;" />
-				<Option output="../../bin/importer/RCT3 Importer TNGd.exe" prefix_auto="0" extension_auto="0" />
-				<Option working_dir="../../bin/importer" />
-				<Option object_output="../../lib/obj/importer/debug" />
-				<Option external_deps="../../lib/lib3DHelpd.a;../../lib/libWXHelpd.a;../../lib/libASEd.a;../../lib/libOVLngd.a;../../lib/libOVLDumpd.a;../../lib/libRawParseud.a;../../lib/libXmlCppud.a;" />
+			<Target title="Debug Unicode">
+				<Option output="..\..\bin\importer\RCT3 Importer TNGd.exe" prefix_auto="0" extension_auto="0" />
+				<Option working_dir="..\..\bin\importer" />
+				<Option object_output="..\..\lib\obj\importer\debug" />
+				<Option external_deps="..\..\lib\lib3DHelpd.a;..\..\lib\libWXHelpd.a;..\..\lib\libASEd.a;..\..\lib\libOVLngd.a;..\..\lib\libOVLDumpd.a;..\..\lib\libRawParseud.a;..\..\lib\libXmlCppud.a;" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -59,99 +51,35 @@
 					<Add option="-g" />
 					<Add option="-DDEBUG" />
 					<Add option="-D__WXDEBUG__" />
-					<Add directory="$(#wx3.lib)/wx/include/msw-unicode-debug-static-2.9" />
-					<Add directory="$(#wx3.lib)/wx/include/gtk2-unicode-debug-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\msw-unicode-debug-static-2.9" />
 				</Compiler>
 				<Linker>
 					<Add library="3DHelpud" />
 					<Add library="WXHelpud" />
 					<Add library="ASEd" />
+					<Add library="wx_mswud_propgrid-2.9" />
 					<Add library="wx_mswud-2.9" />
 					<Add library="OVLngud" />
 					<Add library="OVLDumpd" />
 					<Add library="XmlCppud" />
-					<Add directory="../../bin" />
-				</Linker>
-			</Target>
-			<Target title="Release Unicode Linux">
-				<Option platforms="Unix;" />
-				<Option output="../../bin/importer/RCT3 Importer TNG.exe" prefix_auto="0" extension_auto="0" />
-				<Option working_dir="../../bin/importer" />
-				<Option object_output="../../lib/obj/Importer/release" />
-				<Option external_deps="../../lib/lib3DHelp.a;../../lib/libWXHelp.a;../../lib/libASE.a;../../lib/libOVLng.a;../../lib/libOVLDump.a;../../lib/libRawParseu.a;../../lib/libXmlCppu.a;" />
-				<Option type="0" />
-				<Option compiler="gcc" />
-				<Option projectLinkerOptionsRelation="2" />
-				<Compiler>
-					<Add option="-Os" />
-					<Add option="-O2" />
-					<Add option="-D__WXGTK__" />
-					<Add directory="$(#wx3.lib)/wx/include/msw-unicode-release-static-2.9" />
-					<Add directory="$(#wx3.lib)/wx/include/gtk2-unicode-release-static-2.9" />
-				</Compiler>
-				<Linker>
-					<Add option="-s" />
-					<Add option="-lwx_gtk2u-2.9 -pthread -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -ldl -lgthread-2.0 -lrt -lglib-2.0 -lXinerama -lXxf86vm -lSM -lpng -lz -ljpeg -ltiff -lwxregexu-2.9 -lz -ldl -lm" />
-					<Add library="3DHelpu" />
-					<Add library="WXHelpu" />
-					<Add library="ASE" />
-					<Add library="OVLng" />
-					<Add library="OVLDump" />
-					<Add library="XmlCppu" />
-					<Add library="Magick++" />
-					<Add library="Magick" />
-					<Add directory="../../bin" />
-				</Linker>
-			</Target>
-			<Target title="Debug Unicode Linux">
-				<Option platforms="Unix;" />
-				<Option output="../../bin/importer/RCT3 Importer TNGd.exe" prefix_auto="0" extension_auto="0" />
-				<Option working_dir="../../bin/importer" />
-				<Option object_output="../../lib/obj/importer/debug" />
-				<Option external_deps="../../lib/lib3DHelpd.a;../../lib/libWXHelpd.a;../../lib/libASEd.a;../../lib/libOVLngd.a;../../lib/libOVLDumpd.a;../../lib/libRawParseud.a;../../lib/libXmlCppud.a;" />
-				<Option type="0" />
-				<Option compiler="gcc" />
-				<Option projectLinkerOptionsRelation="2" />
-				<Compiler>
-					<Add option="-W" />
-					<Add option="-Wall" />
-					<Add option="-g" />
-					<Add option="-DDEBUG" />
-					<Add option="-D__WXDEBUG__" />
-					<Add option="-D__WXGTK__" />
-					<Add directory="$(#wx3.lib)/wx/include/msw-unicode-debug-static-2.9" />
-					<Add directory="$(#wx3.lib)/wx/include/gtk2-unicode-debug-static-2.9" />
-				</Compiler>
-				<Linker>
-					<Add option="-lwx_gtk2ud-2.9 -pthread -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -ldl -lgthread-2.0 -lrt -lglib-2.0 -lXinerama -lXxf86vm -lSM -lpng -lz -ljpeg -ltiff -lwxregexud-2.9 -lz -ldl -lm" />
-					<Add library="3DHelpud" />
-					<Add library="WXHelpud" />
-					<Add library="ASEd" />
-					<Add library="OVLngud" />
-					<Add library="OVLDumpd" />
-					<Add library="XmlCppud" />
-					<Add library="Magick++" />
-					<Add library="Magick" />
-					<Add directory="../../bin" />
+					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
 		</Build>
-		<VirtualTargets>
-			<Add alias="Debug Unicode" targets="Debug Unicode WIN;Debug Unicode Linux;" />
-			<Add alias="Release Unicode" targets="Release Unicode WIN;Release Unicode Linux;" />
-		</VirtualTargets>
 		<Compiler>
+			<Add option="-mthreads" />
 			<Add option="-pipe" />
 			<Add option="-fmessage-length=0" />
 			<Add option="-fexceptions" />
+			<Add option='-include &quot;wx_pch.h&quot;' />
+			<Add option="-Winvalid-pch" />
 			<Add option="-fno-strict-aliasing" />
-			<Add option="[[" />
-			<Add option='if ((PLATFORM == PLATFORM_MSW) &amp;&amp; (GetCompilerFactory().GetCompilerVersionString(_T(&quot;gcc&quot;)) &gt;= _T(&quot;4.0.0&quot;))) {' />
-			<Add option='print(_T(&quot;-Wno-attributes -mthreads&quot;));' />
-			<Add option="} else {" />
-			<Add option='print(_T(&quot;-pthread -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -D__WXGTK__&quot;));' />
-			<Add option="}" />
-			<Add option="]]" />
+			<Add option="-DUSE_PCH" />
+			<Add option="-D__GNUWIN32__" />
+			<Add option="-D__WXMSW__" />
+			<Add option="-DHAVE_W32API_H" />
+			<Add option="-DIL_STATIC_LIB" />
+			<Add option="-D_WIN32" />
 			<Add option="-DUSE_SQUISH" />
 			<Add option="-DCACHE_GXIMAGE" />
 			<Add option="-DUNICODE" />
@@ -159,20 +87,22 @@
 			<Add option="-DXMLCPP_USE_XSLT" />
 			<Add option="-DXMLCPP_USE_WXWIDGETS" />
 			<Add directory="$(#wx3.include)" />
-			<Add directory="../lib3DHelp" />
-			<Add directory="../../include" />
-			<Add directory="../libWXHelp" />
-			<Add directory="$(#mingw.include)/GraphicsMagick" />
-			<Add directory="$(#mingw.include)" />
-			<Add directory="../libOVLng" />
-			<Add directory="../libOVLDump" />
-			<Add directory="../libRawParse" />
-			<Add directory="../libXmlCpp" />
-			<Add directory="$(#system.include)/libxml2" />
-			<Add directory="$(#system.lib)/sigc++-2.0/include" />
-			<Add directory="$(#system.include)/sigc++-2.0" />
+			<Add directory="..\lib3DHelp" />
+			<Add directory="..\..\include" />
+			<Add directory="..\libWXHelp" />
+			<Add directory="$(#mingw.include)\GraphicsMagick" />
+			<Add directory="$(#mingw.include)\plib" />
+			<Add directory="..\libOVLng" />
+			<Add directory="..\libOVLDump" />
+			<Add directory="..\libRawParse" />
+			<Add directory="..\libXmlCpp" />
+			<Add directory="$(#mingw.include)\libxml2" />
+			<Add directory="$(#mingw.lib)\sigc++-2.0\include" />
+			<Add directory="$(#mingw.include)\sigc++-2.0" />
 		</Compiler>
 		<Linker>
+			<Add library="GraphicsMagick++" />
+			<Add library="GraphicsMagick" />
 			<Add library="exslt" />
 			<Add library="xslt" />
 			<Add library="xml2" />
@@ -180,381 +110,277 @@
 			<Add library="tiff" />
 			<Add library="jpeg" />
 			<Add library="z" />
+			<Add library="shell32" />
+			<Add library="ole32" />
+			<Add library="wsock32" />
+			<Add library="oleaut32" />
+			<Add library="uuid" />
+			<Add library="comctl32" />
 			<Add library="expat" />
 			<Add library="squish" />
 			<Add library="bz2" />
 			<Add library="sigc-2.0" />
 			<Add library="cryptopp" />
-			<Add directory="../../lib" />
-			<Add directory="$(#wx3.lib)" />
-			<Add directory="$(#mingw.lib)" />
+			<Add directory="..\..\lib" />
 		</Linker>
 		<Unit filename="cLogListCtrl.cpp">
-			<Option virtualFolder="controls/" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option virtualFolder="controls\" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="cLogListCtrl.h">
-			<Option virtualFolder="controls/" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option virtualFolder="controls\" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impCommand.h">
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impControl.cpp">
-			<Option virtualFolder="controls/" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option virtualFolder="controls\" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impControl.h">
-			<Option virtualFolder="controls/" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option virtualFolder="controls\" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impControlHtlb.cpp">
-			<Option virtualFolder="controls/" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option virtualFolder="controls\" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impControlHtlb.h">
-			<Option virtualFolder="controls/" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option virtualFolder="controls\" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impControlHtlbReferences.cpp">
-			<Option virtualFolder="controls/" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option virtualFolder="controls\" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impControlHtlbReferences.h">
-			<Option virtualFolder="controls/" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option virtualFolder="controls\" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impControlText.cpp">
-			<Option virtualFolder="controls/" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option virtualFolder="controls\" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impControlText.h">
-			<Option virtualFolder="controls/" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option virtualFolder="controls\" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impElement.cpp">
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impElement.h">
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impRawovlFileManager.cpp">
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impRawovlFileManager.h">
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impRawovlFileManagerBaseConnecter.h">
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impTypes.h">
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impValidator.cpp">
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impValidator.h">
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impView.cpp">
-			<Option virtualFolder="views/" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option virtualFolder="views\" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impView.h">
-			<Option virtualFolder="views/" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option virtualFolder="views\" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impViewProject.cpp">
-			<Option virtualFolder="views/" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option virtualFolder="views\" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impViewProject.h">
-			<Option virtualFolder="views/" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option virtualFolder="views\" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impViewReferences.cpp">
-			<Option virtualFolder="views/" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option virtualFolder="views\" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impViewReferences.h">
-			<Option virtualFolder="views/" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option virtualFolder="views\" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impViewTree.cpp">
-			<Option virtualFolder="views/" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option virtualFolder="views\" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="impViewTree.h">
-			<Option virtualFolder="views/" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option virtualFolder="views\" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="importerabout.cpp">
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="importerabout.h">
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="importerapp.cpp">
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="importerapp.h">
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="importerconfig.h">
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="importermain.cpp">
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="importermain.h">
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="importerresourcefiles.h">
-			<Option virtualFolder="resources/" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option virtualFolder="resources\" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="importerresources.cpp">
-			<Option virtualFolder="resources/" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option virtualFolder="resources\" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="importerresources.h">
-			<Option virtualFolder="resources/" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option virtualFolder="resources\" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="importersave.cpp">
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="importersave.h">
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="importerxpaths.h">
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="infotag.cpp">
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
-		<Unit filename="resources/about.fbp">
+		<Unit filename="resources\about.fbp">
 			<Option compile="1" />
 			<Option weight="0" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
-		<Unit filename="resources/about.html">
+		<Unit filename="resources\about.html">
 			<Option compile="1" />
 			<Option weight="0" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
-		<Unit filename="resources/crystal/info.png">
+		<Unit filename="resources\crystal\info.png">
 			<Option compile="1" />
 			<Option weight="0" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
-		<Unit filename="resources/crystal/status_unknown.png">
+		<Unit filename="resources\crystal\status_unknown.png">
 			<Option compile="1" />
 			<Option weight="0" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
-		<Unit filename="resources/crystal/stop.png">
+		<Unit filename="resources\crystal\stop.png">
 			<Option compile="1" />
 			<Option weight="0" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
-		<Unit filename="resources/gpl-3.0-standalone.html">
+		<Unit filename="resources\gpl-3.0-standalone.html">
 			<Option compile="1" />
 			<Option weight="0" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
-		<Unit filename="resources/main.fbp">
+		<Unit filename="resources\main.fbp">
 			<Option compile="1" />
 			<Option weight="0" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
-		<Unit filename="resources/misc.fbp">
+		<Unit filename="resources\misc.fbp">
 			<Option compile="1" />
 			<Option weight="0" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
-		<Unit filename="resources/viewproject.fbp">
+		<Unit filename="resources\viewproject.fbp">
 			<Option compile="1" />
 			<Option weight="0" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
-		<Unit filename="resources/viewreferences.fbp">
+		<Unit filename="resources\viewreferences.fbp">
 			<Option compile="1" />
 			<Option weight="0" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
-		<Unit filename="resources/xml/template-project.xml">
+		<Unit filename="resources\xml\template-project.xml">
 			<Option compile="1" />
 			<Option weight="0" />
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="sigchelper.h">
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="version.h">
-			<Option target="Release Unicode WIN" />
-			<Option target="Debug Unicode WIN" />
-			<Option target="Release Unicode Linux" />
-			<Option target="Debug Unicode Linux" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
 		</Unit>
 		<Extensions>
 			<code_completion />
