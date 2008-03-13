@@ -30,6 +30,11 @@
 
 #include "OVLDebug.h"
 
+#ifdef __BORLANDC__
+// Otherwise c++ refuses to build -.-
+#define Library
+#endif
+
 using namespace std;
 
 ////////////////////////////////////////////////////////////////////////////////

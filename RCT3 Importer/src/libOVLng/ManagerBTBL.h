@@ -29,11 +29,11 @@
 #ifndef MANAGERBTBL_H_INCLUDED
 #define MANAGERBTBL_H_INCLUDED
 
-#include <boost/shared_array.hpp>
 #include <vector>
 #include <set>
 #include <string>
 #include <math.h>
+#include <boost/shared_array.hpp>
 
 #include "ManagerOVL.h"
 

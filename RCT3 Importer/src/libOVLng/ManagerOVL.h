@@ -30,6 +30,7 @@
 #define MANAGEROVL_H_INCLUDED
 
 #include <map>
+#include <stdio.h>
 #include <string>
 
 #include "LodSymRefManager.h"

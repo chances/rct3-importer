@@ -33,6 +33,10 @@
 
 #include "OVLException.h"
 
+#ifdef __BORLANDC__
+#define fabsf fabs
+#endif
+
 const char* ovlTXSManager::TAG = "txs";
 
 const cTriangleSortAlgorithm::Algorithm cTriangleSortAlgorithm::DEFAULT = cTriangleSortAlgorithm::MINMAX;
@@ -103,9 +107,15 @@ const char* cTriangleSortAlgorithm::GetAlgorithmName(Algorithm algo) {
 
 cTriangleSortAlgorithm::Algorithm cTriangleSortAlgorithm::GetAlgo(const char* algoname) {
     for (Algorithm i = MIN; i < EnumSize; i = Algorithm(i+1)) {
-        if (!strcasecmp(algoname, algonames[i])) {
-            return i;
-        }
+#ifndef __BORLANDC__
+		if (!strcasecmp(algoname, algonames[i])) {
+			return i;
+		}
+#else
+		if (!stricmp(algoname, algonames[i])) {
+			return i;
+		}
+#endif
     }
     return EnumSize;
 }

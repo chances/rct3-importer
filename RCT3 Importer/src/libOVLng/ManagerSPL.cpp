@@ -33,6 +33,14 @@
 
 #include "OVLException.h"
 
+#ifdef __BORLANDC__
+inline float roundf (float f) {
+	float t = floor(f);
+	return ((t-f)>=0.5)?t+1:t;
+}
+#endif
+
+
 const char* ovlSPLManager::LOADER = "FGDK";
 const char* ovlSPLManager::NAME = "Spline";
 const char* ovlSPLManager::TAG = "spl";

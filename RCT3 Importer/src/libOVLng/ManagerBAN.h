@@ -57,7 +57,7 @@ public:
         //bone->Name = NULL; will be assigned before Fill is called
         bone->TranslateCount = translations.size();
         unsigned long c = 0;
-        for (set<txyz>::iterator it = translations.begin(); it != translations.end(); ++it) {
+        for (set<txyz, cTXYZComp>::iterator it = translations.begin(); it != translations.end(); ++it) {
             bone->Translate[c] = *it;
             if (it->Time > f)
                 f = it->Time;
@@ -65,7 +65,7 @@ public:
         }
         bone->RotateCount = rotations.size();
         c = 0;
-        for (set<txyz>::iterator it = rotations.begin(); it != rotations.end(); ++it) {
+        for (set<txyz, cTXYZComp>::iterator it = rotations.begin(); it != rotations.end(); ++it) {
             bone->Rotate[c] = *it;
             if (it->Time > f)
                 f = it->Time;

@@ -34,7 +34,11 @@
 #include "StringTable.h"
 
 int comparesymbols(const void *s1,const void *s2) {
+#ifndef __BORLANDC__
 	return strcasecmp(((SymbolStruct *)s1)->Symbol,((SymbolStruct *)s2)->Symbol);
+#else
+	return stricmp(((SymbolStruct *)s1)->Symbol,((SymbolStruct *)s2)->Symbol);
+#endif
 }
 
 ovlLodSymRefManager::~ovlLodSymRefManager() {

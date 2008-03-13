@@ -27,6 +27,8 @@
 
 #include "OVLDebug.h"
 
+#include <algorithm>
+
 #include "ManagerBSH.h"
 
 #include "ManagerFTX.h"

@@ -58,7 +58,7 @@ unsigned long cTextureMIP::FillRawData(unsigned long blocksize, unsigned char* _
 unsigned long cTexture::CalcSize() const {
     unsigned long size = 0;
 	unsigned long blocksize = GetBlockSize(format);
-    for (set<cTextureMIP>::iterator it = mips.begin(); it != mips.end(); ++it) {
+    for (set<cTextureMIP>::const_iterator it = mips.begin(); it != mips.end(); ++it) {
         size += it->CalcSize(blocksize);
     }
 
@@ -72,7 +72,7 @@ void cTexture::Check() const {
     GetBlockSize(format); // Throws on wrong format
 
     unsigned long d = mips.begin()->dimension;
-    for (set<cTextureMIP>::iterator it = mips.begin(); it != mips.end(); ++it) {
+    for (set<cTextureMIP>::const_iterator it = mips.begin(); it != mips.end(); ++it) {
         if (it->dimension != d)
             throw EOvl("Texture mips are inconsistent: "+name);
         d = d / 2;
@@ -90,7 +90,7 @@ void cTexture::FillHeader(FlicHeader* header) const {
 unsigned long cTexture::FillRawData(unsigned char* data) const {
     unsigned long size = 0;
 	unsigned long blocksize = GetBlockSize(format);
-    for (set<cTextureMIP>::iterator it = mips.begin(); it != mips.end(); ++it) {
+    for (set<cTextureMIP>::const_iterator it = mips.begin(); it != mips.end(); ++it) {
         size += it->FillRawData(blocksize, data + size);
     }
     return size;
