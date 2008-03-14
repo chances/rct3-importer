@@ -27,6 +27,10 @@
 
 #include "RawParse_cpp.h"
 
+#include "ManagerSPL.h"
+#include "ManagerSID.h"
+#include "ManagerSTA.h"
+
 void cRawParser::ParseSID(cXmlNode& node) {
     USE_PREFIX(node);
     cSid sid;

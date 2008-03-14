@@ -9,6 +9,7 @@
 #include "ManagerFTX.h"
 #include "ManagerGSI.h"
 #include "ManagerPTD.h"
+#include "ManagerQTD.h"
 #include "ManagerSAT.h"
 #include "ManagerSHS.h"
 #include "ManagerSPL.h"

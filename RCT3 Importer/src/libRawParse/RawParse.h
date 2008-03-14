@@ -140,6 +140,7 @@ private:
     void ParseCID(xmlcpp::cXmlNode& node);
     void ParseFTX(xmlcpp::cXmlNode& node);
     void ParsePTD(xmlcpp::cXmlNode& node);
+    void ParseQTD(xmlcpp::cXmlNode& node);
     void ParseSAT(xmlcpp::cXmlNode& node);
     void ParseSHS(xmlcpp::cXmlNode& node);
     void ParseSID(xmlcpp::cXmlNode& node);

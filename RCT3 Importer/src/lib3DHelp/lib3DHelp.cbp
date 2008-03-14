@@ -6,9 +6,9 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="../../lib/lib3DHelpd" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\lib3DHelpd" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../lib/obj/lib3DHelp/debug" />
+				<Option object_output="..\..\lib\obj\lib3DHelp\debug" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -17,14 +17,14 @@
 					<Add option="-g" />
 					<Add option="-D__WXDEBUG__" />
 					<Add directory="$(#wx.include)" />
-					<Add directory="$(#wx.lib)/wx/include/msw-ansi-debug-static-2.8" />
+					<Add directory="$(#wx.lib)\wx\include\msw-ansi-debug-static-2.8" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="../../lib/lib3DHelp" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\lib3DHelp" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../lib/obj/lib3DHelp/release" />
-				<Option external_deps="../../lib/libWXHelp.a;" />
+				<Option object_output="..\..\lib\obj\lib3DHelp\release" />
+				<Option external_deps="..\..\lib\libWXHelp.a;" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -32,17 +32,17 @@
 					<Add option="-Os" />
 					<Add option="-O2" />
 					<Add directory="$(#wx.include)" />
-					<Add directory="$(#wx.lib)/wx/include/msw-ansi-release-static-2.8" />
+					<Add directory="$(#wx.lib)\wx\include\msw-ansi-release-static-2.8" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 				</Linker>
 			</Target>
 			<Target title="Release Unicode">
-				<Option output="../../lib/lib3DHelpu" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\lib3DHelpu" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../lib/obj/lib3DHelp/releaseuni" />
-				<Option external_deps="../../lib/libWXHelp.a;" />
+				<Option object_output="..\..\lib\obj\lib3DHelp\releaseuni" />
+				<Option external_deps="..\..\lib\libWXHelp.a;" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -50,18 +50,18 @@
 					<Add option="-Os" />
 					<Add option="-O2" />
 					<Add directory="$(#wx3.include)" />
-					<Add directory="$(#wx3.lib)/wx/include/msw-unicode-release-static-2.9" />
-					<Add directory="$(#wx3.lib)/wx/include/gtk2-unicode-release-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\msw-unicode-release-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\gtk2-unicode-release-static-2.9" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 				</Linker>
 			</Target>
 			<Target title="Debug Unicode">
-				<Option output="../../lib/lib3DHelpud" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\lib3DHelpud" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../lib/obj/lib3DHelp/debuguni" />
-				<Option external_deps="../../lib/libWXHelpd.a;" />
+				<Option object_output="..\..\lib\obj\lib3DHelp\debuguni" />
+				<Option external_deps="..\..\lib\libWXHelpd.a;" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -70,8 +70,8 @@
 					<Add option="-g" />
 					<Add option="-D__WXDEBUG__" />
 					<Add directory="$(#wx3.include)" />
-					<Add directory="$(#wx3.lib)/wx/include/msw-unicode-debug-static-2.9" />
-					<Add directory="$(#wx3.lib)/wx/include/gtk2-unicode-debug-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\msw-unicode-debug-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\gtk2-unicode-debug-static-2.9" />
 				</Compiler>
 			</Target>
 		</Build>
@@ -99,13 +99,13 @@
 			<Add option="-DCACHE_GXIMAGE" />
 			<Add option="-DXMLCPP_USE_XSLT" />
 			<Add option="-DXMLCPP_USE_WXWIDGETS" />
-			<Add directory="../libASE-1.0" />
-			<Add directory="../../include" />
-			<Add directory="../libWXHelp" />
-			<Add directory="$(#mingw.include)/GraphicsMagick" />
-			<Add directory="../libOVLng" />
-			<Add directory="../libXmlCpp" />
-			<Add directory="$(#system.include)/libxml2" />
+			<Add directory="..\libASE-1.0" />
+			<Add directory="..\..\include" />
+			<Add directory="..\libWXHelp" />
+			<Add directory="$(#mingw.include)\GraphicsMagick" />
+			<Add directory="..\libOVLng" />
+			<Add directory="..\libXmlCpp" />
+			<Add directory="$(#system.include)\libxml2" />
 			<Add directory="$(#mingw.include)" />
 		</Compiler>
 		<Unit filename="3DLoader.cpp" />
@@ -130,6 +130,10 @@
 		<Unit filename="RCT3Structs.h" />
 		<Unit filename="SCNFile.cpp" />
 		<Unit filename="SCNFile.h" />
+		<Unit filename="bmy.pal">
+			<Option compile="1" />
+			<Option weight="0" />
+		</Unit>
 		<Unit filename="lib3Dconfig.h" />
 		<Unit filename="matrix.cpp" />
 		<Unit filename="matrix.h" />

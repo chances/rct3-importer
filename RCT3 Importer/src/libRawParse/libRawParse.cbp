@@ -6,9 +6,9 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="../../lib/libRawParsed" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\libRawParsed" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../lib/obj/libRawParse/debug" />
+				<Option object_output="..\..\lib\obj\libRawParse\debug" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -20,10 +20,10 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="../../lib/libRawParse" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\libRawParse" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../lib/obj/libRawParse/release" />
-				<Option external_deps="../../lib/libWXHelp.a;" />
+				<Option object_output="..\..\lib\obj\libRawParse\release" />
+				<Option external_deps="..\..\lib\libWXHelp.a;" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -37,10 +37,10 @@
 				</Linker>
 			</Target>
 			<Target title="Release Unicode">
-				<Option output="../../lib/libRawParseu" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\libRawParseu" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../lib/obj/libRawParse/releaseuni" />
-				<Option external_deps="../../lib/libWXHelp.a;" />
+				<Option object_output="..\..\lib\obj\libRawParse\releaseuni" />
+				<Option external_deps="..\..\lib\libWXHelp.a;" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -48,18 +48,18 @@
 					<Add option="-Os" />
 					<Add option="-O2" />
 					<Add directory="$(#wx3.include)" />
-					<Add directory="$(#wx3.lib)/wx/include/msw-unicode-release-static-2.9" />
-					<Add directory="$(#wx3.lib)/wx/include/gtk2-unicode-release-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\msw-unicode-release-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\gtk2-unicode-release-static-2.9" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 				</Linker>
 			</Target>
 			<Target title="Debug Unicode">
-				<Option output="../../lib/libRawParseud" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\libRawParseud" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../lib/obj/libRawParse/debuguni" />
-				<Option external_deps="../../lib/libWXHelpd.a;" />
+				<Option object_output="..\..\lib\obj\libRawParse\debuguni" />
+				<Option external_deps="..\..\lib\libWXHelpd.a;" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -68,8 +68,8 @@
 					<Add option="-g" />
 					<Add option="-D__WXDEBUG__" />
 					<Add directory="$(#wx3.include)" />
-					<Add directory="$(#wx3.lib)/wx/include/msw-unicode-debug-static-2.9" />
-					<Add directory="$(#wx3.lib)/wx/include/gtk2-unicode-debug-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\msw-unicode-debug-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\gtk2-unicode-debug-static-2.9" />
 				</Compiler>
 			</Target>
 		</Build>
@@ -97,15 +97,15 @@
 			<Add option="-DCACHE_GXIMAGE" />
 			<Add option="-DXMLCPP_USE_XSLT" />
 			<Add option="-DXMLCPP_USE_WXWIDGETS" />
-			<Add directory="../libASE-1.0" />
-			<Add directory="../../include" />
-			<Add directory="../libWXHelp" />
-			<Add directory="$(#mingw.include)/GraphicsMagick" />
-			<Add directory="../libOVLng" />
-			<Add directory="../lib3DHelp" />
-			<Add directory="../libOVLDump" />
-			<Add directory="../libXmlCpp" />
-			<Add directory="$(#system.include)/libxml2" />
+			<Add directory="..\libASE-1.0" />
+			<Add directory="..\..\include" />
+			<Add directory="..\libWXHelp" />
+			<Add directory="$(#mingw.include)\GraphicsMagick" />
+			<Add directory="..\libOVLng" />
+			<Add directory="..\lib3DHelp" />
+			<Add directory="..\libOVLDump" />
+			<Add directory="..\libXmlCpp" />
+			<Add directory="$(#system.include)\libxml2" />
 			<Add directory="$(#mingw.include)" />
 		</Compiler>
 		<Unit filename="RawParse.h" />
@@ -119,7 +119,7 @@
 		<Unit filename="RawParse_MainParse.cpp" />
 		<Unit filename="RawParse_StructParse_BAN_BSH_CED.cpp" />
 		<Unit filename="RawParse_StructParse_CHG_CID_FTX.cpp" />
-		<Unit filename="RawParse_StructParse_PTD_SAT_SHS.cpp" />
+		<Unit filename="RawParse_StructParse_PTD_QTD_SAT_SHS.cpp" />
 		<Unit filename="RawParse_StructParse_SID_SPL_STA.cpp" />
 		<Unit filename="RawParse_StructParse_SVD_TEX_WAI.cpp" />
 		<Unit filename="RawParse_cpp.h" />

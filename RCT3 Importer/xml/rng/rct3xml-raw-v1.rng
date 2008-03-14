@@ -292,6 +292,7 @@
       <ref name="ftx"></ref>
       <ref name="gsi"></ref>
       <ref name="ptd"></ref>
+      <ref name="qtd"></ref>
       <ref name="sat"></ref>
       <ref name="shs"></ref>
       <ref name="sid"></ref>
@@ -1523,6 +1524,53 @@
               </optional>
             </group>
           </choice>
+        </interleave>
+      </element>
+    </define>
+    <define name="qtd">
+      <element name="qtd">
+        <ref name="baseattrs"></ref>
+        <attribute name="name">
+          <data type="string"></data>
+        </attribute>
+        <optional>
+          <attribute name="internalname">
+            <data type="string"></data>
+          </attribute>
+        </optional>
+        <attribute name="nametxt">
+          <ref name="TXTReference"></ref>
+        </attribute>
+        <attribute name="icon">
+          <ref name="GSIReference"></ref>
+        </attribute>
+        <attribute name="texture">
+          <ref name="FTXReference"></ref>
+        </attribute>
+        <interleave>
+          <element name="straight">
+            <data type="string"></data>
+          </element>
+          <element name="turn_l">
+            <data type="string"></data>
+          </element>
+          <element name="turn_r">
+            <data type="string"></data>
+          </element>
+          <element name="slopeup">
+            <data type="string"></data>
+          </element>
+          <element name="slopedown">
+            <data type="string"></data>
+          </element>
+          <element name="slopestraight">
+            <data type="string"></data>
+          </element>
+          <optional>
+            <element name="slopestraight">
+              <data type="string"></data>
+            </element>
+          </optional>
         </interleave>
       </element>
     </define>

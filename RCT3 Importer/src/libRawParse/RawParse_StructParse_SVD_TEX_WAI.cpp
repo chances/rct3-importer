@@ -27,6 +27,10 @@
 
 #include "RawParse_cpp.h"
 
+#include "ManagerSVD.h"
+#include "ManagerTEX.h"
+#include "ManagerWAI.h"
+
 void cRawParser::ParseSVD(cXmlNode& node) {
     USE_PREFIX(node);
     cSceneryItemVisual svd;

@@ -53,7 +53,7 @@ struct AnimatedRideExtra {
     unsigned long index;
     unsigned long unk2;
     unsigned long unk3;
-    unsigned long unk3;
+    unsigned long unk4;
 };
 
 struct ShowItem {

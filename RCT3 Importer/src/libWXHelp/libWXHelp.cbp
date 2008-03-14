@@ -4,12 +4,12 @@
 	<Project>
 		<Option title="libWXHelp" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="filedlg/;wrapper/;validators/;" />
+		<Option virtualFolders="filedlg\;wrapper\;validators\;" />
 		<Build>
 			<Target title="Debug">
-				<Option output="../../lib/libWXHelpd" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\libWXHelpd" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../lib/obj/libWXHelp/debug" />
+				<Option object_output="..\..\lib\obj\libWXHelp\debug" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -18,13 +18,13 @@
 					<Add option="-g" />
 					<Add option="-D__WXDEBUG__" />
 					<Add directory="$(#wx.include)" />
-					<Add directory="$(#wx.lib)/msw-ansi-debug-static-2.8" />
+					<Add directory="$(#wx.lib)\msw-ansi-debug-static-2.8" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="../../lib/libWXHelp" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\libWXHelp" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../lib/obj/libWXHelp/release" />
+				<Option object_output="..\..\lib\obj\libWXHelp\release" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -32,16 +32,16 @@
 					<Add option="-Os" />
 					<Add option="-O2" />
 					<Add directory="$(#wx.include)" />
-					<Add directory="$(#wx.lib)/msw-ansi-release-static-2.8" />
+					<Add directory="$(#wx.lib)\wx\include\msw-ansi-release-static-2.8" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 				</Linker>
 			</Target>
 			<Target title="Release Unicode">
-				<Option output="../../lib/libWXHelpu" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\libWXHelpu" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../lib/obj/libWXHelp/releaseuni" />
+				<Option object_output="..\..\lib\obj\libWXHelp\releaseuni" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -49,17 +49,17 @@
 					<Add option="-Os" />
 					<Add option="-O2" />
 					<Add directory="$(#wx3.include)" />
-					<Add directory="$(#wx3.lib)/wx/include/msw-unicode-release-static-2.9" />
-					<Add directory="$(#wx3.lib)/wx/include/gtk2-unicode-release-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\msw-unicode-release-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\gtk2-unicode-release-static-2.9" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 				</Linker>
 			</Target>
 			<Target title="Debug Unicode">
-				<Option output="../../lib/libWXHelpud" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\libWXHelpud" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../lib/obj/libWXHelp/debuguni" />
+				<Option object_output="..\..\lib\obj\libWXHelp\debuguni" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -68,14 +68,14 @@
 					<Add option="-g" />
 					<Add option="-D__WXDEBUG__" />
 					<Add directory="$(#wx3.include)" />
-					<Add directory="$(#wx3.lib)/wx/include/msw-unicode-debug-static-2.9" />
-					<Add directory="$(#wx3.lib)/wx/include/gtk2-unicode-debug-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\msw-unicode-debug-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\gtk2-unicode-debug-static-2.9" />
 				</Compiler>
 			</Target>
 			<Target title="Release Base Unicode">
-				<Option output="../../lib/libWXHelpbu" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\libWXHelpbu" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../lib/obj/libWXHelp/releasebaseuni" />
+				<Option object_output="..\..\lib\obj\libWXHelp\releasebaseuni" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -84,16 +84,16 @@
 					<Add option="-O2" />
 					<Add option="-DwxUSE_GUI=0" />
 					<Add directory="$(#wx3.include)" />
-					<Add directory="$(#wx3.lib)/wx/include/base-unicode-release-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\base-unicode-release-static-2.9" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 				</Linker>
 			</Target>
 			<Target title="Debug Base Unicode">
-				<Option output="../../lib/libWXHelpbud" prefix_auto="0" extension_auto="1" />
+				<Option output="..\..\lib\libWXHelpbud" prefix_auto="0" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../lib/obj/libWXHelp/debugbaseuni" />
+				<Option object_output="..\..\lib\obj\libWXHelp\debugbaseuni" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -103,7 +103,7 @@
 					<Add option="-DwxUSE_GUI=0" />
 					<Add option="-D__WXDEBUG__" />
 					<Add directory="$(#wx3.include)" />
-					<Add directory="$(#wx3.lib)/wx/include/base-unicode-debug-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\base-unicode-debug-static-2.9" />
 				</Compiler>
 			</Target>
 		</Build>
@@ -128,34 +128,34 @@
 			<Add option="-DIL_STATIC_LIB" />
 			<Add option="-DUSE_SQUISH" />
 			<Add option="-DCACHE_GXIMAGE" />
-			<Add directory="../libASE-1.0" />
-			<Add directory="../../include" />
-			<Add directory="$(#mingw.include)/GraphicsMagick" />
+			<Add directory="..\libASE-1.0" />
+			<Add directory="..\..\include" />
+			<Add directory="$(#mingw.include)\GraphicsMagick" />
 			<Add directory="$(#mingw.include)" />
 		</Compiler>
 		<Unit filename="auifiledlg.cpp">
-			<Option virtualFolder="filedlg/" />
+			<Option virtualFolder="filedlg\" />
 			<Option target="Debug" />
 			<Option target="Release" />
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="auifiledlg.h">
-			<Option virtualFolder="filedlg/" />
+			<Option virtualFolder="filedlg\" />
 			<Option target="Debug" />
 			<Option target="Release" />
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="auipicfiledlg.cpp">
-			<Option virtualFolder="filedlg/" />
+			<Option virtualFolder="filedlg\" />
 			<Option target="Debug" />
 			<Option target="Release" />
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="auipicfiledlg.h">
-			<Option virtualFolder="filedlg/" />
+			<Option virtualFolder="filedlg\" />
 			<Option target="Debug" />
 			<Option target="Release" />
 			<Option target="Release Unicode" />
@@ -165,46 +165,46 @@
 		<Unit filename="bzipstream.cpp" />
 		<Unit filename="bzipstream.h" />
 		<Unit filename="choicewrapper.cpp">
-			<Option virtualFolder="wrapper/" />
+			<Option virtualFolder="wrapper\" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="choicewrapper.h">
-			<Option virtualFolder="wrapper/" />
+			<Option virtualFolder="wrapper\" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="colhtmllbox.cpp">
-			<Option virtualFolder="wrapper/" />
+			<Option virtualFolder="wrapper\" />
 			<Option target="Debug" />
 			<Option target="Release" />
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="colhtmllbox.h">
-			<Option virtualFolder="wrapper/" />
+			<Option virtualFolder="wrapper\" />
 			<Option target="Debug" />
 			<Option target="Release" />
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="comboboxwrapper.cpp">
-			<Option virtualFolder="wrapper/" />
+			<Option virtualFolder="wrapper\" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="comboboxwrapper.h">
-			<Option virtualFolder="wrapper/" />
+			<Option virtualFolder="wrapper\" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="comboctrlwrapper.cpp">
-			<Option virtualFolder="wrapper/" />
+			<Option virtualFolder="wrapper\" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="comboctrlwrapper.h">
-			<Option virtualFolder="wrapper/" />
+			<Option virtualFolder="wrapper\" />
 			<Option target="Debug" />
 			<Option target="Release" />
 		</Unit>
@@ -219,14 +219,14 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="filedlgg.cpp">
-			<Option virtualFolder="filedlg/" />
+			<Option virtualFolder="filedlg\" />
 			<Option target="Debug" />
 			<Option target="Release" />
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="filedlgg.h">
-			<Option virtualFolder="filedlg/" />
+			<Option virtualFolder="filedlg\" />
 			<Option target="Debug" />
 			<Option target="Release" />
 			<Option target="Release Unicode" />
@@ -301,42 +301,42 @@
 			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="silence.cpp">
-			<Option virtualFolder="validators/" />
+			<Option virtualFolder="validators\" />
 			<Option target="Debug" />
 			<Option target="Release" />
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="silence.h">
-			<Option virtualFolder="validators/" />
+			<Option virtualFolder="validators\" />
 			<Option target="Debug" />
 			<Option target="Release" />
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="valext.cpp">
-			<Option virtualFolder="validators/" />
+			<Option virtualFolder="validators\" />
 			<Option target="Debug" />
 			<Option target="Release" />
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="valext.h">
-			<Option virtualFolder="validators/" />
+			<Option virtualFolder="validators\" />
 			<Option target="Debug" />
 			<Option target="Release" />
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="valsimplelist.cpp">
-			<Option virtualFolder="validators/" />
+			<Option virtualFolder="validators\" />
 			<Option target="Debug" />
 			<Option target="Release" />
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="valsimplelist.h">
-			<Option virtualFolder="validators/" />
+			<Option virtualFolder="validators\" />
 			<Option target="Debug" />
 			<Option target="Release" />
 			<Option target="Release Unicode" />
@@ -351,14 +351,14 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="wxInputBox.cpp">
-			<Option virtualFolder="validators/" />
+			<Option virtualFolder="validators\" />
 			<Option target="Debug" />
 			<Option target="Release" />
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
 		</Unit>
 		<Unit filename="wxInputBox.h">
-			<Option virtualFolder="validators/" />
+			<Option virtualFolder="validators\" />
 			<Option target="Debug" />
 			<Option target="Release" />
 			<Option target="Release Unicode" />

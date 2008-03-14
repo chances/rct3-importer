@@ -37,6 +37,8 @@
 #include "xmldefs.h"
 #include "xmlhelper.h"
 
+#include "bmy.pal.h"
+
 using namespace xmlcpp;
 
 ///////////////////////////////////////////////////////////////
@@ -884,6 +886,8 @@ cXmlNode cFlexiTexture::GetNode(const wxString& path) {
 
 COLOURQUAD cFlexiTexture::g_rgbPalette[256];
 bool cFlexiTexture::g_rgbPaletteCreated = false;
+COLOURQUAD cFlexiTexture::g_bmyPalette[256];
+bool cFlexiTexture::g_bmyPaletteCreated = false;
 
 COLOURQUAD* cFlexiTexture::GetRGBPalette() {
     if (!g_rgbPaletteCreated) {
@@ -898,6 +902,18 @@ COLOURQUAD* cFlexiTexture::GetRGBPalette() {
     return reinterpret_cast<COLOURQUAD*>(&g_rgbPalette);
 }
 
+COLOURQUAD* cFlexiTexture::GetBMYPalette() {
+    if (!g_bmyPaletteCreated) {
+        memset(&g_bmyPalette, 0, sizeof(g_rgbPalette));
+        for (int i = 0; i < 256; i++) {
+            g_bmyPalette[i].red = bmy_pal[(i * 4)+2];
+            g_bmyPalette[i].green = bmy_pal[(i * 4)+1];
+            g_bmyPalette[i].blue = bmy_pal[(i * 4)];
+        }
+        g_bmyPaletteCreated = true;
+    }
+    return reinterpret_cast<COLOURQUAD*>(&g_bmyPalette);
+}
 
 ///////////////////////////////////////////////////////////////
 //

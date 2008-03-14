@@ -27,6 +27,10 @@
 
 #include "RawParse_cpp.h"
 
+#include "ManagerBAN.h"
+#include "ManagerBSH.h"
+#include "ManagerCED.h"
+
 void cRawParser::ParseBAN(cXmlNode& node) {
     USE_PREFIX(node);
     cBoneAnim ban;

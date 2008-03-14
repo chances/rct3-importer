@@ -23,7 +23,7 @@
 					<Add option="-Os" />
 					<Add option="-O2" />
 					<Add directory="..\libOVL" />
-					<Add directory="$(#wx.ansireleasestatic)" />
+					<Add directory="$(#wx.lib)\wx\include\msw-ansi-release-static-2.8" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />

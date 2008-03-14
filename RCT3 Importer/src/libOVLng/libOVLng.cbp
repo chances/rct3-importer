@@ -179,6 +179,12 @@
 		<Unit filename="ManagerPTD.h">
 			<Option virtualFolder="Structure Managers\" />
 		</Unit>
+		<Unit filename="ManagerQTD.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerQTD.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
 		<Unit filename="ManagerSAT.cpp">
 			<Option virtualFolder="Structure Managers\" />
 		</Unit>

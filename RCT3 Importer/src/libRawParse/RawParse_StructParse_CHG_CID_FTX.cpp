@@ -27,6 +27,10 @@
 
 #include "RawParse_cpp.h"
 
+#include "ManagerCHG.h"
+#include "ManagerCID.h"
+#include "ManagerFTX.h"
+
 void cRawParser::ParseCHG(cXmlNode& node) {
     USE_PREFIX(node);
     cChangingRoom room;

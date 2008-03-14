@@ -251,6 +251,8 @@ DEF_RCT3_VECIT(cFlexiTexture)
 private:
     static COLOURQUAD g_rgbPalette[256];
     static bool g_rgbPaletteCreated;
+    static COLOURQUAD g_bmyPalette[256];
+    static bool g_bmyPaletteCreated;
 public:
     wxString Name;
     unsigned long FPS;
@@ -270,6 +272,7 @@ public:
     virtual const std::string GetTagName() const {return RCT3XML_CFLEXITEXTURE;};
 
     static COLOURQUAD* GetRGBPalette();
+    static COLOURQUAD* GetBMYPalette();
 };
 
 class cModelBone;

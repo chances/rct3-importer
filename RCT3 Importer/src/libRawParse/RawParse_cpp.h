@@ -35,7 +35,6 @@
 
 #include "base64.h"
 #include "counted_array_ptr.h"
-#include "OVLManagers.h"
 #include "RCT3Exception.h"
 #include "RCT3Macros.h"
 #include "SCNFile.h"
@@ -66,6 +65,7 @@
 #define RAWXML_FTX "ftx"
 #define RAWXML_GSI "gsi"
 #define RAWXML_PTD "ptd"
+#define RAWXML_QTD "qtd"
 #define RAWXML_SAT "sat"
 #define RAWXML_SHS "shs"
 #define RAWXML_SID "sid"
@@ -150,6 +150,13 @@
 #define RAWXML_PTD_SLOPEMID_BC      "slopemid_bc"
 #define RAWXML_PTD_SLOPEMID_TC      "slopemid_tc"
 #define RAWXML_PTD_PAVING           "paving"
+
+#define RAWXML_QTD_STRAIGHT         "straight"
+#define RAWXML_QTD_TURN_L           "turn_l"
+#define RAWXML_QTD_TURN_R           "turn_r"
+#define RAWXML_QTD_SLOPEUP          "slopeup"
+#define RAWXML_QTD_SLOPEDOWN        "slopedown"
+#define RAWXML_QTD_SLOPESTRAIGHT    "slopestraight"
 
 #define RAWXML_SHS_BBOX1            "boundingboxmin"
 #define RAWXML_SHS_BBOX2            "boundingboxmax"

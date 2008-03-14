@@ -452,23 +452,23 @@ void wxGXImage::FromPaletteData(int width, int height, const void* palette, cons
 
 bool wxGXImage::SaveFile(const wxString& name, int type) {
     switch (type) {
-        wxBITMAP_TYPE_BMP:
+        case wxBITMAP_TYPE_BMP:
             return SaveFile(name, wxT("bmp"));
-        wxBITMAP_TYPE_JPEG:
+        case wxBITMAP_TYPE_JPEG:
             return SaveFile(name, wxT("jpg"));
-        wxBITMAP_TYPE_PNG:
+        case wxBITMAP_TYPE_PNG:
             return SaveFile(name, wxT("png"));
-        wxBITMAP_TYPE_PCX:
+        case wxBITMAP_TYPE_PCX:
             return SaveFile(name, wxT("pcx"));
-        wxBITMAP_TYPE_PNM:
+        case wxBITMAP_TYPE_PNM:
             return SaveFile(name, wxT("pnm"));
-        wxBITMAP_TYPE_TIFF:
+        case wxBITMAP_TYPE_TIF:
             return SaveFile(name, wxT("tiff"));
-        wxBITMAP_TYPE_XPM:
+        case wxBITMAP_TYPE_XPM:
             return SaveFile(name, wxT("xpm"));
-        wxBITMAP_TYPE_ICO:
+        case wxBITMAP_TYPE_ICO:
             return SaveFile(name, wxT("ico"));
-        wxBITMAP_TYPE_CUR:
+        case wxBITMAP_TYPE_CUR:
             return SaveFile(name, wxT("cur"));
         default: {
             m_error = _("Unrecognized image type.");
@@ -591,6 +591,10 @@ void wxGXImage::GetAs8bitForced(unsigned char* data, unsigned char* palette, boo
             d2 = static_cast<int>(src[r].green) - static_cast<int>(pal[p].green);
             d3 = static_cast<int>(src[r].blue) - static_cast<int>(pal[p].blue);
             paldist = d1 * d1 + d2 * d2 + d3 * d3;
+//            if (r == 164673) {
+//                wxLogMessage(wxString::Format(wxT("%03u:%03hhu: %d %d %d, %d %d %d, %d %d"), p, data[r], static_cast<int>(src[r].red), static_cast<int>(src[r].green), static_cast<int>(src[r].blue),
+//                    static_cast<int>(pal[p].red), static_cast<int>(pal[p].green), static_cast<int>(pal[p].blue), paldist, palmax));
+//            }
             if (paldist < palmax) {
                 palmax = paldist;
                 data[r] = p;

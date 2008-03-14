@@ -27,6 +27,11 @@
 
 #include "RawParse_cpp.h"
 
+#include "ManagerPTD.h"
+#include "ManagerQTD.h"
+#include "ManagerSAT.h"
+#include "ManagerSHS.h"
+
 #define DO_PTD(a,b) \
         } else if (cname.IsSameAs(wxT(RAWXML_PTD_ ## a))) { \
             wxString c = UTF8STRINGWRAP(child.content()); \
@@ -105,6 +110,61 @@ void cRawParser::ParsePTD(cXmlNode& node) {
 
     ovlPTDManager* c_ptd = m_ovl.GetManager<ovlPTDManager>();
     c_ptd->AddPath(ptd);
+
+}
+
+void cRawParser::ParseQTD(cXmlNode& node) {
+    USE_PREFIX(node);
+
+    cQueue qtd;
+    wxString name = ParseString(node, wxT(RAWXML_QTD), wxT("name"), NULL, useprefix);
+    qtd.name = name.ToAscii();
+    ParseStringOption(qtd.internalname, node, wxT("internalname"), NULL, useprefix);
+    qtd.nametxt = ParseString(node, wxT(RAWXML_QTD), wxT("nametxt"), NULL, useprefix).ToAscii();
+    qtd.icon = ParseString(node, wxT(RAWXML_QTD), wxT("icon"), NULL, useprefix).ToAscii();
+    qtd.texture = ParseString(node, wxT(RAWXML_QTD), wxT("texture"), NULL, useprefix).ToAscii();
+    wxLogVerbose(wxString::Format(_("Adding qtd %s to %s."), name.c_str(), m_output.GetFullPath().c_str()));
+
+    cXmlNode child(node.children());
+    while (child) {
+        wxString cname = child.wxname();
+
+        if (cname == wxT(RAWXML_QTD_STRAIGHT)) {
+            wxString c = child.wxcontent();
+            MakeVariable(c);
+            qtd.straight = c.ToAscii();
+        } else if (cname == wxT(RAWXML_QTD_TURN_L)) {
+            wxString c = child.wxcontent();
+            MakeVariable(c);
+            qtd.turn_l = c.ToAscii();
+        } else if (cname == wxT(RAWXML_QTD_TURN_R)) {
+            wxString c = child.wxcontent();
+            MakeVariable(c);
+            qtd.turn_l = c.ToAscii();
+        } else if (cname == wxT(RAWXML_QTD_SLOPEUP)) {
+            wxString c = child.wxcontent();
+            MakeVariable(c);
+            qtd.slopeup = c.ToAscii();
+        } else if (cname == wxT(RAWXML_QTD_SLOPEDOWN)) {
+            wxString c = child.wxcontent();
+            MakeVariable(c);
+            qtd.slopedown = c.ToAscii();
+        } else if (cname == wxT(RAWXML_QTD_SLOPESTRAIGHT)) {
+            wxString c = child.wxcontent();
+            MakeVariable(c);
+            if (qtd.slopestraight[0] == "")
+                qtd.slopestraight[0] = c.ToAscii();
+            else
+                qtd.slopestraight[1] = c.ToAscii();
+        } else if (child.element()) {
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in qtd tag '%s'."), cname.c_str(), name.c_str()));
+        }
+
+        child.go_next();
+    }
+
+    ovlQTDManager* c_qtd = m_ovl.GetManager<ovlQTDManager>();
+    c_qtd->AddQueue(qtd);
 
 }
 

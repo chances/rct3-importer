@@ -2704,6 +2704,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                 if (i_ftxfr->recolorable() && (tex.type() != Magick::PaletteType)) {
                     memcpy(c_fts.palette.get(), cFlexiTexture::GetRGBPalette(), 256 * sizeof(COLOURQUAD));
                     tex.GetAs8bitForced(c_fts.texture.get(), c_fts.palette.get(), true);
+                    memcpy(c_fts.palette.get(), cFlexiTexture::GetBMYPalette(), 256 * sizeof(COLOURQUAD));
                 } else {
                     tex.GetAs8bit(c_fts.texture.get(), c_fts.palette.get());
                 }

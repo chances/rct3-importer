@@ -247,6 +247,8 @@ public:
     inline cXmlNode prop(const std::string& nprop, const char* val, bool encode_spchars = true) { return prop(nprop.c_str(), val, encode_spchars); }
 
 #ifdef XMLCPP_USE_WXWIDGETS
+    inline wxString wxname() const { return wxString::FromUTF8(name().c_str()); }
+
     inline wxString wxpath() { return wxString::FromUTF8(path().c_str()); }
 
     inline wxString wxcontent() const { return wxString::FromUTF8(content_internal(true).c_str()); }

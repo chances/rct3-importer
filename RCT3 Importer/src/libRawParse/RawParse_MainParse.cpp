@@ -27,6 +27,10 @@
 
 #include "RawParse_cpp.h"
 
+#include "ManagerBTBL.h"
+#include "ManagerGSI.h"
+#include "ManagerTXT.h"
+
 void cRawParser::Parse(cXmlNode& node) {
     std::string oldprefix = m_prefix;
     ParseStringOption(m_prefix, node, wxT("prefix"), NULL, false);
@@ -493,6 +497,9 @@ void cRawParser::Parse(cXmlNode& node) {
         } else if (child(RAWXML_PTD)) {
             BAKE_SKIP(child);
             ParsePTD(child);
+        } else if (child(RAWXML_QTD)) {
+            BAKE_SKIP(child);
+            ParseQTD(child);
         } else if (child(RAWXML_SAT)) {
             BAKE_SKIP(child);
             ParseSAT(child);
