@@ -35,6 +35,8 @@
 //#include <iostream>
 #include <stdexcept>
 
+using namespace r3;
+
 const char* ovlSHSManager::NAME = "StaticShape";
 const char* ovlSHSManager::TAG = "shs";
 
@@ -112,14 +114,14 @@ struct cTriangleSorter {
 };
 
 
-void cStaticShape2::Fill(StaticShape2* ss2, unsigned long* vert, unsigned long* ind) {
-    ss2->unk1 = support;
-    ss2->fts = NULL;
-    ss2->TextureData = NULL;
-    ss2->PlaceTexturing = placetexturing;
-    ss2->textureflags = textureflags;
+void cStaticShape2::Fill(StaticShapeMesh* ss2, uint32_t* vert, uint32_t* ind) {
+    ss2->support_type = support;
+    ss2->ftx_ref = NULL;
+    ss2->txs_ref = NULL;
+    ss2->transparency = placetexturing;
+    ss2->texture_flags = textureflags;
     ss2->sides = sides;
-    ss2->VertexCount = vertices.size();
+    ss2->vertex_count = vertices.size();
     if (vert)
         *vert += vertices.size();
 #ifndef GLASS_OLD
@@ -130,12 +132,12 @@ void cStaticShape2::Fill(StaticShape2* ss2, unsigned long* vert, unsigned long* 
     }
 
     if ((algo_x == cTriangleSortAlgorithm::NONE) && (placetexturing != 0))
-        ss2->IndexCount = indices.size() / 3;
+        ss2->index_count = indices.size() / 3;
     else
 #endif
-    ss2->IndexCount = indices.size();
+    ss2->index_count = indices.size();
     if (ind)
-        *ind += ss2->IndexCount;
+        *ind += ss2->index_count;
 #ifndef GLASS_OLD
     if ((placetexturing != 0) && (algo_x != cTriangleSortAlgorithm::NONE)) {
         // Sort vertices
@@ -153,7 +155,7 @@ void cStaticShape2::Fill(StaticShape2* ss2, unsigned long* vert, unsigned long* 
     }
 #endif
     for(unsigned long i = 0; i < vertices.size(); ++i) {
-        ss2->Vertexes[i] = vertices[i];
+        ss2->vertexes[i] = vertices[i];
     }
 #ifndef GLASS_OLD
     if ((placetexturing != 0) && (algo_x != cTriangleSortAlgorithm::NONE)) {
@@ -173,9 +175,9 @@ void cStaticShape2::Fill(StaticShape2* ss2, unsigned long* vert, unsigned long* 
             DUMP_LOG("  Tri Sum %f  Min %f  Max %f", vertices[temptri[i].a].position.x+vertices[temptri[i].b].position.x+vertices[temptri[i].c].position.x,
                         TriMin(vertices[temptri[i].a].position.x,vertices[temptri[i].b].position.x,vertices[temptri[i].c].position.x),
                         TriMax(vertices[temptri[i].a].position.x,vertices[temptri[i].b].position.x,vertices[temptri[i].c].position.x));
-            ss2->Triangles[i*3] = temptri[i].a;
-            ss2->Triangles[(i*3)+1] = temptri[i].b;
-            ss2->Triangles[(i*3)+2] = temptri[i].c;
+            ss2->indices[i*3] = temptri[i].a;
+            ss2->indices[(i*3)+1] = temptri[i].b;
+            ss2->indices[(i*3)+2] = temptri[i].c;
         }
         DUMP_LOG("Sorting y.");
         sort(temptri.begin(), temptri.end(), cTriangleSorter(&vertices, cTriangleSortAlgorithm(algo_y, cTriangleSortAlgorithm::BY_Y)));
@@ -183,9 +185,9 @@ void cStaticShape2::Fill(StaticShape2* ss2, unsigned long* vert, unsigned long* 
             DUMP_LOG("  Tri Sum %f  Min %f  Max %f", vertices[temptri[i].a].position.y+vertices[temptri[i].b].position.y+vertices[temptri[i].c].position.y,
                         TriMin(vertices[temptri[i].a].position.y,vertices[temptri[i].b].position.y,vertices[temptri[i].c].position.y),
                         TriMax(vertices[temptri[i].a].position.y,vertices[temptri[i].b].position.y,vertices[temptri[i].c].position.y));
-            ss2->Triangles[(i*3)+indices.size()] = temptri[i].a;
-            ss2->Triangles[(i*3)+indices.size()+1] = temptri[i].b;
-            ss2->Triangles[(i*3)+indices.size()+2] = temptri[i].c;
+            ss2->indices[(i*3)+indices.size()] = temptri[i].a;
+            ss2->indices[(i*3)+indices.size()+1] = temptri[i].b;
+            ss2->indices[(i*3)+indices.size()+2] = temptri[i].c;
         }
         DUMP_LOG("Sorting z.");
         sort(temptri.begin(), temptri.end(), cTriangleSorter(&vertices, cTriangleSortAlgorithm(algo_z, cTriangleSortAlgorithm::BY_Z)));
@@ -193,22 +195,39 @@ void cStaticShape2::Fill(StaticShape2* ss2, unsigned long* vert, unsigned long* 
             DUMP_LOG("  Tri Sum %f  Min %f  Max %f", vertices[temptri[i].a].position.z+vertices[temptri[i].b].position.z+vertices[temptri[i].c].position.z,
                         TriMin(vertices[temptri[i].a].position.z,vertices[temptri[i].b].position.z,vertices[temptri[i].c].position.z),
                         TriMax(vertices[temptri[i].a].position.z,vertices[temptri[i].b].position.z,vertices[temptri[i].c].position.z));
-            ss2->Triangles[(i*3)+(indices.size()*2)] = temptri[i].a;
-            ss2->Triangles[(i*3)+(indices.size()*2)+1] = temptri[i].b;
-            ss2->Triangles[(i*3)+(indices.size()*2)+2] = temptri[i].c;
+            ss2->indices[(i*3)+(indices.size()*2)] = temptri[i].a;
+            ss2->indices[(i*3)+(indices.size()*2)+1] = temptri[i].b;
+            ss2->indices[(i*3)+(indices.size()*2)+2] = temptri[i].c;
         }
     } else {
         for(unsigned long i = 0; i < indices.size(); ++i) {
-            ss2->Triangles[i] = indices[i];
+            ss2->indices[i] = indices[i];
         }
     }
 #else
     for(unsigned long i = 0; i < indices.size(); ++i) {
-        ss2->Triangles[i] = indices[i];
+        ss2->indices[i] = indices[i];
     }
 #endif
 }
 
+void cStaticShape1::Fill(r3::StaticShape* ss1) {
+    ss1->bounding_box_min = bbox1;
+    ss1->bounding_box_max = bbox2;
+    ss1->total_vertex_count = 0;
+    ss1->total_index_count = 0;
+    ss1->mesh_count2 = 0;
+    ss1->mesh_count = meshes.size();
+    for(unsigned long i = 0; i < meshes.size(); ++i) {
+        if (meshes[i].support == r3::Constants::Mesh::SupportType::None)
+            ss1->mesh_count2++;
+        meshes[i].Fill(ss1->sh[i], &ss1->total_vertex_count, &ss1->total_index_count);
+    }
+    ss1->effect_count = effects.size();
+    for(unsigned long i = 0; i < effects.size(); ++i) {
+        effects[i].Fill(&ss1->effect_positions[i]);
+    }
+}
 
 
 void ovlSHSManager::AddModel(const cStaticShape1& item) {
@@ -225,9 +244,9 @@ void ovlSHSManager::AddModel(const cStaticShape1& item) {
     m_blobs[item.name] = cOvlMemBlob(OVLT_COMMON, 4, 0);
 
     // StaticShape1
-    m_size += sizeof(StaticShape1);
+    m_size += sizeof(StaticShape);
     // StaticShape2 pointers
-    m_size += item.meshes.size() * sizeof(StaticShape2*);
+    m_size += item.meshes.size() * 4;
 
     // Put in common
     // Effect name pointers
@@ -238,7 +257,7 @@ void ovlSHSManager::AddModel(const cStaticShape1& item) {
     // Meshes
     for (vector<cStaticShape2>::const_iterator it = item.meshes.begin(); it != item.meshes.end(); ++it) {
         // StaticShape2
-        m_size += sizeof(StaticShape2);
+        m_size += sizeof(StaticShapeMesh);
         // Vertices
         m_blobs[item.name].size += it->vertices.size() * sizeof(VERTEX);
         // Indices
@@ -287,11 +306,11 @@ void ovlSHSManager::Make(cOvlInfo* info) {
     for (map<string, cStaticShape1>::iterator it = m_items.begin(); it != m_items.end(); ++it) {
         unsigned char* c_commondata = m_blobs[it->first].data;
 
-        StaticShape1* c_model = reinterpret_cast<StaticShape1*>(c_data);
-        c_data += sizeof(StaticShape1);
+        StaticShape* c_model = reinterpret_cast<StaticShape*>(c_data);
+        c_data += sizeof(StaticShape);
 
         // Assign space for StaticShape2 pointers
-        c_model->sh = reinterpret_cast<StaticShape2**>(c_data);
+        c_model->sh = reinterpret_cast<StaticShapeMesh**>(c_data);
         c_data += it->second.meshes.size() * 4;
         GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->sh));
         DUMP_RELOCATION("ovlSHSManager::Make, BoneShape2 pointers", c_model->sh);
@@ -302,51 +321,51 @@ void ovlSHSManager::Make(cOvlInfo* info) {
 
         unsigned long s = 0;
         for (vector<cStaticShape2>::iterator itb = it->second.meshes.begin(); itb != it->second.meshes.end(); ++itb) {
-            c_model->sh[s] = reinterpret_cast<StaticShape2*>(c_data);
-            c_data += sizeof(StaticShape2);
+            c_model->sh[s] = reinterpret_cast<StaticShapeMesh*>(c_data);
+            c_data += sizeof(StaticShapeMesh);
             GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->sh[s]));
             DUMP_RELOCATION("ovlSHSManager::Make, StaticShape2", c_model->sh[s]);
 
-            c_model->sh[s]->Vertexes = reinterpret_cast<VERTEX*>(c_commondata);
+            c_model->sh[s]->vertexes = reinterpret_cast<VERTEX*>(c_commondata);
             c_commondata += itb->vertices.size() * sizeof(VERTEX);
-            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->sh[s]->Vertexes));
-            DUMP_RELOCATION("ovlSHSManager::Make, Vertexes", c_model->sh[s]->Vertexes);
+            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->sh[s]->vertexes));
+            DUMP_RELOCATION("ovlSHSManager::Make, Vertexes", c_model->sh[s]->vertexes);
 
-            c_model->sh[s]->Triangles = reinterpret_cast<unsigned long*>(c_commondata);
+            c_model->sh[s]->indices = reinterpret_cast<uint32_t*>(c_commondata);
             c_commondata += itb->indices.size() * sizeof(unsigned long);
 #ifndef GLASS_OLD
             if ((itb->placetexturing != 0) && (!itb->IsAlgoNone())) {
                 c_commondata += 2 * itb->indices.size() * sizeof(unsigned long);
             }
 #endif
-            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->sh[s]->Triangles));
-            DUMP_RELOCATION("ovlSHSManager::Make, Triangles", c_model->sh[s]->Triangles);
+            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->sh[s]->indices));
+            DUMP_RELOCATION("ovlSHSManager::Make, Triangles", c_model->sh[s]->indices);
 
             // Symbol references
-            GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(itb->fts.c_str(), ovlFTXManager::TAG), reinterpret_cast<unsigned long*>(&c_model->sh[s]->fts));
-            GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(itb->texturestyle.c_str(), ovlTXSManager::TAG), reinterpret_cast<unsigned long*>(&c_model->sh[s]->TextureData));
+            GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(itb->fts.c_str(), ovlFTXManager::TAG), reinterpret_cast<unsigned long*>(&c_model->sh[s]->ftx_ref));
+            GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(itb->texturestyle.c_str(), ovlTXSManager::TAG), reinterpret_cast<unsigned long*>(&c_model->sh[s]->txs_ref));
 
             s++;
         }
 
         if (it->second.effects.size()) {
-            c_model->EffectName = reinterpret_cast<char**>(c_commondata);
+            c_model->effect_names = reinterpret_cast<char**>(c_commondata);
             c_commondata += it->second.effects.size() * sizeof(char*);
-            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->EffectName));
-            DUMP_RELOCATION("ovlSHSManager::Make, EffectNames", c_model->EffectName);
+            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->effect_names));
+            DUMP_RELOCATION("ovlSHSManager::Make, EffectNames", c_model->effect_names);
 
-            c_model->EffectPosition = reinterpret_cast<MATRIX*>(c_commondata);
+            c_model->effect_positions = reinterpret_cast<MATRIX*>(c_commondata);
             c_commondata += it->second.effects.size() * sizeof(MATRIX);
-            GetRelocationManager()->AddRelocation((unsigned long *)&c_model->EffectPosition);
-            DUMP_RELOCATION("ovlSHSManager::Make, EffectPositions", c_model->EffectPosition);
+            GetRelocationManager()->AddRelocation((unsigned long *)&c_model->effect_positions);
+            DUMP_RELOCATION("ovlSHSManager::Make, EffectPositions", c_model->effect_positions);
 
             s = 0;
             for (vector<cEffectStruct>::iterator itb = it->second.effects.begin(); itb != it->second.effects.end(); ++itb) {
-                c_model->EffectName[s] = reinterpret_cast<char*>(c_commondata);
+                c_model->effect_names[s] = reinterpret_cast<char*>(c_commondata);
                 strcpy(reinterpret_cast<char*>(c_commondata), itb->name.c_str());
                 c_commondata += itb->name.length() + 1;
-                GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->EffectName[s]));
-                DUMP_RELOCATION("ovlSHSManager::Make, Effect Name", c_model->EffectName[s]);
+                GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long *>(&c_model->effect_names[s]));
+                DUMP_RELOCATION("ovlSHSManager::Make, Effect Name", c_model->effect_names[s]);
 
                 // Padding
                 unsigned long x = itb->name.length() + 1;
@@ -358,8 +377,8 @@ void ovlSHSManager::Make(cOvlInfo* info) {
                 s++;
             }
         } else {
-            c_model->EffectName = NULL;
-            c_model->EffectPosition = NULL;
+            c_model->effect_names = NULL;
+            c_model->effect_positions = NULL;
         }
 
         it->second.Fill(c_model);

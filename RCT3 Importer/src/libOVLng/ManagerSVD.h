@@ -71,11 +71,11 @@ public:
         distance = 0.0;
         unk14 = 0;
     }
-    void Fill(SceneryItemVisualLOD* lod) {
+    void Fill(r3::SceneryItemVisualLOD* lod) {
         lod->MeshType = meshtype;
-        lod->StaticShape = NULL;
+        lod->ss = NULL;
         lod->unk2 = unk2;
-        lod->BoneShape = NULL;
+        lod->bs = NULL;
         lod->unk4 = unk4;
         lod->fts = NULL;
         lod->TextureData = NULL;
@@ -126,7 +126,7 @@ public:
 	    unk10 = 0;
 	    unk11 = 0;
 	}
-	void Fill(SceneryItemVisual* siv) {
+	void Fill(r3::SceneryItemVisual* siv) {
 	    siv->sivflags = sivflags;
 	    siv->sway = sway;
 	    siv->brightness = brightness;

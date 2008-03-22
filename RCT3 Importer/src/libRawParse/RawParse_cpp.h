@@ -175,6 +175,7 @@
 #define RAWXML_SID_COLOURS          "sidcolours"
 #define RAWXML_SID_SVD              "sidvisual"
 #define RAWXML_SID_IMPORTERUNKNOWNS "sidimporterunknowns"
+#define RAWXML_SID_EXTRA            "sidextra"
 #define RAWXML_SID_SQUAREUNKNOWNS   "sidsquareunknowns"
 #define RAWXML_SID_STALLUNKNOWNS    "sidstallunknowns"
 #define RAWXML_SID_PARAMETER        "sidparameter"
@@ -282,6 +283,7 @@ enum {
             wxLogMessage(t); \
         }
 
+using namespace r3;
 using namespace xmlcpp;
 
 bool CanBeWrittenTo(const wxFileName& target);

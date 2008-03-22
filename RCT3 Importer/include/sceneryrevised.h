@@ -29,6 +29,10 @@ struct WAVEFORMATEX {
 #endif
 #endif
 
+namespace r3 {
+
+/*
+
 #ifndef BOOL
 #define BOOL unsigned long
 #endif
@@ -214,6 +218,8 @@ struct SIDData
 	unsigned long dunk5;
 };
 
+*/
+
 struct Sound
 {
 	WAVEFORMATEX format;
@@ -332,70 +338,6 @@ struct SceneryItemData //set all to 0 and see what happens
 	unsigned long unk5;
 };
 
-enum {
-    SID_TYPE_TREE = 0,
-    SID_TYPE_PLANT = 1,
-    SID_TYPE_SHRUB = 2,
-    SID_TYPE_FLOWERS = 3,
-    SID_TYPE_FENCE = 4,
-    SID_TYPE_WALL_MISC = 5,
-    SID_TYPE_PATH_LAMP = 6,
-    SID_TYPE_SCENERY_SMALL = 7,
-    SID_TYPE_SCENERY_MEDIUM = 8,
-    SID_TYPE_SCENERY_LARGE = 9,
-    SID_TYPE_SCENERY_ANAMATRONIC = 10,
-    SID_TYPE_SCENERY_MISC = 11,
-    SID_TYPE_SUPPORT_MIDDLE = 12,
-    SID_TYPE_SUPPORT_TOP = 13,
-    SID_TYPE_SUPPORT_BOTTOM = 14,
-    SID_TYPE_SUPPORT_BOTTOM_EXTRA = 15,
-    SID_TYPE_SUPPORT_GIRDER = 16,
-    SID_TYPE_SUPPORT_CAP = 17,
-    SID_TYPE_RIDE_TRACK = 18,
-    SID_TYPE_PATH = 19,
-    SID_TYPE_PARK_ENTRANCE = 20,
-    SID_TYPE_LITTER = 21,
-    SID_TYPE_GUEST_INJECT = 22,
-    SID_TYPE_RIDE = 23,
-    SID_TYPE_RIDE_ENTRANCE = 24,
-    SID_TYPE_RIDE_EXIT = 25,
-    SID_TYPE_KEEP_CLEAR_FENCE = 26,
-    SID_TYPE_STALL = 27,
-    SID_TYPE_RIDE_EVENT = 28,
-    SID_TYPE_FIREWORK = 29,
-    SID_TYPE_LITTER_BIN = 30,
-    SID_TYPE_BENCH = 31,
-    SID_TYPE_SIGN = 32,
-    SID_TYPE_PHOTO_POINT = 33,
-    SID_TYPE_WALL_STRAIGHT = 34,
-    SID_TYPE_WALL_ROOF = 35,
-    SID_TYPE_WALL_CORNER = 36,
-//new for Soaked!
-    SID_TYPE_WATER_CANNON = 37,
-    SID_TYPE_POOL_PIECE = 38,
-    SID_TYPE_POOL_EXTRA = 39,
-    SID_TYPE_CHANGING_ROOM = 40,
-    SID_TYPE_LASER_DOME = 41, //???
-    SID_TYPE_WATER_JET = 42, //???
-    SID_TYPE_TERRAIN_PIECE = 43, //???
-    SID_TYPE_PARTICLE_EFFECT = 44, //???
-//new for Wild!
-    SID_TYPE_ANIMAL_FENCE = 45, //???
-    SID_TYPE_ANIMAL_MISC = 46 //???
-};
-
-enum {
-    SID_POSITION_FULLTILE = 0,
-    SID_POSITION_PATHEDGEINNER = 1,
-    SID_POSITION_PATHEDGEOUTER = 2,
-    SID_POSITION_WALL = 3,
-    SID_POSITION_QUARTER = 4,
-    SID_POSITION_HALF = 5,
-    SID_POSITION_PATHCENTER = 6,
-    SID_POSITION_CORNER = 7,
-    SID_POSITION_PATHEDGEJOIN = 8
-};
-
 struct SceneryItem
 {
 	unsigned long unk1; //is 0 on disk files
@@ -512,6 +454,8 @@ struct SceneryItemExtra2
                                     *  5: 1x4
                                     *  6: 1x8
                                     */
+};
+
 };
 
 #endif

@@ -11,6 +11,7 @@
 #ifndef __SCENARY_H__
 #define __SCENARY_H__
 
+#include "guiicon.h"
 #include "sceneryvisual.h"
 #include "vertex.h"
 
@@ -28,7 +29,7 @@ struct Scenery
 	long refund;
 	char *wallname;
 	char *name;
-	VECTOR position;
+	r3::VECTOR position;
 	unsigned long type;
 	BOOL flag1;
 	BOOL flag2;
@@ -63,7 +64,7 @@ struct Scenery
 	BOOL flag31;
 	BOOL flag32;
 	unsigned long unk4;
-	VECTOR size;
+	r3::VECTOR size;
 	unsigned long supportstype;
 	unsigned long unk17;
 	unsigned long sizex;
@@ -113,7 +114,7 @@ struct Scenery
 
 struct SIDData
 {
-	VECTOR position;
+	r3::VECTOR position;
 	unsigned long type;
 	BOOL flag1;
 	BOOL flag2;
@@ -148,7 +149,7 @@ struct SIDData
 	BOOL flag31;
 	BOOL flag32;
 	unsigned long unk4;
-	VECTOR size;
+	r3::VECTOR size;
 	unsigned long unk17;
 	unsigned long sizex;
 	unsigned long sizey;
@@ -404,7 +405,7 @@ struct SceneryItem
 	unsigned long type;
 	char *supports;
 	unsigned long svdcount;
-	SceneryItemVisual **svd;
+	r3::SceneryItemVisual **svd;
 	GUISkinItem *gsi;
 	GUISkinItem *wallsetgsi;
 	wchar_t *wallsetname;

@@ -12,6 +12,9 @@
 #include "CommonOVL.h"
 #include "StyleOVL.h"
 #include "attract.h"
+
+using namespace r3;
+
 std::vector<AttractionData *> AttractionData::Attractions;
 int AttractionData::LoaderNumber;
 

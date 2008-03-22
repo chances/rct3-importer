@@ -18,6 +18,10 @@
 #include "guiskin.h"
 #include "stalls.h"
 #include "attract.h"
+
+using namespace r3;
+
+
 extern FILE *f;
 extern unsigned long CurrentFile;
 extern OvlFile OpenFiles[2];

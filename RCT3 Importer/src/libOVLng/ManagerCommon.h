@@ -31,12 +31,11 @@
 
 #include <string>
 
+#include "rct3constants.h"
 #include "stall.h"
 #include "vertex.h"
 
 #include "ManagerOVL.h"
-
-using namespace std;
 
 inline float TriMin(float a, float b, float c) {
     return (a<b)?((a<c)?a:c):((b<c)?b:c);
@@ -73,14 +72,14 @@ struct cTriangleSortAlgorithm {
     Algorithm algo;
     Axis dir;
     cTriangleSortAlgorithm(Algorithm algorithm, Axis direction): algo(algorithm), dir(direction) {};
-    bool operator() (const VECTOR& a1, const VECTOR& a2, const VECTOR& a3, const VECTOR& b1, const VECTOR& b2, const VECTOR& b3) const;
+    bool operator() (const r3::VECTOR& a1, const r3::VECTOR& a2, const r3::VECTOR& a3, const r3::VECTOR& b1, const r3::VECTOR& b2, const r3::VECTOR& b3) const;
 
     static Algorithm GetAlgo(const char* algoname);
     static inline Algorithm GetDefault() { return DEFAULT; }
     static const char* GetDefaultName();
     static const char* GetAlgorithmName(Algorithm algo);
 };
-
+/*
 enum cAttractionType {
     ATTRACTION_TYPE_Ride_Water          = 0x00,
     ATTRACTION_TYPE_Ride_Gentle         = 0x01,
@@ -102,7 +101,7 @@ enum cAttractionType {
     ATTRACTION_TYPE_Soaked              = 0x200,
     ATTRACTION_TYPE_Wild                = 0x300
 };
-
+*/
 class cAttraction {
 public:
 	unsigned long type; // Second byte is 02 for Soaked and 03 for Wild/Vanilla (structure is new since soaked)
@@ -119,27 +118,27 @@ public:
 	vector<string> splines;
 	unsigned long unk9;
 	long unk10;
-	unsigned long unk11;
+	unsigned long addonascn;
 	unsigned long unk12;
 	unsigned long unk13;
 
 	cAttraction() {
 	    // default to generic stall
-	    type = ATTRACTION_TYPE_Stall_Misc | ATTRACTION_TYPE_Wild;
+	    type = r3::Constants::Attraction::Type::Stall_Misc | r3::Constants::Addon::Wild_Hi;
 	    unk2 = 10000;
 	    unk3 = -7500;
 	    unk4 = 0;
 	    unk5 = 0;
-	    unk6 = 1500;
+	    unk6 = r3::Constants::Attraction::BaseUpkeep::Stall;
 	    unk9 = 0;
 	    unk10 = 12;
-	    unk11 = 0;
-	    unk12 = 2;
-	    unk13 = 0;
+	    addonascn = r3::Constants::Addon::Vanilla;
+	    unk12 = r3::Constants::Attraction::Unknown12::Generic_Stall;
+	    unk13 = r3::Constants::Attraction::Unknown13::Default;
 	}
-    void Fill(AttractionA* att); // Automatically casts to Attraction2 depending on type
-    void Fill(StallA* sta);
-    void Fill(SpecialAttractionA* sp);
+    void Fill(r3::Attraction_S* att); // Automatically casts to Attraction_W depending on type
+    void Fill(r3::StallA* sta);
+    void Fill(r3::SpecialAttractionA* sp);
 };
 
 // "Fake" classes for consistent access to file tags

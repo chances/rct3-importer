@@ -58,7 +58,7 @@ void cRawParser::ParseCHG(cXmlNode& node) {
             OPTION_PARSE(unsigned long, room.attraction.unk6, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u6")));
             OPTION_PARSE(unsigned long, room.attraction.unk9, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u9")));
             OPTION_PARSE(long, room.attraction.unk10, ParseSigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u10")));
-            OPTION_PARSE(unsigned long, room.attraction.unk11, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u11")));
+            OPTION_PARSE(unsigned long, room.attraction.addonascn, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u11")));
             OPTION_PARSE(unsigned long, room.attraction.unk12, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u12")));
             OPTION_PARSE(unsigned long, room.attraction.unk13, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u13")));
         } else if (child.element()) {

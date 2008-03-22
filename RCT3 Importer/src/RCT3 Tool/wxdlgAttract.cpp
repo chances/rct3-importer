@@ -34,10 +34,13 @@
 #include <wx/valgen.h>
 
 #include "wxdlgAttract.h"
+#include "scenery.h"
 #include "stall.h"
 
 #include "valsimplelist.h"
 #include "valext.h"
+
+using namespace r3;
 
 extern std::vector <AttractionStr *> Attractions;
 extern std::vector<cText> cTextStrings;

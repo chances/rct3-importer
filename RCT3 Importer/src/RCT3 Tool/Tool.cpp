@@ -79,6 +79,8 @@
 
 #include "version.h"
 
+using namespace r3;
+
 //////////////////////////////////
 //
 //  Globals (verified)

@@ -33,6 +33,8 @@
 #include "MS3DLoader.h"
 //#include "AN8Loaderr.h"
 
+using namespace r3;
+
 c3DLoader* DoLoadFile(const wxChar *filename) {
     c3DLoader *res;
 

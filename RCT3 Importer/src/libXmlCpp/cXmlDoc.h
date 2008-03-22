@@ -66,7 +66,7 @@ namespace xmlcpp {
 
         bool read(const xmlChar* cur, const char* URL, const char* encoding, int options = 0);
         inline bool read(const std::string& buffer, const char* URL = NULL, const char* encoding = NULL, int options = 0) {
-            return read(buffer.c_str(), URL, encoding, options);
+            return read(reinterpret_cast<const xmlChar*>(buffer.c_str()), URL, encoding, options);
         }
         bool read(const char* filename, const char* encoding, int options = 0);
         /// Clones a document tree from a pointer
@@ -82,9 +82,14 @@ namespace xmlcpp {
         cXmlNode root(cXmlNode& newroot);
 
         std::string searchNs(const std::string& prefix = "", xmlNodePtr node = NULL);
+        xmlNsPtr searchNsByHref(const std::string& href, xmlNodePtr node = NULL);
         xmlNsPtr getNs(const std::string& prefix = "", xmlNodePtr node = NULL);
         inline xmlNsPtr defaultNs(xmlNodePtr node = NULL) { return getNs("", node); }
 
+        /// Validate the document with a validator
+        /**
+         * Returns 0 on success, -1 on internal error and number of errors otherwise.
+         */
         int validate(cXmlValidator& val);
         int validate(cXmlValidator& val, int options);
         int xInclude();

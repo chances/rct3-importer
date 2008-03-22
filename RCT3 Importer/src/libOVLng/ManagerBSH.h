@@ -37,14 +37,12 @@
 #include "ManagerCommon.h"
 #include "ManagerOVL.h"
 
-using namespace std;
-
 class cBoneStruct {
 public:
-    string name;
+    std::string name;
 	unsigned long parentbonenumber;
-	MATRIX pos1;
-	MATRIX pos2;
+	r3::MATRIX pos1;
+	r3::MATRIX pos2;
 
     cBoneStruct() {
         parentbonenumber = -1;
@@ -72,13 +70,13 @@ public:
             pos2 = pos1;
         }
     }
-    void Fill(BoneStruct* bs) {
-        bs->ParentBoneNumber = parentbonenumber;
+    void Fill(r3::BoneStruct* bs) {
+        bs->parent_bone_number = parentbonenumber;
     }
-    void Fill1(MATRIX* m) {
+    void Fill1(r3::MATRIX* m) {
         *m = pos1;
     }
-    void Fill2(MATRIX* m) {
+    void Fill2(r3::MATRIX* m) {
         *m = pos2;
     }
 };
@@ -86,13 +84,13 @@ public:
 class cBoneShape2 {
 public:
     long support;
-	string fts; //is 0 in disk files
-	string texturestyle; //is 0 in disk files
+	std::string fts; //is 0 in disk files
+	std::string texturestyle; //is 0 in disk files
 	unsigned long placetexturing; //0 = dont see texturing on things when being placed, 1 = see texturing on things when being placed
 	unsigned long textureflags; //always 0
 	unsigned long sides; //seen values of 3 or 1 for this, 3 is more common
-	vector<VERTEX2> vertices;
-	vector<unsigned short> indices;
+	std::vector<r3::VERTEX2> vertices;
+	std::vector<r3::uint16_t> indices;
 
 #ifndef GLASS_OLD
 	cTriangleSortAlgorithm::Algorithm algo_x;
@@ -104,14 +102,14 @@ public:
 	    placetexturing = 0;
 	    textureflags = 0;
 	    sides = 3;
-	    support = SharedShape::Supports::None;
+	    support = r3::Constants::Mesh::SupportType::None;
 #ifndef GLASS_OLD
 	    algo_x = cTriangleSortAlgorithm::DEFAULT;
 	    algo_y = cTriangleSortAlgorithm::DEFAULT;
 	    algo_z = cTriangleSortAlgorithm::DEFAULT;
 #endif
 	}
-	void Fill(BoneShape2* bs2, unsigned long* vert, unsigned long* ind);
+	void Fill(r3::BoneShapeMesh* bs2, r3::uint32_t* vert, r3::uint32_t* ind);
 	bool IsAlgoNone() const {
 	    return ((algo_x == cTriangleSortAlgorithm::NONE) || (algo_y == cTriangleSortAlgorithm::NONE) || (algo_z == cTriangleSortAlgorithm::NONE));
 	}
@@ -119,32 +117,14 @@ public:
 
 class cBoneShape1 {
 public:
-    string name;
-    VECTOR bbox1;
-    VECTOR bbox2;
-	vector<cBoneShape2> meshes;
-    vector<cBoneStruct> bones;
+    std::string name;
+    r3::VECTOR bbox1;
+    r3::VECTOR bbox2;
+	std::vector<cBoneShape2> meshes;
+    std::vector<cBoneStruct> bones;
 
 	cBoneShape1() {};
-	void Fill(BoneShape1* bs1) {
-	    bs1->BoundingBox1 = bbox1;
-	    bs1->BoundingBox2 = bbox2;
-	    bs1->TotalVertexCount = 0;
-	    bs1->TotalIndexCount = 0;
-	    bs1->MeshCount2 = 0;
-	    bs1->MeshCount = meshes.size();
-	    for(unsigned long i = 0; i < meshes.size(); ++i) {
-	        if (meshes[i].support == SharedShape::Supports::None)
-                bs1->MeshCount2++;
-            meshes[i].Fill(bs1->sh[i], &bs1->TotalVertexCount, &bs1->TotalIndexCount);
-	    }
-	    bs1->BoneCount = bones.size();
-	    for(unsigned long i = 0; i < bones.size(); ++i) {
-            bones[i].Fill(&bs1->Bones[i]);
-            bones[i].Fill1(&bs1->BonePositions1[i]);
-            bones[i].Fill2(&bs1->BonePositions2[i]);
-	    }
-	}
+	void Fill(r3::BoneShape* bs1);
 };
 
 class ovlBSHManager: public ovlOVLManager {
@@ -152,7 +132,7 @@ public:
     static const char* NAME;
     static const char* TAG;
 private:
-    map<string, cBoneShape1> m_items;
+    std::map<std::string, cBoneShape1> m_items;
 public:
     ovlBSHManager(): ovlOVLManager() {};
 

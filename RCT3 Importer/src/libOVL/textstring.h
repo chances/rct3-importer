@@ -7,13 +7,16 @@
 	Software Foundation; either version 2, or (at your option) any later
 	version. See the file COPYING for more details.
 */
+
+#include <vector>
+
 class TextString {
 public:
     char *name;
     char *string;
     TextString(char *name,char *string);
     ~TextString();
-    static vector<TextString *> TextStrings;
+    static std::vector<TextString *> TextStrings;
     static int LoaderNumber;
     static unsigned long ComputeSize();
     static void AddData(unsigned long *data);

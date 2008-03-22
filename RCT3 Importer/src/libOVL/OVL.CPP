@@ -14,6 +14,7 @@
 
 #include <list>
 #include <map>
+#include <string>
 
 #define DUMP_RELOCATIONS
 
@@ -23,6 +24,8 @@
 #define DUMP_RELOCATION( ... )
 #endif
 
+using namespace r3;
+
 FILE *f;
 extern unsigned long CurrentFile;
 extern OvlFile OpenFiles[2];
@@ -30,12 +33,12 @@ std::queue<unsigned long *> relocations;
 std::queue<unsigned long> fixups;
 std::vector <libOVL_Resource *> ResourceItems;
 // Static shapes and textures
-std::vector <StaticShape1 *> StaticShapes;
+std::vector <StaticShape *> StaticShapes;
 std::vector <char *> StaticShapeNames;
 std::vector <char **> StaticShapeFTXNames;
 std::vector <char **> StaticShapeTXSNames;
 // Bone shapes and textures
-std::vector <BoneShape1 *> BoneShapes;
+std::vector <BoneShape *> BoneShapes;
 std::vector <BoneAnim *> BoneAnims;
 std::vector <char *> BoneShapeNames;
 std::vector <char *> BoneAnimNames;
@@ -70,9 +73,9 @@ SceneryItemVisualLOD *svlod1;
 SceneryItemVisualLOD *svlod2;
 SceneryItemVisualLOD *svlod3;
 unsigned char *shape;
-StaticShape1 *sh;
-StaticShape2 **sh2x;
-StaticShape2 *sh2;
+StaticShape *sh;
+StaticShapeMesh **sh2x;
+StaticShapeMesh *sh2;
 VERTEX *Vertexes;
 unsigned long *Triangles;
 
@@ -142,14 +145,14 @@ LIBOVL_API void CreateSceneryOvl(char *filename) {
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-LIBOVL_API void AddStaticShape(char *StaticShapeName, char **FTXNames, char **TXSNames, StaticShape1 *sh) {
+LIBOVL_API void AddStaticShape(char *StaticShapeName, char **FTXNames, char **TXSNames, StaticShape *sh) {
     StaticShapeNames.push_back(StaticShapeName);
     StaticShapeFTXNames.push_back(FTXNames);
     StaticShapeTXSNames.push_back(TXSNames);
     StaticShapes.push_back(sh);
 }
 
-LIBOVL_API void AddBoneShape(char *BoneShapeName, char **FTXNames, char **TXSNames, BoneShape1 *bsh) {
+LIBOVL_API void AddBoneShape(char *BoneShapeName, char **FTXNames, char **TXSNames, BoneShape *bsh) {
     BoneShapeNames.push_back(BoneShapeName);
     BoneShapeFTXNames.push_back(FTXNames);
     BoneShapeTXSNames.push_back(TXSNames);
@@ -390,12 +393,12 @@ LIBOVL_API void SaveSceneryOvl() {
     for (i = 0;i < StaticShapes.size();i++) {
 //        StringTableSize += strlen(StaticShapeNames[i])+5;
         stringtable.AddSymbolString(StaticShapeNames[i], ovlStringTable::SHS);
-        StaticShapeSize += sizeof(StaticShape1);
+        StaticShapeSize += sizeof(StaticShape);
         LoaderCount++;
         SymbolCount++;
-        for (j = 0;j < StaticShapes[i]->MeshCount;j++) {
-            StaticShape2 *obj = StaticShapes[i]->sh[j];
-            StaticShapeSize += sizeof(StaticShape2) + (obj->VertexCount * sizeof(VERTEX)) + (obj->IndexCount * 4) + 4;
+        for (j = 0;j < StaticShapes[i]->mesh_count;j++) {
+            StaticShapeMesh *obj = StaticShapes[i]->sh[j];
+            StaticShapeSize += sizeof(StaticShapeMesh) + (obj->vertex_count * sizeof(VERTEX)) + (obj->index_count * 4) + 4;
             SymbolRefCount++;
             SymbolRefCount++;
 //            StringTableSize += strlen(StaticShapeFTXNames[i][j])+5;
@@ -403,10 +406,10 @@ LIBOVL_API void SaveSceneryOvl() {
 //            StringTableSize += strlen(StaticShapeTXSNames[i][j])+5;
             stringtable.AddSymbolString(StaticShapeTXSNames[i][j], ovlStringTable::TXS);
         }
-        for (j = 0;j < StaticShapes[i]->EffectCount;j++) {
+        for (j = 0;j < StaticShapes[i]->effect_count;j++) {
             StaticShapeSize += 4;
             StaticShapeSize += sizeof(MATRIX);
-            unsigned long x = strlen(StaticShapes[i]->EffectName[j]) + 1;
+            unsigned long x = strlen(StaticShapes[i]->effect_names[j]) + 1;
             while (x % 4 != 0) {
                 x++;
             }
@@ -419,12 +422,12 @@ LIBOVL_API void SaveSceneryOvl() {
     for (i = 0;i < BoneShapes.size();i++) {
 //        StringTableSize += strlen(BoneShapeNames[i])+5;
         stringtable.AddSymbolString(BoneShapeNames[i], ovlStringTable::BSH);
-        BoneShapeSize += sizeof(BoneShape1);
+        BoneShapeSize += sizeof(BoneShape);
         LoaderCount++;
         SymbolCount++;
-        for (j = 0;j < BoneShapes[i]->MeshCount;j++) {
-            BoneShape2 *obj = BoneShapes[i]->sh[j];
-            BoneShapeSize += sizeof(BoneShape2) + (obj->VertexCount * sizeof(VERTEX2)) + (obj->IndexCount * 4) + 4;
+        for (j = 0;j < BoneShapes[i]->mesh_count;j++) {
+            BoneShapeMesh *obj = BoneShapes[i]->sh[j];
+            BoneShapeSize += sizeof(BoneShapeMesh) + (obj->vertex_count * sizeof(VERTEX2)) + (obj->index_count * 4) + 4;
             SymbolRefCount++;
             SymbolRefCount++;
 //            StringTableSize += strlen(BoneShapeFTXNames[i][j])+5;
@@ -432,11 +435,11 @@ LIBOVL_API void SaveSceneryOvl() {
 //            StringTableSize += strlen(BoneShapeTXSNames[i][j])+5;
             stringtable.AddSymbolString(BoneShapeTXSNames[i][j], ovlStringTable::TXS);
         }
-        for (j = 0;j < BoneShapes[i]->BoneCount;j++) {
+        for (j = 0;j < BoneShapes[i]->bone_count;j++) {
 //            BoneShapeSize += 4;  // No need, name pointer is part of BoneStruct
             BoneShapeSize += 2*sizeof(MATRIX);
             BoneShapeSize += sizeof(BoneStruct);
-            stringtable.AddString(BoneShapes[i]->Bones[j].BoneName);
+            stringtable.AddString(BoneShapes[i]->bones[j].bone_name);
 //            unsigned long x = strlen(BoneShapes[i]->Bones[j].BoneName) + 1;
 //            while (x % 4 != 0) {
 //                x++;
@@ -492,13 +495,13 @@ LIBOVL_API void SaveSceneryOvl() {
 //        strcpy(TempStringTable,":shs");
 //        TempStringTable += 5;
         char *shsname = stringtable.FindSymbolString(StaticShapeNames[i], ovlStringTable::SHS);
-        StaticShape1 *shs = (StaticShape1 *)TempStaticShape;
-        memcpy(shs,StaticShapes[i],sizeof(StaticShape1));
-        TempStaticShape += sizeof(StaticShape1);
-        shs->sh = (StaticShape2 **)TempStaticShape;
+        r3::StaticShape* shs = (r3::StaticShape *)TempStaticShape;
+        memcpy(shs,StaticShapes[i],sizeof(r3::StaticShape));
+        TempStaticShape += sizeof(r3::StaticShape);
+        shs->sh = (StaticShapeMesh **)TempStaticShape;
         relocations.push((unsigned long *)&shs->sh);
         DUMP_RELOCATION(f,"relocations: %x: &shs->sh\n",&shs->sh);
-        TempStaticShape += shs->MeshCount * 4;
+        TempStaticShape += shs->mesh_count * 4;
         TempSym->data = (unsigned long *)shs;
         TempSym->IsPointer = true;
         TempSym->Symbol = shsname;
@@ -512,30 +515,30 @@ LIBOVL_API void SaveSceneryOvl() {
         relocations.push((unsigned long *)&TempLdr->Sym);
         DUMP_RELOCATION(f,"relocations: %x: &TempLdr->Sym\n",&TempLdr->Sym);
         TempLdr->SymbolsToResolve = 0;
-        for (unsigned long j = 0;j < StaticShapes[i]->MeshCount;j++) {
-            StaticShape2 *obj = StaticShapes[i]->sh[j];
-            StaticShape2 *sh2 = (StaticShape2 *)TempStaticShape;
-            TempStaticShape += sizeof(StaticShape2);
-            memcpy(sh2,obj,sizeof(StaticShape2));
+        for (unsigned long j = 0;j < StaticShapes[i]->mesh_count;j++) {
+            StaticShapeMesh *obj = StaticShapes[i]->sh[j];
+            StaticShapeMesh *sh2 = (StaticShapeMesh *)TempStaticShape;
+            TempStaticShape += sizeof(StaticShapeMesh);
+            memcpy(sh2,obj,sizeof(StaticShapeMesh));
             shs->sh[j] = sh2;
             relocations.push((unsigned long *)&shs->sh[j]);
             DUMP_RELOCATION(f,"relocations: %x: &shs->sh[j]\n",&shs->sh[j]);
-            sh2->Vertexes = (VERTEX *)TempStaticShape;
-            memcpy(sh2->Vertexes,obj->Vertexes,obj->VertexCount*sizeof(VERTEX));
-            relocations.push((unsigned long *)&sh2->Vertexes);
-            DUMP_RELOCATION(f,"relocations: %x: &sh2->Vertexes\n",&sh2->Vertexes);
-            TempStaticShape += obj->VertexCount*sizeof(VERTEX);
-            sh2->Triangles = (unsigned long *)TempStaticShape;
-            memcpy(sh2->Triangles,obj->Triangles,obj->IndexCount*4);
-            TempStaticShape += obj->IndexCount*4;
-            relocations.push((unsigned long *)&sh2->Triangles);
-            DUMP_RELOCATION(f,"relocations: %x: &sh2->Triangles\n",&sh2->Triangles);
+            sh2->vertexes = (VERTEX *)TempStaticShape;
+            memcpy(sh2->vertexes,obj->vertexes,obj->vertex_count*sizeof(VERTEX));
+            relocations.push((unsigned long *)&sh2->vertexes);
+            DUMP_RELOCATION(f,"relocations: %x: &sh2->Vertexes\n",&sh2->vertexes);
+            TempStaticShape += obj->vertex_count*sizeof(VERTEX);
+            sh2->indices = (uint32_t *)TempStaticShape;
+            memcpy(sh2->indices,obj->indices,obj->index_count*4);
+            TempStaticShape += obj->index_count*4;
+            relocations.push((unsigned long *)&sh2->indices);
+            DUMP_RELOCATION(f,"relocations: %x: &sh2->Triangles\n",&sh2->indices);
 
             TempLdr->SymbolsToResolve += 2;
             TempRef->ldr = TempLdr;
             relocations.push((unsigned long *)&TempRef->ldr);
             DUMP_RELOCATION(f,"relocations: %x: &TempRef->ldr, StaticShape:ftx\n",&TempRef->ldr);
-            TempRef->reference = (unsigned long *)&sh2->fts;
+            TempRef->reference = (unsigned long *)&sh2->ftx_ref;
             relocations.push((unsigned long *)&TempRef->reference);
             DUMP_RELOCATION(f,"relocations: %x: &TempRef->reference, StaticShape:ftx\n",&TempRef->reference);
 //            char *FTX = TempStringTable;
@@ -551,7 +554,7 @@ LIBOVL_API void SaveSceneryOvl() {
             TempRef->ldr = TempLdr;
             relocations.push((unsigned long *)&TempRef->ldr);
             DUMP_RELOCATION(f,"relocations: %x: &TempRef->ldr, StaticShape:txs\n",&TempRef->ldr);
-            TempRef->reference = (unsigned long *)&sh2->TextureData;
+            TempRef->reference = (unsigned long *)&sh2->txs_ref;
             relocations.push((unsigned long *)&TempRef->reference);
             DUMP_RELOCATION(f,"relocations: %x: &TempRef->reference, StaticShape:txs\n",&TempRef->reference);
 //            char *TXS = TempStringTable;
@@ -565,34 +568,34 @@ LIBOVL_API void SaveSceneryOvl() {
             DUMP_RELOCATION(f,"relocations: %x: &TempRef->Symbol, StaticShape:txs\n",&TempRef->Symbol);
             TempRef++;
         }
-        if (StaticShapes[i]->EffectCount != 0) {
-            shs->EffectPosition = (MATRIX *)TempStaticShape;
-            TempStaticShape += (StaticShapes[i]->EffectCount * sizeof(MATRIX));
-            shs->EffectName = (char **)TempStaticShape;
-            shs->EffectCount = StaticShapes[i]->EffectCount;
-            TempStaticShape += (StaticShapes[i]->EffectCount * 4);
-            relocations.push((unsigned long *)&shs->EffectName);
-            DUMP_RELOCATION(f,"relocations: %x: &shs->EffectName\n",&shs->EffectName);
-            relocations.push((unsigned long *)&shs->EffectPosition);
-            DUMP_RELOCATION(f,"relocations: %x: &shs->EffectPosition\n",&shs->EffectPosition);
-            for (unsigned long j = 0;j < StaticShapes[i]->EffectCount;j++) {
-                shs->EffectName[j] = (char *)TempStaticShape;
-                strcpy((char *)TempStaticShape,StaticShapes[i]->EffectName[j]);
-                TempStaticShape += strlen(StaticShapes[i]->EffectName[j]) + 1;
-                unsigned long x = strlen(StaticShapes[i]->EffectName[j]) + 1;
+        if (StaticShapes[i]->effect_count != 0) {
+            shs->effect_positions = (MATRIX *)TempStaticShape;
+            TempStaticShape += (StaticShapes[i]->effect_count * sizeof(MATRIX));
+            shs->effect_names = (char **)TempStaticShape;
+            shs->effect_count = StaticShapes[i]->effect_count;
+            TempStaticShape += (StaticShapes[i]->effect_count * 4);
+            relocations.push((unsigned long *)&shs->effect_names);
+            DUMP_RELOCATION(f,"relocations: %x: &shs->EffectName\n",&shs->effect_names);
+            relocations.push((unsigned long *)&shs->effect_positions);
+            DUMP_RELOCATION(f,"relocations: %x: &shs->EffectPosition\n",&shs->effect_positions);
+            for (unsigned long j = 0;j < StaticShapes[i]->effect_count;j++) {
+                shs->effect_names[j] = (char *)TempStaticShape;
+                strcpy((char *)TempStaticShape,StaticShapes[i]->effect_names[j]);
+                TempStaticShape += strlen(StaticShapes[i]->effect_names[j]) + 1;
+                unsigned long x = strlen(StaticShapes[i]->effect_names[j]) + 1;
                 while (x % 4 != 0) {
                     *TempStaticShape = 0;
                     TempStaticShape++;
                     x++;
                 }
-                relocations.push((unsigned long *)&shs->EffectName[j]);
-                DUMP_RELOCATION(f,"relocations: %x: &shs->EffectName[j]\n",&shs->EffectName[j]);
-                memcpy(&shs->EffectPosition[j],&StaticShapes[i]->EffectPosition[j],sizeof(MATRIX));
+                relocations.push((unsigned long *)&shs->effect_names[j]);
+                DUMP_RELOCATION(f,"relocations: %x: &shs->EffectName[j]\n",&shs->effect_names[j]);
+                memcpy(&shs->effect_positions[j],&StaticShapes[i]->effect_positions[j],sizeof(MATRIX));
             }
         } else {
-            shs->EffectName = 0;
-            shs->EffectCount = 0;
-            shs->EffectPosition = 0;
+            shs->effect_names = 0;
+            shs->effect_count = 0;
+            shs->effect_positions = 0;
         }
         TempSym++;
         TempLdr++;
@@ -607,13 +610,13 @@ LIBOVL_API void SaveSceneryOvl() {
 //        strcpy(TempStringTable,":bsh");
 //        TempStringTable += 5;
         char *bshname = stringtable.FindSymbolString(BoneShapeNames[i], ovlStringTable::BSH);
-        BoneShape1 *bsh = (BoneShape1 *)TempBoneShape;
-        memcpy(bsh,BoneShapes[i],sizeof(BoneShape1));
-        TempBoneShape += sizeof(BoneShape1);
-        bsh->sh = (BoneShape2 **)TempBoneShape;
+        r3::BoneShape *bsh = (r3::BoneShape *)TempBoneShape;
+        memcpy(bsh,BoneShapes[i],sizeof(r3::BoneShape));
+        TempBoneShape += sizeof(r3::BoneShape);
+        bsh->sh = (BoneShapeMesh **)TempBoneShape;
         relocations.push((unsigned long *)&bsh->sh);
         DUMP_RELOCATION(f,"relocations: %x: &bsh->sh\n",&bsh->sh);
-        TempBoneShape += bsh->MeshCount * 4;
+        TempBoneShape += bsh->mesh_count * 4;
         TempSym->data = (unsigned long *)bsh;
         TempSym->IsPointer = true;
         TempSym->Symbol = bshname;
@@ -627,29 +630,29 @@ LIBOVL_API void SaveSceneryOvl() {
         relocations.push((unsigned long *)&TempLdr->Sym);
         DUMP_RELOCATION(f,"relocations: %x: &TempLdr->Sym\n",&TempLdr->Sym);
         TempLdr->SymbolsToResolve = 0;
-        for (unsigned long j = 0;j < BoneShapes[i]->MeshCount;j++) {
-            BoneShape2 *obj = BoneShapes[i]->sh[j];
-            BoneShape2 *sh2 = (BoneShape2 *)TempBoneShape;
-            TempBoneShape += sizeof(BoneShape2);
-            memcpy(sh2,obj,sizeof(BoneShape2));
+        for (unsigned long j = 0;j < BoneShapes[i]->mesh_count;j++) {
+            BoneShapeMesh *obj = BoneShapes[i]->sh[j];
+            BoneShapeMesh *sh2 = (BoneShapeMesh *)TempBoneShape;
+            TempBoneShape += sizeof(BoneShapeMesh);
+            memcpy(sh2,obj,sizeof(BoneShapeMesh));
             bsh->sh[j] = sh2;
             relocations.push((unsigned long *)&bsh->sh[j]);
             DUMP_RELOCATION(f,"relocations: %x: &bsh->sh[j]\n",&bsh->sh[j]);
-            sh2->Vertexes = (VERTEX2 *)TempBoneShape;
-            memcpy(sh2->Vertexes,obj->Vertexes,obj->VertexCount*sizeof(VERTEX2));
-            relocations.push((unsigned long *)&sh2->Vertexes);
-            DUMP_RELOCATION(f,"relocations: %x: &sh2->Vertexes\n",&sh2->Vertexes);
-            TempBoneShape += obj->VertexCount*sizeof(VERTEX2);
-            sh2->Triangles = (unsigned short *)TempBoneShape;
-            memcpy(sh2->Triangles,obj->Triangles,obj->IndexCount*2);
-            TempBoneShape += obj->IndexCount*2;
-            relocations.push((unsigned long *)&sh2->Triangles);
-            DUMP_RELOCATION(f,"relocations: %x: &sh2->Triangles\n",&sh2->Triangles);
+            sh2->vertexes = (VERTEX2 *)TempBoneShape;
+            memcpy(sh2->vertexes,obj->vertexes,obj->vertex_count*sizeof(VERTEX2));
+            relocations.push((unsigned long *)&sh2->vertexes);
+            DUMP_RELOCATION(f,"relocations: %x: &sh2->Vertexes\n",&sh2->vertexes);
+            TempBoneShape += obj->vertex_count*sizeof(VERTEX2);
+            sh2->indices = (uint16_t *)TempBoneShape;
+            memcpy(sh2->indices,obj->indices,obj->index_count*2);
+            TempBoneShape += obj->index_count*2;
+            relocations.push((unsigned long *)&sh2->indices);
+            DUMP_RELOCATION(f,"relocations: %x: &sh2->Triangles\n",&sh2->indices);
             TempLdr->SymbolsToResolve += 2;
             TempRef->ldr = TempLdr;
             relocations.push((unsigned long *)&TempRef->ldr);
             DUMP_RELOCATION(f,"relocations: %x: &TempRef->ldr, BoneShape:ftx\n",&TempRef->ldr);
-            TempRef->reference = (unsigned long *)&sh2->fts;
+            TempRef->reference = (unsigned long *)&sh2->ftx_ref;
             relocations.push((unsigned long *)&TempRef->reference);
             DUMP_RELOCATION(f,"relocations: %x: &TempRef->reference, BoneShape:ftx\n",&TempRef->reference);
 //            char *FTX = TempStringTable;
@@ -665,7 +668,7 @@ LIBOVL_API void SaveSceneryOvl() {
             TempRef->ldr = TempLdr;
             relocations.push((unsigned long *)&TempRef->ldr);
             DUMP_RELOCATION(f,"relocations: %x: &TempRef->ldr, BoneShape:txs\n",&TempRef->ldr);
-            TempRef->reference = (unsigned long *)&sh2->TextureData;
+            TempRef->reference = (unsigned long *)&sh2->txs_ref;
             relocations.push((unsigned long *)&TempRef->reference);
             DUMP_RELOCATION(f,"relocations: %x: &TempRef->reference, BoneShape:txs\n",&TempRef->reference);
 //            char *TXS = TempStringTable;
@@ -679,29 +682,29 @@ LIBOVL_API void SaveSceneryOvl() {
             DUMP_RELOCATION(f,"relocations: %x: &TempRef->Symbol, BoneShape:txs\n",&TempRef->Symbol);
             TempRef++;
         }
-        if (BoneShapes[i]->BoneCount != 0) {
+        if (BoneShapes[i]->bone_count != 0) {
             // Copy the array of BoneStruct's into position as Bones
             // Copy the array of D3DMATRIX's into position as BonePositions1
             // Copy the array of D3DMATRIX's into position as BonePositions2
-            bsh->Bones = (BoneStruct *)TempBoneShape;
-            TempBoneShape += (BoneShapes[i]->BoneCount * sizeof(BoneStruct));
-            relocations.push((unsigned long *)&bsh->Bones);
-            DUMP_RELOCATION(f,"relocations: %x: &bsh->Bones\n",&bsh->Bones);
-            bsh->BoneCount = BoneShapes[i]->BoneCount;
+            bsh->bones = (BoneStruct *)TempBoneShape;
+            TempBoneShape += (BoneShapes[i]->bone_count * sizeof(BoneStruct));
+            relocations.push((unsigned long *)&bsh->bones);
+            DUMP_RELOCATION(f,"relocations: %x: &bsh->Bones\n",&bsh->bones);
+            bsh->bone_count = BoneShapes[i]->bone_count;
 
-            bsh->BonePositions1 = (MATRIX *)TempBoneShape;
-            TempBoneShape += (BoneShapes[i]->BoneCount * sizeof(MATRIX));
-            relocations.push((unsigned long *)&bsh->BonePositions1);
-            DUMP_RELOCATION(f,"relocations: %x: &bsh->BonePositions1\n",&bsh->BonePositions1);
+            bsh->bone_positions1 = (MATRIX *)TempBoneShape;
+            TempBoneShape += (BoneShapes[i]->bone_count * sizeof(MATRIX));
+            relocations.push((unsigned long *)&bsh->bone_positions1);
+            DUMP_RELOCATION(f,"relocations: %x: &bsh->BonePositions1\n",&bsh->bone_positions1);
 
-            bsh->BonePositions2 = (MATRIX *)TempBoneShape;
-            TempBoneShape += (BoneShapes[i]->BoneCount * sizeof(MATRIX));
-            relocations.push((unsigned long *)&bsh->BonePositions2);
-            DUMP_RELOCATION(f,"relocations: %x: &bsh->BonePositions2\n",&bsh->BonePositions2);
+            bsh->bone_positions2 = (MATRIX *)TempBoneShape;
+            TempBoneShape += (BoneShapes[i]->bone_count * sizeof(MATRIX));
+            relocations.push((unsigned long *)&bsh->bone_positions2);
+            DUMP_RELOCATION(f,"relocations: %x: &bsh->BonePositions2\n",&bsh->bone_positions2);
 
-            for (unsigned long j = 0;j < BoneShapes[i]->BoneCount;j++) {
-                bsh->Bones[j].ParentBoneNumber = BoneShapes[i]->Bones[j].ParentBoneNumber;
-                bsh->Bones[j].BoneName = stringtable.FindString(BoneShapes[i]->Bones[j].BoneName);
+            for (unsigned long j = 0;j < BoneShapes[i]->bone_count;j++) {
+                bsh->bones[j].parent_bone_number = BoneShapes[i]->bones[j].parent_bone_number;
+                bsh->bones[j].bone_name = stringtable.FindString(BoneShapes[i]->bones[j].bone_name);
 //                bsh->Bones[j].BoneName = (char *)TempBoneShape;
 //                strcpy((char *)TempBoneShape,BoneShapes[i]->Bones[j].BoneName);
 //                TempBoneShape += strlen(BoneShapes[i]->Bones[j].BoneName) + 1;
@@ -711,16 +714,16 @@ LIBOVL_API void SaveSceneryOvl() {
 //                    TempBoneShape++;
 //                    x++;
 //                }
-                relocations.push((unsigned long *)&bsh->Bones[j].BoneName);
-                DUMP_RELOCATION(f,"relocations: %x: &bsh->Bones[j].BoneName %s\n",&bsh->Bones[j].BoneName, bsh->Bones[j].BoneName);
-                memcpy(&bsh->BonePositions1[j],&BoneShapes[i]->BonePositions1[j],sizeof(MATRIX));
-                memcpy(&bsh->BonePositions2[j],&BoneShapes[i]->BonePositions2[j],sizeof(MATRIX));
+                relocations.push((unsigned long *)&bsh->bones[j].bone_name);
+                DUMP_RELOCATION(f,"relocations: %x: &bsh->Bones[j].BoneName %s\n",&bsh->bones[j].bone_name, bsh->bones[j].bone_name);
+                memcpy(&bsh->bone_positions1[j],&BoneShapes[i]->bone_positions1[j],sizeof(MATRIX));
+                memcpy(&bsh->bone_positions2[j],&BoneShapes[i]->bone_positions2[j],sizeof(MATRIX));
             }
         } else {
-            bsh->BoneCount = 0;
-            bsh->Bones = 0;
-            bsh->BonePositions1 = 0;
-            bsh->BonePositions2 = 0;
+            bsh->bone_count = 0;
+            bsh->bones = 0;
+            bsh->bone_positions1 = 0;
+            bsh->bone_positions2 = 0;
         }
         TempSym++;
         TempLdr++;
@@ -856,7 +859,7 @@ LIBOVL_API void SaveSceneryOvl() {
                 relocations.push((unsigned long *)&TempRef->ldr);
                 DUMP_RELOCATION(f,"relocations: %x: &TempRef->ldr, LOD shs\n",&TempRef->ldr);
 
-                TempRef->reference = (unsigned long *)&LOD->StaticShape;
+                TempRef->reference = (unsigned long *)&LOD->ss;
                 relocations.push((unsigned long *)&TempRef->reference);
                 DUMP_RELOCATION(f,"relocations: %x: &TempRef->reference, LOD shs\n",&TempRef->reference);
                 TempRef++;
@@ -877,7 +880,7 @@ LIBOVL_API void SaveSceneryOvl() {
                 TempLdr->SymbolsToResolve++;
                 relocations.push((unsigned long *)&TempRef->ldr);
                 DUMP_RELOCATION(f,"relocations: %x: &TempRef->ldr, LOD bsh\n",&TempRef->ldr);
-                TempRef->reference = (unsigned long *)&LOD->BoneShape;
+                TempRef->reference = (unsigned long *)&LOD->bs;
                 relocations.push((unsigned long *)&TempRef->reference);
                 DUMP_RELOCATION(f,"relocations: %x: &TempRef->reference, LOD bsh\n",&TempRef->reference);
                 TempRef++;

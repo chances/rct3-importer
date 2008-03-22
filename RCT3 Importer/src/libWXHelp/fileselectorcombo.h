@@ -32,7 +32,36 @@ public:
                         const wxSize& size = wxDefaultSize,
                         long style = 0,
                         const wxValidator& validator = wxDefaultValidator,
+                        const wxString& name = wxComboBoxNameStr): wxComboCtrl()  {
+        Create(parent, dialog, default_dir, id, value, pos, size, style, validator, name);
+    }
+
+    wxFileSelectorCombo(wxWindow *parent,
+                        wxWindowID id = wxID_ANY,
+                        const wxString& value = wxEmptyString,
+                        const wxPoint& pos = wxDefaultPosition,
+                        const wxSize& size = wxDefaultSize,
+                        long style = 0,
+                        const wxValidator& validator = wxDefaultValidator,
+                        const wxString& name = wxComboBoxNameStr): wxComboCtrl() {
+        Create(parent, NULL, NULL, id, value, pos, size, style, validator, name);
+    }
+
+    void Create(wxWindow *parent,
+                        T* dialog,
+                        wxFileName* default_dir = NULL,
+                        wxWindowID id = wxID_ANY,
+                        const wxString& value = wxEmptyString,
+                        const wxPoint& pos = wxDefaultPosition,
+                        const wxSize& size = wxDefaultSize,
+                        long style = 0,
+                        const wxValidator& validator = wxDefaultValidator,
                         const wxString& name = wxComboBoxNameStr);
+
+    void Assign(T* dialog, wxFileName* default_dir = NULL) {
+        m_dialog = dialog;
+        m_defdir = default_dir;
+    }
 
     virtual ~wxFileSelectorCombo() {
         /*
@@ -57,7 +86,7 @@ private:
 };
 
 template <class T>
-wxFileSelectorCombo<T>::wxFileSelectorCombo(wxWindow *parent,
+void wxFileSelectorCombo<T>::Create(wxWindow *parent,
                     T* dialog,
                     wxFileName* default_dir,
                     wxWindowID id,
@@ -67,9 +96,9 @@ wxFileSelectorCombo<T>::wxFileSelectorCombo(wxWindow *parent,
                     long style,
                     const wxValidator& validator,
                     const wxString& name)
-        : wxComboCtrl() {
+        {
     Init();
-    Create(parent,id,value,
+    wxComboCtrl::Create(parent,id,value,
            pos,size,
            // Style flag wxCC_STD_BUTTON makes the button
            // behave more like a standard push button.

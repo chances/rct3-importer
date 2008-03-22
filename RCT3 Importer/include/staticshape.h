@@ -13,9 +13,8 @@
 
 #include "vertex.h"
 #include "flexitexture.h"
-#include <string>
 
-using namespace std;
+namespace r3 {
 
 /*
 #define SS2_PLACE_TEXTURE_AND_MESH  0
@@ -26,61 +25,18 @@ using namespace std;
 #define SS2_FACES_DOUBLE_SIDED      1
 */
 
-struct SharedShape {
-    struct Supports {
-        enum {
-            Below = 1,
-            Top = 2,
-            Mid = 4,
-            GroundAttach = 8,
-            None = 0xFFFFFFFF
-        };
-    };
-    struct Transparency {
-        enum {
-            None = 0,
-            Simple = 1,
-            Complex = 2
-        };
-    };
-    struct Flags {
-        enum {
-            None = 0,
-            ScrollingSign = 12,
-            WaterWheelChain = 20,
-            Wheels1 = 36,
-            Wheels2 = 68,
-            Terrain = 12288,
-            Cliff = 20480,
-            AnimatedBillboard = 32768,
-            Billboard = 32788
-        };
-    };
-    struct Sides {
-        enum {
-            Doublesided = 1,
-            Singlesided = 3
-        };
-    };
-};
-
 struct Triangle {
-    unsigned long a;
-    unsigned long b;
-    unsigned long c;
+    uint32_t a;
+    uint32_t b;
+    uint32_t c;
 };
 
-struct StaticShape2 {
-	unsigned long unk1; ///< always 0xFFFFFFFFF
-	FlexiTextureInfoStruct *fts; ///< is 0 in disk files
-	unsigned long *TextureData; ///< is 0 in disk files
-	unsigned long PlaceTexturing; ///< Transparency
-                                  /**
-                                   * 0: none
-                                   * 1: simple (SIAlphaMask...)
-                                   * 2: complex (SIAlpha..., SIGlass & SIWater)
-                                   */
-	unsigned long textureflags; ///< Texture flags
+struct StaticShapeMesh {
+	uint32_t                    support_type;   ///< Was unk1
+	FlexiTextureInfoStruct*     ftx_ref;
+	void*                       txs_ref;        ///< Was TextureData
+	uint32_t                    transparency;   ///< was PlaceTetxuring
+	uint32_t                    texture_flags;  ///< Texture flags
                                 /**<
                                  * Values:
                                  *   - 0: None
@@ -93,23 +49,26 @@ struct StaticShape2 {
                                  *   - 32788: Billboard (UseAdTexture/SIOpaque)
                                  *   - 32768: Animated Billboard (UseAdTexture/SIOpaque)
                                  */
-	unsigned long sides; ///< Doublesided (1) or singlesided (3)
-	unsigned long VertexCount;
-	unsigned long IndexCount;
-	VERTEX *Vertexes;
-	unsigned long *Triangles;
+	uint32_t                    sides;          ///< Doublesided (1) or singlesided (3)
+	uint32_t                    vertex_count;
+	uint32_t                    index_count;
+	VERTEX*                     vertexes;
+	uint32_t*                   indices;
 };
-struct StaticShape1 {
-	VECTOR BoundingBox1;
-	VECTOR BoundingBox2;
-	unsigned long TotalVertexCount;
-	unsigned long TotalIndexCount;
-	unsigned long MeshCount2;
-	unsigned long MeshCount;
-	StaticShape2 **sh;
-	unsigned long EffectCount;
-	MATRIX *EffectPosition;
-	char **EffectName;
+
+struct StaticShape {
+	VECTOR                  bounding_box_min;
+	VECTOR                  bounding_box_max;
+	uint32_t                total_vertex_count;
+	uint32_t                total_index_count;
+	uint32_t                mesh_count2;
+	uint32_t                mesh_count;
+	StaticShapeMesh**       sh;
+	uint32_t                effect_count;
+	MATRIX*                 effect_positions;
+	char**                  effect_names;
+};
+
 };
 
 #endif

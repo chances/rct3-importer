@@ -34,20 +34,20 @@
 float Deg2Rad(float deg);
 float Rad2Deg(float rad);
 
-VECTOR vectorInvert(const VECTOR& v);
-VECTOR vectorNormalize(const float x, const float y, const float z);
-inline VECTOR vectorNormalize(const VECTOR& v) {
+r3::VECTOR vectorInvert(const r3::VECTOR& v);
+r3::VECTOR vectorNormalize(const float x, const float y, const float z);
+inline r3::VECTOR vectorNormalize(const r3::VECTOR& v) {
     return vectorNormalize(v.x, v.y, v.z);
 }
-inline VECTOR vectorMake(const float x, const float y, const float z) {
-    VECTOR v;
+inline r3::VECTOR vectorMake(const float x, const float y, const float z) {
+    r3::VECTOR v;
     v.x = x;
     v.y = y;
     v.z = z;
     return v;
 }
-inline VERTEX2 vertex2vertex2(const VERTEX& v, unsigned char bone) {
-    VERTEX2 ret;
+inline r3::VERTEX2 vertex2vertex2(const r3::VERTEX& v, unsigned char bone) {
+    r3::VERTEX2 ret;
     ret.position = v.position;
     ret.normal = v.normal;
     *reinterpret_cast<unsigned long*>(&ret.bone) = 0;
@@ -60,8 +60,8 @@ inline VERTEX2 vertex2vertex2(const VERTEX& v, unsigned char bone) {
     return ret;
 }
 
-inline VERTEX2 vertex2castrate(const VERTEX2& v, unsigned char bone) {
-    VERTEX2 ret;
+inline r3::VERTEX2 vertex2castrate(const r3::VERTEX2& v, unsigned char bone) {
+    r3::VERTEX2 ret;
     ret.position = v.position;
     ret.normal = v.normal;
     *reinterpret_cast<unsigned long*>(&ret.bone) = 0;
@@ -74,7 +74,7 @@ inline VERTEX2 vertex2castrate(const VERTEX2& v, unsigned char bone) {
     return ret;
 }
 
-inline void vertex2init(VERTEX2& v) {
+inline void vertex2init(r3::VERTEX2& v) {
     *reinterpret_cast<unsigned long*>(&v.bone) = 0;
     *reinterpret_cast<unsigned long*>(&v.boneweight) = 0;
     v.bone[0] = -1;
@@ -82,8 +82,8 @@ inline void vertex2init(VERTEX2& v) {
     v.color = 0xffffffff;
 }
 
-inline VERTEX vertex22vertex(const VERTEX2& v) {
-    VERTEX ret;
+inline r3::VERTEX vertex22vertex(const r3::VERTEX2& v) {
+    r3::VERTEX ret;
     ret.position = v.position;
     ret.normal = v.normal;
     ret.color = v.color;
@@ -92,42 +92,42 @@ inline VERTEX vertex22vertex(const VERTEX2& v) {
     return ret;
 }
 
-MATRIX matrixGetUnity();
-MATRIX matrixGetFixOrientation(const c3DLoaderOrientation orient = ORIENTATION_RIGHT_ZUP);
+r3::MATRIX matrixGetUnity();
+r3::MATRIX matrixGetFixOrientation(const c3DLoaderOrientation orient = ORIENTATION_RIGHT_ZUP);
 void txyzFixOrientation(txyz& src, const c3DLoaderOrientation& orient);
-MATRIX matrixGetTranslation(const float x, const float y, const float z);
-MATRIX matrixGetTranslation(const VECTOR& v);
-MATRIX matrixGetScale(const float x, const float y, const float z);
-MATRIX matrixGetScale(const VECTOR& v);
+r3::MATRIX matrixGetTranslation(const float x, const float y, const float z);
+r3::MATRIX matrixGetTranslation(const r3::VECTOR& v);
+r3::MATRIX matrixGetScale(const float x, const float y, const float z);
+r3::MATRIX matrixGetScale(const r3::VECTOR& v);
 // Rotations are in a right-handed coordinate system
-MATRIX matrixGetRotationX(const float rad);
-MATRIX matrixGetRotationY(const float rad);
-MATRIX matrixGetRotationZ(const float rad);
+r3::MATRIX matrixGetRotationX(const float rad);
+r3::MATRIX matrixGetRotationY(const float rad);
+r3::MATRIX matrixGetRotationZ(const float rad);
 
 // Note: the IP (In Place) functions return the result in the first parameter or the first
 //       member of the array. They also return a pointer to this result.
-float matrixCalcDeterminant(const MATRIX *m);
-MATRIX matrixMultiply(const MATRIX *m1, const MATRIX *m2);
-inline MATRIX matrixMultiply(const MATRIX& m1, const MATRIX& m2) {
+float matrixCalcDeterminant(const r3::MATRIX *m);
+r3::MATRIX matrixMultiply(const r3::MATRIX *m1, const r3::MATRIX *m2);
+inline r3::MATRIX matrixMultiply(const r3::MATRIX& m1, const r3::MATRIX& m2) {
     return matrixMultiply(&m1, &m2);
 }
-MATRIX *matrixMultiplyIP(MATRIX *m1, const MATRIX *m2);
+r3::MATRIX *matrixMultiplyIP(r3::MATRIX *m1, const r3::MATRIX *m2);
 // These take an array and multiply it up in order.
-MATRIX matrixMultiply(const MATRIX *ms, const unsigned int count);
-MATRIX *matrixMultiplyIP(MATRIX *ms, const unsigned int count);
-MATRIX matrixMultiply(const std::vector<MATRIX>& ms);
-MATRIX matrixMultiply(const MATRIX& m, const float f);
+r3::MATRIX matrixMultiply(const r3::MATRIX *ms, const unsigned int count);
+r3::MATRIX *matrixMultiplyIP(r3::MATRIX *ms, const unsigned int count);
+r3::MATRIX matrixMultiply(const std::vector<r3::MATRIX>& ms);
+r3::MATRIX matrixMultiply(const r3::MATRIX& m, const float f);
 
-MATRIX matrixTranspose(const MATRIX& m);
-MATRIX matrixInverse(const MATRIX& m);
+r3::MATRIX matrixTranspose(const r3::MATRIX& m);
+r3::MATRIX matrixInverse(const r3::MATRIX& m);
 #define matrixNormalTransform(m) matrixTranspose(matrixInverse( m ))
 
-VECTOR matrixApply(const VECTOR& v, const MATRIX& m);
-VECTOR *matrixApplyIP(VECTOR *v, const MATRIX& m);
-VERTEX matrixApply(const VERTEX& v, const MATRIX& m, const MATRIX& mnormal);
-VERTEX *matrixApplyIP(VERTEX *v, const MATRIX& m, const MATRIX& mnormal);
-VERTEX2 matrixApply(const VERTEX2& v, const MATRIX& m, const MATRIX& mnormal);
-VERTEX2 *matrixApplyIP(VERTEX2 *v, const MATRIX& m, const MATRIX& mnormal);
+r3::VECTOR matrixApply(const r3::VECTOR& v, const r3::MATRIX& m);
+r3::VECTOR *matrixApplyIP(r3::VECTOR *v, const r3::MATRIX& m);
+r3::VERTEX matrixApply(const r3::VERTEX& v, const r3::MATRIX& m, const r3::MATRIX& mnormal);
+r3::VERTEX *matrixApplyIP(r3::VERTEX *v, const r3::MATRIX& m, const r3::MATRIX& mnormal);
+r3::VERTEX2 matrixApply(const r3::VERTEX2& v, const r3::MATRIX& m, const r3::MATRIX& mnormal);
+r3::VERTEX2 *matrixApplyIP(r3::VERTEX2 *v, const r3::MATRIX& m, const r3::MATRIX& mnormal);
 
 template <class T>
 inline void doFixOrientation(T& v, const c3DLoaderOrientation& orient) {
@@ -144,12 +144,12 @@ inline T max(const T& a, const T& b) {
 }
 */
 
-bool matrixIsEqual(const MATRIX& m1, const MATRIX& m2);
+bool matrixIsEqual(const r3::MATRIX& m1, const r3::MATRIX& m2);
 
-MATRIX matrixThereAndBackAgain(const std::vector<MATRIX>& stack, const MATRIX& transform, const MATRIX& undodamage);
+r3::MATRIX matrixThereAndBackAgain(const std::vector<r3::MATRIX>& stack, const r3::MATRIX& transform, const r3::MATRIX& undodamage);
 
-void boundsInit(VECTOR *bbox_min, VECTOR *bbox_max);
-void boundsContain(const VECTOR *v, VECTOR *bbox_min, VECTOR *bbox_max);
-void boundsContain(const VECTOR *inner_min, const VECTOR *inner_max, VECTOR *bbox_min, VECTOR *bbox_max);
+void boundsInit(r3::VECTOR *bbox_min, r3::VECTOR *bbox_max);
+void boundsContain(const r3::VECTOR *v, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max);
+void boundsContain(const r3::VECTOR *inner_min, const r3::VECTOR *inner_max, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max);
 
 #endif // OVLMATRIX_H_INCLUDED

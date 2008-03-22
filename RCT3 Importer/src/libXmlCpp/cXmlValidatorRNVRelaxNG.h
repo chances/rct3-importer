@@ -29,6 +29,7 @@
 #include <map>
 #include <string>
 
+#include "cXmlDoc.h"
 #include "cXmlValidator.h"
 #include "cXsltStylesheet.h"
 
@@ -37,6 +38,16 @@ namespace xmlcpp {
 struct RNVValidationContext;
 class cXmlValidatorRNVRelaxNG: public cXmlValidator {
 friend void do_node(cXmlNode& node, RNVValidationContext& ctx);
+public:
+    enum {
+        ERRSTAGE_UNKNOWN =          0,      ///< Unknown stage, probably before parsing began or internal
+        ERRSTAGE_RNC,                       ///< RNC lexing error
+        ERRSTAGE_RNG_PARSE,                 ///< XML parsing error in rng file
+        ERRSTAGE_RNG_VALIDATION,            ///< RNG does not validate against relaxng.rng
+        ERRSTAGE_RNG_INCELIM,               ///< Error during incelim transform
+        ERRSTAGE_RNG_CONVERSION,            ///< Error during conversion to rnc
+        ERRSTAGE_OK =             100
+    };
 private:
     static bool g_resinit;
     static cXmlValidatorRNVRelaxNG* g_rnvclaimed;
@@ -49,21 +60,40 @@ private:
     std::string m_rncfile;
     boost::shared_array<char> m_rncbuffer;
     int m_rncbuffersize;
+    int m_type;
+    int m_errstage;
+#ifdef XMLCPP_USE_XSLT
+    cXmlDoc m_rng;
+#endif
 
     void Init();
     void claimRNV();
     void releaseRNV();
     //void DeInit();
     //void Parse(int options);
+    bool ParseRNC(const std::string& buffer, const char* URL = NULL);
+    bool ParseRNG(cXmlDoc& schema, const char* URL = NULL);
 public:
     cXmlValidatorRNVRelaxNG():cXmlValidator() { Init(); }
     virtual ~cXmlValidatorRNVRelaxNG();
 
-    bool read(const std::string& buffer);
+    bool read(const std::string& buffer, const char* URL = NULL);
     bool read(const char* URL);
+    bool readRNC(const std::string& buffer, const char* URL = NULL);
+    bool readRNC(const char* URL);
+
+    std::string rnc() { return m_rncbuffer?m_rncbuffer.get():""; }
+
 #ifdef XMLCPP_USE_XSLT
     // rng reading will go here
+    bool readRNG(cXmlDoc& schema, const char* URL = NULL);
+    bool readRNG(const std::string& buffer, const char* URL = NULL);
+    bool readRNG(const char* URL);
+
+    inline cXmlDoc& rng() {return m_rng;}
 #endif
+
+
 
     /// Reparse the RNC from memory
     /**
@@ -77,6 +107,10 @@ public:
     inline bool operator!() const { return !ok(); }
     typedef int cXmlValidatorRNVRelaxNG::*unspecified_bool_type;
     inline operator unspecified_bool_type() const { return ok()?(&cXmlValidatorRNVRelaxNG::m_rncstatus):NULL; }
+
+    virtual int getType() const {
+        return m_type;
+    }
 };
 
 } // Namespace

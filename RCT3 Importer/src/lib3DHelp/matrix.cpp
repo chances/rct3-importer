@@ -28,6 +28,8 @@
 #include <math.h>
 #include <float.h>
 
+using namespace r3;
+
 float Deg2Rad(const float deg) {
     return deg * M_PI / 180.0;
 }

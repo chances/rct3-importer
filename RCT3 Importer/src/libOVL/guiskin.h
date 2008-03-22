@@ -7,6 +7,9 @@
 	Software Foundation; either version 2, or (at your option) any later
 	version. See the file COPYING for more details.
 */
+
+#include <vector>
+
 class GUISkin {
 public:
 	char *name;
@@ -17,7 +20,7 @@ public:
 	char *texture;
     GUISkin(char *Name,char *Texture,unsigned long Top, unsigned long Left, unsigned long Bottom, unsigned long Right);
     ~GUISkin();
-    static vector<GUISkin *> GUISkins;
+    static std::vector<GUISkin *> GUISkins;
     static int LoaderNumber;
     static unsigned long ComputeSize();
     static void AddData(unsigned long *data);

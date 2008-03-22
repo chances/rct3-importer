@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<object xmlns:eg="http://examplotron.org/0/" eg:content="eg:interleave" xmlns="http://rct3.sourceforge.net/rct3xml/model">
+	<mesh texture="TextureName" eg:occurence="*">
+		<eg:attribute name="name">MeshName</eg:attribute>
+		<vertex eg:occurence="+" eg:assert="count(bone)&lt;=4">
+			<position eg:define="vector">
+				<eg:attribute name="x">1.0</eg:attribute>
+				<eg:attribute name="y">1.0</eg:attribute>
+				<eg:attribute name="z">1.0</eg:attribute>
+			</position>
+			<normal eg:content="vector"/>
+			<uv>
+				<eg:attribute name="u">1.0</eg:attribute>
+				<eg:attribute name="v">1.0</eg:attribute>
+			</uv>
+			<bone eg:occurence="*">
+				<eg:attribute name="name">ExampleBone</eg:attribute>
+				<eg:attribute name="weight">25.0</eg:attribute>
+			</bone>
+		</vertex>
+	</mesh>
+	<bone parent="ParentName" eg:occurence="*">
+		<eg:attribute name="name">BoneName</eg:attribute>
+		<matrix>
+			<row eg:occurence=".">1.0 0 0 0</row>
+			<row eg:occurence=".">0 1.0 0 0</row>
+			<row eg:occurence=".">0 0 1.0 0</row>
+			<row eg:occurence=".">0 0 0 1.0</row>
+		</matrix>
+	</bone>
+	<spline cyclic="1" eg:occurence="*">
+		<eg:attribute name="name">SplineName</eg:attribute>
+		<node eg:occurence="+">
+			<position eg:content="vector"/>
+			<controlPrev eg:content="vector"/>
+			<controlNext eg:content="vector"/>
+		</node>
+	</spline>
+</object>

@@ -35,6 +35,8 @@
 #include <iostream>
 #include <sstream>
 
+using namespace r3;
+
 const char* ovlFTXManager::LOADER = "FGDK";
 const char* ovlFTXManager::NAME = "FlexiTexture";
 const char* ovlFTXManager::TAG = "ftx";

@@ -1,47 +1,13 @@
 #ifndef SHAREDRIDE_H_INCLUDED
 #define SHAREDRIDE_H_INCLUDED
 
-struct SharedRide {
-    /// Seating enum
-    struct RCT3_Seating {
-        enum {
-            Stand =                    0x00,
-            Sit =                      0x01,
-            Sledge =                   0x02,
-            Lay =                      0x03,
-            Bike =                     0x04,
-            Car =                      0x05,
-            Horse =                    0x06,
-            Row1Oar =                  0x07,
-            Row2Oar =                  0x08,
-            SitVReel =                 0x09,
-            SitHarness =               0x0A,
-            SitBar =                   0x0B,
-            Observation =              0x0C,
-            SitHarnessFeetDangle =     0x0D,
-            HorseSteeple =             0x0E,
-            Pedalo =                   0x0F,
-            PedalBike =                0x10,
-            Canoe =                    0x11,
-            Dinghy =                   0x12,
-            LayFront =                 0x13,
-            RowLOar =                  0x14,
-            RowROar =                  0x15,
-            HorseMerryGoRound =        0x16,
-            HorseSteeplechase =        0x17,
-            Jump =                     0x18, // or 0x19
-            BumBounce =                0x19, // or 0x18
-            Dance =                    0x1A,
-            SurfBoard =                0x1B,
-            WindSurf =                 0x1C,
-            Fishing =                  0x1D,
-            SlideBodyBack =            0x1E,
-            SlideRing =                0x1F,
-            Inflatable =               0x20,
-            SitStadium =               0x21,
-            Swim =                     0x22
-        };
-    };
+namespace r3 {
+
+struct RideExtra {
+    unsigned long index;        ///< Shows: index, skycoaster: 0 or 10
+    unsigned long unk2;         ///< skycoaster: 15-18, Shows: 6
+    unsigned long unk3;         ///< skycoaster, Shows: 0
+    unsigned long unk4;         ///< skycoaster: 49 or 52, 52 confirms to index = 10, Shows: 50
 };
 
 struct RideOptionOption {
@@ -71,7 +37,7 @@ struct RideOption {
             float intensity;
             float nausea;
             RideOptionOption option;
-            float unk5;
+            float factor;       ///< Applied to the above to get the real values
         };
         struct type_09 {
             float unk1;
@@ -94,5 +60,36 @@ struct RideOption {
     };
 };
 
+/// Secondary structure for rides, Soaked Version
+struct Ride_S {
+    uint32_t            unk1;           ///< always 0xFFFFFFFF
+    uint32_t            seating;
+    RideOption**        options;        ///< List terminated by a unrelocated zero pointer
+    uint32_t            unk4;           ///< Seen 1
+    int32_t             unk5;           ///< Seen -1, 1 (FunHouse, LionShow, TigerShow, DolphinShow, KillerWhaleShow)
+    uint32_t            entry_fee;
+    Attraction_S*       att;
+    uint32_t            unk8;           ///< Seen 55, Reese: 30, Shows: 50, FunHouse: 45. Probably Attractivity
+    uint32_t            extra_count;
+    RideExtra*          extras;         ///< Extras have: Soaked Shows, skycoaster
+    uint32_t            unk11;          ///< Seen 3
+    uint32_t            unk12;          ///< Seen 3
+    int32_t             unk13;          ///< Seen -2
+    int32_t             unk14;          ///< Seen -2
+    int32_t             unk15;          ///< Seen -2
+};
+
+struct Ride_Wext {
+    uint32_t            unk16;          ///< Seen 1
+    uint32_t            unk17;          ///< Seen 1
+};
+
+/// Secondary structure for rides, Wild Version
+struct Ride_W {
+    Ride_S              s;
+    Ride_Wext           w;
+};
+
+};
 
 #endif // SHAREDRIDE_H_INCLUDED

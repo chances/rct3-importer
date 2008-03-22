@@ -35,6 +35,8 @@
 #include "ManagerTXT.h"
 #include "OVLException.h"
 
+using namespace r3;
+
 const char* ovlSATManager::LOADER = "FGDK";
 const char* ovlSATManager::NAME = "SpecialAttraction";
 const char* ovlSATManager::TAG = "sat";
@@ -55,13 +57,13 @@ void ovlSATManager::AddAttraction(const cSpecialAttraction& item) {
     m_items[item.name] = item;
 
     // The following depends on the type of stall structure we want to write
-    if (item.attraction.type & 0x200) {
+    if (item.attraction.type & r3::Constants::Addon::Soaked_Hi) {
         // SpecialAttraction2
         m_size += sizeof(SpecialAttractionB);
-        if ((item.attraction.type & ATTRACTION_TYPE_Wild) == ATTRACTION_TYPE_Wild) {
-            m_size += sizeof(AttractionB);
+        if ((item.attraction.type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
+            m_size += sizeof(Attraction_W);
         } else {
-            m_size += sizeof(AttractionA);
+            m_size += sizeof(Attraction_S);
         }
     } else {
         // SpecialAttraction
@@ -94,17 +96,17 @@ void ovlSATManager::Make(cOvlInfo* info) {
     unsigned char* c_data = m_data;
 
     for (map<string, cSpecialAttraction>::iterator it = m_items.begin(); it != m_items.end(); ++it) {
-        if (it->second.attraction.type & 0x200) {
+        if (it->second.attraction.type & r3::Constants::Addon::Soaked_Hi) {
             // SpecialAttraction2
             // Assign structs
             SpecialAttractionB* c_att = reinterpret_cast<SpecialAttractionB*>(c_data);
             c_data += sizeof(SpecialAttractionB);
 
-            c_att->att = reinterpret_cast<AttractionA*>(c_data);
-            if ((it->second.attraction.type & ATTRACTION_TYPE_Wild) == ATTRACTION_TYPE_Wild) {
-                c_data += sizeof(AttractionB);
+            c_att->att = reinterpret_cast<Attraction_S*>(c_data);
+            if ((it->second.attraction.type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
+                c_data += sizeof(Attraction_W);
             } else {
-                c_data += sizeof(AttractionA);
+                c_data += sizeof(Attraction_S);
             }
             GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_att->att));
 
@@ -114,15 +116,15 @@ void ovlSATManager::Make(cOvlInfo* info) {
             GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_att), false, c_symbol);
 
             GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.name.c_str(), ovlTXTManager::TAG),
-                                 reinterpret_cast<unsigned long*>(&c_att->att->Name));
+                                 reinterpret_cast<unsigned long*>(&c_att->att->v.name_ref));
             GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.description.c_str(), ovlTXTManager::TAG),
-                                 reinterpret_cast<unsigned long*>(&c_att->att->Description));
+                                 reinterpret_cast<unsigned long*>(&c_att->att->v.description_ref));
             GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.sid.c_str(), ovlSIDManager::TAG),
                                  reinterpret_cast<unsigned long*>(&c_att->SID));
             GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.icon.c_str(), ovlGSIManager::TAG),
-                                 reinterpret_cast<unsigned long*>(&c_att->att->GSI));
+                                 reinterpret_cast<unsigned long*>(&c_att->att->v.icon_ref));
             GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.spline.c_str(), ovlSPLManager::TAG),
-                                 reinterpret_cast<unsigned long*>(&c_att->att->spline));
+                                 reinterpret_cast<unsigned long*>(&c_att->att->v.spline_ref));
 
             GetLSRManager()->CloseLoader(OVLT_UNIQUE);
         } else {

@@ -116,7 +116,7 @@ void cRawParser::ParseBSH(cXmlNode& node) {
             cBoneShape2 bsh2;
             bsh2.fts = ParseString(child, wxT(RAWXML_BSH_MESH), wxT("ftx"), NULL, useprefix).ToAscii();
             bsh2.texturestyle = ParseString(child, wxT(RAWXML_BSH_MESH), wxT("txs"), NULL).ToAscii();
-            OPTION_PARSE(unsigned long, bsh2.placetexturing, ParseUnsigned(child, wxT(RAWXML_BSH_MESH), wxT("placing")));
+            OPTION_PARSE(unsigned long, bsh2.placetexturing, ParseUnsigned(child, wxT(RAWXML_BSH_MESH), wxT("transparency")));
             OPTION_PARSE(unsigned long, bsh2.textureflags, ParseUnsigned(child, wxT(RAWXML_BSH_MESH), wxT("flags")));
             OPTION_PARSE(unsigned long, bsh2.sides, ParseUnsigned(child, wxT(RAWXML_BSH_MESH), wxT("sides")));
             OPTION_PARSE(long, bsh2.support, ParseSigned(child, wxT(RAWXML_BSH_MESH), wxT("support")));

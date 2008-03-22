@@ -33,6 +33,10 @@
 #include "ManagerTXT.h"
 #include "OVLException.h"
 
+using namespace r3;
+using namespace std;
+
+
 const char* ovlCEDManager::LOADER = "FGDK";
 const char* ovlCEDManager::NAME = "CarriedItemExtra";
 const char* ovlCEDManager::TAG = "ced";

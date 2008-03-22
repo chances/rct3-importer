@@ -17,6 +17,8 @@
 
 #include "spline.h"
 
+namespace r3 {
+
 struct StallItem
 {
 	char *CID;
@@ -87,20 +89,20 @@ struct StallB
 	unsigned long unk5;
 	unsigned long unk6;
 	unsigned long unk7;
-	AttractionA *att;
+	Attraction_S *att;
 	SceneryItem *SID;
 };
 struct ChangingRoom
 {
-	AttractionA *att;
+	Attraction_S *att;
 	SceneryItem *SID;
 	unsigned char *spline;
 };
 struct SpecialAttractionB
 {
 	unsigned long unk;
-	AttractionA *att;
-	SceneryItem *SID;
+	Attraction_S* att;
+	SceneryItem* SID;
 };
 struct SpecialAttractionA
 {
@@ -113,12 +115,14 @@ struct SpecialAttractionA
 	unsigned long unk4;
 	unsigned long unk5;
 	unsigned long unk6;
-	unsigned char *spline;
+	Spline* spline;
 	unsigned long unk7;
 	unsigned long unk8;
 	unsigned long unk9;
 	long unk10;
 	SceneryItem *SID;
+};
+
 };
 
 #endif

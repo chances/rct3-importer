@@ -37,8 +37,6 @@
 #include "ManagerOVL.h"
 #include "ManagerCommon.h"
 
-using namespace std;
-
 class cCarriedItemExtra {
 public:
     string name;
@@ -57,7 +55,7 @@ public:
         hunger = 0.0;
         thirst = 0.0;
     }
-    void Fill(CarriedItemExtra* ced) {
+    void Fill(r3::CarriedItemExtra* ced) {
         ced->unk1 = unk1;
         ced->name = NULL;
         ced->icon = NULL;

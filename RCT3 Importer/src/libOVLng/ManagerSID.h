@@ -33,10 +33,9 @@
 #include <string>
 #include <vector>
 
+#include "rct3constants.h"
 #include "sceneryrevised.h"
 #include "ManagerOVL.h"
-
-using namespace std;
 
 class cSidSquareUnknowns {
 public:
@@ -56,7 +55,7 @@ public:
         unk8 = 0;
         unk9 = 0;
     }
-    void Fill(SceneryItemData* i) {
+    void Fill(r3::SceneryItemData* i) {
         i->flags2 = 0;
         for (unsigned long x = 0; x<32; ++x) {
             if (flag[x])
@@ -84,7 +83,7 @@ public:
         unk1 = 0;
         unk2 = 0;
     }
-    void Fill(SceneryItem* i) {
+    void Fill(r3::SceneryItem* i) {
         i->flags1 = 0;
         for (unsigned long x = 0; x<32; ++x) {
             if (flag[x])
@@ -108,7 +107,7 @@ public:
         unk1 = 1440;
         unk2 = 2880;
     }
-    void Fill(SceneryItem* i) {
+    void Fill(r3::SceneryItem* i) {
         i->stallunknown1 = unk1;
         i->stallunknown2 = unk2;
     }
@@ -149,7 +148,7 @@ public:
         unk47 = 0;
         unk48 = 0;
     }
-    void Fill(SceneryItem* i) {
+    void Fill(r3::SceneryItem* i) {
         unk27 = unk27;
         unk28 = unk28;
         unk34 = unk34;
@@ -177,7 +176,7 @@ public:
         defaultcol[1] = 0;
         defaultcol[2] = 0;
     }
-    void Fill(SceneryItem* i) {
+    void Fill(r3::SceneryItem* i) {
         i->defaultcol1 = defaultcol[0];
         i->defaultcol2 = defaultcol[1];
         i->defaultcol3 = defaultcol[2];
@@ -198,7 +197,7 @@ public:
 	string supports;
 
     cSidPosition() {
-        positioningtype = SID_POSITION_FULLTILE;
+        positioningtype = r3::Constants::SID::Position::Tile_Full;
         xsquares = 1;
         ysquares = 1;
         xpos = 0.0;
@@ -208,7 +207,7 @@ public:
         ysize = 4.0;
         zsize = 4.0;
     }
-    void Fill(SceneryItem* i) {
+    void Fill(r3::SceneryItem* i) {
         i->positioningtype = positioningtype;
         i->xsquares = xsquares;
         i->ysquares = ysquares;
@@ -232,11 +231,11 @@ public:
     long removal_cost;
 
     cSidUI() {
-        type = SID_TYPE_SCENERY_SMALL;
+        type = r3::Constants::SID::Type::Scenery_Small;
         cost = 0;
         removal_cost = 0;
     }
-    void Fill(SceneryItem* i) {
+    void Fill(r3::SceneryItem* i) {
         i->type = type;
         i->cost = cost;
         i->removal_cost = removal_cost;
@@ -246,7 +245,7 @@ public:
 class cSidExtra {
 public:
     unsigned short version;
-	SceneryExtraSound* SoundsUnk;
+	r3::SceneryExtraSound* SoundsUnk;
 	unsigned long unk2;
 	unsigned long AddonPack;       // 0 = Vanilla, 1 = Soaked, 2 = Wild
 	unsigned long GenericAddon;
@@ -259,20 +258,20 @@ public:
         unk2 = 0;
         AddonPack = 0;
         GenericAddon = 0;
-        unkf = 1.0;
+        unkf = -1.0;
         billboardaspect = -1;
     }
-    void Fill(SceneryItem* i) {
+    void Fill(r3::SceneryItem* i) {
         i->extraversion = version;
     }
-    void FillExtra1(SceneryItemExtra1* e) {
+    void FillExtra1(r3::SceneryItemExtra1* e) {
         e->SoundsUnk = SoundsUnk;
         e->unk2 = unk2;
         e->AddonPack = AddonPack;
         e->GenericAddon = GenericAddon;
     }
-    void FillExtra2(SceneryItemExtra2* e) {
-        FillExtra1(reinterpret_cast<SceneryItemExtra1*>(e));
+    void FillExtra2(r3::SceneryItemExtra2* e) {
+        FillExtra1(reinterpret_cast<r3::SceneryItemExtra1*>(e));
         e->unkf = unkf;
         e->billboardaspect = billboardaspect;
     }
@@ -306,7 +305,7 @@ public:
     vector<cSidParam> parameters;
 
     cSid(){};
-    void Fill(SceneryItem* i) {
+    void Fill(r3::SceneryItem* i) {
         ui.Fill(i);
         position.Fill(i);
         colours.Fill(i);

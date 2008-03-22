@@ -140,7 +140,7 @@ void cRawParser::ParseQTD(cXmlNode& node) {
         } else if (cname == wxT(RAWXML_QTD_TURN_R)) {
             wxString c = child.wxcontent();
             MakeVariable(c);
-            qtd.turn_l = c.ToAscii();
+            qtd.turn_r = c.ToAscii();
         } else if (cname == wxT(RAWXML_QTD_SLOPEUP)) {
             wxString c = child.wxcontent();
             MakeVariable(c);
@@ -195,7 +195,7 @@ void cRawParser::ParseSAT(cXmlNode& node) {
             OPTION_PARSE(unsigned long, spa.attraction.unk6, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u6")));
             OPTION_PARSE(unsigned long, spa.attraction.unk9, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u9")));
             OPTION_PARSE(long, spa.attraction.unk10, ParseSigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u10")));
-            OPTION_PARSE(unsigned long, spa.attraction.unk11, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u11")));
+            OPTION_PARSE(unsigned long, spa.attraction.addonascn, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u11")));
             OPTION_PARSE(unsigned long, spa.attraction.unk12, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u12")));
             OPTION_PARSE(unsigned long, spa.attraction.unk13, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u13")));
         } else if (child.element()) {
@@ -234,7 +234,7 @@ void cRawParser::ParseSHS(cXmlNode& node) {
             cStaticShape2 sh2;
             sh2.fts = ParseString(child, wxT(RAWXML_SHS_MESH), wxT("ftx"), NULL, useprefix).ToAscii();
             sh2.texturestyle = ParseString(child, wxT(RAWXML_SHS_MESH), wxT("txs"), NULL).ToAscii();
-            OPTION_PARSE(unsigned long, sh2.placetexturing, ParseUnsigned(child, wxT(RAWXML_SHS_MESH), wxT("placing")));
+            OPTION_PARSE(unsigned long, sh2.placetexturing, ParseUnsigned(child, wxT(RAWXML_SHS_MESH), wxT("transparency")));
             OPTION_PARSE(unsigned long, sh2.textureflags, ParseUnsigned(child, wxT(RAWXML_SHS_MESH), wxT("flags")));
             OPTION_PARSE(unsigned long, sh2.sides, ParseUnsigned(child, wxT(RAWXML_SHS_MESH), wxT("sides")));
             OPTION_PARSE(long, sh2.support, ParseSigned(child, wxT(RAWXML_SHS_MESH), wxT("support")));

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<grammar ns="http://rct3.sourceforge.net/rct3xml/model" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:sch="http://purl.oclc.org/dsdl/schematron" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+	<sch:ns prefix="mod" uri="http://rct3.sourceforge.net/rct3xml/model"/>
+	<start>
+		<element name="model">
+			<oneOrMore>
+				<choice>
+					<element name="mesh">
+						<attribute name="name">
+							<data type="string"/>
+						</attribute>
+						<optional>
+							<attribute name="texture">
+								<data type="string"/>
+							</attribute>
+						</optional>
+						<element name="vertex">
+							<sch:pattern>
+								<sch:title>Check Bone Weight</sch:title>
+								<sch:rule context="mod:vertex">
+									<sch:assert test="mod:bone">No Bones!</sch:assert>
+									<sch:assert test="sum(//mod:bone/@weight) = 100">Bone weights of mesh '<sch:value-of select="ancestor::mesh[@name]/@name"/>'</sch:assert>
+								</sch:rule>
+							</sch:pattern>
+							<element name="position">
+								<ref name="vector"/>
+							</element>
+							<element name="normal">
+								<ref name="vector"/>
+							</element>
+							<element name="uv">
+								<attribute name="u">
+									<data type="decimal" />
+								</attribute>
+								<attribute name="v">
+									<data type="decimal" />
+								</attribute>
+							</element>
+							<optional>
+								<ref name="bone" />
+								<optional>
+									<ref name="bone" />
+									<optional>
+										<ref name="bone" />
+										<optional>
+											<ref name="bone" />
+										</optional>
+									</optional>
+								</optional>
+							</optional>
+						</element>
+					</element>
+					<element name="bone">
+						<attribute name="name">
+							<data type="string"/>
+						</attribute>
+						<optional>
+							<attribute name="parent">
+								<data type="string"/>
+							</attribute>
+						</optional>
+						<element name="matrix">
+							<ref name="matrixrow" />
+							<ref name="matrixrow" />
+							<ref name="matrixrow" />
+							<ref name="matrixrow" />
+						</element>
+					</element>
+					<element name="spline">
+						<attribute name="name">
+							<data type="string"/>
+						</attribute>
+						<optional>
+							<attribute name="cyclic">
+								<choice>
+									<value type="int">0</value>
+									<value type="int">1</value>
+								</choice>
+							</attribute>
+						</optional>
+						<element name="node">
+							<element name="position">
+								<ref name="vector" />
+							</element>
+							<element name="controlPrev">
+								<ref name="vector" />
+							</element>
+							<element name="controlNext">
+								<ref name="vector" />
+							</element>
+						</element>
+					</element>
+				</choice>
+			</oneOrMore>
+		</element>
+	</start>
+	<define name="vector">
+		<attribute name="x">
+			<data type="decimal" />
+		</attribute>
+		<attribute name="y">
+			<data type="decimal" />
+		</attribute>
+		<attribute name="z">
+			<data type="decimal" />
+		</attribute>
+	</define>
+	<define name="bone">
+		<element name="bone">
+			<attribute name="name">
+				<data type="string"/>
+			</attribute>
+			<attribute name="weight">
+				<data type="decimal" />
+			</attribute>
+		</element>
+	</define>
+	<define name="matrixrow">
+		<element name="row">
+			<list>
+				<data type="decimal" />
+				<data type="decimal" />
+				<data type="decimal" />
+				<data type="decimal" />
+			</list>
+		</element>
+	</define>
+</grammar>

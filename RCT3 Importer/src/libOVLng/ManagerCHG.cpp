@@ -36,6 +36,8 @@
 #include "ManagerTXT.h"
 #include "OVLException.h"
 
+using namespace r3;
+
 const char* ovlCHGManager::LOADER = "FGDK";
 const char* ovlCHGManager::NAME = "ChangingRoom";
 const char* ovlCHGManager::TAG = "chg";
@@ -56,10 +58,10 @@ void ovlCHGManager::AddRoom(const cChangingRoom& item) {
     m_items[item.name] = item;
 
     m_size += sizeof(ChangingRoom);
-    if ((item.attraction.type & ATTRACTION_TYPE_Wild) == ATTRACTION_TYPE_Wild) {
-        m_size += sizeof(AttractionB);
+    if ((item.attraction.type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
+        m_size += sizeof(Attraction_W);
     } else {
-        m_size += sizeof(AttractionA);
+        m_size += sizeof(Attraction_S);
     }
 
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
@@ -94,11 +96,11 @@ void ovlCHGManager::Make(cOvlInfo* info) {
         ChangingRoom* c_item = reinterpret_cast<ChangingRoom*>(c_data);
         c_data += sizeof(ChangingRoom);
 
-        c_item->att = reinterpret_cast<AttractionA*>(c_data);
-        if ((it->second.attraction.type & ATTRACTION_TYPE_Wild) == ATTRACTION_TYPE_Wild) {
-            c_data += sizeof(AttractionB);
+        c_item->att = reinterpret_cast<Attraction_S*>(c_data);
+        if ((it->second.attraction.type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
+            c_data += sizeof(Attraction_W);
         } else {
-            c_data += sizeof(AttractionA);
+            c_data += sizeof(Attraction_S);
         }
         GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_item->att));
 
@@ -108,15 +110,15 @@ void ovlCHGManager::Make(cOvlInfo* info) {
         GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_item), false, c_symbol);
 
         GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.name.c_str(), ovlTXTManager::TAG),
-                             reinterpret_cast<unsigned long*>(&c_item->att->Name));
+                             reinterpret_cast<unsigned long*>(&c_item->att->v.name_ref));
         GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.description.c_str(), ovlTXTManager::TAG),
-                             reinterpret_cast<unsigned long*>(&c_item->att->Description));
+                             reinterpret_cast<unsigned long*>(&c_item->att->v.description_ref));
         GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.sid.c_str(), ovlSIDManager::TAG),
                              reinterpret_cast<unsigned long*>(&c_item->SID));
         GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.icon.c_str(), ovlGSIManager::TAG),
-                             reinterpret_cast<unsigned long*>(&c_item->att->GSI));
+                             reinterpret_cast<unsigned long*>(&c_item->att->v.icon_ref));
         GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.spline.c_str(), ovlSPLManager::TAG),
-                             reinterpret_cast<unsigned long*>(&c_item->att->spline));
+                             reinterpret_cast<unsigned long*>(&c_item->att->v.spline_ref));
         GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.spline.c_str(), ovlSPLManager::TAG),
                              reinterpret_cast<unsigned long*>(&c_item->spline));
 

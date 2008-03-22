@@ -37,6 +37,8 @@
 #define fabsf fabs
 #endif
 
+using namespace r3;
+
 const char* ovlTXSManager::TAG = "txs";
 
 const cTriangleSortAlgorithm::Algorithm cTriangleSortAlgorithm::DEFAULT = cTriangleSortAlgorithm::MINMAX;
@@ -258,9 +260,34 @@ bool cTriangleSortAlgorithm::operator() (const VECTOR& a1, const VECTOR& a2, con
 
 
 
-void cAttraction::Fill(AttractionA* att) {
-    if ((type & ATTRACTION_TYPE_Wild) == ATTRACTION_TYPE_Wild) {
-        AttractionB* att2 = reinterpret_cast<AttractionB*>(att);
+void cAttraction::Fill(Attraction_S* att) {
+    if (type & r3::Constants::Addon::Soaked_Hi) {
+        att->v.type = type;
+        att->v.name_ref = NULL;
+        att->v.description_ref = NULL;
+        att->v.icon_ref = NULL;
+        att->v.unk2 = unk2;
+        att->v.unk3 = unk3;
+        att->v.unk4 = unk4;
+        att->v.unk5 = unk5;
+        att->v.base_upkeep = unk6;
+        att->v.spline_ref = NULL;
+        att->v.path_count = splines.size();
+        att->v.paths_ref = NULL;
+        att->v.flags = unk9;
+        att->v.max_height = unk10;
+        att->s.addonascn = addonascn;
+        att->s.unk12 = unk12;
+        if ((type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
+            Attraction_W* att2 = reinterpret_cast<Attraction_W*>(att);
+            att2->w.unk13 = unk13;
+        }
+    } else {
+        throw EOvl("cAttractionType::Fill, cannot determine structure type.");
+    }
+/*
+    if ((type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
+        Attraction_W* att2 = reinterpret_cast<Attraction_W*>(att);
         att2->type = type;
         att2->Name = NULL;
         att2->Description = NULL;
@@ -274,11 +301,11 @@ void cAttraction::Fill(AttractionA* att) {
         att2->pathcount = splines.size();
         att2->paths = NULL;
         att2->unk9 = unk9;
-        att2->unk10 = unk10;
-        att2->unk11 = unk11;
+        att2->max_height = unk10;
+        att2->addonascn = addonascn;
         att2->unk12 = unk12;
         att2->unk13 = unk13;
-    } else if ((type & ATTRACTION_TYPE_Soaked) == ATTRACTION_TYPE_Soaked) {
+    } else if ((type & r3::Constants::Addon::Soaked_Hi) == r3::Constants::Addon::Soaked_Hi) {
         att->type = type;
         att->Name = NULL;
         att->Description = NULL;
@@ -292,12 +319,13 @@ void cAttraction::Fill(AttractionA* att) {
         att->pathcount = splines.size();
         att->paths = NULL;
         att->unk9 = unk9;
-        att->unk10 = unk10;
-        att->unk11 = unk11;
+        att->max_height = unk10;
+        att->addonascn = addonascn;
         att->unk12 = unk12;
     } else {
         throw EOvl("cAttractionType::Fill, cannot determine structure type.");
     }
+*/
 }
 
 void cAttraction::Fill(StallA* sta) {

@@ -58,8 +58,8 @@ typedef struct
 	char* meshname;
 	char* textureIntOVLName; //Internal name of the texture, without the :ftx
 	char* textureStyle; //Texture rendering style. Present in RCT3.dgf
-	VECTOR BoundingBox1;
-	VECTOR BoundingBox2;
+	r3::VECTOR BoundingBox1;
+	r3::VECTOR BoundingBox2;
 } libOVL_MeshInfo;
 
 typedef struct
@@ -68,14 +68,14 @@ typedef struct
 	unsigned char *texturealpha;
 	FlexiTextureStruct *fts;
 	FlexiTextureInfoStruct *fti;
-	COLOURQUAD *colors;
+	r3::COLOURQUAD *colors;
 	char* textureIntOVLName; //Internal name of the texture, without the :ftx
 } libOVL_FlexiTextureInfo;
 
 struct EffectPoint
 {
 	char *Name;
-	MATRIX Transform;
+	r3::MATRIX Transform;
 };
 
 #ifdef BUILDING_DLL
@@ -85,16 +85,16 @@ std::vector <libOVL_MeshInfo *> MeshItems;
 std::vector <libOVL_FlexiTextureInfo *> FlexiTextureItems;
 #endif
 
-LIBOVL_API void AddOVLInfo_Mesh(libOVL_Mesh* mesh, char* meshname, char* textureIntOVLName,char* textureStyle,VECTOR BoundingBox1,VECTOR BoundingBox2);
+LIBOVL_API void AddOVLInfo_Mesh(libOVL_Mesh* mesh, char* meshname, char* textureIntOVLName,char* textureStyle,r3::VECTOR BoundingBox1,r3::VECTOR BoundingBox2);
 LIBOVL_API void DeleteOVLInfo_Meshes();
 LIBOVL_API void AddOVLInfo_FlexiTexture(FlexiTextureStruct *fts, FlexiTextureInfoStruct *fti,RGBQUAD * Bitmapcolors, char* textureIntOVLName);
 LIBOVL_API void DeleteOVLInfo_FlexiTextures();
 
 LIBOVL_API void CreateSceneryOvl(char *filename);
-LIBOVL_API void AddStaticShape(char *StaticShapeName, char **FTXNames, char **TXSNames, StaticShape1 *sh);
-LIBOVL_API void AddBoneShape(char *BoneShapeName, char **FTXNames, char **TXSNames, BoneShape1 *sh);
+LIBOVL_API void AddStaticShape(char *StaticShapeName, char **FTXNames, char **TXSNames, r3::StaticShape *sh);
+LIBOVL_API void AddBoneShape(char *BoneShapeName, char **FTXNames, char **TXSNames, r3::BoneShape *sh);
 LIBOVL_API void AddBoneAnim(char *BoneAnimName, BoneAnim *ban);
-LIBOVL_API void AddSceneryItemVisual(char *SceneryItemVisualName, char **StaticShapeNames, char **BoneShapeNames, char **BoneAnimNames, SceneryItemVisual *svd);
+LIBOVL_API void AddSceneryItemVisual(char *SceneryItemVisualName, char **StaticShapeNames, char **BoneShapeNames, char **BoneAnimNames, r3::SceneryItemVisual *svd);
 LIBOVL_API void AddFlexiTexture(char *FlexiTextureName, FlexiTextureInfoStruct *fti);
 LIBOVL_API void AddReference(char *reference);
 LIBOVL_API void SaveSceneryOvl();

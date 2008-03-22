@@ -52,9 +52,9 @@ LIBOVL_API void AddStyleOVLInfo_Icon(Icon *ico);
 LIBOVL_API void DeleteStyleOVLInfo_Icons();
 LIBOVL_API void AddStyleOVLInfo_TextString(Text *txt);
 LIBOVL_API void DeleteStyleOVLInfo_TextStrings();
-LIBOVL_API void AddStyleOVLInfo_Stalls(StallStr *str);
+LIBOVL_API void AddStyleOVLInfo_Stalls(r3::StallStr *str);
 LIBOVL_API void DeleteStyleOVLInfo_Stalls();
-LIBOVL_API void AddStyleOVLInfo_Attractions(AttractionStr *str);
+LIBOVL_API void AddStyleOVLInfo_Attractions(r3::AttractionStr *str);
 LIBOVL_API void DeleteStyleOVLInfo_Attractions();
 
 LIBOVL_API unsigned long CreateStyleOvl(char *filename, unsigned long ThemeCode);

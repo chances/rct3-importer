@@ -7,6 +7,9 @@
 	Software Foundation; either version 2, or (at your option) any later
 	version. See the file COPYING for more details.
 */
+
+#include <vector>
+
 class Texture {
 public:
     char *name;
@@ -16,7 +19,7 @@ public:
 	unsigned char *data;
     Texture(char *Name,char *Texture,FlicHeader Fh,FlicMipHeader Fmh,unsigned char *Data);
     ~Texture();
-    static vector<Texture *> IconTextures;
+    static std::vector<Texture *> IconTextures;
     static int LoaderNumber;
     static int LoaderNumber2;
     static unsigned long ComputeSize();

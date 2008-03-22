@@ -122,6 +122,10 @@ void cRawParser::ParseSID(cXmlNode& node) {
             sid.stallunknowns.MakeStall();
             OPTION_PARSE(unsigned long, sid.stallunknowns.unk1, ParseUnsigned(child, wxT(RAWXML_SID_STALLUNKNOWNS), wxT("u1")));
             OPTION_PARSE(unsigned long, sid.stallunknowns.unk2, ParseUnsigned(child, wxT(RAWXML_SID_STALLUNKNOWNS), wxT("u2")));
+        } else if (child(RAWXML_SID_EXTRA)) {
+            OPTION_PARSE(unsigned long, sid.extra.version, ParseUnsigned(child, wxT(RAWXML_SID_EXTRA), wxT("version")));
+            OPTION_PARSE(unsigned long, sid.extra.AddonPack, ParseUnsigned(child, wxT(RAWXML_SID_EXTRA), wxT("addonpack")));
+            OPTION_PARSE(long, sid.extra.billboardaspect, ParseSigned(child, wxT(RAWXML_SID_EXTRA), wxT("billboardaspect")));
         } else if (child(RAWXML_SID_SVD)) {
             USE_PREFIX(child);
             svd = ParseString(node, wxT(RAWXML_SVD), wxT("name"), NULL, useprefix);
@@ -255,7 +259,7 @@ void cRawParser::ParseSTA(cXmlNode& node) {
             OPTION_PARSE(unsigned long, stall.attraction.unk6, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u6")));
             OPTION_PARSE(unsigned long, stall.attraction.unk9, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u9")));
             OPTION_PARSE(long, stall.attraction.unk10, ParseSigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u10")));
-            OPTION_PARSE(unsigned long, stall.attraction.unk11, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u11")));
+            OPTION_PARSE(unsigned long, stall.attraction.addonascn, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u11")));
             OPTION_PARSE(unsigned long, stall.attraction.unk12, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u12")));
             OPTION_PARSE(unsigned long, stall.attraction.unk13, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u13")));
         } else if (child.element()) {

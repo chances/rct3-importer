@@ -12,6 +12,9 @@
 #include "CommonOVL.h"
 #include "StyleOVL.h"
 #include "stalls.h"
+
+using namespace r3;
+
 std::vector<StallData *> StallData::Stalls;
 int StallData::LoaderNumber;
 

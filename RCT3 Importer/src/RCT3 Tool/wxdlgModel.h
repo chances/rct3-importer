@@ -254,7 +254,7 @@ public:
     cAnimatedModel GetAnimatedModel() const {
         return m_amodel;
     };
-    void FetchOneVertexMeshes(wxArrayString& names, std::vector<VECTOR>& points);
+    void FetchOneVertexMeshes(wxArrayString& names, std::vector<r3::VECTOR>& points);
 };
 
 

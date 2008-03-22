@@ -11,48 +11,51 @@
 #ifndef __VERTEX_H__
 #define __VERTEX_H__
 
-#define RCT3FLOAT float
-#define COLOUR    unsigned long
+#include "rct3basetypes.h"
+
+namespace r3 {
 
 struct VECTOR {
-    RCT3FLOAT x;
-    RCT3FLOAT y;
-    RCT3FLOAT z;
+    float_t x;
+    float_t y;
+    float_t z;
 };
 
 struct MATRIX {
 	union {
 		struct {
-			float _11, _12, _13, _14;
-			float _21, _22, _23, _24;
-			float _31, _32, _33, _34;
-			float _41, _42, _43, _44;
+			float_t _11, _12, _13, _14;
+			float_t _21, _22, _23, _24;
+			float_t _31, _32, _33, _34;
+			float_t _41, _42, _43, _44;
 		};
-		float m[4][4];
+		float_t m[4][4];
 	};
 };
 
 struct VERTEX {
 	VECTOR position;
 	VECTOR normal;
-	COLOUR color;
-	RCT3FLOAT tu, tv;
+	uint32_t color;
+	float_t tu, tv;
 };
 
 struct VERTEX2 {
 	VECTOR position;
 	VECTOR normal;
-	char bone[4];
-	unsigned char boneweight[4];
-	COLOUR color;
-	RCT3FLOAT tu, tv;
+	int8_t bone[4];
+	uint8_t boneweight[4];
+	uint32_t color;
+	float_t tu, tv;
 };
 
 struct COLOURQUAD {
-    unsigned char blue;
-    unsigned char green;
-    unsigned char red;
-    unsigned char alpha;
+    uint8_t blue;
+    uint8_t green;
+    uint8_t red;
+    uint8_t alpha;
+};
+
 };
 
 #endif // VERTEX_H_INCLUDED

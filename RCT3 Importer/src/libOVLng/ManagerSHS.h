@@ -38,15 +38,13 @@
 #include "ManagerCommon.h"
 #include "ManagerOVL.h"
 
-using namespace std;
-
 class cEffectStruct {
 public:
     string name;
-	MATRIX pos;
+	r3::MATRIX pos;
 
     cEffectStruct() {};
-    void Fill(MATRIX* m) {
+    void Fill(r3::MATRIX* m) {
         *m = pos;
     }
 };
@@ -59,7 +57,7 @@ public:
 	unsigned long placetexturing; //0 = dont see texturing on things when being placed, 1 = see texturing on things when being placed
 	unsigned long textureflags; //always 0
 	unsigned long sides; //seen values of 3 or 1 for this, 3 is more common
-	vector<VERTEX> vertices;
+	vector<r3::VERTEX> vertices;
 	vector<unsigned long> indices;
 
 #ifndef GLASS_OLD
@@ -72,14 +70,14 @@ public:
 	    placetexturing = 0;
 	    textureflags = 0;
 	    sides = 3;
-	    support = SharedShape::Supports::None;
+	    support = r3::Constants::Mesh::SupportType::None;
 #ifndef GLASS_OLD
 	    algo_x = cTriangleSortAlgorithm::DEFAULT;
 	    algo_y = cTriangleSortAlgorithm::DEFAULT;
 	    algo_z = cTriangleSortAlgorithm::DEFAULT;
 #endif
 	}
-	void Fill(StaticShape2* ss2, unsigned long* vert, unsigned long* ind);
+	void Fill(r3::StaticShapeMesh* ss2, r3::uint32_t* vert, r3::uint32_t* ind);
 	bool IsAlgoNone() const {
 	    return ((algo_x == cTriangleSortAlgorithm::NONE) || (algo_y == cTriangleSortAlgorithm::NONE) || (algo_z == cTriangleSortAlgorithm::NONE));
 	}
@@ -88,29 +86,13 @@ public:
 class cStaticShape1 {
 public:
     string name;
-    VECTOR bbox1;
-    VECTOR bbox2;
+    r3::VECTOR bbox1;
+    r3::VECTOR bbox2;
 	vector<cStaticShape2> meshes;
     vector<cEffectStruct> effects;
 
 	cStaticShape1() {};
-	void Fill(StaticShape1* ss1) {
-	    ss1->BoundingBox1 = bbox1;
-	    ss1->BoundingBox2 = bbox2;
-	    ss1->TotalVertexCount = 0;
-	    ss1->TotalIndexCount = 0;
-	    ss1->MeshCount2 = 0;
-	    ss1->MeshCount = meshes.size();
-	    for(unsigned long i = 0; i < meshes.size(); ++i) {
-	        if (meshes[i].support == SharedShape::Supports::None)
-                ss1->MeshCount2++;
-            meshes[i].Fill(ss1->sh[i], &ss1->TotalVertexCount, &ss1->TotalIndexCount);
-	    }
-	    ss1->EffectCount = effects.size();
-	    for(unsigned long i = 0; i < effects.size(); ++i) {
-            effects[i].Fill(&ss1->EffectPosition[i]);
-	    }
-	}
+	void Fill(r3::StaticShape* ss1);
 };
 
 class ovlSHSManager: public ovlOVLManager {

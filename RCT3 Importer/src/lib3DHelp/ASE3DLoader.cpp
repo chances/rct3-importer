@@ -39,6 +39,8 @@
 #include "counted_array_ptr.h"
 #include "matrix.h"
 
+using namespace r3;
+
 cASE3DLoader::cASE3DLoader(const wxChar *filename): c3DLoader(filename) {
     ASE_Scene *scene = NULL;
 

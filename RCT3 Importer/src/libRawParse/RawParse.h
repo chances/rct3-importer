@@ -115,8 +115,8 @@ private:
     unsigned long ParseUnsigned(const xmlcpp::cXmlNode& node, const wxString& nodes, const wxString& attribute);
     long ParseSigned(const xmlcpp::cXmlNode& node, const wxString& nodes, const wxString& attribute);
     double ParseFloat(const xmlcpp::cXmlNode& node, const wxString& nodes, const wxString& attribute);
-    void ParseVector(const xmlcpp::cXmlNode& node, VECTOR& v, const wxString& nodes);
-    void ParseMatrix(const xmlcpp::cXmlNode& node, MATRIX& m, const wxString& nodes);
+    void ParseVector(const xmlcpp::cXmlNode& node, r3::VECTOR& v, const wxString& nodes);
+    void ParseMatrix(const xmlcpp::cXmlNode& node, r3::MATRIX& m, const wxString& nodes);
     c3DLoaderOrientation ParseOrientation(const xmlcpp::cXmlNode& node, const wxString& nodes);
 
     bool MakeVariable(wxString& var);
@@ -180,6 +180,9 @@ public:
     void SetOptions(eRawOvlMode mode, bool dryrun) {
         m_mode = mode;
         m_dryrun = dryrun;
+        if (mode == MODE_INSTALL) {
+            m_commandvariables[wxT("INSTALLING")] = wxT("1");
+        }
     }
 
     const std::vector<wxFileName>& GetModifiedFiles() const {

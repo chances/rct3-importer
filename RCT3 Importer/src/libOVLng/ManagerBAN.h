@@ -37,8 +37,6 @@
 #include "boneanim.h"
 #include "ManagerOVL.h"
 
-using namespace std;
-
 struct cTXYZComp {
     bool operator() (const txyz& lhs, const txyz& rhs) const {
         return lhs.Time<rhs.Time;

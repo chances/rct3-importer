@@ -37,6 +37,8 @@
 #include "wxdlgStall.h"
 #include "stall.h"
 
+using namespace r3;
+
 extern std::vector <StallStr *> Stalls;
 extern bool save;
 int CurrentStall;

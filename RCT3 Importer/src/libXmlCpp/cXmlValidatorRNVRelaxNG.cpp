@@ -25,10 +25,10 @@
 
 #include "cXmlValidatorRNVRelaxNG.h"
 
-#include "cXmlDoc.h"
 #include "cXmlException.h"
 #include "cXmlInputOutputCallbackString.h"
 #include "cXmlNode.h"
+#include "cxmlnamespaceconstants.h"
 
 #include "rnv/erbit.h"
 #include "rnv/drv.h"
@@ -40,6 +40,17 @@
 #include "rnv/rnl.h"
 #include "rnv/rnv.h"
 #include "rnv/rnx.h"
+
+#include "rng/relaxng.rnc.gz.h"
+#include "xsl/rng-incelim-1.2/incelim.xsl.gz.h"
+#include "xsl/rng-incelim-1.2/inc.xsl.gz.h"
+#include "xsl/rng-incelim-1.2/elim.xsl.gz.h"
+#include "xsl/rng-incelim-1.2/strip.xsl.gz.h"
+#include "xsl/rng-incelim-1.2/clean.xsl.gz.h"
+#include "xsl/RngToRnc-1_4/RngToRncClassic.xsl.gz.h"
+
+#include <zlib.h>
+
 
 //#define DUMP
 
@@ -464,10 +475,39 @@ cXmlValidatorRNVRelaxNG::~cXmlValidatorRNVRelaxNG() {
     Init();
 }
 
+#define INIT_XSL_RESOURCE(resname) \
+        { \
+            buf_size = resname ## _xsl_size_unzipped; \
+            boost::shared_array<char> buf(new char[buf_size]); \
+            r = uncompress(reinterpret_cast<Bytef*>(buf.get()), &buf_size, reinterpret_cast<const Bytef*>(resname ## _xsl), resname ## _xsl_size); \
+            if (r != Z_OK) \
+                throw eXml("Uncompressing " #resname ".xsl failed."); \
+            string t(buf.get(), static_cast<size_t>(buf_size+1)); \
+            cXmlInputOutputCallbackString::add(string(cXmlInputOutputCallbackString::INTERNAL)+"/xsl/" #resname ".xsl", t); \
+        }
+
 void cXmlValidatorRNVRelaxNG::Init() {
     if (!g_resinit) {
-//        cXmlInputOutputCallbackString::Init();
-//        cXmlInputOutputCallbackString::add(string(cXmlInputOutputCallbackString::INTERNAL)+"/schematron/iso_schematron_skeleton.xsl", reinterpret_cast<const char*>(iso_schematron_skeleton_xsl_stripped_2));
+        int r;
+        uLongf buf_size;
+        cXmlInputOutputCallbackString::Init();
+
+        {
+            buf_size = relaxng_rng_size_unzipped;
+            boost::shared_array<char> buf(new char[buf_size]);
+            r = uncompress(reinterpret_cast<Bytef*>(buf.get()), &buf_size, reinterpret_cast<const Bytef*>(relaxng_rng), relaxng_rng_size);
+            if (r != Z_OK)
+                throw eXml("Uncompressing relaxng.rng failed.");
+            string t(buf.get(), static_cast<size_t>(buf_size+1));
+            cXmlInputOutputCallbackString::add(string(cXmlInputOutputCallbackString::INTERNAL)+"/rnc/relaxng.rnc", t);
+        }
+        INIT_XSL_RESOURCE(incelim)
+        INIT_XSL_RESOURCE(inc)
+        INIT_XSL_RESOURCE(elim)
+        INIT_XSL_RESOURCE(strip)
+        INIT_XSL_RESOURCE(clean)
+        INIT_XSL_RESOURCE(RngToRncClassic)
+
 //        cXmlInputOutputCallbackString::add(string(cXmlInputOutputCallbackString::INTERNAL)+"/schematron/iso_simple.xsl", reinterpret_cast<const char*>(iso_simple_xsl_stripped_2));
         rnl_init();
         rnl_verror_handler=cXmlValidatorRNVRelaxNG::verror_handler_rnl;
@@ -476,13 +516,21 @@ void cXmlValidatorRNVRelaxNG::Init() {
         rnx_init();
 //        drv_add_dtl(DXL_URL,&dxl_equal,&dxl_allows);
 //        drv_add_dtl(DSL_URL,&dsl_equal,&dsl_allows);
+
         g_resinit = true;
     }
+
+    rnl_clear();
+    rnv_clear();
+    rnx_clear();
 
     m_rncstatus = 0;
     m_rncfile = "";
     m_rncbuffer.reset();
     m_rncbuffersize = 0;
+    m_type = VAL_RNV_UNSPECIFIED;
+    m_errstage = ERRSTAGE_UNKNOWN;
+    m_rng = cXmlDoc();
 }
 
 //void cXmlValidatorSchematron::DeInit() {
@@ -544,13 +592,30 @@ void cXmlValidatorRNVRelaxNG::Init() {
 //}
 
 
-bool cXmlValidatorRNVRelaxNG::read(const std::string& buffer) {
-
-    return false;
+bool cXmlValidatorRNVRelaxNG::readRNC(const std::string& buffer, const char* URL) {
+    Init();
+    m_type = VAL_RNV_RNC;
+    return ParseRNC(buffer, URL);
 }
 
-bool cXmlValidatorRNVRelaxNG::read(const char* URL) {
+bool cXmlValidatorRNVRelaxNG::ParseRNC(const std::string& buffer, const char* URL) {
+    m_rncfile = URL?URL:"";
+    m_rncbuffersize = buffer.size()+1;
+    m_rncbuffer = boost::shared_array<char>(new char[m_rncbuffersize]);
+    memcpy(m_rncbuffer.get(), buffer.c_str(), m_rncbuffersize);
+
+    claimRNV();
+    m_rncstatus = rnl_s(const_cast<char*>(m_rncfile.c_str()), m_rncbuffer.get(), m_rncbuffersize);
+    releaseRNV();
+
+    m_errstage = ok()?ERRSTAGE_OK:ERRSTAGE_RNC;
+
+    return ok();
+}
+
+bool cXmlValidatorRNVRelaxNG::readRNC(const char* URL) {
     Init();
+    m_type = VAL_RNV_RNC;
 
     boost::shared_ptr<xmlParserInputBuffer> buf(xmlParserInputBufferCreateFilename(URL, XML_CHAR_ENCODING_UTF8), xmlFree);
     if (!buf)
@@ -566,6 +631,8 @@ bool cXmlValidatorRNVRelaxNG::read(const char* URL) {
         result += buffer;
     }
 
+    return ParseRNC(result, URL);
+/*
     m_rncfile = URL;
     m_rncbuffersize = result.size()+1;
     m_rncbuffer = boost::shared_array<char>(new char[m_rncbuffersize]);
@@ -576,6 +643,98 @@ bool cXmlValidatorRNVRelaxNG::read(const char* URL) {
     releaseRNV();
 
     return ok();
+*/
+}
+
+bool cXmlValidatorRNVRelaxNG::ParseRNG(cXmlDoc& schema, const char* URL) {
+    string pth = string(cXmlInputOutputCallbackString::PROTOCOL)+string(cXmlInputOutputCallbackString::INTERNAL)+"/rnc/relaxng.rnc";
+    cXmlValidatorRNVRelaxNG val;
+    val.readRNC(pth.c_str());
+    if (!val) {
+        genericerrorcallback("Internal Error: Failed to load RelaxNG schema");
+        return false;
+    }
+
+    if (schema.validate(val)) {
+        m_errstage = ERRSTAGE_RNG_VALIDATION;
+        transferErrors(val);
+        return false;
+    }
+
+    pth = string(cXmlInputOutputCallbackString::PROTOCOL)+string(cXmlInputOutputCallbackString::INTERNAL)+"/xsl/incelim.xsl";
+    cXsltStylesheet incelim(pth.c_str());
+
+    if (!incelim) {
+        transferErrors(incelim);
+        genericerrorcallback("Internal Error: Failed to load incelim transform");
+        return false;
+    }
+
+    cXmlDoc incelimmed(incelim.transform(schema));
+    if (!incelimmed) {
+        m_errstage = ERRSTAGE_RNG_INCELIM;
+        transferErrors(incelimmed);
+        return false;
+    }
+
+    pth = string(cXmlInputOutputCallbackString::PROTOCOL)+string(cXmlInputOutputCallbackString::INTERNAL)+"/xsl/RngToRncClassic.xsl";
+    cXsltStylesheet rncconv(pth.c_str());
+
+    if (!rncconv) {
+        transferErrors(rncconv);
+        genericerrorcallback("Internal Error: Failed to load RngToRncClassic transform");
+        return false;
+    }
+
+    string convertedrnc = rncconv.transformToString(incelimmed);
+    if (convertedrnc == "") {
+        m_errstage = ERRSTAGE_RNG_CONVERSION;
+        transferErrors(rncconv);
+        return false;
+    }
+
+    return ParseRNC(convertedrnc);
+}
+
+bool cXmlValidatorRNVRelaxNG::readRNG(cXmlDoc& schema, const char* URL) {
+    Init();
+    m_type = VAL_RNV_RNG;
+
+    if (!schema) {
+        m_errstage = ERRSTAGE_RNG_PARSE;
+        transferErrors(schema);
+        return false;
+    }
+
+    m_rng = schema;
+
+    return ParseRNG(schema, URL);
+}
+
+bool cXmlValidatorRNVRelaxNG::readRNG(const std::string& buffer, const char* URL) {
+    cXmlDoc schema(buffer, URL, NULL, XML_PARSE_DTDLOAD);
+    return readRNG(schema, URL);
+}
+
+bool cXmlValidatorRNVRelaxNG::readRNG(const char* URL) {
+    cXmlDoc schema(URL, NULL, XML_PARSE_DTDLOAD);
+    return readRNG(schema, URL);
+}
+
+bool cXmlValidatorRNVRelaxNG::read(const std::string& buffer, const char* URL) {
+    cXmlDoc schema(buffer, URL, NULL, XML_PARSE_DTDLOAD);
+    if (schema)
+        return readRNG(schema, URL);
+    else
+        return readRNC(buffer, URL);
+}
+
+bool cXmlValidatorRNVRelaxNG::read(const char* URL) {
+    cXmlDoc schema(URL, NULL, XML_PARSE_DTDLOAD);
+    if (schema)
+        return readRNG(schema, URL);
+    else
+        return readRNC(URL);
 }
 
 void cXmlValidatorRNVRelaxNG::reparse() {
@@ -664,7 +823,7 @@ void do_node(cXmlNode& node, RNVValidationContext& ctx) {
         ctx.start_tag_open(name);
         cXmlNode attr(node.properties());
         while (attr.ok()) {
-            ctx.attribute(attr.name(), attr.content());
+            ctx.attribute(attr.nsname(), attr.content());
             attr.go_next();
         }
         ctx.start_tag_close(name);

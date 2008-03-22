@@ -39,6 +39,7 @@
 
 #include "bmy.pal.h"
 
+using namespace r3;
 using namespace xmlcpp;
 
 ///////////////////////////////////////////////////////////////
@@ -224,9 +225,9 @@ void cMeshStruct::Init() {
     disabled = true;
     TXS = wxT("SIOpaque");
     FTX = wxT("");
-    place = SharedShape::Transparency::None;
+    place = r3::Constants::Mesh::Transparency::None;
     flags = 0;
-    unknown = SharedShape::Sides::Singlesided;
+    unknown = r3::Constants::Mesh::Sides::Singlesided;
     Name = wxT("");
     fudgenormals = 0;
     valid = false;
@@ -394,29 +395,29 @@ bool cMeshStruct::FromNode(cXmlNode& node, const wxString& path, unsigned long v
     if (node.hasProp("place")) {
         temp = node.getPropVal("place");
         if (parseULong(temp, place)) {
-            if (place > SharedShape::Transparency::Complex) {
-                place = SharedShape::Transparency::None;
+            if (place > r3::Constants::Mesh::Transparency::Complex) {
+                place = r3::Constants::Mesh::Transparency::None;
                 wxLogError(_("Mesh, place has illegal value."));
                 ret = false;
             }
         } else {
-            place = SharedShape::Transparency::None;
+            place = r3::Constants::Mesh::Transparency::None;
             wxLogError(_("Mesh, place failed parsing."));
             ret = false;
         }
     } else {
-        place = SharedShape::Transparency::None;
+        place = r3::Constants::Mesh::Transparency::None;
     }
     if (node.hasProp("transparency")) {
         temp = node.getPropVal("transparency");
         if (parseULong(temp, place)) {
-            if (place > SharedShape::Transparency::Complex) {
-                place = SharedShape::Transparency::None;
+            if (place > r3::Constants::Mesh::Transparency::Complex) {
+                place = r3::Constants::Mesh::Transparency::None;
                 wxLogError(_("Mesh, transparency has illegal value."));
                 ret = false;
             }
         } else {
-            place = SharedShape::Transparency::None;
+            place = r3::Constants::Mesh::Transparency::None;
             wxLogError(_("Mesh, transparency failed parsing."));
             ret = false;
         }
@@ -434,12 +435,12 @@ bool cMeshStruct::FromNode(cXmlNode& node, const wxString& path, unsigned long v
     if (node.hasProp("unknown")) {
         temp = node.getPropVal("unknown");
         if (!parseULong(temp, unknown)) {
-            unknown = SharedShape::Sides::Singlesided;
+            unknown = r3::Constants::Mesh::Sides::Singlesided;
             wxLogError(_("Mesh, unknown failed parsing."));
             ret = false;
         }
     } else {
-        unknown = SharedShape::Sides::Singlesided;
+        unknown = r3::Constants::Mesh::Sides::Singlesided;
     }
     if (node.hasProp("fudgenormals")) {
         temp = node.getPropVal("fudgenormals");

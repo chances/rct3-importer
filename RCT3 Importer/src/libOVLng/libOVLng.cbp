@@ -93,6 +93,8 @@
 		<Unit filename="..\..\include\morphmesh.h" />
 		<Unit filename="..\..\include\ovlstructs.h" />
 		<Unit filename="..\..\include\path.h" />
+		<Unit filename="..\..\include\rct3basetypes.h" />
+		<Unit filename="..\..\include\rct3constants.h" />
 		<Unit filename="..\..\include\scenery.h" />
 		<Unit filename="..\..\include\sceneryrevised.h" />
 		<Unit filename="..\..\include\sceneryvisual.h" />
@@ -101,6 +103,8 @@
 		<Unit filename="..\..\include\stall.h" />
 		<Unit filename="..\..\include\staticshape.h" />
 		<Unit filename="..\..\include\terraintype.h" />
+		<Unit filename="..\..\include\trackedride.h" />
+		<Unit filename="..\..\include\tracksection.h" />
 		<Unit filename="..\..\include\vertex.h" />
 		<Unit filename="..\..\include\wildanimalitem.h" />
 		<Unit filename="..\..\include\xmldefs.h" />

@@ -33,6 +33,8 @@
 #include "wxLocalLog.h"
 #include "matrix.h"
 
+using namespace r3;
+
 cMS3DLoader::cMS3DLoader(const wxChar *filename): c3DLoader(filename) {
 wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s)"), filename);
     std::auto_ptr<CMS3DFile> ms3df(new CMS3DFile());

@@ -38,8 +38,6 @@
 #include "RelocationManager.h"
 #include "StringTable.h"
 
-using namespace std;
-
 class cOvl;
 class ovlOVLManager {
 public:

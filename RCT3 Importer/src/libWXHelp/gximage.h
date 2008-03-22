@@ -166,6 +166,7 @@ public:
         m_image.floodFillTexture(x, y, texture.m_image);
     }
 */
+    wxString magick() {return wxString(m_image.magick().c_str(), wxConvLocal);}
     void flip() {m_image.flip();}
     void flop() {m_image.flop();}
     Magick::ImageType type() {return m_image.type();}

@@ -50,8 +50,8 @@ WX_DECLARE_STRING_HASH_MAP(int, cIntMap);
 #define RCT3XML_REFERENCE "reference"
 
 #define RCT3XML_MATRIX "matrix"
-bool XmlParseMatrixNode(xmlcpp::cXmlNode& node, MATRIX* marix, wxString* name, unsigned long version);
-xmlcpp::cXmlNode XmlMakeMatrixNode(const MATRIX& matrix, const wxString& name);
+bool XmlParseMatrixNode(xmlcpp::cXmlNode& node, r3::MATRIX* marix, wxString* name, unsigned long version);
+xmlcpp::cXmlNode XmlMakeMatrixNode(const r3::MATRIX& matrix, const wxString& name);
 
 //bool XmlParseTXYZNode(wxXmlNode* node, txyz* v, unsigned long version);
 //wxXmlNode* XmlMakeTXYZNode(const txyz& v);
@@ -133,7 +133,7 @@ public:
     bool valid;
     unsigned long faces;
     bool effectpoint;
-    VECTOR effectpoint_vert;
+    r3::VECTOR effectpoint_vert;
 
     // Helper for bone assignment
     unsigned int bone;
@@ -249,9 +249,9 @@ DEF_RCT3_PROPERTY_F(unsigned long, AlphaSource, alphasource)
 class cFlexiTexture: public cRCT3Xml {
 DEF_RCT3_VECIT(cFlexiTexture)
 private:
-    static COLOURQUAD g_rgbPalette[256];
+    static r3::COLOURQUAD g_rgbPalette[256];
     static bool g_rgbPaletteCreated;
-    static COLOURQUAD g_bmyPalette[256];
+    static r3::COLOURQUAD g_bmyPalette[256];
     static bool g_bmyPaletteCreated;
 public:
     wxString Name;
@@ -271,8 +271,8 @@ public:
     virtual xmlcpp::cXmlNode GetNode(const wxString& path);
     virtual const std::string GetTagName() const {return RCT3XML_CFLEXITEXTURE;};
 
-    static COLOURQUAD* GetRGBPalette();
-    static COLOURQUAD* GetBMYPalette();
+    static r3::COLOURQUAD* GetRGBPalette();
+    static r3::COLOURQUAD* GetBMYPalette();
 };
 
 class cModelBone;
@@ -283,7 +283,7 @@ DEF_RCT3_VECIT(cEffectPoint)
 public:
 
 	wxString name;
-	std::vector<MATRIX> transforms;
+	std::vector<r3::MATRIX> transforms;
 	wxArrayString transformnames;
 
 	cEffectPoint(): name(wxT("")) {};
@@ -303,7 +303,7 @@ DEF_RCT3_VECIT(cModel)
 public:
     wxString name;
     wxFileName file;
-	std::vector<MATRIX> transforms;
+	std::vector<r3::MATRIX> transforms;
 	wxArrayString transformnames;
     cMeshStruct::vec meshstructs;
     cEffectPoint::vec effectpoints;
@@ -316,7 +316,7 @@ public:
 
 	cModel(): name(wxT("")), file(wxT("")), usedorientation(ORIENTATION_UNKNOWN), fileorientation(ORIENTATION_UNKNOWN), fatal_error(false) {};
 	cModel(const cAnimatedModel& model);
-	cModel(MATRIX def, c3DLoaderOrientation ori);
+	cModel(r3::MATRIX def, c3DLoaderOrientation ori);
 	cModel(wxString filen): name(wxT("")), file(filen), usedorientation(ORIENTATION_UNKNOWN), fileorientation(ORIENTATION_UNKNOWN), fatal_error(false) {
         Load();
     };
@@ -333,7 +333,7 @@ public:
 	}
 
 	virtual bool Check(cModelMap& modnames);
-	virtual bool GetTransformationMatrices(MATRIX& transform, MATRIX& undodamage) const;
+	virtual bool GetTransformationMatrices(r3::MATRIX& transform, r3::MATRIX& undodamage) const;
 
     virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
     virtual void AddNodeContent(xmlcpp::cXmlNode& node, const wxString& path, bool do_local);
@@ -363,9 +363,9 @@ public:
 	wxString parent;
 	bool usepos2;
 	wxArrayString meshes;
-	std::vector<MATRIX> positions1;
+	std::vector<r3::MATRIX> positions1;
 	wxArrayString position1names;
-	std::vector<MATRIX> positions2;
+	std::vector<r3::MATRIX> positions2;
 	wxArrayString position2names;
 
 	// Parent by number
@@ -397,7 +397,7 @@ public:
 
 	cAnimatedModel(): cModel() {};
 	cAnimatedModel(const cModel& model);
-	cAnimatedModel(MATRIX def, c3DLoaderOrientation ori): cModel(def, ori) {};
+	cAnimatedModel(r3::MATRIX def, c3DLoaderOrientation ori): cModel(def, ori) {};
 	cAnimatedModel(wxString filen): cModel() {
 	    file = filen;
         Load();

@@ -26,6 +26,7 @@
 #include "texcheck.h"
 
 #include <Magick++.h>
+#include <algorithm>
 
 #include "confhelp.h"
 #include "gximage.h"
@@ -41,7 +42,7 @@ unsigned int checkRCT3Texture(const wxString& texture) {
         throw RCT3TextureException(wxString::Format(_("File open error: %s"), e.what()));
     }
     if (READ_RCT3_TEXTURE() != RCT3_TEXTURE_ERROR_OUT)
-        return max(img.GetWidth(), img.GetHeight());
+        return std::max(img.GetWidth(), img.GetHeight());
     try {
         if (img.GetWidth() != img.GetHeight())
             throw RCT3TextureException(_("The texture is not square."));

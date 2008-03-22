@@ -34,6 +34,8 @@
 
 #include "wxdlgMatrixLoad.h"
 
+using namespace r3;
+
 class wxMatrixData: public wxTreeItemData {
 public:
     wxMatrixData(): wxTreeItemData(){};

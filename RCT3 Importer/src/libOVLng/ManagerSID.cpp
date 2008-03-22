@@ -34,6 +34,8 @@
 #include "ManagerTXT.h"
 #include "OVLException.h"
 
+using namespace r3;
+
 const char* ovlSIDManager::NAME = "SceneryItem";
 const char* ovlSIDManager::TAG = "sid";
 

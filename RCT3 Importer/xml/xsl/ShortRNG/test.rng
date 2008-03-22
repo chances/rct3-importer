@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<grammar xmlns="http://relaxng.sourceforge.net/ns/shorthand">
+	<start>
+		<choice occurs="*">
+			<ref name="abc" occurs="?"/>
+			<attribute name="abc" type="xyz"/>
+		</choice>
+	</start>
+	
+	<attribute name="xyz" minOccurs="0" type="abc"/>
+	<!--xyz-->
+	<attribute name="xyz" minOccurs="1" type="abc"/>
+	<!--xyz-->
+	<attribute name="xyz" minOccurs="2" maxOccurs="3" type="abc"/>
+	<!-- 0-3 -->
+	<element name="xyz" minOccurs="0" maxOccurs="3" type="abc"/>
+</grammar>

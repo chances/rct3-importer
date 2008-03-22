@@ -30,9 +30,10 @@
 #define _XMLHELPER_H_
 
 bool parseFloat(std::string& str, float& a);
+bool parseFloat(std::string& str, double& a);
 bool parseULong(std::string& str, unsigned long& a);
 bool parseMatrixRow(std::string& str, float& a, float& b, float& c, float& d);
-bool parseMatrix(std::string& str, MATRIX& m);
+bool parseMatrix(std::string& str, r3::MATRIX& m);
 bool parseCompilerVector(std::string& str, txyz& v);
 
 //inline wxXmlNode* makeElementNode(const wxString& name) {

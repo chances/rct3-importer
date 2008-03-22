@@ -60,7 +60,7 @@ public:
         fts->width = dimension;
         fts->height = dimension;
         fts->Recolorable = recolourable;
-        memcpy(fts->palette, palette.get(), 256 * sizeof(COLOURQUAD));
+        memcpy(fts->palette, palette.get(), 256 * sizeof(r3::COLOURQUAD));
         memcpy(fts->texture, texture.get(), dimension * dimension);
         if (alpha.get()) {
             memcpy(fts->alpha, alpha.get(), dimension * dimension);

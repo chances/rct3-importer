@@ -37,8 +37,6 @@
 #include "ManagerOVL.h"
 #include "ManagerCommon.h"
 
-using namespace std;
-
 class cSplineData {
 public:
     unsigned char data[14];
@@ -58,7 +56,7 @@ public:
 class cSpline {
 public:
     string name;
-    vector<SplineNode> nodes;
+    vector<r3::SplineNode> nodes;
     unsigned long cyclic;
     float totallength;
     bool calc_length;
@@ -78,7 +76,7 @@ public:
     };
     void CalcLengths();
     void AssignData();
-    void Fill(Spline* spl);
+    void Fill(r3::Spline* spl);
 };
 
 class ovlSPLManager: public ovlOVLManager {

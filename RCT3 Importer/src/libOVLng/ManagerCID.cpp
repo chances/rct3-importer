@@ -37,6 +37,8 @@
 #include "ManagerTXT.h"
 #include "OVLException.h"
 
+using namespace r3;
+
 const char* ovlCIDManager::LOADER = "FGDK";
 const char* ovlCIDManager::NAME = "CarriedItem";
 const char* ovlCIDManager::TAG = "cid";

@@ -37,8 +37,6 @@
 #include "ManagerOVL.h"
 #include "ManagerCommon.h"
 
-using namespace std;
-
 class cWildAnimalItem {
 public:
     string name;
@@ -96,7 +94,7 @@ public:
         flags = 0;
         weight = 0.7;
     }
-    void Fill(WildAnimalItem* wai) {
+    void Fill(r3::WildAnimalItem* wai) {
         wai->unk1 = unk1;
         wai->unk2 = unk2;
         wai->unk3 = unk3;

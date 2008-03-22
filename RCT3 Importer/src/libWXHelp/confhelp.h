@@ -36,7 +36,7 @@ T wxcRead(const wxString& path, const T& def) {
 }
 
 template <>
-MATRIX wxcRead(const wxString& path, const MATRIX& def);
+r3::MATRIX wxcRead(const wxString& path, const r3::MATRIX& def);
 #if wxUSE_IMAGE
 template <>
 wxSize wxcRead(const wxString& path, const wxSize& def);
@@ -51,7 +51,7 @@ bool wxcWrite(const wxString& path, const T& val) {
 }
 
 template <>
-bool wxcWrite(const wxString& path, const MATRIX& val);
+bool wxcWrite(const wxString& path, const r3::MATRIX& val);
 #if wxUSE_IMAGE
 template <>
 bool wxcWrite(const wxString& path, const wxSize& val);

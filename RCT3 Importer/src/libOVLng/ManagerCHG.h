@@ -37,8 +37,6 @@
 #include "ManagerOVL.h"
 #include "ManagerCommon.h"
 
-using namespace std;
-
 class cChangingRoom {
 public:
     string name;
@@ -47,16 +45,16 @@ public:
     string spline;
 
     cChangingRoom() {
-        attraction.type = ATTRACTION_TYPE_Changing_Room | ATTRACTION_TYPE_Soaked;
+        attraction.type = r3::Constants::Attraction::Type::Changing_Room | r3::Constants::Addon::Soaked_Hi;
 	    attraction.unk2 = 0;
 	    attraction.unk3 = 0;
-	    attraction.unk6 = 4960;
+	    attraction.unk6 = r3::Constants::Attraction::BaseUpkeep::Other;
 	    attraction.unk10 = -1;
-	    attraction.unk11 = 1;
-	    attraction.unk12 = 0;
+	    attraction.addonascn = r3::Constants::Addon::Soaked;
+	    attraction.unk12 = r3::Constants::Attraction::Unknown12::Default;
 
     };
-    void Fill(ChangingRoom* chg) {
+    void Fill(r3::ChangingRoom* chg) {
         chg->SID = NULL;
         chg->spline = NULL;
         attraction.Fill(chg->att);

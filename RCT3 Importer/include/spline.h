@@ -16,15 +16,13 @@
 
 #include "vertex.h"
 
+namespace r3 {
+
 /// Defines a spline node
 struct SplineNode {
-    VECTOR       pos;               ///< Location of node
-    VECTOR       cp1;            ///< Control point 1
-    VECTOR       cp2;            ///< Control point 2
-};
-
-struct SplineData {
-    unsigned char data[14];          ///< The data somehow encodes how things travel along a spline segmont.
+    VECTOR       pos;            ///< Location of node
+    VECTOR       cp1;            ///< Control point 1, relative to pos. Points to the previous node.
+    VECTOR       cp2;            ///< Control point 2, relative to pos. Points to the next node.
 };
 
 /*
@@ -41,23 +39,28 @@ struct SplineNode {
 };
 */
 
+struct SplineData {
+    uint8_t data[14];          ///< The data encodes how things travel along a spline segment.
+};
+
 /// Defines a spline
 /**
  * The exact spline type is so far unknown
  */
 struct Spline {
-    unsigned long    nodecount;       ///< A count
+    uint32_t         nodecount;       ///< A count
     SplineNode*      nodes;           ///< Pointer to a list of SplineNode structures.
-    unsigned long    cyclic;          ///< 0 for open spliens, 1 for cyclic splines
-    float            totallength;
-    float            inv_totallength; ///< Inverse of total length
-    float*           lengths;         ///< The distance between each spline node point.
+    uint32_t         cyclic;          ///< 0 for open splines, 1 for cyclic splines
+    float_t          totallength;
+    float_t          inv_totallength; ///< Inverse of total length
+    float_t*         lengths;         ///< The distance between each spline node point.
                                       /**
                                        * number of lengths is nodecount - 1 for open and nodecount for cyclic splines
                                        */
     SplineData*      datas;               ///< Pointer to SplineData, 14 bytes/length
-    float            max_y;
+    float_t          max_y;
 };
 
+}
 
 #endif

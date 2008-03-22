@@ -37,8 +37,6 @@
 #include "ManagerOVL.h"
 #include "ManagerCommon.h"
 
-using namespace std;
-
 class cCarriedItemUnknowns {
 public:
     unsigned long unk1;             // Always 1
@@ -56,7 +54,7 @@ public:
         unk28 = 0;
         unk33 = 0;
     }
-    void Fill(CarriedItem* cid) {
+    void Fill(r3::CarriedItem* cid) {
         cid->unk1 = unk1;
         cid->unk3 = unk3;
         cid->unk26 = unk26;
@@ -79,7 +77,7 @@ public:
         unk19 = 100;
         unk20 = 100;
     }
-    void Fill(CarriedItem* cid) {
+    void Fill(r3::CarriedItem* cid) {
         cid->unk17 = unk17;
         cid->unk18 = unk18;
         cid->unk19 = unk19;
@@ -99,7 +97,7 @@ public:
     cCarriedItemSoaked() {
         unk38 = 0;
     }
-    void Fill(CarriedItem* cid) {
+    void Fill(r3::CarriedItem* cid) {
         cid->unk38 = unk38;
     }
 };
@@ -114,7 +112,7 @@ public:
         trash1 = 0.0;
         trash2 = -1;
     }
-    void Fill(CarriedItem* cid) {
+    void Fill(r3::CarriedItem* cid) {
         cid->wrapper = NULL;
         cid->trash1 = trash1;
         cid->trash2 = trash2;
@@ -131,14 +129,14 @@ public:
     float lightprotectionfactor;    // 0.0 usually, 4.0, 15.0 and 50.0 for the respective sunblockers
 
     cCarriedItemSettings() {
-        flags = CARRIEDITEM_SOUVENIR;
+        flags = r3::Constants::CarriedItem::Flag::Souvenir;
         ageclass = -1;
-        type = CARRIEDITEM_TYPE_HAND | CARRIEDITEM_TYPE_BODY;
+        type = r3::Constants::CarriedItem::Type::Hand | r3::Constants::CarriedItem::Type::Body;
         hunger = 0.0;
         thirst = 0.0;
         lightprotectionfactor = 0.0;
     }
-    void Fill(CarriedItem* cid) {
+    void Fill(r3::CarriedItem* cid) {
         cid->flags = flags;
         cid->ageclass = ageclass;
         cid->type = type;
@@ -173,7 +171,7 @@ public:
         scalex = 0.75;
         scaley = 0.75;
     }
-    void Fill(CarriedItem* cid) {
+    void Fill(r3::CarriedItem* cid) {
         cid->unk9 = unk9;
         cid->defaultcolour = defaultcolour;
         cid->shaped = shaped;
@@ -203,7 +201,7 @@ public:
     cCarriedItem() {
         addonpack = 0;
     }
-    void Fill(CarriedItem* cid) {
+    void Fill(r3::CarriedItem* cid) {
         cid->addonpack = addonpack;
         cid->name = NULL;
         cid->pluralname = NULL;

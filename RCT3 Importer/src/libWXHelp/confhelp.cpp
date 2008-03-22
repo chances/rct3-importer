@@ -12,11 +12,11 @@
 #include "confhelp.h"
 
 template <>
-MATRIX wxcRead(const wxString& path, const MATRIX& def) {
+r3::MATRIX wxcRead(const wxString& path, const r3::MATRIX& def) {
     wxConfigBase* conf = wxConfigBase::Get(false);
     if (!conf)
         return def;
-    MATRIX val;
+    r3::MATRIX val;
     double v, d;
     for (int x = 0; x < 4; ++x) {
         for (int y = 0; y < 4; ++y) {
@@ -31,7 +31,7 @@ MATRIX wxcRead(const wxString& path, const MATRIX& def) {
 }
 
 template <>
-bool wxcWrite(const wxString& path, const MATRIX& val) {
+bool wxcWrite(const wxString& path, const r3::MATRIX& val) {
     wxConfigBase* conf = wxConfigBase::Get(false);
     if (!conf)
         return false;

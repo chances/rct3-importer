@@ -41,12 +41,27 @@ public:
         OPT_NONE =                               0,
         OPT_DETERMINE_NODE_BY_XPATH =       1 << 0, ///< Use XPath query to determine nodes for errors
     };
+    enum {
+        VAL_NONE =                       0,
+        VAL_RELAXNG =                   10,
+        VAL_SCHEMATRON =                20,
+        VAL_RNV_UNSPECIFIED =           30,
+        VAL_RNV_RNC,
+        VAL_RNV_RNG,
+        VAL_RNV_SHORTHAND,
+        VAL_RNV_EXAMPLOTRON,
+        VAL_RNV_END =                   40,
+        VAL_ISOSCHEMATRON =             40,
+        VAL_UNIVERSAL =         0x00010000,
+        VAL_PLUS_SCHEMATRON =   0x00020000
+    };
 
     cXmlValidator(){}
     virtual ~cXmlValidator(){}
 
     virtual int validate(boost::shared_ptr<xmlDoc>& doc, int options = OPT_NONE) = 0;
     virtual bool ok() const = 0;
+    virtual int getType() const = 0;
 };
 
 } // Namespace

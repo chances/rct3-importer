@@ -37,9 +37,6 @@
 #include "ManagerOVL.h"
 #include "ManagerCommon.h"
 
-using namespace std;
-
-
 class cSpecialAttraction {
 public:
     string name;
@@ -47,18 +44,23 @@ public:
     string sid;
 
     cSpecialAttraction() {
-	    attraction.type = ATTRACTION_TYPE_Special_Toilet | ATTRACTION_TYPE_Wild;
-	    attraction.unk6 = 4960;
-	    attraction.unk12 = 0;
+	    attraction.type = r3::Constants::Attraction::Type::Special_Toilet | r3::Constants::Addon::Wild_Hi;
+	    attraction.unk6 = r3::Constants::Attraction::BaseUpkeep::Other;
+	    attraction.unk12 = r3::Constants::Attraction::Unknown12::Default;
     };
-    void Fill(SpecialAttractionA* sp) {
+    void Fill(r3::SpecialAttractionA* sp) {
         sp->Name = NULL;
         sp->Description = NULL;
         sp->GSI = NULL;
         sp->spline = NULL;
         attraction.Fill(sp);
     }
-    void Fill(SpecialAttractionB* sp) {
+    void Fill(r3::SpecialAttractionB* sp) {
+        if ((attraction.type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
+            sp->unk = r3::Constants::Addon::Wild;
+        } else {
+            sp->unk = r3::Constants::Addon::Soaked;
+        }
         attraction.Fill(sp->att);
     }
 };

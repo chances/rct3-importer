@@ -16,6 +16,8 @@
 #include "guiicon.h"
 #include "staticshape.h"
 
+namespace r3 {
+
 struct CarriedItemExtra
 {
     unsigned long unk1; // 0
@@ -27,6 +29,8 @@ struct CarriedItemExtra
 	float unk7;         // 0.0 usually, 0.3 for Parmesan, Chilli, ChilliSauce and Marshmellow. Nausea?
 };
 
+
+/*
 // Carrieditem flags
 #define CARRIEDITEM_NOTSOLD         0x00000000  // None of the other < 0x1000
                                                 // Used in Autograph, Camera, Camcorder, GolfBall,
@@ -56,7 +60,7 @@ struct CarriedItemExtra
 #define CARRIEDITEM_TYPE_HEAD           8
 #define CARRIEDITEM_TYPE_SUNGLASSES     16
 #define CARRIEDITEM_TYPE_SWIMSUIT       36
-
+*/
 
 struct CarriedItem
 {
@@ -66,8 +70,8 @@ struct CarriedItem
         wchar_t* name;
         wchar_t* pluralname;
         GUISkinItem *GSI;               // :gsi for none 40x40
-        StaticShape1 *shape1;           // So far shape2 always matches shape1
-        StaticShape1 *shape2;           // Seems like alpha textures don't work, at least not with full alpha range
+        StaticShape *shape1;            // So far shape2 always matches shape1
+        StaticShape *shape2;            // Seems like alpha textures don't work, at least not with full alpha range
         float unk9;                     // 0.0 for hidden items, 40.0 usually for shape items, 200.0 for billboard items. Probably a LOD distance
         CarriedItem *wrapper;           // Used up version or open umbrella, :cid for none
         unsigned long flags;            // see above
@@ -101,6 +105,8 @@ struct CarriedItem
         char* textureoption;            // "Inflatable", "DefaultFlexiColours" (Sunglasses), "SwimSuitV1" or "SwimSuitV2"
 //        CarriedItemExtra* carried;
 //        StaticShape1* shape3;
+};
+
 };
 
 #endif

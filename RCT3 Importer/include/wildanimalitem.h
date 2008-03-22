@@ -28,13 +28,15 @@
 #include "guiicon.h"
 #include "staticshape.h"
 
+namespace r3 {
+
 struct WildAnimalItem {
     unsigned long unk1;         // 0
     unsigned long unk2;         // 2
     unsigned long unk3;         // 2
     unsigned long unk4;         // 2
     char* shortname;            // Short name of the item
-    StaticShape1* staticshape;
+    StaticShape* staticshape;
     float distance;             // Probably a lod distance. Always 200.0
     long cost;
     long refund;                // In contrast to scenery items, this IS a refund (positive = money back)
@@ -62,6 +64,8 @@ struct WildAnimalItem {
                                 // 4 Big animals
     wchar_t* description;
     float weight;               // Guess. Between 0.2 and 1.0.
+};
+
 };
 
 #endif

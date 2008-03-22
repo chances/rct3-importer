@@ -47,7 +47,7 @@ class cStaticShape2;
 
 class c3DMesh {
 public:
-    std::vector<VERTEX2> m_vertices;
+    std::vector<r3::VERTEX2> m_vertices;
     std::vector<unsigned long> m_indices;
     wxString m_name;
     unsigned long m_flag;
@@ -131,21 +131,21 @@ public:
     virtual bool IsObjectValid(unsigned int index) {
         return (index>=m_meshes.size())?false:m_meshes[index].m_flag;
     };
-    virtual VERTEX GetObjectVertex(unsigned int mesh, unsigned int vertex);
-    virtual bool FetchObject(unsigned int index, unsigned long *vertexcount, VERTEX **vertices, unsigned long *index_count, unsigned long **indices, VECTOR *bbox_min, VECTOR *bbox_max, const MATRIX *transform, VECTOR *fudge_normal = NULL);
-    virtual bool FetchAsAnimObject(unsigned int index, char bone, unsigned long *vertexcount, VERTEX2 **vertices, unsigned long *index_count, unsigned short **indices, VECTOR *bbox_min, VECTOR *bbox_max, const MATRIX *transform, VECTOR *fudge_normal = NULL);
-    virtual bool FetchObject(unsigned int index, cStaticShape2* sh, VECTOR *bbox_min, VECTOR *bbox_max, const MATRIX *transform, VECTOR *fudge_normal = NULL);
-    virtual bool FetchObject(unsigned int index, char bone, cBoneShape2* sh, VECTOR *bbox_min, VECTOR *bbox_max, const MATRIX *transform, VECTOR *fudge_normal = NULL);
-    virtual bool FetchObject(unsigned int index, cBoneShape2* sh, VECTOR *bbox_min, VECTOR *bbox_max, const MATRIX *transform, VECTOR *fudge_normal = NULL);
+    virtual r3::VERTEX GetObjectVertex(unsigned int mesh, unsigned int vertex);
+    virtual bool FetchObject(unsigned int index, unsigned long *vertexcount, r3::VERTEX **vertices, unsigned long *index_count, unsigned long **indices, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
+    virtual bool FetchAsAnimObject(unsigned int index, char bone, unsigned long *vertexcount, r3::VERTEX2 **vertices, unsigned long *index_count, unsigned short **indices, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
+    virtual bool FetchObject(unsigned int index, cStaticShape2* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
+    virtual bool FetchObject(unsigned int index, char bone, cBoneShape2* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
+    virtual bool FetchObject(unsigned int index, cBoneShape2* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
 
     virtual int GetType() {return C3DLOADER_GENERIC;};
     virtual STRING3D GetName() {return m_name;};
     virtual c3DLoaderOrientation GetOrientation() {return ORIENTATION_UNKNOWN;};
 
-    static void FlattenNormals(const unsigned long vertexcount, VERTEX *vertices, const VECTOR& bbox_min, const VECTOR& bbox_max);
-    static void FlattenNormals(const unsigned long vertexcount, VERTEX2 *vertices, const VECTOR& bbox_min, const VECTOR& bbox_max);
-    static void FlattenNormals(cStaticShape2* sh, const VECTOR& bbox_min, const VECTOR& bbox_max);
-    static void FlattenNormals(cBoneShape2* sh, const VECTOR& bbox_min, const VECTOR& bbox_max);
+    static void FlattenNormals(const unsigned long vertexcount, r3::VERTEX *vertices, const r3::VECTOR& bbox_min, const r3::VECTOR& bbox_max);
+    static void FlattenNormals(const unsigned long vertexcount, r3::VERTEX2 *vertices, const r3::VECTOR& bbox_min, const r3::VECTOR& bbox_max);
+    static void FlattenNormals(cStaticShape2* sh, const r3::VECTOR& bbox_min, const r3::VECTOR& bbox_max);
+    static void FlattenNormals(cBoneShape2* sh, const r3::VECTOR& bbox_min, const r3::VECTOR& bbox_max);
     static counted_ptr<c3DLoader>& LoadFile(const wxChar *filename);
     static void ClearCache();
 };

@@ -7,6 +7,9 @@
 	Software Foundation; either version 2, or (at your option) any later
 	version. See the file COPYING for more details.
 */
+
+#include <vector>
+
 class AttractionData {
 public:
     char *name;
@@ -18,7 +21,7 @@ public:
     char *sid;
     AttractionData(char *Name,unsigned long AttractionType,char *NameString,char *DescriptionString,unsigned long Unk2,long Unk3,char *SID);
     ~AttractionData();
-    static vector<AttractionData *> Attractions;
+    static std::vector<AttractionData *> Attractions;
     static int LoaderNumber;
     static unsigned long ComputeSize();
     static void AddData(unsigned long *data);

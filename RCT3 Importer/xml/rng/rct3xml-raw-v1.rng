@@ -766,7 +766,7 @@
             <ref name="TXSReference"></ref>
           </attribute>
           <optional>
-            <attribute name="placing">
+            <attribute name="transparency">
               <choice>
                 <value type="unsignedInt">0</value>
                 <value type="unsignedInt">1</value>
@@ -1566,11 +1566,6 @@
           <element name="slopestraight">
             <data type="string"></data>
           </element>
-          <optional>
-            <element name="slopestraight">
-              <data type="string"></data>
-            </element>
-          </optional>
         </interleave>
       </element>
     </define>
@@ -1635,7 +1630,7 @@
             <ref name="TXSReference"></ref>
           </attribute>
           <optional>
-            <attribute name="placing">
+            <attribute name="transparency">
               <choice>
                 <value type="unsignedInt">0</value>
                 <value type="unsignedInt">1</value>
@@ -1774,6 +1769,9 @@
             </optional>
             <optional>
               <ref name="sidstallunknowns"></ref>
+            </optional>
+            <optional>
+              <ref name="sidextra"></ref>
             </optional>
             <zeroOrMore>
               <ref name="sidvisual"></ref>
@@ -1979,6 +1977,24 @@
               <data type="unsignedInt"></data>
             </attribute>
           </optional>
+        </element>
+      </define>
+      <define name="sidextra">
+        <element name="sidextra">
+          <ref name="baseattrs"></ref>
+	      <attribute name="version">
+	        <data type="unsignedInt"></data>
+	      </attribute>
+	      <optional>
+	      	<attribute name="addonpack">
+		      <data type="unsignedInt"></data>
+	      	</attribute>
+	      </optional>
+	      <optional>
+	      	<attribute name="billboardaspect">
+		      <data type="int"></data>
+	      	</attribute>
+	      </optional>
         </element>
       </define>
       <define name="sidvisual">

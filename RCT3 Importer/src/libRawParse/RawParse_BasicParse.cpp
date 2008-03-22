@@ -107,12 +107,13 @@ long cRawParser::ParseSigned(const cXmlNode& node, const wxString& nodes, const 
 }
 
 double cRawParser::ParseFloat(const cXmlNode& node, const wxString& nodes, const wxString& attribute) {
-    wxString t(node.getPropVal(attribute.mb_str(wxConvUTF8)).c_str(), wxConvUTF8);
+    wxString t = node.wxgetPropVal(attribute);
     MakeVariable(t);
     double i;
     if (t.IsEmpty())
         throw RCT3Exception(nodes+_(" tag misses ") + attribute + _(" attribute."));
-    if (!t.ToDouble(&i))
+    string ts = static_cast<const char*>(t.utf8_str());
+    if (!parseFloat(ts, i))
         throw RCT3InvalidValueException(nodes+_(" tag, ") + attribute + _(" attribute: invalid value ")+t);
     return i;
 }
@@ -127,28 +128,28 @@ void cRawParser::ParseMatrix(const cXmlNode& node, MATRIX& m, const wxString& no
     m = matrixGetUnity();
 
     bool missrow[4] = {true, true, true, true};
-    wxString temp;
+    string temp;
     cXmlNode child(node.children());
     while(child) {
         if (child("row1")) {
             missrow[0] = false;
-            temp = wxString(child.content().c_str(), wxConvUTF8);
-            if (sscanf(temp.mb_str(wxConvLocal), "%f %f %f %f", &m._11, &m._12, &m._13, &m._14) != 4)
+            temp = child.content();
+            if (!parseMatrixRow(temp, m._11, m._12, m._13, m._14))
                 throw RCT3InvalidValueException(nodes+_(" tag, row1: invalid content: ")+temp);
         } else if (child("row2")) {
             missrow[1] = false;
-            temp = wxString(child.content().c_str(), wxConvUTF8);
-            if (sscanf(temp.mb_str(wxConvLocal), "%f %f %f %f", &m._21, &m._22, &m._23, &m._24) != 4)
+            temp = child.content();
+            if (!parseMatrixRow(temp, m._21, m._22, m._23, m._24))
                 throw RCT3InvalidValueException(nodes+_(" tag, row2: invalid content: ")+temp);
         } else if (child("row3")) {
             missrow[2] = false;
-            temp = wxString(child.content().c_str(), wxConvUTF8);
-            if (sscanf(temp.mb_str(wxConvLocal), "%f %f %f %f", &m._31, &m._32, &m._33, &m._34) != 4)
+            temp = child.content();
+            if (!parseMatrixRow(temp, m._31, m._32, m._33, m._34))
                 throw RCT3InvalidValueException(nodes+_(" tag, row3: invalid content: ")+temp);
         } else if (child("row4")) {
             missrow[3] = false;
-            temp = wxString(child.content().c_str(), wxConvUTF8);
-            if (sscanf(temp.mb_str(wxConvLocal), "%f %f %f %f", &m._41, &m._42, &m._43, &m._44) != 4)
+            temp = child.content();
+            if (!parseMatrixRow(temp, m._41, m._42, m._43, m._44))
                 throw RCT3InvalidValueException(nodes+_(" tag, row4: invalid content: ")+temp);
         } else if (child.is(XML_ELEMENT_NODE)) {
             throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in %s."), STRING_FOR_FORMAT(child.name()), nodes.c_str()));

@@ -33,35 +33,33 @@
 #include "boneanim.h"
 #include "vertex.h"
 
+using namespace r3;
 using namespace std;
 using namespace boost::spirit;
 
 bool parseFloat(std::string& str, float& a) {
-    using namespace boost::spirit;
-
     boost::algorithm::trim(str);
     real_parser<float, real_parser_policies<float> > real_pf;
     return parse(str.c_str(), real_pf[assign_a(a)], space_p).full;
 }
 
-bool parseULong(std::string& str, unsigned long& a) {
-    using namespace boost::spirit;
+bool parseFloat(std::string& str, double& a) {
+    boost::algorithm::trim(str);
+    return parse(str.c_str(), real_p[assign_a(a)], space_p).full;
+}
 
+bool parseULong(std::string& str, unsigned long& a) {
     boost::algorithm::trim(str);
     return parse(str.c_str(), uint_p[assign_a(a)], space_p).full;
 }
 
 bool parseMatrixRow(std::string& str, float& a, float& b, float& c, float& d) {
-    using namespace boost::spirit;
-
     boost::algorithm::trim(str);
     real_parser<float, real_parser_policies<float> > real_pf;
     return parse(str.c_str(), real_pf[assign_a(a)] >> real_pf[assign_a(b)] >> real_pf[assign_a(c)] >> real_pf[assign_a(d)], space_p).full;
 }
 
 bool parseMatrix(std::string& str, MATRIX& m) {
-    using namespace boost::spirit;
-
     boost::algorithm::trim(str);
     real_parser<float, real_parser_policies<float> > real_pf;
     return parse(str.c_str(),
@@ -73,8 +71,6 @@ bool parseMatrix(std::string& str, MATRIX& m) {
 }
 
 bool parseCompilerVector(std::string& str, txyz& v) {
-    using namespace boost::spirit;
-
     boost::algorithm::trim(str);
     real_parser<float, real_parser_policies<float> > real_pf;
     return parse(str.c_str(), real_pf[assign_a(v.X)] >> real_pf[assign_a(v.Y)] >> real_pf[assign_a(v.Z)], space_p).full;

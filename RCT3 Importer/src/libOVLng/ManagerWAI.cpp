@@ -34,6 +34,8 @@
 #include "ManagerTXT.h"
 #include "OVLException.h"
 
+using namespace r3;
+
 const char* ovlWAIManager::LOADER = "FGDK";
 const char* ovlWAIManager::NAME = "WildAnimalItem";
 const char* ovlWAIManager::TAG = "wai";

@@ -36,6 +36,8 @@
 #include "ManagerFTX.h"
 #include "OVLException.h"
 
+using namespace r3;
+
 const char* ovlSVDManager::NAME = "SceneryItemVisual";
 const char* ovlSVDManager::TAG = "svd";
 
@@ -131,13 +133,13 @@ void ovlSVDManager::Make(cOvlInfo* info) {
             // StaticShape
             if (it->second.lods[s].staticshape != "") {
                 GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.lods[s].staticshape.c_str(), ovlSHSManager::TAG),
-                                     reinterpret_cast<unsigned long*>(&c_svd->LODMeshes[s]->StaticShape));
+                                     reinterpret_cast<unsigned long*>(&c_svd->LODMeshes[s]->ss));
             }
 
             // BoneShape
             if (it->second.lods[s].boneshape != "") {
                 GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.lods[s].boneshape.c_str(), ovlBSHManager::TAG),
-                                     reinterpret_cast<unsigned long*>(&c_svd->LODMeshes[s]->BoneShape));
+                                     reinterpret_cast<unsigned long*>(&c_svd->LODMeshes[s]->bs));
             }
 
             // Billboard

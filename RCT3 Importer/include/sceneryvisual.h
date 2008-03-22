@@ -15,6 +15,8 @@
 #include "boneshape.h"
 #include "staticshape.h"
 
+namespace r3 {
+
 #define SVDLOD_MESHTYPE_STATIC     0
 #define SVDLOD_MESHTYPE_ANIMATED   3
 #define SVDLOD_MESHTYPE_BILLBOARD  4
@@ -23,9 +25,9 @@ struct SceneryItemVisualLOD
 {
 	unsigned long MeshType; //seems to be flag for what type of mesh this is, 0 = StaticShape, 3 = BoneShape, 4 = Billboard
 	char *LODName;
-	StaticShape1 *StaticShape; //Set to 0 in disk files, is the StaticStape for static meshes in ram
+	StaticShape *ss; //Set to 0 in disk files, is the StaticStape for static meshes in ram
 	unsigned long unk2; //seen 0 so far
-	BoneShape1 *BoneShape; //Set to 0 in disk files, is the BoneStape for animated meshes in ram
+	BoneShape* bs; //Set to 0 in disk files, is the BoneStape for animated meshes in ram
 	unsigned long unk4; //seen 0 so far
 	FlexiTextureInfoStruct *fts; //Set to 0 in disk files, is the FlexiTexture for a billboard object
 	unsigned long *TextureData; //Set to 0 in disk files, is the Texture Style for a billboard object, is always BillboardStandard.
@@ -81,6 +83,8 @@ struct SceneryItemVisualC {
     SceneryItemVisual vA;
     unsigned long unk12;
     unsigned long unk13;
+};
+
 };
 
 #endif

@@ -49,6 +49,7 @@
 #define MAX_PATH 256
 #endif
 
+using namespace r3;
 using namespace xmlcpp;
 
 bool cSCNFile::CheckForModelNameDuplicates() {
@@ -2701,7 +2702,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
 
                 tex.flip();
 
-                if (i_ftxfr->recolorable() && (tex.type() != Magick::PaletteType)) {
+                if (i_ftxfr->recolorable() && ((tex.type() != Magick::PaletteType) || (tex.magick()==wxT("PNG")))) {
                     memcpy(c_fts.palette.get(), cFlexiTexture::GetRGBPalette(), 256 * sizeof(COLOURQUAD));
                     tex.GetAs8bitForced(c_fts.texture.get(), c_fts.palette.get(), true);
                     memcpy(c_fts.palette.get(), cFlexiTexture::GetBMYPalette(), 256 * sizeof(COLOURQUAD));

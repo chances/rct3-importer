@@ -33,6 +33,8 @@
 
 #include "OVLException.h"
 
+using namespace r3;
+
 #ifdef __BORLANDC__
 inline float roundf (float f) {
 	float t = floor(f);

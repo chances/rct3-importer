@@ -36,6 +36,8 @@
 #include "ManagerTXT.h"
 #include "OVLException.h"
 
+using namespace r3;
+
 const char* ovlSTAManager::LOADER = "FGDK";
 const char* ovlSTAManager::NAME = "Stall";
 const char* ovlSTAManager::TAG = "sta";
@@ -56,13 +58,13 @@ void ovlSTAManager::AddStall(const cStall& stall) {
     m_stalls[stall.name] = stall;
 
     // The following depends on the type of stall structure we want to write
-    if (stall.attraction.type & 0x200) {
+    if (stall.attraction.type & r3::Constants::Addon::Soaked_Hi) {
         // Stall2
         m_size += sizeof(StallB);
-        if ((stall.attraction.type & ATTRACTION_TYPE_Wild) == ATTRACTION_TYPE_Wild) {
-            m_size += sizeof(AttractionB);
+        if ((stall.attraction.type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
+            m_size += sizeof(Attraction_W);
         } else {
-            m_size += sizeof(AttractionA);
+            m_size += sizeof(Attraction_S);
         }
     } else {
         // Stall
@@ -102,17 +104,17 @@ void ovlSTAManager::Make(cOvlInfo* info) {
     unsigned char* c_data = m_data;
 
     for (map<string, cStall>::iterator it = m_stalls.begin(); it != m_stalls.end(); ++it) {
-        if (it->second.attraction.type & 0x200) {
+        if (it->second.attraction.type & r3::Constants::Addon::Soaked_Hi) {
             // Stall2
             // Assign structs
             StallB* c_stall = reinterpret_cast<StallB*>(c_data);
             c_data += sizeof(StallB);
 
-            c_stall->att = reinterpret_cast<AttractionA*>(c_data);
-            if ((it->second.attraction.type & ATTRACTION_TYPE_Wild) == ATTRACTION_TYPE_Wild) {
-                c_data += sizeof(AttractionB);
+            c_stall->att = reinterpret_cast<Attraction_S*>(c_data);
+            if ((it->second.attraction.type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
+                c_data += sizeof(Attraction_W);
             } else {
-                c_data += sizeof(AttractionA);
+                c_data += sizeof(Attraction_S);
             }
             GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_stall->att));
 
@@ -131,15 +133,15 @@ void ovlSTAManager::Make(cOvlInfo* info) {
             GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_stall), false, c_symbol);
 
             GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.name.c_str(), ovlTXTManager::TAG),
-                                 reinterpret_cast<unsigned long*>(&c_stall->att->Name));
+                                 reinterpret_cast<unsigned long*>(&c_stall->att->v.name_ref));
             GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.description.c_str(), ovlTXTManager::TAG),
-                                 reinterpret_cast<unsigned long*>(&c_stall->att->Description));
+                                 reinterpret_cast<unsigned long*>(&c_stall->att->v.description_ref));
             GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.sid.c_str(), ovlSIDManager::TAG),
                                  reinterpret_cast<unsigned long*>(&c_stall->SID));
             GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.icon.c_str(), ovlGSIManager::TAG),
-                                 reinterpret_cast<unsigned long*>(&c_stall->att->GSI));
+                                 reinterpret_cast<unsigned long*>(&c_stall->att->v.icon_ref));
             GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.spline.c_str(), ovlSPLManager::TAG),
-                                 reinterpret_cast<unsigned long*>(&c_stall->att->spline));
+                                 reinterpret_cast<unsigned long*>(&c_stall->att->v.spline_ref));
             unsigned long c = 0;
             for (vector<cStallItem>::iterator iit = it->second.items.begin(); iit != it->second.items.end(); ++iit) {
                 GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(iit->item.c_str(), ovlCIDManager::TAG),

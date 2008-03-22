@@ -14,40 +14,46 @@
 #include "vertex.h"
 #include "flexitexture.h"
 
+namespace r3 {
+
 struct Triangle2 {
-    unsigned short a;
-    unsigned short b;
-    unsigned short c;
+    uint16_t a;
+    uint16_t b;
+    uint16_t c;
 };
 
-struct BoneShape2 {
-	unsigned long unk1; //always 0xFFFFFFFFF
-	FlexiTextureInfoStruct *fts; //is 0 in disk files
-	unsigned long *TextureData; //is 0 in disk files
-	unsigned long PlaceTexturing; //0 = dont see texturing on things when being placed, 1 = see texturing on things when being placed
-	unsigned long textureflags; //always 0
-	unsigned long sides; //seen values of 3 or 1 for this, 3 is more common
-	unsigned long VertexCount;
-	unsigned long IndexCount;
-	VERTEX2 *Vertexes;
-	unsigned short *Triangles;
+struct BoneShapeMesh {
+	uint32_t                support_type;       ///< was unk1
+	FlexiTextureInfoStruct* ftx_ref;
+	void*                   txs_ref;            ///< was TextureData
+	uint32_t                transparency;       ///< was PlaceTexturing
+	uint32_t                texture_flags;
+	uint32_t                sides;
+	uint32_t                vertex_count;
+	uint32_t                index_count;
+	VERTEX2*                vertexes;
+	uint16_t*               indices;
 };
+
 struct BoneStruct {
-	char *BoneName;
-	unsigned long ParentBoneNumber;
+	char*       bone_name;
+	uint32_t    parent_bone_number;
 };
-struct BoneShape1 {
-	VECTOR BoundingBox1;
-	VECTOR BoundingBox2;
-	unsigned long TotalVertexCount;
-	unsigned long TotalIndexCount;
-	unsigned long MeshCount2;
-	unsigned long MeshCount;
-	BoneShape2 **sh;
-	unsigned long BoneCount;
-	BoneStruct *Bones;
-	MATRIX *BonePositions1;
-	MATRIX *BonePositions2;
+
+struct BoneShape {
+	VECTOR              bounding_box_min;       ///< Was 1
+	VECTOR              bounding_box_max;       ///< Was 2
+	uint32_t            total_vertex_count;
+	uint32_t            total_index_count;
+	uint32_t            mesh_count2;
+	uint32_t            mesh_count;
+	BoneShapeMesh**     sh;
+	uint32_t            bone_count;
+	BoneStruct*         bones;
+	MATRIX*             bone_positions1;
+	MATRIX*             bone_positions2;
+};
+
 };
 
 #endif

@@ -227,6 +227,13 @@ std::string cXmlDoc::searchNs(const std::string& prefix, xmlNodePtr node) {
     }
 }
 
+xmlNsPtr cXmlDoc::searchNsByHref(const std::string& href, xmlNodePtr node) {
+    if (!m_doc)
+        throw eXmlInvalid("Tried to search namespace for bad document");
+
+    return xmlSearchNsByHref(m_doc.get(), node?node:xmlDocGetRootElement(m_doc.get()), reinterpret_cast<const xmlChar*>(href.c_str()));
+}
+
 xmlNsPtr cXmlDoc::getNs(const std::string& prefix, xmlNodePtr node) {
     if (!m_doc)
         throw eXmlInvalid("Tried to search namespace for bad document");

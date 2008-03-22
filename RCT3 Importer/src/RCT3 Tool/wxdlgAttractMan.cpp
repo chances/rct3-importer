@@ -37,6 +37,8 @@
 #include "wxdlgAttract.h"
 #include "stall.h"
 
+using namespace r3;
+
 extern std::vector <AttractionStr *> Attractions;
 extern bool save;
 int CurrentAttraction;

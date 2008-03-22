@@ -520,6 +520,9 @@ int main(int argc, char **argv)
         fprintf(stderr, "Failed to load debug library!\n");
 #endif
 
+    wxLocale loc(wxLANGUAGE_ENGLISH);
+    //wxLogMessage(wxString::Format(wxT("%f"), 1.25));
+
     // *&^$% GraphicsMagick
     wxFileName app = wxString(wxArgv[0]);
     wxString appenv = wxT("MAGICK_CONFIGURE_PATH=") + app.GetPathWithSep();

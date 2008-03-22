@@ -46,6 +46,8 @@
 #include "wxdlgMatrixLoad.h"
 #include "wxdlgModel.h"
 
+using namespace r3;
+
 ////////////////////////////////////////////////////////////////////////
 //
 //  dlgPosition
