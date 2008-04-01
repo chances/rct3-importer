@@ -6,6 +6,10 @@
                          e-mail: kohsukekawaguchi@yahoo.com
 
 	$Log: ShortRNG.xsl,v $
+	Revision 1.4  2008-03-30 Tobias Minich
+	Fixed occurs/minOccurs/maxOccurs appearing in output when used with type
+	Added ref attribute. Works like type, adds a ref child node with the respective name attribute.
+	
 	Revision 1.2  2001-08-17 11:30:00-07  bear
 	supported <element> with @type.
 
@@ -15,8 +19,9 @@
 -->
 <x:stylesheet
 	xmlns:x="http://www.w3.org/1999/XSL/Transform"
-	xmlns="http://relaxng.org/ns/structure/0.9"
+	xmlns="http://relaxng.org/ns/structure/1.0"
 	xmlns:s="http://relaxng.sourceforge.net/ns/shorthand"
+	exclude-result-prefixes="s"
 	version="1.0">
 	
 	<x:output encoding="utf-8" indent="yes"/>
@@ -124,17 +129,24 @@
 	</x:template>
 	
 	
+	<!-- pattern with @ref -->
+	<x:template match="s:*[@ref]" mode="pass2">
+		<x:element name="{local-name()}">
+			<x:apply-templates select="@*[(name() != 'minOccurs') and (name() != 'maxOccurs') and (name() != 'occurs')]|*|text()|comment()" mode="pass3"/>
+			<ref name="{@ref}"/>
+		</x:element>
+	</x:template>
 	<!-- attribute with @type -->
 	<x:template match="s:attribute[@type]" mode="pass2">
 		<attribute>
-			<x:apply-templates select="@*|*|text()|comment()" mode="pass3"/>
+			<x:apply-templates select="@*[(name() != 'minOccurs') and (name() != 'maxOccurs') and (name() != 'occurs')]|*|text()|comment()" mode="pass3"/>
 			<data type="{@type}"/>
 		</attribute>
 	</x:template>
 	<!-- element with @type -->
 	<x:template match="s:element[@type]" mode="pass2">
 		<element>
-			<x:apply-templates select="@*|*|text()|comment()" mode="pass3"/>
+			<x:apply-templates select="@*[(name() != 'minOccurs') and (name() != 'maxOccurs') and (name() != 'occurs')]|*|text()|comment()" mode="pass3"/>
 			<data type="{@type}"/>
 		</element>
 	</x:template>
@@ -147,10 +159,12 @@
 	<x:template match="s:element/@type" mode="pass3"/>
 	<!-- default element processing rule -->
 	<x:template match="s:*" mode="pass3">
-		<x:element name="{local-name(.)}"><x:apply-templates select="*|@*|text()|comment()"/></x:element>
+		<x:element name="{local-name(.)}"><x:apply-templates select="*|@*[(name() != 'minOccurs') and (name() != 'maxOccurs') and (name() != 'occurs')]|text()|comment()"/></x:element>
 	</x:template>
 	
 	
+	<!-- ignore @ref -->
+	<x:template match="@ref" mode="pass3"/>
 	<!-- ignore @occurs -->
 	<x:template match="@occurs"/>
 	<x:template match="@maxOccurs" mode="pass3"/>
