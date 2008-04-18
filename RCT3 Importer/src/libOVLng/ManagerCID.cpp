@@ -38,10 +38,72 @@
 #include "OVLException.h"
 
 using namespace r3;
+using namespace std;
 
 const char* ovlCIDManager::LOADER = "FGDK";
 const char* ovlCIDManager::NAME = "CarriedItem";
 const char* ovlCIDManager::TAG = "cid";
+
+void cCarriedItemUnknowns::Fill(r3::CarriedItem* cid) {
+    cid->unk1 = unk1;
+    cid->unk3 = unk3;
+    cid->unk26 = unk26;
+    cid->unk27 = unk27;
+    cid->unk28 = unk28;
+    cid->unk33 = unk33;
+}
+
+void cCarriedItemSizeUnknowns::Fill(r3::CarriedItem* cid) {
+    cid->unk17 = unk17;
+    cid->unk18 = unk18;
+    cid->unk19 = unk19;
+    cid->unk20 = unk20;
+}
+
+void cCarriedItemTrash::Fill(r3::CarriedItem* cid) {
+    cid->wrapper = NULL;
+    cid->trash1 = trash1;
+    cid->trash2 = trash2;
+}
+
+void cCarriedItemSettings::Fill(r3::CarriedItem* cid) {
+    cid->flags = flags;
+    cid->ageclass = ageclass;
+    cid->type = type;
+    cid->hunger = hunger;
+    cid->thirst = thirst;
+    cid->lightprotectionfactor = lightprotectionfactor;
+}
+
+void cCarriedItemShape::MakeBillboard() {
+    unk9 = 200.0;
+    defaultcolour = 7;
+    shaped = 0;
+    scalex = 0.75;
+    scaley = 0.75;
+}
+void cCarriedItemShape::Fill(r3::CarriedItem* cid) {
+    cid->unk9 = unk9;
+    cid->defaultcolour = defaultcolour;
+    cid->shaped = shaped;
+    cid->scalex = scalex;
+    cid->scaley = scaley;
+    cid->shape1 = NULL;
+    cid->shape2 = NULL;
+    cid->fts = NULL;
+}
+
+void cCarriedItem::Fill(r3::CarriedItem* cid) {
+    cid->addonpack = addonpack;
+    cid->name = NULL;
+    cid->pluralname = NULL;
+    shape.Fill(cid);
+    settings.Fill(cid);
+    trash.Fill(cid);
+    soaked.Fill(cid);
+    size.Fill(cid);
+    unknowns.Fill(cid);
+}
 
 void ovlCIDManager::AddItem(const cCarriedItem& item) {
     Check("ovlCIDManager::AddItem");

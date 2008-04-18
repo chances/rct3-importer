@@ -33,11 +33,9 @@
 
 #include "OVLClasses.h"
 
-using namespace std;
-
 class ovlRelocationManager {
 private:
-    queue<unsigned long *> m_relocations;
+    std::queue<unsigned long *> m_relocations;
     cOvlInfo* m_info;
 
     unsigned long DoRelocationForSaving(unsigned long *reloc, bool& common);

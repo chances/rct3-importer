@@ -36,10 +36,41 @@
 #include <sstream>
 
 using namespace r3;
+using namespace std;
 
 const char* ovlFTXManager::LOADER = "FGDK";
 const char* ovlFTXManager::NAME = "FlexiTexture";
 const char* ovlFTXManager::TAG = "ftx";
+
+void cFlexiTextureStruct::Fill(FlexiTextureStruct* fts) {
+    fts->scale = local_log2(dimension);
+    fts->width = dimension;
+    fts->height = dimension;
+    fts->Recolorable = recolourable;
+    memcpy(fts->palette, palette.get(), 256 * sizeof(r3::COLOURQUAD));
+    memcpy(fts->texture, texture.get(), dimension * dimension);
+    if (alpha.get()) {
+        memcpy(fts->alpha, alpha.get(), dimension * dimension);
+    } else {
+        fts->alpha = NULL;
+    }
+}
+
+void cFlexiTextureInfoStruct::Fill(FlexiTextureInfoStruct* fti) {
+    fti->scale = local_log2(dimension);
+    fti->width = dimension;
+    fti->height = dimension;
+    fti->fps = fps;
+    fti->Recolorable = recolourable;
+    fti->offsetCount = animation.size();
+    for (unsigned long i = 0; i < animation.size(); ++i) {
+        fti->offset1[i] = animation[i];
+    }
+    fti->fts2Count = frames.size();
+    for (unsigned long i = 0; i < frames.size(); ++i) {
+        frames[i].Fill(&fti->fts2[i]);
+    }
+}
 
 void ovlFTXManager::AddTexture(const cFlexiTextureInfoStruct& item) {
     Check("ovlFTXManager::AddTexture");

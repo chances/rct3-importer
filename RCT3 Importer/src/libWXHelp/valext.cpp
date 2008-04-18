@@ -130,6 +130,10 @@ bool wxExtendedValidator::Validate(wxWindow* parent) {
         value = (dynamic_cast<wxTextCtrl*>(m_validatorWindow))->GetValue();
     } else if (dynamic_cast<wxComboCtrl*>(m_validatorWindow)) {
         value = (dynamic_cast<wxComboCtrl*>(m_validatorWindow))->GetValue();
+    } else if (dynamic_cast<wxComboBox*>(m_validatorWindow)) {
+        value = (dynamic_cast<wxComboBox*>(m_validatorWindow))->GetValue();
+    } else if (dynamic_cast<wxChoice*>(m_validatorWindow)) {
+        value = (dynamic_cast<wxChoice*>(m_validatorWindow))->GetStringSelection();
     } else {
         return false;
     }
@@ -290,6 +294,46 @@ bool wxExtendedValidator::TransferToWindow(void) {
                 pControl->SetValue(m_pFileName->GetFullPath());
             }
         }
+    } else if (dynamic_cast<wxComboBox*>(m_validatorWindow)) {
+        wxComboBox *pControl = dynamic_cast<wxComboBox*>(m_validatorWindow);
+        if ( m_pFloat || m_pDouble ) {
+            pControl->SetValue(wxString::Format(wxT("%.*f"), m_precision, (m_pFloat)?(*m_pFloat):(*m_pDouble)));
+        } else if (m_pUChar) {
+            unsigned int t = *m_pUChar;
+            pControl->SetValue(wxString::Format(wxT("%u"), t));
+        } else if (m_pUInt) {
+            pControl->SetValue(wxString::Format(wxT("%u"), *m_pUInt));
+        } else if (m_pULong) {
+            pControl->SetValue(wxString::Format(wxT("%lu"), *m_pULong));
+        } else if (m_pString) {
+            pControl->SetValue(*m_pString);
+        } else if (m_pFileName) {
+            if (m_isDir) {
+                pControl->SetValue(m_pFileName->GetPathWithSep());
+            } else {
+                pControl->SetValue(m_pFileName->GetFullPath());
+            }
+        }
+    } else if (dynamic_cast<wxChoice*>(m_validatorWindow)) {
+        wxChoice *pControl = dynamic_cast<wxChoice*>(m_validatorWindow);
+        if ( m_pFloat || m_pDouble ) {
+            return pControl->SetStringSelection(wxString::Format(wxT("%.*f"), m_precision, (m_pFloat)?(*m_pFloat):(*m_pDouble)));
+        } else if (m_pUChar) {
+            unsigned int t = *m_pUChar;
+            return pControl->SetStringSelection(wxString::Format(wxT("%u"), t));
+        } else if (m_pUInt) {
+            return pControl->SetStringSelection(wxString::Format(wxT("%u"), *m_pUInt));
+        } else if (m_pULong) {
+            return pControl->SetStringSelection(wxString::Format(wxT("%lu"), *m_pULong));
+        } else if (m_pString) {
+            return pControl->SetStringSelection(*m_pString);
+        } else if (m_pFileName) {
+            if (m_isDir) {
+                return pControl->SetStringSelection(m_pFileName->GetPathWithSep());
+            } else {
+                return pControl->SetStringSelection(m_pFileName->GetFullPath());
+            }
+        }
     } else {
         return false;
     }
@@ -307,6 +351,10 @@ bool wxExtendedValidator::TransferFromWindow(void) {
         value = (dynamic_cast<wxTextCtrl*>(m_validatorWindow))->GetValue();
     } else if (dynamic_cast<wxComboCtrl*>(m_validatorWindow)) {
         value = (dynamic_cast<wxComboCtrl*>(m_validatorWindow))->GetValue();
+    } else if (dynamic_cast<wxComboBox*>(m_validatorWindow)) {
+        value = (dynamic_cast<wxComboBox*>(m_validatorWindow))->GetValue();
+    } else if (dynamic_cast<wxChoice*>(m_validatorWindow)) {
+        value = (dynamic_cast<wxChoice*>(m_validatorWindow))->GetStringSelection();
     } else {
         return false;
     }

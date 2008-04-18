@@ -39,6 +39,7 @@
 #include "OVLException.h"
 #include "OVLManagers.h"
 #include "OVLng.h"
+#include "pretty.h"
 #include "RCT3Exception.h"
 #include "rct3log.h"
 #include "texcheck.h"
@@ -50,6 +51,7 @@
 #endif
 
 using namespace r3;
+using namespace std;
 using namespace xmlcpp;
 
 bool cSCNFile::CheckForModelNameDuplicates() {
@@ -88,11 +90,13 @@ bool cSCNFile::CheckForModelNameDuplicates() {
 void cSCNFile::Init() {
     ovlpath = wxT("");
     name = wxT("");
+    imported = false;
     flexitextures.clear();
     models.clear();
     animatedmodels.clear();
     lods.clear();
     animations.clear();
+    splines.clear();
     references.clear();
     sivsettings = cSIVSettings();
 
@@ -105,6 +109,20 @@ bool cSCNFile::Load() {
 
     if (filename == wxT("")) {
         throw RCT3Exception(_("No scenery file name given."));
+    }
+
+    try {
+        boost::shared_ptr<c3DLoader> obj = c3DLoader::LoadFile(filename.GetFullPath().c_str());
+        if (obj) {
+            try {
+                filename = "";
+                return FromModelFile(obj);
+            } catch (E3DLoader& e) {
+                throw RCT3Exception(_("Model conversion error: ") + e.wxwhat());
+            }
+        }
+    } catch (E3DLoader& e) {
+        throw RCT3Exception(_("Model loader error: ") + e.wxwhat());
     }
 
     if (filename.GetExt().Lower() == wxT("xml")) {
@@ -585,7 +603,7 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
             } else
                 ms.TXS = wxT("");
         }
-        ms.effectpoint = false;
+//        ms.effectpoint = false;
         models[0].meshstructs.push_back(ms);
     }
 
@@ -846,632 +864,15 @@ bool cSCNFile::LoadLegacy(unsigned long objlen, FILE *f) {
     return models[0].Sync();
     //return LoadObject(false);
 }
-/*
-cMeshStruct cSCNFile::MakeMeshStruct(c3DLoader *obj, unsigned int j) {
-    cMeshStruct ms;
-    if ((strcmp(obj->GetObjectName(j).c_str(), "root") == 0)
-            || (obj->GetObjectVertexCount(j) < 3)
-            || (!obj->IsObjectValid(j))) {
-        ms.disabled = true;
-    } else {
-        ms.disabled = false;
-    }
-    if (obj->GetObjectVertexCount(j) == 1) {
-        ms.effectpoint = true;
-        ms.effectpoint_vert = obj->GetObjectVertex(j, 0).position;
-    } else {
-        ms.effectpoint = false;
-    }
-    ms.Name = obj->GetObjectName(j);
-    ms.flags = 0;
-    ms.place = 0;
-    ms.unknown = 3;
-    ms.FTX = "";
-    ms.TXS = "";
-    return ms;
-}
-
-void cSCNFile::ResetAndReload(c3DLoader *obj) {
-    models[0].meshstructs.clear();
-    // Just load the new object into new mesh structs
-    for (long j = 0; j < obj->GetObjectCount(); j++) {
-        models[0].meshstructs.push_back(MakeMeshStruct(obj, j));
-    }
-
-}
-
-
-void cSCNFile::Fixup(c3DLoader *obj) {
-    std::vector<cMeshStruct> fixup;
-    int msinfile = models[0].meshstructs.size();
-    unsigned int i;
-
-    error = CSCNFILE_ERROR_MESH_FIX;
-
-    // First round of fixups
-    int nrfound = 0;
-    for (i = 0; i < obj->GetObjectCount(); i++) {
-        bool found = false;
-        for (cMeshStructIterator ms = models[0].meshstructs.begin(); ms != models[0].meshstructs.end(); ms++) {
-            if (ms->Name == obj->GetObjectName(i)) {
-                // Found!
-                fixup.push_back(*ms);
-                found = true;
-                nrfound++;
-                models[0].meshstructs.erase(ms);
-                break;
-            }
-        }
-        if (!found)
-            fixup.push_back(MakeMeshStruct(obj, i));
-    }
-
-    // If the fixups were successful, meshstructs is empty
-    if (models[0].meshstructs.size() == 0) {
-        if (msinfile != obj->GetObjectCount())
-            error |= CSCNFILE_ERROR_MESH_MISMATCH;
-        models[0].meshstructs = fixup;
-        return;
-    }
-
-    // Didn't work. Yay! -.-
-    if (obj->GetObjectCount() == models[0].meshstructs.size() == msinfile) {
-        // Special case: Nothing worked, but we have the same number of meshes/objects
-        error |= CSCNFILE_ERROR_MESH_CONFUSION;
-        for (i = 0; i < obj->GetObjectCount(); i++) {
-            models[0].meshstructs[i].Name = obj->GetObjectName(i);
-        }
-        return;
-    }
-    if (nrfound == obj->GetObjectCount()) {
-        // Special case: Meshes/Objects disappeared
-        error |= CSCNFILE_ERROR_MESH_POOF;
-        models[0].meshstructs.clear();
-        models[0].meshstructs = fixup;
-        return;
-    }
-
-    // Well, we can't call this a fix, but it should be the best
-    error = CSCNFILE_ERROR_MESH_CONFUSION;
-    models[0].meshstructs.clear();
-    models[0].meshstructs = fixup;
-    return;
-}
-
-bool cSCNFile::LoadObject(bool reset) {
-    unsigned int i;
-    c3DLoader *obj = c3DLoader::LoadFile(const_cast<char *>(models[0].file.GetFullPath().fn_str()));
-    if (reset)
-        models[0].meshstructs.clear();
-
-    if (!obj) {
-        error = CSCNFILE_ERROR_OBJNOTFOUND;
-        if (reset)
-            return false;
-        if (tmpmeshlist.size()) {
-            for (i = 0; i < models[0].meshstructs.size(); i++)
-                models[0].meshstructs[i].Name = tmpmeshlist[i];
-        } else {
-            for (i = 0; i < models[0].meshstructs.size(); i++) {
-                models[0].meshstructs[i].Name = wxString::Format("Mesh #%02d", i+1);
-            }
-        }
-        return true;
-    }
-
-    if (reset) {
-        ResetAndReload(obj);
-    } else {
-        if (obj->GetObjectCount() == models[0].meshstructs.size()) {
-            if (tmpmeshlist.size()) {
-                bool needsfix = false;
-                for (i = 0; i < models[0].meshstructs.size(); i++) {
-                    if (tmpmeshlist[i] != obj->GetObjectName(i))
-                        needsfix = true;
-                    models[0].meshstructs[i].Name = tmpmeshlist[i];
-                    if (obj->GetObjectVertexCount(i) == 1) {
-                        models[0].meshstructs[i].effectpoint = true;
-                        models[0].meshstructs[i].effectpoint_vert = obj->GetObjectVertex(i, 0).position;
-                    } else {
-                        models[0].meshstructs[i].effectpoint = false;
-                    }
-                }
-                if (needsfix) {
-                    Fixup(obj);
-                }
-            } else {
-                // This is the classic case
-                for (i = 0; i < models[0].meshstructs.size(); i++) {
-                    models[0].meshstructs[i].Name = obj->GetObjectName(i);
-                    if (obj->GetObjectVertexCount(i) == 1) {
-                        models[0].meshstructs[i].effectpoint = true;
-                        models[0].meshstructs[i].effectpoint_vert = obj->GetObjectVertex(i, 0).position;
-                    } else {
-                        models[0].meshstructs[i].effectpoint = false;
-                    }
-                }
-            }
-        } else
-            Fixup(obj);
-    }
-
-    delete obj;
-
-    return true;
-}
-*/
-
-/*
-void cSCNFile::SaveTextures(FILE *f) {
-    unsigned long texcount = flexitextures.size();
-    fwrite(&texcount, sizeof(texcount), 1, f);
-    wxFileName temp;
-    for (unsigned long i = 0; i < texcount; i++) {
-        cFlexiTexture ft = flexitextures[i];
-        unsigned long namelen = ft.Name.length()+1;
-        fwrite(&namelen, sizeof(namelen), 1, f);
-        if (namelen) {
-            fwrite(ft.Name.c_str(), namelen, 1, f);
-        }
-
-        fwrite(&ft.Recolorable, sizeof(ft.Recolorable), 1, f);
-        fwrite(&ft.FPS, sizeof(ft.FPS), 1, f);
-
-        unsigned long anim_count = 0;
-        for(cFlexiTextureAnim::iterator it = ft.Animation.begin(); it != ft.Animation.end(); it++) {
-            anim_count += it->count();
-        }
-        fwrite(&anim_count, sizeof(anim_count), 1, f);
-        for(unsigned long j = 0; j < ft.Animation.size(); j++) {
-            for(unsigned long k = 0; k < ft.Animation[j].count(); k++)
-                fwrite(&ft.Animation[j].frame(), sizeof(unsigned long), 1, f);
-        }
-
-        unsigned long frame_count = ft.Frames.size();
-        fwrite(&frame_count, sizeof(frame_count), 1, f);
-        for(cFlexiTextureFrame::iterator it = ft.Frames.begin(); it != ft.Frames.end(); it++) {
-            it->recolorable_write(f);
-
-            temp = it->texture();
-            if (temp != wxT("")) {
-                if (save_relative_paths)
-                    temp.MakeRelativeTo(filename.GetPath());
-            }
-            unsigned long texturelen = temp.GetFullPath().length()+1;
-            fwrite(&texturelen, sizeof(texturelen), 1, f);
-            if (texturelen) {
-                fwrite(temp.GetFullPath().fn_str(), texturelen, 1, f);
-            }
-
-            temp = it->alpha();
-            if (temp != wxT("")) {
-                if (save_relative_paths)
-                    temp.MakeRelativeTo(filename.GetPath());
-            }
-            unsigned long alphalen = temp.GetFullPath().length()+1;
-            fwrite(&alphalen, sizeof(alphalen), 1, f);
-            if (alphalen) {
-                fwrite(temp.GetFullPath().fn_str(), alphalen, 1, f);
-            }
-
-            it->alphacutoff_write(f);
-            it->alphasource_write(f);
-        }
-    }
-}
-
-void cSCNFile::SaveModels(FILE *f) {
-    unsigned long modcount = models.size();
-    fwrite(&modcount, sizeof(modcount), 1, f);
-    wxFileName temp;
-    unsigned long count;
-    for (unsigned long m = 0; m < modcount; m++) {
-        cModel *mod = &models[m];
-
-        // Write model name
-        count = mod->name.length()+1;
-        fwrite(&count, sizeof(count), 1, f);
-        fwrite(mod->name.c_str(), count, 1, f);
-
-        // Write model filename
-        temp = mod->file;
-        if (temp != wxT("")) {
-            if (save_relative_paths)
-                temp.MakeRelativeTo(filename.GetPath());
-        }
-        count = temp.GetFullPath().length()+1;
-        fwrite(&count, sizeof(count), 1, f);
-        fwrite(temp.GetFullPath().fn_str(), count, 1, f);
-
-        // Write transformations
-        unsigned long matrices = mod->transforms.size();
-        fwrite(&matrices, sizeof(matrices), 1, f);
-        for (unsigned long j = 0; j < matrices; j++) {
-            // Name
-            unsigned long namelen = mod->transformnames[j].length()+1;
-            fwrite(&namelen, sizeof(namelen), 1, f);
-            if (namelen) {
-                fwrite(mod->transformnames[j].c_str(), namelen, 1, f);
-            }
-
-            // Matrix
-            D3DMATRIX m = mod->transforms[j];
-
-            fwrite(&m._11, sizeof(m._11), 1, f);
-            fwrite(&m._12, sizeof(m._12), 1, f);
-            fwrite(&m._13, sizeof(m._13), 1, f);
-            fwrite(&m._14, sizeof(m._14), 1, f);
-            fwrite(&m._21, sizeof(m._21), 1, f);
-            fwrite(&m._22, sizeof(m._22), 1, f);
-            fwrite(&m._23, sizeof(m._23), 1, f);
-            fwrite(&m._24, sizeof(m._24), 1, f);
-            fwrite(&m._31, sizeof(m._31), 1, f);
-            fwrite(&m._32, sizeof(m._32), 1, f);
-            fwrite(&m._33, sizeof(m._33), 1, f);
-            fwrite(&m._34, sizeof(m._34), 1, f);
-            fwrite(&m._41, sizeof(m._41), 1, f);
-            fwrite(&m._42, sizeof(m._42), 1, f);
-            fwrite(&m._43, sizeof(m._43), 1, f);
-            fwrite(&m._44, sizeof(m._44), 1, f);
-        }
-
-        // Write Meshes
-        unsigned long meshcount = mod->meshstructs.size();
-        fwrite(&meshcount, sizeof(meshcount), 1, f);
-        for (unsigned long i = 0; i < meshcount; i++) {
-            cMeshStruct ms = mod->meshstructs[i];
-
-            // Name
-            count = ms.Name.length()+1;
-            fwrite(&count, sizeof(count), 1, f);
-            fwrite(ms.Name.c_str(), count, 1, f);
-
-            // Enabled or disabled
-            BOOL dis = ms.disabled;
-            fwrite(&dis, sizeof(BOOL), 1, f);
-
-            fwrite(&ms.flags, sizeof(ms.flags), 1, f);
-            fwrite(&ms.place, sizeof(ms.place), 1, f);
-            fwrite(&ms.unknown, sizeof(ms.unknown), 1, f);
-
-            unsigned long ftxlen = ms.FTX.length()+1;
-            fwrite(&ftxlen, sizeof(ftxlen), 1, f);
-            if (ftxlen) {
-                fwrite(ms.FTX.c_str(), ftxlen, 1, f);
-            }
-
-            unsigned long txslen = ms.TXS.length()+1;
-            fwrite(&txslen, sizeof(txslen), 1, f);
-            if (txslen) {
-                fwrite(ms.TXS.c_str(), txslen, 1, f);
-            }
-        }
-
-        // Write effect point structures
-        unsigned long ptcount = mod->effectpoints.size();
-        fwrite(&ptcount, sizeof(ptcount), 1, f);
-        for (unsigned long i = 0; i < ptcount; i++) {
-            cEffectPoint e = mod->effectpoints[i];
-
-            // Name
-            unsigned long namelen = e.name.length()+1;
-            fwrite(&namelen, sizeof(namelen), 1, f);
-            if (namelen) {
-                fwrite(e.name.c_str(), namelen, 1, f);
-            }
-
-            // Matrices
-            matrices = e.transforms.size();
-            fwrite(&matrices, sizeof(matrices), 1, f);
-            for (unsigned long j = 0; j < matrices; j++) {
-                D3DMATRIX m = e.transforms[j];
-
-                // Name
-                namelen = e.transformnames[j].length()+1;
-                fwrite(&namelen, sizeof(namelen), 1, f);
-                if (namelen) {
-                    fwrite(e.transformnames[j].c_str(), namelen, 1, f);
-                }
-
-                // Matrix
-                fwrite(&m._11, sizeof(m._11), 1, f);
-                fwrite(&m._12, sizeof(m._12), 1, f);
-                fwrite(&m._13, sizeof(m._13), 1, f);
-                fwrite(&m._14, sizeof(m._14), 1, f);
-                fwrite(&m._21, sizeof(m._21), 1, f);
-                fwrite(&m._22, sizeof(m._22), 1, f);
-                fwrite(&m._23, sizeof(m._23), 1, f);
-                fwrite(&m._24, sizeof(m._24), 1, f);
-                fwrite(&m._31, sizeof(m._31), 1, f);
-                fwrite(&m._32, sizeof(m._32), 1, f);
-                fwrite(&m._33, sizeof(m._33), 1, f);
-                fwrite(&m._34, sizeof(m._34), 1, f);
-                fwrite(&m._41, sizeof(m._41), 1, f);
-                fwrite(&m._42, sizeof(m._42), 1, f);
-                fwrite(&m._43, sizeof(m._43), 1, f);
-                fwrite(&m._44, sizeof(m._44), 1, f);
-            }
-
-        }
-
-    }
-}
-
-void cSCNFile::SaveLODs(FILE *f) {
-    unsigned long lodcount = lods.size();
-    fwrite(&lodcount, sizeof(lodcount), 1, f);
-    for (unsigned long m = 0; m < lodcount; m++) {
-        cLOD *lod = &lods[m];
-
-        // Write model name
-        unsigned long count = lod->modelname.length()+1;
-        fwrite(&count, sizeof(count), 1, f);
-        fwrite(lod->modelname.c_str(), count, 1, f);
-
-        fwrite(&lod->distance, sizeof(lod->distance), 1, f);
-        fwrite(&lod->unk2, sizeof(lod->unk2), 1, f);
-        fwrite(&lod->unk4, sizeof(lod->unk4), 1, f);
-        fwrite(&lod->unk14, sizeof(lod->unk14), 1, f);
-    }
-}
-
-void cSCNFile::SaveReferences(FILE *f) {
-    unsigned long refcount = references.size();
-    fwrite(&refcount, sizeof(refcount), 1, f);
-    for (unsigned long i = 0; i < refcount; i++) {
-        unsigned long reflen = references[i].length()+1;
-        fwrite(&reflen, sizeof(reflen), 1, f);
-        if (reflen) {
-            fwrite(references[i].c_str(), reflen, 1, f);
-        }
-    }
-}
-*/
 
 bool cSCNFile::Save() {
-//    unsigned long i;
-//    error = CSCNFILE_NO_ERROR;
 
     if (filename == wxT("")) {
         throw RCT3Exception(_("Saving failed, file name not set."));
     }
-/*
-    FILE *f = fopen(filename.GetFullPath().fn_str(), "wb");
-    if (!f) {
-        error = CSCNFILE_ERROR_FILENAME;
-        return false;
-    }
-
-    version = VERSION_CSCNFILE;
-
-    // Write unsigned int max to allow discrimination between old and new files
-    long newtag = -1;
-    fwrite(&newtag, sizeof(newtag), 1, f);
-
-    // Write magic
-    char scnmagic[8] = CSCNFILE_MAGIC;
-    fwrite(&scnmagic, 8, 1, f);
-
-    // Write version
-    fwrite(&version, sizeof(long), 1, f);
-
-    // Write ovl name
-    wxFileName temp = ovlpath;
-    temp.SetName(name);
-    if (save_relative_paths)
-        temp.MakeRelativeTo(filename.GetPath());
-    unsigned long count = temp.GetFullPath().length()+1;
-    fwrite(&count, sizeof(count), 1, f);
-    fwrite(temp.GetFullPath().fn_str(), count, 1, f);
-
-    // Write sivsettings
-    fwrite(&sivsettings.sivflags, sizeof(unsigned int), 1, f);
-    fwrite(&sivsettings.sway, sizeof(float), 1, f);
-    fwrite(&sivsettings.brightness, sizeof(float), 1, f);
-    fwrite(&sivsettings.unknown, sizeof(float), 1, f);
-    fwrite(&sivsettings.scale, sizeof(float), 1, f);
-    fwrite(&sivsettings.unk6, sizeof(unsigned long), 1, f);
-    fwrite(&sivsettings.unk7, sizeof(unsigned long), 1, f);
-    fwrite(&sivsettings.unk8, sizeof(unsigned long), 1, f);
-    fwrite(&sivsettings.unk9, sizeof(unsigned long), 1, f);
-    fwrite(&sivsettings.unk10, sizeof(unsigned long), 1, f);
-    fwrite(&sivsettings.unk11, sizeof(unsigned long), 1, f);
-
-    SaveTextures(f);
-    SaveModels(f);
-    SaveLODs(f);
-    SaveReferences(f);
-
-    fclose(f);
-*/
     SaveXML();
-
+    imported = false;
     return true;
-
-    /*
-        unsigned long i;
-        error = CSCNFILE_NO_ERROR;
-
-        if (filename == "") {
-            error = CSCNFILE_ERROR_FILENAME;
-            return false;
-        }
-
-        FILE *f = fopen(filename.GetFullPath().fn_str(), "wb");
-        if (!f) {
-            error = CSCNFILE_ERROR_FILENAME;
-            return false;
-        }
-
-        version = VERSION_CSCNFILE;
-
-        unsigned long objlen = objfile.length()+1;
-        fwrite(&objlen, sizeof(objlen), 1, f);
-        fwrite(objfile.c_str(), objlen, 1, f);
-
-        unsigned long meshcount = meshstructs.size();
-        fwrite(&meshcount, sizeof(meshcount), 1, f);
-        for (i = 0; i < meshcount; i++) {
-            cMeshStruct ms = meshstructs[i];
-            BOOL dis = ms.disabled;
-            fwrite(&dis, sizeof(BOOL), 1, f);
-            if (ms.disabled == false) {
-                fwrite(&ms.flags, sizeof(ms.flags), 1, f);
-                fwrite(&ms.place, sizeof(ms.place), 1, f);
-                fwrite(&ms.unknown, sizeof(ms.unknown), 1, f);
-
-                unsigned long ftxlen = ms.FTX.length()+1;
-                fwrite(&ftxlen, sizeof(ftxlen), 1, f);
-                if (ftxlen) {
-                    fwrite(ms.FTX.c_str(), ftxlen, 1, f);
-                }
-
-                unsigned long txslen = ms.TXS.length()+1;
-                fwrite(&txslen, sizeof(txslen), 1, f);
-                if (txslen) {
-                    fwrite(ms.TXS.c_str(), txslen, 1, f);
-                }
-            }
-        }
-
-        unsigned long texcount = flexitextures.size();
-        fwrite(&texcount, sizeof(texcount), 1, f);
-        for (i = 0; i < texcount; i++) {
-            cFlexiTexture ft = flexitextures[i];
-            fwrite(&ft.Recolorable, sizeof(ft.Recolorable), 1, f);
-
-            unsigned long namelen = ft.Name.length()+1;
-            fwrite(&namelen, sizeof(namelen), 1, f);
-            if (namelen) {
-                fwrite(ft.Name.c_str(), namelen, 1, f);
-            }
-
-            unsigned long texturelen = ft.Texture.length()+1;
-            fwrite(&texturelen, sizeof(texturelen), 1, f);
-            if (texturelen) {
-                fwrite(ft.Texture.c_str(), texturelen, 1, f);
-            }
-
-            unsigned long alphalen = ft.Alpha.length()+1;
-            fwrite(&alphalen, sizeof(alphalen), 1, f);
-            if (alphalen) {
-                fwrite(ft.Alpha.c_str(), alphalen, 1, f);
-            }
-        }
-
-        unsigned long refcount = references.size();
-        fwrite(&refcount, sizeof(refcount), 1, f);
-        for (i = 0; i < refcount; i++) {
-            unsigned long reflen = references[i].length()+1;
-            fwrite(&reflen, sizeof(reflen), 1, f);
-            if (reflen) {
-                fwrite(references[i].c_str(), reflen, 1, f);
-            }
-        }
-
-        // Old effectpoints store
-        unsigned long ptcount = 0;
-        fwrite(&ptcount, sizeof(ptcount), 1, f);
-
-        fwrite(&version, sizeof(long), 1, f);
-
-        // SCN Verison 1 Stuff
-        long fixorient = 0;
-        fwrite(&fixorient, sizeof(long), 1, f);
-
-        // SCN Version 2 Stuff
-        fwrite(&sivsettings.sivflags, sizeof(unsigned int), 1, f);
-        fwrite(&sivsettings.sway, sizeof(float), 1, f);
-        fwrite(&sivsettings.brightness, sizeof(float), 1, f);
-        fwrite(&sivsettings.unknown, sizeof(float), 1, f);
-        fwrite(&sivsettings.scale, sizeof(float), 1, f);
-
-        // SCN Version 3 Stuff
-        // Write Mesh names
-        for (i = 0; i < meshcount; i++) {
-            unsigned long namelen = meshstructs[i].Name.length()+1;
-            fwrite(&namelen, sizeof(namelen), 1, f);
-            if (namelen) {
-                fwrite(meshstructs[i].Name.c_str(), namelen, 1, f);
-            }
-        }
-
-        // Write transformations
-        unsigned long matrices = transforms.size();
-        fwrite(&matrices, sizeof(matrices), 1, f);
-        for (unsigned long j = 0; j < matrices; j++) {
-            unsigned long namelen = transformnames[j].length()+1;
-            fwrite(&namelen, sizeof(namelen), 1, f);
-            if (namelen) {
-                fwrite(transformnames[j].c_str(), namelen, 1, f);
-            }
-
-            D3DMATRIX m = transforms[j];
-
-            fwrite(&m._11, sizeof(m._11), 1, f);
-            fwrite(&m._12, sizeof(m._12), 1, f);
-            fwrite(&m._13, sizeof(m._13), 1, f);
-            fwrite(&m._14, sizeof(m._14), 1, f);
-            fwrite(&m._21, sizeof(m._21), 1, f);
-            fwrite(&m._22, sizeof(m._22), 1, f);
-            fwrite(&m._23, sizeof(m._23), 1, f);
-            fwrite(&m._24, sizeof(m._24), 1, f);
-            fwrite(&m._31, sizeof(m._31), 1, f);
-            fwrite(&m._32, sizeof(m._32), 1, f);
-            fwrite(&m._33, sizeof(m._33), 1, f);
-            fwrite(&m._34, sizeof(m._34), 1, f);
-            fwrite(&m._41, sizeof(m._41), 1, f);
-            fwrite(&m._42, sizeof(m._42), 1, f);
-            fwrite(&m._43, sizeof(m._43), 1, f);
-            fwrite(&m._44, sizeof(m._44), 1, f);
-        }
-
-        // Write new effect point structures
-        ptcount = effectpoints.size();
-        fwrite(&ptcount, sizeof(ptcount), 1, f);
-        for (i = 0; i < ptcount; i++) {
-            cEffectPoint e = effectpoints[i];
-
-            unsigned long namelen = e.Name.length()+1;
-            fwrite(&namelen, sizeof(namelen), 1, f);
-            if (namelen) {
-                fwrite(e.Name.c_str(), namelen, 1, f);
-            }
-
-            matrices = e.Transform.size();
-            fwrite(&matrices, sizeof(matrices), 1, f);
-            for (unsigned long j = 0; j < matrices; j++) {
-                D3DMATRIX m = e.Transform[j];
-
-                namelen = e.TransformNames[j].length()+1;
-                fwrite(&namelen, sizeof(namelen), 1, f);
-                if (namelen) {
-                    fwrite(e.TransformNames[j].c_str(), namelen, 1, f);
-                }
-
-                fwrite(&m._11, sizeof(m._11), 1, f);
-                fwrite(&m._12, sizeof(m._12), 1, f);
-                fwrite(&m._13, sizeof(m._13), 1, f);
-                fwrite(&m._14, sizeof(m._14), 1, f);
-                fwrite(&m._21, sizeof(m._21), 1, f);
-                fwrite(&m._22, sizeof(m._22), 1, f);
-                fwrite(&m._23, sizeof(m._23), 1, f);
-                fwrite(&m._24, sizeof(m._24), 1, f);
-                fwrite(&m._31, sizeof(m._31), 1, f);
-                fwrite(&m._32, sizeof(m._32), 1, f);
-                fwrite(&m._33, sizeof(m._33), 1, f);
-                fwrite(&m._34, sizeof(m._34), 1, f);
-                fwrite(&m._41, sizeof(m._41), 1, f);
-                fwrite(&m._42, sizeof(m._42), 1, f);
-                fwrite(&m._43, sizeof(m._43), 1, f);
-                fwrite(&m._44, sizeof(m._44), 1, f);
-            }
-
-        }
-
-        fclose(f);
-        return true;
-    */
 }
 
 void cSCNFile::SaveXML() {
@@ -1610,7 +1011,7 @@ bool cSCNFile::FromCompilerXml(cXmlNode& node, const wxString& path) {
         lod.animated = true;
         lod.modelname = animatedmodels[0].name;
         if (animations.size())
-            lod.animations.Add(animations[0].name);
+            lod.animations.push_back(animations[0].name);
         switch (option_lods) {
             case 1: {
                     lod.distance = 4000;
@@ -1656,10 +1057,10 @@ bool cSCNFile::FromCompilerXml(cXmlNode& node, const wxString& path) {
                         lods.push_back(lod);
                         cModel sm;
                         if (animatedmodels.size() == 3) {
-                            cModel sm = cModel(animatedmodels[2]);
+                            sm = cModel(animatedmodels[2]);
                             sm.name += wxT("ULLOD");
                         } else {
-                            cModel sm = cModel(animatedmodels[3]);
+                            sm = cModel(animatedmodels[3]);
                             animatedmodels.erase(animatedmodels.begin()+3);
                         }
                         sm.effectpoints.clear();
@@ -1695,14 +1096,163 @@ bool cSCNFile::FromCompilerXml(cXmlNode& node, const wxString& path) {
                 }
                 break;
         }
-    } else {
-        throw RCT3Exception(_("No bsh tags found."));
+//    } else {
+//        throw RCT3Exception(_("No bsh tags found."));
     }
 
     filename = wxT(""); // Destroy filename to prevent overwriting
 
     return ret;
 }
+
+void insertBoneParent(boost::shared_ptr<c3DLoader>& model, const wxString& bone, set<wxString>& usedbones) {
+    c3DBone& b = model->GetBone(bone);
+    if (!b.m_parent.IsEmpty()) {
+        usedbones.insert(b.m_parent);
+        insertBoneParent(model, b.m_parent, usedbones);
+    }
+}
+
+/** @brief FromModelFile
+  *
+  * @todo: document this function
+  */
+bool cSCNFile::FromModelFile(boost::shared_ptr<c3DLoader>& model) {
+    c3DLoaderOrientation ori = model->GetOrientation();
+    imported = true;
+    {
+        wxFileName t(model->GetFilename());
+        ovlpath = model->getSuggestedPath().IsEmpty()?wxFileName::DirName(t.GetPathWithSep()):model->getSuggestedPath();
+        name = model->GetName().IsEmpty()?t.GetName():model->GetName();
+    }
+
+    if (model->getSuggestedNoShadow()) {
+        sivsettings.sivflags = r3::Constants::SVD::Flags::No_Shadow;
+    }
+
+    // Textures
+    foreach(const c3DTexture::pair& tex, model->GetTextures()) {
+        if (tex.second.m_referenced) {
+            if (tex.second.m_file == "-")
+                continue;
+            if (find(references.begin(), references.end(), tex.second.m_file) == references.end()) {
+                references.push_back(tex.second.m_file);
+                continue;
+            }
+        }
+        cFlexiTextureFrame fr;
+        fr.texture(tex.second.m_file);
+        fr.alpha(tex.second.m_alphafile);
+        fr.recolorable(tex.second.m_recol);
+        fr.alphasource(tex.second.m_alphaType);
+
+        cFlexiTexture te;
+        te.Name = tex.second.m_name;
+        te.Recolorable = tex.second.m_recol;
+        te.Frames.push_back(fr);
+        flexitextures.push_back(te);
+    }
+
+    // Splines
+    foreach(const c3DSpline::pair& spl, model->GetSplines())
+        splines.push_back(cImpSpline(spl.second, ori));
+
+    // Animations
+    foreach(const c3DAnimation::pair& ani, model->GetAnimations()) {
+        cAnimation cani;
+        cani.name = ani.first;
+        cani.usedorientation = ori;
+        foreach(const c3DAnimBone::pair& anibone, ani.second.m_bones) {
+            cBoneAnimation canibone;
+            canibone.name = anibone.first;
+            canibone.translations.resize(anibone.second.m_translations.size());
+            canibone.rotations.resize(anibone.second.m_rotations.size());
+            copy(anibone.second.m_translations.begin(), anibone.second.m_translations.end(), canibone.translations.begin());
+            copy(anibone.second.m_rotations.begin(), anibone.second.m_rotations.end(), canibone.rotations.begin());
+            cani.boneanimations.push_back(canibone);
+        }
+        animations.push_back(cani);
+    }
+
+    // Groups
+    foreach(const c3DGroup::pair& gr, model->GetGroups()) {
+        // Find out wheter it is animated or not
+        bool animated = false;
+        foreach(const wxString& bn, gr.second.m_bones) {
+            if ((model->GetBone(bn).m_type == "Bone") || (!model->GetBone(bn).m_parent.IsEmpty())) {
+                animated = true;
+                break;
+            }
+        }
+
+        // Find out which bones we need
+        set<wxString> usedbones = gr.second.m_bones;
+
+        // Mesh bones
+        foreach(const wxString& me, gr.second.m_meshes) {
+            foreach(const wxString& bn, model->GetObjectBones(me)) {
+                usedbones.insert(bn);
+            }
+        }
+
+        // Parents
+        set<wxString> usedboneparents;
+        foreach(const wxString& me, usedbones) {
+            insertBoneParent(model, me, usedboneparents);
+        }
+        if (usedboneparents.size())
+            usedbones.insert(usedboneparents.begin(), usedboneparents.end());
+
+        cModel mod;
+        cAnimatedModel amod;
+        cModel& accmod = animated?amod:mod;
+
+        accmod.name = gr.first;
+        if (!accmod.Load(model->GetFilename())) {
+            if (accmod.fatal_error) {
+                foreach(const wxString& err, accmod.error)
+                    wxLogError(err);
+            } else {
+                foreach(const wxString& err, accmod.error)
+                    wxLogWarning(err);
+            }
+        }
+        accmod.usedorientation = ori;
+
+        accmod.autoBones(&usedbones);
+
+        // Activate and deactivate appropriate meshes, textures and options
+        foreach(cMeshStruct& ms, accmod.meshstructs) {
+            ms.disabled = (!ms.valid) || (gr.second.m_meshes.find(ms.Name) == gr.second.m_meshes.end());
+            const c3DMesh& m = model->GetObject(ms.Name);
+            if (!m.m_texture.IsEmpty())
+                ms.FTX = m.m_texture;
+            if (!m.m_meshOptions.IsEmpty())
+                ms.autoMeshStyle(m.m_meshOptions);
+        }
+
+        if (animated) {
+            animatedmodels.push_back(amod);
+        } else {
+            models.push_back(mod);
+        }
+
+        if (gr.second.m_loddistance >= 0.0) {
+            cLOD lod;
+            lod.modelname = gr.first;
+            lod.distance = gr.second.m_loddistance;
+            lod.animated = animated;
+            if (animated)
+                copy(gr.second.m_animations.begin(), gr.second.m_animations.end(), back_inserter(lod.animations));
+            lods.push_back(lod);
+        }
+
+    }
+
+    return true;
+}
+
+
 
 #define CSCNFILE_READVECTOR(vec, itype, itag, tag) \
     } else if (child(tag)) { \
@@ -1762,6 +1312,7 @@ bool cSCNFile::FromNode(cXmlNode& node, const wxString& path, unsigned long vers
         CSCNFILE_READVECTOR(models, cModel, RCT3XML_CMODEL, RCT3XML_CSCNFILE_MODELS)
         CSCNFILE_READVECTOR(animatedmodels, cAnimatedModel, RCT3XML_CANIMATEDMODEL, RCT3XML_CSCNFILE_ANIMATEDMODELS)
         CSCNFILE_READVECTOR(animations, cAnimation, RCT3XML_CANIMATION, RCT3XML_CSCNFILE_ANIMATIONS)
+        CSCNFILE_READVECTOR(splines, cImpSpline, RCT3XML_CSPLINE, RCT3XML_CSCNFILE_SPLINES)
         CSCNFILE_READVECTOR(lods, cLOD, RCT3XML_CLOD, RCT3XML_CSCNFILE_LODS)
         } else if (child(RCT3XML_CSCNFILE_REFERENCES)) {
             cXmlNode subchild = child.children();
@@ -1807,6 +1358,7 @@ cXmlNode cSCNFile::GetNode(const wxString& path) {
     CSCNFILE_WRITEVECTOR(models, cModel::iterator, RCT3XML_CSCNFILE_MODELS)
     CSCNFILE_WRITEVECTOR(animatedmodels, cAnimatedModel::iterator, RCT3XML_CSCNFILE_ANIMATEDMODELS)
     CSCNFILE_WRITEVECTOR(animations, cAnimation::iterator, RCT3XML_CSCNFILE_ANIMATIONS)
+    CSCNFILE_WRITEVECTOR(splines, cImpSpline::iterator, RCT3XML_CSCNFILE_SPLINES)
     CSCNFILE_WRITEVECTOR(lods, cLOD::iterator, RCT3XML_CSCNFILE_LODS)
 
     //parent = new wxXmlNode(node, wxXML_ELEMENT_NODE, RCT3XML_CSCNFILE_REFERENCES);
@@ -1827,7 +1379,7 @@ bool cSCNFile::Check() {
     bool warning = false;
     CleanWork();
 
-    m_work = new cSCNFile(*this);
+    m_work.reset(new cSCNFile(*this));
 
 
     /////////////////////////////////////////////////////
@@ -1843,8 +1395,10 @@ bool cSCNFile::Check() {
             // Check for LODs
             if (!m_work->lods.size()) {
                 if (READ_RCT3_EXPERTMODE()) {
-                    wxLogWarning(_("You didn't set any levels of detail."));
-                    warning = true;
+                    if (!READ_RCT3_RAWMODE()) {
+                        wxLogWarning(_("You didn't set any levels of detail."));
+                        warning = true;
+                    }
                 } else {
                     throw RCT3Exception(_("You didn't set any levels of detail!"));
                 }
@@ -1853,8 +1407,10 @@ bool cSCNFile::Check() {
             // Check the models
             if ((!m_work->models.size()) && (!m_work->animatedmodels.size())) {
                 if (READ_RCT3_EXPERTMODE()) {
-                    wxLogWarning(_("You didn't add any models."));
-                    warning = true;
+                    if (!READ_RCT3_RAWMODE()) {
+                        wxLogWarning(_("You didn't add any models."));
+                        warning = true;
+                    }
                 } else {
                     throw RCT3Exception(_("You didn't add any models!"));
                 }
@@ -1899,6 +1455,15 @@ bool cSCNFile::Check() {
                     if (amod->fatal_error) {
                         throw RCT3Exception(wxString::Format(_("Level of Detail '%s' (%.1f): Error in corresponding animated model."), i_lod->modelname.c_str(), i_lod->distance));
                     }
+                    if (amod->used) {
+                        wxString mess(wxString::Format(_("Level of Detail '%s' (%.1f): Animated model was already used in a different LOD. This breaks the animation."), i_lod->modelname.c_str(), i_lod->distance));
+                        if (READ_RCT3_EXPERTMODE()) {
+                            warning = true;
+                            wxLogWarning(mess);
+                        } else {
+                            throw RCT3Exception(mess);
+                        }
+                    }
                     amod->used = true;
                     if (!i_lod->animated) {
                         i_lod->animated = true;
@@ -1916,7 +1481,8 @@ bool cSCNFile::Check() {
                         if (!a_found) {
                             warning = true;
                             if (READ_RCT3_EXPERTMODE()) {
-                                wxLogWarning(_("Level of Detail '%s' (%.1f): Assigned animation '%s'missing."), i_lod->modelname.c_str(), i_lod->distance, i_lod->animations[s].c_str());
+                                if (!READ_RCT3_RAWMODE())
+                                    wxLogWarning(_("Level of Detail '%s' (%.1f): Assigned animation '%s'missing."), i_lod->modelname.c_str(), i_lod->distance, i_lod->animations[s].c_str());
                             } else {
                                 wxLogWarning(_("Level of Detail '%s' (%.1f): Assigned animation '%s'missing. Removed."), i_lod->modelname.c_str(), i_lod->distance, i_lod->animations[s].c_str());
                                 i_lod->animations.erase(i_lod->animations.begin()+s);
@@ -1926,6 +1492,10 @@ bool cSCNFile::Check() {
                     if (!i_lod->animations.size()) {
                         warning = true;
                         wxLogWarning(_("Level of Detail '%s' (%.1f): Animated model used but no animations assigned."), i_lod->modelname.c_str(), i_lod->distance);
+                    } else if (i_lod->animations.size()>1) {
+                        if (!READ_RCT3_EXPERTMODE()) {
+                            wxLogWarning(_("Level of Detail '%s' (%.1f): More than one animation assigned. A LOD of normal animated Scenery uses only one animation, more than one only apply to special cases."), i_lod->modelname.c_str(), i_lod->distance);
+                        }
                     }
                 } else {
                     if (READ_RCT3_EXPERTMODE()) {
@@ -2005,80 +1575,11 @@ bool cSCNFile::Check() {
             }
 
             i_ftx->Check();
+        }
 
-//            if (!i_ftx->Frames.size()) {
-//                // No texture frames added.
-//                throw RCT3Exception(wxString::Format(_("Texture '%s': No texture frames defined."), i_ftx->Name.c_str()));
-//            }
-//
-//            // The validators should make these checks unnecessary, but better safe than sorry
-//            for (cFlexiTextureFrame::iterator i_ftxfr = i_ftx->Frames.begin(); i_ftxfr != i_ftx->Frames.end(); i_ftxfr++) {
-//                try {
-//                    checkRCT3Texture(i_ftxfr->texture().GetFullPath());
-//                } catch (RCT3TextureException& e) {
-//                    throw RCT3Exception(wxString::Format(_("Texture '%s', file '%s': %s"), i_ftx->Name.c_str(), i_ftxfr->texture().GetFullPath().fn_str(), e.what()));
-//                }
-//
-//                if (i_ftxfr->alphasource() == CFTF_ALPHA_EXTERNAL) {
-//                    try {
-//                        checkRCT3Texture(i_ftxfr->alpha().GetFullPath());
-//                    } catch (RCT3TextureException& e) {
-//                        i_ftxfr->alphasource(CFTF_ALPHA_NONE);
-//                        warning = true;
-//                        wxLogWarning(_("Texture '%s', file '%s': Problem with alpha channel file. Alpha deactivated. (Problem was %s)"), i_ftx->Name.c_str(), i_ftxfr->alpha().GetFullPath().fn_str(), e.what());
-//                    }
-//                } else if (i_ftxfr->alphasource() == CFTF_ALPHA_INTERNAL) {
-//                    wxGXImage img(i_ftxfr->texture().GetFullPath());
-//                    if (!img.HasAlpha()) {
-//                        i_ftxfr->alphasource(CFTF_ALPHA_NONE);
-//                        warning = true;
-//                        wxLogWarning(_("Texture '%s', file '%s': No alpha channel in file. Alpha deactivated."), i_ftx->Name.c_str(), i_ftxfr->texture().GetFullPath().fn_str());
-//                    }
-//                }
-//
-//                // Make sure recolorable flag matches
-//                i_ftxfr->recolorable(i_ftx->Recolorable);
-//                // Init for next step
-//                i_ftxfr->used = false;
-//            }
-//
-//            // Check the animation
-//            if (i_ftx->Animation.size()) {
-//                for (unsigned long i = 0; i < i_ftx->Animation.size(); i++) {
-//                    if (i_ftx->Animation[i].frame() >= i_ftx->Frames.size()) {
-//                        // Illegal reference
-//                        throw RCT3Exception(wxString::Format(_("Texture '%s': Animation step %d references non-existing frame."), i_ftx->Name.c_str(), i+1));
-//                    }
-//                    i_ftx->Frames[i_ftx->Animation[i].frame()].used = true;
-//                }
-//            } else {
-//                // We need to add one refering to the first frame
-//                cFlexiTextureAnim an(0);
-//                i_ftx->Animation.push_back(an);
-//                i_ftx->Frames[0].used = true;
-//            }
-//
-//
-//            // Now we go through the frames again and fix unreferenced ones
-//            // Doing this inverse to make removing easier
-//            for (long i = i_ftx->Frames.size() - 1; i >=0 ; i--) {
-//                if (!i_ftx->Frames[i].used) {
-//                    // Great -.-
-//                    i_ftx->Frames.erase(i_ftx->Frames.begin() + i);
-//                    // Fix animation
-//                    for (cFlexiTextureAnim::iterator i_anim = i_ftx->Animation.begin(); i_anim != i_ftx->Animation.end(); i_anim++) {
-//                        if (i_anim->frame() > i)
-//                            i_anim->frame(i_anim->frame() - 1);
-//                    }
-//                    warning = true;
-//                    wxLogWarning(_("Texture '%s', frame %d: Unused. It will not be written to the ovl file."), i_ftx->Name.c_str(), i);
-//                }
-//            }
-//
-//            // Zero FPS if there is only one animation step
-//            if (i_ftx->Animation.size()<=1) {
-//                i_ftx->FPS = 0;
-//            }
+        if (splines.size() && (!READ_RCT3_EXPERTMODE())) {
+            warning = true;
+            wxLogWarning(_("You defined splines, there is currently no way to make use of them with the importer alone!"));
         }
 
         // Warn if neither textures nor references are given
@@ -2223,7 +1724,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                 c_slod.unk4 = it->unk4;
                 c_slod.unk14 = it->unk14;
                 if (it->animated) {
-                    c_slod.meshtype = SVDLOD_MESHTYPE_ANIMATED;
+                    c_slod.meshtype = r3::Constants::SVD::LOD_Type::Animated;
                     c_slod.boneshape = it->modelname.ToAscii();
                     if (it->animations.size()) {
                         for (cStringIterator its = it->animations.begin(); its != it->animations.end(); ++its) {
@@ -2231,7 +1732,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                         }
                     }
                 } else {
-                    c_slod.meshtype = SVDLOD_MESHTYPE_STATIC;
+                    c_slod.meshtype = r3::Constants::SVD::LOD_Type::Static;
                     c_slod.staticshape = it->modelname.ToAscii();
                 }
                 c_svis.lods.push_back(c_slod);
@@ -2314,7 +1815,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                     }
                 }
 
-                counted_ptr<c3DLoader> object = c3DLoader::LoadFile(i_mod->file.GetFullPath().c_str());
+                boost::shared_ptr<c3DLoader> object = c3DLoader::LoadFile(i_mod->file.GetFullPath().c_str());
                 if (!object.get()) {
                     // Poof went the model!
                     throw RCT3Exception(wxString::Format(_("Something happened to the file of model '%s'."), i_mod->name.c_str()));
@@ -2503,7 +2004,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                     }
                 }
 
-                counted_ptr<c3DLoader> object = c3DLoader::LoadFile(i_mod->file.GetFullPath().c_str());
+                boost::shared_ptr<c3DLoader> object = c3DLoader::LoadFile(i_mod->file.GetFullPath().c_str());
                 if (!object.get()) {
                     // Poof went the model!
                     throw RCT3Exception(wxString::Format(_("Something happened to the file of model '%s'."), i_mod->name.c_str()));
@@ -2616,10 +2117,10 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                     c_bone.name = i_bone->name.ToAscii();
                     wxLogVerbose(_("  Adding bone: ") + i_bone->name);
                     for (cTXYZ::iterator i_txyz = i_bone->translations.begin(); i_txyz != i_bone->translations.end(); ++i_txyz) {
-                        c_bone.translations.insert(i_txyz->GetFixed(i_anim->usedorientation));
+                        c_bone.translations.insert(i_txyz->GetFixed(i_anim->usedorientation, false));
                     }
                     for (cTXYZ::iterator i_txyz = i_bone->rotations.begin(); i_txyz != i_bone->rotations.end(); ++i_txyz) {
-                        c_bone.rotations.insert(i_txyz->GetFixed(i_anim->usedorientation));
+                        c_bone.rotations.insert(i_txyz->GetFixed(i_anim->usedorientation, true));
                     }
                     c_item.bones.push_back(c_bone);
                 }
@@ -2724,22 +2225,29 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                     reinterpret_cast<COLOURQUAD*>(c_fts.palette.get())[j].alpha = i_ftxfr->alphacutoff();
 
                 c_ftis.frames.push_back(c_fts);
-//                    c_ftx->AddTextureFrame(dimension, i_ftxfr->recolorable(),
-//                                           reinterpret_cast<unsigned char*>(&palette),
-//                                           reinterpret_cast<unsigned char*>(&data),
-//                                           (i_ftxfr->alphasource() == CFTF_ALPHA_NONE)?NULL:reinterpret_cast<unsigned char*>(&alpha));
             }
 
             c_ftx->AddTexture(c_ftis);
         }
     }
 
+    // Splines
+    if (m_work->splines.size()) {
+        wxLogDebug(wxT("TRACE cSCNFile::MakeToOvl SPL"));
+        ovlSPLManager* c_spl = c_ovl.GetManager<ovlSPLManager>();
+        foreach(cImpSpline& cspl, m_work->splines) {
+            cSpline spl;
+            wxLogVerbose(_("Adding spline: ") + cspl.spline.m_name);
+            spl.name = cspl.spline.m_name.ToAscii();
+            spl.cyclic = cspl.spline.m_cyclic;
+            spl.nodes = cspl.spline.GetFixed(cspl.usedorientation);
+            c_spl->AddSpline(spl);
+        }
+    }
 }
 
 void cSCNFile::CleanWork() {
-    if (m_work)
-        delete m_work;
-    m_work = NULL;
+    m_work.reset();
     m_textureovl = false;
     m_meshes = 0;
     m_textures = 0;

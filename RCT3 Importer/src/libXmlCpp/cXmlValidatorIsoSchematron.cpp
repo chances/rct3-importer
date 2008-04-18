@@ -23,11 +23,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-#ifdef XMLCPP_USE_XSLT
-
 #include "cXmlValidatorIsoSchematron.h"
 
-#include "cXmlDoc.h"
+#ifdef XMLCPP_USE_ISO_SCHEMATRON
+
 #include "cXmlException.h"
 #include "cXmlInputOutputCallbackString.h"
 #include "cXmlNode.h"
@@ -55,36 +54,8 @@ void cXmlValidatorIsoSchematron::Init() {
         g_resinit = true;
     }
     m_transform = cXsltStylesheet();
+    m_schema = cXmlDoc();
 }
-
-//void cXmlValidatorSchematron::DeInit() {
-//    if (m_schema) {
-//        xmlSchematronFree(m_schema);
-//        m_schema = NULL;
-//    }
-//    if (m_parser) {
-//        xmlSchematronFreeParserCtxt(m_parser);
-//        m_parser = NULL;
-//    }
-//    if (m_context) {
-//        xmlSchematronFreeValidCtxt ( m_context );
-//        m_context = NULL;
-//    }
-//}
-
-//void cXmlValidatorSchematron::Parse(int options) {
-//    if (!m_parser)
-//        throw eXml("Context missing in cXmlValidatorSchematron::Parse()");
-//
-//    claimErrors();
-//    m_schema = xmlSchematronParse ( m_parser );
-//    if (m_schema)
-//        m_context = xmlSchematronNewValidCtxt ( m_schema, options );
-//    if (m_context) {
-//        xmlSchematronSetValidStructuredErrors(m_context, structurederrorwrap, this);
-//    }
-//    releaseErrors();
-//}
 
 bool cXmlValidatorIsoSchematron::read(cXmlDoc& doc, const std::map<std::string, std::string>& options) {
     Init();
@@ -95,11 +66,13 @@ bool cXmlValidatorIsoSchematron::read(cXmlDoc& doc, const std::map<std::string, 
     string sch = string(cXmlInputOutputCallbackString::PROTOCOL)+string(cXmlInputOutputCallbackString::INTERNAL)+"/schematron/iso_simple.xsl";
     cXmlDoc schemadoc(sch.c_str());
 
-    cXsltStylesheet schema(schemadoc);
-    if (!schema.ok())
+    m_schema = cXmlDoc(doc.getRaw(), false);
+
+    cXsltStylesheet schemash(schemadoc);
+    if (!schemash.ok())
         throw eXml("Internal error: could not load schematron xsl.");
-    schema.setParameters(options);
-    cXmlDoc temp = schema.transform(doc);
+    schemash.setParameters(options);
+    cXmlDoc temp = schemash.transform(doc);
 
     if (!temp.ok()) {
         transferErrors(temp);
@@ -112,15 +85,6 @@ bool cXmlValidatorIsoSchematron::read(cXmlDoc& doc, const std::map<std::string, 
         transferErrors(m_transform);
     }
 
-
-//    DeInit();
-//    claimErrors();
-//    m_parser = xmlSchematronNewMemParserCtxt(buffer.c_str(), buffer.size());
-//    releaseErrors();
-//    if (!m_parser)
-//        return false;
-//    Parse(options);
-//    return valid();
     return ok();
 }
 
@@ -154,6 +118,9 @@ int cXmlValidatorIsoSchematron::validate(boost::shared_ptr<xmlDoc>& doc, int opt
         throw eXml("Tried to validate with invalid schematron schema");
     if (!doc)
         throw eXml("Tried to validate broken document");
+
+    clearGenericErrors();
+    clearStructuredErrors();
 
     cXmlXPath path;
     string ns;
@@ -204,6 +171,17 @@ int cXmlValidatorIsoSchematron::validate(boost::shared_ptr<xmlDoc>& doc, int opt
                 string elempath = (ns == "")?error.path:cXmlXPath::decorateWithNsPrefix(error.path, "utterridiculousxpathns", true);
                 cXmlXPathResult res = path(elempath, true);
                 if (res.size()) {
+                    xmlNodePtr errnode = reinterpret_cast<xmlNodePtr>(res[0].getRaw());
+                    if (errnode) {
+                        if (errnode->type == XML_ATTRIBUTE_NODE) {
+                            if (errnode->parent) {
+                                error.line = errnode->parent->line;
+                            }
+                        } else {
+                            error.line = errnode->line;
+                        }
+                    }
+/*
                     error.node = res[0].getRaw();
                     if (error.node) {
                         xmlNodePtr errnode = reinterpret_cast<xmlNodePtr>(error.node);
@@ -215,6 +193,7 @@ int cXmlValidatorIsoSchematron::validate(boost::shared_ptr<xmlDoc>& doc, int opt
                             error.line = errnode->line;
                         }
                     }
+*/
                 }
             }
 

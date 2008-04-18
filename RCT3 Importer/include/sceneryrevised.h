@@ -332,10 +332,20 @@ struct SceneryItemData //set all to 0 and see what happens
 //	unsigned long unkf63:1;
 //	unsigned long unkf64:1;
 	unsigned long flags2;
-	unsigned long unk2;
-	unsigned long unk3;
-	unsigned long *unk4;
-	unsigned long unk5;
+	long unk2;         ///< Unk 6 in the importer
+                                /**<
+                                 * Seems to be minimal blocking height
+                                 **/
+	long unk3;         ///< Unk 7 in the importer
+                                /**<
+                                 * Seems to be maximal blocking height
+                                 **/
+	unsigned long *unk4;        ///< Unk 8 in the importer
+                                /**<
+                                 * Points to (2^(unk3-unk2))-1
+                                 * Can be bigger than a long
+                                 **/
+	unsigned long unk5;         ///< Unk 9 in the importer
 };
 
 struct SceneryItem
@@ -377,7 +387,10 @@ struct SceneryItem
 	unsigned long flags1;
 	unsigned short positioningtype;
 	unsigned short extraversion; // 0 = None, 1 or 2
-	unsigned long unk4; //valid values are 0-17
+	unsigned long unk4;                 ///< Unk 1 in the importer
+                                        /**<
+                                         * valid values are 0-17
+                                         **/
 	unsigned long xsquares;
 	unsigned long ysquares;
 	SceneryItemData *data; // Array, xsquares*ysquares in size
@@ -391,11 +404,14 @@ struct SceneryItem
 	unsigned long* unk14; //is 0 except in track parts (pointer I think)
 	long cost;
 	long removal_cost;
-	unsigned long unk17; //is 0,4,5 4 is found on the queue paths
+	unsigned long unk17;                ///< Unk 2 in the importer
+                                        /**<
+                                         * is 0,4,5 4 is found on the queue paths
+                                         */
 	unsigned long type;
 	char *supports;
 	unsigned long svdcount;
-	SceneryItemVisual **svd; // Multiple ones used for trees
+	SceneryItemVisual_V **svd; // Multiple ones used for trees
 	GUISkinItem *icon;
 	GUISkinItem *groupicon;
 	wchar_t *groupname;

@@ -11,12 +11,10 @@
 #ifndef __BONEANIM_H__
 #define __BONEANIM_H__
 
-struct txyz {
-	float Time;
-	float X;
-	float Y;
-	float Z;
-};
+#include "vertex.h"
+
+namespace r3 {
+
 struct BoneAnimBone {
 	char *Name;
 	unsigned long TranslateCount;
@@ -28,6 +26,8 @@ struct BoneAnim {
 	unsigned long BoneCount;
 	BoneAnimBone *Bones;
 	float TotalTime;
+};
+
 };
 
 #endif

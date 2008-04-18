@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<srng:grammar xmlns:srng="http://relaxng.sourceforge.net/ns/shorthand" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+	<srng:start>
+		<srng:element name="ms3d">
+			<srng:interleave>
+				<srng:element name="name" occurs="?" type="string"/>
+				<srng:element name="path" occurs="?" type="string"/>
+				<srng:element name="noshadow" occurs="?"/>
+				<srng:element name="lod" occurs="*">
+					<srng:attribute name="name" type="string"/>
+					<srng:attribute name="distance" type="float"/>
+					<srng:interleave>
+						<srng:element name="mesh" occurs="+" type="string"/>
+						<srng:element name="bone" occurs="+" type="string"/>
+					</srng:interleave>
+				</srng:element>
+				<srng:element name="rename" occurs="*">
+					<srng:attribute name="from" type="string"/>
+					<srng:attribute name="to" type="string"/>
+				</srng:element>
+			</srng:interleave>
+		</srng:element>
+	</srng:start>
+</srng:grammar>

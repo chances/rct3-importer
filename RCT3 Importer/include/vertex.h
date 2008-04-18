@@ -56,6 +56,29 @@ struct COLOURQUAD {
     uint8_t alpha;
 };
 
+struct txyz {
+    union {
+        struct {
+            float_t Time;
+            float_t X;
+            float_t Y;
+            float_t Z;
+        };
+        struct {
+            float_t time;
+            union {
+                struct {
+                    float_t x;
+                    float_t y;
+                    float_t z;
+                };
+                VECTOR v;
+            };
+        };
+    };
+};
+
+
 };
 
 #endif // VERTEX_H_INCLUDED

@@ -37,13 +37,11 @@
 #include "ManagerOVL.h"
 #include "ManagerCommon.h"
 
-using namespace std;
-
 struct cPathExt {
-    string b[4];
-    string fc[4];
-    string bc[4];
-    string tc[4];
+    std::string b[4];
+    std::string fc[4];
+    std::string bc[4];
+    std::string tc[4];
 
     void DoCopy(bool ext, ovlStringTable* tab);
 };
@@ -55,35 +53,35 @@ public:
         FLAG_UNDERWATER = 2,
         FLAG_EXTENDED = 0x01000000
     };
-    string name;
+    std::string name;
     unsigned long unk1; ///< flags
-    string internalname;
-    string nametxt;
-	string icon;        ///< 40x40
-    string texture_a;
-    string texture_b;
-    string flat[4];
-    string straight_a[4];
-    string straight_b[4];
-    string turn_u[4];
-    string turn_la[4];
-    string turn_lb[4];
-    string turn_ta[4];
-    string turn_tb[4];
-    string turn_tc[4];
-    string turn_x[4];
-    string corner_a[4];
-    string corner_b[4];
-    string corner_c[4];
-    string corner_d[4];
+    std::string internalname;
+    std::string nametxt;
+	std::string icon;        ///< 40x40
+    std::string texture_a;
+    std::string texture_b;
+    std::string flat[4];
+    std::string straight_a[4];
+    std::string straight_b[4];
+    std::string turn_u[4];
+    std::string turn_la[4];
+    std::string turn_lb[4];
+    std::string turn_ta[4];
+    std::string turn_tb[4];
+    std::string turn_tc[4];
+    std::string turn_x[4];
+    std::string corner_a[4];
+    std::string corner_b[4];
+    std::string corner_c[4];
+    std::string corner_d[4];
     cPathExt slope;
     cPathExt slopestraight;
     cPathExt slopestraightleft;
     cPathExt slopestraightright;
     cPathExt slopemid;
     // Extended follow, if not cPathExt'ed
-    string flat_fc[4];
-    string paving;
+    std::string flat_fc[4];
+    std::string paving;
 
     cPath() {
         unk1 = FLAG_BASIC;
@@ -98,7 +96,7 @@ public:
     static const char* NAME;
     static const char* TAG;
 private:
-    map<string, cPath>  m_items;
+    std::map<std::string, cPath>  m_items;
 
 public:
     ovlPTDManager(): ovlOVLManager() {

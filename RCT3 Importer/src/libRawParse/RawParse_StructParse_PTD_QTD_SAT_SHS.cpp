@@ -182,22 +182,8 @@ void cRawParser::ParseSAT(cXmlNode& node) {
     while (child) {
         DO_CONDITION_COMMENT(child);
 
-        if (child(RAWXML_ATTRACTION_BASE)) {
-            USE_PREFIX(child);
-            OPTION_PARSE(unsigned long, spa.attraction.type, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_BASE), wxT("type")));
-            ParseStringOption(spa.attraction.icon, child, wxT("icon"), NULL, useprefix);
-            ParseStringOption(spa.attraction.spline, child, wxT("spline"), NULL, useprefix);
-        } else if (child(RAWXML_ATTRACTION_UNKNOWNS)) {
-            OPTION_PARSE(unsigned long, spa.attraction.unk2, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u2")));
-            OPTION_PARSE(long, spa.attraction.unk3, ParseSigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u3")));
-            OPTION_PARSE(unsigned long, spa.attraction.unk4, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u4")));
-            OPTION_PARSE(unsigned long, spa.attraction.unk5, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u5")));
-            OPTION_PARSE(unsigned long, spa.attraction.unk6, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u6")));
-            OPTION_PARSE(unsigned long, spa.attraction.unk9, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u9")));
-            OPTION_PARSE(long, spa.attraction.unk10, ParseSigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u10")));
-            OPTION_PARSE(unsigned long, spa.attraction.addonascn, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u11")));
-            OPTION_PARSE(unsigned long, spa.attraction.unk12, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u12")));
-            OPTION_PARSE(unsigned long, spa.attraction.unk13, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u13")));
+        if (child(RAWXML_ATTRACTION)) {
+            ParseAttraction(child, spa.attraction);
         } else if (child.element()) {
             throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in sat tag '%s'."), UTF8STRINGWRAP(child.name()), name.c_str()));
         }
@@ -289,7 +275,7 @@ void cRawParser::ParseSHS(cXmlNode& node) {
 //                if (!modelfile.IsFileReadable())
 //                    throw RCT3Exception(_("shs tag: Model file not readable: ") + modelfile.GetFullPath());
 
-                counted_ptr<c3DLoader> model(c3DLoader::LoadFile(modelfile.GetFullPath().c_str()));
+                boost::shared_ptr<c3DLoader> model(c3DLoader::LoadFile(modelfile.GetFullPath().c_str()));
                 if (!model.get())
                     throw RCT3Exception(_("shs tag: Model file not readable or has unknown format: ") + modelfile.GetFullPath());
 

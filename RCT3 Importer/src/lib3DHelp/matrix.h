@@ -94,7 +94,7 @@ inline r3::VERTEX vertex22vertex(const r3::VERTEX2& v) {
 
 r3::MATRIX matrixGetUnity();
 r3::MATRIX matrixGetFixOrientation(const c3DLoaderOrientation orient = ORIENTATION_RIGHT_ZUP);
-void txyzFixOrientation(txyz& src, const c3DLoaderOrientation& orient);
+void txyzFixOrientation(r3::txyz& src, const c3DLoaderOrientation& orient, bool rotate = false);
 r3::MATRIX matrixGetTranslation(const float x, const float y, const float z);
 r3::MATRIX matrixGetTranslation(const r3::VECTOR& v);
 r3::MATRIX matrixGetScale(const float x, const float y, const float z);
@@ -104,14 +104,13 @@ r3::MATRIX matrixGetRotationX(const float rad);
 r3::MATRIX matrixGetRotationY(const float rad);
 r3::MATRIX matrixGetRotationZ(const float rad);
 
+r3::VECTOR matrixExtractTranslation(const r3::MATRIX& m);
+
 // Note: the IP (In Place) functions return the result in the first parameter or the first
 //       member of the array. They also return a pointer to this result.
 float matrixCalcDeterminant(const r3::MATRIX *m);
-r3::MATRIX matrixMultiply(const r3::MATRIX *m1, const r3::MATRIX *m2);
-inline r3::MATRIX matrixMultiply(const r3::MATRIX& m1, const r3::MATRIX& m2) {
-    return matrixMultiply(&m1, &m2);
-}
-r3::MATRIX *matrixMultiplyIP(r3::MATRIX *m1, const r3::MATRIX *m2);
+r3::MATRIX matrixMultiply(const r3::MATRIX& m1, const r3::MATRIX& m2);
+r3::MATRIX& matrixMultiplyIP(r3::MATRIX& m1, const r3::MATRIX& m2);
 // These take an array and multiply it up in order.
 r3::MATRIX matrixMultiply(const r3::MATRIX *ms, const unsigned int count);
 r3::MATRIX *matrixMultiplyIP(r3::MATRIX *ms, const unsigned int count);
@@ -134,7 +133,7 @@ inline void doFixOrientation(T& v, const c3DLoaderOrientation& orient) {
     matrixApplyIP(&v, matrixGetFixOrientation(orient));
 }
 template <>
-inline void doFixOrientation(txyz& v, const c3DLoaderOrientation& orient) {
+inline void doFixOrientation(r3::txyz& v, const c3DLoaderOrientation& orient) {
     txyzFixOrientation(v, orient);
 }
 /*

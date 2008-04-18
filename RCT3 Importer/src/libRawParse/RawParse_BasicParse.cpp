@@ -27,6 +27,8 @@
 
 #include "RawParse_cpp.h"
 
+#include "ManagerCommon.h"
+
 cOvlType cRawParser::ParseType(const cXmlNode& node, const wxString& nodes, const wxString& attribute) {
     wxString t(node.getPropVal(attribute.mb_str(wxConvUTF8)).c_str(), wxConvUTF8);
     MakeVariable(t);
@@ -160,12 +162,19 @@ void cRawParser::ParseMatrix(const cXmlNode& node, MATRIX& m, const wxString& no
         throw RCT3Exception(wxString::Format(_("Missing matrix row in %s."), nodes.c_str()));
 }
 
-c3DLoaderOrientation cRawParser::ParseOrientation(const cXmlNode& node, const wxString& nodes) {
-    c3DLoaderOrientation ori = ORIENTATION_LEFT_YUP;
-    wxString hand = UTF8STRINGWRAP(node.getPropVal("handedness", "left"));
-    wxString up = UTF8STRINGWRAP(node.getPropVal("up", "y"));
-    if (hand == wxT("left")) {
-        if (up == wxT("x")) {
+c3DLoaderOrientation cRawParser::ParseOrientation(const cXmlNode& node, const wxString& nodes, c3DLoaderOrientation defori) {
+    c3DLoaderOrientation ori = defori;
+    wxString hand = UTF8STRINGWRAP(node.getPropVal("handedness"));
+    wxString up = UTF8STRINGWRAP(node.getPropVal("up"));
+    if (hand.IsEmpty()) {
+        if (!up.IsEmpty()) {
+            throw RCT3Exception(wxString::Format(_("Hand attribute missing in %s."), up.c_str(), nodes.c_str()));
+        }
+        // Fall through to default
+    } else if (hand == wxT("left")) {
+        if (up.IsEmpty()) {
+            throw RCT3Exception(wxString::Format(_("Up attribute missing in %s."), up.c_str(), nodes.c_str()));
+        } else if (up == wxT("x")) {
             ori = ORIENTATION_LEFT_XUP;
         } else if (up == wxT("y")) {
             ori = ORIENTATION_LEFT_YUP;
@@ -175,7 +184,9 @@ c3DLoaderOrientation cRawParser::ParseOrientation(const cXmlNode& node, const wx
             throw RCT3Exception(wxString::Format(_("Unknown value '%s' for up attribute in %s."), up.c_str(), nodes.c_str()));
         }
     } else if (hand == wxT("right")) {
-        if (up == wxT("x")) {
+        if (up.IsEmpty()) {
+            throw RCT3Exception(wxString::Format(_("Up attribute missing in %s."), up.c_str(), nodes.c_str()));
+        } else if (up == wxT("x")) {
             ori = ORIENTATION_RIGHT_XUP;
         } else if (up == wxT("y")) {
             ori = ORIENTATION_RIGHT_YUP;
@@ -263,4 +274,77 @@ void cRawParser::ParseVariables(cXmlNode& node, bool command, const wxString& pa
         child.go_next();
     }
 }
+
+void cRawParser::ParseAttraction(const cXmlNode& node, cAttraction& attraction) {
+    USE_PREFIX(node);
+    OPTION_PARSE(unsigned long, attraction.type, ParseUnsigned(node, wxT(RAWXML_ATTRACTION), wxT("type")));
+    OPTION_PARSE(unsigned char, attraction.version, ParseUnsigned(node, wxT(RAWXML_ATTRACTION), wxT("version")));
+    ParseStringOption(attraction.icon, node, "icon", NULL, useprefix);
+    ParseStringOption(attraction.spline, node, "loopSpline", NULL, useprefix);
+
+    foreach(const cXmlNode& child, node.children()) {
+        DO_CONDITION_COMMENT_FOR(child);
+
+        if (child(RAWXML_ATTRACTION_PATH)) {
+            USE_PREFIX(child);
+            string path = ParseString(child, RAWXML_ATTRACTION_PATH, "spline", NULL, useprefix);
+            attraction.splines.push_back(path);
+        } else if (child(RAWXML_ATTRACTION_MISC)) {
+            OPTION_PARSE(unsigned long, attraction.baseUpkeep, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_MISC), wxT("baseUpkeep")));
+            OPTION_PARSE(unsigned long, attraction.unk2, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_MISC), wxT("u2")));
+            OPTION_PARSE(unsigned long, attraction.unk3, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_MISC), wxT("u3")));
+            OPTION_PARSE(unsigned long, attraction.flags, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_MISC), wxT("flags")));
+            OPTION_PARSE(long, attraction.maxHeight, ParseSigned(child, wxT(RAWXML_ATTRACTION_MISC), wxT("maxHeight")));
+        } else if (child(RAWXML_ATTRACTION_STATIC_UNK)) {
+            OPTION_PARSE(unsigned long, attraction.unk4, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_STATIC_UNK), wxT("u4")));
+            OPTION_PARSE(unsigned long, attraction.unk5, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_STATIC_UNK), wxT("u5")));
+        } else if (child(RAWXML_ATTRACTION_EXTENSION)) {
+            OPTION_PARSE(unsigned long, attraction.addonascn, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_EXTENSION), wxT("addonAssociation")));
+            OPTION_PARSE(unsigned long, attraction.unk12, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_EXTENSION), wxT("u12")));
+            OPTION_PARSE(unsigned long, attraction.unk13, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_EXTENSION), wxT("u13")));
+        } else if (child.element()) {
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in attraction tag."), STRING_FOR_FORMAT(child.name())));
+        }
+    }
+}
+
+void cRawParser::ParseRide(const xmlcpp::cXmlNode& node, cRide& ride) {
+    OPTION_PARSE(unsigned long, ride.seating, ParseUnsigned(node, wxT(RAWXML_RIDE), wxT("seating")));
+    OPTION_PARSE(unsigned char, ride.attractivity, ParseUnsigned(node, wxT(RAWXML_RIDE), wxT("attractivity")));
+    OPTION_PARSE(unsigned long, ride.entry_fee, ParseUnsigned(node, wxT(RAWXML_RIDE), wxT("entryFee")));
+
+    foreach(const cXmlNode& child, node.children()) {
+        DO_CONDITION_COMMENT_FOR(child);
+
+        if (child(RAWXML_RIDE_OPTION)) {
+            cRideOption option;
+            option.type = ParseUnsigned(child, RAWXML_RIDE_OPTION, "type");
+            OPTION_PARSE(unsigned short, option.option.suboption, ParseUnsigned(child, wxT(RAWXML_RIDE_OPTION), wxT("suboptionValue")));
+            OPTION_PARSE(unsigned short, option.option.group, ParseUnsigned(child, wxT(RAWXML_RIDE_OPTION), wxT("suboptionGroup")));
+            int p = 0;
+            foreach(const cXmlNode& param, child.children()) {
+                if (param(RAWXML_RIDE_OPTION_PARAMETER)) {
+                    if (p >= 4)
+                        break;
+                    parseFloatC(param(), option.param[p]);
+                    ++p;
+                }
+            }
+            ride.options.push_back(option);
+        } else if (child(RAWXML_RIDE_STATIC_UNK)) {
+            OPTION_PARSE(unsigned long, ride.unk4, ParseUnsigned(child, wxT(RAWXML_RIDE_STATIC_UNK), wxT("u4")));
+            OPTION_PARSE(long, ride.unk5, ParseSigned(child, wxT(RAWXML_RIDE_STATIC_UNK), wxT("u5")));
+            OPTION_PARSE(unsigned long, ride.unk11, ParseUnsigned(child, wxT(RAWXML_RIDE_STATIC_UNK), wxT("u11")));
+            OPTION_PARSE(unsigned long, ride.unk12, ParseUnsigned(child, wxT(RAWXML_RIDE_STATIC_UNK), wxT("u12")));
+            OPTION_PARSE(long, ride.unk13, ParseSigned(child, wxT(RAWXML_RIDE_STATIC_UNK), wxT("u13")));
+            OPTION_PARSE(long, ride.unk14, ParseSigned(child, wxT(RAWXML_RIDE_STATIC_UNK), wxT("u14")));
+            OPTION_PARSE(long, ride.unk15, ParseSigned(child, wxT(RAWXML_RIDE_STATIC_UNK), wxT("u15")));
+            OPTION_PARSE(unsigned long, ride.unk16, ParseUnsigned(child, wxT(RAWXML_RIDE_STATIC_UNK), wxT("u16")));
+            OPTION_PARSE(unsigned long, ride.unk17, ParseUnsigned(child, wxT(RAWXML_RIDE_STATIC_UNK), wxT("u17")));
+        } else if (child.element()) {
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ride tag."), STRING_FOR_FORMAT(child.name())));
+        }
+    }
+}
+
 

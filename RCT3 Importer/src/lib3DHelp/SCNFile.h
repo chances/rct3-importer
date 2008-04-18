@@ -28,6 +28,8 @@
 
 #include "wx_pch.h"
 
+#include <boost/shared_ptr.hpp>
+
 #include "RCT3Structs.h"
 //#include "3DLoader.h"
 #include "cXmlDoc.h"
@@ -50,6 +52,7 @@
 #define RCT3XML_CSCNFILE_MODELS "models"
 #define RCT3XML_CSCNFILE_ANIMATEDMODELS "animatedmodels"
 #define RCT3XML_CSCNFILE_ANIMATIONS "animations"
+#define RCT3XML_CSCNFILE_SPLINES "splines"
 #define RCT3XML_CSCNFILE_LODS "lods"
 #define RCT3XML_CSCNFILE_REFERENCES "references"
 
@@ -65,14 +68,19 @@ public:
 //    long error;
 //    wxString objfile;
     bool save_relative_paths;
+    bool imported;
 
 	cSIVSettings sivsettings;
     cFlexiTexture::vec flexitextures;
     cModel::vec models;
     cAnimatedModel::vec animatedmodels;
     cAnimation::vec animations;
+    cImpSpline::vec splines;
     cLOD::vec lods;
     wxArrayString references;
+
+    template<class T>
+    inline typename T::vec& collection() { return T::breakme; }
 
 //    wxArrayString tmpmeshlist;
 
@@ -82,8 +90,8 @@ public:
 //	wxArrayString transformnames;
 
 
-	cSCNFile(): filename(wxT("")),version(VERSION_CSCNFILE),save_relative_paths(true),m_work(NULL) {};
-	cSCNFile(wxString l_filename, xmlcpp::cXmlDoc* doc = NULL): filename(l_filename),save_relative_paths(true),m_work(NULL) {
+	cSCNFile(): filename(wxT("")),version(VERSION_CSCNFILE),save_relative_paths(true),imported(false) {};
+	cSCNFile(wxString l_filename, xmlcpp::cXmlDoc* doc = NULL): filename(l_filename),save_relative_paths(true),imported(false) {
 	    if (doc) {
 	        LoadXML(*doc);
 	    } else {
@@ -92,6 +100,10 @@ public:
     };
 	void Init();
 	bool Load();
+	inline bool Load(const wxString& l_filename) {
+	    filename = l_filename;
+	    return Load();
+	}
 	void LoadTextures(FILE *f);
 	bool LoadModels(FILE *f);
 	void LoadLODs(FILE *f);
@@ -123,8 +135,17 @@ public:
     virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
     virtual xmlcpp::cXmlNode GetNode(const wxString& path);
     virtual const std::string GetTagName() const {return RCT3XML_CSCNFILE;};
+
+    static wxString GetSupportedFilesFilter() {
+        return _("All Supported Files|") + GetSupportedFilesFilterExt() + wxT(";") + c3DLoader::GetSupportedFilesFilterExt() +
+            _("|Supported Scenery Files|*.scn;*.xml|Old Scenery Files (*.scn)|*.scn|New Scenery Files (*.xml)|*.xml|") +
+            c3DLoader::GetSupportedFilesFilter();
+    }
+    static wxString GetSupportedFilesFilterExt() {
+        return _("*.scn;*.xml");
+    }
 private:
-    cSCNFile* m_work;
+    boost::shared_ptr<cSCNFile> m_work;
     int m_meshes;
     int m_textures;
     bool m_textureovl;
@@ -132,6 +153,22 @@ private:
 //    void ResetAndReload(c3DLoader *obj);
 //    void Fixup(c3DLoader *obj);
     bool FromCompilerXml(xmlcpp::cXmlNode& node, const wxString& path);
+    bool FromModelFile(boost::shared_ptr<c3DLoader>& model);
 };
+
+
+template<>
+inline cFlexiTexture::vec& cSCNFile::collection<cFlexiTexture>() { return flexitextures; }
+template<>
+inline cModel::vec& cSCNFile::collection<cModel>() { return models; }
+template<>
+inline cAnimatedModel::vec& cSCNFile::collection<cAnimatedModel>() { return animatedmodels; }
+template<>
+inline cAnimation::vec& cSCNFile::collection<cAnimation>() { return animations; }
+template<>
+inline cImpSpline::vec& cSCNFile::collection<cImpSpline>() { return splines; }
+template<>
+inline cLOD::vec& cSCNFile::collection<cLOD>() { return lods; }
+
 
 #endif // SCNFILE_H_INCLUDED

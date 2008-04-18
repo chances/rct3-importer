@@ -58,6 +58,9 @@ enum eRawOvlMode {
     MODE_BAKE = 2
 };
 
+class cAttraction;
+class cRide;
+
 class cRawDatablock {
 private:
     boost::shared_array<unsigned char> m_data;
@@ -117,7 +120,11 @@ private:
     double ParseFloat(const xmlcpp::cXmlNode& node, const wxString& nodes, const wxString& attribute);
     void ParseVector(const xmlcpp::cXmlNode& node, r3::VECTOR& v, const wxString& nodes);
     void ParseMatrix(const xmlcpp::cXmlNode& node, r3::MATRIX& m, const wxString& nodes);
-    c3DLoaderOrientation ParseOrientation(const xmlcpp::cXmlNode& node, const wxString& nodes);
+
+    void ParseAttraction(const xmlcpp::cXmlNode& node, cAttraction& attraction);
+    void ParseRide(const xmlcpp::cXmlNode& node, cRide& ride);
+
+    c3DLoaderOrientation ParseOrientation(const xmlcpp::cXmlNode& node, const wxString& nodes, c3DLoaderOrientation defori = ORIENTATION_LEFT_YUP);
 
     bool MakeVariable(wxString& var);
     void PassBakeStructures(const wxSortedArrayString& bake) {
@@ -133,6 +140,7 @@ private:
 
     void CopyBaseAttributes(const xmlcpp::cXmlNode& from, xmlcpp::cXmlNode& to);
 
+    void ParseANR(xmlcpp::cXmlNode& node);
     void ParseBAN(xmlcpp::cXmlNode& node);
     void ParseBSH(xmlcpp::cXmlNode& node);
     void ParseCED(xmlcpp::cXmlNode& node);

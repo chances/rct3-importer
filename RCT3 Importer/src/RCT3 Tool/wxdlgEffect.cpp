@@ -36,6 +36,7 @@
 
 #include "matrix.h"
 #include "SCNFile.h"
+#include "pretty.h"
 #include "valext.h"
 #include "wxInputBox.h"
 
@@ -47,6 +48,7 @@
 #include "wxdlgModel.h"
 
 using namespace r3;
+using namespace std;
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -206,10 +208,11 @@ dlgEffectBase::dlgEffectBase(wxWindow *parent, bool effect) {
 */
     dlgModel *mod = dynamic_cast<dlgModel *> (parent);
     if (mod) {
-        wxArrayString names;
-        std::vector<VECTOR> points;
-        mod->FetchOneVertexMeshes(names, points);
-        if (points.size()) {
+//        wxArrayString names;
+//        std::vector<VECTOR> points;
+//        mod->FetchOneVertexMeshes(names, points);
+        const cModel* pmod = mod->GetModelPtr();
+        if (pmod->model_bones.size()) {
             wxMenuItemList p1menuitems = m_menuPos1->GetMenuItems();
             wxMenu* p1item = NULL;
             for (wxMenuItemList::iterator node = p1menuitems.begin(); node != p1menuitems.end(); ++node) {
@@ -238,19 +241,38 @@ dlgEffectBase::dlgEffectBase(wxWindow *parent, bool effect) {
                     }
                 }
             }
-            for (int i = 0; i < points.size(); i++) {
+            //for (int i = 0; i < points.size(); i++) {
+            /*
+            for (vector<c3DBone>::const_iterator it = pmod->model_bones.begin(); it != pmod->model_bones.end(); ++it) {
                 int newid = wxNewId();
-                m_IdMap[0][newid] = points[i];
-                m_IdNameMap[0][newid] = names[i];
+                m_IdMap[0][newid] = &(*it);
+                m_IdNameMap[0][newid] = it->m_name;
                 if (p1item) {
-                    p1item->Append(newid, names[i]);
+                    p1item->Append(newid, it->m_name);
                     Connect(newid, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(dlgEffectBase::OnQuickMenu1));
                 }
                 if (p2item) {
                     newid = wxNewId();
-                    m_IdMap[1][newid] = points[i];
-                    m_IdNameMap[1][newid] = names[i];
-                    p2item->Append(newid, names[i]);
+                    m_IdMap[1][newid] = &(*it);
+                    m_IdNameMap[1][newid] = it->m_name;
+                    p2item->Append(newid, it->m_name);
+                    Connect(newid, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(dlgEffectBase::OnQuickMenu2));
+                }
+            }
+            */
+            foreach(const c3DBone::pair& bone, pmod->model_bones) {
+                int newid = wxNewId();
+                m_IdMap[0][newid] = &bone.second;
+                m_IdNameMap[0][newid] = bone.first;
+                if (p1item) {
+                    p1item->Append(newid, bone.first);
+                    Connect(newid, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(dlgEffectBase::OnQuickMenu1));
+                }
+                if (p2item) {
+                    newid = wxNewId();
+                    m_IdMap[1][newid] = &bone.second;
+                    m_IdNameMap[1][newid] = bone.first;
+                    p2item->Append(newid, bone.first);
                     Connect(newid, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(dlgEffectBase::OnQuickMenu2));
                 }
             }
@@ -333,11 +355,10 @@ void dlgEffectBase::DoQuickMenu(const int id, wxArrayString& names, std::vector<
             dialog->Destroy();
         }
     } else {
-        wxIdOVMMap::iterator vec = m_IdMap[nr].find(id);
+        std::map<int, const c3DBone*>::iterator vec = m_IdMap[nr].find(id);
         if (vec != m_IdMap[nr].end()) {
-            VECTOR v = vec->second;
-            newmatrixname = wxString::Format(_("Translation by <%.4f,%.4f,%.4f> (%s)"), v.x, v.y, v.z, m_IdNameMap[nr][id].c_str());
-            newmatrix = matrixGetTranslation(v);
+            newmatrixname = wxString::Format(_("Imported from bone/effect %s"), m_IdNameMap[nr][id].c_str());
+            newmatrix = vec->second->m_pos[1];
 
             transforms.clear();
             names.clear();

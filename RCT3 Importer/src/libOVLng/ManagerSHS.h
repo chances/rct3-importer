@@ -40,7 +40,7 @@
 
 class cEffectStruct {
 public:
-    string name;
+    std::string name;
 	r3::MATRIX pos;
 
     cEffectStruct() {};
@@ -52,13 +52,13 @@ public:
 class cStaticShape2 {
 public:
     long support;
-	string fts; //is 0 in disk files
-	string texturestyle; //is 0 in disk files
+	std::string fts; //is 0 in disk files
+	std::string texturestyle; //is 0 in disk files
 	unsigned long placetexturing; //0 = dont see texturing on things when being placed, 1 = see texturing on things when being placed
 	unsigned long textureflags; //always 0
 	unsigned long sides; //seen values of 3 or 1 for this, 3 is more common
-	vector<r3::VERTEX> vertices;
-	vector<unsigned long> indices;
+	std::vector<r3::VERTEX> vertices;
+	std::vector<unsigned long> indices;
 
 #ifndef GLASS_OLD
 	cTriangleSortAlgorithm::Algorithm algo_x;
@@ -85,11 +85,11 @@ public:
 
 class cStaticShape1 {
 public:
-    string name;
+    std::string name;
     r3::VECTOR bbox1;
     r3::VECTOR bbox2;
-	vector<cStaticShape2> meshes;
-    vector<cEffectStruct> effects;
+	std::vector<cStaticShape2> meshes;
+    std::vector<cEffectStruct> effects;
 
 	cStaticShape1() {};
 	void Fill(r3::StaticShape* ss1);
@@ -100,7 +100,7 @@ public:
     static const char* NAME;
     static const char* TAG;
 private:
-    map<string, cStaticShape1> m_items;
+    std::map<std::string, cStaticShape1> m_items;
 public:
     ovlSHSManager(): ovlOVLManager() {};
 

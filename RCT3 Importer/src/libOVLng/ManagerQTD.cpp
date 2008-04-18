@@ -34,6 +34,8 @@
 #include "ManagerTXT.h"
 #include "OVLException.h"
 
+using namespace std;
+
 const char* ovlQTDManager::NAME = "QueueType";
 const char* ovlQTDManager::TAG = "qtd";
 

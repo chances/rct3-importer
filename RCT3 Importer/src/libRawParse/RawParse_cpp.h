@@ -40,6 +40,7 @@
 #include "SCNFile.h"
 #include "gximage.h"
 #include "matrix.h"
+#include "pretty.h"
 #include "rct3log.h"
 #include "xmlhelper.h"
 #include "xmldefs.h"
@@ -56,6 +57,7 @@
 #define RAWXML_WRITE   "write"
 #define RAWXML_DATA    "data"
 
+#define RAWXML_ANR "anr"
 #define RAWXML_BAN "ban"
 #define RAWXML_BSH "bsh"
 #define RAWXML_BTBL "btbl"
@@ -75,6 +77,8 @@
 #define RAWXML_TEX "tex"
 #define RAWXML_TXT "txt"
 #define RAWXML_WAI "wai"
+
+#define RAWXML_UNKNOWNS "unknowns"
 
 #define RAWXML_BAN_BONE             "banbone"
 #define RAWXML_BAN_BONE_TRANSLATION "translation"
@@ -197,8 +201,16 @@
 #define RAWXML_WAI_PARAMETERS       "waiparameters"
 #define RAWXML_WAI_UNKNOWNS         "waiunknowns"
 
-#define RAWXML_ATTRACTION_BASE      "attractionbase"
-#define RAWXML_ATTRACTION_UNKNOWNS  "attractionunknowns"
+#define RAWXML_ATTRACTION           "attraction"
+#define RAWXML_ATTRACTION_PATH      "attractionPath"
+#define RAWXML_ATTRACTION_MISC      "attractionMisc"
+#define RAWXML_ATTRACTION_STATIC_UNK "attractionStaticUnknowns"
+#define RAWXML_ATTRACTION_EXTENSION "attractionExtension"
+
+#define RAWXML_RIDE                 "ride"
+#define RAWXML_RIDE_OPTION          "rideOption"
+#define RAWXML_RIDE_OPTION_PARAMETER "parameter"
+#define RAWXML_RIDE_STATIC_UNK      "rideStaticUnknowns"
 
 
 #define RAWXML_IMPORT    "import"
@@ -283,7 +295,48 @@ enum {
             wxLogMessage(t); \
         }
 
+#define DO_CONDITION_COMMENT_FOR(child) \
+        if (m_mode != MODE_BAKE) { \
+            if (child.hasProp("if")) { \
+                bool haveit = true; \
+                wxString t = UTF8STRINGWRAP(child.getPropVal("if")); \
+                MakeVariable(t); \
+                cRawParserVars::iterator it = m_commandvariables.find(t); \
+                if (it == m_commandvariables.end()) \
+                    it = m_variables.find(t); \
+                if (it == m_variables.end()) \
+                    haveit = false; \
+                if (haveit) { \
+                    haveit = it->second != wxT("0"); \
+                } \
+                if (!haveit) { \
+                    continue; \
+                } \
+            } \
+            if (child.hasProp("ifnot")) { \
+                bool haveit = true; \
+                wxString t = UTF8STRINGWRAP(child.getPropVal("ifnot")); \
+                MakeVariable(t); \
+                cRawParserVars::iterator it = m_commandvariables.find(t); \
+                if (it == m_commandvariables.end()) \
+                    it = m_variables.find(t); \
+                if (it == m_variables.end()) \
+                    haveit = false; \
+                if (haveit) { \
+                    haveit = it->second != wxT("0"); \
+                } \
+                if (haveit) { \
+                    continue; \
+                } \
+            } \
+        } \
+        if (child.hasProp("comment")) { \
+            wxString t = UTF8STRINGWRAP(child.getPropVal("comment")); \
+            MakeVariable(t); \
+            wxLogMessage(t); \
+        }
 using namespace r3;
+using namespace std;
 using namespace xmlcpp;
 
 bool CanBeWrittenTo(const wxFileName& target);

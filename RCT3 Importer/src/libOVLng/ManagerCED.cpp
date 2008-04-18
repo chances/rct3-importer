@@ -41,6 +41,16 @@ const char* ovlCEDManager::LOADER = "FGDK";
 const char* ovlCEDManager::NAME = "CarriedItemExtra";
 const char* ovlCEDManager::TAG = "ced";
 
+void cCarriedItemExtra::Fill(r3::CarriedItemExtra* ced) {
+    ced->unk1 = unk1;
+    ced->name = NULL;
+    ced->icon = NULL;
+    ced->unk4 = unk4;
+    ced->hunger = hunger;
+    ced->thirst = thirst;
+    ced->unk7 = unk7;
+}
+
 void ovlCEDManager::AddExtra(const cCarriedItemExtra& item) {
     Check("ovlCEDManager::AddExtra");
     if (item.name == "")

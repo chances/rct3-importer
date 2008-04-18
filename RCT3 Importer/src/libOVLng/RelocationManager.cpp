@@ -30,6 +30,8 @@
 
 #include "OVLDebug.h"
 
+using namespace std;
+
 void ovlRelocationManager::Init(cOvlInfo* info) {
     m_info = info;
 }

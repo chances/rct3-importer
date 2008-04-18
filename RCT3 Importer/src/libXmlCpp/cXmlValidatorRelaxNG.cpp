@@ -105,6 +105,10 @@ bool cXmlValidatorRelaxNG::read(const char* URL) {
 int cXmlValidatorRelaxNG::validate(boost::shared_ptr<xmlDoc>& doc, int options) {
     if (!ok())
         throw eXml("Tried to validate with invalid relaxng schema");
+
+    clearGenericErrors();
+    clearStructuredErrors();
+
     return xmlRelaxNGValidateDoc(m_context, doc.get());
 }
 

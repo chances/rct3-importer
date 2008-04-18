@@ -37,10 +37,17 @@
 #include "OVLException.h"
 
 using namespace r3;
+using namespace std;
 
 const char* ovlCHGManager::LOADER = "FGDK";
 const char* ovlCHGManager::NAME = "ChangingRoom";
 const char* ovlCHGManager::TAG = "chg";
+
+void cChangingRoom::Fill(r3::ChangingRoom* chg) {
+    chg->SID = NULL;
+    chg->spline = NULL;
+    attraction.Fill(chg->att);
+}
 
 void ovlCHGManager::AddRoom(const cChangingRoom& item) {
     Check("ovlCHGManager::AddRoom");

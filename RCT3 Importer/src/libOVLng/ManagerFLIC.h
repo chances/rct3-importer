@@ -39,8 +39,6 @@
 
 #include "icontexture.h"
 
-using namespace std;
-
 /*
 Here is how simple flics work:
 
@@ -74,8 +72,8 @@ public:
     static const char* TAG;
     unsigned long TYPE; // Not const, neither static!
 private:
-    map<unsigned long, cTexture> m_items;
-    map<string, unsigned long> m_itemmap;
+    std::map<unsigned long, cTexture> m_items;
+    std::map<std::string, unsigned long> m_itemmap;
     ovlBTBLManager* m_btbl;
 public:
     ovlFLICManager(): ovlOVLManager(), m_btbl(NULL) {
@@ -86,8 +84,8 @@ public:
 
     void AddTexture(const cTexture& item);
 
-    FlicStruct** GetPointer1(const string& name);
-    FlicStruct* GetPointer2(const string& name);
+    FlicStruct** GetPointer1(const std::string& name);
+    FlicStruct* GetPointer2(const std::string& name);
 
     virtual void Make(cOvlInfo* info);
 

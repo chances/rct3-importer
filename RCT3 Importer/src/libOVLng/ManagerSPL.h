@@ -55,15 +55,15 @@ public:
 
 class cSpline {
 public:
-    string name;
-    vector<r3::SplineNode> nodes;
+    std::string name;
+    std::vector<r3::SplineNode> nodes;
     unsigned long cyclic;
     float totallength;
     bool calc_length;
     float inv_totallength;
-    vector<float> lengths;
+    std::vector<float> lengths;
     unsigned long lengthcalcres;
-    vector<cSplineData> datas;
+    std::vector<cSplineData> datas;
     float max_y;
 
     cSpline() {
@@ -85,7 +85,7 @@ public:
     static const char* NAME;
     static const char* TAG;
 private:
-    map<string, cSpline>  m_items;
+    std::map<std::string, cSpline>  m_items;
 
 public:
     ovlSPLManager(): ovlOVLManager() {

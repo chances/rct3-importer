@@ -30,6 +30,8 @@
 
 #include "OVLException.h"
 
+using namespace std;
+
 const char* ovlTXTManager::LOADER = "FGDK";
 const char* ovlTXTManager::NAME = "Text";
 const char* ovlTXTManager::TAG = "txt";

@@ -13,6 +13,7 @@
 #ifndef ATTRACTION_H_INCLUDED
 #define ATTRACTION_H_INCLUDED
 
+#include "guiicon.h"
 #include "spline.h"
 
 namespace r3 {

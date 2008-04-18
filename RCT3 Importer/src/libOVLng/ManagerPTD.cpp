@@ -33,6 +33,8 @@
 #include "ManagerTXT.h"
 #include "OVLException.h"
 
+using namespace std;
+
 const char* ovlPTDManager::NAME = "PathType";
 const char* ovlPTDManager::TAG = "ptd";
 

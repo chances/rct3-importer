@@ -34,12 +34,30 @@
 #include "OVLException.h"
 #include "OVLng.h"
 
+using namespace std;
+
 const char* ovlTEXManager::LOADER = "FGDK";
 const char* ovlTEXManager::NAME = "Texture";
 const char* ovlTEXManager::TAG = "tex";
 const unsigned long ovlTEXManager::TYPE = 2;
 
 //#define GUIICON "GUIIcon"
+
+void cTextureStruct::Fill(TextureStruct* ts) {
+    ts->unk1 = unk1;
+    ts->unk2 = unk2;
+    ts->unk3 = unk3;
+    ts->unk4 = unk4;
+    ts->unk5 = unk5;
+    ts->unk6 = unk6;
+    ts->unk7 = unk7;
+    ts->unk8 = unk8;
+    ts->unk9 = unk9;
+    ts->unk10 = unk10;
+    ts->unk11 = unk11;
+    ts->TextureData = NULL;
+    ts->unk12 = unk12;
+}
 
 void ovlTEXManager::Init(cOvl* ovl) {
     ovlOVLManager::Init(ovl);

@@ -16,14 +16,17 @@
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
-					<Add option="-g" />
+					<Add option="-Os" />
+					<Add option="-O2" />
 					<Add directory="$(#wx3.lib)\wx\include\msw-unicode-release-static-2.9" />
 				</Compiler>
 				<Linker>
+					<Add option="-s" />
 					<Add library="WXHelpu" />
 					<Add library="wx_mswu-2.9" />
 					<Add library="wxscintilla-2.9" />
 					<Add library="XmlCppu" />
+					<Add library="3DHelpu" />
 					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
@@ -47,6 +50,7 @@
 					<Add library="WXHelpud" />
 					<Add library="wx_mswud-2.9" />
 					<Add library="XmlCppud" />
+					<Add library="3DHelpud" />
 					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
@@ -75,6 +79,8 @@
 			<Add directory="..\libWXHelp" />
 			<Add directory="..\libXmlCpp" />
 			<Add directory="$(#mingw.include)\libxml2" />
+			<Add directory="..\lib3DHelp" />
+			<Add directory="..\..\include" />
 		</Compiler>
 		<Linker>
 			<Add library="exslt" />
@@ -94,11 +100,16 @@
 			<Add library="bz2" />
 			<Add directory="..\..\lib" />
 		</Linker>
-		<Unit filename="fileselectorcombofile.h" />
+		<Unit filename="resources\keyframe.fbp">
+			<Option compile="1" />
+			<Option weight="0" />
+		</Unit>
 		<Unit filename="resources\main.fbp">
 			<Option compile="1" />
 			<Option weight="0" />
 		</Unit>
+		<Unit filename="validator_keyframes.cpp" />
+		<Unit filename="validator_keyframes.h" />
 		<Unit filename="validatorapp.cpp" />
 		<Unit filename="validatorapp.h" />
 		<Unit filename="validatormain.cpp" />

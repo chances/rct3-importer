@@ -405,7 +405,7 @@ struct SceneryItem
 	unsigned long type;
 	char *supports;
 	unsigned long svdcount;
-	r3::SceneryItemVisual **svd;
+	r3::SceneryItemVisual_V **svd;
 	GUISkinItem *gsi;
 	GUISkinItem *wallsetgsi;
 	wchar_t *wallsetname;

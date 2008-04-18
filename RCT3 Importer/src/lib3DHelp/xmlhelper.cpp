@@ -37,18 +37,18 @@ using namespace r3;
 using namespace std;
 using namespace boost::spirit;
 
-bool parseFloat(std::string& str, float& a) {
+bool parseFloat_(std::string& str, float& a) {
     boost::algorithm::trim(str);
     real_parser<float, real_parser_policies<float> > real_pf;
     return parse(str.c_str(), real_pf[assign_a(a)], space_p).full;
 }
 
-bool parseFloat(std::string& str, double& a) {
+bool parseFloat_(std::string& str, double& a) {
     boost::algorithm::trim(str);
     return parse(str.c_str(), real_p[assign_a(a)], space_p).full;
 }
 
-bool parseULong(std::string& str, unsigned long& a) {
+bool parseULong_(std::string& str, unsigned long& a) {
     boost::algorithm::trim(str);
     return parse(str.c_str(), uint_p[assign_a(a)], space_p).full;
 }

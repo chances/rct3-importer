@@ -25,6 +25,8 @@
 #ifndef XMLCPP_CXSLTSTYLESHEET_H
 #define XMLCPP_CXSLTSTYLESHEET_H
 
+#include "cxmlconfig.h"
+
 #ifdef XMLCPP_USE_XSLT
 
 #include <map>

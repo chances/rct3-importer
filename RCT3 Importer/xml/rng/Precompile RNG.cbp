@@ -27,6 +27,8 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="ms3d_comment.rnc.gz.h" />
+		<Unit filename="ms3d_comment.srng" />
 		<Unit filename="rct3xml-raw-v1.rnc.gz.h" />
 		<Unit filename="rct3xml-raw-v1.rng" />
 		<Unit filename="relaxng.rnc.gz.h" />

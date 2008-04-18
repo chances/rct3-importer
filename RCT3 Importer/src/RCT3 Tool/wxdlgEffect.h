@@ -33,13 +33,14 @@
 
 #include "wx_pch.h"
 
+#include <map>
 #include <wx/xrc/xmlres.h>
 
 #include "RCT3Structs.h"
 
 class wxEffectCombo;
-WX_DECLARE_HASH_MAP( int, r3::VECTOR, wxIntegerHash, wxIntegerEqual, wxIdOVMMap );
-WX_DECLARE_HASH_MAP( int, wxString, wxIntegerHash, wxIntegerEqual, wxIdStringMap );
+//WX_DECLARE_HASH_MAP( int, r3::VECTOR, wxIntegerHash, wxIntegerEqual, wxIdOVMMap );
+//WX_DECLARE_HASH_MAP( int, wxString, wxIntegerHash, wxIntegerEqual, wxIdStringMap );
 
 class dlgEffectBase : public wxDialog {
 protected:
@@ -68,8 +69,8 @@ protected:
 
     wxEffectCombo* m_textEffectName;
 
-    wxIdOVMMap m_IdMap[2];
-    wxIdStringMap m_IdNameMap[2];
+    std::map<int, const c3DBone*> m_IdMap[2];
+    std::map<int, wxString> m_IdNameMap[2];
 
 //    wxMenu* m_menuPopup;
 //    std::vector<D3DVECTOR> m_points;

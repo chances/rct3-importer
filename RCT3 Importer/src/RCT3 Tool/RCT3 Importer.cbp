@@ -33,7 +33,7 @@
 					<Add library="libASE" />
 					<Add library="wx_msw-2.8" />
 					<Add library="libOVLng" />
-					<Add library="XmlCpp" />
+					<Add library="XmlCpp_slim" />
 					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
@@ -52,7 +52,7 @@
 					<Add option="-DDEBUG" />
 					<Add option="-D__WXDEBUG__" />
 					<Add directory="..\libOVL" />
-					<Add directory="$(#wx.ansidebugstatic)" />
+					<Add directory="$(#wx.lib)\wx\include\msw-ansi-debug-static-2.8" />
 				</Compiler>
 				<Linker>
 					<Add library="libOVLd" />
@@ -61,7 +61,7 @@
 					<Add library="libASE" />
 					<Add library="libOVLngd" />
 					<Add library="wx_mswd-2.8" />
-					<Add library="XmlCppd" />
+					<Add library="XmlCpp_slimd" />
 					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
@@ -112,6 +112,7 @@
 			<Add option="-DCACHE_GXIMAGE" />
 			<Add option="-DXMLCPP_USE_XSLT" />
 			<Add option="-DXMLCPP_USE_WXWIDGETS" />
+			<Add option="-DXMLCPP_SLIM" />
 			<Add directory="$(#wx.include)" />
 			<Add directory="..\lib3DHelp" />
 			<Add directory="..\..\include" />
@@ -160,12 +161,6 @@
 			<Option virtualFolder="resources\" />
 			<Option compiler="gcc" use="1" buildCommand="bin2c -c $file $file.h" />
 			<Option target="Precompile XRC" />
-		</Unit>
-		<Unit filename="bmy.pal.h">
-			<Option virtualFolder="resources\" />
-			<Option target="Release" />
-			<Option target="Debug" />
-			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="changelog.txt">
 			<Option target="Release" />
@@ -266,6 +261,18 @@
 			<Option target="Debug" />
 			<Option target="Debug (Public)" />
 		</Unit>
+		<Unit filename="wxdlgAnimation_HTLB.cpp">
+			<Option virtualFolder="wx\" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Debug (Public)" />
+		</Unit>
+		<Unit filename="wxdlgAnimation_HTLB.h">
+			<Option virtualFolder="wx\" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Debug (Public)" />
+		</Unit>
 		<Unit filename="wxdlgAttract.cpp">
 			<Option virtualFolder="wx\" />
 			<Option target="Release" />
@@ -297,6 +304,18 @@
 			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="wxdlgCreateScenery.h">
+			<Option virtualFolder="wx\" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Debug (Public)" />
+		</Unit>
+		<Unit filename="wxdlgCreateScenery_HTLB.cpp">
+			<Option virtualFolder="wx\" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Debug (Public)" />
+		</Unit>
+		<Unit filename="wxdlgCreateScenery_HTLB.h">
 			<Option virtualFolder="wx\" />
 			<Option target="Release" />
 			<Option target="Debug" />
@@ -345,6 +364,30 @@
 			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="wxdlgLOD.h">
+			<Option virtualFolder="wx\" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Debug (Public)" />
+		</Unit>
+		<Unit filename="wxdlgLOD_HTLB.cpp">
+			<Option virtualFolder="wx\" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Debug (Public)" />
+		</Unit>
+		<Unit filename="wxdlgLOD_HTLB.h">
+			<Option virtualFolder="wx\" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Debug (Public)" />
+		</Unit>
+		<Unit filename="wxdlgLoadFromFile.cpp">
+			<Option virtualFolder="wx\" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Debug (Public)" />
+		</Unit>
+		<Unit filename="wxdlgLoadFromFile.h">
 			<Option virtualFolder="wx\" />
 			<Option target="Release" />
 			<Option target="Debug" />
@@ -434,10 +477,33 @@
 			<Option target="Debug" />
 			<Option target="Debug (Public)" />
 		</Unit>
-		<Unit filename="xrc\xrc_animation.xrc">
+		<Unit filename="xrc\animation.fbp">
 			<Option compile="1" />
-			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_animation.cpp --function=InitXmlAnimation $file" />
-			<Option target="Precompile XRC" />
+			<Option weight="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Debug (Public)" />
+		</Unit>
+		<Unit filename="xrc\createscenery.fbp">
+			<Option compile="1" />
+			<Option weight="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Debug (Public)" />
+		</Unit>
+		<Unit filename="xrc\lod.fbp">
+			<Option compile="1" />
+			<Option weight="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Debug (Public)" />
+		</Unit>
+		<Unit filename="xrc\misc.fbp">
+			<Option compile="1" />
+			<Option weight="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="xrc\xrc_attract.xrc">
 			<Option compile="1" />
@@ -447,11 +513,6 @@
 		<Unit filename="xrc\xrc_attractman.xrc">
 			<Option compile="1" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_attractman.cpp --function=InitXmlAttractMan $file" />
-			<Option target="Precompile XRC" />
-		</Unit>
-		<Unit filename="xrc\xrc_createscenery.xrc">
-			<Option compile="1" />
-			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_createscenery.cpp --function=InitXmlCreateScenery $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
 		<Unit filename="xrc\xrc_effect.xrc">
@@ -469,19 +530,9 @@
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_info.cpp --function=InitXmlInfo $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
-		<Unit filename="xrc\xrc_lod.xrc">
-			<Option compile="1" />
-			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_lod.cpp --function=InitXmlLOD $file" />
-			<Option target="Precompile XRC" />
-		</Unit>
 		<Unit filename="xrc\xrc_matrix.xrc">
 			<Option compile="1" />
 			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_matrix.cpp --function=InitXmlMatrix $file" />
-			<Option target="Precompile XRC" />
-		</Unit>
-		<Unit filename="xrc\xrc_misc.xrc">
-			<Option compile="1" />
-			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_misc.cpp --function=InitXmlMisc $file" />
 			<Option target="Precompile XRC" />
 		</Unit>
 		<Unit filename="xrc\xrc_model.xrc">
@@ -519,18 +570,6 @@
 			<Option target="Debug" />
 			<Option target="Debug (Public)" />
 		</Unit>
-		<Unit filename="xrc_animation.cpp">
-			<Option virtualFolder="xrc\" />
-			<Option target="Release" />
-			<Option target="Debug" />
-			<Option target="Debug (Public)" />
-		</Unit>
-		<Unit filename="xrc_animation.h">
-			<Option virtualFolder="xrc\" />
-			<Option target="Release" />
-			<Option target="Debug" />
-			<Option target="Debug (Public)" />
-		</Unit>
 		<Unit filename="xrc_attract.cpp">
 			<Option virtualFolder="xrc\" />
 			<Option target="Release" />
@@ -562,18 +601,6 @@
 			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="xrc_bitmap_crystal.h">
-			<Option virtualFolder="xrc\" />
-			<Option target="Release" />
-			<Option target="Debug" />
-			<Option target="Debug (Public)" />
-		</Unit>
-		<Unit filename="xrc_createscenery.cpp">
-			<Option virtualFolder="xrc\" />
-			<Option target="Release" />
-			<Option target="Debug" />
-			<Option target="Debug (Public)" />
-		</Unit>
-		<Unit filename="xrc_createscenery.h">
 			<Option virtualFolder="xrc\" />
 			<Option target="Release" />
 			<Option target="Debug" />
@@ -615,18 +642,6 @@
 			<Option target="Debug" />
 			<Option target="Debug (Public)" />
 		</Unit>
-		<Unit filename="xrc_lod.cpp">
-			<Option virtualFolder="xrc\" />
-			<Option target="Release" />
-			<Option target="Debug" />
-			<Option target="Debug (Public)" />
-		</Unit>
-		<Unit filename="xrc_lod.h">
-			<Option virtualFolder="xrc\" />
-			<Option target="Release" />
-			<Option target="Debug" />
-			<Option target="Debug (Public)" />
-		</Unit>
 		<Unit filename="xrc_matrix.cpp">
 			<Option virtualFolder="xrc\" />
 			<Option target="Release" />
@@ -634,18 +649,6 @@
 			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="xrc_matrix.h">
-			<Option virtualFolder="xrc\" />
-			<Option target="Release" />
-			<Option target="Debug" />
-			<Option target="Debug (Public)" />
-		</Unit>
-		<Unit filename="xrc_misc.cpp">
-			<Option virtualFolder="xrc\" />
-			<Option target="Release" />
-			<Option target="Debug" />
-			<Option target="Debug (Public)" />
-		</Unit>
-		<Unit filename="xrc_misc.h">
 			<Option virtualFolder="xrc\" />
 			<Option target="Release" />
 			<Option target="Debug" />

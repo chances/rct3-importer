@@ -39,10 +39,10 @@
 
 class cCarriedItemExtra {
 public:
-    string name;
+    std::string name;
     unsigned long unk1; // 0
-    string nametxt;
-	string icon;        // 20x20
+    std::string nametxt;
+	std::string icon;        // 20x20
 	unsigned long unk4; // 0 usually, 4 for Mustard
 	float hunger;       // >= 0.0, <= 0.3   Probably influences hunger
 	float thirst;       // >= -0.3, <=0.3   Probably influences thirst, negative increases, positive quenches
@@ -55,15 +55,7 @@ public:
         hunger = 0.0;
         thirst = 0.0;
     }
-    void Fill(r3::CarriedItemExtra* ced) {
-        ced->unk1 = unk1;
-        ced->name = NULL;
-        ced->icon = NULL;
-        ced->unk4 = unk4;
-        ced->hunger = hunger;
-        ced->thirst = thirst;
-        ced->unk7 = unk7;
-    }
+    void Fill(r3::CarriedItemExtra* ced);
 };
 
 
@@ -73,7 +65,7 @@ public:
     static const char* NAME;
     static const char* TAG;
 private:
-    map<string, cCarriedItemExtra>  m_extras;
+    std::map<std::string, cCarriedItemExtra>  m_extras;
 
 public:
     ovlCEDManager(): ovlOVLManager() {

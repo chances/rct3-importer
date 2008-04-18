@@ -23,9 +23,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-#ifdef XMLCPP_USE_XSLT
-
 #include "cXsltStylesheet.h"
+
+#ifdef XMLCPP_USE_XSLT
 
 #include <libxslt/transform.h>
 #include <libxslt/xsltutils.h>

@@ -36,6 +36,7 @@
 #include <stdexcept>
 
 using namespace r3;
+using namespace std;
 
 const char* ovlSHSManager::NAME = "StaticShape";
 const char* ovlSHSManager::TAG = "shs";

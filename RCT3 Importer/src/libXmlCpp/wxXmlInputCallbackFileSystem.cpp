@@ -27,6 +27,8 @@
 
 #include "wxXmlInputCallbackFileSystem.h"
 
+//#define DUMP
+
 namespace xmlcpp {
 
 wxXmlInputCallbackFileSystem* wxXmlInputCallbackFileSystem::g_instance = NULL;
@@ -47,11 +49,20 @@ wxXmlInputCallbackFileSystem::~wxXmlInputCallbackFileSystem() {
 }
 
 bool wxXmlInputCallbackFileSystem::match_in(const char* filename) {
+#ifdef DUMP
+    bool r = wxFileSystem::HasHandlerForPath(wxString(filename, wxConvUTF8));
+fprintf(stderr, "wxXmlInputCallbackFileSystem match_in: %s %s\n", filename, r?"YES":"NO");
+    return r;
+#else
     return wxFileSystem::HasHandlerForPath(wxString(filename, wxConvUTF8));
+#endif
 }
 
 unsigned long wxXmlInputCallbackFileSystem::open_in(const char* filename) {
     boost::shared_ptr<wxFSFile> f(m_fs.OpenFile(wxString(filename, wxConvUTF8), wxFS_READ));
+#ifdef DUMP
+fprintf(stderr, "wxXmlInputCallbackFileSystem open_in: %s\n", filename);
+#endif
     if (f.get()) {
         unsigned long id;
         if (m_idpool.size()) {
@@ -63,6 +74,9 @@ unsigned long wxXmlInputCallbackFileSystem::open_in(const char* filename) {
         m_files[id] = f;
         return id;
     } else {
+#ifdef DUMP
+fprintf(stderr, "wxXmlInputCallbackFileSystem open_in: %s FAILED!\n", filename);
+#endif
         return -1;
     }
 }

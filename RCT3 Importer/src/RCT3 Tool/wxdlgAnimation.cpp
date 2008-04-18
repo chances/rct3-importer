@@ -41,133 +41,14 @@
 #include "wxdlgCreateScenery.h"
 
 #include "wxdlgAnimation.h"
-
-////////////////////////////////////////////////////////////////////////
-//
-//  wxBonesListBox
-//
-////////////////////////////////////////////////////////////////////////
-
-class wxBonesListBox: public wxColourHtmlListBox {
-private:
-    cAnimation* m_contents;
-public:
-    wxBonesListBox(wxWindow *parent, cAnimation *content):
-            wxColourHtmlListBox(parent, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), wxSUNKEN_BORDER) {
-        wxLogDebug(wxT("Trace, wxBonesListBox::Create"));
-        m_contents = content;
-        UpdateContents();
-    };
-    void UpdateContents() {
-        wxLogDebug(wxT("wxBonesListBox::UpdateContents Size:%d"), m_contents->boneanimations.size());
-        SetItemCount(m_contents->boneanimations.size());
-        if (GetSelection() >= m_contents->boneanimations.size())
-            SetSelection(wxNOT_FOUND);
-        RefreshAll();
-    };
-    virtual wxString OnGetItem(size_t n) const {
-        wxLogDebug(wxT("wxBonesListBox::OnGetItem(%d) '%d'"), n, m_contents->boneanimations.size());
-        if (n < m_contents->boneanimations.size()) {
-            wxString addon = wxString::Format(wxT("%d&nbsp;translations<br>%d&nbsp;rotations"), m_contents->boneanimations[n].translations.size(), m_contents->boneanimations[n].rotations.size());
-            wxString ret = wxT("<font size='2'>")+wxEncodeHtmlEntities(m_contents->boneanimations[n].name)
-                +HTML_INSET_START+addon+HTML_INSET_END
-                +wxT("</font>");
-            wxLogDebug(wxT("wxBonesListBox::OnGetItem(%d) '%s'"), n, ret.c_str());
-            return ret;
-        } else {
-                return wxT("Internal Error");
-        }
-    }
-};
-
-
-////////////////////////////////////////////////////////////////////////
-//
-//  wxTranslationListBox
-//
-////////////////////////////////////////////////////////////////////////
-
-class wxTranslationListBox: public wxColourHtmlListBox {
-private:
-    cBoneAnimation** m_contents;
-public:
-    wxTranslationListBox(wxWindow *parent, cBoneAnimation **content):
-            wxColourHtmlListBox(parent, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), wxSUNKEN_BORDER) {
-        m_contents = content;
-        UpdateContents();
-    };
-    void UpdateContents() {
-        if (*m_contents) {
-            SetItemCount((*m_contents)->translations.size());
-            if (GetSelection() >= (*m_contents)->translations.size())
-                SetSelection(wxNOT_FOUND);
-        } else {
-            SetItemCount(0);
-            SetSelection(wxNOT_FOUND);
-        }
-        RefreshAll();
-    };
-    virtual wxString OnGetItem(size_t n) const {
-        if (*m_contents) {
-            if (n < (*m_contents)->translations.size()) {
-                return wxT("<font size='2'>")+wxString::Format(wxT("%.2f s"), (*m_contents)->translations[n].v.Time)
-                    +HTML_INSET_START+wxT("&lt;")+wxString::Format(wxT("%.6f,%.6f,%.6f"), (*m_contents)->translations[n].v.X, (*m_contents)->translations[n].v.Y, (*m_contents)->translations[n].v.Z)+wxT("&gt;")
-                    +HTML_INSET_END+wxT("</font>");
-            } else {
-                    return wxT("Internal Error");
-            }
-        } else
-            return wxT("");
-    }
-};
-
-
-////////////////////////////////////////////////////////////////////////
-//
-//  wxRotationListBox
-//
-////////////////////////////////////////////////////////////////////////
-
-class wxRotationListBox: public wxColourHtmlListBox {
-private:
-    cBoneAnimation** m_contents;
-public:
-    wxRotationListBox(wxWindow *parent, cBoneAnimation **content):
-            wxColourHtmlListBox(parent, wxID_ANY, wxDefaultPosition, wxSize(-1, -1), wxSUNKEN_BORDER) {
-        m_contents = content;
-        UpdateContents();
-    };
-    void UpdateContents() {
-        if (*m_contents) {
-            SetItemCount((*m_contents)->rotations.size());
-            if (GetSelection() >= (*m_contents)->rotations.size())
-                SetSelection(wxNOT_FOUND);
-        } else {
-            SetItemCount(0);
-            SetSelection(wxNOT_FOUND);
-        }
-        RefreshAll();
-    };
-    virtual wxString OnGetItem(size_t n) const {
-        if (*m_contents) {
-            if (n < (*m_contents)->rotations.size()) {
-                return wxT("<font size='2'>")+wxString::Format(wxT("%.2f s"), (*m_contents)->rotations[n].v.Time)
-                    +HTML_INSET_START+wxT("&lt;")+wxString::Format(wxT("%.2f°,%.2f°,%.2f°"), Rad2Deg((*m_contents)->rotations[n].v.X), Rad2Deg((*m_contents)->rotations[n].v.Y), Rad2Deg((*m_contents)->rotations[n].v.Z))+wxT("&gt;")
-                    +HTML_INSET_END+wxT("</font>");
-            } else {
-                    return wxT("Internal Error");
-            }
-        } else
-            return wxT("");
-    }
-};
-
+#include "wxdlgAnimation_HTLB.h"
 
 ////////////////////////////////////////////////////////////////////////
 //
 //  dlgAnimation
 //
 ////////////////////////////////////////////////////////////////////////
+/*
 BEGIN_EVENT_TABLE(dlgAnimation,wxDialog)
 EVT_LISTBOX(XRCID("m_htlbBones"), dlgAnimation::OnBoneChange)
 EVT_SPIN_UP(XRCID("m_spinBone"), dlgAnimation::OnBoneUp)
@@ -180,16 +61,19 @@ EVT_BUTTON(XRCID("m_btBoneClear"), dlgAnimation::OnBoneClear)
 EVT_TEXT(XRCID("m_comboBoneName"), dlgAnimation::OnBoneName)
 
 END_EVENT_TABLE()
+*/
 
-dlgAnimation::dlgAnimation(wxWindow *parent): m_currentbone(NULL) {
+dlgAnimation::dlgAnimation(wxWindow *parent):rcdlgAnimation(parent), m_currentbone(NULL) {
     wxLogDebug(wxT("Trace, dlgAnimation::Create"));
-    InitWidgetsFromXRC((wxWindow *)parent);
+//    InitWidgetsFromXRC((wxWindow *)parent);
 
     SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
 
+/*
     m_staticXRot->SetLabel(wxT("X (°)"));
     m_staticYRot->SetLabel(wxT("Y (°)"));
     m_staticZRot->SetLabel(wxT("Z (°)"));
+*/
 
     dlgCreateScenery* cs = dynamic_cast<dlgCreateScenery*>(parent);
     if (cs) {
@@ -210,12 +94,18 @@ dlgAnimation::dlgAnimation(wxWindow *parent): m_currentbone(NULL) {
     wxInputBox *t_ibName = new wxInputBox(this, wxID_ANY);
     t_ibName->SetEditor(m_textName);
 
+/*
     m_htlbBones = new wxBonesListBox(this, &m_animation);
     wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbBones"), m_htlbBones, this);
     m_htlbTranslations = new wxTranslationListBox(m_panCurrent, &m_currentbone);
     wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbTranslations"), m_htlbTranslations, m_panCurrent);
     m_htlbRotations = new wxRotationListBox(m_panCurrent, &m_currentbone);
     wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbRotations"), m_htlbRotations, m_panCurrent);
+*/
+
+    m_htlbBones->Init(&m_animation);
+    m_htlbTranslations->Init(&m_currentbone);
+    m_htlbRotations->Init(&m_currentbone);
 
     Fit();
     Layout();
@@ -254,6 +144,7 @@ void dlgAnimation::UpdateBone() {
         m_htlbTranslations->UpdateContents();
         m_htlbRotations->UpdateContents();
         m_comboBoneName->SetValue(wxT(""));
+/*
         m_textTimeTranslation->ChangeValue(wxT(""));
         m_textXTranslation->ChangeValue(wxT(""));
         m_textYTranslation->ChangeValue(wxT(""));
@@ -262,6 +153,7 @@ void dlgAnimation::UpdateBone() {
         m_textXRotation->ChangeValue(wxT(""));
         m_textYRotation->ChangeValue(wxT(""));
         m_textZRotation->ChangeValue(wxT(""));
+*/
         m_panCurrent->Disable();
     }
 }
@@ -303,7 +195,7 @@ void dlgAnimation::OnBoneDown(wxSpinEvent& WXUNUSED(event)) {
     UpdateBone();
 }
 
-void dlgAnimation::OnBoneAdd(wxCommandEvent& WXUNUSED(event)) {
+void dlgAnimation::OnBoneLoad(wxCommandEvent& WXUNUSED(event)) {
     cBoneAnimation ban;
     ban.name = _("New animated bone");
     m_animation.boneanimations.push_back(ban);

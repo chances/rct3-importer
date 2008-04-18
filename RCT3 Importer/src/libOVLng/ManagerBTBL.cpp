@@ -32,6 +32,8 @@
 #include "OVLException.h"
 #include "OVLng.h"
 
+using namespace std;
+
 const char* ovlBTBLManager::LOADER = "FGDK";
 const char* ovlBTBLManager::NAME = "BmpTbl";
 const char* ovlBTBLManager::TAG = "btbl";

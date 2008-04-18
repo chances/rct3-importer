@@ -155,64 +155,96 @@ void cRawParser::ParseSPL(cXmlNode& node) {
     cSpline spl;
     wxString name = ParseString(node, wxT(RAWXML_SPL), wxT("name"), NULL, useprefix);
     spl.name = name.ToAscii();
-    if (node.hasProp("totallength")) {
-        spl.calc_length = false;
-        spl.totallength = ParseFloat(node, wxT(RAWXML_SPL), wxT("totallength"));
-        spl.inv_totallength = ParseFloat(node, wxT(RAWXML_SPL), wxT("inv_totallength"));
-    }
-    OPTION_PARSE(float, spl.max_y, ParseFloat(node, wxT(RAWXML_SPL), wxT("max_y")));
-    OPTION_PARSE(unsigned long, spl.cyclic, ParseUnsigned(node, wxT(RAWXML_SPL), wxT("cyclic")));
-    OPTION_PARSE(unsigned long, spl.lengthcalcres, ParseUnsigned(node, wxT(RAWXML_SPL), wxT("autolengthres")));
-    c3DLoaderOrientation ori = ParseOrientation(node, wxString::Format(wxT("spl(%s) tag"), name.c_str()));
-    wxLogVerbose(wxString::Format(_("Adding spl %s to %s."), wxString(spl.name.c_str(), wxConvLocal).c_str(), m_output.GetFullPath().c_str()));
+    if (node.hasProp("modelFile")) {
+        wxString splinename = ParseString(node, wxT(RAWXML_SPL), wxT("splineObject"), NULL);
+        wxFSFileName modelfile = ParseString(node, wxT(RAWXML_SPL), wxT("modelFile"), NULL);
+        if (!modelfile.IsAbsolute())
+            modelfile.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
 
-    cXmlNode child(node.children());
-    while (child) {
-        DO_CONDITION_COMMENT(child);
+        // TODO: baking
 
-        if (child(RAWXML_SPL_NODE)) {
-            SplineNode sp;
-            sp.pos.x = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("x"));
-            sp.pos.y = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("y"));
-            sp.pos.z = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("z"));
-            sp.cp1.x = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("cp1x"));
-            sp.cp1.y = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("cp1y"));
-            sp.cp1.z = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("cp1z"));
-            sp.cp2.x = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("cp2x"));
-            sp.cp2.y = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("cp2y"));
-            sp.cp2.z = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("cp2z"));
-            if (ori != ORIENTATION_LEFT_YUP) {
-                doFixOrientation(sp.pos, ori);
-                doFixOrientation(sp.cp1, ori);
-                doFixOrientation(sp.cp2, ori);
-            }
-            spl.nodes.push_back(sp);
-        } else if (child(RAWXML_SPL_LENGTH)) {
-            float l = ParseFloat(child, wxT(RAWXML_SPL_LENGTH), wxT("length"));
-            spl.lengths.push_back(l);
-        } else if (child(RAWXML_SPL_DATA)) {
-            cSplineData dt;
-            wxString datastr = ParseString(child, wxT(RAWXML_SPL_DATA), wxT("data"), NULL);
-            if (datastr.Length() != 28)
-                throw RCT3InvalidValueException(wxString::Format(_("The data attribute of a spl(%s)/spldata tag is of invalid length"), name.c_str()));
-            const char* d = datastr.ToAscii();
-            for (int i = 0; i < 28; i+=2) {
-                unsigned char dta = 0;
-                unsigned char t = ParseDigit(d[i]);
-                if (t >= 16)
-                    throw RCT3InvalidValueException(wxString::Format(_("The data attribute of a spl(%s)/spldata tag has an invalid character"), name.c_str()));
-                dta += t * 16;
-                t = ParseDigit(d[i+1]);
-                if (t >= 16)
-                    throw RCT3InvalidValueException(wxString::Format(_("The data attribute of a spl(%s)/spldata tag has an invalid character"), name.c_str()));
-                dta += t;
-                dt.data[i/2] = dta;
-            }
-            spl.datas.push_back(dt);
-        } else if (child.element()) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in spl(%s) tag."), STRING_FOR_FORMAT(child.name()), name.c_str()));
+        boost::shared_ptr<c3DLoader> model(c3DLoader::LoadFile(modelfile.GetFullPath().c_str()));
+        if (!model.get())
+            throw RCT3Exception(_("spline tag: Model file not readable or has unknown format: ") + modelfile.GetFullPath());
+
+        if (!model->GetSplines().size()) {
+            throw RCT3Exception(_("spline tag: Model file does not contain splines: ") + modelfile.GetFullPath());
         }
-        child.go_next();
+
+        std::map<wxString, c3DSpline>::const_iterator sp = model->GetSplines().find(splinename);
+        if (sp == model->GetSplines().end()) {
+            throw RCT3Exception(wxString::Format(_("spline tag: Model file '%s' does not contain spline '%s'."), modelfile.GetFullPath().c_str(), splinename.c_str()));
+        }
+        if (!sp->second.m_nodes.size()) {
+            throw RCT3Exception(wxString::Format(_("spline tag: Model file '%s', spline '%s' has no nodes."), modelfile.GetFullPath().c_str(), splinename.c_str()));
+        }
+
+        c3DLoaderOrientation ori = ParseOrientation(node, wxString::Format(wxT("spl(%s) tag"), name.c_str()), model->GetOrientation());
+
+        wxLogMessage("%d", static_cast<int>(ori));
+
+        spl.nodes = sp->second.GetFixed(ori);
+        spl.cyclic = sp->second.m_cyclic;
+    } else {
+        if (node.hasProp("totallength")) {
+            spl.calc_length = false;
+            spl.totallength = ParseFloat(node, wxT(RAWXML_SPL), wxT("totalLength"));
+            spl.inv_totallength = ParseFloat(node, wxT(RAWXML_SPL), wxT("inv_totalLength"));
+        }
+        OPTION_PARSE(float, spl.max_y, ParseFloat(node, wxT(RAWXML_SPL), wxT("max_y")));
+        OPTION_PARSE(unsigned long, spl.cyclic, ParseUnsigned(node, wxT(RAWXML_SPL), wxT("cyclic")));
+        OPTION_PARSE(unsigned long, spl.lengthcalcres, ParseUnsigned(node, wxT(RAWXML_SPL), wxT("autoLengthRes")));
+        c3DLoaderOrientation ori = ParseOrientation(node, wxString::Format(wxT("spl(%s) tag"), name.c_str()));
+        wxLogVerbose(wxString::Format(_("Adding spl %s to %s."), wxString(spl.name.c_str(), wxConvLocal).c_str(), m_output.GetFullPath().c_str()));
+
+        cXmlNode child(node.children());
+        while (child) {
+            DO_CONDITION_COMMENT(child);
+
+            if (child(RAWXML_SPL_NODE)) {
+                SplineNode sp;
+                sp.pos.x = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("x"));
+                sp.pos.y = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("y"));
+                sp.pos.z = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("z"));
+                sp.cp1.x = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("cp1x"));
+                sp.cp1.y = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("cp1y"));
+                sp.cp1.z = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("cp1z"));
+                sp.cp2.x = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("cp2x"));
+                sp.cp2.y = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("cp2y"));
+                sp.cp2.z = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("cp2z"));
+                if (ori != ORIENTATION_LEFT_YUP) {
+                    doFixOrientation(sp.pos, ori);
+                    doFixOrientation(sp.cp1, ori);
+                    doFixOrientation(sp.cp2, ori);
+                }
+                spl.nodes.push_back(sp);
+            } else if (child(RAWXML_SPL_LENGTH)) {
+                float l = ParseFloat(child, wxT(RAWXML_SPL_LENGTH), wxT("length"));
+                spl.lengths.push_back(l);
+            } else if (child(RAWXML_SPL_DATA)) {
+                cSplineData dt;
+                wxString datastr = ParseString(child, wxT(RAWXML_SPL_DATA), wxT("data"), NULL);
+                if (datastr.Length() != 28)
+                    throw RCT3InvalidValueException(wxString::Format(_("The data attribute of a spl(%s)/spldata tag is of invalid length"), name.c_str()));
+                const char* d = datastr.ToAscii();
+                for (int i = 0; i < 28; i+=2) {
+                    unsigned char dta = 0;
+                    unsigned char t = ParseDigit(d[i]);
+                    if (t >= 16)
+                        throw RCT3InvalidValueException(wxString::Format(_("The data attribute of a spl(%s)/spldata tag has an invalid character"), name.c_str()));
+                    dta += t * 16;
+                    t = ParseDigit(d[i+1]);
+                    if (t >= 16)
+                        throw RCT3InvalidValueException(wxString::Format(_("The data attribute of a spl(%s)/spldata tag has an invalid character"), name.c_str()));
+                    dta += t;
+                    dt.data[i/2] = dta;
+                }
+                spl.datas.push_back(dt);
+            } else if (child.element()) {
+                throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in spl(%s) tag."), STRING_FOR_FORMAT(child.name()), name.c_str()));
+            }
+            child.go_next();
+        }
     }
 
     ovlSPLManager* c_spl = m_ovl.GetManager<ovlSPLManager>();
@@ -233,11 +265,8 @@ void cRawParser::ParseSTA(cXmlNode& node) {
     while (child) {
         DO_CONDITION_COMMENT(child);
 
-        if (child(RAWXML_ATTRACTION_BASE)) {
-            USE_PREFIX(child);
-            OPTION_PARSE(unsigned long, stall.attraction.type, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_BASE), wxT("type")));
-            ParseStringOption(stall.attraction.icon, child, wxT("icon"), NULL, useprefix);
-            ParseStringOption(stall.attraction.spline, child, wxT("spline"), NULL, useprefix);
+        if (child(RAWXML_ATTRACTION)) {
+            ParseAttraction(child, stall.attraction);
         } else if (child(RAWXML_STA_ITEM)) {
             USE_PREFIX(child);
             cStallItem item;
@@ -251,17 +280,6 @@ void cRawParser::ParseSTA(cXmlNode& node) {
             OPTION_PARSE(unsigned long, stall.unknowns.unk4, ParseUnsigned(child, wxT(RAWXML_STA_STALLUNKNOWNS), wxT("u4")));
             OPTION_PARSE(unsigned long, stall.unknowns.unk5, ParseUnsigned(child, wxT(RAWXML_STA_STALLUNKNOWNS), wxT("u5")));
             OPTION_PARSE(unsigned long, stall.unknowns.unk6, ParseUnsigned(child, wxT(RAWXML_STA_STALLUNKNOWNS), wxT("u6")));
-        } else if (child(RAWXML_ATTRACTION_UNKNOWNS)) {
-            OPTION_PARSE(unsigned long, stall.attraction.unk2, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u2")));
-            OPTION_PARSE(long, stall.attraction.unk3, ParseSigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u3")));
-            OPTION_PARSE(unsigned long, stall.attraction.unk4, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u4")));
-            OPTION_PARSE(unsigned long, stall.attraction.unk5, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u5")));
-            OPTION_PARSE(unsigned long, stall.attraction.unk6, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u6")));
-            OPTION_PARSE(unsigned long, stall.attraction.unk9, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u9")));
-            OPTION_PARSE(long, stall.attraction.unk10, ParseSigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u10")));
-            OPTION_PARSE(unsigned long, stall.attraction.addonascn, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u11")));
-            OPTION_PARSE(unsigned long, stall.attraction.unk12, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u12")));
-            OPTION_PARSE(unsigned long, stall.attraction.unk13, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u13")));
         } else if (child.element()) {
             throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in sta tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()));
         }

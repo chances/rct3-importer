@@ -36,8 +36,6 @@
 
 #include "ManagerOVL.h"
 
-using namespace std;
-
 class ovlTXTManager: public ovlOVLManager {
 public:
     static const char* LOADER;
@@ -45,7 +43,7 @@ public:
     static const char* TAG;
     static const unsigned long TYPE;
 private:
-    map<string, counted_array_ptr<wchar_t> > m_items;
+    std::map<std::string, counted_array_ptr<wchar_t> > m_items;
 public:
     ovlTXTManager(): ovlOVLManager() {};
     virtual ~ovlTXTManager(){};

@@ -25,6 +25,8 @@
 #ifndef CXMLVALIDATOR_H_INCLUDED
 #define CXMLVALIDATOR_H_INCLUDED
 
+#include "cxmlconfig.h"
+
 #include <string>
 #include <vector>
 #include <libxml/parser.h>
@@ -48,11 +50,12 @@ public:
         VAL_RNV_UNSPECIFIED =           30,
         VAL_RNV_RNC,
         VAL_RNV_RNG,
-        VAL_RNV_SHORTHAND,
+        VAL_RNV_SHORTRNG,
         VAL_RNV_EXAMPLOTRON,
         VAL_RNV_END =                   40,
         VAL_ISOSCHEMATRON =             40,
-        VAL_UNIVERSAL =         0x00010000,
+        VAL_LOWMASK =           0x0000FFFF,
+        VAL_MULTI =             0x00010000,
         VAL_PLUS_SCHEMATRON =   0x00020000
     };
 
@@ -62,6 +65,49 @@ public:
     virtual int validate(boost::shared_ptr<xmlDoc>& doc, int options = OPT_NONE) = 0;
     virtual bool ok() const = 0;
     virtual int getType() const = 0;
+
+    static std::string getTypeName(int type) {
+        std::string ret;
+        if (type & VAL_MULTI) {
+            ret = "Multi: ";
+        }
+        switch (type & VAL_LOWMASK) {
+            case VAL_NONE:
+                ret += "None";
+                break;
+            case VAL_RELAXNG:
+                ret += "RelaxNG (libxml2)";
+                break;
+            case VAL_SCHEMATRON:
+                ret += "Schematron (libxml2)";
+                break;
+            case VAL_RNV_UNSPECIFIED:
+                ret += "RelaxNG (rnv), unspecified";
+                break;
+            case VAL_RNV_RNC:
+                ret += "RelaxNG (rnv), RNC";
+                break;
+            case VAL_RNV_RNG:
+                ret += "RelaxNG (rnv), RNG";
+                break;
+            case VAL_RNV_SHORTRNG:
+                ret += "RelaxNG (rnv), ShortRNG";
+                break;
+            case VAL_RNV_EXAMPLOTRON:
+                ret += "RelaxNG (rnv), Examplotron";
+                break;
+            case VAL_ISOSCHEMATRON:
+                ret += "Iso Schematron";
+                break;
+            default:
+                ret += "Unknown";
+                break;
+        }
+        if (type & VAL_PLUS_SCHEMATRON) {
+            ret += " plus inline Schematron";
+        }
+        return ret;
+    }
 };
 
 } // Namespace

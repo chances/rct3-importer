@@ -35,10 +35,37 @@
 #include "OVLException.h"
 
 using namespace r3;
+using namespace std;
 
 const char* ovlWAIManager::LOADER = "FGDK";
 const char* ovlWAIManager::NAME = "WildAnimalItem";
 const char* ovlWAIManager::TAG = "wai";
+
+
+void cWildAnimalItem::Fill(r3::WildAnimalItem* wai) {
+    wai->unk1 = unk1;
+    wai->unk2 = unk2;
+    wai->unk3 = unk3;
+    wai->unk4 = unk4;
+    wai->staticshape = NULL;
+    wai->distance = distance;
+    wai->cost = cost;
+    wai->refund = refund;
+    wai->invdurability = invdurability;
+    wai->unk11 = unk11;
+    wai->x_size = x_size;
+    wai->y_size = y_size;
+    wai->z_size = z_size;
+    wai->name = NULL;
+    wai->icon = NULL;
+    wai->unk17 = unk17;
+    wai->unk18 = unk18;
+    wai->unk19 = unk19;
+    wai->unk20 = unk20;
+    wai->flags = flags;
+    wai->description = NULL;
+    wai->weight = weight;
+}
 
 void ovlWAIManager::AddItem(const cWildAnimalItem& item) {
     Check("ovlWAIManager::AddItem");

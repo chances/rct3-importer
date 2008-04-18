@@ -24,6 +24,7 @@ public:
         SetSelectionBackground(wxColour(0x00, 0x33, 0x66));
         //SetSelectionBackground(wxColour(0xEE, 0xCC, 0xAA));
     };
+    virtual void UpdateContents() {};
 protected:
     virtual wxColour GetSelectedTextColour(const wxColour& colFg) const;
     //virtual wxColour GetSelectedTextBgColour(const wxColour& colFg) const;

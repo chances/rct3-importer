@@ -33,19 +33,19 @@
 #include "wx_pch.h"
 
 #include "wxdlgSave.h"
-
+/*
 BEGIN_EVENT_TABLE(dlgSave,wxDialog)
 EVT_BUTTON(wxID_SAVE, dlgSave::OnButton)
 EVT_BUTTON(wxID_NO, dlgSave::OnButton)
 END_EVENT_TABLE()
-
-dlgSave::dlgSave(wxString message, wxString title, wxWindow *parent) {
-    InitWidgetsFromXRC((wxWindow *)parent);
+*/
+dlgSave::dlgSave(wxString message, wxString title, wxWindow *parent):rcdlgSave(parent) {
+//    InitWidgetsFromXRC((wxWindow *)parent);
 
     m_textText->SetLabel(message);
     SetTitle(title);
 
-    m_NO->SetLabel(_("Do&n't Save"));
+    m_sdbNo->SetLabel(_("Do&n't Save"));
 
     Fit();
     Layout();

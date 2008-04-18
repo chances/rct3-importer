@@ -37,22 +37,20 @@
 #include "ManagerOVL.h"
 #include "ManagerCommon.h"
 
-using namespace std;
-
 class cQueue {
 public:
-    string name;
+    std::string name;
     unsigned long unk1; ///< flags
-    string internalname;
-    string nametxt;
-	string icon;        ///< 40x40
-    string texture;
-    string straight;
-    string turn_l;
-    string turn_r;
-    string slopeup;
-    string slopedown;
-    string slopestraight[2];
+    std::string internalname;
+    std::string nametxt;
+	std::string icon;        ///< 40x40
+    std::string texture;
+    std::string straight;
+    std::string turn_l;
+    std::string turn_r;
+    std::string slopeup;
+    std::string slopedown;
+    std::string slopestraight[2];
 
     void Fill(QueueType* qtd, ovlStringTable* tab, ovlRelocationManager* rel);
     void DoCopy(ovlStringTable* tab);
@@ -64,7 +62,7 @@ public:
     static const char* NAME;
     static const char* TAG;
 private:
-    map<string, cQueue>  m_items;
+    std::map<std::string, cQueue>  m_items;
 
 public:
     ovlQTDManager(): ovlOVLManager() {

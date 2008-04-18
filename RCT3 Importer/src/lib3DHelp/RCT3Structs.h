@@ -32,6 +32,7 @@
 #include <string>
 #include <vector>
 
+#include "rct3constants.h"
 #include "sceneryvisual.h"
 
 #include "cXmlNode.h"
@@ -46,6 +47,7 @@ enum {
 };
 
 WX_DECLARE_STRING_HASH_MAP(int, cIntMap);
+
 
 #define RCT3XML_REFERENCE "reference"
 
@@ -70,6 +72,9 @@ public:
     virtual xmlcpp::cXmlNode GetNode(const wxString& path) = 0;
     virtual const std::string GetTagName() const = 0;
 
+    static wxString getSingular() { return wxT("UNIMPLEMENTED"); }
+    static wxString getPlural() { return wxT("UNIMPLEMENTEDs"); }
+
     virtual ~cRCT3Xml() {}
 };
 
@@ -77,7 +82,7 @@ public:
 class cTXYZ: public cRCT3Xml {
 DEF_RCT3_VECIT(cTXYZ)
 public:
-    txyz v;
+    r3::txyz v;
 
     cTXYZ() {
         v.Time = 0.0;
@@ -85,14 +90,14 @@ public:
         v.Y = 0.0;
         v.Z = 0.0;
     }
-    cTXYZ(const txyz& nv) {
+    cTXYZ(const r3::txyz& nv) {
         v = nv;
     }
-    operator txyz () {
+    operator r3::txyz () {
         return v;
     }
 
-    txyz GetFixed(c3DLoaderOrientation ori) const;
+    r3::txyz GetFixed(c3DLoaderOrientation ori, bool rotate) const;
 
     virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
     virtual xmlcpp::cXmlNode GetNode(const wxString& path);
@@ -132,8 +137,9 @@ public:
     // Helper variables for the UI
     bool valid;
     unsigned long faces;
-    bool effectpoint;
+    //bool effectpoint;
     r3::VECTOR effectpoint_vert;
+    std::set<wxString> boneassignment;
 
     // Helper for bone assignment
     unsigned int bone;
@@ -152,6 +158,7 @@ public:
         FromNode(node, path, version);
     }
     void CopySettingsFrom(const cMeshStruct& from);
+    void autoMeshStyle(const wxString& style);
 
     bool FromCompilerXml(xmlcpp::cXmlNode& node, const wxString& path);
 
@@ -164,6 +171,19 @@ private:
     void Init();
 };
 WX_DECLARE_STRING_HASH_MAP(cMeshStruct *, cMeshStructMap);
+
+class cTextureStyle {
+private:
+    static std::vector<wxString> m_texturestyles;
+    static void makeStyles();
+public:
+    static inline const std::vector<wxString>& getTextureStyles() {
+        if (!m_texturestyles.size())
+            makeStyles();
+        return m_texturestyles;
+    }
+    static bool isValid(const wxString& style);
+};
 
 #define CFTF_ALPHA_NONE     0
 #define CFTF_ALPHA_INTERNAL 1
@@ -271,6 +291,9 @@ public:
     virtual xmlcpp::cXmlNode GetNode(const wxString& path);
     virtual const std::string GetTagName() const {return RCT3XML_CFLEXITEXTURE;};
 
+    static wxString getSingular() { return wxT("texture"); }
+    static wxString getPlural() { return wxT("textures"); }
+
     static r3::COLOURQUAD* GetRGBPalette();
     static r3::COLOURQUAD* GetBMYPalette();
 };
@@ -313,6 +336,7 @@ public:
 	wxArrayString error;
 	bool fatal_error;
 	bool used;          // Used during ovl generation to see if the model is actually used.
+	std::map<wxString, c3DBone> model_bones;
 
 	cModel(): name(wxT("")), file(wxT("")), usedorientation(ORIENTATION_UNKNOWN), fileorientation(ORIENTATION_UNKNOWN), fatal_error(false) {};
 	cModel(const cAnimatedModel& model);
@@ -334,6 +358,7 @@ public:
 
 	virtual bool Check(cModelMap& modnames);
 	virtual bool GetTransformationMatrices(r3::MATRIX& transform, r3::MATRIX& undodamage) const;
+	virtual void autoBones(const std::set<wxString>* onlyaddfrom = NULL);
 
     virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
     virtual void AddNodeContent(xmlcpp::cXmlNode& node, const wxString& path, bool do_local);
@@ -344,9 +369,12 @@ public:
     }
     virtual const std::string GetTagName() const {return RCT3XML_CMODEL;};
 
+    static wxString getSingular() { return _("model"); }
+    static wxString getPlural() { return _("models"); }
+
 protected:
-    void SetupFileProperties(cMeshStruct* ms, const counted_ptr<c3DLoader>& obj, unsigned int n);
-    cMeshStruct MakeMesh(const counted_ptr<c3DLoader>& obj, unsigned int n);
+    void SetupFileProperties(cMeshStruct* ms, const boost::shared_ptr<c3DLoader>& obj, unsigned int n);
+    cMeshStruct MakeMesh(const boost::shared_ptr<c3DLoader>& obj, unsigned int n);
 
     bool CheckMeshes(bool animated = false);
 };
@@ -404,12 +432,16 @@ public:
     };
 
 	bool Check(cAnimatedModelMap& amodnames);
+	virtual void autoBones(const std::set<wxString>* onlyaddfrom = NULL);
 
     bool FromCompilerXml(xmlcpp::cXmlNode& node, const wxString& path);
 
     virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
     virtual void AddNodeContent(xmlcpp::cXmlNode& node, const wxString& path, bool do_local);
     virtual const std::string GetTagName() const {return RCT3XML_CANIMATEDMODEL;};
+
+    static wxString getSingular() { return _("animated model"); }
+    static wxString getPlural() { return _("animated models"); }
 };
 
 
@@ -452,6 +484,9 @@ public:
     virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
     virtual xmlcpp::cXmlNode GetNode(const wxString& path);
     virtual const std::string GetTagName() const {return RCT3XML_CANIMATION;};
+
+    static wxString getSingular() { return _("animation"); }
+    static wxString getPlural() { return _("animations"); }
 };
 
 #define RCT3XML_CLOD "lod"
@@ -461,7 +496,7 @@ DEF_RCT3_VECIT(cLOD)
 public:
     wxString modelname;
     bool animated;
-    wxArrayString animations;
+    std::vector<wxString> animations;
     float distance; //has something to do with the distance this LOD model kicks in at or stops being used at
     unsigned long unk2; //seen 0 so far
     unsigned long unk4; //seen 0 so far
@@ -472,6 +507,25 @@ public:
     virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
     virtual xmlcpp::cXmlNode GetNode(const wxString& path);
     virtual const std::string GetTagName() const {return RCT3XML_CLOD;};
+};
+
+#define RCT3XML_CSPLINE "spline"
+#define RCT3XML_CSPLINE_NODE "node"
+class cImpSpline: public cRCT3Xml {
+DEF_RCT3_VECIT(cImpSpline)
+public:
+    c3DSpline spline;
+    c3DLoaderOrientation usedorientation;
+
+    cImpSpline() : usedorientation(ORIENTATION_UNKNOWN) {};
+    cImpSpline(const c3DSpline& sp, c3DLoaderOrientation ori) : spline(sp), usedorientation(ori) {};
+
+    virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
+    virtual xmlcpp::cXmlNode GetNode(const wxString& path);
+    virtual const std::string GetTagName() const {return RCT3XML_CSPLINE;};
+
+    static wxString getSingular() { return _("spline"); }
+    static wxString getPlural() { return _("splines"); }
 };
 
 #define RCT3XML_CSIVSETTINGS "siv"
@@ -491,7 +545,7 @@ public:
 
     cSIVSettings(bool as_tree = false) {
         if (as_tree) {
-            sivflags = OVL_SIV_GREENERY | OVL_SIV_ROTATION;
+            sivflags = r3::Constants::SVD::Flags::Greenery | r3::Constants::SVD::Flags::Rotation;
             sway = 0.2;
             brightness = 0.8;
             scale = 0.4;
@@ -513,5 +567,35 @@ public:
     virtual xmlcpp::cXmlNode GetNode(const wxString& path);
     virtual const std::string GetTagName() const {return RCT3XML_CSIVSETTINGS;};
 };
+
+template<class T>
+inline const wxString& NameExtractorC(const T& t) { return t.name; }
+
+template<class T>
+inline wxString& NameExtractor(T& t) { return t.name; }
+
+template<>
+inline const wxString& NameExtractorC(const cImpSpline& t) { return t.spline.m_name; }
+
+template<>
+inline wxString& NameExtractor(cImpSpline& t) { return t.spline.m_name; }
+
+template<>
+inline const wxString& NameExtractorC(const cFlexiTexture& t) { return t.Name; }
+
+template<>
+inline wxString& NameExtractor(cFlexiTexture& t) { return t.Name; }
+
+template<class T>
+struct NamePredicate {
+    const wxString& c;
+    NamePredicate(const wxString& _c): c(_c) {}
+    template<class X>
+    NamePredicate(const X& _x): c(NameExtractorC<X>(_x)) {}
+    bool operator() (const T& v) {
+        return c.IsSameAs(NameExtractorC(v));
+    }
+};
+
 
 #endif // RCT3STRUCTS_H_INCLUDED

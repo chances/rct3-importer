@@ -25,18 +25,20 @@
 #ifndef CXMLVALIDATORRNVRELAXNG_H_INCLUDED
 #define CXMLVALIDATORRNVRELAXNG_H_INCLUDED
 
+#include "cxmlconfig.h"
+
 #include <boost/shared_array.hpp>
 #include <map>
 #include <string>
 
 #include "cXmlDoc.h"
-#include "cXmlValidator.h"
+#include "cXmlInlinedSchematronValidator.h"
 #include "cXsltStylesheet.h"
 
 namespace xmlcpp {
 
 struct RNVValidationContext;
-class cXmlValidatorRNVRelaxNG: public cXmlValidator {
+class cXmlValidatorRNVRelaxNG: public cXmlInlinedSchematronValidator {
 friend void do_node(cXmlNode& node, RNVValidationContext& ctx);
 public:
     enum {
@@ -46,6 +48,8 @@ public:
         ERRSTAGE_RNG_VALIDATION,            ///< RNG does not validate against relaxng.rng
         ERRSTAGE_RNG_INCELIM,               ///< Error during incelim transform
         ERRSTAGE_RNG_CONVERSION,            ///< Error during conversion to rnc
+        ERRSTAGE_RNG_SHORTRNG,              ///< Error during conversion of ShortRNG to rng
+        ERRSTAGE_RNG_EXAMPLOTRON,           ///< Error during conversion of examplotron to rng
         ERRSTAGE_OK =             100
     };
 private:
@@ -62,9 +66,6 @@ private:
     int m_rncbuffersize;
     int m_type;
     int m_errstage;
-#ifdef XMLCPP_USE_XSLT
-    cXmlDoc m_rng;
-#endif
 
     void Init();
     void claimRNV();
@@ -72,26 +73,18 @@ private:
     //void DeInit();
     //void Parse(int options);
     bool ParseRNC(const std::string& buffer, const char* URL = NULL);
-    bool ParseRNG(cXmlDoc& schema, const char* URL = NULL);
 public:
-    cXmlValidatorRNVRelaxNG():cXmlValidator() { Init(); }
+    cXmlValidatorRNVRelaxNG():cXmlInlinedSchematronValidator() { Init(); }
+    cXmlValidatorRNVRelaxNG(const char* URL):cXmlInlinedSchematronValidator() {
+        Init();
+        read(URL);
+    }
     virtual ~cXmlValidatorRNVRelaxNG();
 
-    bool read(const std::string& buffer, const char* URL = NULL);
-    bool read(const char* URL);
     bool readRNC(const std::string& buffer, const char* URL = NULL);
     bool readRNC(const char* URL);
 
     std::string rnc() { return m_rncbuffer?m_rncbuffer.get():""; }
-
-#ifdef XMLCPP_USE_XSLT
-    // rng reading will go here
-    bool readRNG(cXmlDoc& schema, const char* URL = NULL);
-    bool readRNG(const std::string& buffer, const char* URL = NULL);
-    bool readRNG(const char* URL);
-
-    inline cXmlDoc& rng() {return m_rng;}
-#endif
 
 
 
@@ -111,6 +104,52 @@ public:
     virtual int getType() const {
         return m_type;
     }
+// Slim stuff at end
+private:
+#ifdef XMLCPP_USE_RNV_RNG
+    cXmlDoc m_rng;
+
+    bool ParseRNG(cXmlDoc& schema, const char* URL = NULL);
+#ifdef XMLCPP_USE_RNV_SHORTRNG
+    bool ParseShortRNG(cXmlDoc& schema, const char* URL = NULL);
+#endif
+#ifdef XMLCPP_USE_RNV_EXAMPLOTRON
+    bool ParseExamplotron(cXmlDoc& schema, const char* URL = NULL);
+#endif
+    bool parse(cXmlDoc& schema, const std::string& buffer, const char* URL);
+#endif
+public:
+#ifdef XMLCPP_USE_RNV_RNG
+    cXmlValidatorRNVRelaxNG(cXmlDoc& schema, const char* URL = NULL):cXmlInlinedSchematronValidator() {
+        Init();
+        read(schema, URL);
+    }
+
+    bool read(cXmlDoc& schema, const char* URL = NULL) {
+        return parse(schema, "", URL);
+    }
+    bool read(const std::string& buffer, const char* URL = NULL);
+    bool read(const char* URL);
+
+    // rng reading will go here
+    bool readRNG(cXmlDoc& schema, const char* URL = NULL);
+    bool readRNG(const std::string& buffer, const char* URL = NULL);
+    bool readRNG(const char* URL);
+
+    inline cXmlDoc& rng() {return m_rng;}
+#else
+    inline bool read(const std::string& buffer, const char* URL = NULL) { return readRNC(buffer, URL); }
+    inline bool read(const char* URL) { return readRNC(URL); }
+#endif
+
+#ifdef XMLCPP_USE_INLINED_SCHEMATRON
+#ifdef XMLCPP_USE_RNV_RNG
+    virtual cXmlDoc schematron();
+#else
+    virtual cXmlDoc schematron() {return cXmlDoc();}
+#endif
+#endif
+
 };
 
 } // Namespace

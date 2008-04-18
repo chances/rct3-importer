@@ -38,6 +38,7 @@
 #endif
 
 using namespace r3;
+using namespace std;
 
 const char* ovlTXSManager::TAG = "txs";
 
@@ -260,30 +261,29 @@ bool cTriangleSortAlgorithm::operator() (const VECTOR& a1, const VECTOR& a2, con
 
 
 
-void cAttraction::Fill(Attraction_S* att) {
-    if (type & r3::Constants::Addon::Soaked_Hi) {
-        att->v.type = type;
-        att->v.name_ref = NULL;
-        att->v.description_ref = NULL;
-        att->v.icon_ref = NULL;
-        att->v.unk2 = unk2;
-        att->v.unk3 = unk3;
-        att->v.unk4 = unk4;
-        att->v.unk5 = unk5;
-        att->v.base_upkeep = unk6;
-        att->v.spline_ref = NULL;
-        att->v.path_count = splines.size();
+void cAttraction::Fill(Attraction_V* attv) const {
+    Attraction_W* att = reinterpret_cast<Attraction_W*>(attv);
+    att->v.type = type;
+    att->v.name_ref = NULL;
+    att->v.description_ref = NULL;
+    att->v.icon_ref = NULL;
+    att->v.unk2 = unk2;
+    att->v.unk3 = unk3;
+    att->v.unk4 = unk4;
+    att->v.unk5 = unk5;
+    att->v.base_upkeep = unk6;
+    att->v.spline_ref = NULL;
+    att->v.path_count = splines.size();
+    if (!splines.size())
         att->v.paths_ref = NULL;
-        att->v.flags = unk9;
-        att->v.max_height = unk10;
+    att->v.flags = unk9;
+    att->v.max_height = unk10;
+    if (type & r3::Constants::Addon::Soaked_Hi) {
         att->s.addonascn = addonascn;
         att->s.unk12 = unk12;
-        if ((type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
-            Attraction_W* att2 = reinterpret_cast<Attraction_W*>(att);
-            att2->w.unk13 = unk13;
-        }
-    } else {
-        throw EOvl("cAttractionType::Fill, cannot determine structure type.");
+    }
+    if ((type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
+        att->w.unk13 = unk13;
     }
 /*
     if ((type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
@@ -328,7 +328,7 @@ void cAttraction::Fill(Attraction_S* att) {
 */
 }
 
-void cAttraction::Fill(StallA* sta) {
+void cAttraction::Fill(StallA* sta) const {
     sta->type = type & 0xFF; // low byte only
     sta->unk2 = unk2;
     sta->unk3 = unk3;
@@ -341,6 +341,172 @@ void cAttraction::Fill(StallA* sta) {
     sta->unk10 = unk10;
 }
 
-void cAttraction::Fill(SpecialAttractionA* sp) {
+void cAttraction::Fill(SpecialAttractionA* sp) const {
     Fill(reinterpret_cast<StallA*>(sp));
 }
+
+/** @brief GetSize
+  *
+  * @todo: document this function
+  */
+unsigned long cRideOption::GetSize() const {
+    switch (type) {
+        case 0: return 4;
+        case 2: return 3*4;
+        case 4: return 3*4;
+        case 7: return 3*4;
+        case 8: return 6*4;
+        case 9: return 4*4;
+        case 10: return 3*4;
+        case 11: return 3*4;
+        case 12: return 4*4;
+        default:
+            throw EOvl("cRideOption::GetSize, unknown option type.");
+    }
+}
+
+/** @brief SetType
+  *
+  * Sets sensible defaults for a certain option
+  */
+void cRideOption::SetType(unsigned long t) {
+    type = t;
+    switch (type) {
+        case 0: break;
+        case 2: return;
+        case 4: return;
+        case 7: return;
+        case 8: {
+                param[3] = 1.0;
+            }
+            break;
+        case 9: return;
+        case 10: {
+                param[0] = 22.0;
+            }
+            break;
+        case 11: return;
+        case 12: {
+                param[0] = 50.0;
+                param[1] = 10.0;
+            }
+            break;
+        default:
+            throw EOvl("cRideOption::GetSize, unknown option type.");
+    }
+}
+
+/** @brief Fill
+  *
+  * @todo: document this function
+  */
+void cRideOption::Fill(r3::RideOption* r) const {
+    r->type = type;
+    switch (type) {
+        case 0:
+            break;
+        case 2: {
+                r->type_02.option = option;
+                r->type_02.unk2 = param[0];
+            }
+            break;
+        case 4: {
+                r->type_04.option = option;
+                r->type_04.unk2 = param[0];
+            }
+            break;
+        case 7: {
+                r->type_07.option = option;
+                r->type_07.unk2 = param[0];
+            }
+            break;
+        case 8: {
+                r->type_08.excitement = param[0];
+                r->type_08.intensity = param[1];
+                r->type_08.nausea = param[2];
+                r->type_08.option = option;
+                r->type_08.factor = param[3];
+            }
+            break;
+        case 9: {
+                r->type_09.unk1 = param[0];
+                r->type_09.unk2 = param[1];
+                r->type_09.unk3 = param[2];
+            }
+            break;
+        case 10: {
+                r->type_10.unk1 = param[0];
+                r->type_10.option = option;
+            }
+            break;
+        case 11: {
+                r->type_11.unk1 = param[0];
+                r->type_11.option = option;
+            }
+            break;
+        case 12: {
+                r->type_12.unk1 = param[0];
+                r->type_12.unk2 = param[1];
+                r->type_12.unk3 = param[2];
+            }
+            break;
+        default:
+            throw EOvl("cRideOption::Fill, unknown option type.");
+    }
+}
+
+/** @brief Fill
+  *
+  * @todo: document this function
+  */
+void cRide::Fill(r3::Ride_V* r) const {
+    r->attractivity_v = attractivity;
+    r->seating = seating;
+    r->entry_fee = entry_fee;
+    r->unk4 = unk4;
+    r->unk5 = unk5;
+    for (int i = 0; i < options.size(); ++i) {
+        options[i].Fill(r->options[i]);
+    }
+}
+
+/** @brief Fill
+  *
+  * @todo: document this function
+  */
+void cRide::Fill(r3::Ride_S* r) const {
+    Fill(&r->v);
+    r->v.attractivity_v = 0xFFFFFFFF;
+    r->s.attractivity_sw = attractivity;
+    r->s.extra_count = 0;
+    r->s.extras = NULL;
+    r->s.unk11 = unk11;
+    r->s.unk12 = unk12;
+    r->s.unk13 = unk13;
+    r->s.unk14 = unk14;
+    r->s.unk15 = unk15;
+}
+
+/** @brief Fill
+  *
+  * @todo: document this function
+  */
+void cRide::Fill(r3::Ride_W* r) const {
+    Fill(reinterpret_cast<Ride_S*>(r));
+    r->w.unk16 = unk16;
+    r->w.unk17 = unk17;
+}
+
+/** @brief GetOptionsSize
+  *
+  * @todo: document this function
+  */
+unsigned long cRide::GetOptionsSize() const {
+    unsigned long s = 0;
+    for (vector<cRideOption>::const_iterator it = options.begin(); it != options.end(); ++it) {
+        s += it->GetSize();
+    }
+    return s;
+}
+
+

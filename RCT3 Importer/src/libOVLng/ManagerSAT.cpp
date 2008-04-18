@@ -36,10 +36,27 @@
 #include "OVLException.h"
 
 using namespace r3;
+using namespace std;
 
 const char* ovlSATManager::LOADER = "FGDK";
 const char* ovlSATManager::NAME = "SpecialAttraction";
 const char* ovlSATManager::TAG = "sat";
+
+void cSpecialAttraction::Fill(r3::SpecialAttractionA* sp) {
+    sp->Name = NULL;
+    sp->Description = NULL;
+    sp->GSI = NULL;
+    sp->spline = NULL;
+    attraction.Fill(sp);
+}
+void cSpecialAttraction::Fill(r3::SpecialAttractionB* sp) {
+    if ((attraction.type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
+        sp->unk = r3::Constants::Addon::Wild;
+    } else {
+        sp->unk = r3::Constants::Addon::Soaked;
+    }
+    attraction.Fill(sp->att);
+}
 
 void ovlSATManager::AddAttraction(const cSpecialAttraction& item) {
     Check("ovlSATManager::AddAttraction");

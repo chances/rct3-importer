@@ -37,8 +37,6 @@
 
 #include "icontexture.h"
 
-using namespace std;
-
 /// Encapsulates a TextureStruct.
 /**
  *  @see TextureStruct
@@ -56,7 +54,7 @@ public:
 	unsigned long unk9;
 	unsigned long unk10;
 	unsigned long unk11;
-	string texturestyle;
+	std::string texturestyle;
 	unsigned long unk12;
 
 	cTexture texture;
@@ -65,21 +63,7 @@ public:
 	                  unk5(0x70007), unk6(0x70007), unk7(0x70007), unk8(0x70007),
 	                  unk9(1), unk10(8), unk11(0x10), texturestyle("GUIIcon"), unk12(1) {}
 
-    void Fill(TextureStruct* ts) {
-        ts->unk1 = unk1;
-        ts->unk2 = unk2;
-        ts->unk3 = unk3;
-        ts->unk4 = unk4;
-        ts->unk5 = unk5;
-        ts->unk6 = unk6;
-        ts->unk7 = unk7;
-        ts->unk8 = unk8;
-        ts->unk9 = unk9;
-        ts->unk10 = unk10;
-        ts->unk11 = unk11;
-        ts->TextureData = NULL;
-        ts->unk12 = unk12;
-    }
+    void Fill(TextureStruct* ts);
 };
 
 class ovlFLICManager;
@@ -90,7 +74,7 @@ public:
     static const char* TAG;
     static const unsigned long TYPE;
 private:
-    map<string, cTextureStruct> m_items;
+    std::map<std::string, cTextureStruct> m_items;
 
     ovlFLICManager* m_flicman;
 public:

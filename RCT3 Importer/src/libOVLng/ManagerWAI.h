@@ -39,13 +39,13 @@
 
 class cWildAnimalItem {
 public:
-    string name;
+    std::string name;
     unsigned long unk1;         // 0
     unsigned long unk2;         // 2
     unsigned long unk3;         // 2
     unsigned long unk4;         // 2
-    string shortname;           // Short name of the item
-    string staticshape;
+    std::string shortname;           // Short name of the item
+    std::string staticshape;
     float distance;             // Probably a lod distance
     long cost;
     long refund;                // In contrast to scenery items, this IS a refund (positive = money back)
@@ -61,8 +61,8 @@ public:
     float x_size;               // These values relate to the size of the item, maybe something about the physics
     float y_size;               // for throwing them around.
     float z_size;
-    string icon;
-    string nametxt;
+    std::string icon;
+    std::string nametxt;
     float unk17;                // Don't know what these are.
     float unk18;                // They are around 1.0, between 0.8 and 1.5
     float unk19;
@@ -71,7 +71,7 @@ public:
                                 // 1 Plant eaters
                                 // 2 Meat eaters
                                 // 4 Big animals
-    string description;
+    std::string description;
     float weight;               // Guess. Between 0.2 and 1.0.
 
     cWildAnimalItem() {
@@ -94,30 +94,7 @@ public:
         flags = 0;
         weight = 0.7;
     }
-    void Fill(r3::WildAnimalItem* wai) {
-        wai->unk1 = unk1;
-        wai->unk2 = unk2;
-        wai->unk3 = unk3;
-        wai->unk4 = unk4;
-        wai->staticshape = NULL;
-        wai->distance = distance;
-        wai->cost = cost;
-        wai->refund = refund;
-        wai->invdurability = invdurability;
-        wai->unk11 = unk11;
-        wai->x_size = x_size;
-        wai->y_size = y_size;
-        wai->z_size = z_size;
-        wai->name = NULL;
-        wai->icon = NULL;
-        wai->unk17 = unk17;
-        wai->unk18 = unk18;
-        wai->unk19 = unk19;
-        wai->unk20 = unk20;
-        wai->flags = flags;
-        wai->description = NULL;
-        wai->weight = weight;
-    }
+    void Fill(r3::WildAnimalItem* wai);
 };
 
 
@@ -127,7 +104,7 @@ public:
     static const char* NAME;
     static const char* TAG;
 private:
-    map<string, cWildAnimalItem>  m_items;
+    std::map<std::string, cWildAnimalItem>  m_items;
 
 public:
     ovlWAIManager(): ovlOVLManager() {

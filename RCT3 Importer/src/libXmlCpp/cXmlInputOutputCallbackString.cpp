@@ -24,6 +24,9 @@
 
 #include "cXmlInputOutputCallbackString.h"
 
+#include <boost/shared_array.hpp>
+#include <zlib.h>
+
 #include "cXmlException.h"
 
 //#define DUMP
@@ -38,10 +41,12 @@ const char* cXmlInputOutputCallbackString::INTERNAL = "/INTERNAL";
 cXmlInputOutputCallbackString* cXmlInputOutputCallbackString::g_instance = NULL;
 const string cXmlInputOutputCallbackString::EMPTY = "";
 
-void cXmlInputOutputCallbackString::Init() {
+bool cXmlInputOutputCallbackString::Init() {
     if (!g_instance) {
         g_instance = new cXmlInputOutputCallbackString();
+        return true;
     }
+    return false;
 }
 
 void cXmlInputOutputCallbackString::add(const std::string& filename, const std::string& content) {
@@ -52,6 +57,20 @@ void cXmlInputOutputCallbackString::add(const std::string& filename, const std::
 fprintf(stderr, "cXmlInputOutputCallbackString add: %s\n", filename.c_str());
 #endif
     g_instance->m_files[filename] = content;
+}
+
+void cXmlInputOutputCallbackString::add(const std::string& filename, const unsigned char* data, unsigned int datasize, unsigned int unzippedsize) {
+    if ((!unzippedsize) || (datasize == unzippedsize)) {
+        add(filename, string(reinterpret_cast<const char*>(data)));
+    }
+
+    uLongf buf_size = unzippedsize;
+    boost::shared_array<char> buf(new char[buf_size]);
+    int r = uncompress(reinterpret_cast<Bytef*>(buf.get()), &buf_size, reinterpret_cast<const Bytef*>(data), datasize);
+    if (r != Z_OK)
+        throw eXml("Uncompressing "+filename+" failed.");
+    string t(buf.get(), static_cast<size_t>(buf_size+1));
+    add(filename, t);
 }
 
 const string& cXmlInputOutputCallbackString::get(const std::string& filename) {

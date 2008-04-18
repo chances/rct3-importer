@@ -33,6 +33,9 @@
 
 #include "OVLDException.h"
 
+using namespace std;
+
+
 unsigned long crctable[256] = {0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA,
                       0x076DC419, 0x706AF48F, 0xE963A535, 0x9E6495A3,
                       0x0EDB8832, 0x79DCB8A4, 0xE0D5E91E, 0x97D2D988,
@@ -625,10 +628,12 @@ void cOVLDump::MakeLoaders(cOvlType type) {
             for (unsigned long s = 0; s < symrefcount; ++s) {
                 OvlRelocation* rel = m_relmap[RelocationFromVar(symrefs[s].reference, m_fileblocks[type][2].blocks[2])];
                 char* name = reinterpret_cast<char*>(m_targets[reinterpret_cast<unsigned long>(symrefs[s].Symbol)]);
-                rel->t_issymref = true;
-                rel->r_inwhat = string("SymbolReference(") + name + ")";
-                rel->t_usedfor = string("|- ") + name;
-                m_symbolreferences[rel->target] = name;
+                if (rel) {
+                    rel->t_issymref = true;
+                    rel->r_inwhat = string("SymbolReference(") + name + ")";
+                    rel->t_usedfor = string("|- ") + name;
+                    m_symbolreferences[rel->target] = name;
+                }
             }
         } else {
             SymbolRefStruct2* symrefs = reinterpret_cast<SymbolRefStruct2*>(m_fileblocks[type][2].blocks[2].data);
@@ -636,10 +641,12 @@ void cOVLDump::MakeLoaders(cOvlType type) {
             for (unsigned long s = 0; s < symrefcount; ++s) {
                 OvlRelocation* rel = m_relmap[RelocationFromVar(symrefs[s].reference, m_fileblocks[type][2].blocks[2])];
                 char* name = reinterpret_cast<char*>(m_targets[reinterpret_cast<unsigned long>(symrefs[s].Symbol)]);
-                rel->t_issymref = true;
-                rel->r_inwhat = string("SymbolReference(") + name + ")";
-                rel->t_usedfor = string("|- ") + name;
-                m_symbolreferences[rel->target] = name;
+                if (rel) {
+                    rel->t_issymref = true;
+                    rel->r_inwhat = string("SymbolReference(") + name + ")";
+                    rel->t_usedfor = string("|- ") + name;
+                    m_symbolreferences[rel->target] = name;
+                }
             }
         }
     }

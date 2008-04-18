@@ -25,6 +25,8 @@
 #ifndef CXMLERRORHANDLER_H_INCLUDED
 #define CXMLERRORHANDLER_H_INCLUDED
 
+#include "cxmlconfig.h"
+
 #include <string>
 #include <vector>
 #include <libxml/xmlerror.h>
@@ -49,6 +51,7 @@ struct cXmlStructuredError {
     void*           ctxt;
     void*           node;
     std::string     path;
+    std::string     attribute; ///< Error is about an attribute in a node. Used for full path calculation
 
     cXmlStructuredError(xmlErrorPtr error = NULL);
     std::string getPath() const;

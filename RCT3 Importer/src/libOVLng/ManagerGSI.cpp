@@ -32,6 +32,8 @@
 
 #include "ManagerTEX.h"
 
+using namespace std;
+
 const char* ovlGSIManager::LOADER = "FGDK";
 const char* ovlGSIManager::NAME = "GUISkinItem";
 const char* ovlGSIManager::TAG = "gsi";

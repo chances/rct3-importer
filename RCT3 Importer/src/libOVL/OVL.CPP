@@ -11,6 +11,7 @@
 #include "Common.h"
 #include "CommonOVL.h"
 #include "OVL.h"
+#include "rct3constants.h"
 
 #include <list>
 #include <map>
@@ -47,7 +48,7 @@ std::vector <char **> BoneShapeTXSNames;
 
 std::vector <FlexiTextureInfoStruct *> FlexiTextures;
 std::vector <char *> FlexiTextureNames;
-SceneryItemVisual *SVD;
+SceneryItemVisual_V *SVD;
 char *SVDName;
 char **SHSNames;
 char **BSHNames;
@@ -67,7 +68,7 @@ LoaderStruct *Ldr;
 SymbolRefStruct *Ref;
 
 unsigned char *svd;
-SceneryItemVisual *sv;
+SceneryItemVisual_V *sv;
 SceneryItemVisualLOD **svlod;
 SceneryItemVisualLOD *svlod1;
 SceneryItemVisualLOD *svlod2;
@@ -93,6 +94,7 @@ unsigned long saveScenaryData(unsigned long);
 void clearOVLData();
 int compare(const void *s1,const void *s2);
 
+#if 0
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -171,7 +173,7 @@ LIBOVL_API void AddBoneAnim(char *BoneAnimName, BoneAnim *ban) {
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-LIBOVL_API void AddSceneryItemVisual(char *SceneryItemVisualName, char **StaticShapeNames, char **BoneShapeNames, char **BoneAnimNames, SceneryItemVisual *svd) {
+LIBOVL_API void AddSceneryItemVisual(char *SceneryItemVisualName, char **StaticShapeNames, char **BoneShapeNames, char **BoneAnimNames, SceneryItemVisual_V *svd) {
     SVDName = SceneryItemVisualName;
     SVD = svd;
     SHSNames = StaticShapeNames;
@@ -339,15 +341,15 @@ LIBOVL_API void SaveSceneryOvl() {
     unsigned long j;
 
     if (SVD) {
-        SVDSize += sizeof(SceneryItemVisual);
+        SVDSize += sizeof(SceneryItemVisual_V);
 //        StringTableSize += strlen(SVDName) + 5;
         stringtable.AddSymbolString(SVDName, ovlStringTable::SVD);
         SymbolCount++;
         LoaderCount++;
-        for (i = 0;i < SVD->LODCount;i++) {
+        for (i = 0;i < SVD->lod_count;i++) {
             SVDSize += 4;
             SVDSize += sizeof(SceneryItemVisualLOD);
-            SVDSize += 8*SVD->LODMeshes[i]->AnimationCount;
+            SVDSize += 8*SVD->lods[i]->animation_count;
             if (SHSNames) {
                 SymbolRefCount++;
 //                StringTableSize += strlen(SHSNames[i]) + 1;
@@ -810,13 +812,13 @@ LIBOVL_API void SaveSceneryOvl() {
 //        strcpy(TempStringTable,":svd");
 //        TempStringTable += 5;
         char *svdname = stringtable.FindSymbolString(SVDName, ovlStringTable::SVD);
-        SceneryItemVisual *sv = (SceneryItemVisual *)TempSVD;
-        memcpy(sv,SVD,sizeof(SceneryItemVisual));
-        TempSVD += sizeof(SceneryItemVisual);
-        sv->LODMeshes = (SceneryItemVisualLOD **)TempSVD;
-        relocations.push((unsigned long *)&sv->LODMeshes);
-        DUMP_RELOCATION(f,"relocations: %x: &sv->LODMeshes\n",&sv->LODMeshes);
-        TempSVD += sv->LODCount * 4;
+        SceneryItemVisual_V *sv = (SceneryItemVisual_V *)TempSVD;
+        memcpy(sv,SVD,sizeof(SceneryItemVisual_V));
+        TempSVD += sizeof(SceneryItemVisual_V);
+        sv->lods = (SceneryItemVisualLOD **)TempSVD;
+        relocations.push((unsigned long *)&sv->lods);
+        DUMP_RELOCATION(f,"relocations: %x: &sv->LODMeshes\n",&sv->lods);
+        TempSVD += sv->lod_count * 4;
         TempSym->data = (unsigned long *)sv;
         TempSym->IsPointer = true;
         TempSym->Symbol = svdname;
@@ -834,19 +836,19 @@ LIBOVL_API void SaveSceneryOvl() {
         int count_bsh = 0;
         int count_ban = 0;
 
-        for (unsigned long i = 0;i < SVD->LODCount;i++) {
+        for (unsigned long i = 0;i < SVD->lod_count;i++) {
             DUMP_RELOCATION(f,"SVD->LODMeshes[%i]\n",i);
 
             // Allocate the LOD once, then check the Names arrays to see what member data needs to be filled in or referenced.
             //char *lodname = NULL;
             SceneryItemVisualLOD *LOD = (SceneryItemVisualLOD *)TempSVD;
             TempSVD += sizeof(SceneryItemVisualLOD);
-            memcpy(LOD,SVD->LODMeshes[i],sizeof(SceneryItemVisualLOD));
-            sv->LODMeshes[i] = LOD;
-            relocations.push((unsigned long *)&sv->LODMeshes[i]);
-            DUMP_RELOCATION(f,"relocations: %x: &sv->LODMeshes[i]\n",&sv->LODMeshes[i]);
+            memcpy(LOD,SVD->lods[i],sizeof(SceneryItemVisualLOD));
+            sv->lods[i] = LOD;
+            relocations.push((unsigned long *)&sv->lods[i]);
+            DUMP_RELOCATION(f,"relocations: %x: &sv->LODMeshes[i]\n",&sv->lods[i]);
 
-            if ((LOD->MeshType == SVDLOD_MESHTYPE_STATIC) && SHSNames) {
+            if ((LOD->type == r3::Constants::SVD::LOD_Type::Static) && SHSNames) {
                 char* st = stringtable.FindSymbolString(SHSNames[count_shs], ovlStringTable::SHS);
                 DUMP_RELOCATION(f,"SYMBOL: %s:\n",st);
 
@@ -859,17 +861,17 @@ LIBOVL_API void SaveSceneryOvl() {
                 relocations.push((unsigned long *)&TempRef->ldr);
                 DUMP_RELOCATION(f,"relocations: %x: &TempRef->ldr, LOD shs\n",&TempRef->ldr);
 
-                TempRef->reference = (unsigned long *)&LOD->ss;
+                TempRef->reference = (unsigned long *)&LOD->shs_ref;
                 relocations.push((unsigned long *)&TempRef->reference);
                 DUMP_RELOCATION(f,"relocations: %x: &TempRef->reference, LOD shs\n",&TempRef->reference);
                 TempRef++;
 
-                LOD->LODName = stringtable.FindString(SHSNames[count_shs]);
+                LOD->lod_name = stringtable.FindString(SHSNames[count_shs]);
                 relocations.push((unsigned long *)&LOD->LODName);
-                DUMP_RELOCATION(f,"relocations: %x: &LOD->LODName\n",&LOD->LODName);
+                DUMP_RELOCATION(f,"relocations: %x: &LOD->LODName\n",&LOD->lod_name);
 
                 count_shs++;
-            } else if ((LOD->MeshType == SVDLOD_MESHTYPE_ANIMATED) && BSHNames) {
+            } else if ((LOD->MeshType == r3::Constants::SVD::LOD_Type::Animated) && BSHNames) {
                 char* st = stringtable.FindSymbolString(BSHNames[count_bsh], ovlStringTable::BSH);
                 DUMP_RELOCATION(f,"SYMBOL: %s:\n",st);
 
@@ -2340,3 +2342,4 @@ LIBOVL_API void DeleteOVLInfo_FlexiTextures() {
 }
 */
 
+#endif

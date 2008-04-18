@@ -39,8 +39,6 @@
 #include "StringTable.h"
 #include "OVLException.h"
 
-using namespace std;
-
 /// Ovl creation class
 /**
  * This class is responsible for creating ovl files. It needs to be initialized before using by either calling the Init
@@ -51,13 +49,13 @@ using namespace std;
 class cOvl {
 friend class ovlOVLManager;
 private:
-    string m_file;
+    std::string m_file;
     cOvlInfo m_ovlinfo;
     ovlStringTable m_stringtable;
     ovlRelocationManager m_relmanager;
     ovlLodSymRefManager m_lsrmanager;
 
-    map<string, ovlOVLManager*> m_managers;
+    std::map<std::string, ovlOVLManager*> m_managers;
 
     bool m_init;
 
@@ -74,7 +72,7 @@ public:
      * @param file Ovl base file name.
      * @see Init()
      */
-    cOvl(string file);
+    cOvl(std::string file);
     virtual ~cOvl();
 
     /// Initialize a cOvl instance
@@ -83,7 +81,7 @@ public:
      * @param file Ovl base file name (without .common.ovl or .unique.ovl extension).
      * @see cOvl()
      */
-    void Init(string file);
+    void Init(std::string file);
 
     /// Add a reference to the ovl.
     void AddReference(const char* ref);

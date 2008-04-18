@@ -25,6 +25,8 @@
 #ifndef CXMLDOC_H_INCLUDED
 #define CXMLDOC_H_INCLUDED
 
+#include "cxmlconfig.h"
+
 #include <string>
 #include <vector>
 #include <libxml/parser.h>
@@ -75,6 +77,8 @@ namespace xmlcpp {
         /// Share the document from another source
         bool share(const boost::shared_ptr<xmlDoc>& doc);
 
+
+        std::string write(bool indent = false, const char* encoding = NULL);
         int write(const char* filename, bool indent = false, const char* encoding = NULL);
         int dump(FILE* f);
 
@@ -108,6 +112,9 @@ namespace xmlcpp {
         inline bool read(const wxString& filename, const wxString& encoding = wxT(""), int options = 0) { return read(filename.utf8_str(), encoding.IsEmpty()?NULL:static_cast<const char*>(encoding.utf8_str()), options); }
         int write(const wxString& filename, bool indent = false, const wxString& encoding = wxString()) {
             return write(static_cast<const char*>(filename.utf8_str()), indent, encoding.IsSameAs(wxString())?NULL:static_cast<const char*>(encoding.utf8_str()));
+        }
+        inline wxString wxwrite(bool indent = false) {
+            return wxString::FromUTF8(write(indent, "UTF-8").c_str());
         }
 #endif
     };

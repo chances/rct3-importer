@@ -39,10 +39,10 @@
 
 class cChangingRoom {
 public:
-    string name;
+    std::string name;
     cAttraction attraction;
-    string sid;
-    string spline;
+    std::string sid;
+    std::string spline;
 
     cChangingRoom() {
         attraction.type = r3::Constants::Attraction::Type::Changing_Room | r3::Constants::Addon::Soaked_Hi;
@@ -54,11 +54,7 @@ public:
 	    attraction.unk12 = r3::Constants::Attraction::Unknown12::Default;
 
     };
-    void Fill(r3::ChangingRoom* chg) {
-        chg->SID = NULL;
-        chg->spline = NULL;
-        attraction.Fill(chg->att);
-    }
+    void Fill(r3::ChangingRoom* chg);
 };
 
 class ovlCHGManager: public ovlOVLManager {
@@ -67,7 +63,7 @@ public:
     static const char* NAME;
     static const char* TAG;
 private:
-    map<string, cChangingRoom>  m_items;
+    std::map<std::string, cChangingRoom>  m_items;
 
 public:
     ovlCHGManager(): ovlOVLManager() {

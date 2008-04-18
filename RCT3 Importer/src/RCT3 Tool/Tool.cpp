@@ -2940,7 +2940,12 @@ int ToolApp::OnRun() {
 #ifdef DEBUG
     wxLogWindow win(NULL, wxT("Debug Log"), true, false);
 #endif
-    DialogBox(hInst, MAKEINTRESOURCE(IDD_MAIN), NULL, (DLGPROC) MainDlgProc);
+    try {
+        xmlcpp::cXmlInitHandler keepalive();
+        DialogBox(hInst, MAKEINTRESOURCE(IDD_MAIN), NULL, (DLGPROC) MainDlgProc);
+    } catch (std::exception& e) {
+        ::wxMessageBox(_("Uncaught exception: ") + wxString(e.what()), "Fatal Exception", wxOK|wxICON_ERROR);
+    }
     WRITE_APP_WORKDIR(g_workdir.GetPath());
     wxcFlush();
     //delete g_config;

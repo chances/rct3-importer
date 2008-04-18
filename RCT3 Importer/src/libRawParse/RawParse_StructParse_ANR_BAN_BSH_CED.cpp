@@ -27,9 +27,43 @@
 
 #include "RawParse_cpp.h"
 
+#include "ManagerANR.h"
 #include "ManagerBAN.h"
 #include "ManagerBSH.h"
 #include "ManagerCED.h"
+
+void cRawParser::ParseANR(cXmlNode& node) {
+    USE_PREFIX(node);
+    cAnimatedRide animride;
+    animride.name = ParseString(node, wxT(RAWXML_ANR), wxT("name"), NULL, useprefix).ToAscii();
+    animride.attraction.name = ParseString(node, wxT(RAWXML_ANR), wxT("nametxt"), NULL, useprefix).ToAscii();
+    animride.attraction.description = ParseString(node, wxT(RAWXML_ANR), wxT("description"), NULL, useprefix).ToAscii();
+    animride.sid = ParseString(node, wxT(RAWXML_ANR), wxT("sid"), NULL, useprefix).ToAscii();
+    wxLogVerbose(wxString::Format(_("Adding anr %s to %s."), wxString(animride.name.c_str(), wxConvLocal).c_str(), m_output.GetFullPath().c_str()));
+
+    foreach (const cXmlNode& child, node.children()) {
+        DO_CONDITION_COMMENT_FOR(child);
+
+        if (child(RAWXML_ATTRACTION)) {
+            ParseAttraction(child, animride.attraction);
+        } else if (child(RAWXML_RIDE)) {
+            ParseRide(child, animride.ride);
+        } else if (child(RAWXML_UNKNOWNS)) {
+            OPTION_PARSE(unsigned long, animride.unk22, ParseUnsigned(child, RAWXML_ANR "/" RAWXML_UNKNOWNS, wxT("u22")));
+            OPTION_PARSE(unsigned long, animride.unk23, ParseUnsigned(child, RAWXML_ANR "/" RAWXML_UNKNOWNS, wxT("u23")));
+            OPTION_PARSE(unsigned long, animride.unk24, ParseUnsigned(child, RAWXML_ANR "/" RAWXML_UNKNOWNS, wxT("u24")));
+            OPTION_PARSE(unsigned long, animride.unk25, ParseUnsigned(child, RAWXML_ANR "/" RAWXML_UNKNOWNS, wxT("u25")));
+            OPTION_PARSE(unsigned long, animride.unk8, ParseUnsigned(child, RAWXML_ANR "/" RAWXML_UNKNOWNS, wxT("u8")));
+            OPTION_PARSE(unsigned long, animride.unk9, ParseUnsigned(child, RAWXML_ANR "/" RAWXML_UNKNOWNS, wxT("u9")));
+        } else if (child.element()) {
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in anr tag."), STRING_FOR_FORMAT(child.name())));
+        }
+    }
+
+    ovlANRManager* c_anr = m_ovl.GetManager<ovlANRManager>();
+    c_anr->AddRide(animride);
+    wxLogVerbose(wxString::Format(_("Adding anr %s to %s. -- Done"), wxString(animride.name.c_str(), wxConvLocal).c_str(), m_output.GetFullPath().c_str()));
+}
 
 void cRawParser::ParseBAN(cXmlNode& node) {
     USE_PREFIX(node);
@@ -171,7 +205,7 @@ void cRawParser::ParseBSH(cXmlNode& node) {
                 if (!modelfile.IsFileReadable())
                     throw RCT3Exception(_("bsh tag: Model file not readable: ") + modelfile.GetFullPath());
 */
-                counted_ptr<c3DLoader> model(c3DLoader::LoadFile(modelfile.GetFullPath().c_str()));
+                boost::shared_ptr<c3DLoader> model(c3DLoader::LoadFile(modelfile.GetFullPath().c_str()));
                 if (!model.get())
                     throw RCT3Exception(_("bsh tag: Model file cannot be read or has unknown format: ") + modelfile.GetFullPath());
 

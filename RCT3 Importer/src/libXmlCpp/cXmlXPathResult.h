@@ -25,6 +25,8 @@
 #ifndef CXMLXPATHRESULT_H
 #define CXMLXPATHRESULT_H
 
+#include "cxmlconfig.h"
+
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 #include <string>

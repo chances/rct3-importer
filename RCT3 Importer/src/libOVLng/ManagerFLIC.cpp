@@ -31,6 +31,8 @@
 #include "OVLException.h"
 #include "OVLng.h"
 
+using namespace std;
+
 const char* ovlFLICManager::LOADER = "FGDK";
 const char* ovlFLICManager::NAME = "Flic";
 const char* ovlFLICManager::TAG = "flic";

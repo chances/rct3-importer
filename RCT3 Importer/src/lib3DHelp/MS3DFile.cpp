@@ -159,6 +159,7 @@ wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile joints %d"), nNumJoints);
             return 2;
 	    }
 
+
         int nNumGroupComments;
         fread(&nNumGroupComments, 1, sizeof(int), fp);
 wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile group comments %d"), nNumGroupComments);
@@ -210,7 +211,7 @@ wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile model comments %d"), nNumModelCom
         m_arrModelComments.resize(nNumModelComments);
         for (i = 0; i < nNumModelComments; i++)
         {
-            fread(&m_arrModelComments[i].index, 1, sizeof(int), fp);
+            //fread(&m_arrModelComments[i].index, 1, sizeof(int), fp);
             fread(&m_arrModelComments[i].commentLength, 1, sizeof(int), fp);
             char *tmp = new char[m_arrModelComments[i].commentLength+1];
             fread(tmp, m_arrModelComments[i].commentLength, sizeof(char), fp);

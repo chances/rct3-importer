@@ -28,12 +28,13 @@
 
 #include "3DLoader.h"
 
-class cMS3DLoader: public c3DLoader
-{
+class cMS3DLoader: public c3DLoader {
 public:
     cMS3DLoader(const wxChar *filename);
     virtual int GetType() {return C3DLOADER_MS3D;};
     virtual c3DLoaderOrientation GetOrientation() {return ORIENTATION_RIGHT_YUP;};
+private:
+    void findPosAndRot(void* ms3df, std::map<wxString, wxString>& renames, int i, r3::txyz& pos, r3::txyz& rot);
 };
 
 #endif // MS3DLOADER_H_INCLUDED

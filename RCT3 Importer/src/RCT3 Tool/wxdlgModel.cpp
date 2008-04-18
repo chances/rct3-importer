@@ -44,6 +44,7 @@
 #include "htmlentities.h"
 #include "lib3Dconfig.h"
 #include "matrix.h"
+#include "pretty.h"
 #include "SCNFile.h"
 #include "valext.h"
 #include "wrappereditevent.h"
@@ -56,6 +57,7 @@
 #include "wxdlgMatrix.h"
 
 using namespace r3;
+using namespace std;
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -200,7 +202,7 @@ bool wxMeshListModel::SetValue( wxVariant &variant, unsigned int col, unsigned i
                     unsigned long right_value = 0;
                     if (m_content->meshstructs[row].TXS.StartsWith(wxT("SIAlphaMask")))
                         right_value = 1;
-                    else if (m_content->meshstructs[row].TXS.StartsWith(wxT("SIAlpha")) || m_content->meshstructs[row].TXS.IsSameAs(wxT("SIGlass")) || m_content->meshstructs[row].TXS.IsSameAs(wxT("SIGlass")))
+                    else if (m_content->meshstructs[row].TXS.StartsWith(wxT("SIAlpha")) || m_content->meshstructs[row].TXS.IsSameAs(wxT("SIGlass")) || m_content->meshstructs[row].TXS.IsSameAs(wxT("SIWater")))
                         right_value = 2;
                     m_content->meshstructs[row].place = right_value;
                 }
@@ -399,11 +401,11 @@ public:
 */
                 wxCoord x = cell.x + (cell.width-16)/2;
                 wxCoord y = cell.y + (cell.height-16)/2;
-                if (m_value->effectpoint) {
-                    dc->DrawBitmap(wxXmlResource::Get()->LoadBitmap(wxT("virus_detected_2_16x16")), x, y);
-                } else {
+//                if (m_value->effectpoint) {
+//                    dc->DrawBitmap(wxXmlResource::Get()->LoadBitmap(wxT("virus_detected_2_16x16")), x, y);
+//                } else {
                     dc->DrawBitmap(wxXmlResource::Get()->LoadBitmap(wxT("virus_detected_16x16")), x, y);
-                }
+//                }
             }
         }
         return true;
@@ -481,9 +483,9 @@ public:
             wxCoord w, h;
             dc->GetTextExtent(m_value->Name, &w, &h);
             wxCoord top = (rect.height - h) / 2;
-            if (m_value->effectpoint)
+/*            if (m_value->effectpoint)
                 dc->SetTextForeground(GetStateColour(wxColor(wxT("#A0D2A0")), state));
-            else if (!m_value->valid)
+            else */ if (!m_value->valid)
                 dc->SetTextForeground(GetStateColour(wxColor(wxT("#CC0000")), state));
             else if (m_value->disabled)
                 dc->SetTextForeground(GetStateColour(wxColor(wxT("#808080")), state));
@@ -707,6 +709,7 @@ public:
         m_max = max;
         m_value = NULL;
         if (wxMeshListTXSRenderer::m_styles.size()==0) {
+            /*
 			wxMeshListTXSRenderer::m_styles.Add(wxT("SIOpaque"));
 			wxMeshListTXSRenderer::m_styles.Add(wxT("SIOpaqueDS"));
 			wxMeshListTXSRenderer::m_styles.Add(wxT("SIAlpha"));
@@ -762,7 +765,11 @@ public:
             wxMeshListTXSRenderer::m_styles.Add(wxT("SIEmissiveMaskSpecular100"));
             wxMeshListTXSRenderer::m_styles.Add(wxT("SIEmissiveMaskSpecular100Reflection"));
             wxMeshListTXSRenderer::m_styles.Add(wxT("SIFillZ"));
+            */
 
+            // FIXME (belgabor#1#): Use list directly
+            wxMeshListTXSRenderer::m_styles.resize(cTextureStyle::getTextureStyles().size());
+            copy(cTextureStyle::getTextureStyles().begin(), cTextureStyle::getTextureStyles().end(), wxMeshListTXSRenderer::m_styles.begin());
         }
     }
     bool SetValue( const wxVariant &value ) {
@@ -1281,7 +1288,7 @@ dlgModel::dlgModel(wxWindow *parent, bool animated):m_model(NULL), m_animated(an
                                _("Open Model File"),
                                wxEmptyString,
                                wxEmptyString,
-                               _("Supported 3D Files|*.ase;*.ms3d|ASE Files (*.ase)|*.ase|Milkshape 3D (*.ms3d)|*.ms3d|All Files (*.*)|*.*"),
+                                c3DLoader::GetSupportedFilesFilter()+_("|All Files (*.*)|*.*"),
                                wxFD_FILE_MUST_EXIST|wxFD_CHANGE_DIR,
                                wxDefaultPosition,
                                wxSize(600,400)
@@ -1461,7 +1468,7 @@ void dlgModel::CheckModel() {
                                    _("Select Model File"),
                                    wxEmptyString,
                                    wxEmptyString,
-                                   _("Supported 3D Files|*.ase;*.ms3d|ASE Files (*.ase)|*.ase|Milkshape 3D (*.ms3d)|*.ms3d|All Files (*.*)|*.*"),
+                                   c3DLoader::GetSupportedFilesFilter()+_("|All Files (*.*)|*.*"),
                                    wxFD_FILE_MUST_EXIST|wxFD_CHANGE_DIR,
                                    wxDefaultPosition,
                                    wxSize(600,400)
@@ -1503,7 +1510,7 @@ void dlgModel::CheckModel() {
     }
     UpdateAll();
 };
-
+/*
 void dlgModel::FetchOneVertexMeshes(wxArrayString& names, std::vector<VECTOR>& points) {
     for (cMeshStruct::iterator ms = m_model->meshstructs.begin();
             ms != m_model->meshstructs.end(); ms++) {
@@ -1513,7 +1520,7 @@ void dlgModel::FetchOneVertexMeshes(wxArrayString& names, std::vector<VECTOR>& p
         }
     }
 }
-
+*/
 void dlgModel::ShowTransform(int pr) {
     MATRIX m = matrixMultiply(m_model->transforms);
     for (int i=0; i<4; i++)
@@ -1634,6 +1641,8 @@ void dlgModel::UpdateControlState() {
     m_btEffectClear->Enable(count>=1);
 
 //    m_btEditMesh->Enable(m_htlbMesh->GetSelection()>=0);
+
+/*
     bool haspoints = false;
     for (cMeshStruct::iterator ms = m_model->meshstructs.begin();
             ms != m_model->meshstructs.end(); ms++) {
@@ -1642,7 +1651,8 @@ void dlgModel::UpdateControlState() {
             break;
         }
     }
-    m_btEffectAuto->Enable(haspoints);
+*/
+    m_btEffectAuto->Enable(m_model->model_bones.size());
 
 }
 
@@ -1764,6 +1774,7 @@ void dlgModel::OnMatrixEdit(wxCommandEvent& WXUNUSED(event)) {
 
 void dlgModel::OnMatrixSave(wxCommandEvent& WXUNUSED(event)) {
     WRITE_APP_MATRIX(matrixMultiply(m_model->transforms));
+    WRITE_RCT3_ORIENTATION(m_model->usedorientation);
     wxcFlush();
 }
 
@@ -1865,17 +1876,26 @@ void dlgModel::OnEffectAuto(wxCommandEvent& WXUNUSED(event)) {
         }
     }
 
-    for (cMeshStruct::iterator ms = m_model->meshstructs.begin();
-            ms != m_model->meshstructs.end(); ms++) {
-        if (ms->effectpoint) {
-            cEffectPoint t;
+/*
+    for (vector<c3DBone>::iterator bn = m_model->model_bones.begin();
+            bn != m_model->model_bones.end(); bn++) {
+        cEffectPoint t;
 
-            t.name = ms->Name;
-            t.transforms.push_back(matrixGetTranslation(ms->effectpoint_vert));
-            wxString nam = _("Auto-generated form mesh '")+ms->Name+wxT("'");
-            t.transformnames.push_back(nam);
-            m_model->effectpoints.push_back(t);
-        }
+        t.name = bn->m_name;
+        t.transforms.push_back(bn->m_pos[1]);
+        wxString nam = _("Auto-generated form bone '")+bn->m_name+wxT("'");
+        t.transformnames.push_back(nam);
+        m_model->effectpoints.push_back(t);
+    }
+*/
+    foreach(const c3DBone::pair& bn, m_model->model_bones) {
+        cEffectPoint t;
+
+        t.name = bn.first;
+        t.transforms.push_back(bn.second.m_pos[1]);
+        wxString nam = _("Auto-generated form bone '")+bn.first+wxT("'");
+        t.transformnames.push_back(nam);
+        m_model->effectpoints.push_back(t);
     }
 
     m_htlbEffect->UpdateContents();
@@ -1991,19 +2011,60 @@ void dlgModel::OnBoneAuto(wxCommandEvent& WXUNUSED(event)) {
         }
     }
 
-    for (cMeshStruct::iterator ms = m_model->meshstructs.begin();
-            ms != m_model->meshstructs.end(); ms++) {
-        if (ms->effectpoint) {
-            cModelBone t;
+/*
+    for (vector<c3DBone>::iterator bn = m_model->model_bones.begin();
+            bn != m_model->model_bones.end(); bn++) {
+        cModelBone t;
 
-            t.name = ms->Name;
-            t.parent = wxT("");
-            t.usepos2 = false;
-            t.positions1.push_back(matrixGetTranslation(ms->effectpoint_vert));
-            wxString nam = _("Auto-generated form mesh '")+ms->Name+wxT("'");
+        t.name = bn->m_name;
+        t.parent = bn->m_parent;
+        t.usepos2 = !t.parent.IsEmpty();
+        if (t.usepos2) {
+            t.positions1.push_back(bn->m_pos[0]);
+            wxString nam = _("Auto-generated form bone '")+bn->m_name+wxT("'");
             t.position1names.push_back(nam);
-            amodel->modelbones.push_back(t);
+            t.positions2.push_back(bn->m_pos[1]);
+            t.position2names.push_back(nam);
+        } else {
+            t.positions1.push_back(bn->m_pos[1]);
+            wxString nam = _("Auto-generated form bone '")+bn->m_name+wxT("'");
+            t.position1names.push_back(nam);
         }
+        for (cMeshStruct::iterator ms = m_model->meshstructs.begin(); ms != m_model->meshstructs.end(); ++ms) {
+            if (ms->boneassignment.size() == 1) {
+                if (ms->boneassignment.find(t.name) != ms->boneassignment.end()) {
+                    t.meshes.push_back(ms->Name);
+                }
+            }
+        }
+        amodel->modelbones.push_back(t);
+    }
+*/
+    foreach(const c3DBone::pair& bn, m_model->model_bones) {
+        cModelBone t;
+
+        t.name = bn.first;
+        t.parent = bn.second.m_parent;
+        t.usepos2 = !t.parent.IsEmpty();
+        if (t.usepos2) {
+            t.positions1.push_back(bn.second.m_pos[0]);
+            wxString nam = _("Auto-generated form bone '")+bn.first+wxT("'");
+            t.position1names.push_back(nam);
+            t.positions2.push_back(bn.second.m_pos[1]);
+            t.position2names.push_back(nam);
+        } else {
+            t.positions1.push_back(bn.second.m_pos[1]);
+            wxString nam = _("Auto-generated form bone '")+bn.first+wxT("'");
+            t.position1names.push_back(nam);
+        }
+        foreach(const cMeshStruct& ms, m_model->meshstructs) {
+            if (ms.boneassignment.size() == 1) {
+                if (ms.boneassignment.find(t.name) != ms.boneassignment.end()) {
+                    t.meshes.push_back(ms.Name);
+                }
+            }
+        }
+        amodel->modelbones.push_back(t);
     }
 
     m_htlbEffect->UpdateContents();

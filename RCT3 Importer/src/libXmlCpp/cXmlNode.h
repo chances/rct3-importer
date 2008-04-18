@@ -25,8 +25,11 @@
 #ifndef CXMLNODE_H
 #define CXMLNODE_H
 
+#include "cxmlconfig.h"
+
 #include <libxml/parser.h>
 #include <string>
+#include <boost/iterator/iterator_facade.hpp>
 #include <boost/shared_ptr.hpp>
 
 #ifdef XMLCPP_USE_WXWIDGETS
@@ -37,6 +40,9 @@
 #include "cXmlInitHandler.h"
 
 namespace xmlcpp {
+
+class cXmlNode_iterator;
+class cXmlNode_const_iterator;
 
 /// Wraps an xmlNode structure, also handles attributes
 class cXmlNode: private cXmlInitHandler {
@@ -231,8 +237,8 @@ public:
     inline operator unspecified_bool_type() const { return ok()?(&cXmlNode::m_node):NULL; }
 
     inline std::string operator() () const { return content_internal(false); }
-    inline bool operator() (const std::string& comp, bool with_ns = false) { return (with_ns)?(!nsname().compare(comp)):(!name().compare(comp)); }
-    inline bool operator() (const char* comp, bool with_ns = false) { return (with_ns)?(!nsname().compare(comp)):(!name().compare(comp)); }
+    inline bool operator() (const std::string& comp, bool with_ns = false) const { return (with_ns)?(!nsname().compare(comp)):(!name().compare(comp)); }
+    inline bool operator() (const char* comp, bool with_ns = false) const { return (with_ns)?(!nsname().compare(comp)):(!name().compare(comp)); }
     inline cXmlNode operator[] (const std::string& nprop) const { return prop_internal(nprop.c_str(), false); }
     inline cXmlNode operator[] (const char* nprop) const { return prop_internal(nprop, false); }
     inline cXmlNode& operator++ () { go_next(); return *this; }
@@ -241,6 +247,15 @@ public:
 
     cXmlNode& operator= (const cXmlNode& node);
     bool operator== (const cXmlNode& node) { return (m_node == node.m_node); }
+
+    // Iteration
+    typedef cXmlNode_iterator iterator;
+    typedef cXmlNode_const_iterator const_iterator;
+    iterator begin();
+    const_iterator begin() const;
+    iterator end();
+    const_iterator end() const;
+
 
     // Convenience wrappers
     inline cXmlNode prop(const char* nprop, const std::string& val, bool encode_spchars = true) { return prop(nprop, val.c_str(), encode_spchars); }
@@ -302,6 +317,50 @@ private:
     std::string content_internal(bool do_throw) const;
     cXmlNode prop_internal(const char* nprop, bool do_throw) const;
 
+};
+
+class cXmlNode_iterator: public boost::iterator_facade<cXmlNode_iterator, cXmlNode, boost::forward_traversal_tag> {
+ public:
+    cXmlNode_iterator()
+      : m_node() {}
+
+    explicit cXmlNode_iterator(const cXmlNode& p)
+      : m_node(p) {}
+
+ private:
+    friend class boost::iterator_core_access;
+
+    void increment() { ++m_node; }
+
+    bool equal(cXmlNode_iterator const& other) const {
+        return this->m_node == other.m_node;
+    }
+
+    cXmlNode& dereference() { return m_node; }
+
+    cXmlNode m_node;
+};
+
+class cXmlNode_const_iterator: public boost::iterator_facade<cXmlNode_const_iterator, const cXmlNode, boost::forward_traversal_tag> {
+ public:
+    cXmlNode_const_iterator()
+      : m_node() {}
+
+    explicit cXmlNode_const_iterator(const cXmlNode& p)
+      : m_node(p) {}
+
+ private:
+    friend class boost::iterator_core_access;
+
+    void increment() { ++m_node; }
+
+    bool equal(cXmlNode_const_iterator const& other) const {
+        return this->m_node == other.m_node;
+    }
+
+    const cXmlNode& dereference() const { return m_node; }
+
+    cXmlNode m_node;
 };
 
 }

@@ -33,6 +33,8 @@
 
 #include "wx_pch.h"
 
+#include "xrc\res_lod.h"
+
 #include <wx/xrc/xmlres.h>
 #include <wx/spinbutt.h>
 
@@ -41,8 +43,11 @@
 
 class wxLODAnimationListBox;
 
-class dlgLOD : public wxDialog {
+class cSCNFile;
+
+class dlgLOD : public rcdlgLOD {
 protected:
+/*
     wxChoice* m_choiceModel;
     wxGXPicture* m_gxpictAni;
     wxTextCtrl* m_textDistance;
@@ -62,21 +67,34 @@ protected:
     wxButton* m_btAnimAdd;
     wxButton* m_btAnimDel;
     wxButton* m_btAnimClear;
+*/
 
     void UpdateAll();
+    void UpdateModels();
     void UpdateControlState();
 
+    virtual void OnNBChanging( wxNotebookEvent& event );
     void OnModelChange(wxCommandEvent& event);
-    void OnShowUnknowns(wxCommandEvent& event);
+    void OnTypeChange(wxCommandEvent& event);
+    //void OnShowUnknowns(wxCommandEvent& event);
     void OnDist40(wxCommandEvent& event);
     void OnDist100(wxCommandEvent& event);
     void OnDist4000(wxCommandEvent& event);
 
+    virtual void OnUpdateControlState( wxCommandEvent& event );
+
+    virtual void OnAnimationDown( wxSpinEvent& event );
+    virtual void OnAnimationUp( wxSpinEvent& event );
+    virtual void OnAnimationAdd( wxCommandEvent& event );
+    virtual void OnAnimationDel( wxCommandEvent& event );
+    virtual void OnAnimationClear( wxCommandEvent& event );
+
 private:
     cLOD m_lod;
-    cModel::vec* m_models;
-    cAnimatedModel::vec* m_animatedmodels;
+    const cSCNFile& m_scn;
+    bool m_warned;
 
+/*
     void InitWidgetsFromXRC(wxWindow *parent) {
         wxXmlResource::Get()->LoadObject(this,parent,_T("dlgLOD"), _T("wxDialog"));
         m_choiceModel = XRCCTRL(*this,"m_choiceModel",wxChoice);
@@ -98,14 +116,18 @@ private:
     }
 
     DECLARE_EVENT_TABLE()
+*/
 public:
-    dlgLOD(cModel::vec* mods, cAnimatedModel::vec* amods, wxWindow *parent=NULL);
+    dlgLOD(const cSCNFile& scn, wxWindow *parent=NULL);
     void SetLOD(const cLOD& lod) {
+        m_choiceType->SetSelection(lod.animated?1:0);
         m_lod = lod;
-        TransferDataToWindow();
         UpdateAll();
+        TransferDataToWindow();
     };
-    cLOD GetLOD() const {return m_lod;};
+    cLOD GetLOD() const {
+        return m_lod;
+    };
 };
 
 #endif // WXDLGLOD_H_INCLUDED

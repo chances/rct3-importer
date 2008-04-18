@@ -14,6 +14,7 @@
 #define ANIMATEDRIDE_H_INCLUDED
 
 #include "attraction.h"
+#include "sceneryrevised.h"
 #include "sharedride.h"
 
 namespace r3 {
@@ -40,12 +41,15 @@ struct AnimatedRide_V {
 	long unk14;                 ///< Seen 12, 16
 */
     Attraction_V        att;
-	uint32_t            unk15;        ///< Seen 20, 24, 35, 45, 50. Probably Attractivity (How many peeps are drawn into the park by it)
+/*
+	uint32_t            attractivity; ///< Seen 20, 24, 35, 45, 50. Probably Attractivity (How many peeps are drawn into the park by it)
 	uint32_t            seating;      ///< Seen 0, 5, 6, 9, 10, 11, 12, 13, 14, 18, 25
     RideOption**        options;      ///< List terminated by a unrelocated zero pointer
 	uint32_t            unk18;        ///< Seen 1
 	int32_t             unk19;        ///< Seen -1
 	uint32_t            entry_fee;    ///< Default entry fee
+*/
+    Ride_V              ride;
     SceneryItem*        sid_ref;
 	uint32_t            unk22;        ///< Seen 0
 	uint32_t            unk23;        ///< Seen 0

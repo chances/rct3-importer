@@ -39,8 +39,6 @@
 class ovlRelocationManager;
 class ovlStringTable;
 
-using namespace std;
-
 class ovlExtraChunk {
 public:
     unsigned long size;
@@ -67,10 +65,10 @@ private:
     SymbolStruct* m_csymbol[2];
     SymbolRefStruct* m_symrefs[2];
     SymbolRefStruct* m_csymref[2];
-    map<string, unsigned long> m_npsymbols[2];
-    vector<ovlExtraChunk*> m_loaderextras[2];
+    std::map<std::string, unsigned long> m_npsymbols[2];
+    std::vector<ovlExtraChunk*> m_loaderextras[2];
 
-    vector<string> m_loadernames[2];
+    std::vector<std::string> m_loadernames[2];
 
     int m_loadercount[2];
     int m_symbolcount[2];
@@ -100,7 +98,7 @@ public:
 
     void Init(ovlRelocationManager* relman, ovlStringTable* stable);
     void Assign(cOvlInfo* info);
-    void Make(const map<string, unsigned long>& loadernumbers);
+    void Make(const std::map<std::string, unsigned long>& loadernumbers);
 
     void AddLoader(cOvlType type);
     LoaderStruct* OpenLoader(cOvlType type, const char* ctype, unsigned long *data, unsigned long extradatacount, SymbolStruct *sym);
@@ -124,7 +122,7 @@ public:
         return m_symrefcount[type];
     }
 
-    const vector<ovlExtraChunk*>& GetExtraChunks(cOvlType type) const {
+    const std::vector<ovlExtraChunk*>& GetExtraChunks(cOvlType type) const {
         return m_loaderextras[type];
     }
 };

@@ -25,6 +25,8 @@
 #ifndef CXMLEXCEPTION_H_INCLUDED
 #define CXMLEXCEPTION_H_INCLUDED
 
+#include "cxmlconfig.h"
+
 #include <exception>
 #include <string>
 

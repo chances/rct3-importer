@@ -41,94 +41,16 @@
 #include "colhtmllbox.h"
 #include "fileselectorcombo.h"
 #include "SCNFile.h"
+#include "wxutilityfunctions.h"
 
-class wxTextureListBox;
-class wxModelListBox;
-class wxAnimatedModelListBox;
-class wxLODListBox;
-class wxReferenceListBox;
-class wxAnimationsListBox;
+#include "xrc\res_createscenery.h"
 
-class dlgCreateScenery : public wxDialog {
+#include "wxdlgCreateScenery_HTLB.h"
+#include "wxdlgLoadFromFile.h"
+
+class dlgCreateScenery : public rcdlgCreateScenery {
 protected:
-    wxSpinButton* m_spinTexture;
-    wxButton* m_btTextureEdit;
-    wxButton* m_btTextureCopy;
-    wxButton* m_btTextureDel;
-    wxButton* m_btTextureClear;
-    wxTextCtrl* m_textReference;
-    wxButton* m_btReferenceDel;
-    wxButton* m_btReferenceClear;
-
-    wxSpinButton* m_spinModel;
-    wxButton* m_btModelEdit;
-    wxButton* m_btModelCopy;
-    wxButton* m_btModelConvert;
-    wxButton* m_btModelDel;
-    wxButton* m_btModelClear;
-    wxSpinButton* m_spinAModel;
-    wxButton* m_btAModelAdd;
-    wxButton* m_btAModelEdit;
-    wxButton* m_btAModelCopy;
-    wxButton* m_btAModelConvert;
-    wxButton* m_btAModelDel;
-    wxButton* m_btAModelClear;
-
-    wxButton* m_btLODAdd;
-    wxButton* m_btLODEdit;
-    wxButton* m_btLODCopy;
-    wxButton* m_btLODDel;
-    wxButton* m_btLODAuto;
-    wxButton* m_btLODClear;
-
-    wxChoice* m_choiceExpansion;
-    wxCheckBox* m_checkGreenery;
-    wxTextCtrl* m_textSway;
-    wxCheckBox* m_checkShadow;
-    wxTextCtrl* m_textBrightness;
-    wxCheckBox* m_checkRotation;
-    wxTextCtrl* m_textScale;
-
-    wxCheckBox* m_checkShowUnknown;
-    wxPanel* m_panelUnknown;
-    wxCheckBox* m_checkUnknown;
-    wxTextCtrl* m_textUnknownFactor;
-    wxTextCtrl* m_textUnknown6;
-    wxTextCtrl* m_textUnknown7;
-    wxTextCtrl* m_textUnknown8;
-    wxTextCtrl* m_textUnknown9;
-    wxTextCtrl* m_textUnknown10;
-    wxTextCtrl* m_textUnknown11;
-
-    wxSpinButton* m_spinAnimation;
-    wxButton* m_btAnimationAdd;
-    wxButton* m_btAnimationEdit;
-    wxButton* m_btAnimationCopy;
-    wxButton* m_btAnimationDel;
-    wxButton* m_btAnimationAddToLod;
-    wxButton* m_btAnimationClear;
-
-    wxTextCtrl* m_textName;
-    wxButton* m_btAutoName;
-    wxFileSelectorCombo<wxDirDialog>* m_textPath;
-    wxButton* m_btCheck;
-    wxButton* m_btCreate;
-
-    wxNotebook* m_nbTexRef;
-    wxPanel* m_panTextures;
-    wxPanel* m_panReferences;
-
-    wxNotebook* m_nbModels;
-    wxPanel* m_panSModel;
-    wxPanel* m_panAModel;
-
     wxToolBar *m_tbCS;
-    wxTextureListBox *m_htlbTexture;
-    wxModelListBox *m_htlbModel;
-    wxAnimatedModelListBox *m_htlbAModel;
-    wxLODListBox *m_htlbLOD;
-    wxReferenceListBox *m_htlbReferences;
-    wxAnimationsListBox *m_htlbAnimation;
 
     virtual bool TransferDataFromWindow();
     virtual bool TransferDataToWindow();
@@ -137,7 +59,6 @@ protected:
     bool Save(bool as = false);
 
     void OnToolBar(wxCommandEvent& event);
-    void OnShowUnknowns(wxCommandEvent& event);
     void OnControlUpdate(wxCommandEvent& event);
     void OnMakeDirty(wxCommandEvent& event);
     void OnClose(wxCloseEvent& event);
@@ -149,6 +70,7 @@ protected:
     void OnTextureEdit(wxCommandEvent& event);
     void OnTextureCopy(wxCommandEvent& event);
     void OnTextureDel(wxCommandEvent& event);
+    void OnTextureLoad(wxCommandEvent& event);
     void OnTextureClear(wxCommandEvent& event);
 
     void OnReferenceAdd(wxCommandEvent& event);
@@ -162,6 +84,7 @@ protected:
     void OnModelCopy(wxCommandEvent& event);
     void OnModelConvert(wxCommandEvent& event);
     void OnModelDel(wxCommandEvent& event);
+    void OnModelLoad(wxCommandEvent& event);
     void OnModelClear(wxCommandEvent& event);
 
     void OnAModelUp(wxSpinEvent& event);
@@ -171,6 +94,7 @@ protected:
     void OnAModelCopy(wxCommandEvent& event);
     void OnAModelConvert(wxCommandEvent& event);
     void OnAModelDel(wxCommandEvent& event);
+    void OnAModelLoad(wxCommandEvent& event);
     void OnAModelClear(wxCommandEvent& event);
 
     void OnLODAdd(wxCommandEvent& event);
@@ -190,7 +114,20 @@ protected:
     void OnAnimationCopy(wxCommandEvent& event);
     void OnAnimationAddToLod(wxCommandEvent& event);
     void OnAnimationDel(wxCommandEvent& event);
+    void OnAnimationLoad(wxCommandEvent& event);
     void OnAnimationClear(wxCommandEvent& event);
+    void OnAnimationRDLoad(wxMouseEvent& event);
+    void OnAnimationRDClear(wxMouseEvent& event);
+
+    virtual void OnSplineUp( wxSpinEvent& event );
+    virtual void OnSplineDown( wxSpinEvent& event );
+    virtual void OnSplineEdit( wxCommandEvent& event );
+    virtual void OnSplineCopy( wxCommandEvent& event );
+    virtual void OnSplineDel( wxCommandEvent& event );
+    virtual void OnSplineLoad( wxCommandEvent& event );
+    virtual void OnSplineClear( wxCommandEvent& event );
+    virtual void OnSplineRDLoad( wxMouseEvent& event );
+    virtual void OnSplineRDClear( wxMouseEvent& event );
 
     void OnAutoName(wxCommandEvent& event);
     void OnCheck(wxCommandEvent& event);
@@ -204,80 +141,100 @@ private:
 
     void UpdateAll();
 
-    void InitWidgetsFromXRC(wxWindow *parent) {
-        wxXmlResource::Get()->LoadObject(this,parent,_T("dlgCreateScenery"), _T("wxDialog"));
-        m_spinTexture = XRCCTRL(*this,"m_spinTexture",wxSpinButton);
-        m_btTextureEdit = XRCCTRL(*this,"m_btTextureEdit",wxButton);
-        m_btTextureCopy = XRCCTRL(*this,"m_btTextureCopy",wxButton);
-        m_btTextureDel = XRCCTRL(*this,"m_btTextureDel",wxButton);
-        m_btTextureClear = XRCCTRL(*this,"m_btTextureClear",wxButton);
-        m_textReference = XRCCTRL(*this,"m_textReference",wxTextCtrl);
-        m_btReferenceDel = XRCCTRL(*this,"m_btReferenceDel",wxButton);
-        m_btReferenceClear = XRCCTRL(*this,"m_btReferenceClear",wxButton);
+    template<class T>
+    inline wxColourHtmlListBox* listbox() { return T::breakme; }
 
-        m_spinModel = XRCCTRL(*this,"m_spinModel",wxSpinButton);
-        m_btModelEdit = XRCCTRL(*this,"m_btModelEdit",wxButton);
-        m_btModelCopy = XRCCTRL(*this,"m_btModelCopy",wxButton);
-        m_btModelConvert = XRCCTRL(*this,"m_btModelConvert",wxButton);
-        m_btModelDel = XRCCTRL(*this,"m_btModelDel",wxButton);
-        m_btModelClear = XRCCTRL(*this,"m_btModelClear",wxButton);
-        m_spinAModel = XRCCTRL(*this,"m_spinAModel",wxSpinButton);
-        m_btAModelAdd = XRCCTRL(*this,"m_btAModelAdd",wxButton);
-        m_btAModelEdit = XRCCTRL(*this,"m_btAModelEdit",wxButton);
-        m_btAModelCopy = XRCCTRL(*this,"m_btAModelCopy",wxButton);
-        m_btAModelConvert = XRCCTRL(*this,"m_btAModelConvert",wxButton);
-        m_btAModelDel = XRCCTRL(*this,"m_btAModelDel",wxButton);
-        m_btAModelClear = XRCCTRL(*this,"m_btAModelClear",wxButton);
+    template<class T>
+    inline void implementSpinUp() {
+        int sel = listbox<T>()->GetSelection();
+        if (sel < 1)
+            return;
+        T ft = m_SCN.collection<T>()[sel];
+        m_SCN.collection<T>().erase(m_SCN.collection<T>().begin() + sel);
+        m_SCN.collection<T>().insert(m_SCN.collection<T>().begin() + sel - 1, ft);
 
-        m_btLODAdd = XRCCTRL(*this,"m_btLODAdd",wxButton);
-        m_btLODEdit = XRCCTRL(*this,"m_btLODEdit",wxButton);
-        m_btLODCopy = XRCCTRL(*this,"m_btLODCopy",wxButton);
-        m_btLODDel = XRCCTRL(*this,"m_btLODDel",wxButton);
-        m_btLODAuto = XRCCTRL(*this,"m_btLODAuto",wxButton);
-        m_btLODClear = XRCCTRL(*this,"m_btLODClear",wxButton);
+        MakeDirty();
+        listbox<T>()->UpdateContents();
+        listbox<T>()->SetSelection(sel-1);
+        UpdateControlState();
+    }
+    template<class T>
+    inline void implementSpinDown() {
+        int count = m_SCN.collection<T>().size();
+        int sel = listbox<T>()->GetSelection();
+        if ((count-sel) <= 1)
+            return;
+        T ft = m_SCN.collection<T>()[sel];
+        m_SCN.collection<T>().erase(m_SCN.collection<T>().begin() + sel);
+        m_SCN.collection<T>().insert(m_SCN.collection<T>().begin() + sel + 1, ft);
 
-        m_choiceExpansion = XRCCTRL(*this,"m_choiceExpansion",wxChoice);
-        m_checkGreenery = XRCCTRL(*this,"m_checkGreenery",wxCheckBox);
-        m_textSway = XRCCTRL(*this,"m_textSway",wxTextCtrl);
-        m_checkShadow = XRCCTRL(*this,"m_checkShadow",wxCheckBox);
-        m_textBrightness = XRCCTRL(*this,"m_textBrightness",wxTextCtrl);
-        m_checkRotation = XRCCTRL(*this,"m_checkRotation",wxCheckBox);
-        m_textScale = XRCCTRL(*this,"m_textScale",wxTextCtrl);
-        m_checkShowUnknown = XRCCTRL(*this,"m_checkShowUnknown",wxCheckBox);
-        m_panelUnknown = XRCCTRL(*this,"m_panelUnknown",wxPanel);
+        MakeDirty();
+        listbox<T>()->UpdateContents();
+        listbox<T>()->SetSelection(sel+1);
+        UpdateControlState();
+    }
+    template<class T>
+    inline void implementCopy() {
+        int sel = listbox<T>()->GetSelection();
+        if (sel<0)
+            return;
 
-        m_checkUnknown = XRCCTRL(*this,"m_checkUnknown",wxCheckBox);
-        m_textUnknownFactor = XRCCTRL(*this,"m_textUnknownFactor",wxTextCtrl);
-        m_textUnknown6 = XRCCTRL(*this,"m_textUnknown6",wxTextCtrl);
-        m_textUnknown7 = XRCCTRL(*this,"m_textUnknown7",wxTextCtrl);
-        m_textUnknown8 = XRCCTRL(*this,"m_textUnknown8",wxTextCtrl);
-        m_textUnknown9 = XRCCTRL(*this,"m_textUnknown9",wxTextCtrl);
-        m_textUnknown10 = XRCCTRL(*this,"m_textUnknown10",wxTextCtrl);
-        m_textUnknown11 = XRCCTRL(*this,"m_textUnknown11",wxTextCtrl);
+        T ft = m_SCN.collection<T>()[sel];
+        int m = 2;
+        while (std::find_if(m_SCN.collection<T>().begin(), m_SCN.collection<T>().end(), NamePredicate<T>(wxString::Format("%s %d", NameExtractorC<T>(ft).c_str(), m))) != m_SCN.collection<T>().end())
+            m++;
+        NameExtractor<T>(ft) = wxString::Format("%s %d", NameExtractorC<T>(ft).c_str(), m);
+        m_SCN.collection<T>().insert(m_SCN.collection<T>().begin() + sel + 1, ft);
 
-        m_spinAnimation = XRCCTRL(*this,"m_spinAnimation",wxSpinButton);
-        m_btAnimationAdd = XRCCTRL(*this,"m_btAnimationAdd",wxButton);
-        m_btAnimationEdit = XRCCTRL(*this,"m_btAnimationEdit",wxButton);
-        m_btAnimationCopy = XRCCTRL(*this,"m_btAnimationCopy",wxButton);
-        m_btAnimationDel = XRCCTRL(*this,"m_btAnimationDel",wxButton);
-        m_btAnimationAddToLod = XRCCTRL(*this,"m_btAnimationAddToLod",wxButton);
-        m_btAnimationClear = XRCCTRL(*this,"m_btAnimationClear",wxButton);
+        MakeDirty();
+        listbox<T>()->UpdateContents();
+        listbox<T>()->SetSelection(sel+1);
+        UpdateControlState();
+    }
+    template<class T>
+    inline void implementDel() {
+        int sel = listbox<T>()->GetSelection();
+        if (sel<0)
+            return;
 
-        m_nbTexRef = XRCCTRL(*this,"m_nbTexRef",wxNotebook);
-        m_panTextures = XRCCTRL(*this,"m_panTextures",wxPanel);
-        m_panReferences = XRCCTRL(*this,"m_panReferences",wxPanel);
-        m_nbModels = XRCCTRL(*this,"m_nbModels",wxNotebook);
-        m_panSModel = XRCCTRL(*this,"m_panSModel",wxPanel);
-        m_panAModel = XRCCTRL(*this,"m_panAModel",wxPanel);
+        m_SCN.collection<T>().erase(m_SCN.collection<T>().begin() + sel);
 
-        m_textName = XRCCTRL(*this,"m_textName",wxTextCtrl);
-        //m_textPath = XRCCTRL(*this,"m_textPath",wxTextCtrl);
-        m_btAutoName = XRCCTRL(*this,"m_btAutoName",wxButton);
-        m_btCheck = XRCCTRL(*this,"m_btCheck",wxButton);
-        m_btCreate = XRCCTRL(*this,"m_btCreate",wxButton);
+        MakeDirty();
+        listbox<T>()->UpdateContents();
+        listbox<T>()->SetSelection(sel-1);
+        UpdateControlState();
+    }
+    template<class T>
+    inline void implementClear(bool do_ask = true) {
+        if (do_ask && m_SCN.collection<T>().size()) {
+            if (::wxMessageBox(wxString::Format(_("Do you really want to delete all %s?"), T::getPlural().c_str()), _("Question"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this)==wxNO)
+                return;
+        }
+
+        m_SCN.collection<T>().clear();
+
+        MakeDirty();
+        listbox<T>()->UpdateContents();
+        listbox<T>()->SetSelection(-1);
+        UpdateControlState();
+    }
+    template<class T>
+    inline void implementLoad(bool do_clear = false) {
+        bool updated = do_clear;
+        if (do_clear) {
+            m_SCN.collection<T>().clear();
+            listbox<T>()->UpdateContents();
+            listbox<T>()->SetSelection(-1);
+        }
+
+        boost::shared_ptr<dlgLoadFromFile> dlg(new dlgLoadFromFile(this, m_SCN, dlgLoadFromFile::type<T>(), &updated, listbox<T>()), wxWindowDestroyer);
+        dlg->ShowModal();
+        if (updated) {
+            MakeDirty();
+            UpdateControlState();
+        }
     }
 
-    DECLARE_EVENT_TABLE()
 public:
     cSCNFile m_SCN;
 
@@ -293,4 +250,16 @@ public:
 
     void UpdateControlState();
 };
+
+template<>
+inline wxColourHtmlListBox* dlgCreateScenery::listbox<cFlexiTexture>() { return m_htlbTexture; }
+template<>
+inline wxColourHtmlListBox* dlgCreateScenery::listbox<cModel>() { return m_htlbModel; }
+template<>
+inline wxColourHtmlListBox* dlgCreateScenery::listbox<cAnimatedModel>() { return m_htlbAModel; }
+template<>
+inline wxColourHtmlListBox* dlgCreateScenery::listbox<cAnimation>() { return m_htlbAnimation; }
+template<>
+inline wxColourHtmlListBox* dlgCreateScenery::listbox<cImpSpline>() { return m_htlbSpline; }
+
 #endif // WXDLGCREATESCENERY_H_INCLUDED

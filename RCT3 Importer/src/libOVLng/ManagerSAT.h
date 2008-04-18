@@ -39,30 +39,17 @@
 
 class cSpecialAttraction {
 public:
-    string name;
+    std::string name;
     cAttraction attraction;
-    string sid;
+    std::string sid;
 
     cSpecialAttraction() {
 	    attraction.type = r3::Constants::Attraction::Type::Special_Toilet | r3::Constants::Addon::Wild_Hi;
 	    attraction.unk6 = r3::Constants::Attraction::BaseUpkeep::Other;
 	    attraction.unk12 = r3::Constants::Attraction::Unknown12::Default;
     };
-    void Fill(r3::SpecialAttractionA* sp) {
-        sp->Name = NULL;
-        sp->Description = NULL;
-        sp->GSI = NULL;
-        sp->spline = NULL;
-        attraction.Fill(sp);
-    }
-    void Fill(r3::SpecialAttractionB* sp) {
-        if ((attraction.type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
-            sp->unk = r3::Constants::Addon::Wild;
-        } else {
-            sp->unk = r3::Constants::Addon::Soaked;
-        }
-        attraction.Fill(sp->att);
-    }
+    void Fill(r3::SpecialAttractionA* sp);
+    void Fill(r3::SpecialAttractionB* sp);
 };
 
 class ovlSATManager: public ovlOVLManager {
@@ -71,7 +58,7 @@ public:
     static const char* NAME;
     static const char* TAG;
 private:
-    map<string, cSpecialAttraction>  m_items;
+    std::map<std::string, cSpecialAttraction>  m_items;
 
 public:
     ovlSATManager(): ovlOVLManager() {};

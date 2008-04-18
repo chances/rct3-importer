@@ -25,6 +25,8 @@
 #ifndef CXMLINPUTCALLBACK_H
 #define CXMLINPUTCALLBACK_H
 
+#include "cxmlconfig.h"
+
 #include <deque>
 #include <set>
 #include <vector>

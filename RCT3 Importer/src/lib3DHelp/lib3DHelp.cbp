@@ -99,6 +99,7 @@
 			<Add option="-DCACHE_GXIMAGE" />
 			<Add option="-DXMLCPP_USE_XSLT" />
 			<Add option="-DXMLCPP_USE_WXWIDGETS" />
+			<Add option="-DXMLCPP_SLIM" />
 			<Add directory="..\libASE-1.0" />
 			<Add directory="..\..\include" />
 			<Add directory="..\libWXHelp" />
@@ -107,6 +108,7 @@
 			<Add directory="..\libXmlCpp" />
 			<Add directory="$(#system.include)\libxml2" />
 			<Add directory="$(#mingw.include)" />
+			<Add directory="..\..\xml" />
 		</Compiler>
 		<Unit filename="3DLoader.cpp" />
 		<Unit filename="3DLoader.h" />
@@ -130,6 +132,8 @@
 		<Unit filename="RCT3Structs.h" />
 		<Unit filename="SCNFile.cpp" />
 		<Unit filename="SCNFile.h" />
+		<Unit filename="XML3DLoader.cpp" />
+		<Unit filename="XML3DLoader.h" />
 		<Unit filename="bmy.pal">
 			<Option compile="1" />
 			<Option weight="0" />

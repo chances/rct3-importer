@@ -14,314 +14,234 @@
 #ifndef __car_h__
 #define __car_h__
 
-struct RideCarA
-{
+#include "sceneryvisual.h"
+
+namespace r3 {
+
+struct RideCar_V {
     char*	     	    name;			// Possibly a language lookup
     char*		        username;
-    unsigned char       seating;        ///< Seating type (@see RCT3_Seating)
-    unsigned char       version;        ///< Structure version
-    unsigned short		unused;
-    SceneryItemVisual*  svd;
-    float		        weight1;	    // Probably weight. Can be zero (rot mouse)
-    SceneryItemVisual*  seatsvd;        // If seats move in some way (rotating mouse, multidimensional)
-    unsigned long       unk7;           // Seen 2 (cuttlefish multidim), 4 (rot mouse, EuroSpinner). 0 if not rotating
-                                        // Probably 2 = horizontal axis, 4 = vertical axis
-    float               weight2;        // Probably weight of seats. -1.0 for cars withot rotation
-    float               unk9;           // Seen 0.3, 4.0
-    unsigned long       unk10;          // Seen 0
-    float               unk11;          // Seen -1
-    float               unk12;          // Seen 0.1, 0.3
-    unsigned long       unk13;          // Seen 0
-    unsigned long       unk14;          // Seen 0
-    float               unk15;          // Seen -1.0
-    unsigned long       unk16;          // Seen 0
-    unsigned long       unk17;          // Seen 0
-    unsigned long       unk18;          // Seen 0
-    unsigned long       unk19;          // Seen 0
-    long                unk20;          // Seen -1
-    long                unk21;          // Seen -1
-    long                unk22;          // Seen -1
-    long                unk23;          // Seen -1
-    unsigned long       unk24;          // Seen 0
-    unsigned long       unk25;          // Seen 1
-    unsigned long       unk26;          // Seen 2
-    long                unk27;          // Seen -1
-    long                unk28;          // Seen -1
-    long                unk29;          // Seen -1
-    long                unk30;          // Seen -1
-    long                unk31;          // Seen -1
-    long                unk32;          // Seen -1
-    long                unk33;          // Seen -1
-    long                unk34;          // Seen -1
-    long                unk35;          // Seen -1
-    long                unk36;          // Seen -1
-    long                unk37;          // Seen -1
-    long                unk38;          // Seen -1
-    long                unk39;          // Seen -1
-    unsigned long       unk40;
-    unsigned long       unk41;
-    unsigned long       unk42;
-    unsigned long       unk43;
-    unsigned long       unk44;
-    unsigned long       unk45;
-    unsigned long       unk46;
-    unsigned long       unk47;
-    unsigned long       unk48;
-    unsigned long       unk49;
-    unsigned long       unk50;
-    unsigned long       unk51;
-    unsigned long       unk52;          // Seen 4
-    unsigned long       unk53;          // Seen 4
-    unsigned long       unk54;
-    float               unk55;          // Seen -1.0
-    long                unk56;          // Seen -1
-    float               unk57;          // Seen -1.0
-    float               unk58;          // Seen -1.0
-    float               unk59;          // Seen -1.0
-    float               unk60;          // Seen -1.0
+    uint8_t             seating;        ///< Seating type (@see RCT3_Seating)
+    uint8_t             version;        ///< Structure version (0 Vanilla, 2 Soaked and 3 Wild)
+    uint16_t		    unused;
+    SceneryItemVisual_V* svd_ref;
+    float_t		        weight1;	    ///< car body weight.
+                                        /**<
+                                         * Is zero if there isn't really a main body (eg slides, suspended,
+                                         * bobs).
+                                         * otherwise in the range 0.1 - 5500. Never < 0.
+                                         **/
+    SceneryItemVisual_V* seatsvd_ref;    ///< If seats move in some way (rotating mouse, multidimensional)
+    uint32_t            free_axis;      ///< Rotation axis for seat vs. base movement
+                                        /**<
+                                         * 0 none
+                                         * 2 horizontal axis, crossing the track (y in right handed z up).
+                                         *   Used for multidimensional and chair lift
+                                         * 3 horizontal axis, along the track (x in rhzu).
+                                         *   Used for bobs, slides and free hanging suspended. Many only use
+                                         *   a virtual base to rotate against. Bobs and slides use this to achive
+                                         *   the illusion of free movement in curves.
+                                         * 4 horizontal axis, along the track (x in rhzu)
+                                         *   Spinnig and sliding cars.
+                                         **/
+    float_t             weight2;        ///< Probably weight of seats. -1.0 for cars withot rotation
+                                        /**<
+                                         * otherwise in the range 40 - 990
+                                         **/
+    float_t             unk9;           ///< Mostly 4
+                                        /**<
+                                         * 0.1 chair lift cars
+                                         * 0.2 - 0.8 mostly free spinning cars, includes BallCoaster
+                                         * 2 Suspendend and bobs, some slides, Xtend Drifting and Wild Mine
+                                         **/
+    float_t             unk10;          ///< Almost allways 0
+                                        /**<
+                                         * 0.2 - 12 for slides.
+                                         * 4 for WildMine
+                                         * Probably something with swinging/sideways movement
+                                         **/
+    float_t             unk11;          ///< Almost allways -1
+                                        /**<
+                                         * 3 for BallCoaster
+                                         * 5 for River Raft cars
+                                         **/
+    float_t             unk12;          ///< Mostly 0.1
+                                        /**<
+                                         * 0.01 for Chair and Ski Lift
+                                         * 0.2 for suspendeds, bobs, some slides
+                                         * 0.3 for most spinnig cars (virginial reel cars, but also halfpipe and eurospinner)
+                                         * 0.5-0.7 for Xtend Drifting, two slides, Wild Mine and BallCoaster
+                                         **/
+    float_t             unk13;          ///< Almost always 0
+                                        /**<
+                                         * 4000 for Xtend Drifting
+                                         * 10000 for Wild Mine
+                                         * Probably related to left/right swinging for fixed situations
+                                         **/
+    float_t             unk14;          ///< Mostly 0
+                                        /**<
+                                         * 0.1 for suspended and bobs
+                                         * 0.5-0.9 for slides
+                                         * Probably related to the left/right swinging/physics
+                                         **/
+    float_t             unk15;          ///< Almost always -1.0
+                                        /**<
+                                         * 0 for FrequentFaller
+                                         * 0.2 for Wild Mine
+                                         * 0.785 for Xtend Drifting
+                                         * 0.9 for Super Soaker
+                                         **/
+    uint32_t            water_car;      ///< 1 for water cars, 0 otherwise.
+                                        /**<
+                                         * maybe floating, bobbing?
+                                         **/
+    float_t             water_float1;   // Seen 0
+    float_t             water_float2;   // Seen 0
+    float_t             water_float3;   // Seen 0
+    int32_t             unk20;          ///< -1, 1 or 3.
+                                        /**<
+                                         * -1 Most common
+                                         * 1 Several. Among them are eg the tour boats, but also others. No idea
+                                         * 3 for rotating tower cars (observation towers and rotodrop)
+                                         **/
+    int32_t             unk21;          // Seen -1
+    int32_t             unk22;          // Seen -1
+    int32_t             unk23;          // Seen -1
+    uint32_t            unk24;          // Seen 0
+    uint32_t            unk25;          // Seen 1
+    uint32_t            unk26;          // Seen 2
+    int32_t             unk27;          // Seen -1
+    int32_t             unk28;          // Seen -1
+    int32_t             unk29;          // Seen -1
+    int32_t             unk30;          // Seen -1
+    int32_t             unk31;          // Seen -1
+    int32_t             unk32;          // Seen -1
+    int32_t             unk33;          // Seen -1
+    int32_t             unk34;          // Seen -1
+    int32_t             unk35;          // Seen -1
+    int32_t             unk36;          // Seen -1
+    int32_t             unk37;          // Seen -1
+    int32_t             unk38;          // Seen -1
+    int32_t             unk39;          // Seen -1
+    uint32_t            unk40;
+    uint32_t            unk41;
+    uint32_t            unk42;
+    uint32_t            unk43;
+    uint32_t            unk44;
+    uint32_t            unk45;
+    uint32_t            unk46;
+    uint32_t            unk47;
+    uint32_t            unk48;
+    uint32_t            unk49;
+    SceneryItemVisual_V* axelsvd_ref;
+    uint32_t            unk51;
+    uint32_t            unk52;          // Seen 4
+    uint32_t            unk53;          // Seen 4
+    uint32_t            unk54;
+    float_t             unk55;          // Seen -1.0
+    int32_t             unk56;          // Seen -1
+    float_t             unk57;          // Seen -1.0
+    float_t             unk58;          // Seen -1.0
+    float_t             unk59;          // Seen -1.0
+    float_t             unk60;          // Seen -1.0
 };
 
-struct RideCarB
-{
-    char*	     	    name;			// Possibly a language lookup
-    char*		        username;
-    unsigned char       seating;        ///< Seating type (@see RCT3_Seating)
-    unsigned char       version;        ///< Structure version
-    unsigned short		unused;
-    SceneryItemVisual*  svd;
-    float		        weight1;	    // Probably weight. Can be zero (rot mouse)
-    SceneryItemVisual*  seatsvd;        // If seats move in some way (rotating mouse, multidimensional)
-    unsigned long       unk7;           // Seen 2 (cuttlefish multidim), 4 (rot mouse, EuroSpinner). 0 if not rotating
-                                        // Probably 2 = horizontal axis, 4 = vertical axis
-    float               weight2;        // Probably weight of seats. -1.0 for cars withot rotation
-    float               unk9;           // Seen 0.3, 4.0
-    unsigned long       unk10;          // Seen 0
-    float               unk11;          // Seen -1
-    float               unk12;          // Seen 0.1, 0.3
-    unsigned long       unk13;          // Seen 0
-    unsigned long       unk14;          // Seen 0
-    float               unk15;          // Seen -1.0
-    unsigned long       unk16;          // Seen 0
-    unsigned long       unk17;          // Seen 0
-    unsigned long       unk18;          // Seen 0
-    unsigned long       unk19;          // Seen 0
-    long                unk20;          // Seen -1
-    long                unk21;          // Seen -1
-    long                unk22;          // Seen -1
-    long                unk23;          // Seen -1
-    unsigned long       unk24;          // Seen 0
-    unsigned long       unk25;          // Seen 1
-    unsigned long       unk26;          // Seen 2
-    long                unk27;          // Seen -1
-    long                unk28;          // Seen -1
-    long                unk29;          // Seen -1
-    long                unk30;          // Seen -1
-    long                unk31;          // Seen -1
-    long                unk32;          // Seen -1
-    long                unk33;          // Seen -1
-    long                unk34;          // Seen -1
-    long                unk35;          // Seen -1
-    long                unk36;          // Seen -1
-    long                unk37;          // Seen -1
-    long                unk38;          // Seen -1
-    long                unk39;          // Seen -1
-    unsigned long       unk40;
-    unsigned long       unk41;
-    unsigned long       unk42;
-    unsigned long       unk43;
-    unsigned long       unk44;
-    unsigned long       unk45;
-    unsigned long       unk46;
-    unsigned long       unk47;
-    unsigned long       unk48;
-    unsigned long       unk49;
-    SceneryItemVisual*  axelsvd;
-    unsigned long       unk51;
-    unsigned long       unk52;          // Seen 1, 4
-    unsigned long       unk53;          // Seen 4, 1 (for rear car)
-    unsigned long       unk54;
-    float               unk55;          // Seen 0
-    long                unk56;          // Seen 0
-    float               unk57;          // Seen -1.0
-    float               unk58;          // Seen 4.0
-    float               unk59;          // Seen 0
-    float               unk60;          // Seen -1.0
-    float               unk61;          // Seen 0.1
-    unsigned long       unk62;
-    unsigned long       unk63;
-    float               unk64;          // Seen -1.0
-    unsigned long       unk65;
-    unsigned long       unk66;          // Seen 1
-    unsigned long       unk67;
-    unsigned long       unk68;
-    unsigned long       unk69;          // Seen 1
-    unsigned long       unk70;
-    unsigned long       unk71;
-    unsigned long       unk72;          // Seen 0
-    float               unk73;          // Seen -9999.9 (0xc61c3f9a)
+struct RideCar_Sext {
+    float_t             unk61;          // Seen 0.1
+    uint32_t            unk62;
+    uint32_t            unk63;
+    float_t             unk64;          // Seen -1.0
+    uint32_t            unk65;
+    uint32_t            unk66;          // Seen 1
+    uint32_t            unk67;
+    uint32_t            unk68;
+    uint32_t            unk69;          // Seen 1
+    uint32_t            unk70;
+    uint32_t            unk71;
+    uint32_t            unk72;          // Seen 0
+    float_t             unk73;          // Seen -9999.9 (0xc61c3f9a)
 };
 
-struct RideCarC
-{
-    char*	     	    name;			// Possibly a language lookup
-    char*		        username;
-    unsigned char       seating;        ///< Seating type (@see RCT3_Seating)
-    unsigned char       version;        ///< Structure version
-    unsigned short		unused;
-    SceneryItemVisual*  svd;
-    float		        weight1;	    // Probably weight. Can be zero (rot mouse)
-    SceneryItemVisual*  seatsvd;        // If seats move in some way (rotating mouse, multidimensional)
-    unsigned long       unk7;           // Seen 2 (cuttlefish multidim), 4 (rot mouse, EuroSpinner). 0 if not rotating
-                                        // Probably 2 = horizontal axis, 4 = vertical axis
-    float               weight2;        // Probably weight of seats. -1.0 for cars withot rotation
-    float               unk9;           // Seen 0.3, 4.0
-    unsigned long       unk10;          // Seen 0
-    float               unk11;          // Seen -1
-    float               unk12;          // Seen 0.1, 0.3
-    unsigned long       unk13;          // Seen 0
-    unsigned long       unk14;          // Seen 0
-    float               unk15;          // Seen -1.0
-    unsigned long       unk16;          // Seen 0
-    unsigned long       unk17;          // Seen 0
-    unsigned long       unk18;          // Seen 0
-    unsigned long       unk19;          // Seen 0
-    long                unk20;          // Seen -1
-    long                unk21;          // Seen -1
-    long                unk22;          // Seen -1
-    long                unk23;          // Seen -1
-    unsigned long       unk24;          // Seen 0
-    unsigned long       unk25;          // Seen 1
-    unsigned long       unk26;          // Seen 2
-    long                unk27;          // Seen -1
-    long                unk28;          // Seen -1
-    long                unk29;          // Seen -1
-    long                unk30;          // Seen -1
-    long                unk31;          // Seen -1
-    long                unk32;          // Seen -1
-    long                unk33;          // Seen -1
-    long                unk34;          // Seen -1
-    long                unk35;          // Seen -1
-    long                unk36;          // Seen -1
-    long                unk37;          // Seen -1
-    long                unk38;          // Seen -1
-    long                unk39;          // Seen -1
-    unsigned long       unk40;
-    unsigned long       unk41;
-    SceneryItemVisual*  wheelR1;
-    unsigned long       unk43;
-    SceneryItemVisual*  wheelL1;
-    unsigned long       unk45;
-    SceneryItemVisual*  wheelR2;
-    unsigned long       unk47;
-    SceneryItemVisual*  wheelL2;
-    unsigned long       unk49;
-    SceneryItemVisual*  axelsvd;
-    unsigned long       unk51;
-    unsigned long       unk52;          // Seen 1, 4
-    unsigned long       unk53;          // Seen 4, 1 (for rear car)
-    unsigned long       unk54;
-    float               unk55;          // Seen 0
-    long                unk56;          // Seen 0
-    float               unk57;          // Seen -1.0
-    float               unk58;          // Seen 4.0
-    float               unk59;          // Seen 0
-    float               unk60;          // Seen -1.0
-    float               unk61;          // Seen 0.1
-    unsigned long       unk62;
-    unsigned long       unk63;
-    float               unk64;          // Seen -1.0
-    unsigned long       unk65;
-    unsigned long       unk66;          // Seen 1
-    unsigned long       unk67;
-    unsigned long       unk68;
-    unsigned long       unk69;          // Seen 1
-    unsigned long       unk70;
-    unsigned long       unk71;
-    unsigned long       unk72;          // Seen 0
-    float               unk73;          // Seen -9999.9 (0xc61c3f9a)
-    unsigned long       unk74;          // Seen 1
-    unsigned long       unk75;          // Seen 0
-    unsigned long       unk76;          // Seen 0
-    unsigned long       unk77;          // Seen 0
-    float               unk78;          // Seen 1.0
-    float               unk79;          // Seen 1.0
-    void*               unk80;          ///< Symbol reference to a was (WildAnimalSpecies)
+struct RideCar_S {
+    RideCar_V           v;
+    RideCar_Sext        s;
+};
+
+struct RideCar_Wext {
+    uint32_t            unk74;          // Seen 1
+    SceneryItemVisual_W* svd_flipped_ref;        ///< Flipped body svd for splitting (siezmic)
+    SceneryItemVisual_W* seatsvd_flipped_ref;    ///< Flipped seat svd for splitting (siezmic)
+    uint32_t            unk77;          // Seen 0
+    float_t             unk78;          // Seen 1.0
+    float_t             unk79;          // Seen 1.0
+    void*               was_ref;        ///< Symbol reference to a was (WildAnimalSpecies)
                                         /**
                                          * Used for Elephant transport
                                          */
-    float               unk81;          // Seen 4.1
-    unsigned long       unk82;          // Seen 0
-    long                unk83;          // Seen -1
-    unsigned long       unk84;          // Seen 0
+    float_t             unk81;          // Seen 4.1
+    uint32_t            unk82;          // Seen 0
+    int32_t             unk83;          // Seen -1
+    uint32_t            unk84;          // Seen 0
 };
 
-struct RideTrainC // ?
-{
-    unsigned long    	unk1;              	// -1 on the structures that I've looked at.
-    char*            	name;              	//  probably user visible text, ie. spaces and stuff rather than an internal name
-    RideCar*         	frontcar;
-    RideCar*         	secondcar;
-    RideCar*         	midcar;
-    RideCar*         	penultimatecar;
-    RideCar*         	rearcar;
-    RideCar*         	link;	        	// Pointer to the object that links cars together.
-    unsigned long    	minimumcars;       	// the minimum number of cars for this train
-    unsigned long    	maximumcars;		// the maximum number of cars for this train
-    unsigned long    	initialcars;		// the initial number of cars for this train when the ride is created
-    float	     	    unkfloats1[35];		// 35 unknown floats
-    char*	     	    configuration;
-    unsigned long    	unk10;			    // Seen 3
-    char*	     	    carname;
-    unsigned long    	unk11;              // Seen 2, 0 on HyperTwister|Looping
-    unsigned long    	unk12;              // Seen 0
-    unsigned long    	unk13;              // Seen 0
-    unsigned long    	unk14;              // Seen 0
-    unsigned long    	unk15;              // Seen 0
-    float    	        unk16;              // Seen -1.0
-    float    	        unk17;              // Seen -1.0
-    float    	        unk18;              // Seen -1.0
-    float    	        unk19;              // Seen 1.0
-    unsigned long    	unk20;              // Seen 0
-    unsigned long    	unk21;              // Seen 0
-    float           	unk22;              // Seen 0.0, 90.0 on FrequentFaller
+struct RideCar_W {
+    RideCar_V           v;
+    RideCar_Sext        s;
+    RideCar_Wext        w;
 };
 
-struct RideTrainB
-{
-    unsigned long    	unk1;              	// -1 on the structures that I've looked at.
-    char*            	name;              	//  probably user visible text, ie. spaces and stuff rather than an internal name
-    RideCar*         	frontcar;
-    RideCar*         	secondcar;
-    RideCar*         	midcar;
-    RideCar*         	penultimatecar;
-    RideCar*         	rearcar;
-    RideCar*         	link;	        	// Pointer to the object that links cars together.
-    unsigned long    	minimumcars;       	// the minimum number of cars for this train
-    unsigned long    	maximumcars;		// the maximum number of cars for this train
-    unsigned long    	initialcars;		// the initial number of cars for this train when the ride is created
-    float	     	    unkfloats1[35];		// 35 unknown floats
-    char*	     	    configuration;
-    unsigned long    	unk10;			    // Seen 2
-    char*	     	    carname;
-    unsigned long    	unk11;              // Seen 0, 1
-    unsigned long    	unk12;              // Seen 0
+struct RideTrain_V {
+    char*           	name;              	///< txt for train name, not a symref. 0xFFFFFFFF for RideTrainB/C
+    char*            	description;        ///< txt for train description, not a symref
+                                            /**<
+                                             * In Soaked and Wild this could be user visible text, it contains spaces
+                                             * and stuff usually not present for an internal name.
+                                             **/
+    RideCar_V*         	frontcar_ref;
+    RideCar_V*         	secondcar_ref;
+    RideCar_V*         	midcar_ref;
+    RideCar_V*         	penultimatecar_ref;
+    RideCar_V*         	rearcar_ref;
+    RideCar_V*         	link_ref;	        /// Pointer to the object that links cars together.
+    uint32_t    	    minimum_cars;       /// the minimum number of cars for this train
+    uint32_t    	    maximum_cars;		/// the maximum number of cars for this train
+    uint32_t    	    initial_cars;		/// the initial number of cars for this train when the ride is created
+    float_t	     	    unkfloats1[35];		/// 35 unknown floats, unk12 - unk46
+    char*	     	    configuration;      /// Platform? Seen "NoPlatform"
 };
 
-struct RideTrainA
-{
-    char*           	name;              	// txt for train name. 0xFFFFFFFF for RideTrainB/C
-    char*            	description;        // txt for train description.
-    RideCar*         	frontcar;
-    RideCar*         	secondcar;
-    RideCar*         	midcar;
-    RideCar*         	penultimatecar;
-    RideCar*         	rearcar;
-    RideCar*         	link;	        	// Pointer to the object that links cars together.
-    unsigned long    	minimumcars;       	// the minimum number of cars for this train
-    unsigned long    	maximumcars;		// the maximum number of cars for this train
-    unsigned long    	initialcars;		// the initial number of cars for this train when the ride is created
-    float	     	unkfloats1[35];		// 35 unknown floats
-    char*	     	configuration;      // Platform? Seen "NoPlatform"
+struct RideTrain_Sext {
+    uint32_t    	    unk48;			    ///< Seen 2
+    char*	     	    carname;            ///< Probably equivalent to name in V structure
+    uint32_t    	    unk50;              ///< Seen 0, 1, 2
+    uint32_t    	    unk51;              ///< Seen 0
+};
+
+struct RideTrain_S {
+    RideTrain_V         v;
+    RideTrain_Sext      s;
+};
+
+struct RideTrain_Wext {
+    uint32_t    	    unk52;              // Seen 0
+    uint32_t    	    unk53;              // Seen 0
+    uint32_t    	    unk54;              // Seen 0
+    float_t    	        unk55;              // Seen -1.0
+    float_t    	        unk56;              // Seen -1.0
+    float_t    	        unk57;              // Seen -1.0
+    float_t    	        unk58;              // Seen 1.0
+    uint32_t    	    unk59;              // Seen 0
+    uint32_t    	    unk60;              // Seen 0
+    float_t           	unk61;              // Seen 0.0, 90.0 on FrequentFaller
+};
+
+struct RideTrain_W {
+    RideTrain_V         v;
+    RideTrain_Sext      s;
+    RideTrain_Wext      w;
+};
+
+
 };
 
 #endif

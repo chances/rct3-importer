@@ -440,6 +440,7 @@ void cRawParser::Parse(cXmlNode& node) {
                 }
             }
 
+            wxLogVerbose(wxString::Format(_("Importing from %s..."), filename.GetFullPath().c_str()));
             cSCNFile c_scn(filename.GetFullPath());
             if (!name.IsEmpty()) {
                 if (useprefix)
@@ -461,6 +462,9 @@ void cRawParser::Parse(cXmlNode& node) {
                 wxLogVerbose(wxString::Format(_("Importing %s (%s) to %s."), filename.GetFullPath().c_str(), c_scn.name.c_str(), m_output.GetFullPath().c_str()));
                 c_scn.MakeToOvl(m_ovl);
             }
+        } else if (child(RAWXML_ANR)) {
+            BAKE_SKIP(child);
+            ParseANR(child);
         } else if (child(RAWXML_BAN)) {
             BAKE_SKIP(child);
             ParseBAN(child);

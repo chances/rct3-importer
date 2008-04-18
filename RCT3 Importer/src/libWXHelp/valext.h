@@ -66,8 +66,11 @@ protected:
     {
         wxCHECK_MSG( m_validatorWindow, false,
                      _T("No window associated with validator") );
-        wxCHECK_MSG( (m_validatorWindow->IsKindOf(CLASSINFO(wxTextCtrl))) || (m_validatorWindow->IsKindOf(CLASSINFO(wxComboCtrl))), false,
-                     _T("wxExtendedValidator is only for wxTextCtrls & ComboCtrls") );
+        wxCHECK_MSG( (m_validatorWindow->IsKindOf(CLASSINFO(wxTextCtrl))) ||
+                     (m_validatorWindow->IsKindOf(CLASSINFO(wxComboCtrl))) ||
+                     (m_validatorWindow->IsKindOf(CLASSINFO(wxComboBox))) ||
+                     (m_validatorWindow->IsKindOf(CLASSINFO(wxChoice)))
+                     , false, _T("wxExtendedValidator is only for wxTextCtrls & ComboCtrls") );
 
         return true;
     }

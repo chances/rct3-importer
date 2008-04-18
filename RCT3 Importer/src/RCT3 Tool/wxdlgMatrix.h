@@ -76,9 +76,11 @@ protected:
     wxButton* m_btMirrorX;
     wxButton* m_btMirrorY;
     wxButton* m_btMirrorZ;
-    wxButton* m_btUnity;
+    wxChoice* m_choiceBone;
+    wxButton* m_btFull;
+    wxChoice* m_choiceFix;
+    wxButton* m_btFix;
     wxButton* m_btDefault;
-    wxButton* m_btFixOrient;
     wxButton* m_btLoad;
     wxButton* m_btOk;
     wxButton* m_btCancel;
@@ -108,7 +110,7 @@ protected:
     void OnScale(wxCommandEvent& event);
     void OnMirror(wxCommandEvent& event);
 
-    void OnSpecialUnity(wxCommandEvent& event);
+    void OnSpecialBone(wxCommandEvent& event);
     void OnSpecialDefault(wxCommandEvent& event);
     void OnSpecialFix(wxCommandEvent& event);
     void OnSpecialLoad(wxCommandEvent& event);
@@ -118,7 +120,8 @@ protected:
 private:
     std::vector<r3::MATRIX> m_matrices;
     wxArrayString m_matrixnames;
-    std::vector<r3::VECTOR> m_points;
+    const std::map<wxString, c3DBone>* m_bones;
+    std::vector<const c3DBone*> m_boneId;
 
     void InitWidgetsFromXRC(wxWindow *parent) {
         wxXmlResource::Get()->LoadObject(this,parent,_T("dlgMatrix"), _T("wxDialog"));
@@ -162,9 +165,11 @@ private:
         m_btMirrorX = XRCCTRL(*this,"m_btMirrorX",wxButton);
         m_btMirrorY = XRCCTRL(*this,"m_btMirrorY",wxButton);
         m_btMirrorZ = XRCCTRL(*this,"m_btMirrorZ",wxButton);
-        m_btUnity = XRCCTRL(*this,"m_btUnity",wxButton);
+        m_choiceBone = XRCCTRL(*this,"m_choiceBone",wxChoice);
+        m_btFull = XRCCTRL(*this,"m_btFull",wxButton);
+        m_choiceFix = XRCCTRL(*this,"m_choiceFix",wxChoice);
+        m_btFix = XRCCTRL(*this,"m_btFix",wxButton);
         m_btDefault = XRCCTRL(*this,"m_btDefault",wxButton);
-        m_btFixOrient = XRCCTRL(*this,"m_btFixOrient",wxButton);
         m_btLoad = XRCCTRL(*this,"m_btLoad",wxButton);
         m_btOk = XRCCTRL(*this,"m_btOk",wxButton);
         m_btCancel = XRCCTRL(*this,"m_btCancel",wxButton);

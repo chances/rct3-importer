@@ -32,20 +32,18 @@
 #include <exception>
 #include <string>
 
-using namespace std;
-
-class EOvl: public exception {
+class EOvl: public std::exception {
 public:
-    EOvl(const string& message);
+    EOvl(const std::string& message);
     virtual const char* what() const throw() {
         return m_message.c_str();
     }
-    virtual const string& swhat() const throw() {
+    virtual const std::string& swhat() const throw() {
         return m_message;
     }
     ~EOvl() throw() {};
 protected:
-    string m_message;
+    std::string m_message;
 };
 
 #endif

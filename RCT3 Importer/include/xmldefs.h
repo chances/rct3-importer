@@ -20,6 +20,7 @@
 #define XML_SCHEMALOCATION_RAW      "http://rct3.sourceforge.net/xml/rct3xml-raw-v1.xsd"
 #define XML_NAMESPACE_COMPILER      "http://rct3.sourceforge.net/rct3xml/ovlcompiler"
 #define XML_SCHEMALOCATION_COMPILER "http://rct3.sourceforge.net/xml/rct3xml-ovlcompiler-v1.xsd"
+#define XML_NAMESPACE_MODEL         "http://rct3.sourceforge.net/rct3xml/model"
 
 #define XML_NAMESPACE_SCHEMAINSTANCE "http://www.w3.org/2001/XMLSchema-instance"
 

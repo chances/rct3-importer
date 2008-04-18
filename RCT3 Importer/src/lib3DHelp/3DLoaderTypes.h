@@ -30,6 +30,7 @@
 #define C3DLOADER_ASE           1
 #define C3DLOADER_MS3D          2
 #define C3DLOADER_AN8           3
+#define C3DLOADER_XML           4
 
 #define C3DMESH_INVALID         0
 #define C3DMESH_VALID           1

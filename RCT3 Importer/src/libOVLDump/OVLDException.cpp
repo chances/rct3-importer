@@ -25,7 +25,7 @@
 
 #include "OVLDException.h"
 
-EOvlD::EOvlD(const string& message) {
+EOvlD::EOvlD(const std::string& message) {
     m_message = message;
 }
 

@@ -38,6 +38,8 @@
 #include <exception>
 #include <stdlib.h>
 
+#include <boost/format.hpp>
+
 #include "version.h"
 
 //#define LIBXMLTEST
@@ -56,10 +58,12 @@
 #include "SCNFile.h"
 #include "RCT3Exception.h"
 #include "OVLException.h"
+#include "pretty.h"
 #include "RawParse.h"
 #include "lib3Dconfig.h"
 #include "confhelp.h"
 #include "bzipstream.h"
+#include "xmldefs.h"
 
 #ifdef UNICODE
 #define UNIPTR(s) s.mb_str(wxConvLocal).data()
@@ -67,6 +71,8 @@
 #define UNIPTR(s) s.c_str()
 #endif
 
+using namespace r3;
+using namespace std;
 using namespace xmlcpp;
 
 void printVersion() {
@@ -356,7 +362,8 @@ int DoCompile(const wxCmdLineParser& parser) {
 
                     wxLogMessage(_("Processing raw xml file..."));
                     WRITE_RCT3_EXPERTMODE(true);
-
+                    if (!parser.Found(wxT("v")))
+                        WRITE_RCT3_RAWMODE(true);
                     cRawParser rovl;
                     rovl.SetUserDir(wxStandardPaths::Get().GetDocumentsDir());
                     if (!bake.IsEmpty()) {
@@ -412,6 +419,103 @@ int DoCompile(const wxCmdLineParser& parser) {
             } else {
                 throw RCT3Exception(_("Error in xml file"));
             }
+        } else if (inputfile.GetExt().Lower() == wxT("ms3d")) {
+            boost::shared_ptr<c3DLoader> object = c3DLoader::LoadFile(inputfile.GetFullPath().c_str());
+            if (!object.get()) {
+                wxLogError(_("Failed to load input file."));
+                return -1;
+            }
+            wxString outputxml = inputfile.GetFullPath() + wxT(".xml");
+
+            cXmlDoc doc(true);
+
+            cXmlNode root("ovl");
+            root.prop("xmlns", XML_NAMESPACE_COMPILER);
+
+            cXmlNode fix("fix");
+            fix.prop("handedness", "right");
+            fix.prop("up", "y");
+            root.appendChildren(fix);
+
+            cXmlNode bsh("bsh");
+            bsh.prop("name", inputfile.GetName().utf8_str());
+            bsh.prop("model", inputfile.GetFullName().utf8_str());
+
+            for (int i = 0; i < object->GetObjectCount(); ++i) {
+                if (object->IsObjectValid(i)) {
+                    cXmlNode geom("geomobj");
+                    geom.prop("name", object->GetObjectName(i).utf8_str());
+                    geom.prop("ftx", "???");
+                    geom.prop("txs", "SIOpaque");
+                    if (object->GetObjectVertex2(i, 0).bone[0] >= 0) {
+                        geom.prop("bone", object->GetBone(object->GetObjectVertex2(i, 0).bone[0]).m_name.utf8_str());
+                    }
+                    bsh.appendChildren(geom);
+                }
+            }
+            for (int i = 0; i < object->GetBoneCount(); ++i) {
+                cXmlNode bone("bone");
+                bone.prop("name", object->GetBone(i).m_name.utf8_str());
+                if (!object->GetBone(i).m_parent.IsEmpty()) {
+                    bone.prop("parent", object->GetBone(i).m_parent.utf8_str());
+                }
+                MATRIX p = object->GetBone(i).m_pos[0];
+                bone.newChild("pos1", boost::str(boost::format("%f %f %f %f   %f %f %f %f   %f %f %f %f   %f %f %f %f") % p._11 % p._12 % p._13 % p._14 %
+                    p._21 % p._22 % p._23 % p._24 % p._31 % p._32 % p._33 % p._34 % p._41 % p._42 % p._43 % p._44).c_str());
+                p = object->GetBone(i).m_pos[1];
+                bone.newChild("pos2", boost::str(boost::format("%f %f %f %f   %f %f %f %f   %f %f %f %f   %f %f %f %f") % p._11 % p._12 % p._13 % p._14 %
+                    p._21 % p._22 % p._23 % p._24 % p._31 % p._32 % p._33 % p._34 % p._41 % p._42 % p._43 % p._44).c_str());
+                bsh.appendChildren(bone);
+            }
+            root.appendChildren(bsh);
+
+            cXmlNode ban("ban");
+            ban.prop("name", inputfile.GetName().utf8_str());
+            const c3DAnimation& an = object->GetAnimations().begin()->second;
+
+            typedef pair<wxString, c3DAnimBone> bonepair;
+            foreach(const bonepair& bp, an.m_bones) {
+                cXmlNode bone("bone");
+                bone.prop("name", bp.second.m_name.utf8_str());
+                for (int f = 0; f < bp.second.m_translations.size(); ++f) {
+                    txyz t = bp.second.m_translations[f];
+                    cXmlNode trans("translate", boost::str(boost::format("%f %f %f") % t.X % t.Y % t.Z).c_str());
+                    trans.prop("time", boost::str(boost::format("%f") % t.Time).c_str());
+                    bone.appendChildren(trans);
+                }
+                for (int f = 0; f < bp.second.m_rotations.size(); ++f) {
+                    txyz t = bp.second.m_rotations[f];
+                    cXmlNode rot("rotate", boost::str(boost::format("%f %f %f") % t.X % t.Y % t.Z).c_str());
+                    rot.prop("time", boost::str(boost::format("%f") % t.Time).c_str());
+                    bone.appendChildren(rot);
+                }
+                ban.appendChildren(bone);
+            }
+/*
+            for (int i = 0; i < an.m_bones.size(); ++i) {
+                cXmlNode bone("bone");
+                bone.prop("name", an.m_bones[i].m_name.utf8_str());
+                for (int f = 0; f < an.m_bones[i].m_translations.size(); ++f) {
+                    txyz t = an.m_bones[i].m_translations[f];
+                    cXmlNode trans("translate", boost::str(boost::format("%f %f %f") % t.X % t.Y % t.Z).c_str());
+                    trans.prop("time", boost::str(boost::format("%f") % t.Time).c_str());
+                    bone.appendChildren(trans);
+                }
+                for (int f = 0; f < an.m_bones[i].m_rotations.size(); ++f) {
+                    txyz t = object->an.m_bones[i].m_rotations[f];
+                    cXmlNode rot("rotate", boost::str(boost::format("%f %f %f") % t.X % t.Y % t.Z).c_str());
+                    rot.prop("time", boost::str(boost::format("%f") % t.Time).c_str());
+                    bone.appendChildren(rot);
+                }
+                ban.appendChildren(bone);
+            }
+*/
+            root.appendChildren(ban);
+
+            doc.root(root);
+            doc.write(outputxml.utf8_str(), true, wxString(wxT("UTF-8")));
+
+            return 0;
         } else {
             c_scn.filename = inputfile.GetFullPath();
             c_scn.Load();
@@ -520,9 +624,6 @@ int main(int argc, char **argv)
         fprintf(stderr, "Failed to load debug library!\n");
 #endif
 
-    wxLocale loc(wxLANGUAGE_ENGLISH);
-    //wxLogMessage(wxString::Format(wxT("%f"), 1.25));
-
     // *&^$% GraphicsMagick
     wxFileName app = wxString(wxArgv[0]);
     wxString appenv = wxT("MAGICK_CONFIGURE_PATH=") + app.GetPathWithSep();
@@ -543,6 +644,9 @@ int main(int argc, char **argv)
 
         return -1;
     }
+
+    wxLocale loc(wxLANGUAGE_ENGLISH);
+
 
     static const wxCmdLineEntryDesc cmdLineDesc[] =
     {

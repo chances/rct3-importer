@@ -18,7 +18,7 @@
 					<Add option="-g" />
 					<Add option="-D__WXDEBUG__" />
 					<Add directory="$(#wx.include)" />
-					<Add directory="$(#wx.lib)\msw-ansi-debug-static-2.8" />
+					<Add directory="$(#wx.lib)\wx\include\msw-ansi-debug-static-2.8" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -244,6 +244,7 @@
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
 		</Unit>
+		<Unit filename="fileselectorcombowrap.h" />
 		<Unit filename="fsfilename.cpp" />
 		<Unit filename="fsfilename.h" />
 		<Unit filename="gximage.cpp" />
@@ -300,6 +301,7 @@
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
 		</Unit>
+		<Unit filename="pretty.h" />
 		<Unit filename="silence.cpp">
 			<Option virtualFolder="validators\" />
 			<Option target="Debug" />

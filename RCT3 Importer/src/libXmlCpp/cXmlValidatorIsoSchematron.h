@@ -25,11 +25,14 @@
 #ifndef CXMLVALIDATORISOSCHEMATRON_H_INCLUDED
 #define CXMLVALIDATORISOSCHEMATRON_H_INCLUDED
 
-#ifdef XMLCPP_USE_XSLT
+#include "cxmlconfig.h"
+
+#ifdef XMLCPP_USE_ISO_SCHEMATRON
 
 #include <map>
 #include <string>
 
+#include "cXmlDoc.h"
 #include "cXmlValidator.h"
 #include "cXsltStylesheet.h"
 
@@ -43,22 +46,30 @@ class cXmlValidatorIsoSchematron: public cXmlValidator {
 private:
     static bool g_resinit;
     cXsltStylesheet m_transform;
+    cXmlDoc m_schema;
 
     void Init();
     //void DeInit();
     //void Parse(int options);
 public:
     cXmlValidatorIsoSchematron():cXmlValidator() { Init(); }
+    cXmlValidatorIsoSchematron(cXmlDoc& doc, const std::map<std::string, std::string>& options = (std::map<std::string, std::string>()) ):cXmlValidator() {
+        Init();
+        read(doc, options);
+    }
     virtual ~cXmlValidatorIsoSchematron();
 
     bool read(cXmlDoc& doc, const std::map<std::string, std::string>& options = (std::map<std::string, std::string>()) );
     bool read(const std::string& buffer, const std::map<std::string, std::string>& options = (std::map<std::string, std::string>()) );
     bool read(const char* URL, const std::map<std::string, std::string>& options = (std::map<std::string, std::string>()) );
 
+    inline cXmlDoc& schema() { return m_schema; };
+
     virtual int validate(boost::shared_ptr<xmlDoc>& doc, int options = OPT_NONE);
 
     virtual bool ok() const { return m_transform.ok(); }
     inline bool operator!() const { return !ok(); }
+    virtual int getType() const { return VAL_ISOSCHEMATRON; }
     typedef cXsltStylesheet cXmlValidatorIsoSchematron::*unspecified_bool_type;
     inline operator unspecified_bool_type() const { return ok()?(&cXmlValidatorIsoSchematron::m_transform):NULL; }
 };

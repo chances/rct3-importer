@@ -36,8 +36,6 @@
 
 #include "ovlstructs.h"
 
-using namespace std;
-
 class ovlOVLManager;
 class ovlLodSymRefManager;
 class ovlExtraChunk;
@@ -115,7 +113,7 @@ public:
 
 class cOvlFileType {
 public:
-    vector<cOvlFile*> files;
+    std::vector<cOvlFile*> files;
 	unsigned long reloffset;
 	unsigned long size;
 	cOvlFileType() {
@@ -131,15 +129,15 @@ public:
 
 class cOvlFileClass {
 public:
-	string filename;
+	std::string filename;
 	cOvlFileType types[9];
-    vector<string> references;
-    set<unsigned long> fixups;
+    std::vector<std::string> references;
+    std::set<unsigned long> fixups;
 
     cOvlFileClass(){};
     unsigned char* GetBlock(int filetype, unsigned long size);
     unsigned long MakeRelOffsets(unsigned long from);
-    void Write(const map<string, ovlOVLManager*>& managers, const vector<ovlExtraChunk*>& extra);
+    void Write(const std::map<std::string, ovlOVLManager*>& managers, const std::vector<ovlExtraChunk*>& extra);
 };
 
 class cOvlInfo {
@@ -152,7 +150,7 @@ public:
         unsigned long off = OpenFiles[OVLT_COMMON].MakeRelOffsets(0);
         OpenFiles[OVLT_UNIQUE].MakeRelOffsets(off);
     };
-    void WriteFiles(const map<string, ovlOVLManager*>& managers, const ovlLodSymRefManager& lsrman);
+    void WriteFiles(const std::map<std::string, ovlOVLManager*>& managers, const ovlLodSymRefManager& lsrman);
 };
 
 #endif

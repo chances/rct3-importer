@@ -25,6 +25,8 @@
 #ifndef CXMLVALIDATORSCHEMATRON_H_INCLUDED
 #define CXMLVALIDATORSCHEMATRON_H_INCLUDED
 
+#include "cxmlconfig.h"
+
 #ifdef XMLCPP_USE_SCHEMATRON_PATCHED_LIBXML
 
 #include "cXmlValidator.h"
@@ -46,6 +48,14 @@ private:
     void Parse(int options);
 public:
     cXmlValidatorSchematron():cXmlValidator() { Init(); }
+    cXmlValidatorSchematron(cXmlDoc& doc, int options = XML_SCHEMATRON_OUT_ERROR):cXmlValidator() {
+        Init();
+        read(doc, options);
+    }
+    cXmlValidatorSchematron(const std::string& buffer, int options = XML_SCHEMATRON_OUT_ERROR):cXmlValidator() {
+        Init();
+        read(buffer, options);
+    }
     virtual ~cXmlValidatorSchematron();
 
     bool read(cXmlDoc& doc, int options = XML_SCHEMATRON_OUT_ERROR);
@@ -53,6 +63,7 @@ public:
     bool read(const char* URL, int options = XML_SCHEMATRON_OUT_ERROR);
 
     virtual int validate(boost::shared_ptr<xmlDoc>& doc, int options = OPT_NONE);
+    virtual int getType() const { return VAL_SCHEMATRON; }
 
     virtual bool ok() const { return m_context && m_parser && m_schema; }
     inline bool operator!() const { return !ok(); }

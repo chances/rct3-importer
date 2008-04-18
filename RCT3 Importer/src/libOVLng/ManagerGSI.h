@@ -36,17 +36,15 @@
 
 #include "guiicon.h"
 
-using namespace std;
-
 class ovlGSIManager: public ovlOVLManager {
 public:
     static const char* LOADER;
     static const char* NAME;
     static const char* TAG;
 private:
-    vector<string> m_gsinames;
-    vector<string> m_gsitextures;
-    vector<GUISkinItemPos> m_gsipositions;
+    std::vector<std::string> m_gsinames;
+    std::vector<std::string> m_gsitextures;
+    std::vector<GUISkinItemPos> m_gsipositions;
 
     unsigned long m_commonsize;
 public:

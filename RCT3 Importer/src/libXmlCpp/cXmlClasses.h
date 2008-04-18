@@ -25,6 +25,8 @@
 #ifndef CXMLCLASSES_H_INCLUDED
 #define CXMLCLASSES_H_INCLUDED
 
+#include "cxmlconfig.h"
+
 namespace xmlcpp {
 
 class cXmlDoc;

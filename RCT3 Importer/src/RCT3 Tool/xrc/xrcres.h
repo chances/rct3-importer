@@ -1,10 +1,10 @@
 #ifndef XRCRES_H_INCLUDED
 #define XRCRES_H_INCLUDED
 
-void InitXmlCreateScenery();
+//void InitXmlCreateScenery();
 void InitXmlEffect();
 void InitXmlInfo();
-void InitXmlLOD();
+//void InitXmlLOD();
 void InitXmlMatrix();
 //void InitXmlMesh();
 void InitXmlModel();
@@ -17,14 +17,14 @@ void InitXmlAttractMan();
 void InitXmlAttract();
 void InitXmlBitmapCrystal();
 //void InitXmlScenerySettings();
-void InitXmlAnimation();
-void InitXmlMisc();
+//void InitXmlAnimation();
+//void InitXmlMisc();
 
 inline void InitXmlResource() {
-    InitXmlCreateScenery();
+//    InitXmlCreateScenery();
     InitXmlEffect();
     InitXmlInfo();
-    InitXmlLOD();
+//    InitXmlLOD();
     InitXmlMatrix();
 //    InitXmlMesh();
     InitXmlModel();
@@ -37,8 +37,8 @@ inline void InitXmlResource() {
     InitXmlAttract();
     InitXmlBitmapCrystal();
 //    InitXmlScenerySettings();
-    InitXmlAnimation();
-    InitXmlMisc();
+//    InitXmlAnimation();
+//    InitXmlMisc();
 }
 
 #endif

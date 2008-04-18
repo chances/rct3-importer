@@ -22,10 +22,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifdef XMLCPP_USE_SCHEMATRON_PATCHED_LIBXML
-
-
 #include "cXmlValidatorSchematron.h"
+
+#ifdef XMLCPP_USE_SCHEMATRON_PATCHED_LIBXML
 
 #include "cXmlDoc.h"
 #include "cXmlException.h"
@@ -110,6 +109,10 @@ bool cXmlValidatorSchematron::read(const char* URL, int options) {
 int cXmlValidatorSchematron::validate(boost::shared_ptr<xmlDoc>& doc, int options) {
     if (!ok())
         throw eXml("Tried to validate with invalid schematron schema");
+
+    clearGenericErrors();
+    clearStructuredErrors();
+
     return xmlSchematronValidateDoc(m_context, doc.get());
 }
 

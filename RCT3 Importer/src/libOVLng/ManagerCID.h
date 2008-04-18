@@ -54,14 +54,7 @@ public:
         unk28 = 0;
         unk33 = 0;
     }
-    void Fill(r3::CarriedItem* cid) {
-        cid->unk1 = unk1;
-        cid->unk3 = unk3;
-        cid->unk26 = unk26;
-        cid->unk27 = unk27;
-        cid->unk28 = unk28;
-        cid->unk33 = unk33;
-    }
+    void Fill(r3::CarriedItem* cid);
 };
 
 class cCarriedItemSizeUnknowns {
@@ -77,22 +70,17 @@ public:
         unk19 = 100;
         unk20 = 100;
     }
-    void Fill(r3::CarriedItem* cid) {
-        cid->unk17 = unk17;
-        cid->unk18 = unk18;
-        cid->unk19 = unk19;
-        cid->unk20 = unk20;
-    }
+    void Fill(r3::CarriedItem* cid);
 };
 
 class cCarriedItemSoaked {
 public:
-    string male_morphmesh_body;      // All char*s point to empty strings if not set
-    string male_morphmesh_legs;
-    string female_morphmesh_body;
-    string female_morphmesh_legs;
+    std::string male_morphmesh_body;      // All char*s point to empty strings if not set
+    std::string male_morphmesh_legs;
+    std::string female_morphmesh_body;
+    std::string female_morphmesh_legs;
     unsigned long unk38;            // 0 usually, 1 for SwimSuitV1
-    string textureoption;            // "Inflatable", "DefaultFlexiColours" (Sunglasses), "SwimSuitV1" or "SwimSuitV2"
+    std::string textureoption;            // "Inflatable", "DefaultFlexiColours" (Sunglasses), "SwimSuitV1" or "SwimSuitV2"
 
     cCarriedItemSoaked() {
         unk38 = 0;
@@ -104,7 +92,7 @@ public:
 
 class cCarriedItemTrash {
 public:
-    string wrapper;           // Used up version or open umbrella, :cid for none
+    std::string wrapper;           // Used up version or open umbrella, :cid for none
     float trash1;                   // 0.0 usually, 0.01 for trash
     long trash2;                    // -1 usually, 1 for FoodWrapper and Stick, 2 for boxes and bottles
 
@@ -112,11 +100,7 @@ public:
         trash1 = 0.0;
         trash2 = -1;
     }
-    void Fill(r3::CarriedItem* cid) {
-        cid->wrapper = NULL;
-        cid->trash1 = trash1;
-        cid->trash2 = trash2;
-    }
+    void Fill(r3::CarriedItem* cid);
 };
 
 class cCarriedItemSettings {
@@ -136,24 +120,17 @@ public:
         thirst = 0.0;
         lightprotectionfactor = 0.0;
     }
-    void Fill(r3::CarriedItem* cid) {
-        cid->flags = flags;
-        cid->ageclass = ageclass;
-        cid->type = type;
-        cid->hunger = hunger;
-        cid->thirst = thirst;
-        cid->lightprotectionfactor = lightprotectionfactor;
-    }
+    void Fill(r3::CarriedItem* cid);
 };
 
 class cCarriedItemShape {
 public:
-    string shape1;                  // So far shape2 always matches shape1
-    string shape2;
+    std::string shape1;                  // So far shape2 always matches shape1
+    std::string shape2;
     float unk9;                     // 0.0 for hidden items, 40.0 usually for shape items, 200.0 for billboard items. Probably a LOD distance
     unsigned long defaultcolour;    // 0 usually, 7 for Baloon
     unsigned long shaped;           // Usually 1, 0 for billboard objects
-    string fts;                     // is the FlexiTexture for a billboard object
+    std::string fts;                     // is the FlexiTexture for a billboard object
     float scalex;                   // Scalefactor for billboards
     float scaley;
 
@@ -164,54 +141,29 @@ public:
         scalex = 1.0;
         scaley = 1.0;
     }
-    void MakeBillboard() {
-        unk9 = 200.0;
-        defaultcolour = 7;
-        shaped = 0;
-        scalex = 0.75;
-        scaley = 0.75;
-    }
-    void Fill(r3::CarriedItem* cid) {
-        cid->unk9 = unk9;
-        cid->defaultcolour = defaultcolour;
-        cid->shaped = shaped;
-        cid->scalex = scalex;
-        cid->scaley = scaley;
-        cid->shape1 = NULL;
-        cid->shape2 = NULL;
-        cid->fts = NULL;
-    }
+    void MakeBillboard();
+    void Fill(r3::CarriedItem* cid);
 };
 
 class cCarriedItem {
 public:
-    string name;
+    std::string name;
     unsigned long addonpack;        // 0 vanilla, 1 soaked, 2 wild
-    string nametxt;
-    string pluralnametxt;
-    string icon;                    // :gsi for none 40x40
+    std::string nametxt;
+    std::string pluralnametxt;
+    std::string icon;                    // :gsi for none 40x40
     cCarriedItemShape shape;
     cCarriedItemSettings settings;
     cCarriedItemTrash trash;
     cCarriedItemSoaked soaked;
     cCarriedItemSizeUnknowns size;
     cCarriedItemUnknowns unknowns;
-    vector<string> extras;
+    std::vector<std::string> extras;
 
     cCarriedItem() {
         addonpack = 0;
     }
-    void Fill(r3::CarriedItem* cid) {
-        cid->addonpack = addonpack;
-        cid->name = NULL;
-        cid->pluralname = NULL;
-        shape.Fill(cid);
-        settings.Fill(cid);
-        trash.Fill(cid);
-        soaked.Fill(cid);
-        size.Fill(cid);
-        unknowns.Fill(cid);
-    }
+    void Fill(r3::CarriedItem* cid);
 };
 
 
@@ -221,7 +173,7 @@ public:
     static const char* NAME;
     static const char* TAG;
 private:
-    map<string, cCarriedItem>  m_items;
+    std::map<std::string, cCarriedItem>  m_items;
 
 public:
     ovlCIDManager(): ovlOVLManager() {

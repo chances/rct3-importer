@@ -42,8 +42,6 @@
 #include "ManagerOVL.h"
 #include "rct3log.h"
 
-using namespace std;
-
 class cFlexiTextureStruct {
 public:
     unsigned long dimension;
@@ -55,50 +53,24 @@ public:
     cFlexiTextureStruct() {
         dimension = 0;
     }
-    void Fill(FlexiTextureStruct* fts) {
-        fts->scale = local_log2(dimension);
-        fts->width = dimension;
-        fts->height = dimension;
-        fts->Recolorable = recolourable;
-        memcpy(fts->palette, palette.get(), 256 * sizeof(r3::COLOURQUAD));
-        memcpy(fts->texture, texture.get(), dimension * dimension);
-        if (alpha.get()) {
-            memcpy(fts->alpha, alpha.get(), dimension * dimension);
-        } else {
-            fts->alpha = NULL;
-        }
-    }
+    void Fill(FlexiTextureStruct* fts);
 };
 
 class cFlexiTextureInfoStruct {
 public:
-    string name;
+    std::string name;
     unsigned long dimension;
     unsigned long fps;
     unsigned long recolourable;
-    vector<unsigned long> animation;
-    vector<cFlexiTextureStruct> frames;
+    std::vector<unsigned long> animation;
+    std::vector<cFlexiTextureStruct> frames;
 
     cFlexiTextureInfoStruct() {
         dimension = 0;
         fps = 0;
         recolourable = 0;
     }
-    void Fill(FlexiTextureInfoStruct* fti) {
-        fti->scale = local_log2(dimension);
-        fti->width = dimension;
-        fti->height = dimension;
-        fti->fps = fps;
-        fti->Recolorable = recolourable;
-        fti->offsetCount = animation.size();
-        for (unsigned long i = 0; i < animation.size(); ++i) {
-            fti->offset1[i] = animation[i];
-        }
-        fti->fts2Count = frames.size();
-        for (unsigned long i = 0; i < frames.size(); ++i) {
-            frames[i].Fill(&fti->fts2[i]);
-        }
-    }
+    void Fill(FlexiTextureInfoStruct* fti);
 };
 
 class ovlFTXManager: public ovlOVLManager {
@@ -107,7 +79,7 @@ public:
     static const char* NAME;
     static const char* TAG;
 private:
-    map<string, cFlexiTextureInfoStruct> m_items;
+    std::map<std::string, cFlexiTextureInfoStruct> m_items;
 public:
     ovlFTXManager(): ovlOVLManager() {};
 

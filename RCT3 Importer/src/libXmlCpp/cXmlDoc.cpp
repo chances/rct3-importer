@@ -185,6 +185,27 @@ bool cXmlDoc::share(const boost::shared_ptr<xmlDoc>& doc) {
     return ok();
 }
 
+string cXmlDoc::write(bool indent, const char* encoding) {
+    if (!m_doc)
+        throw eXmlInvalid("Tried to write bad document");
+
+    xmlChar* output;
+    int outputlen;
+
+    if (indent) {
+        xmlDocDumpFormatMemoryEnc(m_doc.get(), &output, &outputlen, encoding, 1);
+    } else {
+        xmlDocDumpMemoryEnc(m_doc.get(), &output, &outputlen, encoding);
+    }
+
+    string ret;
+    if (output) {
+        ret = reinterpret_cast<char*>(output);
+        xmlFree(output);
+    }
+    return ret;
+}
+
 int cXmlDoc::write(const char* filename, bool indent, const char* encoding) {
     if (!m_doc)
         throw eXmlInvalid("Tried to write bad document");

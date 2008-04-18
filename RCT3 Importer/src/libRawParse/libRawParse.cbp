@@ -97,6 +97,7 @@
 			<Add option="-DCACHE_GXIMAGE" />
 			<Add option="-DXMLCPP_USE_XSLT" />
 			<Add option="-DXMLCPP_USE_WXWIDGETS" />
+			<Add option="-DXMLCPP_SLIM" />
 			<Add directory="..\libASE-1.0" />
 			<Add directory="..\..\include" />
 			<Add directory="..\libWXHelp" />
@@ -117,7 +118,7 @@
 		<Unit filename="RawParse_Data.cpp" />
 		<Unit filename="RawParse_Extra.cpp" />
 		<Unit filename="RawParse_MainParse.cpp" />
-		<Unit filename="RawParse_StructParse_BAN_BSH_CED.cpp" />
+		<Unit filename="RawParse_StructParse_ANR_BAN_BSH_CED.cpp" />
 		<Unit filename="RawParse_StructParse_CHG_CID_FTX.cpp" />
 		<Unit filename="RawParse_StructParse_PTD_QTD_SAT_SHS.cpp" />
 		<Unit filename="RawParse_StructParse_SID_SPL_STA.cpp" />

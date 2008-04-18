@@ -46,12 +46,12 @@ public:
 protected:
     unsigned long m_size;
     unsigned char* m_data;
-    map<string, cOvlMemBlob> m_blobs;
+    std::map<std::string, cOvlMemBlob> m_blobs;
     bool m_made;
     ovlOVLManager* m_defermake;
     bool m_deferable;
 
-    virtual void Check(const string& err);
+    virtual void Check(const std::string& err);
 private:
     cOvl* m_ovl;
 public:

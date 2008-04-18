@@ -36,6 +36,7 @@
 
 #include "htmlentities.h"
 #include "matrix.h"
+#include "pretty.h"
 #include "SCNFile.h"
 
 #include "confhelp.h"
@@ -120,15 +121,15 @@ EVT_BUTTON(XRCID("m_btMirrorX"), dlgMatrix::OnMirror)
 EVT_BUTTON(XRCID("m_btMirrorY"), dlgMatrix::OnMirror)
 EVT_BUTTON(XRCID("m_btMirrorZ"), dlgMatrix::OnMirror)
 
-EVT_BUTTON(XRCID("m_btUnity"), dlgMatrix::OnSpecialUnity)
+EVT_BUTTON(XRCID("m_btFull"), dlgMatrix::OnSpecialBone)
 EVT_BUTTON(XRCID("m_btDefault"), dlgMatrix::OnSpecialDefault)
-EVT_BUTTON(XRCID("m_btFixOrient"), dlgMatrix::OnSpecialFix)
+EVT_BUTTON(XRCID("m_btFix"), dlgMatrix::OnSpecialFix)
 EVT_BUTTON(XRCID("m_btLoad"), dlgMatrix::OnSpecialLoad)
 
 EVT_BUTTON(XRCID("m_btMatrixLoadAll"), dlgMatrix::OnLoad)
 END_EVENT_TABLE()
 
-dlgMatrix::dlgMatrix(wxWindow *parent) {
+dlgMatrix::dlgMatrix(wxWindow *parent): m_bones(NULL) {
     InitWidgetsFromXRC((wxWindow *)parent);
 
     m_htlbMatrix = new wxMatrixListBox(this, &m_matrixnames);
@@ -145,11 +146,23 @@ dlgMatrix::dlgMatrix(wxWindow *parent) {
             mod = dynamic_cast<dlgModel *> (parent->GetParent());
     }
     if (mod) {
-        wxArrayString names;
-        mod->FetchOneVertexMeshes(names, m_points);
-        m_choiceTranslationPoint->Append(names);
+        if (mod->GetModelPtr()->model_bones.size()) {
+            m_bones = &mod->GetModelPtr()->model_bones;
+/*
+            for (std::vector<c3DBone>::const_iterator it = m_bones->begin(); it != m_bones->end(); ++it) {
+                m_choiceTranslationPoint->Append(it->m_name);
+                m_choiceBone->Append(it->m_name);
+            }
+*/
+            foreach(const c3DBone::pair& bn, *m_bones) {
+                m_choiceTranslationPoint->Append(bn.first);
+                m_choiceBone->Append(bn.first);
+                m_boneId.push_back(&bn.second);
+            }
+        }
     }
-    m_choiceTranslationPoint->Enable(m_points.size()>0);
+    m_choiceTranslationPoint->Enable(m_bones);
+    m_choiceBone->Enable(m_bones);
 
     Fit();
     Layout();
@@ -249,7 +262,7 @@ void dlgMatrix::OnMatrixMoveUp(wxSpinEvent& WXUNUSED(event)) {
     if (::wxGetKeyState(WXK_SHIFT)) {
         MATRIX temp = m_matrices[sel-1];
         m_matrices.erase(m_matrices.begin() + sel-1);
-        matrixMultiplyIP(&m_matrices[sel-2], &temp);
+        matrixMultiplyIP(m_matrices[sel-2], temp);
         wxString temps = m_matrixnames[sel-1];
         m_matrixnames.erase(m_matrixnames.begin() + sel-1);
         m_matrixnames[sel-2] += " & " + temps;
@@ -272,7 +285,7 @@ void dlgMatrix::OnMatrixMoveDown(wxSpinEvent& WXUNUSED(event)) {
         return;
     if (::wxGetKeyState(WXK_SHIFT)) {
         MATRIX temp = m_matrices[sel];
-        matrixMultiplyIP(&m_matrices[sel-1], &temp);
+        matrixMultiplyIP(m_matrices[sel-1], temp);
         m_matrices.erase(m_matrices.begin() + sel);
         wxString temps = m_matrixnames[sel];
         m_matrixnames[sel-1] += " & " + temps;
@@ -349,10 +362,11 @@ void dlgMatrix::OnTranslateChoice(wxCommandEvent& WXUNUSED(event)) {
     m_textTranslationX->Enable(sel<=0);
     m_textTranslationY->Enable(sel<=0);
     m_textTranslationZ->Enable(sel<=0);
+    VECTOR v = matrixExtractTranslation(m_boneId[sel-1]->m_pos[1]);
     if (sel>0) {
-        m_textTranslationX->ChangeValue(wxString::Format("%.4f", m_points[sel-1].x));
-        m_textTranslationY->ChangeValue(wxString::Format("%.4f", m_points[sel-1].y));
-        m_textTranslationZ->ChangeValue(wxString::Format("%.4f", m_points[sel-1].z));
+        m_textTranslationX->ChangeValue(wxString::Format("%.6f", v.x));
+        m_textTranslationY->ChangeValue(wxString::Format("%.6f", v.y));
+        m_textTranslationZ->ChangeValue(wxString::Format("%.6f", v.z));
     }
 }
 
@@ -471,7 +485,7 @@ void dlgMatrix::OnMirror(wxCommandEvent& event) {
 //
 ////////////////////////////////////////////////////////////////////////
 
-void dlgMatrix::OnSpecialUnity(wxCommandEvent& WXUNUSED(event)) {
+void dlgMatrix::OnSpecialBone(wxCommandEvent& WXUNUSED(event)) {
     AddMatrix(wxT("-"), matrixGetUnity());
 }
 

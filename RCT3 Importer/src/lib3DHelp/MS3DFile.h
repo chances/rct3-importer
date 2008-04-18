@@ -208,6 +208,11 @@ public:
 	int FindJointByName(const char* lpszName);
 	void GetVertexExAt(int nIndex, ms3d_vertex_ex_t **ppVertex);
 
+	const std::vector<ms3d_comment_t>& GetGroupComments() const { return m_arrGroupComments; }
+	const std::vector<ms3d_comment_t>& GetMaterialComments() const { return m_arrMaterialComments; }
+	const std::vector<ms3d_comment_t>& GetJointComments() const { return m_arrJointComments; }
+	const std::vector<ms3d_comment_t>& GetModelComments() const { return m_arrModelComments; }
+
 
 
 	float GetAnimationFPS();

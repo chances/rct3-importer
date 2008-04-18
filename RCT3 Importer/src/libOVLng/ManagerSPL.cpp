@@ -34,6 +34,7 @@
 #include "OVLException.h"
 
 using namespace r3;
+using namespace std;
 
 #ifdef __BORLANDC__
 inline float roundf (float f) {

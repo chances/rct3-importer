@@ -29,12 +29,33 @@
 #ifndef _XMLHELPER_H_
 #define _XMLHELPER_H_
 
-bool parseFloat(std::string& str, float& a);
-bool parseFloat(std::string& str, double& a);
-bool parseULong(std::string& str, unsigned long& a);
+#include "vertex.h"
+
+bool parseFloat_(std::string& str, float& a);
+bool parseFloat_(std::string& str, double& a);
+
+template <class T>
+bool parseFloatC(const std::string& str, T& a) {
+    std::string s = str;
+    return parseFloat_(s, a);
+}
+
+template <class T>
+bool parseFloat(std::string& str, T& a) {
+    return parseFloat_(str, a);
+}
+
+bool parseULong_(std::string& str, unsigned long& a);
+inline bool parseULongC(const std::string& str, unsigned long& a) {
+    std::string s = str;
+    return parseULong_(s, a);
+}
+inline bool parseULong(std::string& str, unsigned long& a) {
+    return parseULong_(str, a);
+}
 bool parseMatrixRow(std::string& str, float& a, float& b, float& c, float& d);
 bool parseMatrix(std::string& str, r3::MATRIX& m);
-bool parseCompilerVector(std::string& str, txyz& v);
+bool parseCompilerVector(std::string& str, r3::txyz& v);
 
 //inline wxXmlNode* makeElementNode(const wxString& name) {
 //    return new wxXmlNode(NULL, wxXML_ELEMENT_NODE, name);

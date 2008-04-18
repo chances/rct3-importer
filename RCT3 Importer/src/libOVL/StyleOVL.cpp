@@ -711,7 +711,7 @@ LIBOVL_API bool saveStyleOVL()
 		sids += sizeof(SceneryItemData);
 		long *s3 = (long *)sids;
 		sids += 4;
-		SceneryItemVisual **svd = (SceneryItemVisual **)sids;
+		SceneryItemVisual_V **svd = (SceneryItemVisual_V **)sids;
 		unsigned int SymbolsToResolve = 5;
 		if (!sc->wallicon)
 		{

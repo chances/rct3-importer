@@ -28,19 +28,150 @@
 
 #include <stdio.h>
 
+#include <boost/tokenizer.hpp>
+
 #include "MS3DLoader.h"
 #include "MS3DFile.h"
 #include "wxLocalLog.h"
+#include "gximage.h"
 #include "matrix.h"
+#include "pretty.h"
+#include "rct3constants.h"
+#include "xmlhelper.h"
+
+#include "cXmlDoc.h"
+#include "cXmlInputOutputCallbackString.h"
+#include "cXmlNode.h"
+#include "cXmlValidatorRNVRelaxNG.h"
+
+#include "rng/ms3d_comment.rnc.gz.h"
 
 using namespace r3;
+using namespace std;
+using namespace xmlcpp;
+
+//#define DUMP_ANIDATA
+
+inline void fixMS3DRotation(txyz& v) {
+    float ax = fabs(v.x);
+    float ay = fabs(v.y);
+    float az = fabs(v.z);
+
+    if (((ax < 0.000001) && (az < 0.000001)) || ((ay < 0.000001) && (az < 0.000001)) || ((ax < 0.000001) && (ay < 0.000001)))
+        return; // Only one axis affected, bail out
+
+    MATRIX m = matrixMultiply(matrixGetRotationX(v.x), matrixGetRotationY(v.y));
+    matrixMultiplyIP(m, matrixGetRotationZ(v.z));
+
+    VECTOR va;
+    va.x = atan2(-m.m[1][2], m.m[2][2]);
+    va.y = asin(m.m[0][2]);
+    va.z = atan2(-m.m[0][1], m.m[0][0]);
+
+    VECTOR vb;
+    vb.x = atan2(m.m[1][2], -m.m[2][2]);
+    vb.y = asin(-m.m[0][2])+M_PI;
+    vb.z = atan2(m.m[0][1], -m.m[0][0]);
+
+    if ((fabs(va.x) + fabs(va.y) + fabs(va.z)) > (fabs(vb.x) + fabs(vb.y) + fabs(vb.z)))
+        v.v = vb;
+    else
+        v.v = va;
+}
+
 
 cMS3DLoader::cMS3DLoader(const wxChar *filename): c3DLoader(filename) {
 wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s)"), filename);
+    if (cXmlInputOutputCallbackString::Init())
+        XMLCPP_RES_ADD(ms3d_comment, rng);
+
     std::auto_ptr<CMS3DFile> ms3df(new CMS3DFile());
     if (!ms3df->LoadFromFile(wxString(filename).mb_str(wxConvFile)))
-        return;
+        throw E3DLoaderNotMyBeer();
+
+    wxFileName f(filename);
+
 wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename, ms3df->GetNumGroups(), ms3df->GetNumVertices());
+
+    // Handle model comment
+    foreach(const ms3d_comment_t& c, ms3df->GetModelComments()) {
+        cXmlDoc comm(c.comment, NULL, NULL, XML_PARSE_DTDLOAD);
+        if (comm) {
+            try {
+                cXmlValidatorRNVRelaxNG val(XMLCPP_RES_USE(ms3d_comment, rng).c_str());
+                if (!val) {
+                    wxString error(_("Internal Error: could not load ms3d comment schema:\n"));
+                    foreach(const cXmlStructuredError& se, val.getStructuredErrors()) {
+                        error += wxString::Format(wxT("Line %d: %s\n"), se.line,
+                            wxString::FromUTF8(se.message.c_str()).c_str());
+                    }
+                    foreach(const std::string& ge, val.getGenericErrors())
+                        error += wxString::FromUTF8(ge.c_str()) + "\n";
+                    throw E3DLoader(error);
+                }
+                if (comm.validate(val)) {
+                    wxString error(_("The comment of the MS3D file is not valid:\n"));
+                    foreach(const cXmlStructuredError& se, val.getStructuredErrors()) {
+                        error += wxString::Format(wxT("Line %d: %s\n"), se.line,
+                            wxString::FromUTF8(se.message.c_str()).c_str());
+                    }
+                    foreach(const std::string& ge, val.getGenericErrors())
+                        error += wxString::FromUTF8(ge.c_str()) + "\n";
+                    wxLogWarning(error);
+                } else {
+                    foreach(const cXmlNode& n, comm.root().children()) {
+                        if (n("name")) {
+                            m_name = n.content();
+                        } else if (n("path")) {
+                            m_path = n.content();
+                            wxFileName temp = m_path;
+                            temp.MakeAbsolute(f.GetPathWithSep());
+                            m_path = temp.GetFullPath();
+                        } else if (n("noshadow")) {
+                            m_noshadow = true;
+                        } else if (n("lod")) {
+                            c3DGroup gr;
+                            gr.m_name = n.getPropVal("name");
+                            parseFloatC(n.getPropVal("distance"), gr.m_loddistance);
+                            gr.m_animations.insert("Default");
+                            foreach(const cXmlNode& ch, n.children()) {
+                                if (ch("mesh")) {
+                                    gr.m_meshes.insert(ch.content());
+                                } else if (ch("bone")) {
+                                    gr.m_bones.insert(ch.content());
+                                }
+                            }
+                            m_groups[gr.m_name] = gr;
+                        }
+                    }
+                }
+            } catch (exception& e) {
+                wxLogError(e.what());
+            }
+        } else {
+            if (c.comment != "")
+                wxLogWarning(_("MS3D file had model comment, but it wasn't valid xml."));
+        }
+    }
+
+    // Handle joint comments
+    map<wxString, wxString> jointrenames;
+    for (int m = 0; m < ms3df->GetNumJoints(); m++) {
+        ms3d_joint_t * joint;
+        ms3df->GetJointAt(m, &joint);
+        jointrenames[joint->name] = joint->name;
+    }
+    foreach(const ms3d_comment_t& c, ms3df->GetJointComments()) {
+        if (c.index < ms3df->GetNumJoints()) {
+            ms3d_joint_t* joint;
+            ms3df->GetJointAt(c.index, &joint);
+            wxString temp = c.comment;
+            temp.Trim().Trim(false);
+            jointrenames[joint->name] = temp;
+        }
+    }
+
+
     for (int m = 0; m < ms3df->GetNumGroups(); m++) {
         c3DMesh cmesh;
 
@@ -232,37 +363,248 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
                 // j should have our real index value now as well
                 cmesh.m_indices.push_back(j);
             }
-        m_meshes.push_back(cmesh);
+        if (group->materialIndex >= 0) {
+            ms3d_material_t* mat;
+            ms3df->GetMaterialAt(group->materialIndex, &mat);
+            cmesh.m_texture = mat->name;
+        }
+        m_meshes[cmesh.m_name] = cmesh;
+        m_meshId.push_back(cmesh.m_name);
     }
 
-    for (int m = 0; m < ms3df->GetNumVertices(); m++) {
-        ms3d_vertex_t *vertex;
-        ms3df->GetVertexAt(m, &vertex);
-        if (vertex->referenceCount == 0) {
-            c3DMesh cmesh;
-            VERTEX2 tv;
-            vertex2init(tv);
-            cmesh.m_flag = C3DMESH_INVALID;
-            cmesh.m_name = wxString::Format(wxT("Vertex at <%.4f,%.4f,%.4f>"), vertex->vertex[0], vertex->vertex[1], vertex->vertex[2]);
+    c3DAnimation ani;
+    ani.m_name = "Default";
 
-            tv.position.x = vertex->vertex[0];
-            tv.position.y = vertex->vertex[1];
-            tv.position.z = vertex->vertex[2];
-            tv.color = 0xffffffff;
-            tv.normal.x = 0.0;
-            tv.normal.y = 0.0;
-            tv.normal.z = 0.0;
-            tv.tu = 0.0;
-            tv.tv = 0.0;
-            cmesh.m_vertices.push_back(tv);
-            m_meshes.push_back(cmesh);
-        }
+    for (int m = 0; m < ms3df->GetNumJoints(); m++) {
+        ms3d_joint_t * joint;
+        ms3df->GetJointAt(m, &joint);
+        c3DBone bone;
+        bone.m_name = jointrenames[joint->name];
+        if (joint->parentName)
+            bone.m_parent = jointrenames[joint->parentName];
+        bone.m_type = wxT("Bone");
+
+        bone.m_id = m_bones.size();
+        m_bones[bone.m_name] = bone;
+        m_boneId.push_back(bone.m_name);
     }
 
     for (int m = 0; m < ms3df->GetNumJoints(); m++) {
         ms3d_joint_t * joint;
         ms3df->GetJointAt(m, &joint);
-        m_bones.push_back(wxString(joint->name, wxConvLocal));
+#ifdef DUMP_ANIDATA
+        wxLogMessage("Dumping Bone %s", m_boneId[m].c_str());
+#endif
+        txyz pos;
+        txyz rot;
+        memset(&pos, 0, sizeof(txyz));
+        memset(&rot, 0, sizeof(txyz));
+        findPosAndRot(ms3df.get(), jointrenames, m, pos, rot);
+#ifdef DUMP_ANIDATA
+        wxLogMessage("  Translation: raw <%f/%f/%f>, written  <%f/%f/%f>",
+            joint->position[0],joint->position[1],joint->position[2],
+            pos.X, pos.Y, pos.Z
+            );
+        wxLogMessage("  Rotation: raw <%f/%f/%f>, written  <%f/%f/%f>",
+            joint->rotation[0],joint->rotation[1],joint->rotation[2],
+            rot.X, rot.Y, rot.Z
+            );
+#endif
+
+        vector<MATRIX> posm;
+        posm.push_back(matrixGetRotationX(rot.X));
+        posm.push_back(matrixGetRotationY(rot.Y));
+        posm.push_back(matrixGetRotationZ(rot.Z));
+        posm.push_back(matrixGetTranslation(pos.X, pos.Y, pos.Z));
+        m_bones[m_boneId[m]].m_pos[1] = matrixMultiply(posm);
+        ani.m_bones[m_boneId[m]].m_name = m_boneId[m];
+
+#ifdef DUMP_ANIDATA
+        wxLogMessage("  Translation frames:");
+#endif
+        for (int i = 0; i < joint->numKeyFramesTrans; ++i) {
+            txyz pf;
+            pf.Time = joint->keyFramesTrans[i].time;
+            pf.X = joint->position[0] + joint->keyFramesTrans[i].position[0];
+            pf.Y = joint->position[1] + joint->keyFramesTrans[i].position[1];
+            pf.Z = joint->position[2] + joint->keyFramesTrans[i].position[2];
+            ani.m_bones[m_boneId[m]].m_translations.push_back(pf);
+#ifdef DUMP_ANIDATA
+        wxLogMessage("    %f: raw <%f/%f/%f>, written  <%f/%f/%f>", pf.Time,
+            joint->keyFramesTrans[i].position[0],joint->keyFramesTrans[i].position[1],joint->keyFramesTrans[i].position[2],
+            pf.X, pf.Y, pf.Z
+            );
+#endif
+        }
+#ifdef DUMP_ANIDATA
+        wxLogMessage("  Rotation frames:");
+#endif
+        for (int i = 0; i < joint->numKeyFramesRot; ++i) {
+            txyz pf;
+            pf.Time = joint->keyFramesTrans[i].time;
+            pf.X = joint->rotation[0] + joint->keyFramesRot[i].rotation[0];
+            pf.Y = joint->rotation[1] + joint->keyFramesRot[i].rotation[1];
+            pf.Z = joint->rotation[2] + joint->keyFramesRot[i].rotation[2];
+            fixMS3DRotation(pf);
+            ani.m_bones[m_boneId[m]].m_rotations.push_back(pf);
+#ifdef DUMP_ANIDATA
+        wxLogMessage("    %f: raw <%f/%f/%f>, written  <%f/%f/%f>", pf.Time,
+            joint->keyFramesRot[i].rotation[0],joint->keyFramesRot[i].rotation[1],joint->keyFramesRot[i].rotation[2],
+            pf.X, pf.Y, pf.Z
+            );
+#endif
+        }
     }
+
+    for (int m = 0; m < ms3df->GetNumVertices(); ++m) {
+        ms3d_vertex_t *vertex;
+        ms3df->GetVertexAt(m, &vertex);
+        if (vertex->referenceCount == 0) {
+            c3DBone cbone;
+            cbone.m_name = wxString::Format(wxT("Vertex at <%.4f,%.4f,%.4f>"), vertex->vertex[0], vertex->vertex[1], vertex->vertex[2]);
+            cbone.m_type = "Effect";
+            cbone.m_pos[1] = matrixGetTranslation(vertex->vertex[0], vertex->vertex[1], vertex->vertex[2]);
+            cbone.m_id = m_bones.size();
+            m_bones[cbone.m_name] = cbone;
+            m_boneId.push_back(cbone.m_name);
+        }
+    }
+
+
+    calculateBonePos1();
+    if (ani.m_bones.size()) {
+        m_animations[ani.m_name] = ani;
+    }
+
+    if (!m_groups.size())
+        makeDefaultGroup(wxFileName(filename).GetName());
+
+    // Handle group comments
+    boost::char_separator<char> sep(" \r\n");
+    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+    foreach(const ms3d_comment_t& c, ms3df->GetGroupComments()) {
+        if (c.index < m_meshes.size()) {
+            m_meshes[m_meshId[c.index]].m_meshOptions = c.comment;
+        }
+    }
+    // Handle textures
+    if (ms3df->GetNumMaterials()) {
+        wxFileName temp;
+        for (int t = 0; t < ms3df->GetNumMaterials(); ++t) {
+            string comment;
+            foreach(const ms3d_comment_t& c, ms3df->GetMaterialComments()) {
+                if (c.index == t) {
+                    comment = c.comment;
+                    break;
+                }
+            }
+            ms3d_material_t* mat;
+            ms3df->GetMaterialAt(t, &mat);
+            c3DTexture tex;
+            tex.m_name = mat->name;
+            tex.m_file = mat->texture;
+            if (tex.m_file != "") {
+                temp = tex.m_file;
+                temp.MakeAbsolute(f.GetPathWithSep());
+                tex.m_file = temp.GetFullPath();
+            }
+            tex.m_alphafile = mat->alphamap;
+            if (tex.m_alphafile != "") {
+                temp = tex.m_alphafile;
+                temp.MakeAbsolute(f.GetPathWithSep());
+                tex.m_alphafile = temp.GetFullPath();
+            }
+            tokenizer tok(comment, sep);
+            enum matmode {
+                Normal,
+                Recol,
+                Ref
+            } tokenmode = Normal;
+            foreach(const string& token, tok) {
+                switch (tokenmode) {
+                    case Normal: {
+                        if (token == "recol") {
+                            tokenmode = Recol;
+                        } else if (token == "ref") {
+                            tex.m_referenced = true;
+                            tokenmode = Ref;
+                        } else {
+                            wxLogWarning(_("Unknown material/texture option token '%s'"), token.c_str());
+                        }
+                        break;
+                    }
+                    case Recol: {
+                        tex.m_recol = 0;
+                        if (token[0] == '1')
+                            tex.m_recol |= r3::Constants::FlexiTexture::Recolourable::First;
+                        if ((token[0] == '2') || (token[1] == '2'))
+                            tex.m_recol |= r3::Constants::FlexiTexture::Recolourable::Second;
+                        if ((token[0] == '3') || (token[1] == '3') || (token[2] == '3'))
+                            tex.m_recol |= r3::Constants::FlexiTexture::Recolourable::Third;
+                        tokenmode = Normal;
+                        break;
+                    }
+                    case Ref: {
+                        tex.m_file = token;
+                        tokenmode = Normal;
+                        break;
+                    }
+                }
+            }
+            if (tex.m_file != "") {
+                // Figure out alpha mode
+                if (tex.m_alphafile != "") {
+                    tex.m_alphaType = 2;
+                } else {
+                    wxGXImage i(tex.m_file);
+                    tex.m_alphaType = i.HasAlpha()?1:0;
+                }
+                m_textures[tex.m_name] = tex;
+            }
+        }
+    }
+
+#ifdef DUMP_ANIDATA
+    wxLogMessage("Group Comments:");
+    foreach(const ms3d_comment_t& c, ms3df->GetGroupComments())
+        wxLogMessage("%d %s", c.index, c.comment.c_str());
+    wxLogMessage("Material Comments:");
+    foreach(const ms3d_comment_t& c, ms3df->GetMaterialComments())
+        wxLogMessage("%d %s", c.index, c.comment.c_str());
+    wxLogMessage("Joint Comments:");
+    foreach(const ms3d_comment_t& c, ms3df->GetJointComments())
+        wxLogMessage("%d %s", c.index, c.comment.c_str());
+    wxLogMessage("Model Comments:");
+    foreach(const ms3d_comment_t& c, ms3df->GetModelComments())
+        wxLogMessage("%d %s", c.index, c.comment.c_str());
+#endif
+
+//    for (int m = 0; m < ms3df->GetNumJoints(); m++) {
+//        if (!m_bones[m].m_parent.IsEmpty()) {
+//            m_bones[m].m_pos[0] = matrixMultiply(m_bones[m].m_pos[1], matrixInverse(m_bones[m_bonemap[m_bones[m].m_parent]].m_pos[1]));
+//        } else {
+//            m_bones[m].m_pos[0] = m_bones[m].m_pos[1];
+//        }
+//    }
 wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s), End"), filename);
 }
+
+void cMS3DLoader::findPosAndRot(void* ms3df, std::map<wxString, wxString>& renames, int i, txyz& pos, txyz& rot) {
+    ms3d_joint_t * joint;
+    reinterpret_cast<CMS3DFile*>(ms3df)->GetJointAt(i, &joint);
+    pos.X += joint->position[0];
+    pos.Y += joint->position[1];
+    pos.Z += joint->position[2];
+    rot.X += joint->rotation[0];
+    rot.Y += joint->rotation[1];
+    rot.Z += joint->rotation[2];
+
+    if (joint->parentName) {
+        wxString parent = joint->parentName;
+        if (!parent.IsEmpty()) {
+            findPosAndRot(ms3df, renames, m_bones[renames[parent]].m_id, pos, rot);
+        }
+    }
+
+}
+

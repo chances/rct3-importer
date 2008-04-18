@@ -36,8 +36,6 @@
 #include "icontexture.h"
 #include "ovlstructs.h"
 
-using namespace std;
-
 class OvlExtendedHeader {
 public:
     // V4 and V5
@@ -45,10 +43,10 @@ public:
     // V5 only
     unsigned long unknownv5_count;
     unsigned long unknownv5_1;
-    vector<unsigned long> unknownv5_list;
+    std::vector<unsigned long> unknownv5_list;
     unsigned long unknownv5_2;
-    vector<unsigned char> unknownv5_bytes;
-    vector<unsigned char> unknownv5_padding;
+    std::vector<unsigned char> unknownv5_bytes;
+    std::vector<unsigned char> unknownv5_padding;
 
     OvlExtendedHeader() {
     };
@@ -64,10 +62,10 @@ struct OvlExtraChuck {
 
 class OvlLoaderHeader {
 public:
-    string loader;
-    string name;
+    std::string loader;
+    std::string name;
     unsigned long type;
-    string tag;
+    std::string tag;
     unsigned long unknownv5[2];
     OvlLoaderHeader(){};
 };
@@ -81,15 +79,15 @@ public:
     cOvlType r_filetype; // Common or unique
     int r_file;     // 0-8
     unsigned long r_block;
-    string r_inwhat;
+    std::string r_inwhat;
 
     unsigned long targetrelocation;
     void* target;
     cOvlType t_filetype; // Common or unique
     int t_file;     // 0-8
     unsigned long t_block;
-    string t_usedfor;
-    string t_data;
+    std::string t_usedfor;
+    std::string t_data;
     bool t_issymref;
     unsigned long t_apparentlength; // valid only if MakeMoreInfo was called
 
@@ -136,8 +134,8 @@ public:
 	unsigned long fileoffset;
 //	std::map<unsigned long, OvlRelocation*> relocs;
 //	std::map<unsigned long, OvlRelocation*> targets;
-	set<OvlRelocation*, OvlRelocationRComp> relocs;
-	set<OvlRelocation*, OvlRelocationTComp> targets;
+	std::set<OvlRelocation*, OvlRelocationRComp> relocs;
+	std::set<OvlRelocation*, OvlRelocationTComp> targets;
 	OvlFileBlock() {
 	    size = 0;
 	    reloffset = 0;
@@ -151,9 +149,9 @@ public:
     unsigned long count;
     unsigned long size;
     unsigned long reloffset;
-    vector<OvlFileBlock> blocks;
+    std::vector<OvlFileBlock> blocks;
 
-    vector<unsigned long> unknownv5_list;
+    std::vector<unsigned long> unknownv5_list;
     unsigned long unknownv4v5_1;
 
     //char* data;
@@ -169,10 +167,10 @@ public:
 class OvlPostBlockUnknowns {
 public:
     unsigned long unknownv4[2];
-    vector<unsigned char> unknownv5_bytes;
-    vector<unsigned long> unknownv5_longs;
+    std::vector<unsigned char> unknownv5_bytes;
+    std::vector<unsigned long> unknownv5_longs;
     unsigned long unknownv4_postrelocationlong;
-    vector<unsigned long> unknownv5_postrelocationlongs;
+    std::vector<unsigned long> unknownv5_postrelocationlongs;
     OvlPostBlockUnknowns() {};
 };
 
@@ -197,14 +195,14 @@ public:
 class OvlLoader {
 public:
     unsigned long loadertype;
-    string name;
+    std::string name;
     OvlRelocation* data;
     unsigned long hasextradata;
     unsigned short unknownv5; // Actually the upper word of hasextradata in v5 ovls
     OvlRelocation* symbol;
-    string symbolname;
+    std::string symbolname;
     unsigned long symbolstoresolve;
-    vector<OvlExtraChuck> extradata;
+    std::vector<OvlExtraChuck> extradata;
 
     OvlLoader() {
         data = NULL;
@@ -217,12 +215,12 @@ public:
 
 class OvlStringTableEntry {
 public:
-    string entry;
+    std::string entry;
     unsigned long reloffset;
     unsigned long fileoffset;
     char* orgstring;
     unsigned long orglength;
-	set<OvlRelocation*, OvlRelocationTComp> relocs;
+	std::set<OvlRelocation*, OvlRelocationTComp> relocs;
 	OvlStringTableEntry() {
 	    orglength = 0;
 	    orgstring = NULL;

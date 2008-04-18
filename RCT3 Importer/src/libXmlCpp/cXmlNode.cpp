@@ -522,4 +522,38 @@ void cXmlNode::assign(const cXmlNode& node) {
     }
 }
 
+/** @brief end
+  *
+  * @todo: document this function
+  */
+cXmlNode::const_iterator cXmlNode::end() const {
+    return cXmlNode_const_iterator();
+}
+
+/** @brief begin
+  *
+  * @todo: document this function
+  */
+cXmlNode::const_iterator cXmlNode::begin() const {
+    return cXmlNode_const_iterator(*this);
+}
+
+/** @brief end
+  *
+  * @todo: document this function
+  */
+cXmlNode::iterator cXmlNode::end() {
+    return cXmlNode_iterator();
+}
+
+/** @brief begin
+  *
+  * @todo: document this function
+  */
+cXmlNode::iterator cXmlNode::begin() {
+    return cXmlNode_iterator(*this);
+}
+
+
+
 } // Namespace end

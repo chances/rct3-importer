@@ -31,6 +31,7 @@
 #include "wx_pch.h"
 
 #include <wx/app.h>
+#include <wx/filename.h>
 
 #include <list>
 

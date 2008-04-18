@@ -45,24 +45,10 @@ void cRawParser::ParseCHG(cXmlNode& node) {
     while (child) {
         DO_CONDITION_COMMENT(child);
 
-        if (child(RAWXML_ATTRACTION_BASE)) {
-            USE_PREFIX(child);
-            OPTION_PARSE(unsigned long, room.attraction.type, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_BASE), wxT("type")));
-            ParseStringOption(room.attraction.icon, child, wxT("icon"), NULL, useprefix);
-            ParseStringOption(room.spline, child, wxT("attractionspline"), NULL, useprefix);
-        } else if (child(RAWXML_ATTRACTION_UNKNOWNS)) {
-            OPTION_PARSE(unsigned long, room.attraction.unk2, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u2")));
-            OPTION_PARSE(long, room.attraction.unk3, ParseSigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u3")));
-            OPTION_PARSE(unsigned long, room.attraction.unk4, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u4")));
-            OPTION_PARSE(unsigned long, room.attraction.unk5, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u5")));
-            OPTION_PARSE(unsigned long, room.attraction.unk6, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u6")));
-            OPTION_PARSE(unsigned long, room.attraction.unk9, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u9")));
-            OPTION_PARSE(long, room.attraction.unk10, ParseSigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u10")));
-            OPTION_PARSE(unsigned long, room.attraction.addonascn, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u11")));
-            OPTION_PARSE(unsigned long, room.attraction.unk12, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u12")));
-            OPTION_PARSE(unsigned long, room.attraction.unk13, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_UNKNOWNS), wxT("u13")));
+        if (child(RAWXML_ATTRACTION)) {
+            ParseAttraction(child, room.attraction);
         } else if (child.element()) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in sta tag."), STRING_FOR_FORMAT(child.name())));
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in chg tag."), STRING_FOR_FORMAT(child.name())));
         }
 
         child.go_next();

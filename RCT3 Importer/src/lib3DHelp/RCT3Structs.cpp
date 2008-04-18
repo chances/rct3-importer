@@ -26,6 +26,9 @@
 #include "RCT3Structs.h"
 
 #include <boost/format.hpp>
+#include <boost/tokenizer.hpp>
+
+#include "spline.h"
 
 #include "confhelp.h"
 #include "lib3Dconfig.h"
@@ -36,10 +39,12 @@
 #include "gximage.h"
 #include "xmldefs.h"
 #include "xmlhelper.h"
+#include "pretty.h"
 
 #include "bmy.pal.h"
 
 using namespace r3;
+using namespace std;
 using namespace xmlcpp;
 
 ///////////////////////////////////////////////////////////////
@@ -209,9 +214,9 @@ txyz& operator= (txyz& t, cTXYZ& v) {
 }
 */
 
-txyz cTXYZ::GetFixed(c3DLoaderOrientation ori) const {
+txyz cTXYZ::GetFixed(c3DLoaderOrientation ori, bool rotate) const {
     txyz r = v;
-    txyzFixOrientation(r, ori);
+    txyzFixOrientation(r, ori, rotate);
     return r;
 }
 
@@ -232,7 +237,7 @@ void cMeshStruct::Init() {
     fudgenormals = 0;
     valid = false;
     faces = 0;
-    effectpoint = 0;
+    //effectpoint = 0;
     bone = 0;
 }
 
@@ -251,6 +256,55 @@ void cMeshStruct::CopySettingsFrom(const cMeshStruct& from) {
     algo_x = from.algo_x;
     algo_y = from.algo_y;
     algo_z = from.algo_z;
+
+    if (from.boneassignment.size()) // Cheapass fix...
+        boneassignment = from.boneassignment;
+}
+
+/** @brief autoMeshStyle
+  *
+  * @todo: document this function
+  */
+void cMeshStruct::autoMeshStyle(const wxString& style) {
+    boost::tokenizer<boost::char_delimiters_separator<char>, wxString::const_iterator, wxString> tok(style);
+    foreach(const wxString& t, tok) {
+        if ((t == "doublesided") || (t == "ds")) {
+            unknown = 1;
+        } else if (t.IsSameAs(wxT("terrain"))) {
+            flags = 12288;
+            FTX = wxT("useterraintexture");
+            TXS = wxT("SIOpaque");
+        } else if (t.IsSameAs(wxT("cliff"))) {
+            flags = 20480;
+            FTX = wxT("useclifftexture");
+            TXS = wxT("SIOpaque");
+        } else if (t.IsSameAs(wxT("water"))) {
+            FTX = wxT("siwater");
+            TXS = wxT("SIWater");
+        } else if (t.IsSameAs(wxT("watermask"))) {
+            FTX = wxT("watermask");
+            TXS = wxT("SIFillZ");
+        } else if (t.IsSameAs(wxT("billboard"))) {
+            flags = 32788;
+            FTX = wxT("UseAdTexture");
+            TXS = wxT("SIOpaque");
+        } else if (t.IsSameAs(wxT("animatedbillboard"))) {
+            flags = 32768;
+            FTX = wxT("UseAdTexture");
+            TXS = wxT("SIOpaque");
+        } else {
+            if (cTextureStyle::isValid(t))
+                TXS = t;
+            else
+                wxLogWarning(_("Unknown mesh option token '%s'"), t.c_str());
+        }
+    }
+    unsigned long right_value = 0;
+    if (TXS.StartsWith(wxT("SIAlphaMask")))
+        right_value = 1;
+    else if (TXS.StartsWith(wxT("SIAlpha")) || TXS.IsSameAs(wxT("SIGlass")) || TXS.IsSameAs(wxT("SIWater")))
+        right_value = 2;
+    place = right_value;
 }
 
 bool cMeshStruct::FromCompilerXml(cXmlNode& node, const wxString& path) {
@@ -378,6 +432,8 @@ void cMeshStruct::Check(const wxString& modelname) {
         right_value = 2;
     if ((place != right_value) && (!READ_RCT3_EXPERTMODE()))
         wxLogWarning(wxString::Format(_("Model '%s', Group '%s': Texture style %s and transparency setting do not match."), modelname.c_str(), Name.c_str(), TXS.c_str()));
+    if (!cTextureStyle::isValid(TXS))
+        wxLogWarning(wxString::Format(_("Model '%s', Group '%s': Texture style %s is not one of the styles normally used in RCT3."), modelname.c_str(), Name.c_str(), TXS.c_str()));
 }
 
 bool cMeshStruct::FromNode(cXmlNode& node, const wxString& path, unsigned long version) {
@@ -502,6 +558,82 @@ cXmlNode cMeshStruct::GetNode(const wxString& path) {
     if (!algo_z.IsEmpty())
         node.prop("sortz", algo_z);
     return node;
+}
+
+
+///////////////////////////////////////////////////////////////
+//
+// cTextureStyle
+//
+///////////////////////////////////////////////////////////////
+
+vector<wxString> cTextureStyle::m_texturestyles;
+
+/** @brief makeStyles
+  *
+  * @todo: document this function
+  */
+void cTextureStyle::makeStyles() {
+    m_texturestyles.push_back(wxT("SIOpaque"));
+    m_texturestyles.push_back(wxT("SIAlpha"));
+    m_texturestyles.push_back(wxT("SIAlphaMask"));
+    m_texturestyles.push_back(wxT("SIAlphaMaskLow"));
+    m_texturestyles.push_back(wxT("SIEmissiveMask"));
+    m_texturestyles.push_back(wxT("SIGlass"));
+    m_texturestyles.push_back(wxT("SIWater"));
+    m_texturestyles.push_back(wxT("SIOpaqueCaustics"));
+    m_texturestyles.push_back(wxT("SIOpaqueCausticsGlossSpecular100"));
+    m_texturestyles.push_back(wxT("SIOpaqueCausticsReflection"));
+    m_texturestyles.push_back(wxT("SIOpaqueCausticsSpecular50"));
+    m_texturestyles.push_back(wxT("SIOpaqueCausticsSpecular100"));
+    m_texturestyles.push_back(wxT("SIOpaqueChrome"));
+    m_texturestyles.push_back(wxT("SIOpaqueChromeModulate"));
+    m_texturestyles.push_back(wxT("SIOpaqueGlossReflection"));
+    m_texturestyles.push_back(wxT("SIOpaqueGlossSpecular50"));
+    m_texturestyles.push_back(wxT("SIOpaqueGlossSpecular100"));
+    m_texturestyles.push_back(wxT("SIOpaqueReflection"));
+    m_texturestyles.push_back(wxT("SIOpaqueSpecular50"));
+    m_texturestyles.push_back(wxT("SIOpaqueSpecular50Reflection"));
+    m_texturestyles.push_back(wxT("SIOpaqueSpecular100"));
+    m_texturestyles.push_back(wxT("SIOpaqueSpecular100Reflection"));
+    m_texturestyles.push_back(wxT("SIOpaqueText"));
+    m_texturestyles.push_back(wxT("SIOpaqueUnlit"));
+    m_texturestyles.push_back(wxT("SIAlphaChrome"));
+    m_texturestyles.push_back(wxT("SIAlphaReflection"));
+    m_texturestyles.push_back(wxT("SIAlphaSpecular50"));
+    m_texturestyles.push_back(wxT("SIAlphaSpecular50Reflection"));
+    m_texturestyles.push_back(wxT("SIAlphaSpecular100"));
+    m_texturestyles.push_back(wxT("SIAlphaSpecular100Reflection"));
+    m_texturestyles.push_back(wxT("SIAlphaText"));
+    m_texturestyles.push_back(wxT("SIAlphaUnlit"));
+    m_texturestyles.push_back(wxT("SIAlphaMaskCaustics"));
+    m_texturestyles.push_back(wxT("SIAlphaMaskChrome"));
+    m_texturestyles.push_back(wxT("SIAlphaMaskReflection"));
+    m_texturestyles.push_back(wxT("SIAlphaMaskSpecular50"));
+    m_texturestyles.push_back(wxT("SIAlphaMaskSpecular50Reflection"));
+    m_texturestyles.push_back(wxT("SIAlphaMaskSpecular100"));
+    m_texturestyles.push_back(wxT("SIAlphaMaskSpecular100Reflection"));
+    m_texturestyles.push_back(wxT("SIAlphaMaskUnlit"));
+    m_texturestyles.push_back(wxT("SIAlphaMaskLowCaustics"));
+    m_texturestyles.push_back(wxT("SIAlphaMaskLowSpecular50"));
+    m_texturestyles.push_back(wxT("SIAlphaMaskLowSpecular50Reflection"));
+    m_texturestyles.push_back(wxT("SIAlphaMaskLowSpecular100"));
+    m_texturestyles.push_back(wxT("SIAlphaMaskLowSpecular100Reflection"));
+    m_texturestyles.push_back(wxT("SIAlphaMaskUnlitLow"));
+    m_texturestyles.push_back(wxT("SIEmissiveMaskReflection"));
+    m_texturestyles.push_back(wxT("SIEmissiveMaskSpecular50"));
+    m_texturestyles.push_back(wxT("SIEmissiveMaskSpecular50Reflection"));
+    m_texturestyles.push_back(wxT("SIEmissiveMaskSpecular100"));
+    m_texturestyles.push_back(wxT("SIEmissiveMaskSpecular100Reflection"));
+    m_texturestyles.push_back(wxT("SIFillZ"));
+}
+
+/** @brief isValid
+  *
+  * @todo: document this function
+  */
+bool cTextureStyle::isValid(const wxString& style) {
+    return find(getTextureStyles().begin(), getTextureStyles().end(), style) != getTextureStyles().end();
 }
 
 
@@ -991,7 +1123,7 @@ cModel::cModel(MATRIX def, c3DLoaderOrientation ori): name(wxT("")), file(wxT(""
     transformnames.push_back(_("Default Matrix"));
 }
 
-void cModel::SetupFileProperties(cMeshStruct* ms, const counted_ptr<c3DLoader>& obj, unsigned int n) {
+void cModel::SetupFileProperties(cMeshStruct* ms, const boost::shared_ptr<c3DLoader>& obj, unsigned int n) {
     if ((obj->GetObjectName(n).CmpNoCase(wxT("root")) == 0)
             || (obj->GetObjectVertexCount(n) < 3)
             || (!obj->IsObjectValid(n))) {
@@ -1002,16 +1134,19 @@ void cModel::SetupFileProperties(cMeshStruct* ms, const counted_ptr<c3DLoader>& 
     } else {
         ms->valid = true;
     }
+    ms->boneassignment = obj->GetObjectBones(n);
+/*
     if (obj->GetObjectVertexCount(n) == 1) {
         ms->effectpoint = true;
         ms->effectpoint_vert = obj->GetObjectVertex(n, 0).position;
     } else {
         ms->effectpoint = false;
     }
+*/
     ms->faces = obj->GetObjectIndexCount(n) / 3;
 }
 
-cMeshStruct cModel::MakeMesh(const counted_ptr<c3DLoader>& obj, unsigned int n) {
+cMeshStruct cModel::MakeMesh(const boost::shared_ptr<c3DLoader>& obj, unsigned int n) {
     cMeshStruct ms;
     if ((obj->GetObjectName(n).CmpNoCase(wxT("root")) == 0)
             || (obj->GetObjectVertexCount(n) < 3)
@@ -1022,6 +1157,7 @@ cMeshStruct cModel::MakeMesh(const counted_ptr<c3DLoader>& obj, unsigned int n) 
     }
     SetupFileProperties(&ms, obj, n);
     ms.Name = obj->GetObjectName(n);
+    ms.boneassignment = obj->GetObjectBones(n);
 /*
     ms.flags = 0;
     ms.place = 0;
@@ -1033,7 +1169,7 @@ cMeshStruct cModel::MakeMesh(const counted_ptr<c3DLoader>& obj, unsigned int n) 
 }
 
 bool cModel::Load() {
-    counted_ptr<c3DLoader> obj = c3DLoader::LoadFile(file.GetFullPath().c_str());
+    boost::shared_ptr<c3DLoader> obj = c3DLoader::LoadFile(file.GetFullPath().c_str());
 
     if (!obj.get()) {
         fatal_error = true;
@@ -1052,6 +1188,7 @@ bool cModel::Load() {
     error.clear();
 
     fileorientation = obj->GetOrientation();
+    model_bones = obj->GetBones();
 
     meshstructs.clear();
     // Load the object into mesh structs
@@ -1080,7 +1217,7 @@ bool cModel::Sync() {
         return Load();
 
     // Load & check the object file
-    counted_ptr<c3DLoader> obj = c3DLoader::LoadFile(file.GetFullPath().c_str());
+    boost::shared_ptr<c3DLoader> obj = c3DLoader::LoadFile(file.GetFullPath().c_str());
     if (!obj.get()) {
         fatal_error = true;
         error.push_back(wxString::Format(_("Model file '%s' not found or of an unknown format."), file.GetFullPath().c_str()));
@@ -1088,6 +1225,7 @@ bool cModel::Sync() {
     }
 
     fileorientation = obj->GetOrientation();
+    model_bones = obj->GetBones();
 
     // Predeclare to make goto work
     wxString notify;
@@ -1269,6 +1407,27 @@ bool cModel::GetTransformationMatrices(MATRIX& transform, MATRIX& undodamage) co
            (!matrixIsEqual(undodamage, matrixGetUnity()));
 }
 
+/** @brief autoBones
+  *
+  * @todo: document this function
+  */
+void cModel::autoBones(const set<wxString>* onlyaddfrom) {
+    effectpoints.clear();
+    foreach(const c3DBone::pair& bn, model_bones) {
+        if (onlyaddfrom) {
+            if (onlyaddfrom->find(bn.first) == onlyaddfrom->end())
+                continue;
+        }
+
+        cEffectPoint t;
+
+        t.name = bn.first;
+        t.transforms.push_back(bn.second.m_pos[1]);
+        wxString nam = _("Auto-generated form bone '")+bn.first+wxT("'");
+        t.transformnames.push_back(nam);
+        effectpoints.push_back(t);
+    }
+}
 
 bool cModel::CheckMeshes(bool animated) {
     wxLogDebug(wxT("Trace, cModel::CheckMeshes '%s', %d"), name.c_str(), animated);
@@ -1285,7 +1444,7 @@ bool cModel::CheckMeshes(bool animated) {
         wxLogWarning(_("Model '%s': Model file not found."), name.c_str());
         return false;
     }
-    counted_ptr<c3DLoader> object = c3DLoader::LoadFile(file.GetFullPath().c_str());
+    boost::shared_ptr<c3DLoader> object = c3DLoader::LoadFile(file.GetFullPath().c_str());
     if (!object.get()) {
         fatal_error = true;
         wxLogWarning(_("Model '%s': Error loading model file."), name.c_str());
@@ -1603,6 +1762,45 @@ cAnimatedModel::cAnimatedModel(const cModel& model) {
     for (vector<cEffectPoint>::const_iterator it = model.effectpoints.begin(); it != model.effectpoints.end(); ++it) {
         cModelBone b(*it);
         modelbones.push_back(b);
+    }
+}
+
+/** @brief autoBones
+  *
+  * @todo: document this function
+  */
+void cAnimatedModel::autoBones(const set<wxString>* onlyaddfrom) {
+    modelbones.clear();
+    foreach(const c3DBone::pair& bn, model_bones) {
+        if (onlyaddfrom) {
+            if (onlyaddfrom->find(bn.first) == onlyaddfrom->end())
+                continue;
+        }
+
+        cModelBone t;
+
+        t.name = bn.first;
+        t.parent = bn.second.m_parent;
+        t.usepos2 = !t.parent.IsEmpty();
+        if (t.usepos2) {
+            t.positions1.push_back(bn.second.m_pos[0]);
+            wxString nam = _("Auto-generated form bone '")+bn.first+wxT("'");
+            t.position1names.push_back(nam);
+            t.positions2.push_back(bn.second.m_pos[1]);
+            t.position2names.push_back(nam);
+        } else {
+            t.positions1.push_back(bn.second.m_pos[1]);
+            wxString nam = _("Auto-generated form bone '")+bn.first+wxT("'");
+            t.position1names.push_back(nam);
+        }
+        foreach(const cMeshStruct& ms, meshstructs) {
+            if (ms.boneassignment.size() == 1) {
+                if (ms.boneassignment.find(t.name) != ms.boneassignment.end()) {
+                    t.meshes.push_back(ms.Name);
+                }
+            }
+        }
+        modelbones.push_back(t);
     }
 }
 
@@ -1974,7 +2172,8 @@ bool cAnimation::Check(const wxSortedArrayString& presentbones) {
         if (presentbones.Index(boneanimations[i].name) == wxNOT_FOUND) {
             ret = false;
             if (READ_RCT3_EXPERTMODE()) {
-                wxLogWarning(_("Animation '%s': Bone '%s' is not present in any animated model."), name.c_str(), boneanimations[i].name.c_str());
+                if (!READ_RCT3_RAWMODE())
+                    wxLogWarning(_("Animation '%s': Bone '%s' is not present in any animated model."), name.c_str(), boneanimations[i].name.c_str());
             } else {
                 wxLogWarning(_("Animation '%s': Bone '%s' is not present in any animated model and was removed."), name.c_str(), boneanimations[i].name.c_str());
                 boneanimations.erase(boneanimations.begin() + i);
@@ -2137,7 +2336,7 @@ bool cLOD::FromNode(cXmlNode& node, const wxString& path, unsigned long version)
     while(child) {
         if (child(RCT3XML_CLOD_ANIMATION)) {
             wxString anim = child.wxgetPropVal("name", "ERROR");
-            animations.Add(anim);
+            animations.push_back(anim);
         }
         ++child;
     }
@@ -2161,6 +2360,95 @@ cXmlNode cLOD::GetNode(const wxString& path) {
     }
 
     return node;
+}
+
+
+///////////////////////////////////////////////////////////////
+//
+// cImpSpline
+//
+///////////////////////////////////////////////////////////////
+
+
+/** @brief GetNode
+  *
+  * @todo: document this function
+  */
+cXmlNode cImpSpline::GetNode(const wxString& path) {
+    cXmlNode node(RCT3XML_CSPLINE);
+    node.prop("name", spline.m_name);
+    if (spline.m_cyclic)
+        node.prop("cyclic", "1");
+    unsigned long l = usedorientation;
+    node.prop("orientation", boost::str(boost::format("%lu") % l).c_str());
+
+    foreach(const SplineNode& n, spline.m_nodes) {
+        cXmlNode newchild(RCT3XML_CSPLINE_NODE);
+        newchild.prop("x", boost::str(boost::format("%8f") % n.pos.x).c_str());
+        newchild.prop("y", boost::str(boost::format("%8f") % n.pos.y).c_str());
+        newchild.prop("z", boost::str(boost::format("%8f") % n.pos.z).c_str());
+        newchild.prop("cp1x", boost::str(boost::format("%8f") % n.cp1.x).c_str());
+        newchild.prop("cp1y", boost::str(boost::format("%8f") % n.cp1.y).c_str());
+        newchild.prop("cp1z", boost::str(boost::format("%8f") % n.cp1.z).c_str());
+        newchild.prop("cp2x", boost::str(boost::format("%8f") % n.cp2.x).c_str());
+        newchild.prop("cp2y", boost::str(boost::format("%8f") % n.cp2.y).c_str());
+        newchild.prop("cp2z", boost::str(boost::format("%8f") % n.cp2.z).c_str());
+        node.appendChildren(newchild);
+    }
+
+    return node;
+}
+
+#define PARSE_NODE_FLOAT(n, v) \
+    temp = child.getPropVal(n, "0.0"); \
+    if (!parseFloat(temp, v)) { \
+        wxLogError(_("Spline node, " n " failed parsing.")); \
+        ret = false; \
+    }
+
+/** @brief FromNode
+  *
+  * @todo: document this function
+  */
+bool cImpSpline::FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version) {
+    bool ret = true;
+    std::string temp;
+    if (!node)
+        return false;
+    if (!node(RCT3XML_CSPLINE))
+        return false;
+
+    spline.m_name = node.getPropVal("name");
+    spline.m_cyclic = (node.getPropVal("cyclic", "0") == "1");
+    if (node.getPropVal("orientation", &temp)) {
+        unsigned long l = 0;
+        if (!parseULong(temp, l)) {
+            usedorientation = ORIENTATION_UNKNOWN;
+            wxLogError(_("Spline, usedorientation failed parsing."));
+            ret = false;
+        } else {
+            usedorientation = static_cast<c3DLoaderOrientation>(l);
+        }
+    } else {
+        usedorientation = ORIENTATION_UNKNOWN;
+    }
+
+    for (cXmlNode child = node.children(); child; ++child) {
+        if (child(RCT3XML_CSPLINE_NODE)) {
+            SplineNode n;
+            PARSE_NODE_FLOAT("x", n.pos.x)
+            PARSE_NODE_FLOAT("y", n.pos.y)
+            PARSE_NODE_FLOAT("z", n.pos.z)
+            PARSE_NODE_FLOAT("cp1x", n.cp1.x)
+            PARSE_NODE_FLOAT("cp1y", n.cp1.y)
+            PARSE_NODE_FLOAT("cp1z", n.cp1.z)
+            PARSE_NODE_FLOAT("cp2x", n.cp2.x)
+            PARSE_NODE_FLOAT("cp2y", n.cp2.y)
+            PARSE_NODE_FLOAT("cp2z", n.cp2.z)
+            spline.m_nodes.push_back(n);
+        }
+    }
+    return ret;
 }
 
 

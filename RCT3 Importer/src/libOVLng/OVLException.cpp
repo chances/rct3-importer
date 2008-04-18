@@ -34,7 +34,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-EOvl::EOvl(const string& message) {
+EOvl::EOvl(const std::string& message) {
     m_message = message;
 }
 

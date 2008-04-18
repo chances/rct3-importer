@@ -25,6 +25,8 @@
 #ifndef CXMLINITHANDLER_H
 #define CXMLINITHANDLER_H
 
+#include "cxmlconfig.h"
+
 #include <set>
 
 namespace xmlcpp {

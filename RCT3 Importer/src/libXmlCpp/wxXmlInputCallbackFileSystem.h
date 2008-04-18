@@ -25,6 +25,8 @@
 #ifndef WXXMLINPUTCALLBACKFILESYSTEM_H
 #define WXXMLINPUTCALLBACKFILESYSTEM_H
 
+#include "cxmlconfig.h"
+
 #ifdef XMLCPP_USE_WXWIDGETS
 
 #include <boost/shared_ptr.hpp>

@@ -71,7 +71,7 @@ struct TrackSection_V {
         unsigned long exit_bank;	// see entry_bank
         char* exit_trackgroup;
         unsigned long unk29; 		// count for below?
-        ChainStruct*  unk30; 		// array? set for chain pieces
+        TrackSectionChainStruct*  unk30; 		// array? set for chain pieces
         unsigned long unk31;
         unsigned long unk32;
         unsigned long unk33;
@@ -153,6 +153,11 @@ struct TrackSection_Sext {
         unsigned long unk89;
         unsigned long unk90;
         unsigned long unk91;
+};
+
+struct TrackSection_S {
+    TrackSection_V      v;
+    TrackSection_Sext   s;
 };
 
 struct TrackSection_Wext {

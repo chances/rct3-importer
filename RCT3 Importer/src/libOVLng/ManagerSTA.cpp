@@ -37,10 +37,42 @@
 #include "OVLException.h"
 
 using namespace r3;
+using namespace std;
 
 const char* ovlSTAManager::LOADER = "FGDK";
 const char* ovlSTAManager::NAME = "Stall";
 const char* ovlSTAManager::TAG = "sta";
+
+void cStallUnknowns::Fill(r3::StallA* sta) {
+    sta->unk11 = unk1;
+    sta->unk12 = unk2;
+    sta->unk13 = unk3;
+    sta->unk14 = unk4;
+    sta->unk15 = unk5;
+    sta->unk16 = unk6;
+}
+void cStallUnknowns::Fill(r3::StallB* sta) {
+    sta->unk2 = unk1;
+    sta->unk3 = unk2;
+    sta->unk4 = unk3;
+    sta->unk5 = unk4;
+    sta->unk6 = unk5;
+    sta->unk7 = unk6;
+}
+
+void cStall::Fill(r3::StallA* sta) {
+    sta->Name = NULL;
+    sta->Description = NULL;
+    sta->GSI = NULL;
+    sta->spline = NULL;
+    attraction.Fill(sta);
+    unknowns.Fill(sta);
+}
+void cStall::Fill(r3::StallB* sta) {
+    attraction.Fill(sta->att);
+    unknowns.Fill(sta);
+}
+
 
 void ovlSTAManager::AddStall(const cStall& stall) {
     Check("ovlSTAManager::AddStall");

@@ -32,6 +32,7 @@
 #include <string>
 
 #include "rct3constants.h"
+#include "sharedride.h"
 #include "stall.h"
 #include "vertex.h"
 
@@ -102,22 +103,39 @@ enum cAttractionType {
     ATTRACTION_TYPE_Wild                = 0x300
 };
 */
+
 class cAttraction {
 public:
-	unsigned long type; // Second byte is 02 for Soaked and 03 for Wild/Vanilla (structure is new since soaked)
-                        // This gives the structure version. 03 has one long more
-	string name;
-	string description;
-	string icon;
+    union {
+        unsigned long type; // Second byte is 02 for Soaked and 03 for Wild/Vanilla (structure is new since soaked)
+                            // This gives the structure version. 03 has one long more
+        struct {
+            unsigned char type_b;
+            unsigned char version;
+            unsigned short unused;
+        };
+    };
+	std::string name;
+	std::string description;
+	std::string icon;
 	unsigned long unk2;
     long unk3;
 	unsigned long unk4;
 	unsigned long unk5;
-	unsigned long unk6;
-	string spline;
-	vector<string> splines;
-	unsigned long unk9;
-	long unk10;
+	union {
+        unsigned long unk6;
+        unsigned long baseUpkeep;
+	};
+	std::string spline;
+	std::vector<std::string> splines;
+	union {
+        unsigned long unk9;
+        unsigned long flags;
+	};
+	union {
+        long unk10;
+        long maxHeight;
+	};
 	unsigned long addonascn;
 	unsigned long unk12;
 	unsigned long unk13;
@@ -136,9 +154,67 @@ public:
 	    unk12 = r3::Constants::Attraction::Unknown12::Generic_Stall;
 	    unk13 = r3::Constants::Attraction::Unknown13::Default;
 	}
-    void Fill(r3::Attraction_S* att); // Automatically casts to Attraction_W depending on type
-    void Fill(r3::StallA* sta);
-    void Fill(r3::SpecialAttractionA* sp);
+    void Fill(r3::Attraction_V* attv) const; // Automatically casts to Attraction_S/W depending on type
+    inline void Fill(r3::Attraction_S* att) const { Fill(reinterpret_cast<r3::Attraction_V*>(att)); }
+    void Fill(r3::StallA* sta) const;
+    void Fill(r3::SpecialAttractionA* sp) const;
+};
+
+class cRideOption {
+public:
+    unsigned long type;
+    r3::RideOptionOption option;
+    float param[4];
+
+    cRideOption() {
+        type = 0;
+        option.suboption = 0;
+        option.group = 0;
+        param[0] = 0.0;
+        param[1] = 0.0;
+        param[2] = 0.0;
+        param[3] = 0.0;
+    }
+    unsigned long GetSize() const;
+    void SetType(unsigned long t);
+    void Fill(r3::RideOption* r) const;
+};
+
+class cRide {
+public:
+    unsigned long attractivity;
+    unsigned long seating;
+    std::vector<cRideOption> options;
+    unsigned long entry_fee;
+    unsigned long unk4;           ///< Seen 1
+    long unk5;           ///< Seen -1, 1 (Spiral Slide, FunHouse, LionShow, TigerShow, DolphinShow, KillerWhaleShow)
+    unsigned long unk11;          ///< Seen 3
+    unsigned long unk12;          ///< Seen 3
+    long unk13;          ///< Seen -2
+    long unk14;          ///< Seen -2
+    long unk15;          ///< Seen -2
+    unsigned long unk16;          ///< Seen 1
+    unsigned long unk17;          ///< Seen 1
+
+    cRide() {
+        attractivity = 55;
+        seating = 0;
+        entry_fee = 100;
+        unk4 = 1;
+        unk5 = -1;
+        unk11 = 3;
+        unk12 = 3;
+        unk13 = -2;
+        unk14 = -2;
+        unk15 = -2;
+        unk16 = 1;
+        unk17 = 1;
+    }
+    unsigned long GetOptionsSize() const;
+    void Fill(r3::Ride_V* r) const;
+    void Fill(r3::Ride_S* r) const;
+    void Fill(r3::Ride_W* r) const;
+
 };
 
 // "Fake" classes for consistent access to file tags

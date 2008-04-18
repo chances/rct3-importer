@@ -80,14 +80,14 @@ void BakeScenery(cXmlNode& root, const cSCNFile& scn) {
             lodunk.addProp("u4", wxString::Format(wxT("%lu"), it->unk4).mb_str(wxConvUTF8));
             lodunk.addProp("u14", wxString::Format(wxT("%lu"), it->unk14).mb_str(wxConvUTF8));
             if (it->animated) {
-                lod.addProp("type", wxString::Format(wxT("%u"), SVDLOD_MESHTYPE_ANIMATED).mb_str(wxConvUTF8));
+                lod.addProp("type", wxString::Format(wxT("%u"), static_cast<int>(r3::Constants::SVD::LOD_Type::Animated)).mb_str(wxConvUTF8));
                 lod.addProp("boneshape", it->modelname.mb_str(wxConvUTF8));
                 for (wxArrayString::const_iterator its = it->animations.begin(); its != it->animations.end(); ++its) {
                     //XML_ADD(lod, makeContentNode(RAWXML_SVD_LOD_ANIMATION, *its));
                     lod.newTextChild(RAWXML_SVD_LOD_ANIMATION, its->mb_str(wxConvUTF8));
                 }
             } else {
-                lod.addProp("type", wxString::Format(wxT("%u"), SVDLOD_MESHTYPE_STATIC).mb_str(wxConvUTF8));
+                lod.addProp("type", wxString::Format(wxT("%u"), static_cast<int>(r3::Constants::SVD::LOD_Type::Static)).mb_str(wxConvUTF8));
                 lod.addProp("staticshape", it->modelname.mb_str(wxConvUTF8));
             }
         }
@@ -217,11 +217,11 @@ void BakeScenery(cXmlNode& root, const cSCNFile& scn) {
             cXmlNode bone(ban.newChild(RAWXML_BAN_BONE));
             bone.addProp("name", itb->name.mb_str(wxConvUTF8));
             for (cTXYZ::const_iterator itt = itb->translations.begin(); itt != itb->translations.end(); ++itt) {
-                txyz t = itt->GetFixed(it->usedorientation);
+                txyz t = itt->GetFixed(it->usedorientation, false);
                 makeTXYZ(bone, wxT(RAWXML_BAN_BONE_TRANSLATION), t);
             }
             for (cTXYZ::const_iterator itt = itb->rotations.begin(); itt != itb->rotations.end(); ++itt) {
-                txyz t = itt->GetFixed(it->usedorientation);
+                txyz t = itt->GetFixed(it->usedorientation, true);
                 makeTXYZ(bone, wxT(RAWXML_BAN_BONE_ROTATION), t);
             }
         }

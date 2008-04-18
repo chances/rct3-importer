@@ -37,9 +37,53 @@
 #include "OVLException.h"
 
 using namespace r3;
+using namespace std;
 
 const char* ovlSVDManager::NAME = "SceneryItemVisual";
 const char* ovlSVDManager::TAG = "svd";
+
+void cSceneryItemVisualLOD::Fill(r3::SceneryItemVisualLOD* lod) {
+    lod->type = meshtype;
+    lod->shs_ref = NULL;
+    lod->unk2 = unk2;
+    lod->bsh_ref = NULL;
+    lod->unk4 = unk4;
+    lod->ftx_ref = NULL;
+    lod->txs_ref = NULL;
+    lod->unk7 = unk7;
+    lod->unk8 = unk8;
+    lod->unk9 = unk9;
+    lod->unk10 = unk10;
+    lod->unk11 = unk11;
+    lod->unk12 = unk12;
+    lod->distance = distance;
+    lod->animation_count = animations.size();
+    lod->unk14 = unk14;
+}
+
+void cSceneryItemVisual::Fill(r3::SceneryItemVisual_V* siv) {
+    siv->sivflags = sivflags;
+    siv->sway = sway;
+    siv->brightness = brightness;
+    siv->unk4 = unk4;
+    siv->scale = scale;
+    siv->lod_count = lods.size();
+    siv->unk6 = unk6;
+    siv->unk7 = unk7;
+    siv->unk8 = unk8;
+    siv->unk9 = unk9;
+    siv->unk10 = unk10;
+    siv->unk11 = unk11;
+    for (unsigned long i = 0; i < lods.size(); ++i) {
+        lods[i].Fill(siv->lods[i]);
+    }
+    if (sivflags & r3::Constants::SVD::Flags::Soaked) {
+        reinterpret_cast<r3::SceneryItemVisual_S*>(siv)->s.unk12 = unk12;
+    } else if (sivflags & r3::Constants::SVD::Flags::Wild) {
+        reinterpret_cast<r3::SceneryItemVisual_W*>(siv)->s.unk12 = unk12;
+        reinterpret_cast<r3::SceneryItemVisual_W*>(siv)->w.unk13 = unk13;
+    }
+}
 
 void ovlSVDManager::AddSVD(const cSceneryItemVisual& item) {
     DUMP_LOG("Trace: ovlSVDManager::AddSVD(%s)", UNISTR(item.name.c_str()));
@@ -52,7 +96,13 @@ void ovlSVDManager::AddSVD(const cSceneryItemVisual& item) {
     m_items[item.name] = item;
 
     // SceneryItemVisual
-    m_size += sizeof(SceneryItemVisual);
+    if (item.sivflags & r3::Constants::SVD::Flags::Soaked) {
+        m_size += sizeof(SceneryItemVisual_S);
+    } else if (item.sivflags & r3::Constants::SVD::Flags::Wild) {
+        m_size += sizeof(SceneryItemVisual_W);
+    } else {
+        m_size += sizeof(SceneryItemVisual_V);
+    }
     // SceneryItemVisualLOD pointers & structures
     m_size += item.lods.size() * (sizeof(SceneryItemVisualLOD*) + sizeof(SceneryItemVisualLOD));
 
@@ -105,14 +155,20 @@ void ovlSVDManager::Make(cOvlInfo* info) {
 
     for (map<string, cSceneryItemVisual>::iterator it = m_items.begin(); it != m_items.end(); ++it) {
         // Data Transfer, SceneryItemVisual
-        SceneryItemVisual* c_svd = reinterpret_cast<SceneryItemVisual*>(c_data);
-        c_data += sizeof(SceneryItemVisual);
+        SceneryItemVisual_V* c_svd = reinterpret_cast<SceneryItemVisual_V*>(c_data);
+        if (it->second.sivflags & r3::Constants::SVD::Flags::Soaked) {
+            c_data += sizeof(SceneryItemVisual_S);
+        } else if (it->second.sivflags & r3::Constants::SVD::Flags::Wild) {
+            c_data += sizeof(SceneryItemVisual_W);
+        } else {
+            c_data += sizeof(SceneryItemVisual_V);
+        }
 
         // Assign space for LOD pointers
-        c_svd->LODMeshes = reinterpret_cast<SceneryItemVisualLOD**>(c_data);
+        c_svd->lods = reinterpret_cast<SceneryItemVisualLOD**>(c_data);
         c_data += it->second.lods.size() * sizeof(SceneryItemVisualLOD*);
-        GetRelocationManager()->AddRelocation((unsigned long *)&c_svd->LODMeshes);
-        DUMP_RELOCATION("ovlSVDManager::Make, LodMeshes pointers", c_svd->LODMeshes);
+        GetRelocationManager()->AddRelocation((unsigned long *)&c_svd->lods);
+        DUMP_RELOCATION("ovlSVDManager::Make, LodMeshes pointers", c_svd->lods);
 
         // Symbol and Loader
         SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), Tag()), reinterpret_cast<unsigned long*>(c_svd));
@@ -120,57 +176,57 @@ void ovlSVDManager::Make(cOvlInfo* info) {
 
         for (unsigned long s = 0; s < it->second.lods.size(); ++s) {
             // Data Transfer, LOD
-            c_svd->LODMeshes[s] = reinterpret_cast<SceneryItemVisualLOD*>(c_data);
+            c_svd->lods[s] = reinterpret_cast<SceneryItemVisualLOD*>(c_data);
             c_data += sizeof(SceneryItemVisualLOD);
-            GetRelocationManager()->AddRelocation((unsigned long*)&c_svd->LODMeshes[s]);
-            DUMP_RELOCATION("ovlSVDManager::Make, LodMesh", c_svd->LODMeshes[s]);
+            GetRelocationManager()->AddRelocation((unsigned long*)&c_svd->lods[s]);
+            DUMP_RELOCATION("ovlSVDManager::Make, LodMesh", c_svd->lods[s]);
 
             // LodName
-            c_svd->LODMeshes[s]->LODName = GetStringTable()->FindString(it->second.lods[s].name.c_str());
-            GetRelocationManager()->AddRelocation((unsigned long*)&c_svd->LODMeshes[s]->LODName);
-            DUMP_RELOCATION_STR("ovlSVDManager::Make, LodName", c_svd->LODMeshes[s]->LODName);
+            c_svd->lods[s]->lod_name = GetStringTable()->FindString(it->second.lods[s].name.c_str());
+            GetRelocationManager()->AddRelocation((unsigned long*)&c_svd->lods[s]->lod_name);
+            DUMP_RELOCATION_STR("ovlSVDManager::Make, LodName", c_svd->lods[s]->lod_name);
 
             // StaticShape
             if (it->second.lods[s].staticshape != "") {
                 GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.lods[s].staticshape.c_str(), ovlSHSManager::TAG),
-                                     reinterpret_cast<unsigned long*>(&c_svd->LODMeshes[s]->ss));
+                                     reinterpret_cast<unsigned long*>(&c_svd->lods[s]->shs_ref));
             }
 
             // BoneShape
             if (it->second.lods[s].boneshape != "") {
                 GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.lods[s].boneshape.c_str(), ovlBSHManager::TAG),
-                                     reinterpret_cast<unsigned long*>(&c_svd->LODMeshes[s]->bs));
+                                     reinterpret_cast<unsigned long*>(&c_svd->lods[s]->bsh_ref));
             }
 
             // Billboard
             if (it->second.lods[s].fts != "") {
                 GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.lods[s].fts.c_str(), ovlFTXManager::TAG),
-                                     reinterpret_cast<unsigned long*>(&c_svd->LODMeshes[s]->fts));
+                                     reinterpret_cast<unsigned long*>(&c_svd->lods[s]->ftx_ref));
             }
             if (it->second.lods[s].txs != "") {
                 GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.lods[s].txs.c_str(), ovlTXSManager::TAG),
-                                     reinterpret_cast<unsigned long*>(&c_svd->LODMeshes[s]->TextureData));
+                                     reinterpret_cast<unsigned long*>(&c_svd->lods[s]->txs_ref));
             }
 
             // Animations
             if (it->second.lods[s].animations.size()) {
                 // Allocate Space
-                c_svd->LODMeshes[s]->AnimationArray = reinterpret_cast<BoneAnim***>(c_data);
+                c_svd->lods[s]->animations_ref = reinterpret_cast<BoneAnim***>(c_data);
                 c_data += it->second.lods[s].animations.size() * sizeof(BoneAnim**);
-                GetRelocationManager()->AddRelocation((unsigned long *)&c_svd->LODMeshes[s]->AnimationArray);
-                DUMP_RELOCATION("ovlSVDManager::Make, AnimationArray pointers", c_svd->LODMeshes[s]->AnimationArray);
+                GetRelocationManager()->AddRelocation((unsigned long *)&c_svd->lods[s]->animations_ref);
+                DUMP_RELOCATION("ovlSVDManager::Make, AnimationArray pointers", c_svd->lods[s]->animations_ref);
 
                 for (unsigned long a = 0; a < it->second.lods[s].animations.size(); ++a) {
                     // Allocate space for animation pointer
-                    c_svd->LODMeshes[s]->AnimationArray[a] = reinterpret_cast<BoneAnim**>(c_data);
+                    c_svd->lods[s]->animations_ref[a] = reinterpret_cast<BoneAnim**>(c_data);
                     c_data += sizeof(BoneAnim*);
-                    *c_svd->LODMeshes[s]->AnimationArray[a] = NULL;
-                    GetRelocationManager()->AddRelocation((unsigned long *)&c_svd->LODMeshes[s]->AnimationArray[a]);
-                    DUMP_RELOCATION("ovlSVDManager::Make, AnimationArray", c_svd->LODMeshes[s]->AnimationArray[a]);
+                    *c_svd->lods[s]->animations_ref[a] = NULL;
+                    GetRelocationManager()->AddRelocation((unsigned long *)&c_svd->lods[s]->animations_ref[a]);
+                    DUMP_RELOCATION("ovlSVDManager::Make, AnimationArray", c_svd->lods[s]->animations_ref[a]);
 
                     // Symbol reference for ban name
                     GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.lods[s].animations[a].c_str(), ovlBANManager::TAG),
-                                         reinterpret_cast<unsigned long*>(c_svd->LODMeshes[s]->AnimationArray[a]));
+                                         reinterpret_cast<unsigned long*>(c_svd->lods[s]->animations_ref[a]));
                 }
             }
 

@@ -53,12 +53,12 @@ cASE3DLoader::cASE3DLoader(const wxChar *filename): c3DLoader(filename) {
         std::auto_ptr<wxFSFile> file(fs.OpenFile(filename, wxFS_READ));
 
         if (!file.get())
-            return;
+            throw E3DLoaderNotMyBeer();
 
         wxInputStream* filestream = file->GetStream(); // Stream is destroyed by wxFSFile
 
         if (!filestream)
-            return;
+            throw E3DLoaderNotMyBeer();
 
         filestream->SeekI(0, wxFromEnd);
         len = filestream->TellI();
@@ -79,11 +79,11 @@ cASE3DLoader::cASE3DLoader(const wxChar *filename): c3DLoader(filename) {
 #endif
 
     if (!len)
-        return;
+        throw E3DLoaderNotMyBeer();
 
     // Test whether it's an ase
     if (strncasecmp(buf.get(), "*3DSMAX_ASCIIEXPORT", 19))
-        return;
+        throw E3DLoaderNotMyBeer();
 
 
 /*
@@ -111,7 +111,7 @@ cASE3DLoader::cASE3DLoader(const wxChar *filename): c3DLoader(filename) {
         try {
             ASE_freeScene(scene);
         } catch (...) {}
-        return;
+        throw E3DLoaderNotMyBeer();
     }
     if (scene) {
         for (int m = 0; m < scene->objectCount; m++) {
@@ -125,6 +125,7 @@ cASE3DLoader::cASE3DLoader(const wxChar *filename): c3DLoader(filename) {
             unsigned long i, j;
 
             if (mesh->faceCount == 0) {
+                /*
                 cmesh.m_flag = C3DMESH_INVALID;
                 for (i = 0; i < (unsigned long) mesh->vertexCount; i++) {
                     tv.position.x = mesh->vertices[i].x;
@@ -138,6 +139,16 @@ cASE3DLoader::cASE3DLoader(const wxChar *filename): c3DLoader(filename) {
                     tv.tv = 0.0;
                     cmesh.m_vertices.push_back(tv);
                 }
+                */
+                c3DBone bone;
+                bone.m_name = cmesh.m_name;
+                bone.m_type = wxT("Vertex");
+                bone.m_pos[0] = matrixGetTranslation(mesh->vertices[0].x, mesh->vertices[0].y, mesh->vertices[0].z);
+                bone.m_pos[1] = bone.m_pos[0];
+                bone.m_id = m_bones.size();
+                m_bones[bone.m_name] = bone;
+                m_boneId.push_back(bone.m_name);
+                continue;
             } else
                 for (i = 0; i < (unsigned long) mesh->faceCount * 3; i += 3) {
                     unsigned int index = i / 3;
@@ -251,8 +262,10 @@ cASE3DLoader::cASE3DLoader(const wxChar *filename): c3DLoader(filename) {
                     // j should have our real index value now as well
                     cmesh.m_indices.push_back(j);
                 }
-            m_meshes.push_back(cmesh);
+            m_meshes[cmesh.m_name] = cmesh;
+            m_meshId.push_back(cmesh.m_name);
         }
+        makeDefaultGroup(wxFileName(filename).GetName());
         ASE_freeScene(scene);
     }
 }

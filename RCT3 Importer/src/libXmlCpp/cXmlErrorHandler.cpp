@@ -120,7 +120,10 @@ string cXmlStructuredError::getPath() const {
     cXmlNode temp(reinterpret_cast<xmlNodePtr>(node));
     if (!temp.ok())
         return "";
-    return temp.path();
+    std::string ret = temp.path();
+    if (attribute != "")
+        ret += "/@"+attribute;
+    return ret;
 }
 
 void cXmlErrorHandler::Init() {
@@ -187,8 +190,8 @@ fflush(stderr);
 
 void cXmlErrorHandler::transferErrors(cXmlErrorHandler& from) {
     if (this != &from) {
-        m_structurederrors = from.m_structurederrors;
-        m_genericerrors = from.m_genericerrors;
+        m_structurederrors.insert(m_structurederrors.end(), from.m_structurederrors.begin(), from.m_structurederrors.end());
+        m_genericerrors.insert(m_genericerrors.end(), from.m_genericerrors.begin(), from.m_genericerrors.end());
     }
 }
 

@@ -1,128 +1,220 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<grammar ns="http://rct3.sourceforge.net/rct3xml/model" xmlns="http://relaxng.org/ns/structure/1.0" xmlns:sch="http://purl.oclc.org/dsdl/schematron" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
-	<sch:ns prefix="mod" uri="http://rct3.sourceforge.net/rct3xml/model"/>
+<?xml version="1.0" encoding="utf-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" ns="http://rct3.sourceforge.net/rct3xml/model" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+	<sch:ns xmlns:sch="http://purl.oclc.org/dsdl/schematron" prefix="mod" uri="http://rct3.sourceforge.net/rct3xml/model"/>
+	<sch:ns xmlns:sch="http://purl.oclc.org/dsdl/schematron" prefix="math" uri="http://exslt.org/math"/>
 	<start>
 		<element name="model">
-			<oneOrMore>
-				<choice>
-					<element name="mesh">
-						<attribute name="name">
-							<data type="string"/>
-						</attribute>
-						<optional>
-							<attribute name="texture">
-								<data type="string"/>
-							</attribute>
-						</optional>
-						<element name="vertex">
-							<sch:pattern>
-								<sch:title>Check Bone Weight</sch:title>
-								<sch:rule context="mod:vertex">
-									<sch:assert test="mod:bone">No Bones!</sch:assert>
-									<sch:assert test="sum(//mod:bone/@weight) = 100">Bone weights of mesh '<sch:value-of select="ancestor::mesh[@name]/@name"/>'</sch:assert>
-								</sch:rule>
-							</sch:pattern>
-							<element name="position">
-								<ref name="vector"/>
-							</element>
-							<element name="normal">
-								<ref name="vector"/>
-							</element>
-							<element name="uv">
-								<attribute name="u">
-									<data type="decimal" />
-								</attribute>
-								<attribute name="v">
-									<data type="decimal" />
-								</attribute>
-							</element>
-							<optional>
-								<ref name="bone" />
-								<optional>
-									<ref name="bone" />
-									<optional>
-										<ref name="bone" />
-										<optional>
-											<ref name="bone" />
-										</optional>
-									</optional>
-								</optional>
-							</optional>
+			<sch:pattern xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+				<sch:title>Name uniqueness</sch:title>
+				<sch:rule context="/*/mod:mesh/@name">
+					<sch:assert test="count(/*/mod:mesh[@name = current()]) = 1">The name of meshes have to be unique, '<sch:value-of select="."/>' is not.</sch:assert>
+				</sch:rule>
+				<sch:rule context="/*/mod:bone/@name">
+					<sch:assert test="count(/*/mod:bone[@name = current()]) = 1">The name of bones have to be unique, '<sch:value-of select="."/>' is not.</sch:assert>
+				</sch:rule>
+				<sch:rule context="/*/mod:spline/@name">
+					<sch:assert test="count(/*/mod:spline[@name = current()]) = 1">The name of splines have to be unique, '<sch:value-of select="."/>' is not.</sch:assert>
+				</sch:rule>
+				<sch:rule context="/*/mod:texture/@name">
+					<sch:assert test="count(/*/mod:texture[@name = current()]) = 1">The name of textures have to be unique, '<sch:value-of select="."/>' is not.</sch:assert>
+				</sch:rule>
+				<sch:rule context="/*/mod:group/@name">
+					<sch:assert test="count(/*/mod:group[@name = current()]) = 1">The name of groups have to be unique, '<sch:value-of select="."/>' is not.</sch:assert>
+				</sch:rule>
+			</sch:pattern>
+			<optional><element name="system">
+				<attribute name="handedness">
+					<choice>
+						<value>left</value>
+						<value>right</value>
+					</choice>
+				</attribute>
+				<attribute name="up">
+					<choice>
+						<value>x</value>
+						<value>y</value>
+						<value>z</value>
+					</choice>
+				</attribute>
+			</element></optional>
+			<oneOrMore><choice>
+				<element name="mesh">
+					<sch:pattern xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+						<sch:title>Check texture</sch:title>
+						<sch:rule context="mod:mesh/@texture">
+							<sch:assert test="//mod:texture[@name = current()]">Texture '<sch:value-of select="."/>' of mesh '<sch:value-of select="ancestor-or-self::mod:mesh/@name"/>' is undefined.</sch:assert>
+						</sch:rule>
+					</sch:pattern>
+					<attribute name="name"><data type="string"/></attribute>
+					<optional><attribute name="texture"><data type="string"/></attribute></optional>
+					<oneOrMore><element name="vertex">
+						<sch:pattern xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+							<sch:title>Check Bones</sch:title>
+							<sch:rule context="mod:vertex/mod:bone[last()]">
+								<sch:assert test="sum(../mod:bone/@weight) = 100">Bone weights of vertex #<sch:value-of select="count(ancestor::mod:vertex/preceding-sibling::mod:vertex)+1"/> in mesh '<sch:value-of select="ancestor::mod:mesh/@name"/>' do not add up to 100.</sch:assert>
+							</sch:rule>
+							<sch:rule context="mod:vertex/mod:bone/@name">
+								<sch:assert test="/*/mod:bone[@name = current()]" role="warning">Bone '<sch:value-of select="."/>' of vertex #<sch:value-of select="count(ancestor::mod:vertex/preceding-sibling::mod:vertex)+1"/> in mesh '<sch:value-of select="ancestor::mod:mesh/@name"/>' is not defined.</sch:assert>
+								<sch:assert test="count(ancestor::mod:vertex/mod:bone[@name = current()]) = 1">Bone '<sch:value-of select="."/>' of vertex #<sch:value-of select="count(ancestor::mod:vertex/preceding-sibling::mod:vertex)+1"/> in mesh '<sch:value-of select="ancestor::mod:mesh/@name"/>' repeated.</sch:assert>
+							</sch:rule>
+						</sch:pattern>
+						<element name="position"><ref name="vector"/></element>
+						<element name="normal"><ref name="vector"/></element>
+						<element name="uv">
+							<attribute name="u"><data type="decimal"/></attribute>
+							<attribute name="v"><data type="decimal"/></attribute>
 						</element>
+						<optional><ref name="bone"/><optional><ref name="bone"/><optional><ref name="bone"/><optional><ref name="bone"/></optional></optional></optional></optional>
+					</element></oneOrMore>
+					<oneOrMore><element name="triangle">
+						<sch:pattern xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+							<sch:title>Triangle indices</sch:title>
+							<sch:rule context="mod:triangle">
+								<sch:assert test="@a &lt; count(ancestor::mod:mesh/mod:vertex)">Index 'a' of triangle #<sch:value-of select="count(ancestor::mod:triangle/preceding-sibling::mod:triangle)+1"/> in mesh '<sch:value-of select="ancestor::mod:mesh/@name"/>' is too big.</sch:assert>
+								<sch:assert test="@b &lt; count(ancestor::mod:mesh/mod:vertex)">Index 'b' of triangle #<sch:value-of select="count(ancestor::mod:triangle/preceding-sibling::mod:triangle)+1"/> in mesh '<sch:value-of select="ancestor::mod:mesh/@name"/>' is too big.</sch:assert>
+								<sch:assert test="@c &lt; count(ancestor::mod:mesh/mod:vertex)">Index 'c' of triangle #<sch:value-of select="count(ancestor::mod:triangle/preceding-sibling::mod:triangle)+1"/> in mesh '<sch:value-of select="ancestor::mod:mesh/@name"/>' is too big.</sch:assert>
+								<sch:assert test="(@a != @b) and (@b != @c) and (@a != @c)">Some of the indices of triangle #<sch:value-of select="count(ancestor::mod:triangle/preceding-sibling::mod:triangle)+1"/> in mesh '<sch:value-of select="ancestor::mod:mesh/@name"/>' are identical.</sch:assert>
+							</sch:rule>
+						</sch:pattern>
+						<attribute name="a"><data type="unsignedInt"/></attribute>
+						<attribute name="b"><data type="unsignedInt"/></attribute>
+						<attribute name="c"><data type="unsignedInt"/></attribute>
+					</element></oneOrMore>
+				</element>
+				<element name="bone">
+					<sch:pattern xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+						<sch:title>Check parent</sch:title>
+						<sch:rule context="/*/mod:bone/@parent">
+							<sch:assert test="/*/mod:bone[@name = current()]">Parent '<sch:value-of select="."/>' of bone '<sch:value-of select="ancestor-or-self::mod:bone/@name"/>' is undefined.</sch:assert>
+							<sch:assert test="current() != ancestor-or-self::mod:bone/@name">Bone '<sch:value-of select="."/>' cannot be its own parent.</sch:assert>
+						</sch:rule>
+					</sch:pattern>
+					<attribute name="name"><data type="string"/></attribute>
+					<optional><attribute name="parent"><data type="string"/></attribute></optional>
+					<optional><attribute name="role"><data type="string"/></attribute></optional>
+					<element name="matrix">
+						<ref name="matrixrow"/><ref name="matrixrow"/><ref name="matrixrow"/><ref name="matrixrow"/>
 					</element>
-					<element name="bone">
-						<attribute name="name">
-							<data type="string"/>
-						</attribute>
-						<optional>
-							<attribute name="parent">
-								<data type="string"/>
-							</attribute>
-						</optional>
-						<element name="matrix">
-							<ref name="matrixrow" />
-							<ref name="matrixrow" />
-							<ref name="matrixrow" />
-							<ref name="matrixrow" />
-						</element>
-					</element>
-					<element name="spline">
-						<attribute name="name">
-							<data type="string"/>
-						</attribute>
-						<optional>
-							<attribute name="cyclic">
-								<choice>
-									<value type="int">0</value>
-									<value type="int">1</value>
-								</choice>
-							</attribute>
-						</optional>
-						<element name="node">
-							<element name="position">
-								<ref name="vector" />
-							</element>
-							<element name="controlPrev">
-								<ref name="vector" />
-							</element>
-							<element name="controlNext">
-								<ref name="vector" />
-							</element>
-						</element>
-					</element>
-				</choice>
-			</oneOrMore>
+				</element>
+				<element name="spline">
+					<attribute name="name"><data type="string"/></attribute>
+					<optional><attribute name="cyclic">
+						<choice>
+							<value type="int">0</value>
+							<value type="int">1</value>
+						</choice>
+					</attribute></optional>
+					<oneOrMore><element name="node">
+						<element name="position"><ref name="vector"/></element>
+						<element name="controlPrev"><ref name="vector"/></element>
+						<element name="controlNext"><ref name="vector"/></element>
+					</element></oneOrMore>
+				</element>
+				<element name="texture">
+					<sch:pattern xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+						<sch:title>Check texture</sch:title>
+						<sch:rule context="mod:texture/@name">
+							<sch:assert test="//mod:mesh[@texture = current()]" role="warning">Texture '<sch:value-of select="."/>' unused.</sch:assert>
+						</sch:rule>
+					</sch:pattern>
+					<attribute name="name"><data type="string"/></attribute>
+					<attribute name="file"><data type="string"/></attribute>
+				</element>
+				<element name="animation">
+					<sch:pattern xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+						<sch:title>Check animation</sch:title>
+						<sch:rule context="mod:animation/mod:bone">
+							<sch:assert test="(count(mod:translate) &gt;= 2) or (count(mod:rotate) &gt;= 2)">Bone '<sch:value-of select="./@name"/>' of animation '<sch:value-of select="ancestor::mod:animation/@name"/>' needs at least two keyframes of the same type.</sch:assert>
+							<sch:assert test="not(mod:translate) or not(mod:rotate) or (math:max(mod:translate/@time) = math:max(mod:rotate/@time))" role="warning">The end times of translation and rotation frames in bone '<sch:value-of select="./@name"/>' of animation '<sch:value-of select="ancestor::mod:animation/@name"/>' do not match.</sch:assert>
+						</sch:rule>
+						<sch:rule context="mod:animation/mod:bone/@name">
+							<sch:assert test="/*/mod:bone[@name = current()]" role="warning">Bone '<sch:value-of select="."/>' of animation '<sch:value-of select="ancestor::mod:animation/@name"/>' is undefined.</sch:assert>
+							<sch:assert test="count(ancestor::mod:animation/mod:bone[@name = current()]) = 1">Bones may only be animated once within the same animation. Bone '<sch:value-of select="."/>' is animated multiple times in animation '<sch:value-of select="ancestor::mod:animation/@name"/>'.</sch:assert>
+						</sch:rule>
+						<sch:rule abstract="true" id="txyz.element">
+							<sch:let name="nodename" value="name()"/>
+							<sch:assert test="count(ancestor::mod:bone/*[name() = $nodename]) != 1">Bone '<sch:value-of select="ancestor::mod:bone/@name"/>' of animation '<sch:value-of select="ancestor::mod:animation/@name"/>' has only one keyframe of a type '<sch:value-of select="$nodename"/>'.</sch:assert>
+						</sch:rule>
+						<sch:rule context="mod:animation/mod:bone/mod:rotate">
+							<sch:extends rule="txyz.element"/>
+						</sch:rule>
+						<sch:rule context="mod:animation/mod:bone/mod:translate">
+							<sch:extends rule="txyz.element"/>
+						</sch:rule>
+						<sch:rule abstract="true" id="txyz.time">
+							<sch:let name="nodename" value="name(ancestor::*[1])"/>
+							<sch:assert test="(count(ancestor::*[1]/preceding-sibling::*[name() = $nodename])=0) or (current() &gt; preceding::*[name() = $nodename]/@time)">Keyframe '<sch:value-of select="$nodename"/>' #<sch:value-of select="count(ancestor::*[1]/preceding-sibling::*[name() = $nodename])+1"/> of bone '<sch:value-of select="ancestor::mod:bone/@name"/>' in animation '<sch:value-of select="ancestor::mod:animation/@name"/>' has out-of-order time.</sch:assert>
+							<sch:assert test="(count(ancestor::*[1]/preceding-sibling::*[name() = $nodename]) &gt; 0) or (current() = 0)" role="warning">The first '<sch:value-of select="$nodename"/>' keyframe of bone '<sch:value-of select="ancestor::mod:bone/@name"/>' in animation '<sch:value-of select="ancestor::mod:animation/@name"/>' needs to be at the start (time="0").</sch:assert>
+						</sch:rule>
+						<sch:rule context="mod:animation/mod:bone/mod:rotate/@time">
+							<sch:extends rule="txyz.time"/>
+						</sch:rule>
+						<sch:rule context="mod:animation/mod:bone/mod:translate/@time">
+							<sch:extends rule="txyz.time"/>
+						</sch:rule>
+					</sch:pattern>
+					<attribute name="name"><data type="string"/></attribute>
+					<oneOrMore><element name="bone">
+						<attribute name="name"><data type="string"/></attribute>
+						<zeroOrMore><element name="translate"><ref name="timevector"/></element></zeroOrMore>
+						<zeroOrMore><element name="rotate"><ref name="timevector"/></element></zeroOrMore>
+					</element></oneOrMore>
+				</element>
+				<element name="group">
+					<sch:pattern xmlns:sch="http://purl.oclc.org/dsdl/schematron">
+						<sch:title>Check group</sch:title>
+						<sch:rule context="mod:group/mod:mesh">
+							<sch:assert test="/*/mod:mesh[@name = current()]">Mesh '<sch:value-of select="."/>' of group '<sch:value-of select="ancestor::mod:group/@name"/>' is undefined.</sch:assert>
+							<sch:assert test="count(ancestor::mod:group/mod:mesh[. = current()]) = 1">Meshes may only be assigned once to a group. Mesh '<sch:value-of select="."/>' is assigned multiple times to group '<sch:value-of select="ancestor::mod:group/@name"/>'.</sch:assert>
+						</sch:rule>
+						<sch:rule context="mod:group/mod:bone">
+							<sch:assert test="/*/mod:bone[@name = current()]">Bone '<sch:value-of select="."/>' of group '<sch:value-of select="ancestor::mod:group/@name"/>' is undefined.</sch:assert>
+							<sch:assert test="count(ancestor::mod:group/mod:bone[. = current()]) = 1">Bones may only be assigned once to a group. Bone '<sch:value-of select="."/>' is assigned multiple times to group '<sch:value-of select="ancestor::mod:group/@name"/>'.</sch:assert>
+						</sch:rule>
+						<sch:rule context="mod:group/mod:animation">
+							<sch:assert test="/*/mod:animation[@name = current()]" role="warning">Animation '<sch:value-of select="."/>' of group '<sch:value-of select="ancestor::mod:group/@name"/>' is undefined.</sch:assert>
+							<sch:assert test="count(ancestor::mod:group/mod:animation[. = current()]) = 1">Animations may only be assigned once to a group. Animation '<sch:value-of select="."/>' is assigned multiple times to group '<sch:value-of select="ancestor::mod:group/@name"/>'.</sch:assert>
+						</sch:rule>
+					</sch:pattern>
+					<attribute name="name"><data type="string"/></attribute>
+					<optional><element name="rct3">
+						<optional><attribute name="lodDistance">
+							<data type="decimal">
+								<param name="minInclusive">0</param>
+							</data>
+						</attribute></optional>
+					</element></optional>
+					<oneOrMore><choice>
+						<element name="bone"><data type="string"/></element>
+						<element name="mesh"><data type="string"/></element>
+						<element name="animation"><data type="string"/></element>
+					</choice></oneOrMore>
+				</element>
+			</choice></oneOrMore>
 		</element>
 	</start>
 	<define name="vector">
-		<attribute name="x">
-			<data type="decimal" />
-		</attribute>
-		<attribute name="y">
-			<data type="decimal" />
-		</attribute>
-		<attribute name="z">
-			<data type="decimal" />
-		</attribute>
+		<attribute name="x"><data type="decimal"/></attribute>
+		<attribute name="y"><data type="decimal"/></attribute>
+		<attribute name="z"><data type="decimal"/></attribute>
+	</define>
+	<define name="timevector">
+		<ref name="vector"/>
+		<attribute name="time"><data type="decimal"/></attribute>
 	</define>
 	<define name="bone">
 		<element name="bone">
-			<attribute name="name">
-				<data type="string"/>
-			</attribute>
-			<attribute name="weight">
-				<data type="decimal" />
-			</attribute>
+			<attribute name="name"><data type="string"/></attribute>
+			<attribute name="weight"><data type="decimal"/></attribute>
 		</element>
 	</define>
 	<define name="matrixrow">
 		<element name="row">
 			<list>
-				<data type="decimal" />
-				<data type="decimal" />
-				<data type="decimal" />
-				<data type="decimal" />
+				<data type="decimal"/>
+				<data type="decimal"/>
+				<data type="decimal"/>
+				<data type="decimal"/>
 			</list>
 		</element>
 	</define>

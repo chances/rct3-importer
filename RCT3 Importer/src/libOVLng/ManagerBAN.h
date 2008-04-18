@@ -38,64 +38,33 @@
 #include "ManagerOVL.h"
 
 struct cTXYZComp {
-    bool operator() (const txyz& lhs, const txyz& rhs) const {
+    bool operator() (const r3::txyz& lhs, const r3::txyz& rhs) const {
         return lhs.Time<rhs.Time;
     }
 };
 
 class cBoneAnimBone {
 public:
-    string name;
-    set<txyz, cTXYZComp> translations;
-    set<txyz, cTXYZComp> rotations;
+    std::string name;
+    std::set<r3::txyz, cTXYZComp> translations;
+    std::set<r3::txyz, cTXYZComp> rotations;
 
     cBoneAnimBone(){};
-    float Fill(BoneAnimBone* bone) {
-        float f = 0.0;
-        //bone->Name = NULL; will be assigned before Fill is called
-        bone->TranslateCount = translations.size();
-        unsigned long c = 0;
-        for (set<txyz, cTXYZComp>::iterator it = translations.begin(); it != translations.end(); ++it) {
-            bone->Translate[c] = *it;
-            if (it->Time > f)
-                f = it->Time;
-            c++;
-        }
-        bone->RotateCount = rotations.size();
-        c = 0;
-        for (set<txyz, cTXYZComp>::iterator it = rotations.begin(); it != rotations.end(); ++it) {
-            bone->Rotate[c] = *it;
-            if (it->Time > f)
-                f = it->Time;
-            c++;
-        }
-        return f;
-    }
+    float Fill(r3::BoneAnimBone* bone);
 };
 
 class cBoneAnim {
 public:
-    string name;
+    std::string name;
     float totaltime;
     bool calc_time;
-    vector<cBoneAnimBone> bones;
+    std::vector<cBoneAnimBone> bones;
 
     cBoneAnim() {
         totaltime = 0.0;
         calc_time = true;
     }
-    void Fill(BoneAnim* ban) {
-        if (calc_time)
-            ban->TotalTime = 0.0;
-        else
-            ban->TotalTime = totaltime;
-        ban->BoneCount = bones.size();
-        for (unsigned int i = 0; i < bones.size(); ++i) {
-            float f = bones[i].Fill(&ban->Bones[i]);
-            if (calc_time && (f > ban->TotalTime))
-                ban->TotalTime = f;
-        }
-    }
+    void Fill(r3::BoneAnim* ban);
 };
 
 class ovlBANManager: public ovlOVLManager {
@@ -103,7 +72,7 @@ public:
     static const char* NAME;
     static const char* TAG;
 private:
-    map<string, cBoneAnim> m_items;
+    std::map<std::string, cBoneAnim> m_items;
 
 public:
     ovlBANManager(): ovlOVLManager() {};

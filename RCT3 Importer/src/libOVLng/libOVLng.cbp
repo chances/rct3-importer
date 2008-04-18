@@ -110,6 +110,12 @@
 		<Unit filename="..\..\include\xmldefs.h" />
 		<Unit filename="LodSymRefManager.cpp" />
 		<Unit filename="LodSymRefManager.h" />
+		<Unit filename="ManagerANR.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerANR.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
 		<Unit filename="ManagerBAN.cpp">
 			<Option virtualFolder="Structure Managers\" />
 		</Unit>

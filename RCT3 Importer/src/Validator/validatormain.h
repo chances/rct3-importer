@@ -28,21 +28,48 @@
 #include <boost/shared_ptr.hpp>
 #include <wx/stc/stc.h>
 
+#include "cXmlValidatorMulti.h"
+
 #include "resources/res_main.h"
 
+class dlgKeyframes;
 class frmMain: public rcfrmMain {
 public:
     frmMain(wxWindow* parent);
     virtual ~frmMain();
 
     virtual void OnMenuLoad( wxCommandEvent& event );
+    virtual void OnMenuSave( wxCommandEvent& event );
+    virtual void OnMenuSaveAs( wxCommandEvent& event );
     virtual void OnSchema( wxCommandEvent& event );
     virtual void OnSTCMarginClick (wxStyledTextEvent &event);
+    virtual void OnSTCChange (wxStyledTextEvent &event);
+    virtual void OnSTCCharAdded (wxStyledTextEvent &event);
+    virtual void OnValidate( wxCommandEvent& event );
+    virtual void OnReloadSchema( wxCommandEvent& event );
+    virtual void OnReloadXml( wxCommandEvent& event );
+
+    virtual void OnSchemaProfile10( wxCommandEvent& event );
+    virtual void OnSchemaProfile100( wxCommandEvent& event );
+    virtual void OnSchemaProfile1000( wxCommandEvent& event );
+
+    virtual void OnRelaxNG( wxCommandEvent& event );
+    virtual void OnSchematron( wxCommandEvent& event );
+
+    virtual void OnReloadBoth( wxCommandEvent& event );
+    virtual void OnKeyframe( wxCommandEvent& event );
 
 private:
     boost::shared_ptr<wxFileDialog> m_fdlgSchema;
     boost::shared_ptr<wxFileDialog> m_fdlgFile;
+    xmlcpp::cXmlValidatorMulti m_val;
+    bool m_schemachanged;
+    wxString m_xmlfile;
+    boost::shared_ptr<dlgKeyframes> m_kf;
 
+    void InitXMLSTC(wxStyledTextCtrl* ctl);
+    bool DoValidate();
+    void DoProfileValidation(int times);
 };
 
 #endif // MANAGERMAIN_H_INCLUDED

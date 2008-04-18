@@ -35,25 +35,23 @@
 
 #include "OVLClasses.h"
 
-using namespace std;
-
 class ovlStringTable {
 private:
-    list<string> m_strings;
-    map<string, char*> m_ptrmap;
+    std::list<std::string> m_strings;
+    std::map<std::string, char*> m_ptrmap;
     int m_size;
     char* m_table;
 
-    char* FindRawString(const string& findit) const;
+    char* FindRawString(const std::string& findit) const;
 public:
     ovlStringTable();
     ~ovlStringTable();
 
-    void AddString(const string& lstring);
-    void AddSymbolString(const string& lstring, const string& lextension);
+    void AddString(const std::string& lstring);
+    void AddSymbolString(const std::string& lstring, const std::string& lextension);
     char* Make(cOvlInfo* info);
-    char* FindString(const string& lstring) const;
-    char* FindSymbolString(const string& lstring, const string& lextension) const;
+    char* FindString(const std::string& lstring) const;
+    char* FindSymbolString(const std::string& lstring, const std::string& lextension) const;
     int GetSize() const;
 };
 

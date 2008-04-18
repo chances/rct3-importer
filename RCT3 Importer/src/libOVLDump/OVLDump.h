@@ -35,42 +35,40 @@
 #include "ovlstructs.h"
 #include "ovldumperstructs.h"
 
-using namespace std;
-
 #define RelocationFromVar(m, s) \
     ((reinterpret_cast<unsigned long>(&m) + s.reloffset) - reinterpret_cast<unsigned long>(s.data))
 
 class cOVLDump {
 protected:
-    string m_file[2];
+    std::string m_file[2];
     char* m_data[2];
     char* m_dataend[2];
     unsigned long m_size[2];
 
     unsigned long* mp_referencecount[2];
     char* mp_references[2];
-    vector<string> m_injectreferences[2];
+    std::vector<std::string> m_injectreferences[2];
 
     OvlHeader m_header[2];
     OvlExtendedHeader m_exheader[2];
-    vector<string> m_references[2];
+    std::vector<std::string> m_references[2];
     OvlHeader2 m_header2[2];
-    vector<OvlLoaderHeader> m_loaderheaders[2];
+    std::vector<OvlLoaderHeader> m_loaderheaders[2];
     OvlFileTypeBlock m_fileblocks[2][9];
     OvlPostBlockUnknowns m_pbunknowns[2];
-    vector<OvlRelocation> m_relocations[2];
-    vector<OvlSymbol> m_symbols[2];
-    vector<OvlLoader> m_loaders[2];
-    set<OvlStringTableEntry, OvlStringTableComp> m_strings;
+    std::vector<OvlRelocation> m_relocations[2];
+    std::vector<OvlSymbol> m_symbols[2];
+    std::vector<OvlLoader> m_loaders[2];
+    std::set<OvlStringTableEntry, OvlStringTableComp> m_strings;
 
     unsigned long m_crc[2];
 
     unsigned long m_reloffset;
-    map<unsigned long, OvlRelocation*> m_relmap;
-    map<unsigned long, void*> m_targets;
-    map<void*, string> m_symbolreferences;
-    map<string, map<string, OvlRelocation*> > m_structmap[2];
-    map<unsigned long, OvlFlicData> m_flics;
+    std::map<unsigned long, OvlRelocation*> m_relmap;
+    std::map<unsigned long, void*> m_targets;
+    std::map<void*, std::string> m_symbolreferences;
+    std::map<std::string, std::map<std::string, OvlRelocation*> > m_structmap[2];
+    std::map<unsigned long, OvlFlicData> m_flics;
 
 
     void Init();
@@ -96,7 +94,7 @@ public:
         return m_header[OVLT_COMMON].version;
     }
 
-    string GetFilename(cOvlType type) {
+    std::string GetFilename(cOvlType type) {
         return m_file[type];
     }
 
@@ -108,7 +106,7 @@ public:
     void InjectReference(cOvlType type, const char* ref) {
         m_injectreferences[type].push_back(ref);
     }
-    const vector<string>& GetReferences(cOvlType type) const {
+    const std::vector<std::string>& GetReferences(cOvlType type) const {
         return m_references[type];
     }
 
@@ -122,7 +120,7 @@ public:
     const OvlSymbol& GetSymbol(cOvlType type, unsigned long id);
     void SetSymbolData(cOvlType type, unsigned long id, unsigned long data);
     unsigned long FindSymbol(cOvlType type, const char* name);
-    vector<unsigned long> FindSymbols(cOvlType type, const char* query);
+    std::vector<unsigned long> FindSymbols(cOvlType type, const char* query);
 
     unsigned long GetLoaderCount(cOvlType type) {
         return m_loaders[type].size();
@@ -131,13 +129,13 @@ public:
     const OvlStringTableEntry& GetString(unsigned long id);
     void SetString(unsigned long id, const char* newstr);
 
-    const map<string, map<string, OvlRelocation*> >& GetStructures(cOvlType type) const {
+    const std::map<std::string, std::map<std::string, OvlRelocation*> >& GetStructures(cOvlType type) const {
         return m_structmap[type];
     }
-    map<unsigned long, void*>& GetTargets() {
+    std::map<unsigned long, void*>& GetTargets() {
         return m_targets;
     }
-    map<void*, string>& GetSymbolReferences() {
+    std::map<void*, std::string>& GetSymbolReferences() {
         return m_symbolreferences;
     }
 };

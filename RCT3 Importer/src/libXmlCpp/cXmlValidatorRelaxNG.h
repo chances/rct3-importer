@@ -25,6 +25,8 @@
 #ifndef CXMLVALIDATORRELAXNG_H_INCLUDED
 #define CXMLVALIDATORRELAXNG_H_INCLUDED
 
+#include "cxmlconfig.h"
+
 #include "cXmlValidator.h"
 
 #include <libxml/relaxng.h>
@@ -42,6 +44,10 @@ private:
     void Parse();
 public:
     cXmlValidatorRelaxNG():cXmlValidator() { Init(); }
+    cXmlValidatorRelaxNG(const std::string& buffer):cXmlValidator() {
+        Init();
+        read(buffer);
+    }
     virtual ~cXmlValidatorRelaxNG();
 
     bool read(cXmlDoc& doc);
@@ -54,6 +60,8 @@ public:
     inline bool operator!() const { return !ok(); }
     typedef xmlRelaxNGPtr cXmlValidatorRelaxNG::*unspecified_bool_type;
     inline operator unspecified_bool_type() const { return ok()?(&cXmlValidatorRelaxNG::m_schema):NULL; }
+
+    virtual int getType() const { return VAL_RELAXNG; }
 };
 
 } // Namespace

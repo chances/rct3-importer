@@ -35,19 +35,23 @@
 
 #include "wx_pch.h"
 
-#include <wx/xrc/xmlres.h>
+//#include <wx/xrc/xmlres.h>
 
-class dlgSave : public wxDialog {
+#include "xrc\res_misc.h"
+
+class dlgSave : public rcdlgSave {
 protected:
+/*
     wxStaticText* m_textText;
     wxButton* m_SAVE;
     wxButton* m_NO;
     wxButton* m_CANCEL;
-
+*/
     void OnButton(wxCommandEvent& event);
 
-    DECLARE_EVENT_TABLE()
+//    DECLARE_EVENT_TABLE()
 private:
+/*
     void InitWidgetsFromXRC(wxWindow *parent){
         wxXmlResource::Get()->LoadObject(this,parent,_T("dlgSave"), _T("wxDialog"));
         m_textText = XRCCTRL(*this,"m_textText",wxStaticText);
@@ -55,6 +59,7 @@ private:
         m_NO = XRCCTRL(*this,"wxID_NO",wxButton);
         m_CANCEL = XRCCTRL(*this,"wxID_CANCEL",wxButton);
     }
+*/
 public:
     dlgSave(wxString message, wxString title = _("Unsaved Changes"), wxWindow *parent=NULL);
 };

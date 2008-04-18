@@ -30,7 +30,7 @@
 					<Add library="libASE" />
 					<Add library="wx_baseu-2.9" />
 					<Add library="libOVLng" />
-					<Add library="XmlCppu" />
+					<Add library="XmlCpp_slimu" />
 				</Linker>
 			</Target>
 			<Target title="Debug Base Unicode">
@@ -60,7 +60,7 @@
 					<Add library="libASE" />
 					<Add library="wx_baseud-2.9" />
 					<Add library="libOVLngud" />
-					<Add library="XmlCppud" />
+					<Add library="XmlCpp_slimud" />
 				</Linker>
 			</Target>
 		</Build>
@@ -80,6 +80,7 @@
 			<Add option="-DCACHE_GXIMAGE" />
 			<Add option="-DXMLCPP_USE_XSLT" />
 			<Add option="-DXMLCPP_USE_WXWIDGETS" />
+			<Add option="-DXMLCPP_SLIM" />
 			<Add directory="$(#wx3.include)" />
 			<Add directory="..\lib3DHelp" />
 			<Add directory="..\..\include" />

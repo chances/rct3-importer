@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<grammar xmlns="http://relaxng.sourceforge.net/ns/shorthand" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+	<define name="impFudge">
+		<data type="unsignedInt">
+			<param name="minInclusive">0</param>
+			<param name="maxInclusive">7</param>
+		</data>
+	</define>
+	<define name="impMatrix">
+		<element name="row1" ref="impMatrixRow"/>
+		<element name="row2" ref="impMatrixRow"/>
+		<element name="row3" ref="impMatrixRow"/>
+		<element name="row4" ref="impMatrixRow"/>
+	</define>
+	<define name="impMatrixRow">
+		<list>
+			<data type="float"/>
+			<data type="float"/>
+			<data type="float"/>
+			<data type="float"/>
+		</list>
+	</define>
+	<define name="ovlBoneAssignment">
+		<element name="boneassignment">
+			<attribute name="bone" type="byte"/>
+			<attribute name="weight" type="unsignedByte"/>
+		</element>
+	</define>
+	<define name="ovlMeshSupport">
+		<choice>
+			<value type="int">-1</value>
+			<value type="int">1</value>
+			<value type="int">2</value>
+			<value type="int">4</value>
+			<value type="int">8</value>
+		</choice>
+	</define>
+	<define name="ovlTXYZ">
+		<attribute name="time" type="float"/>
+		<ref name="ovlVector"/>
+	</define>
+	<define name="ovlVector">
+		<attribute name="x" type="float"/>
+		<attribute name="y" type="float"/>
+		<attribute name="z" type="float"/>
+	</define>
+	<define name="ovlVertex">
+		<attribute name="u" type="float"/>
+		<attribute name="v" type="float"/>
+		<attribute name="colour" occurs="?">
+			<data type="hexBinary">
+				<param name="length">4</param>
+			</data>
+		</attribute>
+		<element name="position" ref="ovlVector"/>
+		<element name="normal" ref="ovlVector"/>
+	</define>
+	<define name="ovlVertex2">
+		<ref name="ovlVertex"/>
+		<ref name="ovlBoneAssignment" minOccurs="0" maxOccurs="4"/>
+	</define>
+	<define name="ovlDefaultColour">
+		<data type="unsignedInt">
+			<param name="minInclusive">0</param>
+			<param name="maxInclusive">31</param>
+		</data>
+	</define>
+	<define name="ovlExtraPack">
+		<data type="unsignedByte">
+			<param name="minInclusive">0</param>
+			<param name="maxInclusive">2</param>
+		</data>
+	</define>
+	<define name="ovlRecolourable">
+		<data type="unsignedInt">
+			<param name="minInclusive">0</param>
+			<param name="maxInclusive">7</param>
+		</data>
+	</define>
+	<define name="ovlTextureDimension">
+		<data type="unsignedInt">
+			<param name="minInclusive">4</param>
+			<param name="maxInclusive">1024</param>
+		</data>
+	</define>
+	<define name="ovlSidSupports">
+		<choice>
+			<value type="string">adventure</value>
+			<value type="string">crazygolf</value>
+			<value type="string">crazygolfholes</value>
+			<value type="string">girder</value>
+			<value type="string">ornate</value>
+			<value type="string">pathasphalt</value>
+			<value type="string">pathcrazy</value>
+			<value type="string">pathdirt</value>
+			<value type="string">pathleafy</value>
+			<value type="string">marble</value>
+			<value type="string">pathtarmac</value>
+			<value type="string">flatqueueset1</value>
+			<value type="string">romanpillar</value>
+			<value type="string">scaffolding</value>
+			<value type="string">space</value>
+			<value type="string">spooky</value>
+			<value type="string">steel</value>
+			<value type="string">ts1</value>
+			<value type="string">ts2</value>
+			<value type="string">ts3</value>
+			<value type="string">ts4</value>
+			<value type="string">ts5</value>
+			<value type="string">flatwildwest</value>
+			<value type="string">aquarium</value>
+			<value type="string">aquariumcorner</value>
+			<value type="string">defaultpool</value>
+			<value type="string">defaultpoolpath</value>
+			<value type="string">defaultpoolsmall</value>
+			<value type="string">sand</value>
+			<value type="string">pathunderwater</value>
+			<value type="string">ts1a</value>
+			<value type="string">ts6</value>
+			<value type="string">ts7</value>
+			<value type="string">ts8</value>
+		</choice>
+	</define>
+	<define name="ovlSidParameters">
+		<choice>
+			<value type="string">LoudSpeaker</value>
+			<value type="string">GuestInjectionPoint</value>
+			<value type="string">VistaPoint</value>
+			<value type="string">ParkEntrance</value>
+			<value type="string">PathFountain</value>
+			<value type="string">WaterCannon</value>
+			<value type="string">QueueLineEntertainer</value>
+			<value type="string">LitterBin</value>
+			<value type="string">ParkBench</value>
+			<value type="string">LifeguardChair</value>
+			<value type="string">PoolExtra</value>
+			<value type="string">Sign</value>
+			<value type="string">RideEvent</value>
+			<value type="string">PassportPost</value>
+			<value type="string">Waterable</value>
+		</choice>
+	</define>
+</grammar>

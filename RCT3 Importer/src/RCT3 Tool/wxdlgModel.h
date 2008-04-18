@@ -248,13 +248,16 @@ public:
         m_amodel = model;
         CheckModel();
     };
-    cModel const GetModel() const {
+    const cModel& GetModel() const {
         return m_smodel;
     };
-    cAnimatedModel GetAnimatedModel() const {
+    const cAnimatedModel& GetAnimatedModel() const {
         return m_amodel;
     };
-    void FetchOneVertexMeshes(wxArrayString& names, std::vector<r3::VECTOR>& points);
+    const cModel* GetModelPtr() const {
+        return m_model;
+    };
+    //void FetchOneVertexMeshes(wxArrayString& names, std::vector<r3::VECTOR>& points);
 };
 
 

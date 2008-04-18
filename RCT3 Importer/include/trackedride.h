@@ -46,14 +46,17 @@ struct TrackedRide_V {
 	unsigned long unk14;
 */
     Attraction_V        att;
+/*
 	uint32_t            attractivity;       ///< How many peeps are drawn into the park by this ride
 	uint32_t            unk16;              ///< Would be seating if similar to AnimatedRideA
 	RideOption**        options;
 	uint32_t            unk18;
 	uint32_t            unk19;
 	uint32_t            unk20;
+*/
+    Ride_V              ride;
 	uint32_t            track_section_count;
-	TrackSection**      track_sections_ref;
+	TrackSection_V**    track_sections_ref;
 	uint32_t            train_name_count;
 	char**              train_names;
 	uint32_t            unk25;
@@ -107,8 +110,8 @@ struct TrackedRide_V {
 	char*               track_path;
 	uint32_t            unk74;
 	uint32_t            unk75;
-	TrackSection*       tower_top_ref;
-	TrackSection*       tower_mid_ref;
+	TrackSection_V*     tower_top_ref;
+	TrackSection_V*     tower_mid_ref;
 	uint32_t            unk78;
 	uint32_t            unk79;
 	uint32_t            unk80;
@@ -158,7 +161,7 @@ struct TrackedRideB2 {
  */
 struct TrackedRide_S {
 	uint32_t            unk1;                   ///< 0xFFFFFFFF signals TrackedRide_S or TrackedRide_W
-	TrackSection**      track_sections_ref;
+	TrackSection_S**    track_sections_ref;
 	uint32_t            train_name_count;
 	char**              train_names;
 	uint32_t            unk5;
@@ -171,7 +174,7 @@ struct TrackedRide_S {
 	float_t             unk12;
 	float_t             unk13;
 	float_t             unk14;
-	char*b              platform;
+	char*               platform;
 	uint32_t            unk16;
 	uint32_t            unk17;
 	uint32_t            unk18;

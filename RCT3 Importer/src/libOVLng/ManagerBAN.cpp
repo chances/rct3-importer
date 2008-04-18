@@ -32,8 +32,47 @@
 #include "OVLException.h"
 #include "OVLng.h"
 
+using namespace r3;
+using namespace std;
+
 const char* ovlBANManager::NAME = "BoneAnim";
 const char* ovlBANManager::TAG = "ban";
+
+float cBoneAnimBone::Fill(r3::BoneAnimBone* bone) {
+    float f = 0.0;
+    //bone->Name = NULL; will be assigned before Fill is called
+    bone->TranslateCount = translations.size();
+    unsigned long c = 0;
+    for (set<r3::txyz, cTXYZComp>::iterator it = translations.begin(); it != translations.end(); ++it) {
+        bone->Translate[c] = *it;
+        if (it->Time > f)
+            f = it->Time;
+        c++;
+    }
+    bone->RotateCount = rotations.size();
+    c = 0;
+    for (set<r3::txyz, cTXYZComp>::iterator it = rotations.begin(); it != rotations.end(); ++it) {
+        bone->Rotate[c] = *it;
+        if (it->Time > f)
+            f = it->Time;
+        c++;
+    }
+    return f;
+}
+
+void cBoneAnim::Fill(r3::BoneAnim* ban) {
+    if (calc_time)
+        ban->TotalTime = 0.0;
+    else
+        ban->TotalTime = totaltime;
+    ban->BoneCount = bones.size();
+    for (unsigned int i = 0; i < bones.size(); ++i) {
+        float f = bones[i].Fill(&ban->Bones[i]);
+        if (calc_time && (f > ban->TotalTime))
+            ban->TotalTime = f;
+    }
+}
+
 
 void ovlBANManager::AddAnimation(const cBoneAnim& item) {
     Check("ovlBANManager::AddAnimation");

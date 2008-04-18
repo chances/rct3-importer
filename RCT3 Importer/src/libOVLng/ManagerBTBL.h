@@ -39,8 +39,6 @@
 
 #include "icontexture.h"
 
-using namespace std;
-
 /*
 Here is how complex flics work:
 
@@ -104,9 +102,9 @@ public:
         FORMAT_D15S1 =      0x102,
         FORMAT_D24S8 =      0x103
     };
-    string name;
+    std::string name;
     unsigned long format;
-    set<cTextureMIP> mips;
+    std::set<cTextureMIP> mips;
 
     // Used by ovlFLICManager
     unsigned long flicindex;
@@ -136,7 +134,7 @@ public:
     static const char* TAG;
     static const unsigned long TYPE;
 private:
-    vector<cTexture> m_items;
+    std::vector<cTexture> m_items;
 public:
     ovlBTBLManager(): ovlOVLManager() {
         //m_deferable = true;

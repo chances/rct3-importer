@@ -33,8 +33,10 @@
 
 #include "wx_pch.h"
 
-#include <wx/xrc/xmlres.h>
-#include <wx/spinbutt.h>
+#include "xrc\res_animation.h"
+
+//#include <wx/xrc/xmlres.h>
+//#include <wx/spinbutt.h>
 
 #include "RCT3Structs.h"
 
@@ -42,8 +44,9 @@ class wxBonesListBox;
 class wxTranslationListBox;
 class wxRotationListBox;
 
-class dlgAnimation : public wxDialog {
+class dlgAnimation : public rcdlgAnimation {
 protected:
+/*
     wxTextCtrl* m_textName;
     wxChoice* m_choiceCoordinateSystem;
 
@@ -89,6 +92,7 @@ protected:
     wxButton* m_btLoad;
     wxButton* m_btOk;
     wxButton* m_btCancel;
+*/
 
     void UpdateBone();
     int UpdateControlState();
@@ -97,16 +101,17 @@ protected:
 
     void OnBoneUp(wxSpinEvent& event);
     void OnBoneDown(wxSpinEvent& event);
-    void OnBoneAdd(wxCommandEvent& event);
+//    void OnBoneAdd(wxCommandEvent& event);
     void OnBoneCopy(wxCommandEvent& event);
     void OnBoneDel(wxCommandEvent& event);
+    void OnBoneLoad(wxCommandEvent& event);
     void OnBoneClear(wxCommandEvent& event);
 
     void OnBoneName(wxCommandEvent& event);
 private:
     cAnimation m_animation;
     cBoneAnimation* m_currentbone;
-
+/*
     void InitWidgetsFromXRC(wxWindow *parent){
         wxXmlResource::Get()->LoadObject(this,parent,_T("dlgAnimation"), _T("wxDialog"));
         m_textName = XRCCTRL(*this,"m_textName",wxTextCtrl);
@@ -152,6 +157,7 @@ private:
         m_btCancel = XRCCTRL(*this,"m_btCancel",wxButton);
     }
     DECLARE_EVENT_TABLE()
+*/
 public:
     dlgAnimation(wxWindow *parent=NULL);
     void SetAnimation(const cAnimation& ani) {

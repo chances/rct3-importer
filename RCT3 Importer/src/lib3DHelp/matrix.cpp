@@ -111,30 +111,32 @@ MATRIX matrixGetFixOrientation(const c3DLoaderOrientation orient) {
     }
 }
 
-void txyzFixOrientation(txyz& src, const c3DLoaderOrientation& orient) {
+void txyzFixOrientation(txyz& src, const c3DLoaderOrientation& orient, bool rotate) {
     switch (orient) {
         case ORIENTATION_RIGHT_XUP: {
-            float t = -src.Y;
-            src.Y = src.X;
-            src.X = src.Z;
+            float t = -src.Y * (rotate?-1.0:1.0);
+            src.Y = src.X * (rotate?-1.0:1.0);
+            src.X = src.Z * (rotate?-1.0:1.0);
             src.Z = t;
             break;
         }
         case ORIENTATION_RIGHT_YUP: {
-            src.Z = -src.Z;
+            src.X = src.X * (rotate?-1.0:1.0);
+            src.Y = src.Y * (rotate?-1.0:1.0);
+            src.Z = -src.Z * (rotate?-1.0:1.0);
             break;
         }
         case ORIENTATION_RIGHT_ZUP: {
-            float t = -src.X;
-            src.X = src.Y;
-            src.Y = src.Z;
+            float t = -src.X * (rotate?-1.0:1.0);
+            src.X = src.Y * (rotate?-1.0:1.0);
+            src.Y = src.Z * (rotate?-1.0:1.0);
             src.Z = t;
             break;
         }
         case ORIENTATION_LEFT_XUP: {
-            float t = src.X;
-            src.X = src.Z;
-            src.Z = src.Y;
+            float t = src.X * (rotate?-1.0:1.0);
+            src.X = src.Z * (rotate?-1.0:1.0);
+            src.Z = src.Y * (rotate?-1.0:1.0);
             src.Y = t;
             break;
         }
@@ -200,6 +202,11 @@ MATRIX matrixGetRotationZ(const float rad) {
     return m;
 }
 
+VECTOR matrixExtractTranslation(const MATRIX& m) {
+    return vectorMake(m._41, m._42, m._43);
+}
+
+
 float matrixCalcDeterminant(const MATRIX *m) {
     return (m->_11*m->_22*m->_33*m->_44)
            -(m->_11*m->_22*m->_34*m->_43)
@@ -227,33 +234,32 @@ float matrixCalcDeterminant(const MATRIX *m) {
            +(m->_14*m->_23*m->_32*m->_41);
 }
 
-MATRIX matrixMultiply(const MATRIX *m1, const MATRIX *m2) {
+MATRIX matrixMultiply(const MATRIX& m1, const MATRIX& m2) {
     MATRIX m;
-    m._11 = (m1->_11 * m2->_11) + (m1->_12 * m2->_21) + (m1->_13 * m2->_31) + (m1->_14 * m2->_41);
-    m._12 = (m1->_11 * m2->_12) + (m1->_12 * m2->_22) + (m1->_13 * m2->_32) + (m1->_14 * m2->_42);
-    m._13 = (m1->_11 * m2->_13) + (m1->_12 * m2->_23) + (m1->_13 * m2->_33) + (m1->_14 * m2->_43);
-    m._14 = (m1->_11 * m2->_14) + (m1->_12 * m2->_24) + (m1->_13 * m2->_34) + (m1->_14 * m2->_44);
+    m._11 = (m1._11 * m2._11) + (m1._12 * m2._21) + (m1._13 * m2._31) + (m1._14 * m2._41);
+    m._12 = (m1._11 * m2._12) + (m1._12 * m2._22) + (m1._13 * m2._32) + (m1._14 * m2._42);
+    m._13 = (m1._11 * m2._13) + (m1._12 * m2._23) + (m1._13 * m2._33) + (m1._14 * m2._43);
+    m._14 = (m1._11 * m2._14) + (m1._12 * m2._24) + (m1._13 * m2._34) + (m1._14 * m2._44);
 
-    m._21 = (m1->_21 * m2->_11) + (m1->_22 * m2->_21) + (m1->_23 * m2->_31) + (m1->_24 * m2->_41);
-    m._22 = (m1->_21 * m2->_12) + (m1->_22 * m2->_22) + (m1->_23 * m2->_32) + (m1->_24 * m2->_42);
-    m._23 = (m1->_21 * m2->_13) + (m1->_22 * m2->_23) + (m1->_23 * m2->_33) + (m1->_24 * m2->_43);
-    m._24 = (m1->_21 * m2->_14) + (m1->_22 * m2->_24) + (m1->_23 * m2->_34) + (m1->_24 * m2->_44);
+    m._21 = (m1._21 * m2._11) + (m1._22 * m2._21) + (m1._23 * m2._31) + (m1._24 * m2._41);
+    m._22 = (m1._21 * m2._12) + (m1._22 * m2._22) + (m1._23 * m2._32) + (m1._24 * m2._42);
+    m._23 = (m1._21 * m2._13) + (m1._22 * m2._23) + (m1._23 * m2._33) + (m1._24 * m2._43);
+    m._24 = (m1._21 * m2._14) + (m1._22 * m2._24) + (m1._23 * m2._34) + (m1._24 * m2._44);
 
-    m._31 = (m1->_31 * m2->_11) + (m1->_32 * m2->_21) + (m1->_33 * m2->_31) + (m1->_34 * m2->_41);
-    m._32 = (m1->_31 * m2->_12) + (m1->_32 * m2->_22) + (m1->_33 * m2->_32) + (m1->_34 * m2->_42);
-    m._33 = (m1->_31 * m2->_13) + (m1->_32 * m2->_23) + (m1->_33 * m2->_33) + (m1->_34 * m2->_43);
-    m._34 = (m1->_31 * m2->_14) + (m1->_32 * m2->_24) + (m1->_33 * m2->_34) + (m1->_34 * m2->_44);
+    m._31 = (m1._31 * m2._11) + (m1._32 * m2._21) + (m1._33 * m2._31) + (m1._34 * m2._41);
+    m._32 = (m1._31 * m2._12) + (m1._32 * m2._22) + (m1._33 * m2._32) + (m1._34 * m2._42);
+    m._33 = (m1._31 * m2._13) + (m1._32 * m2._23) + (m1._33 * m2._33) + (m1._34 * m2._43);
+    m._34 = (m1._31 * m2._14) + (m1._32 * m2._24) + (m1._33 * m2._34) + (m1._34 * m2._44);
 
-    m._41 = (m1->_41 * m2->_11) + (m1->_42 * m2->_21) + (m1->_43 * m2->_31) + (m1->_44 * m2->_41);
-    m._42 = (m1->_41 * m2->_12) + (m1->_42 * m2->_22) + (m1->_43 * m2->_32) + (m1->_44 * m2->_42);
-    m._43 = (m1->_41 * m2->_13) + (m1->_42 * m2->_23) + (m1->_43 * m2->_33) + (m1->_44 * m2->_43);
-    m._44 = (m1->_41 * m2->_14) + (m1->_42 * m2->_24) + (m1->_43 * m2->_34) + (m1->_44 * m2->_44);
+    m._41 = (m1._41 * m2._11) + (m1._42 * m2._21) + (m1._43 * m2._31) + (m1._44 * m2._41);
+    m._42 = (m1._41 * m2._12) + (m1._42 * m2._22) + (m1._43 * m2._32) + (m1._44 * m2._42);
+    m._43 = (m1._41 * m2._13) + (m1._42 * m2._23) + (m1._43 * m2._33) + (m1._44 * m2._43);
+    m._44 = (m1._41 * m2._14) + (m1._42 * m2._24) + (m1._43 * m2._34) + (m1._44 * m2._44);
     return m;
 }
 
-MATRIX *matrixMultiplyIP(MATRIX *m1, const MATRIX *m2) {
-    MATRIX m = matrixMultiply(m1, m2);
-    *m1 = m;
+MATRIX& matrixMultiplyIP(MATRIX& m1, const MATRIX& m2) {
+    m1 = matrixMultiply(m1, m2);
     return m1;
 }
 
@@ -267,12 +273,12 @@ MATRIX matrixMultiply(const MATRIX *ms, const unsigned int count) {
         m = *ms;
         break;
     case 2:
-        m = matrixMultiply(&ms[0], &ms[1]);
+        m = matrixMultiply(ms[0], ms[1]);
         break;
     default: {
         m = *ms;
         for (unsigned int i = 1; i < count; i++)
-            matrixMultiplyIP(&m, &ms[i]);
+            matrixMultiplyIP(m, ms[i]);
     }
     break;
     }
@@ -285,11 +291,11 @@ MATRIX *matrixMultiplyIP(MATRIX *ms, const unsigned int count) {
     case 1:
         break;
     case 2:
-        matrixMultiplyIP(&ms[0], &ms[1]);
+        matrixMultiplyIP(ms[0], ms[1]);
         break;
     default: {
         for (unsigned int i = 1; i < count; i++)
-            matrixMultiplyIP(ms, &ms[i]);
+            matrixMultiplyIP(*ms, ms[i]);
     }
     break;
     }
@@ -306,12 +312,12 @@ MATRIX matrixMultiply(const std::vector<MATRIX>& ms) {
         m = ms[0];
         break;
     case 2:
-        m = matrixMultiply(&ms[0], &ms[1]);
+        m = matrixMultiply(ms[0], ms[1]);
         break;
     default: {
         m = ms[0];
         for (unsigned int i = 1; i < ms.size(); i++)
-            matrixMultiplyIP(&m, &ms[i]);
+            matrixMultiplyIP(m, ms[i]);
     }
     break;
     }

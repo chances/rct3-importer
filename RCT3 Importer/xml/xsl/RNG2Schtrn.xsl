@@ -4,8 +4,12 @@
 	Based on the stylesheet for extracting Schematron information from W3C XML Schema.
 	Created by Eddie Robertsson 2002/06/01
 -->
-<xsl:transform version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
-xmlns:sch="http://purl.oclc.org/dsdl/schematron" xmlns:rng="http://relaxng.org/ns/structure/1.0">
+<xsl:stylesheet version="1.0"
+		xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
+		xmlns:sch="http://purl.oclc.org/dsdl/schematron" 
+		xmlns:rng="http://relaxng.org/ns/structure/1.0"
+		xmlns:srng="http://relaxng.sourceforge.net/ns/shorthand"
+	  exclude-result-prefixes="rng srng">
 	<!-- Set the output to be XML with an XML declaration and use indentation -->
 	<xsl:output method="xml" omit-xml-declaration="no" indent="yes" standalone="yes"/>
 	<!-- -->
@@ -19,6 +23,16 @@ xmlns:sch="http://purl.oclc.org/dsdl/schematron" xmlns:rng="http://relaxng.org/n
 			<!-- ... and any includes in the $include parameter -->
 			<xsl:with-param name="includes" select="document(/rng:grammar/rng:include/@href
 | //rng:externalRef/@href)"/>
+		</xsl:call-template>
+	</xsl:template>
+	<xsl:template match="/srng:grammar | /srng:element">
+		<!-- call the schema definition template ... -->
+		<xsl:call-template name="gatherSchema">
+			<!-- ... with current node as the $schemas parameter ... -->
+			<xsl:with-param name="schemas" select="."/>
+			<!-- ... and any includes in the $include parameter -->
+			<xsl:with-param name="includes" select="document(/srng:grammar/srng:include/@href
+| //srng:externalRef/@href)"/>
 		</xsl:call-template>
 	</xsl:template>
 	<!-- -->
@@ -52,7 +66,7 @@ xmlns:sch="http://purl.oclc.org/dsdl/schematron" xmlns:rng="http://relaxng.org/n
 	<xsl:template name="output">
 		<xsl:param name="schemas"/>
 		<!-- -->
-		<sch:schema>
+		<sch:schema queryBinding="xslt">
 			<!-- get header-type elements - eg title and especially ns -->
 			<!-- title (just one) -->
 			<!-- <xsl:copy-of select="$schemas//sch:title[1]"/> -->
@@ -71,4 +85,4 @@ xmlns:sch="http://purl.oclc.org/dsdl/schematron" xmlns:rng="http://relaxng.org/n
 		</sch:schema>
 	</xsl:template>
 	<!-- -->
-</xsl:transform>
+</xsl:stylesheet>

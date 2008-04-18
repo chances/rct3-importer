@@ -289,6 +289,7 @@ void cRawParser::Load(cXmlNode& root) {
         Parse(root);
 
         if ((!subonly) && (!m_dryrun) && (m_mode != MODE_BAKE)) {
+            wxLogVerbose(wxString::Format(_("Saving OVL '%s'..."), m_output.GetFullPath().c_str()));
             m_ovl.Save();
             wxLogMessage(wxString::Format(_("OVL '%s' written successfully."), m_output.GetFullPath().c_str()));
         }

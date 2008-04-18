@@ -138,6 +138,17 @@ struct Constants {
 
     };
 
+    struct FlexiTexture {
+        struct Recolourable {
+            enum {
+                First =         1,
+                Second =        2,
+                Third =         4
+            };
+        };
+        typedef Recolourable Recolorable;
+    };
+
     struct Mesh {
         struct SupportType {
             enum {
@@ -215,6 +226,27 @@ struct Constants {
                 Inflatable =               0x20,
                 Sit_Stadium =              0x21,
                 Swim =                     0x22
+            };
+        };
+    };
+
+    struct SVD {
+        struct LOD_Type {
+            enum {
+                Static =     0,
+                Animated =   3,
+                Billboard =  4
+            };
+        };
+        struct Flags {
+            enum {
+                Greenery =              0x00000001,
+                Flower =                0x00000002,
+                No_Shadow =             0x00000002,
+                Rotation =              0x00000004,
+                Unknown =               0x00000070,
+                Soaked =                0x01000000,
+                Wild =                  0x02000000
             };
         };
     };

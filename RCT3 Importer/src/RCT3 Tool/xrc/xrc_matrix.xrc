@@ -359,6 +359,7 @@
 												<border>5</border>
 												<object class="wxChoice" name="m_choiceTranslationPoint">
 													<tooltip>Select an available one-vertex mesh for translation</tooltip>
+													<selection>0</selection>
 													<content />
 												</object>
 											</object>
@@ -652,51 +653,80 @@
 											<label>Special</label>
 											<object class="sizeritem">
 												<option>1</option>
-												<flag>wxEXPAND|wxALL</flag>
+												<flag>wxEXPAND</flag>
 												<border>5</border>
-												<object class="wxGridSizer">
-													<rows>2</rows>
-													<cols>2</cols>
-													<vgap>5</vgap>
-													<hgap>5</hgap>
+												<object class="wxGridBagSizer">
+													<vgap>0</vgap>
+													<hgap>0</hgap>
+													<growablecols></growablecols>
+													<growablerows></growablerows>
 													<object class="sizeritem">
-														<option>0</option>
-														<flag>wxEXPAND</flag>
+														<cellpos>0,0</cellpos>
+														<cellspan>1,1</cellspan>
+														<flag>wxALL|wxEXPAND|wxALIGN_CENTER_VERTICAL</flag>
 														<border>5</border>
-														<object class="wxButton" name="m_btUnity">
-															<tooltip>Add the unity (no operation) matrix</tooltip>
-															<label>Separator</label>
+														<object class="wxChoice" name="m_choiceBone">
+															<selection>0</selection>
+															<content />
+														</object>
+													</object>
+													<object class="sizeritem">
+														<cellpos>0,1</cellpos>
+														<cellspan>1,1</cellspan>
+														<flag>wxTOP|wxBOTTOM|wxRIGHT|wxALIGN_CENTER_VERTICAL</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btFull">
+															<label>Full matrix</label>
 															<default>0</default>
 														</object>
 													</object>
 													<object class="sizeritem">
-														<option>0</option>
-														<flag>wxEXPAND</flag>
+														<cellpos>1,0</cellpos>
+														<cellspan>1,1</cellspan>
+														<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxALIGN_CENTER_VERTICAL</flag>
 														<border>5</border>
-														<object class="wxButton" name="m_btDefault">
-															<tooltip>Add the default matrix.</tooltip>
-															<label>Default</label>
+														<object class="wxChoice" name="m_choiceFix">
+															<selection>0</selection>
+															<content />
+														</object>
+													</object>
+													<object class="sizeritem">
+														<cellpos>1,1</cellpos>
+														<cellspan>1,1</cellspan>
+														<flag>wxBOTTOM|wxRIGHT</flag>
+														<border>5</border>
+														<object class="wxButton" name="m_btFix">
+															<label>System Fix</label>
 															<default>0</default>
 														</object>
 													</object>
 													<object class="sizeritem">
-														<option>0</option>
+														<cellpos>2,0</cellpos>
+														<cellspan>1,2</cellspan>
 														<flag>wxEXPAND</flag>
 														<border>5</border>
-														<object class="wxButton" name="m_btFixOrient">
-															<tooltip>Add the classic fix orientation matrix.</tooltip>
-															<label>Fix Orientation</label>
-															<default>0</default>
-														</object>
-													</object>
-													<object class="sizeritem">
-														<option>0</option>
-														<flag>wxEXPAND</flag>
-														<border>5</border>
-														<object class="wxButton" name="m_btLoad">
-															<tooltip>Load a matrix from a SCN file.</tooltip>
-															<label>Load</label>
-															<default>0</default>
+														<object class="wxBoxSizer">
+															<orient>wxVERTICAL</orient>
+															<object class="sizeritem">
+																<option>0</option>
+																<flag>wxEXPAND</flag>
+																<border>5</border>
+																<object class="wxButton" name="m_btDefault">
+																	<tooltip>Add the default matrix.</tooltip>
+																	<label>Default</label>
+																	<default>0</default>
+																</object>
+															</object>
+															<object class="sizeritem">
+																<option>0</option>
+																<flag>wxEXPAND</flag>
+																<border>5</border>
+																<object class="wxButton" name="m_btLoad">
+																	<tooltip>Load a matrix from a SCN file.</tooltip>
+																	<label>Load</label>
+																	<default>0</default>
+																</object>
+															</object>
 														</object>
 													</object>
 												</object>
@@ -952,6 +982,7 @@
 						<border>5</border>
 						<object class="wxChoice" name="m_choiceMatrix">
 							<tooltip>Load the selected stack comlpetely or multiplied as a single matrix.</tooltip>
+							<selection>0</selection>
 							<content>
 								<item>single matrix</item>
 								<item>complete stack</item>

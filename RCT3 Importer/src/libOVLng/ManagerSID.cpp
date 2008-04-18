@@ -35,9 +35,123 @@
 #include "OVLException.h"
 
 using namespace r3;
+using namespace std;
 
 const char* ovlSIDManager::NAME = "SceneryItem";
 const char* ovlSIDManager::TAG = "sid";
+
+void cSidSquareUnknowns::Fill(r3::SceneryItemData* i) {
+    i->flags2 = 0;
+    for (unsigned long x = 0; x<32; ++x) {
+        if (flag[x])
+            i->flags2 += (1 << x);
+    }
+    i->unk2 = unk6;
+    i->unk3 = unk7;
+    if (use_unk8)
+        *(i->unk4) = unk8;
+    else
+        i->unk4 = NULL;
+    i->unk5 = unk9;
+}
+
+void cSidImporterUnknowns::Fill(r3::SceneryItem* i) {
+    i->flags1 = 0;
+    for (unsigned long x = 0; x<32; ++x) {
+        if (flag[x])
+            i->flags1 += (1 << x);
+    }
+    i->unk4 = unk1;
+    i->unk17 = unk2;
+}
+
+void cSidUnknowns::Fill(r3::SceneryItem* i) {
+    unk27 = unk27;
+    unk28 = unk28;
+    unk34 = unk34;
+    unk35 = unk35;
+    unk36 = unk36;
+    unk37 = unk37;
+    unk38 = unk38;
+    unk39 = unk39;
+    unk40 = unk40;
+    unk41 = unk41;
+    unk44 = unk44;
+    unk45 = unk45;
+    unk46 = unk46;
+    unk47 = unk47;
+    unk48 = unk48;
+}
+
+void cSidDefaultColours::Fill(r3::SceneryItem* i) {
+    i->defaultcol1 = defaultcol[0];
+    i->defaultcol2 = defaultcol[1];
+    i->defaultcol3 = defaultcol[2];
+}
+
+void cSidPosition::Fill(r3::SceneryItem* i) {
+    i->positioningtype = positioningtype;
+    i->xsquares = xsquares;
+    i->ysquares = ysquares;
+    i->xpos = xpos;
+    i->ypos = ypos;
+    i->zpos = zpos;
+    i->xsize = xsize;
+    i->ysize = ysize;
+    i->zsize = zsize;
+}
+
+void cSidUI::Fill(r3::SceneryItem* i) {
+    i->type = type;
+    i->cost = cost;
+    i->removal_cost = removal_cost;
+}
+
+void cSidExtra::Fill(r3::SceneryItem* i) {
+    i->extraversion = version;
+}
+void cSidExtra::FillExtra1(r3::SceneryItemExtra1* e) {
+    e->SoundsUnk = SoundsUnk;
+    e->unk2 = unk2;
+    e->AddonPack = AddonPack;
+    e->GenericAddon = GenericAddon;
+}
+void cSidExtra::FillExtra2(r3::SceneryItemExtra2* e) {
+    FillExtra1(reinterpret_cast<r3::SceneryItemExtra1*>(e));
+    e->unkf = unkf;
+    e->billboardaspect = billboardaspect;
+}
+
+void cSid::Fill(r3::SceneryItem* i) {
+    ui.Fill(i);
+    position.Fill(i);
+    colours.Fill(i);
+    importerunknowns.Fill(i);
+    stallunknowns.Fill(i);
+    unknowns.Fill(i);
+    extra.Fill(i);
+
+    for (unsigned long x = 0; x < position.xsquares * position.ysquares; ++x) {
+        if (squareunknowns.size() < position.xsquares * position.ysquares) {
+            if (squareunknowns.size() == 0) {
+                cSidSquareUnknowns uk;
+                uk.Fill(&i->data[x]);
+            } else {
+                squareunknowns[0].Fill(&i->data[x]);
+            }
+        } else {
+            squareunknowns[x].Fill(&i->data[x]);
+        }
+    }
+
+    // Unsupported stuff
+    i->unk13count = 0;
+    i->unk14 = NULL;
+    i->SoundsCount = 0;
+    i->Sounds = NULL;
+    i->carcount = 0;
+    i->cars = NULL;
+}
 
 void ovlSIDManager::AddSID(const cSid& sid) {
     Check("ovlSIDManager::AddSID");
@@ -140,7 +254,7 @@ void ovlSIDManager::Make(cOvlInfo* info) {
         }
 
         // Assign svd pointers
-        c_sid->svd = reinterpret_cast<SceneryItemVisual**>(c_data);
+        c_sid->svd = reinterpret_cast<SceneryItemVisual_V**>(c_data);
         c_data += it->second.svds.size() * 4;
         memset(c_sid->svd, 0, it->second.svds.size() * 4); // Set 0, symbolref targets
         GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->svd));
