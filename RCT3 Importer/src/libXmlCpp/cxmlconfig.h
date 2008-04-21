@@ -26,6 +26,8 @@
 #ifndef CXMLCONFIG_H_INCLUDED
 #define CXMLCONFIG_H_INCLUDED
 
+#include <libxml/xmlversion.h>
+
 /** @file cxmlconfig.h
  *  \brief Configuration file for libxmlcpp
  *  This file allows you to comfigure certain options. Do not touch the ifdef's.
@@ -42,7 +44,9 @@
 // Special functions for wxWidgets support to prevent unwanted overload conversions
 //#define XMLCPP_USE_WXWIDGETS 1
 
+#if LIBXML_VERSION >= 20632
 #define XMLCPP_USE_SCHEMATRON_PATCHED_LIBXML 1
+#endif
 
 #ifdef XMLCPP_USE_XSLT
 // These all depend on libxslt support

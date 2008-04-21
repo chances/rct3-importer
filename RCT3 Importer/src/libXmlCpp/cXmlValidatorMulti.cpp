@@ -101,8 +101,11 @@ bool cXmlValidatorMulti::read(boost::shared_ptr<cXmlValidator>& into, cXmlDoc& s
         }
     } else {
         string rootns = schema.root().ns();
-        if (rootns == NAMESPACE_SCHEMATRON) {
+        if (false) {
+#ifdef XMLCPP_USE_SCHEMATRON_PATCHED_LIBXML
+        } else if (rootns == NAMESPACE_SCHEMATRON) {
             into.reset(new cXmlValidatorSchematron(schema));
+#endif
 #ifdef XMLCPP_USE_RNV_RNG
         } else if (rootns == NAMESPACE_RELAXNG) {
             into.reset(new cXmlValidatorRNVRelaxNG(schema, URL));

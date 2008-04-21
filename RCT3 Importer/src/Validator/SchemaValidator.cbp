@@ -5,36 +5,45 @@
 		<Option title="SchemaValidator" />
 		<Option default_target="Debug Unicode" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="resources\;" />
+		<Option virtualFolders="resources/;" />
 		<Build>
 			<Target title="Release Unicode">
-				<Option output="..\..\bin\validator\Schema Validator.exe" prefix_auto="0" extension_auto="0" />
-				<Option working_dir="..\..\bin\validator" />
-				<Option object_output="..\..\lib\obj\Validator\release" />
-				<Option external_deps="..\..\lib\lib3DHelp.a;..\..\lib\libWXHelp.a;..\..\lib\libASE.a;..\..\lib\libOVLng.a;..\..\lib\libOVLDump.a;..\..\lib\libRawParseu.a;..\..\lib\libXmlCppu.a;" />
+				<Option output="../../bin/validator/Schema Validator" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="../../bin/validator" />
+				<Option object_output="../../lib/obj/Validator/release" />
+				<Option external_deps="../../lib/lib3DHelp.a;../../lib/libWXHelp.a;../../lib/libASE.a;../../lib/libOVLng.a;../../lib/libOVLDump.a;../../lib/libRawParseu.a;../../lib/libXmlCppu.a;" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
 					<Add option="-Os" />
 					<Add option="-O2" />
-					<Add directory="$(#wx3.lib)\wx\include\msw-unicode-release-static-2.9" />
+					<Add directory="$(#wx3.lib)/wx/include/msw-unicode-release-static-2.9" />
+					<Add directory="$(#wx3.lib)/wx/include/gtk2-unicode-release-static-2.9" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
+					<Add option="[[" />
+					<Add option='if ((PLATFORM == PLATFORM_MSW) &amp;&amp; (GetCompilerFactory().GetCompilerVersionString(_T(&quot;gcc&quot;)) &gt;= _T(&quot;4.0.0&quot;))) {' />
+					<Add option='print(_T(&quot;-lshell32 -lole32 -lwsock32 -loleaut32 -luuid -lcomctl32&quot;));' />
+					<Add option='print(_T(&quot; -lwx_mswu-2.9&quot;));' />
+					<Add option="} else {" />
+					<Add option='print(_T(&quot;-lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -ldl -lgthread-2.0 -lrt -lglib-2.0 -lXinerama -lXxf86vm -lSM -lpng -lz -ljpeg -ltiff -lwxregexu-2.9 -lz -ldl -lm &quot;));' />
+					<Add option='print(_T(&quot;-lwx_gtk2u-2.9&quot;));' />
+					<Add option="}" />
+					<Add option="]]" />
 					<Add library="WXHelpu" />
-					<Add library="wx_mswu-2.9" />
 					<Add library="wxscintilla-2.9" />
 					<Add library="XmlCppu" />
 					<Add library="3DHelpu" />
-					<Add directory="..\..\bin" />
+					<Add directory="../../bin" />
 				</Linker>
 			</Target>
 			<Target title="Debug Unicode">
-				<Option output="..\..\bin\validator\Schema Validatord.exe" prefix_auto="0" extension_auto="0" />
-				<Option working_dir="..\..\bin\validator" />
-				<Option object_output="..\..\lib\obj\Validator\debug" />
-				<Option external_deps="..\..\lib\lib3DHelpd.a;..\..\lib\libWXHelpd.a;..\..\lib\libASEd.a;..\..\lib\libOVLngd.a;..\..\lib\libOVLDumpd.a;..\..\lib\libRawParseud.a;..\..\lib\libXmlCppud.a;" />
+				<Option output="../../bin/validator/Schema Validatord" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="../../bin/validator" />
+				<Option object_output="../../lib/obj/Validator/debug" />
+				<Option external_deps="../../lib/lib3DHelpd.a;../../lib/libWXHelpd.a;../../lib/libASEd.a;../../lib/libOVLngd.a;../../lib/libOVLDumpd.a;../../lib/libRawParseud.a;../../lib/libXmlCppud.a;" />
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -44,31 +53,33 @@
 					<Add option="-g" />
 					<Add option="-DDEBUG" />
 					<Add option="-D__WXDEBUG__" />
-					<Add directory="$(#wx3.lib)\wx\include\msw-unicode-debug-static-2.9" />
+					<Add directory="$(#wx3.lib)/wx/include/msw-unicode-debug-static-2.9" />
 				</Compiler>
 				<Linker>
 					<Add library="WXHelpud" />
 					<Add library="wx_mswud-2.9" />
 					<Add library="XmlCppud" />
 					<Add library="3DHelpud" />
-					<Add directory="..\..\bin" />
+					<Add directory="../../bin" />
 				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-mthreads" />
 			<Add option="-pipe" />
 			<Add option="-fmessage-length=0" />
 			<Add option="-fexceptions" />
 			<Add option='-include &quot;wx_pch.h&quot;' />
 			<Add option="-Winvalid-pch" />
 			<Add option="-fno-strict-aliasing" />
+			<Add option="[[" />
+			<Add option='if ((PLATFORM == PLATFORM_MSW) &amp;&amp; (GetCompilerFactory().GetCompilerVersionString(_T(&quot;gcc&quot;)) &gt;= _T(&quot;4.0.0&quot;))) {' />
+			<Add option='print(_T(&quot;-Wno-attributes -mthreads&quot;));' />
+			<Add option="} else {" />
+			<Add option='print(_T(&quot;-pthread -D_FILE_OFFSET_BITS=64 -D_LARGE_FILES -D__WXGTK__&quot;));' />
+			<Add option="}" />
+			<Add option="]]" />
 			<Add option="-DUSE_PCH" />
-			<Add option="-D__GNUWIN32__" />
-			<Add option="-D__WXMSW__" />
-			<Add option="-DHAVE_W32API_H" />
 			<Add option="-DIL_STATIC_LIB" />
-			<Add option="-D_WIN32" />
 			<Add option="-DUSE_SQUISH" />
 			<Add option="-DCACHE_GXIMAGE" />
 			<Add option="-DUNICODE" />
@@ -76,11 +87,11 @@
 			<Add option="-DXMLCPP_USE_XSLT" />
 			<Add option="-DXMLCPP_USE_WXWIDGETS" />
 			<Add directory="$(#wx3.include)" />
-			<Add directory="..\libWXHelp" />
-			<Add directory="..\libXmlCpp" />
-			<Add directory="$(#mingw.include)\libxml2" />
-			<Add directory="..\lib3DHelp" />
-			<Add directory="..\..\include" />
+			<Add directory="../libWXHelp" />
+			<Add directory="../libXmlCpp" />
+			<Add directory="../lib3DHelp" />
+			<Add directory="../../include" />
+			<Add directory="$(#system.include)/libxml2" />
 		</Compiler>
 		<Linker>
 			<Add library="exslt" />
@@ -90,21 +101,16 @@
 			<Add library="tiff" />
 			<Add library="jpeg" />
 			<Add library="z" />
-			<Add library="shell32" />
-			<Add library="ole32" />
-			<Add library="wsock32" />
-			<Add library="oleaut32" />
-			<Add library="uuid" />
-			<Add library="comctl32" />
 			<Add library="expat" />
 			<Add library="bz2" />
-			<Add directory="..\..\lib" />
+			<Add directory="../../lib" />
+			<Add directory="$(#wx3.lib)" />
 		</Linker>
-		<Unit filename="resources\keyframe.fbp">
+		<Unit filename="resources/keyframe.fbp">
 			<Option compile="1" />
 			<Option weight="0" />
 		</Unit>
-		<Unit filename="resources\main.fbp">
+		<Unit filename="resources/main.fbp">
 			<Option compile="1" />
 			<Option weight="0" />
 		</Unit>

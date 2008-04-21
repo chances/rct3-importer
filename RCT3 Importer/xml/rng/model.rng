@@ -123,9 +123,19 @@
 				<element name="animation">
 					<sch:pattern xmlns:sch="http://purl.oclc.org/dsdl/schematron">
 						<sch:title>Check animation</sch:title>
+						<sch:rule context="mod:animation">
+							<sch:let name="trans" value="count(mod:bone/mod:translate[last() and @time='max'])"/>
+							<sch:let name="transall" value="count(mod:bone/mod:translate[last()])"/>
+							<sch:let name="rot" value="count(mod:bone/mod:rotate[last() and @time='max'])"/>
+							<sch:let name="rotall" value="count(mod:bone/mod:rotate[last()])"/>
+							<sch:assert test="($transall &gt; $trans) or ($rotall &gt; $rot)">Animation '<sch:value-of select="@name"/>' must not have all last keyframes set to 'max'.</sch:assert>
+						</sch:rule>
+						<sch:rule context="mod:animation/@inherit">
+							<sch:assert test="/*/mod:animation[@name = current()]">Animation '<sch:value-of select="ancestor::mod:animation/@name"/>' tries to inherit from undefined animation '<sch:value-of select="."/>'.</sch:assert>
+						</sch:rule>
 						<sch:rule context="mod:animation/mod:bone">
 							<sch:assert test="(count(mod:translate) &gt;= 2) or (count(mod:rotate) &gt;= 2)">Bone '<sch:value-of select="./@name"/>' of animation '<sch:value-of select="ancestor::mod:animation/@name"/>' needs at least two keyframes of the same type.</sch:assert>
-							<sch:assert test="not(mod:translate) or not(mod:rotate) or (math:max(mod:translate/@time) = math:max(mod:rotate/@time))" role="warning">The end times of translation and rotation frames in bone '<sch:value-of select="./@name"/>' of animation '<sch:value-of select="ancestor::mod:animation/@name"/>' do not match.</sch:assert>
+							<sch:assert test="not(mod:translate) or not(mod:rotate) or (*[@time = 'max']) or (math:max(mod:translate/@time) = math:max(mod:rotate/@time))" role="warning">The end times of translation and rotation frames in bone '<sch:value-of select="./@name"/>' of animation '<sch:value-of select="ancestor::mod:animation/@name"/>' do not match.</sch:assert>
 						</sch:rule>
 						<sch:rule context="mod:animation/mod:bone/@name">
 							<sch:assert test="/*/mod:bone[@name = current()]" role="warning">Bone '<sch:value-of select="."/>' of animation '<sch:value-of select="ancestor::mod:animation/@name"/>' is undefined.</sch:assert>
@@ -143,8 +153,9 @@
 						</sch:rule>
 						<sch:rule abstract="true" id="txyz.time">
 							<sch:let name="nodename" value="name(ancestor::*[1])"/>
-							<sch:assert test="(count(ancestor::*[1]/preceding-sibling::*[name() = $nodename])=0) or (current() &gt; preceding::*[name() = $nodename]/@time)">Keyframe '<sch:value-of select="$nodename"/>' #<sch:value-of select="count(ancestor::*[1]/preceding-sibling::*[name() = $nodename])+1"/> of bone '<sch:value-of select="ancestor::mod:bone/@name"/>' in animation '<sch:value-of select="ancestor::mod:animation/@name"/>' has out-of-order time.</sch:assert>
+							<sch:assert test="(count(ancestor::*[1]/preceding-sibling::*[name() = $nodename])=0) or (current() = 'max') or (current() &gt; preceding::*[name() = $nodename]/@time)">Keyframe '<sch:value-of select="$nodename"/>' #<sch:value-of select="count(ancestor::*[1]/preceding-sibling::*[name() = $nodename])+1"/> of bone '<sch:value-of select="ancestor::mod:bone/@name"/>' in animation '<sch:value-of select="ancestor::mod:animation/@name"/>' has out-of-order time.</sch:assert>
 							<sch:assert test="(count(ancestor::*[1]/preceding-sibling::*[name() = $nodename]) &gt; 0) or (current() = 0)" role="warning">The first '<sch:value-of select="$nodename"/>' keyframe of bone '<sch:value-of select="ancestor::mod:bone/@name"/>' in animation '<sch:value-of select="ancestor::mod:animation/@name"/>' needs to be at the start (time="0").</sch:assert>
+							<sch:assert test="(count(ancestor::*[1]/following-sibling::*[name() = $nodename])=0) or (current() != 'max')">Only the last '<sch:value-of select="$nodename"/>' keyframe of bone '<sch:value-of select="ancestor::mod:bone/@name"/>' in animation '<sch:value-of select="ancestor::mod:animation/@name"/>' may have time='max'.</sch:assert>
 						</sch:rule>
 						<sch:rule context="mod:animation/mod:bone/mod:rotate/@time">
 							<sch:extends rule="txyz.time"/>
@@ -154,6 +165,7 @@
 						</sch:rule>
 					</sch:pattern>
 					<attribute name="name"><data type="string"/></attribute>
+					<optional><attribute name="inherit"><data type="string"/></attribute></optional>
 					<oneOrMore><element name="bone">
 						<attribute name="name"><data type="string"/></attribute>
 						<zeroOrMore><element name="translate"><ref name="timevector"/></element></zeroOrMore>
@@ -177,12 +189,17 @@
 						</sch:rule>
 					</sch:pattern>
 					<attribute name="name"><data type="string"/></attribute>
-					<optional><element name="rct3">
-						<optional><attribute name="lodDistance">
-							<data type="decimal">
-								<param name="minInclusive">0</param>
-							</data>
-						</attribute></optional>
+					<optional><element name="metadata">
+						<group>
+							<attribute name="role">
+								<value>rct3</value>
+							</attribute>
+							<optional><attribute name="lodDistance">
+								<data type="decimal">
+									<param name="minInclusive">0</param>
+								</data>
+							</attribute></optional>
+						</group>
 					</element></optional>
 					<oneOrMore><choice>
 						<element name="bone"><data type="string"/></element>
@@ -200,7 +217,12 @@
 	</define>
 	<define name="timevector">
 		<ref name="vector"/>
-		<attribute name="time"><data type="decimal"/></attribute>
+		<attribute name="time">
+			<choice>
+				<data type="decimal"/>
+				<value>max</value>
+			</choice>
+		</attribute>
 	</define>
 	<define name="bone">
 		<element name="bone">

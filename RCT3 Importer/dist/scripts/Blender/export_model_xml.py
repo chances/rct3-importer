@@ -35,7 +35,7 @@ Based on goofos ase exporter v0.6.10
 # ***** END GPL LICENCE BLOCK *****
 
 import Blender, time, math, sys as osSys #os
-from Blender import sys, Window, Draw, Scene, Mesh, Material, Texture, Image, Mathutils, Lamp, Curve, Group
+from Blender import sys, Window, Draw, Scene, Mesh, Material, Texture, Image, Mathutils, Lamp, Curve, Group, Armature
 
 # from BezierExport
 def GlobaliseVector(vec, mat): return (Mathutils.Vector(vec) * mat)
@@ -59,7 +59,7 @@ def write(filename):
    matTable = {}
    worldTable = {'ambR': 0.0, 'ambG': 0.0, 'ambB': 0.0, 'horR': 0.0, 'horG': 0.0, 'horB': 0.0} #default
    total = {'Verts': 0, 'Tris': 0, 'Faces': 0}
-   
+
    scn = Blender.Scene.GetCurrent()
 
    file = open(filename, "w")
@@ -85,9 +85,27 @@ def write(filename):
          file.write("%s<rotate time=\"max\" x=\"%.6f\" y=\"%.6f\" z=\"%.6f\"/>\n" % (3*Tab, ra[2][0], ra[2][1], ra[2][2]))
          file.write("%s</bone>\n" % (2*Tab))
       file.write("%s</animation>\n" % (Tab))
+
+   acts = Armature.NLA.GetActions()
+   arms = Armature.Get()
+   for aname in acts.keys():
+      act = acts[aname]
+      aipos = act.getAllChannelIpos()
+      exact = []
+      frames = act.getFrameNumbers()
+      maxframe = frames[len(frames)-1]
+      print "Action %s, max %d" % (aname, maxframe)
+      for arm in arms.values():
+          for bname in arm.bones.keys():
+              bone = arm.bones[bname]
+              if aipos.has_key(bname):
+                  print "Action %s, bone %s" % (aname, bname)
+
+
+
    write_post(file, filename, scn, worldTable)
    file.close()
-   
+
    Blender.Window.DrawProgressBar(0, "")    # clear progressbar
    end = time.clock()
    seconds = " in %.2f %s" % (end-start, "seconds")
@@ -129,21 +147,28 @@ def set_up(scn, exp_list, file, matTable, worldTable):
       return
 
    set_lists(file, exp_list, objects, matTable, worldTable)
-   
+
 def find_boneParent(obj):
    if not obj:
       return None
-      
+
    if obj.parent:
       if obj.parent.getType() == 'Empty':
          return obj.parent
       elif obj.parent.getType() == 'Camera':
          return obj.parent
+      elif obj.parent.getType() == 'Armature':
+         if obj.parentType == Blender.Object.ParentTypes['BONE']:
+            return obj.parentbonename
+         else:
+            return obj.parent
+      elif obj.parent.getType() == 'Bone':
+         return obj.parent
       else:
          return find_boneParent(obj.parent)
    else:
       return None
-   
+
 
 def make_boneName(obj, type = None, name = None):
    n = obj.name
@@ -154,10 +179,13 @@ def make_boneName(obj, type = None, name = None):
       s += " role=\"%s\"" % type
    p = find_boneParent(obj)
    if p:
-      s += " parent=\"%s\"" % p.name
+      if isinstance(p, basestring):
+         s += " parent=\"%s\"" % p
+      else:
+         s += " parent=\"%s\"" % p.name
    s += ">"
    return s
-      
+
 
 
 def make_lampName(lamp, lights):
@@ -178,9 +206,9 @@ def make_lampName(lamp, lights):
       else:
          # bulb
          s = "simplelightstart"
-      
+
    lights += 1
-   
+
    s += "%02d" % lights
 
    if lamp.mode & Lamp.Modes['NoSpecular']:
@@ -195,14 +223,14 @@ def make_lampName(lamp, lights):
       s += "_flexi%d" % e
    else:
       s += "_r%dg%db%d" % (lamp.col[0] *  255, lamp.col[1] * 255, lamp.col[2] * 255)
-      
+
    s += "_radius%d" % lamp.dist
    return s
-   
+
 
 def normalizeRotation(m):
    global guiTable
-   
+
    r = []
    # Deconstruct matrix
    t = -math.atan2(-m[1][2], m[2][2])
@@ -211,7 +239,7 @@ def normalizeRotation(m):
    r.append(t)
    t = -math.atan2(-m[0][1], m[0][0])
    r.append(t)
-   
+
    if guiTable['SIMPROT']:
       r2 = []
       t = -math.atan2(m[1][2], -m[2][2])
@@ -220,10 +248,10 @@ def normalizeRotation(m):
       r2.append(t)
       t = -math.atan2(m[0][1], -m[0][0])
       r2.append(t)
-      
+
       s1 = math.fabs(r[0]) + math.fabs(r[1]) + math.fabs(r[2])
       s2 = math.fabs(r2[0]) + math.fabs(r2[1]) + math.fabs(r2[2])
-      
+
       if s1 > s2:
          return r2
       else:
@@ -245,7 +273,7 @@ def set_lists(file, exp_list, objects, matTable, worldTable):
          #if not mesh.faceUV:
          #   print 'Mesh Object '+obj.name+' not exported. Lacks UV data.'
          #   continue
-            
+
          if len(mesh.verts) == 1:
             v = mesh.verts[0].co * current_obj.matrix
             #file.write("%s<bone name=\"%s\" role=\"vertex\">\n" % (Tab, current_obj.name))
@@ -263,11 +291,11 @@ def set_lists(file, exp_list, objects, matTable, worldTable):
             ra.append([0,0,0])
             restanim.append(ra)
             continue
-            
+
          if len(mesh.faces) == 0:
             print 'Mesh Object '+current_obj.name+' not exported. No faces.'
             continue
-         
+
          container.append(current_obj)
 
          mat_type = 0 #1=Material, 2=UV Images
@@ -298,7 +326,32 @@ def set_lists(file, exp_list, objects, matTable, worldTable):
                mat_index+=1
          container.append(mat_ref)
          exp_list.append(container)
-         
+
+      elif current_obj.getType() == 'Armature':
+         arm_mat= current_obj.matrixWorld
+         arm_data= current_obj.getData()
+
+         bones= arm_data.bones.values()
+         for bone in bones:
+            bone_mat = bone.matrix['ARMATURESPACE']
+            m = bone_mat*arm_mat
+            s = ""
+            if bone.parent:
+                s = " parent=\"%s\"" % bone.parent.name
+            file.write("%s<bone name=\"%s\"%s role=\"bone\">\n" % (Tab, bone.name, s))
+            file.write("%s<matrix>\n" % (Tab*2))
+            file.write("%s<row>%.6f %.6f %.6f 0.000000</row>\n" % ((Tab*3), m[0][0], m[0][1], m[0][2]))
+            file.write("%s<row>%.6f %.6f %.6f 0.000000</row>\n" % ((Tab*3), m[1][0], m[1][1], m[1][2]))
+            file.write("%s<row>%.6f %.6f %.6f 0.000000</row>\n" % ((Tab*3), m[2][0], m[2][1], m[2][2]))
+            file.write("%s<row>%.6f %.6f %.6f 1.000000</row>\n" % ((Tab*3), m[3][0], m[3][1], m[3][2]))
+            file.write("%s</matrix>\n" % (Tab*2))
+            file.write("%s</bone>\n" % (Tab))
+            ra = []
+            ra.append(bone.name)
+            ra.append(m.translationPart())
+            m = m.rotationPart()
+            ra.append(normalizeRotation(m))
+            restanim.append(ra)
       elif current_obj.getType() == 'Empty':
          #print current_obj.name
          v = current_obj.matrix.translationPart()
@@ -338,7 +391,7 @@ def set_lists(file, exp_list, objects, matTable, worldTable):
          #print '   %f %f %f' % (-math.atan2(m[1][2], -m[2][2]), -(math.asin(-m[0][2])+math.pi), -math.atan2(m[0][1], -m[0][0]))
          ra.append(normalizeRotation(m))
          restanim.append(ra)
-         
+
       elif current_obj.getType() == 'Camera':
          #print current_obj.name
          v = current_obj.matrix.translationPart()
@@ -374,7 +427,7 @@ def set_lists(file, exp_list, objects, matTable, worldTable):
          #print '   %f %f %f' % (-math.atan2(m[1][2], -m[2][2]), -(math.asin(-m[0][2])+math.pi), -math.atan2(m[0][1], -m[0][0]))
          ra.append(normalizeRotation(m))
          restanim.append(ra)
-         
+
       elif current_obj.getType() == 'Curve':
          cu = Curve.Get(current_obj.getData(1))
          obMatrix = current_obj.matrixWorld
@@ -391,9 +444,9 @@ def set_lists(file, exp_list, objects, matTable, worldTable):
                   file.write("%s<controlPrev x=\"%f\" y=\"%f\" z=\"%f\"/>\n" % ((Tab*3), handle1[0], handle1[1], handle1[2]))
                   file.write("%s<controlNext x=\"%f\" y=\"%f\" z=\"%f\"/>\n" % ((Tab*3), handle2[0], handle2[1], handle2[2]))
                   file.write("%s</node>\n" % (Tab*2))
-                  
+
                file.write("%s</spline>\n" % (Tab))
-         
+
       elif current_obj.getType() == 'Lamp':
          l = current_obj.getData()
          if l.type != Lamp.Types['Lamp']:
@@ -406,7 +459,7 @@ def set_lists(file, exp_list, objects, matTable, worldTable):
             continue
 
          v = current_obj.matrix.translationPart()
-         
+
          #file.write("%s<bone name=\"%s\" role=\"light\">\n" % (Tab, s))
          file.write("%s%s\n" % (Tab, make_boneName(current_obj, "light", s)))
          file.write("%s<matrix>\n" % (Tab*2))
@@ -421,7 +474,7 @@ def set_lists(file, exp_list, objects, matTable, worldTable):
          ra.append(current_obj.matrixLocal.translationPart())
          ra.append([0,0,0])
          restanim.append(ra)
-         
+
 
    #If there is a world shader get some values
    world = Blender.World.GetCurrent()
@@ -449,13 +502,13 @@ def write_header(file, filename, scn, worldTable):
    file.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
    file.write("<model xmlns=\"http://rct3.sourceforge.net/rct3xml/model\">\n");
    file.write("%s<system handedness=\"right\" up=\"z\"/>\n" % (Tab))
-   
+
 
 def write_post(file, filename, scn, worldTable):
    print "Write Post"
 
    file.write("</model>\n");
-   
+
 
 
 #============================================
@@ -465,7 +518,7 @@ def write_post(file, filename, scn, worldTable):
 def write_materials(file, exp_list, worldTable, matTable):
    print "Write Materials"
 
-   file.write("*MATERIAL_LIST {\n") 
+   file.write("*MATERIAL_LIST {\n")
    file.write("%s*MATERIAL_COUNT %s\n" % (Tab, mat_cnt))
 
    for i,m in matTable.iteritems():
@@ -609,7 +662,7 @@ def map_getTex(MTex, map_subNo, map_amount, texes):
    container.append(map_amount)
    texes[map_subNo].append(container)
 
-         
+
 def map_image(file, idnt, MTexCon, subNo, tex, mapType):
 
    img = tex.getImage()
@@ -752,7 +805,7 @@ def write_mesh(file, scn, exp_list, matTable, total):
 
       if obj.getParent():
          nameMe['parent'] = obj.getParent().name
-      
+
       me = Mesh.New()      # Create a new mesh
 
       if guiTable['MOD']:   # Use modified mesh
@@ -788,15 +841,15 @@ def write_mesh(file, scn, exp_list, matTable, total):
       tempObj.setMatrix(obj.matrix)
       tempObj.link(me)
 
-      if guiTable['VG2SG']:
-         VGNames = data.getVertGroupNames()
-         for vg in VGNames:
-            me.addVertGroup(vg)
-            gverts = data.getVertsFromGroup(vg, 1)
-            gverts_copy = []
-            for gv in gverts:
-               gverts_copy.append(gv[0])
-            me.assignVertsToGroup(vg, gverts_copy, 1, 1)
+#      if guiTable['VG2SG']:
+      VGNames = data.getVertGroupNames()
+      for vg in VGNames:
+         me.addVertGroup(vg)
+         gverts = data.getVertsFromGroup(vg, 1)
+         gverts_copy = []
+         for gv in gverts:
+            gverts_copy.append(gv[0])
+         me.assignVertsToGroup(vg, gverts_copy, 1, 1)
 
       obj = tempObj
       faces = me.faces
@@ -857,7 +910,7 @@ def write_mesh(file, scn, exp_list, matTable, total):
       #mesh_faceList(file, idnt, me, materials, sGroups, faces, matTable, hasTable, count)
 
       file.write("%s</mesh>\n" % (Tab))
-      
+
       #free some memory
       me.materials = [None]
       if me.faces:
@@ -868,11 +921,11 @@ def write_mesh(file, scn, exp_list, matTable, total):
       scn.objects.unlink(obj)
 
 
-      
+
 
 def mesh_writeMeshData(file, idnt, me, obj):
    faces = me.faces
-   
+
    # To export quads it is needed to calculate all face and vertex normals new!
    #vec_null = Blender.Mathutils.Vector(0.0, 0.0, 0.0)
    #v_normals = dict([(v.index, vec_null) for v in me.verts])
@@ -901,7 +954,7 @@ def mesh_writeMeshData(file, idnt, me, obj):
             #~ v_normals[v0_i] = v_normals[v0_i] + f_no0
             #~ v_normals[v1_i] = v_normals[v1_i] + f_no0
             #~ v_normals[v2_i] = v_normals[v2_i] + f_no0
-            
+
             #~ v_normals[v0_i] = v_normals[v2_i] + f_no1
             #~ v_normals[v2_i] = v_normals[v3_i] + f_no1
             #~ v_normals[v3_i] = v_normals[v0_i] + f_no1
@@ -915,36 +968,54 @@ def mesh_writeMeshData(file, idnt, me, obj):
    vertexMap = {}
    indexMap = {}
    p = find_boneParent(obj)
-   
+
    for current_face in faces:
 
       face_verts = current_face.verts
-      
+
       for i in range(0, len(face_verts)):
          #no = v_normals[face_verts[i].index]
          no = face_verts[i].no
+         bmap = [];
+         if p:
+            isarm = False
+            name = ""
+            if not isinstance(p, basestring):
+                if p.getType() == "Armature":
+                    isarm = True
+                else:
+                    name = p.name
+            else:
+                name = p
+            if isarm:
+                bmap = me.getVertexInfluences(face_verts[i].index)
+                #print "Armature parent! %d\n" % len(bmap)
+            else:
+                bmap.append([name, 1.0])
          vert = (face_verts[i].co[0], face_verts[i].co[1], face_verts[i].co[2], no[0], no[1], no[2], current_face.uv[i][0], current_face.uv[i][1])
          if not vertexMap.has_key(vert):
-            vertexMap[vert] = 0
+            vertexMap[vert] = bmap
 
    for index,current_vert in enumerate(vertexMap.iterkeys()):
       indexMap[current_vert] = index
-      
+
       file.write("%s<vertex>\n" % ((Tab*idnt)))
       idnt += 1
 
       file.write("%s<position x=\"%.6f\" y=\"%.6f\" z=\"%.6f\"/>\n" % ((Tab*idnt), current_vert[0], current_vert[1], current_vert[2]))
       file.write("%s<normal x=\"%.6f\" y=\"%.6f\" z=\"%.6f\"/>\n" % ((Tab*idnt), current_vert[3], current_vert[4], current_vert[5]))
       file.write("%s<uv u=\"%.6f\" v=\"%.6f\"/>\n" % ((Tab*idnt), current_vert[6], current_vert[7]))
-      # poor mans bone...
-      if p:
-         file.write("%s<bone name=\"%s\" weight=\"100\"/>\n" % ((Tab*idnt), p.name))
-      
+      # poor man's bone...
+
+      bones = vertexMap[current_vert]
+      for bn in bones:
+         file.write("%s<bone name=\"%s\" weight=\"%f\"/>\n" % ((Tab*idnt), bn[0], bn[1]*100.0/len(bones)))
+
       idnt -= 1
       file.write("%s</vertex>\n" % ((Tab*idnt)))
 
    for current_face in me.faces:
-      
+
       face_verts = current_face.verts
 
       if len(face_verts) is 3:
@@ -986,12 +1057,12 @@ def write_groups(file):
    lights = 0
    for group in Group.Get():
       objects = group.objects
-         
+
       groupobjs = []
       for object in objects:
          if (guiTable['SELO'] == 1) and (not object.isSelected()):
             continue
-         
+
          if object.getType() == 'Mesh':
             groupobjs.append(object)
          elif object.getType() == 'Empty':
@@ -1010,7 +1081,7 @@ def write_groups(file):
             if s == "":
                continue
             groupobjs.append(object)
-            
+
       if groupobjs:
          file.write("%s<group name=\"%s\">\n" % (Tab, group.name))
          for grobj in groupobjs:
@@ -1025,7 +1096,7 @@ def write_groups(file):
             else:
                file.write("%s<bone>%s</bone>\n" % ((Tab*2), grobj.name))
          file.write("%s</group>\n" % (Tab))
-         
+
 
 
 
@@ -1034,8 +1105,8 @@ def write_groups(file):
 
 def write_ui(filename):
 
-   global guiTable, EXPORT_MOD, EXPORT_MTL, EXPORT_UV, EXPORT_VC, EXPORT_SELO, EXPORT_UVI, EXPORT_VG2SG, EXPORT_MESHORI, EXPORT_SIMPROT, EXPORT_MAXTIME
-   guiTable = {'MOD': 1, 'MTL': 1, 'UV': 1, 'VC': 1, 'SELO': 1, 'UVI': 0, 'VG2SG': 0, 'RECENTER':0, 'MESHORI': 0, 'SIMPROT': 1, 'MAXTIME': 1.0}
+   global guiTable, EXPORT_MOD, EXPORT_MTL, EXPORT_UV, EXPORT_VC, EXPORT_SELO, EXPORT_UVI, EXPORT_VG2SG, EXPORT_MESHORI, EXPORT_SIMPROT, EXPORT_MAXTIME, EXPORT_FPS
+   guiTable = {'MOD': 1, 'MTL': 1, 'UV': 1, 'VC': 1, 'SELO': 1, 'UVI': 0, 'VG2SG': 0, 'RECENTER':0, 'MESHORI': 0, 'SIMPROT': 1, 'MAXTIME': 1.0, 'FPS': Scene.GetCurrent().getRenderingContext().fps}
 
    EXPORT_MOD = Draw.Create(guiTable['MOD'])
    EXPORT_MTL = Draw.Create(guiTable['MTL'])
@@ -1047,6 +1118,7 @@ def write_ui(filename):
    EXPORT_MESHORI = Draw.Create(guiTable['MESHORI'])
    EXPORT_SIMPROT = Draw.Create(guiTable['SIMPROT'])
    EXPORT_MAXTIME = Draw.Create(guiTable['MAXTIME'])
+   EXPORT_FPS = Draw.Create(guiTable['FPS'])
 
    # Get USER Options
    pup_block = []
@@ -1056,6 +1128,7 @@ def write_ui(filename):
    pup_block.append(('RCT3 Fixes', EXPORT_VC, 'Export effect points/bones appropriately for RCT3'))
    pup_block.append(('Simplfy Rotations', EXPORT_SIMPROT, 'Simplify rotational keyframes for rest animation'))
    pup_block.append(('Rest animation length', EXPORT_MAXTIME, 0.0, 3600.0, 'Length of resting animation'))
+   pup_block.append(('Animation FPS', EXPORT_FPS, 0.0, 120.0, 'Export animation as frames per second.'))
    pup_block.append(('Context...'))
    pup_block.append(('Mesh Origins', EXPORT_MESHORI, 'Export mesh origins as bones'))
    pup_block.append(('Selection Only', EXPORT_SELO, 'Only export objects in visible selection, else export all mesh object.'))

@@ -516,6 +516,7 @@ bool frmMain::DoValidate() {
   * @todo: document this function
   */
 void frmMain::OnSchematron(wxCommandEvent& event) {
+#ifdef XMLCPP_USE_SCHEMATRON_PATCHED_LIBXML
     string schema(m_stcSchema->GetText().utf8_str());
     m_lbResults->Clear();
     m_lbResults->Append(_("Validating with stock Schematron validator"));
@@ -582,6 +583,9 @@ void frmMain::OnSchematron(wxCommandEvent& event) {
         return;
     }
     m_statusBar->SetStatusText(wxT("OK!"), 0);
+#else
+    ::wxMessageBox(_("Basic schematron validation not available."));
+#endif
 }
 
 /** @brief OnRelaxNG

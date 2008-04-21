@@ -1,8 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 
-<grammar xmlns="http://relaxng.sourceforge.net/ns/shorthand" xmlns:sch="http://purl.oclc.org/dsdl/schematron" ns="http://rct3.sourceforge.net/rct3xml/model" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+<grammar xmlns="http://relaxng.sourceforge.net/ns/shorthand" xmlns:sch="http://purl.oclc.org/dsdl/schematron" ns="http://rct3.sourceforge.net/rct3xml/model" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
 	<sch:ns prefix="mod" uri="http://rct3.sourceforge.net/rct3xml/model"/>
 	<sch:ns prefix="math" uri="http://exslt.org/math"/>
+	<a:documentation>Shorthand RelaxNG + Schematron Schema to describe 3D models</a:documentation>
 	<start>
 		<element name="model">
 			<sch:pattern>
@@ -23,6 +24,7 @@
 					<sch:assert test="count(/*/mod:group[@name = current()]) = 1">The name of groups have to be unique, '<sch:value-of select="."/>' is not.</sch:assert>
 				</sch:rule>
 			</sch:pattern>
+			<a:documentation>The 'system' element describes the coordinate system used for the model</a:documentation>
 			<element name="system" occurs="?">
 				<attribute name="handedness">
 					<choice>
@@ -30,6 +32,7 @@
 						<value>right</value>
 					</choice>
 				</attribute>
+				<a:documentation>The 'up' attribute defines which axis points up in the used coordinate system</a:documentation>
 				<attribute name="up">
 					<choice>
 						<value>x</value>
@@ -65,6 +68,7 @@
 							<attribute name="u" type="decimal"/>
 							<attribute name="v" type="decimal"/>
 						</element>
+						<a:documentation>Up to four bones can infulence a vertex. The weight has to add up to 100 (%)</a:documentation>
 						<ref name="bone" minOccurs="0" maxOccurs="4"/>
 					</element>
 					<element name="triangle" occurs="+">
@@ -92,11 +96,16 @@
 					</sch:pattern>
 					<attribute name="name" type="string"/>
 					<attribute name="parent" type="string" occurs="?"/>
+					<a:documentation>The value of the 'role' attribute is arbitrary. It may describe a (recommended) use for the bone.
+					If this attribute is missing or set to 'bone', it is usually assumed that a real mesh-transforming bone is described (In contrast
+					to e.g. effect points).</a:documentation>
 					<attribute name="role" type="string" occurs="?"/>
 					<element name="matrix">
 						<ref name="matrixrow" minOccurs="4" maxOccurs="4"/>
 					</element>
 				</element>
+				<a:documentation>The 'spline' element describes a Bézier curve or circle. 
+				Control points are defined with absolute coordinates.</a:documentation>
 				<element name="spline">
 					<attribute name="name" type="string"/>
 					<attribute name="cyclic" occurs="?">
@@ -111,6 +120,8 @@
 						<element name="controlNext" ref="vector"/>
 					</element>
 				</element>
+				<a:documentation>The 'texture' element is currently only a simple hint to what texture file should be assigned
+				to a mesh. This may change in the future.</a:documentation>
 				<element name="texture">
 					<sch:pattern>
 						<sch:title>Check texture</sch:title>
@@ -121,6 +132,8 @@
 					<attribute name="name" type="string"/>
 					<attribute name="file" type="string"/>
 				</element>
+				<a:documentation>'animation' elements define simple keyframe based animations. They are relative to a bone's parent. The rotation
+				order is currently not defined, but will in all likelyhood be xyz.</a:documentation>
 				<element name="animation">
 					<sch:pattern>
 						<sch:title>Check animation</sch:title>
@@ -166,6 +179,10 @@
 						</sch:rule>
 					</sch:pattern>
 					<attribute name="name" type="string"/>
+					<a:documentation>The optional 'inherit' attribute allows an animation to copy animated bones from a 'parent' animation.
+					Definitions inside supercede definitions in the parent. Also times set to 'max' are interpreted within the context of
+					this animation (= the maximum time of the defined oanimation is also applied to frames with time='max' inherited form the 
+					parent).</a:documentation>
 					<attribute name="inherit" occurs="?" type="string"/>
 					<element name="bone" occurs="+">
 						<attribute name="name" type="string"/>
@@ -173,6 +190,7 @@
 						<element name="rotate" occurs="*" ref="timevector"/>
 					</element>
 				</element>
+				<a:documentation>The group element groups together meshes, bones and animations for various purposes.</a:documentation>
 				<element name="group">
 					<sch:pattern>
 						<sch:title>Check group</sch:title>
@@ -190,12 +208,19 @@
 						</sch:rule>
 					</sch:pattern>
 					<attribute name="name" type="string"/>
-					<element name="rct3" occurs="?">
-						<attribute name="lodDistance" occurs="?">
-							<data type="decimal">
-								<param name="minInclusive">0</param>
-							</data>
-						</attribute>
+					<a:documentation>'metadata' elements represent information specific for a reading application. As the need arises,
+					'metadata' elments will be added to other elemens beside 'group'.</a:documentation>
+					<element name="metadata" occurs="?">
+						<group>
+							<attribute name="role">
+								<value>rct3</value>
+							</attribute>
+							<element name="lodDistance" occurs="?">
+								<data type="decimal">
+									<param name="minInclusive">0</param>
+								</data>
+							</element>
+						</group>
 					</element>
 					<choice occurs="+">
 						<element name="bone" type="string"/>
@@ -213,6 +238,9 @@
 	</define>
 	<define name="timevector">
 		<ref name="vector"/>
+		<a:documentation>The 'time' attribute can be set to 'max'. This will be replaced by the maximal numeric time within an 
+		'animation' element. Therefore an 'animation' element must at least have one last keyframe with a numeric time value (validated
+		via a Schematron ruleu).</a:documentation>
 		<attribute name="time">
 			<choice>
 				<data type="decimal"/>
