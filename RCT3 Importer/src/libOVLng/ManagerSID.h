@@ -40,22 +40,26 @@
 class cSidSquareUnknowns {
 public:
     bool flag[32];
-    unsigned long unk6; // SIDData unk2
-    unsigned long unk7; // SIDData unk3
-    bool use_unk8;
-    unsigned long unk8; // SIDData unk4
+    unsigned long min_height; // SIDData unk2
+    unsigned long max_height; // SIDData unk3
+    //bool use_unk8;
+    //unsigned long unk8; // SIDData unk4
     unsigned long unk9; // SIDData unk5
 
     cSidSquareUnknowns() {
         for (int i = 0; i < 32; ++i)
             flag[i] = false;
-        unk6 = 0;
-        unk7 = 0;
-        use_unk8 = false;
-        unk8 = 0;
+        min_height = 0;
+        max_height = 0;
+        //use_unk8 = false;
+        //unk8 = 0;
         unk9 = 0;
     }
-    void Fill(r3::SceneryItemData* i);
+    void Fill(r3::SceneryItemData* i) const;
+    int GetHeightSize() const;
+    inline long GetHeight() const {
+        return max_height - min_height;
+    }
 };
 
 class cSidImporterUnknowns {

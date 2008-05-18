@@ -74,13 +74,28 @@
 					<Add directory="$(#wx3.lib)\wx\include\gtk2-unicode-debug-static-2.9" />
 				</Compiler>
 			</Target>
+			<Target title="Debug Base Unicode">
+				<Option output="..\..\lib\lib3DHelpubd" prefix_auto="0" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="..\..\lib\obj\lib3DHelp\debugunibase" />
+				<Option external_deps="..\..\lib\libWXHelpd.a;" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Option createDefFile="1" />
+				<Compiler>
+					<Add option="-Wall" />
+					<Add option="-g" />
+					<Add option="-D__WXDEBUG__" />
+					<Add directory="$(#wx3.include)" />
+					<Add directory="$(#wx3.lib)\wx\include\base-unicode-debug-static-2.9" />
+				</Compiler>
+			</Target>
 		</Build>
 		<VirtualTargets>
 			<Add alias="All" targets="Debug;Release;Release Unicode;Debug Unicode;" />
 			<Add alias="All Ansi" targets="Debug;Release;" />
 			<Add alias="All Unicode" targets="Release Unicode;Debug Unicode;" />
 			<Add alias="Debug Base" targets="Debug;" />
-			<Add alias="Debug Base Unicode" targets="Debug Unicode;" />
 			<Add alias="Release Base" targets="Release;" />
 			<Add alias="Release Base Unicode" targets="Release Unicode;" />
 		</VirtualTargets>
@@ -144,8 +159,18 @@
 		<Unit filename="rct3log.h" />
 		<Unit filename="texcheck.cpp" />
 		<Unit filename="texcheck.h" />
-		<Unit filename="valtexture.cpp" />
-		<Unit filename="valtexture.h" />
+		<Unit filename="valtexture.cpp">
+			<Option target="Debug" />
+			<Option target="Release" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
+		</Unit>
+		<Unit filename="valtexture.h">
+			<Option target="Debug" />
+			<Option target="Release" />
+			<Option target="Release Unicode" />
+			<Option target="Debug Unicode" />
+		</Unit>
 		<Unit filename="wxLocalLog.h" />
 		<Unit filename="wx_pch.h">
 			<Option weight="0" />

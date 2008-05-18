@@ -20,7 +20,7 @@
 //#include <IL/ilu.h>
 
 //extern wxMutex wxILMutex;
-
+class wxSize;
 wxSize getBitmapSize(const char *filename);
 
 //bool getBitmapInfo(const char *filename, ILinfo& info);

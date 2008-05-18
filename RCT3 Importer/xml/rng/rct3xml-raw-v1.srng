@@ -1766,17 +1766,12 @@
 						</attribute>
 					</optional>
 					<optional>
-						<attribute name="u6">
+						<attribute name="minHeight">
 							<data type="unsignedInt"/>
 						</attribute>
 					</optional>
 					<optional>
-						<attribute name="u7">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u8">
+						<attribute name="maxHeight">
 							<data type="unsignedInt"/>
 						</attribute>
 					</optional>

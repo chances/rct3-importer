@@ -30,6 +30,7 @@
 
 #include <map>
 
+#include "gximage.h"
 #include "matrix.h"
 #include "xmldefs.h"
 #include "xmlhelper.h"
@@ -50,8 +51,9 @@ inline void parseVector(V& v, const cXmlNode& n) {
     parseFloatC(n.getPropVal("z"), v.z);
 }
 
-inline bool parseTXYZ(txyz& v, const cXmlNode& n) {
+inline bool parseTXYZ(txyz& v, float& w, const cXmlNode& n) {
     parseVector(v, n);
+    parseFloatC(n.getPropVal("w"), w);
     return parseFloatC(n.getPropVal("time"), v.time);
 }
 
@@ -91,11 +93,21 @@ void cXML3DLoader::parseAnimation(c3DAnimation& a, xmlcpp::cXmlNode n, float _ma
     foreach(const cXmlNode& bonen, n.children()) {
         if (bonen("bone")) {
             c3DAnimBone cbone;
-            cbone.m_name = bonen.getPropVal("name");
+            cbone.m_name = bonen.wxgetPropVal("name");
+            string rottypes = bonen.getPropVal("rotationformat");
+            int rottype = 0;
+            if (rottypes == "axis") {
+                rottype = 1;
+                cbone.m_axis = true;
+            } else if (rottypes == "quaternion") {
+                rottype = 2;
+                cbone.m_axis = true;
+            }
+            float w;
             foreach(const cXmlNode& frame, bonen.children()) {
                 if (frame("translate")) {
                     txyz pt;
-                    if (!parseTXYZ(pt, frame)) {
+                    if (!parseTXYZ(pt, w, frame)) {
                         if (frame.getPropVal("time") == "max") {
                             if (_max > 0.0) {
                                 pt.time = _max;
@@ -111,7 +123,7 @@ void cXML3DLoader::parseAnimation(c3DAnimation& a, xmlcpp::cXmlNode n, float _ma
                     cbone.m_translations.push_back(pt);
                 } else if (frame("rotate")) {
                     txyz pt;
-                    if (!parseTXYZ(pt, frame)) {
+                    if (!parseTXYZ(pt, w, frame)) {
                         if (frame.getPropVal("time") == "max") {
                             if (_max > 0.0) {
                                 pt.time = _max;
@@ -122,6 +134,29 @@ void cXML3DLoader::parseAnimation(c3DAnimation& a, xmlcpp::cXmlNode n, float _ma
                         } else {
                             wxLogWarning(_("Model XML loader: failed to parse keyframe time (skipped)"));
                             continue;
+                        }
+                    }
+                    switch (rottype) {
+                        case 1: {
+                            // Axis angle
+                            pt.x *= w;
+                            pt.y *= w;
+                            pt.z *= w;
+                            break;
+                        }
+                        case 2: {
+                            // Quaternion
+                            if (fabs(w) > 0.99999) {
+                                pt.x = 0;
+                                pt.y = 0;
+                                pt.z = 0;
+                                break;
+                            }
+                            float a = 2*acos(w);
+                            float s = a/sqrt(1-(w*w));
+                            pt.x *= s;
+                            pt.y *= s;
+                            pt.z *= s;
                         }
                     }
                     cbone.m_rotations.push_back(pt);
@@ -210,7 +245,6 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
         m_bones[bone.m_name] = bone;
         m_boneId.push_back(bone.m_name);
     }
-    calculateBonePos1();
 
 
     // Meshes
@@ -219,10 +253,22 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
         cXmlNode xmesh = meshes[m];
         c3DMesh cmesh;
         cmesh.m_name = xmesh.wxgetPropVal("name");
+        cmesh.m_texture = xmesh.wxgetPropVal("texture");
         cmesh.m_flag = C3DMESH_VALID;
         path.setNodeContext(xmesh);
 
         VERTEX2 tv;
+
+        cXmlXPathResult meta = path("mod:metadata[@role='rct3']");
+        if (meta.size()) {
+            foreach(const cXmlNode& n, meta[0].children()) {
+                if (n("doubleSided")) {
+                    cmesh.m_meshOptions += "ds ";
+                } else if (n("textureStyle")) {
+                    cmesh.m_meshOptions += n.wxcontent() + " ";
+                }
+            }
+        }
 
         cXmlXPathResult vertices = path("mod:vertex");
         cXmlXPathResult triangles = path("mod:triangle");
@@ -369,6 +415,37 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
         m_animations[canim.m_name] = canim;
     }
 
+    // Textures
+    cXmlXPathResult textures = path("/*/mod:texture");
+    for (int s = 0; s < textures.size(); ++s) {
+        cXmlNode xtex = textures[s];
+        c3DTexture ctex;
+        ctex.m_name = xtex.wxgetPropVal("name");
+        ctex.m_file = xtex.wxgetPropVal("file");
+        if (ctex.m_file != "") {
+            wxFileName temp(ctex.m_file);
+            temp.MakeAbsolute(wxFileName(filename).GetPathWithSep());
+            ctex.m_file = temp.GetFullPath();
+        }
+
+        ctex.m_alphaType = 0;
+        foreach(const cXmlNode& entries, xtex.children()) {
+            if (entries("metadata")) {
+                if (entries.getPropVal("role") == "rct3") {
+                    foreach(const cXmlNode& met, entries.children()) {
+                        if (met("recol")) {
+                            parseULongC(met.content(), ctex.m_recol);
+                        } else if (met("useAlpha")) {
+                            wxGXImage i(ctex.m_file);
+                            ctex.m_alphaType = i.HasAlpha()?1:0;
+                        }
+                    }
+                }
+            }
+        }
+        m_textures[ctex.m_name] = ctex;
+    }
+
     // Groups
     cXmlXPathResult groups = path("/*/mod:group");
     for (int s = 0; s < groups.size(); ++s) {
@@ -383,8 +460,14 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
                 cgroup.m_bones.insert(entries());
             } else if (entries("animation")) {
                 cgroup.m_animations.insert(entries());
-            } else if (entries("rct3")) {
-                parseFloatC(entries.getPropVal("lodDistance"), cgroup.m_loddistance);
+            } else if (entries("metadata")) {
+                if (entries.getPropVal("role") == "rct3") {
+                    foreach(const cXmlNode& met, entries.children()) {
+                        if (met("lodDistance")) {
+                            parseFloatC(met.content(), cgroup.m_loddistance);
+                        }
+                    }
+                }
             }
         }
 
@@ -394,4 +477,5 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
     if (!m_groups.size())
         makeDefaultGroup(wxFileName(filename).GetName());
 
+    calculateBonePos1();
 }

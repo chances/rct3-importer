@@ -2,6 +2,8 @@
 #ifndef BASICSIZE_H_INCLUDED
 #define BASICSIZE_H_INCLUDED
 
+#if 0
+
 #if !wxUSE_IMAGE
 class wxSize {
 private:
@@ -18,6 +20,8 @@ public:
     int GetWidth() {return w;}
     int GetHeight() {return h;}
 };
+#endif
+
 #endif
 
 #endif

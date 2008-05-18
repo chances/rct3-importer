@@ -214,10 +214,10 @@ txyz& operator= (txyz& t, cTXYZ& v) {
 }
 */
 
-txyz cTXYZ::GetFixed(c3DLoaderOrientation ori, bool rotate) const {
+txyz cTXYZ::GetFixed(c3DLoaderOrientation ori, bool rotate, bool axis) const {
     txyz r = v;
     txyzFixOrientation(r, ori, rotate);
-    return r;
+    return (rotate && (!axis))?txyzEulerToAxis(r):r;
 }
 
 ///////////////////////////////////////////////////////////////
@@ -266,7 +266,7 @@ void cMeshStruct::CopySettingsFrom(const cMeshStruct& from) {
   * @todo: document this function
   */
 void cMeshStruct::autoMeshStyle(const wxString& style) {
-    boost::tokenizer<boost::char_delimiters_separator<char>, wxString::const_iterator, wxString> tok(style);
+    boost::tokenizer<boost::char_separator<char>, wxString::const_iterator, wxString> tok(style, boost::char_separator<char>(" \n\r\t"));
     foreach(const wxString& t, tok) {
         if ((t == "doublesided") || (t == "ds")) {
             unknown = 1;
@@ -295,7 +295,14 @@ void cMeshStruct::autoMeshStyle(const wxString& style) {
         } else {
             if (cTextureStyle::isValid(t))
                 TXS = t;
-            else
+            else if (t.StartsWith(wxT("SIOpaqueChrome"))) {
+                wxString st = t.AfterFirst('_');
+                if (!st.IsEmpty()) {
+                    TXS = "SIOpaqueChrome";
+                    FTX = st;
+                } else
+                    wxLogWarning(_("Unknown mesh option token '%s'"), t.c_str());
+            } else
                 wxLogWarning(_("Unknown mesh option token '%s'"), t.c_str());
         }
     }
@@ -1798,6 +1805,9 @@ void cAnimatedModel::autoBones(const set<wxString>* onlyaddfrom) {
                 if (ms.boneassignment.find(t.name) != ms.boneassignment.end()) {
                     t.meshes.push_back(ms.Name);
                 }
+            } else if (ms.boneassignment.size() > 1) {
+                if (!READ_RCT3_EXPERTMODE())
+                    wxLogWarning(wxString::Format(_("Bone auto-assignment: Mesh '%s' has vertices assigend to more than one bone. This is not supported and the mesh was not assigned to any bone."), ms.Name.c_str()));
             }
         }
         modelbones.push_back(t);
@@ -1849,7 +1859,9 @@ bool cAnimatedModel::Check(cAnimatedModelMap& amodnames) {
             for (cStringIterator i_st = modelbones[i].meshes.begin(); i_st != modelbones[i].meshes.end(); ++i_st) {
                 cMeshStructMap::iterator a_ms = meshmap.find(*i_st);
                 if (a_ms == meshmap.end()) {
-                    throw RCT3Exception(wxString::Format(_("Animated Model '%s': Mesh '%s' was assigned to bone '%s' but is disabled, invalid or not there."), name.c_str(), i_st->c_str(), modelbones[i].name.c_str()));
+                    if (!READ_RCT3_EXPERTMODE())
+                        wxLogMessage(wxString::Format(_("Animated Model '%s': Mesh '%s' was assigned to bone '%s' but is disabled, invalid or not there."), name.c_str(), i_st->c_str(), modelbones[i].name.c_str()));
+                    continue;
                 }
                 if (a_ms->second->bone != 0) {
                     warning = true;
@@ -2105,6 +2117,9 @@ bool cBoneAnimation::FromNode(cXmlNode& node, const wxString& path, unsigned lon
         return false;
 
     name = wxString::FromUTF8(node.getPropVal("name").c_str());
+    unsigned long rot = 0;
+    parseULongC(node.getPropVal("axis"), rot);
+    axis = rot;
 
     cXmlNode child = node.children();
     while(child) {
@@ -2139,6 +2154,8 @@ bool cBoneAnimation::FromNode(cXmlNode& node, const wxString& path, unsigned lon
 cXmlNode cBoneAnimation::GetNode(const wxString& path) {
     cXmlNode node(RCT3XML_CBONEANIMATION);
     node.prop("name", name);
+    if (axis)
+        node.prop("axis", "1");
 
     cXmlNode trans(RCT3XML_CBONEANIMATION_TRANSLATIONS);
     for (cTXYZ::iterator it = translations.begin(); it != translations.end(); it++) {
@@ -2172,7 +2189,7 @@ bool cAnimation::Check(const wxSortedArrayString& presentbones) {
         if (presentbones.Index(boneanimations[i].name) == wxNOT_FOUND) {
             ret = false;
             if (READ_RCT3_EXPERTMODE()) {
-                if (!READ_RCT3_RAWMODE())
+                if (!READ_RCT3_MOREEXPERTMODE())
                     wxLogWarning(_("Animation '%s': Bone '%s' is not present in any animated model."), name.c_str(), boneanimations[i].name.c_str());
             } else {
                 wxLogWarning(_("Animation '%s': Bone '%s' is not present in any animated model and was removed."), name.c_str(), boneanimations[i].name.c_str());

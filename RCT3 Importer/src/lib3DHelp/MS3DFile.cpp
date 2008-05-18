@@ -25,7 +25,8 @@ CMS3DFile::CMS3DFile()
 :	m_fAnimationFPS(24.0f),
 	m_fCurrentTime(0.0f),
 	m_iTotalFrames(0),
-	m_subVersion(0)
+	m_subVersionComments(0),
+	m_subVersionVertexEx(0)
 {
 }
 
@@ -153,8 +154,8 @@ wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile joints %d"), nNumJoints);
 	}
 
 	if (!feof(fp)) {
-	    fread(&m_subVersion, 1, sizeof(m_subVersion), fp);
-	    if (m_subVersion != 1) {
+	    fread(&m_subVersionComments, 1, sizeof(m_subVersionComments), fp);
+	    if (m_subVersionComments != 1) {
             fclose(fp);
             return 2;
 	    }
@@ -220,11 +221,33 @@ wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile model comments %d"), nNumModelCom
             delete[] tmp;
         }
 
-        m_arrVerticesEx.resize(nNumVertices);
-        fread(&m_arrVerticesEx[0], nNumVertices, sizeof(ms3d_vertex_ex_t), fp);
 	} else {
 	    fclose(fp);
 	    return 2;
+	}
+
+	if (!feof(fp)) {
+	    fread(&m_subVersionVertexEx, 1, sizeof(m_subVersionVertexEx), fp);
+        m_arrVerticesEx.resize(nNumVertices);
+		if (m_subVersionVertexEx == 2) {
+			for (int i = 0; i < nNumVertices; i++) {
+				fread(&m_arrVerticesEx[i].boneIds[0], sizeof(char), 3, fp);
+				fread(&m_arrVerticesEx[i].weights[0], sizeof(unsigned char), 3, fp);
+				fread(&m_arrVerticesEx[i].extra, sizeof(unsigned int), 1, fp);
+				for (int c = 0; c < 3; ++c)
+                    m_arrVerticesEx[i].weights[c] = float(m_arrVerticesEx[i].weights[c]) * 255.0 / 100.0;
+			}
+		} else if (m_subVersionVertexEx == 1) {
+			for (int i = 0; i < nNumVertices; i++) {
+				fread(&m_arrVerticesEx[i].boneIds[0], sizeof(char), 3, fp);
+				fread(&m_arrVerticesEx[i].weights[0], sizeof(unsigned char), 3, fp);
+				m_arrVerticesEx[i].extra = 0;
+			}
+		} else {
+            fclose(fp);
+            return 2;
+		}
+        fread(&m_arrVerticesEx[0], nNumVertices, sizeof(ms3d_vertex_ex_t), fp);
 	}
 
 	fclose(fp);

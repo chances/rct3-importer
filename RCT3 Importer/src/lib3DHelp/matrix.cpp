@@ -55,14 +55,39 @@ VECTOR vectorNormalize(const float x, const float y, const float z) {
     return r;
 }
 
-MATRIX matrixGetUnity() {
-    MATRIX m;
+/** @brief txyzEulerToAxis
+  *
+  * @todo: document this function
+  */
+txyz txyzEulerToAxis(const txyz& euler) {
+    float sx = sin(euler.x/2.0);
+    float sy = sin(euler.y/2.0);
+    float sz = sin(euler.z/2.0);
+    float cx = cos(euler.x/2.0);
+    float cy = cos(euler.y/2.0);
+    float cz = cos(euler.z/2.0);
+
+    // Calculate quaternion
+    float qw = cx*cy*cz - sx*sy*sz;
+    if (fabs(qw) > 0.99999)
+        return txyzMake(euler.Time, 0, 0, 0);
+    float qx = sx*cy*cz + cx*sy*sz;
+    float qy = cx*sy*cz - sx*cy*sz;
+    float qz = sx*sy*cz + cx*cy*sz;
+
+    // axis angle
+    float aa = 2* acos(qw);
+
+    return txyzMake(euler.Time, qx*aa/sqrtf(1-qw*qw), qy*aa/sqrtf(1-qw*qw), qz*aa/sqrtf(1-qw*qw));
+}
+
+
+void matrixSetUnity(MATRIX& m) {
     memset(&m, 0, sizeof(m));
     m._11 = 1.0;
     m._22 = 1.0;
     m._33 = 1.0;
     m._44 = 1.0;
-    return m;
 }
 
 MATRIX matrixGetFixOrientation(const c3DLoaderOrientation orient) {
@@ -200,10 +225,6 @@ MATRIX matrixGetRotationZ(const float rad) {
     m._21 = sin(rad);
     m._22 = cos(rad);
     return m;
-}
-
-VECTOR matrixExtractTranslation(const MATRIX& m) {
-    return vectorMake(m._41, m._42, m._43);
 }
 
 

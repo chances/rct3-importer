@@ -121,8 +121,8 @@ struct Ride_S {
 };
 
 struct Ride_Wext {
-    uint32_t            unk16;          ///< Seen 1
-    uint32_t            unk17;          ///< Seen 1
+    uint32_t            unk16;          ///< Seen 0, 1
+    uint32_t            unk17;          ///< Seen 0, 1
 };
 
 /// Secondary structure for rides, Wild Version

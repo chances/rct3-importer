@@ -1165,6 +1165,7 @@ bool cSCNFile::FromModelFile(boost::shared_ptr<c3DLoader>& model) {
         foreach(const c3DAnimBone::pair& anibone, ani.second.m_bones) {
             cBoneAnimation canibone;
             canibone.name = anibone.first;
+            canibone.axis = anibone.second.m_axis;
             canibone.translations.resize(anibone.second.m_translations.size());
             canibone.rotations.resize(anibone.second.m_rotations.size());
             copy(anibone.second.m_translations.begin(), anibone.second.m_translations.end(), canibone.translations.begin());
@@ -1177,11 +1178,13 @@ bool cSCNFile::FromModelFile(boost::shared_ptr<c3DLoader>& model) {
     // Groups
     foreach(const c3DGroup::pair& gr, model->GetGroups()) {
         // Find out wheter it is animated or not
-        bool animated = false;
-        foreach(const wxString& bn, gr.second.m_bones) {
-            if ((model->GetBone(bn).m_type == "Bone") || (!model->GetBone(bn).m_parent.IsEmpty())) {
-                animated = true;
-                break;
+        bool animated = gr.second.m_forceanim;
+        if (!animated) {
+            foreach(const wxString& bn, gr.second.m_bones) {
+                if ((model->GetBone(bn).m_type == "Bone") || (!model->GetBone(bn).m_parent.IsEmpty())) {
+                    animated = true;
+                    break;
+                }
             }
         }
 
@@ -1395,7 +1398,7 @@ bool cSCNFile::Check() {
             // Check for LODs
             if (!m_work->lods.size()) {
                 if (READ_RCT3_EXPERTMODE()) {
-                    if (!READ_RCT3_RAWMODE()) {
+                    if (!READ_RCT3_MOREEXPERTMODE()) {
                         wxLogWarning(_("You didn't set any levels of detail."));
                         warning = true;
                     }
@@ -1407,7 +1410,7 @@ bool cSCNFile::Check() {
             // Check the models
             if ((!m_work->models.size()) && (!m_work->animatedmodels.size())) {
                 if (READ_RCT3_EXPERTMODE()) {
-                    if (!READ_RCT3_RAWMODE()) {
+                    if (!READ_RCT3_MOREEXPERTMODE()) {
                         wxLogWarning(_("You didn't add any models."));
                         warning = true;
                     }
@@ -1481,10 +1484,10 @@ bool cSCNFile::Check() {
                         if (!a_found) {
                             warning = true;
                             if (READ_RCT3_EXPERTMODE()) {
-                                if (!READ_RCT3_RAWMODE())
-                                    wxLogWarning(_("Level of Detail '%s' (%.1f): Assigned animation '%s'missing."), i_lod->modelname.c_str(), i_lod->distance, i_lod->animations[s].c_str());
+                                if (!READ_RCT3_MOREEXPERTMODE())
+                                    wxLogWarning(_("Level of Detail '%s' (%.1f): Assigned animation '%s' missing."), i_lod->modelname.c_str(), i_lod->distance, i_lod->animations[s].c_str());
                             } else {
-                                wxLogWarning(_("Level of Detail '%s' (%.1f): Assigned animation '%s'missing. Removed."), i_lod->modelname.c_str(), i_lod->distance, i_lod->animations[s].c_str());
+                                wxLogWarning(_("Level of Detail '%s' (%.1f): Assigned animation '%s' missing. Removed."), i_lod->modelname.c_str(), i_lod->distance, i_lod->animations[s].c_str());
                                 i_lod->animations.erase(i_lod->animations.begin()+s);
                             }
                         }
@@ -2120,7 +2123,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                         c_bone.translations.insert(i_txyz->GetFixed(i_anim->usedorientation, false));
                     }
                     for (cTXYZ::iterator i_txyz = i_bone->rotations.begin(); i_txyz != i_bone->rotations.end(); ++i_txyz) {
-                        c_bone.rotations.insert(i_txyz->GetFixed(i_anim->usedorientation, true));
+                        c_bone.rotations.insert(i_txyz->GetFixed(i_anim->usedorientation, true, i_bone->axis));
                     }
                     c_item.bones.push_back(c_bone);
                 }

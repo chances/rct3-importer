@@ -68,8 +68,7 @@
 					<Add option="-g" />
 					<Add option="-D__WXDEBUG__" />
 					<Add directory="$(#wx3.include)" />
-					<Add directory="$(#wx3.lib)\wx\include\msw-unicode-debug-static-2.9" />
-					<Add directory="$(#wx3.lib)\wx\include\gtk2-unicode-debug-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\base-unicode-debug-static-2.9" />
 				</Compiler>
 			</Target>
 		</Build>

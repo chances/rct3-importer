@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <grammar xmlns="http://relaxng.sourceforge.net/ns/shorthand" xmlns:sch="http://purl.oclc.org/dsdl/schematron" ns="http://rct3.sourceforge.net/rct3xml/model" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
 	<sch:ns prefix="mod" uri="http://rct3.sourceforge.net/rct3xml/model"/>
@@ -51,6 +51,17 @@
 					</sch:pattern>
 					<attribute name="name" type="string"/>
 					<attribute name="texture" type="string" occurs="?"/>
+					<element name="metadata" occurs="?">
+						<group>
+							<attribute name="role">
+								<value>rct3</value>
+							</attribute>
+							<element name="doubleSided" occurs="?">
+								<empty/>
+							</element>
+							<element name="textureStyle" type="string" occurs="?"/>
+						</group>
+					</element>
 					<element name="vertex" occurs="+">
 						<sch:pattern>
 							<sch:title>Check Bones</sch:title>
@@ -104,7 +115,7 @@
 						<ref name="matrixrow" minOccurs="4" maxOccurs="4"/>
 					</element>
 				</element>
-				<a:documentation>The 'spline' element describes a Bézier curve or circle. 
+				<a:documentation>The 'spline' element describes a Bézier curve or circle.
 				Control points are defined with absolute coordinates.</a:documentation>
 				<element name="spline">
 					<attribute name="name" type="string"/>
@@ -131,6 +142,17 @@
 					</sch:pattern>
 					<attribute name="name" type="string"/>
 					<attribute name="file" type="string"/>
+					<element name="metadata" occurs="?">
+						<group>
+							<attribute name="role">
+								<value>rct3</value>
+							</attribute>
+							<element name="useAlpha" occurs="?">
+								<empty/>
+							</element>
+							<element name="recol" type="int" occurs="?"/>
+						</group>
+					</element>
 				</element>
 				<a:documentation>'animation' elements define simple keyframe based animations. They are relative to a bone's parent. The rotation
 				order is currently not defined, but will in all likelyhood be xyz.</a:documentation>
@@ -148,13 +170,16 @@
 							<sch:assert test="/*/mod:animation[@name = current()]">Animation '<sch:value-of select="ancestor::mod:animation/@name"/>' tries to inherit from undefined animation '<sch:value-of select="."/>'.</sch:assert>
 						</sch:rule>
 						<sch:rule context="mod:animation/mod:bone">
+							<!--
 							<sch:assert test="(count(mod:translate) &gt;= 2) or (count(mod:rotate) &gt;= 2)">Bone '<sch:value-of select="./@name"/>' of animation '<sch:value-of select="ancestor::mod:animation/@name"/>' needs at least two keyframes of the same type.</sch:assert>
+							-->
 							<sch:assert test="not(mod:translate) or not(mod:rotate) or (*[@time = 'max']) or (math:max(mod:translate/@time) = math:max(mod:rotate/@time))" role="warning">The end times of translation and rotation frames in bone '<sch:value-of select="./@name"/>' of animation '<sch:value-of select="ancestor::mod:animation/@name"/>' do not match.</sch:assert>
 						</sch:rule>
 						<sch:rule context="mod:animation/mod:bone/@name">
 							<sch:assert test="/*/mod:bone[@name = current()]" role="warning">Bone '<sch:value-of select="."/>' of animation '<sch:value-of select="ancestor::mod:animation/@name"/>' is undefined.</sch:assert>
 							<sch:assert test="count(ancestor::mod:animation/mod:bone[@name = current()]) = 1">Bones may only be animated once within the same animation. Bone '<sch:value-of select="."/>' is animated multiple times in animation '<sch:value-of select="ancestor::mod:animation/@name"/>'.</sch:assert>
 						</sch:rule>
+						<!--
 						<sch:rule abstract="true" id="txyz.element">
 							<sch:let name="nodename" value="name()" />
 							<sch:assert test="count(ancestor::mod:bone/*[name() = $nodename]) != 1">Bone '<sch:value-of select="ancestor::mod:bone/@name"/>' of animation '<sch:value-of select="ancestor::mod:animation/@name"/>' has only one keyframe of a type '<sch:value-of select="$nodename"/>'.</sch:assert>
@@ -165,6 +190,7 @@
 						<sch:rule context="mod:animation/mod:bone/mod:translate">
 							<sch:extends rule="txyz.element"/>
 						</sch:rule>
+						-->
 						<sch:rule abstract="true" id="txyz.time">
 							<sch:let name="nodename" value="name(ancestor::*[1])" />
 							<sch:assert test="(count(ancestor::*[1]/preceding-sibling::*[name() = $nodename])=0) or (current() = 'max') or (current() &gt; preceding::*[name() = $nodename]/@time)">Keyframe '<sch:value-of select="$nodename"/>' #<sch:value-of select="count(ancestor::*[1]/preceding-sibling::*[name() = $nodename])+1"/> of bone '<sch:value-of select="ancestor::mod:bone/@name"/>' in animation '<sch:value-of select="ancestor::mod:animation/@name"/>' has out-of-order time.</sch:assert>
@@ -181,13 +207,32 @@
 					<attribute name="name" type="string"/>
 					<a:documentation>The optional 'inherit' attribute allows an animation to copy animated bones from a 'parent' animation.
 					Definitions inside supercede definitions in the parent. Also times set to 'max' are interpreted within the context of
-					this animation (= the maximum time of the defined oanimation is also applied to frames with time='max' inherited form the 
+					this animation (= the maximum time of the defined oanimation is also applied to frames with time='max' inherited form the
 					parent).</a:documentation>
 					<attribute name="inherit" occurs="?" type="string"/>
 					<element name="bone" occurs="+">
 						<attribute name="name" type="string"/>
 						<element name="translate" occurs="*" ref="timevector"/>
-						<element name="rotate" occurs="*" ref="timevector"/>
+						<choice>
+                            <group>
+                                <attribute name="rotationformat" occurs="?">
+                                    <value>euler</value>
+                                </attribute>
+                                <element name="rotate" occurs="*" ref="timevector"/>
+                            </group>
+                            <group>
+                                <attribute name="rotationformat">
+                                    <choice>
+                                        <value>axis</value>
+                                        <value>quaternion</value>
+                                    </choice>
+                                </attribute>
+                                <element name="rotate" occurs="*">
+                                    <ref name="timevector"/>
+                                    <attribute name="w" type="decimal"/>
+                                </element>
+                            </group>
+                        </choice>
 					</element>
 				</element>
 				<a:documentation>The group element groups together meshes, bones and animations for various purposes.</a:documentation>
@@ -238,7 +283,7 @@
 	</define>
 	<define name="timevector">
 		<ref name="vector"/>
-		<a:documentation>The 'time' attribute can be set to 'max'. This will be replaced by the maximal numeric time within an 
+		<a:documentation>The 'time' attribute can be set to 'max'. This will be replaced by the maximal numeric time within an
 		'animation' element. Therefore an 'animation' element must at least have one last keyframe with a numeric time value (validated
 		via a Schematron ruleu).</a:documentation>
 		<attribute name="time">

@@ -2,6 +2,7 @@
 <grammar xmlns="http://relaxng.org/ns/structure/1.0" ns="http://rct3.sourceforge.net/rct3xml/model" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
 	<sch:ns xmlns:sch="http://purl.oclc.org/dsdl/schematron" prefix="mod" uri="http://rct3.sourceforge.net/rct3xml/model"/>
 	<sch:ns xmlns:sch="http://purl.oclc.org/dsdl/schematron" prefix="math" uri="http://exslt.org/math"/>
+	<a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Shorthand RelaxNG + Schematron Schema to describe 3D models</a:documentation>
 	<start>
 		<element name="model">
 			<sch:pattern xmlns:sch="http://purl.oclc.org/dsdl/schematron">
@@ -22,6 +23,7 @@
 					<sch:assert test="count(/*/mod:group[@name = current()]) = 1">The name of groups have to be unique, '<sch:value-of select="."/>' is not.</sch:assert>
 				</sch:rule>
 			</sch:pattern>
+			<a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">The 'system' element describes the coordinate system used for the model</a:documentation>
 			<optional><element name="system">
 				<attribute name="handedness">
 					<choice>
@@ -29,6 +31,7 @@
 						<value>right</value>
 					</choice>
 				</attribute>
+				<a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">The 'up' attribute defines which axis points up in the used coordinate system</a:documentation>
 				<attribute name="up">
 					<choice>
 						<value>x</value>
@@ -47,6 +50,17 @@
 					</sch:pattern>
 					<attribute name="name"><data type="string"/></attribute>
 					<optional><attribute name="texture"><data type="string"/></attribute></optional>
+					<optional><element name="metadata">
+						<group>
+							<attribute name="role">
+								<value>rct3</value>
+							</attribute>
+							<optional><element name="doubleSided">
+								<empty/>
+							</element></optional>
+							<optional><element name="textureStyle"><data type="string"/></element></optional>
+						</group>
+					</element></optional>
 					<oneOrMore><element name="vertex">
 						<sch:pattern xmlns:sch="http://purl.oclc.org/dsdl/schematron">
 							<sch:title>Check Bones</sch:title>
@@ -64,6 +78,7 @@
 							<attribute name="u"><data type="decimal"/></attribute>
 							<attribute name="v"><data type="decimal"/></attribute>
 						</element>
+						<a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">Up to four bones can infulence a vertex. The weight has to add up to 100 (%)</a:documentation>
 						<optional><ref name="bone"/><optional><ref name="bone"/><optional><ref name="bone"/><optional><ref name="bone"/></optional></optional></optional></optional>
 					</element></oneOrMore>
 					<oneOrMore><element name="triangle">
@@ -91,11 +106,16 @@
 					</sch:pattern>
 					<attribute name="name"><data type="string"/></attribute>
 					<optional><attribute name="parent"><data type="string"/></attribute></optional>
+					<a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">The value of the 'role' attribute is arbitrary. It may describe a (recommended) use for the bone.
+					If this attribute is missing or set to 'bone', it is usually assumed that a real mesh-transforming bone is described (In contrast
+					to e.g. effect points).</a:documentation>
 					<optional><attribute name="role"><data type="string"/></attribute></optional>
 					<element name="matrix">
 						<ref name="matrixrow"/><ref name="matrixrow"/><ref name="matrixrow"/><ref name="matrixrow"/>
 					</element>
 				</element>
+				<a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">The 'spline' element describes a Bézier curve or circle.
+				Control points are defined with absolute coordinates.</a:documentation>
 				<element name="spline">
 					<attribute name="name"><data type="string"/></attribute>
 					<optional><attribute name="cyclic">
@@ -110,6 +130,8 @@
 						<element name="controlNext"><ref name="vector"/></element>
 					</element></oneOrMore>
 				</element>
+				<a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">The 'texture' element is currently only a simple hint to what texture file should be assigned
+				to a mesh. This may change in the future.</a:documentation>
 				<element name="texture">
 					<sch:pattern xmlns:sch="http://purl.oclc.org/dsdl/schematron">
 						<sch:title>Check texture</sch:title>
@@ -119,7 +141,20 @@
 					</sch:pattern>
 					<attribute name="name"><data type="string"/></attribute>
 					<attribute name="file"><data type="string"/></attribute>
+					<optional><element name="metadata">
+						<group>
+							<attribute name="role">
+								<value>rct3</value>
+							</attribute>
+							<optional><element name="useAlpha">
+								<empty/>
+							</element></optional>
+							<optional><element name="recol"><data type="int"/></element></optional>
+						</group>
+					</element></optional>
 				</element>
+				<a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">'animation' elements define simple keyframe based animations. They are relative to a bone's parent. The rotation
+				order is currently not defined, but will in all likelyhood be xyz.</a:documentation>
 				<element name="animation">
 					<sch:pattern xmlns:sch="http://purl.oclc.org/dsdl/schematron">
 						<sch:title>Check animation</sch:title>
@@ -134,15 +169,18 @@
 							<sch:assert test="/*/mod:animation[@name = current()]">Animation '<sch:value-of select="ancestor::mod:animation/@name"/>' tries to inherit from undefined animation '<sch:value-of select="."/>'.</sch:assert>
 						</sch:rule>
 						<sch:rule context="mod:animation/mod:bone">
+							<!--
 							<sch:assert test="(count(mod:translate) &gt;= 2) or (count(mod:rotate) &gt;= 2)">Bone '<sch:value-of select="./@name"/>' of animation '<sch:value-of select="ancestor::mod:animation/@name"/>' needs at least two keyframes of the same type.</sch:assert>
+							-->
 							<sch:assert test="not(mod:translate) or not(mod:rotate) or (*[@time = 'max']) or (math:max(mod:translate/@time) = math:max(mod:rotate/@time))" role="warning">The end times of translation and rotation frames in bone '<sch:value-of select="./@name"/>' of animation '<sch:value-of select="ancestor::mod:animation/@name"/>' do not match.</sch:assert>
 						</sch:rule>
 						<sch:rule context="mod:animation/mod:bone/@name">
 							<sch:assert test="/*/mod:bone[@name = current()]" role="warning">Bone '<sch:value-of select="."/>' of animation '<sch:value-of select="ancestor::mod:animation/@name"/>' is undefined.</sch:assert>
 							<sch:assert test="count(ancestor::mod:animation/mod:bone[@name = current()]) = 1">Bones may only be animated once within the same animation. Bone '<sch:value-of select="."/>' is animated multiple times in animation '<sch:value-of select="ancestor::mod:animation/@name"/>'.</sch:assert>
 						</sch:rule>
+						<!--
 						<sch:rule abstract="true" id="txyz.element">
-							<sch:let name="nodename" value="name()"/>
+							<sch:let name="nodename" value="name()" />
 							<sch:assert test="count(ancestor::mod:bone/*[name() = $nodename]) != 1">Bone '<sch:value-of select="ancestor::mod:bone/@name"/>' of animation '<sch:value-of select="ancestor::mod:animation/@name"/>' has only one keyframe of a type '<sch:value-of select="$nodename"/>'.</sch:assert>
 						</sch:rule>
 						<sch:rule context="mod:animation/mod:bone/mod:rotate">
@@ -151,6 +189,7 @@
 						<sch:rule context="mod:animation/mod:bone/mod:translate">
 							<sch:extends rule="txyz.element"/>
 						</sch:rule>
+						-->
 						<sch:rule abstract="true" id="txyz.time">
 							<sch:let name="nodename" value="name(ancestor::*[1])"/>
 							<sch:assert test="(count(ancestor::*[1]/preceding-sibling::*[name() = $nodename])=0) or (current() = 'max') or (current() &gt; preceding::*[name() = $nodename]/@time)">Keyframe '<sch:value-of select="$nodename"/>' #<sch:value-of select="count(ancestor::*[1]/preceding-sibling::*[name() = $nodename])+1"/> of bone '<sch:value-of select="ancestor::mod:bone/@name"/>' in animation '<sch:value-of select="ancestor::mod:animation/@name"/>' has out-of-order time.</sch:assert>
@@ -165,13 +204,37 @@
 						</sch:rule>
 					</sch:pattern>
 					<attribute name="name"><data type="string"/></attribute>
+					<a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">The optional 'inherit' attribute allows an animation to copy animated bones from a 'parent' animation.
+					Definitions inside supercede definitions in the parent. Also times set to 'max' are interpreted within the context of
+					this animation (= the maximum time of the defined oanimation is also applied to frames with time='max' inherited form the
+					parent).</a:documentation>
 					<optional><attribute name="inherit"><data type="string"/></attribute></optional>
 					<oneOrMore><element name="bone">
 						<attribute name="name"><data type="string"/></attribute>
 						<zeroOrMore><element name="translate"><ref name="timevector"/></element></zeroOrMore>
-						<zeroOrMore><element name="rotate"><ref name="timevector"/></element></zeroOrMore>
+						<choice>
+                            <group>
+                                <optional><attribute name="rotationformat">
+                                    <value>euler</value>
+                                </attribute></optional>
+                                <zeroOrMore><element name="rotate"><ref name="timevector"/></element></zeroOrMore>
+                            </group>
+                            <group>
+                                <attribute name="rotationformat">
+                                    <choice>
+                                        <value>axis</value>
+                                        <value>quaternion</value>
+                                    </choice>
+                                </attribute>
+                                <zeroOrMore><element name="rotate">
+                                    <ref name="timevector"/>
+                                    <attribute name="w"><data type="decimal"/></attribute>
+                                </element></zeroOrMore>
+                            </group>
+                        </choice>
 					</element></oneOrMore>
 				</element>
+				<a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">The group element groups together meshes, bones and animations for various purposes.</a:documentation>
 				<element name="group">
 					<sch:pattern xmlns:sch="http://purl.oclc.org/dsdl/schematron">
 						<sch:title>Check group</sch:title>
@@ -189,16 +252,18 @@
 						</sch:rule>
 					</sch:pattern>
 					<attribute name="name"><data type="string"/></attribute>
+					<a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">'metadata' elements represent information specific for a reading application. As the need arises,
+					'metadata' elments will be added to other elemens beside 'group'.</a:documentation>
 					<optional><element name="metadata">
 						<group>
 							<attribute name="role">
 								<value>rct3</value>
 							</attribute>
-							<optional><attribute name="lodDistance">
+							<optional><element name="lodDistance">
 								<data type="decimal">
 									<param name="minInclusive">0</param>
 								</data>
-							</attribute></optional>
+							</element></optional>
 						</group>
 					</element></optional>
 					<oneOrMore><choice>
@@ -217,6 +282,9 @@
 	</define>
 	<define name="timevector">
 		<ref name="vector"/>
+		<a:documentation xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0">The 'time' attribute can be set to 'max'. This will be replaced by the maximal numeric time within an
+		'animation' element. Therefore an 'animation' element must at least have one last keyframe with a numeric time value (validated
+		via a Schematron ruleu).</a:documentation>
 		<attribute name="time">
 			<choice>
 				<data type="decimal"/>

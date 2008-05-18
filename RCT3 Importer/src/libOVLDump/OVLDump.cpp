@@ -725,7 +725,7 @@ void cOVLDump::MakeFlics(cOvlType type) {
                     TextureStruct* ts = reinterpret_cast<TextureStruct*>(i_tex->second->target);
                     if (ts->unk9) {
                         TextureStruct2* ts2 = reinterpret_cast<TextureStruct2*>(m_targets[reinterpret_cast<unsigned long>(ts->ts2)]);
-                        if (it->data->targetrelocation == reinterpret_cast<unsigned long>(ts2->Flic)) {
+                        if (ts2 && (it->data->targetrelocation == reinterpret_cast<unsigned long>(ts2->Flic))) {
                             fd.texture = i_tex->first;
                         }
                     }
@@ -736,7 +736,7 @@ void cOVLDump::MakeFlics(cOvlType type) {
                     TextureStruct* ts = reinterpret_cast<TextureStruct*>(i_tex->second->target);
                     if (ts->unk9) {
                         TextureStruct2* ts2 = reinterpret_cast<TextureStruct2*>(m_targets[reinterpret_cast<unsigned long>(ts->ts2)]);
-                        if (it->data->targetrelocation == reinterpret_cast<unsigned long>(ts2->Flic)) {
+                        if (ts2 && (it->data->targetrelocation == reinterpret_cast<unsigned long>(ts2->Flic))) {
                             fd.texture = i_tex->first;
                         }
                     }

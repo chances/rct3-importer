@@ -34,7 +34,7 @@ Based on goofos ase exporter v0.6.10
 #
 # ***** END GPL LICENCE BLOCK *****
 
-import Blender, time, math, sys as osSys #os
+import Blender, time, math, sets, sys as osSys #os
 from Blender import sys, Window, Draw, Scene, Mesh, Material, Texture, Image, Mathutils, Lamp, Curve, Group, Armature, Ipo
 
 # from BezierExport
@@ -44,14 +44,64 @@ def GlobaliseVector(vec, mat): return (Mathutils.Vector(vec) * mat)
 #           Write!
 #============================================
 
+def get_Name(ob):
+    try:
+        return ob.properties['modxml']['general']['name']
+    except:
+        return ob.name
+
+def getMatrix_Empty(obj):
+    m = obj.matrix.copy()
+    if obj.drawSize <= 0.6:
+        m = Mathutils.RotationMatrix(180, 4, "z") * m
+    return m
+
+def getMatrix_Camera(obj):
+    m = obj.matrix.copy()
+    m = Mathutils.RotationMatrix(-90, 4, "x") * m
+    m = Mathutils.RotationMatrix(-90, 4, "z") * m
+    return m
+
+def get_rotFrame(bone_mat):
+    global guiTable
+    rf = None
+    if guiTable['ROTFORM'] == 'A':
+        q = bone_mat.rotationPart().toQuat()
+        if math.fabs(q.w) > 0.99999:
+            rf = Mathutils.Vector(0, 1, 0, 0)
+        else:
+            rf = Mathutils.Vector(2*math.acos(q.w), q.x/math.sqrt(1.0-(q.w*q.w)), q.y/math.sqrt(1.0-(q.w*q.w)), q.z/math.sqrt(1.0-(q.w*q.w)))
+    elif guiTable['ROTFORM'] == 'Q':
+        q = bone_mat.rotationPart().toQuat()
+        rf = Mathutils.Vector(q.w, q.x, q.y, q.z)
+    else:
+        rf = bone_mat.rotationPart().toEuler()
+        rf = Mathutils.Vector(rf[0]*math.pi/180.0, rf[1]*math.pi/180.0, rf[2]*math.pi/180.0)
+
+    return rf
+
+def is_frameSame(fra, frb):
+    if (not fra) and (not frb):
+        return True
+    if (not fra) or (not frb):
+        return False
+
+    ret = True
+    for i in range(len(fra)):
+        if math.fabs(math.fabs(fra[i]) - math.fabs(frb[i])) > 0.000001:
+            ret = False
+            break
+    return ret
+
 def write(filename):
    start = time.clock()
    print_boxed('---------Start of Export------------')
    print 'Export Path: ' + filename
 
    global exp_list, Tab, idnt, imgTable, worldTable, guiTable
-   global restanim
+   global restanim, tex_list
    restanim = []
+   tex_list = {}
 
    exp_list =[]
    Tab = "\t"
@@ -70,7 +120,7 @@ def write(filename):
    #write_materials(file, exp_list, worldTable, matTable)
    write_mesh(file, scn, exp_list, matTable, total)
    write_groups(file)
-   if (restanim):
+   if restanim and (guiTable['MAXTIME'] > 0):
       file.write("%s<animation name=\"AnimationTemplate\">\n" % (Tab))
       firstOne = True
       for ra in restanim:
@@ -89,29 +139,49 @@ def write(filename):
    acts = Armature.NLA.GetActions()
    arms = Armature.Get()
    evalfps = guiTable['FPS']
+   expfps = guiTable['EXPFPS']
    ex_act = {}
    for aname in acts.keys():
+      if aname[0] == '_':
+          continue
+      print "\nExporting Action %s" % (aname)
+
       act = acts[aname]
       aipos = act.getAllChannelIpos()
       frames = act.getFrameNumbers()
+      print " keyframes %d" % (len(frames))
       maxframe = frames[len(frames)-1]
-      print "Action %s, max %d" % (aname, maxframe)
+      # Calculate in 0 to max-1 domain
+      maxframe_exp = (((maxframe-1) * expfps) / evalfps) + 1
+
+      frames_exp = []
+      for fr in frames:
+          frames_exp.append((((fr-1) * expfps) / evalfps) + 1)
+      frames_exp = sets.Set(frames_exp)
+
+      print " max frame %d, exported %d" % (maxframe, maxframe_exp)
       for arm in arms.values():
-          arm_mat = Blender.Object.Get(arm.name).matrixWorld
+          if arm.name[0] == '_':
+             continue
+          arm_obj = Blender.Object.Get(arm.name)
+          arm_mat = arm_obj.matrixWorld.copy()
           ex_bones = []
           for bname in arm.bones.keys():
+              if bname[0] == '_':
+                  continue
               bone = arm.bones[bname]
               ex_bone = []
               ex_bone_t = []
               ex_bone_r = []
               if aipos.has_key(bname):
-                  print "Action %s, bone %s" % (aname, bname)
+                  print "  Action %s, bone %s" % (aname, bname)
 
                   ipos = aipos[bname]
                   old_bone_t = None
                   old_bone_tt = 0
                   old_bone_r = None
                   old_bone_rt = 0
+                  i_exp_old = 0
                   qw = ipos[Ipo.PO_QUATW]
                   qx = ipos[Ipo.PO_QUATX]
                   qy = ipos[Ipo.PO_QUATY]
@@ -120,75 +190,20 @@ def write(filename):
                   ly = ipos[Ipo.PO_LOCY]
                   lz = ipos[Ipo.PO_LOCZ]
 
-                  frlist = frames
+                  frlist = frames_exp
                   if not guiTable['KEYONLY']:
-                      frlist = range(1, maxframe+1)
+                      frlist = range(1, maxframe_exp+1)
 
-                  for i in frlist:
-#                      #m = Mathutils.Matrix([1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1])
-#                      if qw and qx and qy and qz:
-#                          #m = Mathutils.Quaternion(qw[i], qx[i], qy[i], qz[i]).toMatrix()
-#                          #m.resize4x4()
-#                          quel = Mathutils.Quaternion(qw[i], qx[i], qy[i], qz[i]).toEuler()
-#                          rf = Mathutils.Vector(quel[0]*math.pi/180.0, quel[1]*math.pi/180.0, quel[2]*math.pi/180.0)
-#                      else:
-#                          rf = Mathutils.Vector(0, 0, 0)
-#
-#                      #tm = m.rotationPart();
-#                      #print "Frame %d m:  %f %f %f" % (i, tm[0][0], tm[0][1], tm[0][2])
-#                      #print "Frame %d m:  %f %f %f" % (i, tm[1][0], tm[1][1], tm[1][2])
-#                      #print "Frame %d m:  %f %f %f" % (i, tm[2][0], tm[2][1], tm[2][2])
-#                      #nr = normalizeRotation(m.rotationPart())
-#                      #rf = Mathutils.Vector(nr[0], nr[1], nr[2])
-#                      #print "Frame %d quat:  %f %f %f %f" % (i, qw[i], qx[i], qy[i], qz[i])
-#                      #test = Mathutils.Quaternion(qw[i], qx[i], qy[i], qz[i]).toEuler()
-#                      #print "Frame %d eul:  %f %f %f" % (i, test[0], test[1], test[2])
-#                      print "Frame %d pre:  %f %f %f\n" % (i, rf[0], rf[1], rf[2])
-#                      if lx and ly and lz:
-#                          tf = Mathutils.Vector(lx[i], ly[i], lz[i])
-#                      else:
-#                          tf = Mathutils.Vector(0, 0, 0)
-#
-#                      mdiff = bone.matrix['ARMATURESPACE'].copy()
-#                      if bone.parent:
-#                          # calculate locally
-#                          mp = bone.parent.matrix['ARMATURESPACE'].copy()
-#                          mp.invert()
-#                          mdiff = mdiff * mp
-#
-#                      nr = normalizeRotation(mdiff.rotationPart())
-#                      rf = rf + Mathutils.Vector(nr[0], nr[1], nr[2])
-#                      tf = tf + mdiff.translationPart()
-#
-#                      #tf = mdiff.translationPart()
-#                      if (tf != old_bone_t) or (i == maxframe):
-#                          if (old_bone_tt < (i-1)) and (i != maxframe):
-#                              # Add last frame of a constant range
-#                              fr = [float(i-2)/float(evalfps), old_bone_t]
-#                              ex_bone_t.append(fr)
-#                          old_bone_t = tf
-#                          old_bone_tt = i
-#                          fr = [float(i-1)/float(evalfps), tf]
-#                          ex_bone_t.append(fr)
-#                      #rf = normalizeRotation(mdiff.rotationPart())
-#                      #print "Frame %d post: %f %f %f\n" % (i, rf[0], rf[1], rf[2])
-#                      if (rf != old_bone_r) or (i == maxframe):
-#                          if (old_bone_rt < (i-1)) and (i != maxframe):
-#                              # Add last frame of a constant range
-#                              fr = [float(i-2)/float(evalfps), old_bone_r]
-#                              ex_bone_r.append(fr)
-#                          old_bone_r = rf
-#                          old_bone_rt = i
-#                          fr = [float(i-1)/float(evalfps), rf]
-#                          ex_bone_r.append(fr)
+                  for i_exp in frlist:
+                      i = ((i_exp - 1) * evalfps / expfps) + 1
 
                       m = Mathutils.Matrix([1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1])
                       if qw and qx and qy and qz:
                           m = Mathutils.Quaternion(qw[i], qx[i], qy[i], qz[i]).toMatrix()
                           m.resize4x4()
 
-                      tt = normalizeRotation(m.rotationPart())
-                      print "Frame %d pre:  %f %f %f" % (i, tt[0], tt[1], tt[2])
+                      #tt = normalizeRotation(m.rotationPart())
+                      #print "Frame %d pre:  %f %f %f" % (i, tt[0], tt[1], tt[2])
                       if lx and ly and lz:
                           m = m * Mathutils.TranslationMatrix(Mathutils.Vector(lx[i], ly[i], lz[i]))
 
@@ -200,14 +215,16 @@ def write(filename):
                           mdiff = mdiff * mp
 
                       tf = mdiff.translationPart()
-                      if (tf != old_bone_t) or (i == maxframe) or guiTable['KEYONLY']:
-                          if (old_bone_tt < (i-1)) and (i != maxframe) and (not guiTable['KEYONLY']):
+                      if (not is_frameSame(tf, old_bone_t)) or (i_exp == maxframe_exp):
+                          #print "New Frame %d / %d | %f\n" % (i, i_exp, float(i_exp-1)/float(expfps))
+                          if (old_bone_tt < i_exp_old) and (i_exp != maxframe_exp):
                               # Add last frame of a constant range
-                              fr = [float(i-2)/float(evalfps), old_bone_t]
+                              fr = [float(i_exp_old-1)/float(expfps), old_bone_t]
                               ex_bone_t.append(fr)
+                              #print "  Old Frame %d | %f\n" % (i_exp_old, float(i_exp_old-1)/float(expfps))
                           old_bone_t = tf
-                          old_bone_tt = i
-                          fr = [float(i-1)/float(evalfps), tf]
+                          old_bone_tt = i_exp
+                          fr = [float(i_exp-1)/float(expfps), tf]
                           ex_bone_t.append(fr)
                       #rf = normalizeRotation(mdiff.rotationPart())
                       rf = None
@@ -223,16 +240,17 @@ def write(filename):
                       else:
                          rf = mdiff.rotationPart().toEuler()
                          rf = Mathutils.Vector(rf[0]*math.pi/180.0, rf[1]*math.pi/180.0, rf[2]*math.pi/180.0)
-                      print "Frame %d post: %f %f %f\n" % (i, rf[0], rf[1], rf[2])
-                      if (rf != old_bone_r) or (i == maxframe) or guiTable['KEYONLY']:
-                          if (old_bone_rt < (i-1)) and (i != maxframe) and (not guiTable['KEYONLY']):
+                      #print "Frame %d post: %f %f %f\n" % (i, rf[0], rf[1], rf[2])
+                      if (not is_frameSame(rf, old_bone_r)) or (i_exp == maxframe_exp):
+                          if (old_bone_rt < (i_exp_old)) and (i_exp != maxframe_exp):
                               # Add last frame of a constant range
-                              fr = [float(i-2)/float(evalfps), old_bone_r]
+                              fr = [float(i_exp_old-1)/float(expfps), old_bone_r]
                               ex_bone_r.append(fr)
                           old_bone_r = rf
-                          old_bone_rt = i
-                          fr = [float(i-1)/float(evalfps), rf]
+                          old_bone_rt = i_exp
+                          fr = [float(i_exp-1)/float(expfps), rf]
                           ex_bone_r.append(fr)
+                      i_exp_old = i_exp
                       #print "Frame %d %f  trans %f/%f/%f  rot %f/%f/%f" % (i, t, tf[0], tf[1], tf[2], rf[0], rf[1], rf[2])
               else:
                   # Write rest animation
@@ -243,7 +261,8 @@ def write(filename):
                      bone_mat = bone_mat * mp
 
                   ex_bone_t.append([0.0, bone_mat.translationPart()])
-                  ex_bone_t.append([float(maxframe-1)/float(evalfps), bone_mat.translationPart()])
+                  if maxframe_exp > 1:
+                     ex_bone_t.append([float(maxframe_exp-1)/float(expfps), bone_mat.translationPart()])
                   rf = None
                   if guiTable['ROTFORM'] == 'A':
                      q = bone_mat.rotationPart().toQuat()
@@ -258,12 +277,54 @@ def write(filename):
                      rf = bone_mat.rotationPart().toEuler()
                      rf = Mathutils.Vector(rf[0]*math.pi/180.0, rf[1]*math.pi/180.0, rf[2]*math.pi/180.0)
                   ex_bone_r.append([0.0, rf])
-                  ex_bone_r.append([float(maxframe-1)/float(evalfps), rf])
+                  if maxframe_exp > 1:
+                     ex_bone_r.append([float(maxframe_exp-1)/float(expfps), rf])
 
               ex_bone.append(ex_bone_t)
               ex_bone.append(ex_bone_r)
 
               ex_bones.append([bname, ex_bone])
+
+          if scn.objects.selected and guiTable['SELO'] == 1:
+              objects = scn.objects.selected
+          elif scn.objects:
+              objects = scn.objects
+          for obj in objects:
+              if obj.parent != arm_obj:
+                  continue
+
+              if not obj.parentbonename:
+                  continue
+
+              bone_mat = None
+              if obj.getType() == 'Empty':
+                  bone_mat = getMatrix_Empty(obj)
+              if obj.getType() == 'Camera':
+                  bone_mat = getMatrix_Camera(obj)
+              else:
+                  continue
+
+              parent_bone = arm.bones[obj.parentbonename]
+              parent_mat = parent_bone.matrix['ARMATURESPACE'].copy() * arm_mat
+              parent_mat.invert()
+              bone_mat = bone_mat * parent_mat
+
+              ex_bone = []
+              ex_bone_t = []
+              ex_bone_t.append([0.0, bone_mat.translationPart()])
+              if maxframe_exp > 1:
+                 ex_bone_t.append([float(maxframe_exp-1)/float(expfps), bone_mat.translationPart()])
+              ex_bone_r = []
+              rf = get_rotFrame(bone_mat)
+              ex_bone_r.append([0.0, rf])
+              if maxframe_exp > 1:
+                 ex_bone_r.append([float(maxframe_exp-1)/float(expfps), rf])
+
+              ex_bone.append(ex_bone_t)
+              ex_bone.append(ex_bone_r)
+
+              ex_bones.append([get_Name(obj), ex_bone])
+
       ex_act[aname] = ex_bones
 
    for animname in ex_act.keys():
@@ -289,6 +350,14 @@ def write(filename):
       file.write("%s</animation>\n" % (Tab))
 
 
+   for tex in tex_list.values():
+         file.write("%s<texture name=\"%s\" file=\"%s\">\n" % (Tab, tex['name'], tex['file']))
+         file.write("%s<metadata role=\"rct3\">\n" % (Tab*2))
+         if tex['alpha']:
+            file.write("%s<useAlpha/>\n" % (Tab*3))
+         file.write("%s<recol>%d</recol>\n" % (Tab*3, tex['recol']))
+         file.write("%s</metadata>\n" % (Tab*2))
+         file.write("%s</texture>\n" % (Tab))
    write_post(file, filename, scn, worldTable)
    file.close()
 
@@ -357,7 +426,7 @@ def find_boneParent(obj):
 
 
 def make_boneName(obj, type = None, name = None):
-   n = obj.name
+   n = get_Name(obj)
    if name:
       n = name
    s = "<bone name=\"%s\"" % n
@@ -368,7 +437,7 @@ def make_boneName(obj, type = None, name = None):
       if isinstance(p, basestring):
          s += " parent=\"%s\"" % p
       else:
-         s += " parent=\"%s\"" % p.name
+         s += " parent=\"%s\"" % get_Name(p)
    s += ">"
    return s
 
@@ -461,6 +530,8 @@ def set_lists(file, exp_list, objects, matTable, worldTable):
    #exp_list = [container1 = [ [mesh], [material_ref] ],...]
 
    for current_obj in objects:
+      if current_obj.name[0] == '_':
+         continue
       container = []
       if current_obj.getType() == 'Mesh':
          mesh = current_obj.data
@@ -480,7 +551,7 @@ def set_lists(file, exp_list, objects, matTable, worldTable):
             file.write("%s</matrix>\n" % (Tab*2))
             file.write("%s</bone>\n" % (Tab))
             ra = []
-            ra.append(current_obj.name)
+            ra.append(get_Name(current_obj))
             ra.append(current_obj.matrixLocal.translationPart())
             ra.append([0,0,0])
             restanim.append(ra)
@@ -527,12 +598,14 @@ def set_lists(file, exp_list, objects, matTable, worldTable):
 
          bones= arm_data.bones.values()
          for bone in bones:
+            if bone.name[0] == '_':
+                continue
             bone_mat = bone.matrix['ARMATURESPACE'].copy()
             m = bone_mat*arm_mat
             s = ""
             if bone.parent:
-                s = " parent=\"%s\"" % bone.parent.name
-            file.write("%s<bone name=\"%s\"%s role=\"bone\">\n" % (Tab, bone.name, s))
+                s = " parent=\"%s\"" % get_Name(bone.parent)
+            file.write("%s<bone name=\"%s\"%s role=\"bone\">\n" % (Tab, get_Name(bone), s))
             file.write("%s<matrix>\n" % (Tab*2))
             file.write("%s<row>%.6f %.6f %.6f 0.000000</row>\n" % ((Tab*3), m[0][0], m[0][1], m[0][2]))
             file.write("%s<row>%.6f %.6f %.6f 0.000000</row>\n" % ((Tab*3), m[1][0], m[1][1], m[1][2]))
@@ -547,7 +620,7 @@ def set_lists(file, exp_list, objects, matTable, worldTable):
                 bone_mat = bone_mat * mp
 
             ra = []
-            ra.append(bone.name)
+            ra.append(get_Name(bone))
             ra.append(bone_mat.translationPart())
             bone_mat = bone_mat.rotationPart()
             ra.append(normalizeRotation(bone_mat))
@@ -576,7 +649,7 @@ def set_lists(file, exp_list, objects, matTable, worldTable):
          #print("   %.6f %.6f %.6f 0.000000" % (m[2][0], m[2][1], m[2][2]))
          #print("   %.6f %.6f %.6f 1.000000" % (v[0], v[1], v[2]))
          ra = []
-         ra.append(current_obj.name)
+         ra.append(get_Name(current_obj))
          ra.append(current_obj.matrixLocal.translationPart())
          # Deconstruct matrix
          m = current_obj.matrixLocal.rotationPart()
@@ -612,7 +685,7 @@ def set_lists(file, exp_list, objects, matTable, worldTable):
          #print("   %.6f %.6f %.6f 0.000000" % (m[2][0], m[2][1], m[2][2]))
          #print("   %.6f %.6f %.6f 1.000000" % (v[0], v[1], v[2]))
          ra = []
-         ra.append(current_obj.name)
+         ra.append(get_Name(current_obj))
          ra.append(current_obj.matrixLocal.translationPart())
          # Deconstruct matrix
          m = current_obj.matrixLocal.rotationPart()
@@ -633,7 +706,7 @@ def set_lists(file, exp_list, objects, matTable, worldTable):
          obMatrix = current_obj.matrixWorld
          for c, bezCurve in enumerate(cu):
             if not bezCurve.isNurb():
-               file.write("%s<spline name=\"%s\" cyclic=\"%d\">\n" % (Tab, current_obj.name, bezCurve.isCyclic()))
+               file.write("%s<spline name=\"%s\" cyclic=\"%d\">\n" % (Tab, get_Name(current_obj), bezCurve.isCyclic()))
                for b, bezPoint in enumerate(bezCurve):
                   triple =  bezPoint.vec
                   handle1 = GlobaliseVector(triple[0],obMatrix)
@@ -652,7 +725,7 @@ def set_lists(file, exp_list, objects, matTable, worldTable):
          if l.type != Lamp.Types['Lamp']:
             continue
 
-         s = current_obj.name;
+         s = get_Name(current_obj);
          if not (s.startswith("light") or s.startswith("nblight") or s.startswith("simplelight")):
             s = make_lampName(l, lights)
          if s == "":
@@ -670,7 +743,7 @@ def set_lists(file, exp_list, objects, matTable, worldTable):
          file.write("%s</matrix>\n" % (Tab*2))
          file.write("%s</bone>\n" % (Tab))
          ra = []
-         ra.append(current_obj.name)
+         ra.append(get_Name(current_obj))
          ra.append(current_obj.matrixLocal.translationPart())
          ra.append([0,0,0])
          restanim.append(ra)
@@ -975,6 +1048,7 @@ def map_uvw(file, idnt):
 
 def write_mesh(file, scn, exp_list, matTable, total):
    print "Write Geometric"
+   global tex_list
 
    for current_container in exp_list:
 
@@ -987,7 +1061,7 @@ def write_mesh(file, scn, exp_list, matTable, total):
       obj = current_container[0]
       #mat_ref = current_container[1]
       data = obj.getData(0,1)
-      nameMe['objName'] = obj.name
+      nameMe['objName'] = get_Name(obj)
       nameMe['meName'] = data.name
 
       mats_me = [mat for mat in data.materials if mat] #fix for 2.44, get rid of NoneType Objects in me.materials
@@ -1004,7 +1078,7 @@ def write_mesh(file, scn, exp_list, matTable, total):
          hasTable['matRef'] = current_container[1]
 
       if obj.getParent():
-         nameMe['parent'] = obj.getParent().name
+         nameMe['parent'] = get_Name(obj.getParent())
 
       me = Mesh.New()      # Create a new mesh
 
@@ -1030,7 +1104,7 @@ def write_mesh(file, scn, exp_list, matTable, total):
             file.write("%s</matrix>\n" % (Tab*2))
             file.write("%s</bone>\n" % (Tab))
             ra = []
-            ra.append(obj.name)
+            ra.append(get_Name(obj))
             ra.append(obj.matrixLocal.translationPart())
             # Deconstruct matrix
             m = obj.matrixLocal.rotationPart()
@@ -1098,12 +1172,57 @@ def write_mesh(file, scn, exp_list, matTable, total):
             total['Tris'] += 2
             total['Faces'] += 1
 
+      me_options = {}
+
+      if me.mode and Mesh.Modes['TWOSIDED']:
+          me_options['doublesided'] = 1
+      if materials:
+         for mat in materials:
+             for tex in mat.getTextures():
+                if not tex:
+                    continue
+                if not tex.tex:
+                    continue
+                if tex.tex.name.startswith('SI'):
+                    me_options['texturestyle'] = get_Name(tex.tex)
+                elif tex.tex.getType() == 'Image':
+                    if tex.tex.image:
+                        me_options['texturename'] = tex.tex.name
+                        tex_list[tex.tex.name] = {}
+                        me_options['texture'] = {}
+                        tex_list[tex.tex.name]['name'] = tex.tex.name
+                        tex_list[tex.tex.name]['file'] = tex.tex.image.filename
+                        tex_list[tex.tex.name]['alpha'] = tex.tex.useAlpha
+                        recol = 0
+                        if tex.tex.mipmap:
+                            recol = 7
+                        #if tex.tex.mipmap:
+                        #    recol = recol + 1
+                        #if tex.tex.gauss:
+                        #    recol = recol + 2
+                        #if tex.tex.interpol:
+                        #    recol = recol + 4
+                        tex_list[tex.tex.name]['recol'] = recol
+
+
       #Open Geomobject
-      file.write("%s<mesh name=\"%s\">\n" % (Tab, nameMe['objName']))
+      if 'texturename' in me_options:
+         file.write("%s<mesh name=\"%s\" texture=\"%s\">\n" % (Tab, nameMe['objName'], me_options['texturename']))
+      else:
+         file.write("%s<mesh name=\"%s\">\n" % (Tab, nameMe['objName']))
       print "Exporting Mesh %s\n" % nameMe['objName']
 
       me.calcNormals()
       idnt = 2
+
+      if me_options:
+          file.write("%s<metadata role=\"rct3\">\n" % (Tab*2))
+          if 'doublesided' in me_options:
+             file.write("%s<doubleSided/>\n" % (Tab*3))
+          if 'texturestyle' in me_options:
+             file.write("%s<textureStyle>%s</textureStyle>\n" % (Tab*3, me_options['texturestyle']))
+
+          file.write("%s</metadata>\n" % (Tab*2))
       mesh_writeMeshData(file, idnt, me, current_container[0])
       #mesh_vertexList(file, idnt, verts, count)
       #idnt = 2
@@ -1184,7 +1303,7 @@ def mesh_writeMeshData(file, idnt, me, obj):
                 if p.getType() == "Armature":
                     isarm = True
                 else:
-                    name = p.name
+                    name = get_Name(p)
             else:
                 name = p
             if isarm:
@@ -1256,45 +1375,58 @@ def mesh_writeMeshData(file, idnt, me, obj):
 def write_groups(file):
    lights = 0
    for group in Group.Get():
+      if group.name[0] == '_':
+         continue
+
       objects = group.objects
 
       groupobjs = []
-      for object in objects:
-         if (guiTable['SELO'] == 1) and (not object.isSelected()):
+      for obj in objects:
+         if (guiTable['SELO'] == 1) and (not obj.isSelected()):
             continue
 
-         if object.getType() == 'Mesh':
-            groupobjs.append(object)
-         elif object.getType() == 'Empty':
-            groupobjs.append(object)
-         elif object.getType() == 'Camera':
-            groupobjs.append(object)
-         elif object.getType() == 'Lamp':
-            l = object.getData()
+         if obj.name[0] == '_':
+            continue
+
+         if obj.getType() == 'Mesh':
+            groupobjs.append(obj)
+         elif obj.getType() == 'Empty':
+            groupobjs.append(obj)
+         elif obj.getType() == 'Armature':
+            groupobjs.append(obj)
+         elif obj.getType() == 'Camera':
+            groupobjs.append(obj)
+         elif obj.getType() == 'Lamp':
+            l = obj.getData()
             if l.type != Lamp.Types['Lamp']:
                continue
 
             fakelights = 0
-            s = object.name;
+            s = get_Name(obj);
             if not (s.startswith("light") or s.startswith("nblight") or s.startswith("simplelight")):
                s = make_lampName(l, lights)
             if s == "":
                continue
-            groupobjs.append(object)
+            groupobjs.append(obj)
 
       if groupobjs:
-         file.write("%s<group name=\"%s\">\n" % (Tab, group.name))
+         file.write("%s<group name=\"%s\">\n" % (Tab, get_Name(group)))
          for grobj in groupobjs:
             if grobj.getType() == 'Mesh':
-               file.write("%s<mesh>%s</mesh>\n" % ((Tab*2), grobj.name))
+               file.write("%s<mesh>%s</mesh>\n" % ((Tab*2), get_Name(grobj)))
+            elif grobj.getType() == 'Armature':
+               arm_data= grobj.getData()
+               for bone in arm_data.bones.values():
+                  if bone.name[0] != '_':
+                     file.write("%s<bone>%s</bone>\n" % ((Tab*2), get_Name(bone)))
             elif grobj.getType() == 'Lamp':
                l = grobj.getData()
-               s = grobj.name;
+               s = get_Name(grobj);
                if not (s.startswith("light") or s.startswith("nblight") or s.startswith("simplelight")):
                   s = make_lampName(l, lights)
                file.write("%s<bone>%s</bone>\n" % ((Tab*2), s))
             else:
-               file.write("%s<bone>%s</bone>\n" % ((Tab*2), grobj.name))
+               file.write("%s<bone>%s</bone>\n" % ((Tab*2), get_Name(grobj)))
          file.write("%s</group>\n" % (Tab))
 
 
@@ -1305,60 +1437,152 @@ def write_groups(file):
 
 def write_ui(filename):
 
-   global guiTable, EXPORT_MOD, EXPORT_MTL, EXPORT_UV, EXPORT_VC, EXPORT_SELO, EXPORT_UVI, EXPORT_VG2SG, EXPORT_MESHORI, EXPORT_SIMPROT, EXPORT_MAXTIME, EXPORT_FPS, EXPORT_KEYONLY, EXPORT_ROTFORM
-   guiTable = {'MOD': 1, 'MTL': 1, 'UV': 1, 'VC': 1, 'SELO': 1, 'UVI': 0, 'VG2SG': 0, 'RECENTER':0, 'MESHORI': 0, 'SIMPROT': 1, 'MAXTIME': 1.0, 'FPS': Scene.GetCurrent().getRenderingContext().fps, 'KEYONLY': 0, 'ROTFORM':'E'}
+   global guiTable
+   #, EXPORT_MOD, EXPORT_MTL, EXPORT_VC, EXPORT_SELO, EXPORT_UVI, EXPORT_MESHORI, EXPORT_SIMPROT, EXPORT_MAXTIME, EXPORT_FPS, EXPORT_KEYONLY, EXPORT_ROTFORM
+   guiTable = {}
 
-   EXPORT_MOD = Draw.Create(guiTable['MOD'])
-   EXPORT_MTL = Draw.Create(guiTable['MTL'])
-   #EXPORT_UV = Draw.Create(guiTable['UV'])
-   EXPORT_VC = Draw.Create(guiTable['VC'])
-   EXPORT_SELO = Draw.Create(guiTable['SELO'])
-   #EXPORT_VG2SG = Draw.Create(guiTable['VG2SG'])
-   #EXPORT_REC = Draw.Create(guiTable['RECENTER'])
-   EXPORT_MESHORI = Draw.Create(guiTable['MESHORI'])
-   EXPORT_SIMPROT = Draw.Create(guiTable['SIMPROT'])
-   EXPORT_MAXTIME = Draw.Create(guiTable['MAXTIME'])
-   EXPORT_FPS = Draw.Create(guiTable['FPS'])
-   EXPORT_KEYONLY = Draw.Create(guiTable['KEYONLY'])
-   EXPORT_ROTFORM = Draw.Create(guiTable['ROTFORM'])
+   curscene = Scene.GetCurrent()
 
-   # Get USER Options
-   pup_block = []
-   pup_block.append(('Options...'))
-   pup_block.append(('Apply Modifiers', EXPORT_MOD, 'Use modified mesh data from each object.'))
-   pup_block.append(('Materials', EXPORT_MTL, 'Export Materials.'))
-   pup_block.append(('RCT3 Fixes', EXPORT_VC, 'Export effect points/bones appropriately for RCT3'))
-   pup_block.append(('Simplfy Rotations', EXPORT_SIMPROT, 'Simplify rotational keyframes for rest animation'))
-   pup_block.append(('Animation...'))
-   pup_block.append(('Rest animation length', EXPORT_MAXTIME, 0.0, 3600.0, 'Length of resting animation'))
-   pup_block.append(('Animation FPS', EXPORT_FPS, 0.0, 120.0, 'Export animation as frames per second.'))
-   pup_block.append(('Keyframes only', EXPORT_KEYONLY, 'Export only defined keyframes without interpolation.'))
-   pup_block.append(('Rotation format _', EXPORT_ROTFORM, 0, 1, 'Rotation keyframe format: ''E''uler, ''A''xis or ''Q''uaternion'))
-   pup_block.append(('Context...'))
-   pup_block.append(('Mesh Origins', EXPORT_MESHORI, 'Export mesh origins as bones'))
-   pup_block.append(('Selection Only', EXPORT_SELO, 'Only export objects in visible selection, else export all mesh object.'))
+   # Defaults
+   guiTable['MOD'] = 1
+   guiTable['MTL'] = 1
+   guiTable['VC'] = 1
+   guiTable['SELO'] = 1
+   guiTable['MESHORI'] = 0
+   guiTable['SIMPROT'] = 1
+   guiTable['MAXTIME'] = 1.0
+   guiTable['FPS'] = 0
+   guiTable['EXPFPS'] = 0
+   guiTable['KEYONLY'] = 0
+   guiTable['ROTFORM'] = 'E'
+   guiTable['STORE'] = 1
+   guiTable['SHOWOPT'] = 1
 
-   if not Draw.PupBlock('Export...', pup_block):
-      return
+   # Stuff from Goofos ASE exporter I don't dare touch :p
+   guiTable['UV'] = 1
+   guiTable['UVI'] = 0
+   guiTable['VG2SG'] = 0
+   guiTable['RECENTER'] = 0
+
+   if 'modxml' in curscene.properties:
+       mprop = curscene.properties['modxml']
+       if 'export' in mprop:
+           eprop = mprop['export']
+           if 'MOD' in eprop:
+                guiTable['MOD'] = eprop['MOD']
+           if 'MTL' in eprop:
+                guiTable['MTL'] = eprop['MTL']
+           if 'VC' in eprop:
+                guiTable['VC'] = eprop['VC']
+           if 'SELO' in eprop:
+                guiTable['SELO'] = eprop['SELO']
+           if 'MESHORI' in eprop:
+                guiTable['MESHORI'] = eprop['MESHORI']
+           if 'SIMPROT' in eprop:
+                guiTable['SIMPROT'] = eprop['SIMPROT']
+           if 'MAXTIME' in eprop:
+                guiTable['MAXTIME'] = eprop['MAXTIME']
+           if 'FPS' in eprop:
+                guiTable['FPS'] = eprop['FPS']
+           if 'EXPFPS' in eprop:
+                guiTable['EXPFPS'] = eprop['EXPFPS']
+           if 'KEYONLY' in eprop:
+                guiTable['KEYONLY'] = eprop['KEYONLY']
+           if 'ROTFORM' in eprop:
+                guiTable['ROTFORM'] = eprop['ROTFORM']
+           if 'STORE' in eprop:
+                guiTable['STORE'] = eprop['STORE']
+           if 'SHOWOPT' in eprop:
+                guiTable['SHOWOPT'] = eprop['SHOWOPT']
+
+
+   if guiTable['SHOWOPT']:
+       EXPORT_MOD = Draw.Create(guiTable['MOD'])
+       EXPORT_MTL = Draw.Create(guiTable['MTL'])
+       #EXPORT_UV = Draw.Create(guiTable['UV'])
+       EXPORT_VC = Draw.Create(guiTable['VC'])
+       EXPORT_SELO = Draw.Create(guiTable['SELO'])
+       #EXPORT_VG2SG = Draw.Create(guiTable['VG2SG'])
+       #EXPORT_REC = Draw.Create(guiTable['RECENTER'])
+       EXPORT_MESHORI = Draw.Create(guiTable['MESHORI'])
+       EXPORT_SIMPROT = Draw.Create(guiTable['SIMPROT'])
+       EXPORT_MAXTIME = Draw.Create(guiTable['MAXTIME'])
+       EXPORT_FPS = Draw.Create(guiTable['FPS'])
+       EXPORT_EXPFPS = Draw.Create(guiTable['EXPFPS'])
+       EXPORT_KEYONLY = Draw.Create(guiTable['KEYONLY'])
+       EXPORT_ROTFORM = Draw.Create(guiTable['ROTFORM'])
+       EXPORT_STORE = Draw.Create(guiTable['STORE'])
+       EXPORT_SHOWOPT = Draw.Create(guiTable['SHOWOPT'])
+
+       # Get USER Options
+       pup_block = []
+       pup_block.append(('Options...'))
+       pup_block.append(('Apply Modifiers', EXPORT_MOD, 'Use modified mesh data from each object.'))
+       pup_block.append(('Materials', EXPORT_MTL, 'Export Materials.'))
+       pup_block.append(('RCT3 Fixes', EXPORT_VC, 'Export effect points/bones appropriately for RCT3'))
+       pup_block.append(('Simplify Rotations', EXPORT_SIMPROT, 'Simplify rotational keyframes'))
+       pup_block.append(('Animation...'))
+       pup_block.append(('Animation template length', EXPORT_MAXTIME, 0.0, 3600.0, 'Length for animation template. Zero deactivates it.'))
+       pup_block.append(('Evaluation FPS', EXPORT_FPS, 0.0, 120.0, 'Evaluate animation as frames per second.'))
+       pup_block.append(('Export FPS', EXPORT_EXPFPS, 0.0, 120.0, 'Export animation as frames per second.'))
+       pup_block.append(('Keyframes only', EXPORT_KEYONLY, 'Export only defined keyframes without interpolation.'))
+       pup_block.append(('Rotation format _', EXPORT_ROTFORM, 0, 1, 'Rotation keyframe format: ''E''uler, ''A''xis or ''Q''uaternion'))
+       pup_block.append(('Context...'))
+       pup_block.append(('Mesh Origins', EXPORT_MESHORI, 'Export mesh origins as bones'))
+       pup_block.append(('Selection Only', EXPORT_SELO, 'Only export objects in visible selection, else export all mesh object.'))
+       pup_block.append(('Export Script...'))
+       pup_block.append(('Store Options', EXPORT_STORE, 'Use modified mesh data from each object.'))
+       pup_block.append(('Show Options', EXPORT_SHOWOPT, 'Show these options.'))
+
+       if not Draw.PupBlock('Export...', pup_block):
+          return
+
+
+       guiTable['MOD'] = EXPORT_MOD.val
+       guiTable['MTL'] = EXPORT_MTL.val
+       #guiTable['UV'] = EXPORT_UV.val
+       guiTable['VC'] = EXPORT_VC.val
+       guiTable['SELO'] = EXPORT_SELO.val
+       #guiTable['VG2SG'] = EXPORT_VG2SG.val
+       #guiTable['RECENTER'] = EXPORT_REC.val
+       guiTable['MESHORI'] = EXPORT_MESHORI.val
+       guiTable['SIMPROT'] = EXPORT_SIMPROT.val
+       guiTable['MAXTIME'] = EXPORT_MAXTIME.val
+       guiTable['FPS'] = EXPORT_FPS.val
+       guiTable['EXPFPS'] = EXPORT_EXPFPS.val
+       guiTable['KEYONLY'] = EXPORT_KEYONLY.val
+       guiTable['ROTFORM'] = EXPORT_ROTFORM.val
+       guiTable['STORE'] = EXPORT_STORE.val
+       guiTable['SHOWOPT'] = EXPORT_SHOWOPT.val
+
+       if guiTable['STORE']:
+           if not ('modxml' in curscene.properties):
+               curscene.properties['modxml'] = {}
+           if not ('export' in curscene.properties['modxml']):
+               curscene.properties['modxml']['export'] = {}
+           curscene.properties['modxml']['export']['MOD'] = guiTable['MOD']
+           curscene.properties['modxml']['export']['MTL'] = guiTable['MTL']
+           curscene.properties['modxml']['export']['VC'] = guiTable['VC']
+           curscene.properties['modxml']['export']['SELO'] = guiTable['SELO']
+           curscene.properties['modxml']['export']['MESHORI'] = guiTable['MESHORI']
+           curscene.properties['modxml']['export']['SIMPROT'] = guiTable['SIMPROT']
+           curscene.properties['modxml']['export']['MAXTIME'] = guiTable['MAXTIME']
+           curscene.properties['modxml']['export']['FPS'] = guiTable['FPS']
+           curscene.properties['modxml']['export']['EXPFPS'] = guiTable['EXPFPS']
+           curscene.properties['modxml']['export']['KEYONLY'] = guiTable['KEYONLY']
+           curscene.properties['modxml']['export']['ROTFORM'] = guiTable['ROTFORM']
+           curscene.properties['modxml']['export']['STORE'] = guiTable['STORE']
+           curscene.properties['modxml']['export']['SHOWOPT'] = guiTable['SHOWOPT']
 
    Window.WaitCursor(1)
 
-   guiTable['MOD'] = EXPORT_MOD.val
-   guiTable['MTL'] = EXPORT_MTL.val
-   #guiTable['UV'] = EXPORT_UV.val
-   guiTable['VC'] = EXPORT_VC.val
-   guiTable['SELO'] = EXPORT_SELO.val
-   #guiTable['VG2SG'] = EXPORT_VG2SG.val
-   #guiTable['RECENTER'] = EXPORT_REC.val
-   guiTable['MESHORI'] = EXPORT_MESHORI.val
-   guiTable['SIMPROT'] = EXPORT_SIMPROT.val
-   guiTable['MAXTIME'] = EXPORT_MAXTIME.val
-   guiTable['FPS'] = EXPORT_FPS.val
-   guiTable['KEYONLY'] = EXPORT_KEYONLY.val
-   guiTable['ROTFORM'] = EXPORT_ROTFORM.val
-
    if not filename.lower().endswith('.modxml'):
       filename += '.modxml'
+
+   if guiTable['FPS'] == 0:
+        guiTable['FPS'] = curscene.getRenderingContext().fps
+   if guiTable['EXPFPS'] == 0:
+        guiTable['EXPFPS'] = curscene.getRenderingContext().fps
 
    write(filename)
 

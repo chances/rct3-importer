@@ -97,7 +97,7 @@ public:
         return v;
     }
 
-    r3::txyz GetFixed(c3DLoaderOrientation ori, bool rotate) const;
+    r3::txyz GetFixed(c3DLoaderOrientation ori, bool rotate, bool axis = false) const;
 
     virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
     virtual xmlcpp::cXmlNode GetNode(const wxString& path);
@@ -454,8 +454,9 @@ public:
     wxString name;
     cTXYZ::vec translations;
     cTXYZ::vec rotations;
+    bool axis;
 
-    cBoneAnimation(): name(wxT("")) {};
+    cBoneAnimation(): name(wxT("")), axis(false) {};
 
     bool FromCompilerXml(xmlcpp::cXmlNode& node, const wxString& path);
 

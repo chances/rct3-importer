@@ -173,6 +173,7 @@ struct ms3d_vertex_ex_t
 {
 	char boneIds[3];									// index of joint or -1, if -1, then that weight is ignored
 	byte weights[3];									// vertex weight ranging from 0 - 255, last weight is computed by 1.0 - sum(all weights)
+	unsigned int extra;
 	// weight[0] is the weight for boneId in ms3d_vertex_t
 	// weight[1] is the weight for boneIds[0]
 	// weight[2] is the weight for boneIds[1]
@@ -231,7 +232,8 @@ private:
 	float m_fCurrentTime;
 	int m_iTotalFrames;
 	std::vector<ms3d_joint_t> m_arrJoints;
-	int m_subVersion;
+	int m_subVersionComments;
+	int m_subVersionVertexEx;
 	std::vector<ms3d_comment_t> m_arrGroupComments;
 	std::vector<ms3d_comment_t> m_arrMaterialComments;
 	std::vector<ms3d_comment_t> m_arrJointComments;

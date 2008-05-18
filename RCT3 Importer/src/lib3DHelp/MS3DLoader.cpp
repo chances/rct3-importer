@@ -64,14 +64,16 @@ inline void fixMS3DRotation(txyz& v) {
     matrixMultiplyIP(m, matrixGetRotationZ(v.z));
 
     VECTOR va;
-    va.x = atan2(-m.m[1][2], m.m[2][2]);
-    va.y = asin(m.m[0][2]);
-    va.z = atan2(-m.m[0][1], m.m[0][0]);
+    matrixExtractRotation(m, va);
+//    va.x = atan2(-m.m[1][2], m.m[2][2]);
+//    va.y = asin(m.m[0][2]);
+//    va.z = atan2(-m.m[0][1], m.m[0][0]);
 
     VECTOR vb;
-    vb.x = atan2(m.m[1][2], -m.m[2][2]);
-    vb.y = asin(-m.m[0][2])+M_PI;
-    vb.z = atan2(m.m[0][1], -m.m[0][0]);
+    matrixExtractRotation(m, vb, true);
+//    vb.x = atan2(m.m[1][2], -m.m[2][2]);
+//    vb.y = asin(-m.m[0][2])+M_PI;
+//    vb.z = atan2(m.m[0][1], -m.m[0][0]);
 
     if ((fabs(va.x) + fabs(va.y) + fabs(va.z)) > (fabs(vb.x) + fabs(vb.y) + fabs(vb.z)))
         v.v = vb;
@@ -90,6 +92,7 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s)"), filename);
         throw E3DLoaderNotMyBeer();
 
     wxFileName f(filename);
+    wxString animationname = _("Default");
 
 wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename, ms3df->GetNumGroups(), ms3df->GetNumVertices());
 
@@ -121,19 +124,23 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
                 } else {
                     foreach(const cXmlNode& n, comm.root().children()) {
                         if (n("name")) {
-                            m_name = n.content();
+                            m_name = n.wxcontent();
                         } else if (n("path")) {
-                            m_path = n.content();
+                            m_path = n.wxcontent();
                             wxFileName temp = m_path;
                             temp.MakeAbsolute(f.GetPathWithSep());
                             m_path = temp.GetFullPath();
+                        } else if (n("animation")) {
+                            animationname = n.wxcontent();
                         } else if (n("noshadow")) {
                             m_noshadow = true;
                         } else if (n("lod")) {
                             c3DGroup gr;
+                            unsigned long forceanim = 0;
                             gr.m_name = n.getPropVal("name");
                             parseFloatC(n.getPropVal("distance"), gr.m_loddistance);
-                            gr.m_animations.insert("Default");
+                            parseULongC(n.getPropVal("forceanim"), forceanim);
+                            gr.m_forceanim = forceanim;
                             foreach(const cXmlNode& ch, n.children()) {
                                 if (ch("mesh")) {
                                     gr.m_meshes.insert(ch.content());
@@ -141,6 +148,8 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
                                     gr.m_bones.insert(ch.content());
                                 }
                             }
+                            if (gr.m_bones.size() || forceanim)
+                                gr.m_animations.insert(animationname);
                             m_groups[gr.m_name] = gr;
                         }
                     }
@@ -203,6 +212,7 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
                 }
                 ms3df->GetTriangleAt(i_triangle, &face);
 
+                vertex2init(tv);
                 word i_vertex = face->vertexIndices[0];
                 if (i_vertex >= ms3df->GetNumVertices()) {
                     cmesh.m_flag = C3DMESH_INVALID;
@@ -221,7 +231,9 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
                 tv.tv = 1.0-face->t[0];
 
                 tv.bone[0] = vertex->boneId;
-                if (vertexex) {
+                if ((vertexex) && (tv.bone[0] != -1)) {
+//wxLogMessage(wxString::Format(wxT("%s %hhd %hhd %hhd %hhd /  %hhd %hhd %hhd"), cmesh.m_name.c_str(),
+//    vertex->boneId, vertexex->boneIds[0], vertexex->boneIds[1], vertexex->boneIds[2], vertexex->weights[0], vertexex->weights[1], vertexex->weights[2]));
                     unsigned char lastweight = 255;
                     bool readnext = true;
                     for (int c = 0; c < 3; ++c) {
@@ -237,6 +249,21 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
                         }
                     }
                     tv.boneweight[3] = lastweight;
+                } else {
+                    tv.boneweight[0] = 255;
+                }
+
+//wxLogMessage(wxString::Format(wxT("%s %hhd %hhd %hhd %hhd /  %hhd %hhd %hhd %hhd"), cmesh.m_name.c_str(),
+//    tv.bone[0], tv.bone[1], tv.bone[2], tv.bone[3], tv.boneweight[0], tv.boneweight[1], tv.boneweight[2], tv.boneweight[3]));
+                for (int c = 0; c < 4; ++c) {
+                    if (tv.bone[c] == -1)
+                        continue;
+                    if (tv.boneweight[c] > 0) {
+                        ms3d_joint_t * joint;
+                        ms3df->GetJointAt(tv.bone[c], &joint);
+                        cmesh.m_bones.insert(jointrenames[joint->name]);
+//wxLogMessage(wxString::Format(wxT("%s %s"), cmesh.m_name.c_str(), jointrenames[joint->name].c_str()));
+                    }
                 }
 
                 // now see if we have already added this point
@@ -275,7 +302,9 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
                 tv.tv = 1.0-face->t[1];
 
                 tv.bone[0] = vertex->boneId;
-                if (vertexex) {
+                if ((vertexex) && (tv.bone[0] != -1)) {
+//wxLogMessage(wxString::Format(wxT("%s %hhd %hhd %hhd %hhd /  %hhd %hhd %hhd"), cmesh.m_name.c_str(),
+//    vertex->boneId, vertexex->boneIds[0], vertexex->boneIds[1], vertexex->boneIds[2], vertexex->weights[0], vertexex->weights[1], vertexex->weights[2]));
                     unsigned char lastweight = 255;
                     bool readnext = true;
                     for (int c = 0; c < 3; ++c) {
@@ -291,6 +320,21 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
                         }
                     }
                     tv.boneweight[3] = lastweight;
+                } else {
+                    tv.boneweight[0] = 255;
+                }
+
+//wxLogMessage(wxString::Format(wxT("%s %hhd %hhd %hhd %hhd /  %hhd %hhd %hhd %hhd"), cmesh.m_name.c_str(),
+//    tv.bone[0], tv.bone[1], tv.bone[2], tv.bone[3], tv.boneweight[0], tv.boneweight[1], tv.boneweight[2], tv.boneweight[3]));
+                for (int c = 0; c < 4; ++c) {
+                    if (tv.bone[c] == -1)
+                        continue;
+                    if (tv.boneweight[c] > 0) {
+                        ms3d_joint_t * joint;
+                        ms3df->GetJointAt(tv.bone[c], &joint);
+                        cmesh.m_bones.insert(jointrenames[joint->name]);
+//wxLogMessage(wxString::Format(wxT("%s %s"), cmesh.m_name.c_str(), jointrenames[joint->name].c_str()));
+                    }
                 }
 
                 // now see if we have already added this point
@@ -329,7 +373,9 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
                 tv.tv = 1.0-face->t[2];
 
                 tv.bone[0] = vertex->boneId;
-                if (vertexex) {
+                if ((vertexex) && (tv.bone[0] != -1)) {
+//wxLogMessage(wxString::Format(wxT("%s %hhd %hhd %hhd %hhd /  %hhd %hhd %hhd"), cmesh.m_name.c_str(),
+//    vertex->boneId, vertexex->boneIds[0], vertexex->boneIds[1], vertexex->boneIds[2], vertexex->weights[0], vertexex->weights[1], vertexex->weights[2]));
                     unsigned char lastweight = 255;
                     bool readnext = true;
                     for (int c = 0; c < 3; ++c) {
@@ -345,6 +391,21 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
                         }
                     }
                     tv.boneweight[3] = lastweight;
+                } else {
+                    tv.boneweight[0] = 255;
+                }
+
+//wxLogMessage(wxString::Format(wxT("%s %hhd %hhd %hhd %hhd /  %hhd %hhd %hhd %hhd"), cmesh.m_name.c_str(),
+//    tv.bone[0], tv.bone[1], tv.bone[2], tv.bone[3], tv.boneweight[0], tv.boneweight[1], tv.boneweight[2], tv.boneweight[3]));
+                for (int c = 0; c < 4; ++c) {
+                    if (tv.bone[c] == -1)
+                        continue;
+                    if (tv.boneweight[c] > 0) {
+                        ms3d_joint_t * joint;
+                        ms3df->GetJointAt(tv.bone[c], &joint);
+                        cmesh.m_bones.insert(jointrenames[joint->name]);
+//wxLogMessage(wxString::Format(wxT("%s %s"), cmesh.m_name.c_str(), jointrenames[joint->name].c_str()));
+                    }
                 }
 
                 // now see if we have already added this point
@@ -373,7 +434,7 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
     }
 
     c3DAnimation ani;
-    ani.m_name = "Default";
+    ani.m_name = animationname;
 
     for (int m = 0; m < ms3df->GetNumJoints(); m++) {
         ms3d_joint_t * joint;
@@ -469,7 +530,6 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
             m_boneId.push_back(cbone.m_name);
         }
     }
-
 
     calculateBonePos1();
     if (ani.m_bones.size()) {

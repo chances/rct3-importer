@@ -139,11 +139,13 @@ void dlgAnimation::UpdateBone() {
         m_htlbRotations->UpdateContents();
         m_comboBoneName->SetValue(m_currentbone->name);
         m_panCurrent->Enable();
+        m_sizRotations->GetStaticBox()->SetLabel(wxString(_("Rotations"))+(m_currentbone->axis?_(" (Axis/Angle)"):_(" (Euler)")));
     } else {
         m_currentbone = NULL;
         m_htlbTranslations->UpdateContents();
         m_htlbRotations->UpdateContents();
         m_comboBoneName->SetValue(wxT(""));
+        m_sizRotations->GetStaticBox()->SetLabel(_("Rotations"));
 /*
         m_textTimeTranslation->ChangeValue(wxT(""));
         m_textXTranslation->ChangeValue(wxT(""));

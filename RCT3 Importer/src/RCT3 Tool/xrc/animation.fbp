@@ -956,9 +956,9 @@
                                                     <property name="id">wxID_ANY</property>
                                                     <property name="label">Rotations</property>
                                                     <property name="minimum_size"></property>
-                                                    <property name="name">sbSizer41</property>
+                                                    <property name="name">m_sizRotations</property>
                                                     <property name="orient">wxVERTICAL</property>
-                                                    <property name="permission">none</property>
+                                                    <property name="permission">protected</property>
                                                     <event name="OnUpdateUI"></event>
                                                     <object class="sizeritem" expanded="1">
                                                         <property name="border">5</property>

@@ -34,6 +34,8 @@
 //#include "AN8Loaderr.h"
 #include "XML3DLoader.h"
 
+#include "confhelp.h"
+#include "lib3Dconfig.h"
 #include "pretty.h"
 
 using namespace r3;
@@ -175,7 +177,7 @@ VERTEX2 c3DLoader::GetObjectVertex2(unsigned int mesh, unsigned int vertex) {
 const set<wxString>& c3DLoader::GetObjectBones(const wxString& mesh) const {
     map<wxString, c3DMesh>::const_iterator it = m_meshes.find(mesh);
     if (it == m_meshes.end())
-        throw E3DLoader("Internal Error: c3DLoader::GetObjectBones");
+        throw E3DLoader(wxString::Format(_("Unknown mesh '%s' used (c3DLoader::GetObjectBones)."), mesh.c_str()));
     return it->second.m_bones;
 }
 
@@ -431,12 +433,200 @@ void c3DLoader::FlattenNormals(cBoneShape2* sh, const VECTOR& bbox_min, const VE
     }
 }
 
+#if 0
+/** @brief splitBones
+  *
+  * @todo: document this function
+  */
+
+#define SPLIT_THRESHOLD 0.00001
+struct SplitInfo {
+    typedef pair<const wxString, SplitInfo> pair;
+    bool x, y, z;
+    SplitInfo(): x(false), y(false), z(false) {}
+    inline bool operator() () const {
+        return ((x?1:0) + (y?1:0) + (z?1:0)) > 1;
+    }
+};
+void c3DLoader::splitBones() {
+    if (!READ_RCT3_SPLITBONES())
+        return;
+
+    map<wxString, SplitInfo> bones_to_split;
+    foreach(c3DAnimation::pair& ani, m_animations) {
+        foreach(c3DAnimBone::pair& anibone, ani.second.m_bones) {
+            foreach(txyz& fr, anibone.second.m_rotations) {
+                if (fabs(fr.X) > SPLIT_THRESHOLD)
+                    bones_to_split[anibone.first].x = true;
+                if (fabs(fr.Y) > SPLIT_THRESHOLD)
+                    bones_to_split[anibone.first].y = true;
+                if (fabs(fr.Z) > SPLIT_THRESHOLD)
+                    bones_to_split[anibone.first].z = true;
+            }
+        }
+    }
+    foreach(SplitInfo::pair& binfo, bones_to_split) {
+        if (binfo.second()) {
+            c3DBone bone_z, bone_y;
+            c3DAnimBone abone_x, abone_y, abone_z;
+
+            c3DBone& bone = GetBone(binfo.first);
+            MATRIX m, mbase;
+            if (bone.m_parent.IsEmpty()) {
+                m = bone.m_pos[1];
+                matrixSetUnity(mbase);
+            } else {
+                m = matrixMultiply(bone.m_pos[1], matrixInverse(GetBone(bone.m_parent).m_pos[1]));
+                mbase = GetBone(bone.m_parent).m_pos[1];
+            }
+            VECTOR tv, rv;
+            matrixExtractTranslation(m, tv);
+            matrixExtractRotation(m, rv);
+            if (binfo.second.z) {
+                bone_z.m_name = "z_" + binfo.first;
+                bone_z.m_parent = bone.m_parent;
+                bone_z.m_type = "Bone";
+                bone_z.m_pos[1] = matrixMultiply(matrixMultiply(matrixGetRotationX(rv.z), matrixGetTranslation(tv)), mbase);
+            }
+            if (binfo.second.y) {
+                bone_y.m_name = "y_" + binfo.first;
+                bone_y.m_parent = bone_z.m_name.IsEmpty()?bone.m_parent:bone_z.m_name;
+                bone_y.m_type = "Bone";
+                bone_y.m_pos[1] = matrixMultiply(matrixMultiply(matrixMultiply(matrixGetRotationX(rv.y),matrixGetRotationY(rv.z)), matrixGetTranslation(tv)), mbase);
+            }
+            if (binfo.second.x) {
+                bone.m_parent = bone_y.m_name.IsEmpty()?bone_z.m_name:bone_y.m_name;
+                bone.m_pos[1] = matrixMultiply(matrixMultiply(matrixMultiply(matrixMultiply(matrixGetRotationX(rv.x),matrixGetRotationY(rv.y)),matrixGetRotationZ(rv.z)), matrixGetTranslation(tv)), mbase);
+                if (binfo.second.z) {
+                    m_bones[bone_z.m_name] = bone_z;
+                    m_boneId.push_back(bone_z.m_name);
+                }
+                if (binfo.second.y) {
+                    m_bones[bone_y.m_name] = bone_y;
+                    m_boneId.push_back(bone_y.m_name);
+                }
+            } else {
+                bone.m_parent = bone_y.m_parent;
+                bone.m_pos[1] = bone_y.m_pos[1];
+                m_bones[bone_z.m_name] = bone_z;
+                m_boneId.push_back(bone_z.m_name);
+            }
+            foreach (c3DAnimation::pair& ani, m_animations) {
+                if (has(ani.second.m_bones, binfo.first)) {
+                    c3DAnimBone abone_x, abone_y, abone_z;
+                    c3DAnimBone& abone = ani.second.m_bones.find(binfo.first)->second;
+                    abone_z.m_name = "z_" + binfo.first;
+                    abone_y.m_name = "y_" + binfo.first;
+                    foreach(txyz& fr, abone.m_rotations) {
+                        if (binfo.second.x)
+                            abone_x.m_rotations.push_back(txyzMake(fr.Time, fr.x, 0, 0));
+                        if (binfo.second.y)
+                            abone_y.m_rotations.push_back(txyzMake(fr.Time, 0, fr.y, 0));
+                        if (binfo.second.z)
+                            abone_z.m_rotations.push_back(txyzMake(fr.Time, 0, 0, fr.z));
+                    }
+                    float maxtime = abone.m_rotations[abone.m_rotations.size()-1].Time;
+                    if (binfo.second.z) {
+                        abone_z.m_translations = abone.m_translations;
+                        abone_y.m_translations.push_back(txyzMake(0.0, 0.0, 0.0, 0.0));
+                        abone_y.m_translations.push_back(txyzMake(maxtime, 0.0, 0.0, 0.0));
+                    } else {
+                        abone_y.m_translations = abone.m_translations;
+                    }
+                    abone.m_translations.clear();
+                    abone.m_translations.push_back(txyzMake(0.0, 0.0, 0.0, 0.0));
+                    abone.m_translations.push_back(txyzMake(maxtime, 0.0, 0.0, 0.0));
+                    if (binfo.second.x) {
+                        abone.m_rotations = abone_x.m_rotations;
+                        if (binfo.second.z)
+                            ani.second.m_bones[abone_z.m_name] = abone_z;
+                        if (binfo.second.y)
+                            ani.second.m_bones[abone_y.m_name] = abone_y;
+                    } else {
+                        abone.m_rotations = abone_y.m_rotations;
+                        ani.second.m_bones[abone_z.m_name] = abone_z;
+                    }
+                }
+            }
+/*
+            if (binfo.second.x) {
+                bone_x.m_name = "x_" + binfo.first;
+                bone_x.m_parent = bone.m_parent;
+                bone_x.m_type = "Bone";
+                bone_x.m_pos[1] = matrixMultiply(matrixMultiply(matrixGetRotationX(rv.x), matrixGetTranslation(tv)), mbase);
+            }
+            if (binfo.second.y) {
+                bone_y.m_name = "y_" + binfo.first;
+                bone_y.m_parent = bone_x.m_name.IsEmpty()?bone.m_parent:bone_x.m_name;
+                bone_y.m_type = "Bone";
+                bone_y.m_pos[1] = matrixMultiply(matrixMultiply(matrixMultiply(matrixGetRotationX(rv.x),matrixGetRotationY(rv.y)), matrixGetTranslation(tv)), mbase);
+            }
+            if (binfo.second.z) {
+                bone.m_parent = bone_y.m_name.IsEmpty()?bone_x.m_name:bone_y.m_name;
+                bone.m_pos[1] = matrixMultiply(matrixMultiply(matrixMultiply(matrixMultiply(matrixGetRotationX(rv.x),matrixGetRotationY(rv.y)),matrixGetRotationZ(rv.z)), matrixGetTranslation(tv)), mbase);
+                if (binfo.second.x) {
+                    m_bones[bone_x.m_name] = bone_x;
+                    m_boneId.push_back(bone_x.m_name);
+                }
+                if (binfo.second.y) {
+                    m_bones[bone_y.m_name] = bone_y;
+                    m_boneId.push_back(bone_y.m_name);
+                }
+            } else {
+                bone.m_parent = bone_y.m_parent;
+                bone.m_pos[1] = bone_y.m_pos[1];
+                m_bones[bone_x.m_name] = bone_x;
+                m_boneId.push_back(bone_x.m_name);
+            }
+            foreach (c3DAnimation::pair& ani, m_animations) {
+                if (has(ani.second.m_bones, binfo.first)) {
+                    c3DAnimBone abone_x, abone_y, abone_z;
+                    c3DAnimBone& abone = ani.second.m_bones.find(binfo.first)->second;
+                    abone_x.m_name = "x_" + binfo.first;
+                    abone_y.m_name = "y_" + binfo.first;
+                    foreach(txyz& fr, abone.m_rotations) {
+                        if (binfo.second.x)
+                            abone_x.m_rotations.push_back(txyzMake(fr.Time, fr.x, 0, 0));
+                        if (binfo.second.y)
+                            abone_y.m_rotations.push_back(txyzMake(fr.Time, 0, fr.y, 0));
+                        if (binfo.second.z)
+                            abone_z.m_rotations.push_back(txyzMake(fr.Time, 0, 0, fr.z));
+                    }
+                    float maxtime = abone.m_rotations[abone.m_rotations.size()-1].Time;
+                    if (binfo.second.x) {
+                        abone_x.m_translations = abone.m_translations;
+                        abone_y.m_translations.push_back(txyzMake(0.0, 0.0, 0.0, 0.0));
+                        abone_y.m_translations.push_back(txyzMake(maxtime, 0.0, 0.0, 0.0));
+                    } else {
+                        abone_y.m_translations = abone.m_translations;
+                    }
+                    abone.m_translations.clear();
+                    abone.m_translations.push_back(txyzMake(0.0, 0.0, 0.0, 0.0));
+                    abone.m_translations.push_back(txyzMake(maxtime, 0.0, 0.0, 0.0));
+                    if (binfo.second.z) {
+                        abone.m_rotations = abone_z.m_rotations;
+                        if (binfo.second.x)
+                            ani.second.m_bones[abone_x.m_name] = abone_x;
+                        if (binfo.second.y)
+                            ani.second.m_bones[abone_y.m_name] = abone_y;
+                    } else {
+                        abone.m_rotations = abone_y.m_rotations;
+                        ani.second.m_bones[abone_x.m_name] = abone_x;
+                    }
+                }
+            }
+*/
+        }
+    }
+}
+#endif
+
 void c3DLoader::calculateBonePos1() {
     foreach(c3DBone::pair& bone, m_bones) {
         if (bone.second.m_parent.IsEmpty()) {
             bone.second.m_pos[0] = bone.second.m_pos[1];
         } else {
-            bone.second.m_pos[0] = matrixMultiply(bone.second.m_pos[1], matrixInverse(m_bones[bone.first].m_pos[1]));
+            bone.second.m_pos[0] = matrixMultiply(bone.second.m_pos[1], matrixInverse(m_bones[bone.second.m_parent].m_pos[1]));
         }
     }
 

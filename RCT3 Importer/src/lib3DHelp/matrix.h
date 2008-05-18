@@ -27,6 +27,8 @@
 #define OVLMATRIX_H_INCLUDED
 
 #include <vector>
+#include <math.h>
+
 #include "vertex.h"
 #include "boneanim.h"
 #include "3DLoaderTypes.h"
@@ -39,13 +41,30 @@ r3::VECTOR vectorNormalize(const float x, const float y, const float z);
 inline r3::VECTOR vectorNormalize(const r3::VECTOR& v) {
     return vectorNormalize(v.x, v.y, v.z);
 }
-inline r3::VECTOR vectorMake(const float x, const float y, const float z) {
-    r3::VECTOR v;
+inline void vectorMake(r3::VECTOR& v, const float x, const float y, const float z) {
     v.x = x;
     v.y = y;
     v.z = z;
+}
+inline r3::VECTOR vectorMake(const float x, const float y, const float z) {
+    r3::VECTOR v;
+    vectorMake(v, x, y, z);
     return v;
 }
+inline void txyzMake(r3::txyz& v, const float t, const float x, const float y, const float z) {
+    v.Time = t;
+    v.x = x;
+    v.y = y;
+    v.z = z;
+}
+inline r3::txyz txyzMake(const float t, const float x, const float y, const float z) {
+    r3::txyz v;
+    txyzMake(v, t, x, y, z);
+    return v;
+}
+
+r3::txyz txyzEulerToAxis(const r3::txyz& euler);
+
 inline r3::VERTEX2 vertex2vertex2(const r3::VERTEX& v, unsigned char bone) {
     r3::VERTEX2 ret;
     ret.position = v.position;
@@ -92,7 +111,12 @@ inline r3::VERTEX vertex22vertex(const r3::VERTEX2& v) {
     return ret;
 }
 
-r3::MATRIX matrixGetUnity();
+void matrixSetUnity(r3::MATRIX& m);
+inline r3::MATRIX matrixGetUnity() {
+    r3::MATRIX m;
+    matrixSetUnity(m);
+    return m;
+}
 r3::MATRIX matrixGetFixOrientation(const c3DLoaderOrientation orient = ORIENTATION_RIGHT_ZUP);
 void txyzFixOrientation(r3::txyz& src, const c3DLoaderOrientation& orient, bool rotate = false);
 r3::MATRIX matrixGetTranslation(const float x, const float y, const float z);
@@ -104,7 +128,12 @@ r3::MATRIX matrixGetRotationX(const float rad);
 r3::MATRIX matrixGetRotationY(const float rad);
 r3::MATRIX matrixGetRotationZ(const float rad);
 
-r3::VECTOR matrixExtractTranslation(const r3::MATRIX& m);
+inline void matrixExtractTranslation(const r3::MATRIX& m, r3::VECTOR& t) {
+    vectorMake(t, m._41, m._42, m._43);
+}
+inline r3::VECTOR matrixExtractTranslation(const r3::MATRIX& m) {
+    return vectorMake(m._41, m._42, m._43);
+}
 
 // Note: the IP (In Place) functions return the result in the first parameter or the first
 //       member of the array. They also return a pointer to this result.
@@ -127,6 +156,13 @@ r3::VERTEX matrixApply(const r3::VERTEX& v, const r3::MATRIX& m, const r3::MATRI
 r3::VERTEX *matrixApplyIP(r3::VERTEX *v, const r3::MATRIX& m, const r3::MATRIX& mnormal);
 r3::VERTEX2 matrixApply(const r3::VERTEX2& v, const r3::MATRIX& m, const r3::MATRIX& mnormal);
 r3::VERTEX2 *matrixApplyIP(r3::VERTEX2 *v, const r3::MATRIX& m, const r3::MATRIX& mnormal);
+
+inline void matrixExtractRotation(const r3::MATRIX& m, r3::VECTOR& r, bool alternate = false) {
+    float s = alternate?-1:1;
+    r.x = atan2(-m.m[1][2]*s, m.m[2][2]*s);
+    r.y = asin(m.m[0][2]*s)+(alternate?M_PI:0);
+    r.z = atan2(-m.m[0][1]*s, m.m[0][0]*s);
+}
 
 template <class T>
 inline void doFixOrientation(T& v, const c3DLoaderOrientation& orient) {

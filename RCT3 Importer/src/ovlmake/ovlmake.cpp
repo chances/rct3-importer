@@ -363,7 +363,7 @@ int DoCompile(const wxCmdLineParser& parser) {
                     wxLogMessage(_("Processing raw xml file..."));
                     WRITE_RCT3_EXPERTMODE(true);
                     if (!parser.Found(wxT("v")))
-                        WRITE_RCT3_RAWMODE(true);
+                        WRITE_RCT3_MOREEXPERTMODE(true);
                     cRawParser rovl;
                     rovl.SetUserDir(wxStandardPaths::Get().GetDocumentsDir());
                     if (!bake.IsEmpty()) {

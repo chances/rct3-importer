@@ -87,8 +87,11 @@ public:
     typedef std::pair<const wxString, c3DAnimBone> pair;
 public:
     wxString m_name;
+    bool m_axis;
     std::vector<r3::txyz> m_translations;
     std::vector<r3::txyz> m_rotations;
+
+    c3DAnimBone(): m_axis(false) {}
 };
 
 class c3DAnimation {
@@ -108,8 +111,9 @@ public:
     std::set<wxString> m_meshes;
     std::set<wxString> m_bones;
     std::set<wxString> m_animations;
+    bool m_forceanim;
 
-    c3DGroup(): m_loddistance(-1.0) {}
+    c3DGroup(): m_loddistance(-1.0), m_forceanim(false) {}
 };
 
 class c3DSpline {
@@ -199,6 +203,7 @@ protected:
     // no m_meshes and no m_warnings signal that the loader did not recognize the file.
     static c3DLoaderCache g_cache;
 
+    //void splitBones();
     void calculateBonePos1();
     void makeDefaultGroup(const wxString& name = "");
 public:

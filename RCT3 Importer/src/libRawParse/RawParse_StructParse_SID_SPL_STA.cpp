@@ -74,12 +74,8 @@ void cRawParser::ParseSID(cXmlNode& node) {
             OPTION_PARSE(unsigned long, sid.colours.defaultcol[2], ParseUnsigned(child, wxT(RAWXML_SID_COLOURS), wxT("choice3")));
         } else if (child(RAWXML_SID_SQUAREUNKNOWNS)) {
             cSidSquareUnknowns squ;
-            OPTION_PARSE(unsigned long, squ.unk6, ParseUnsigned(child, wxT(RAWXML_SID_SQUAREUNKNOWNS), wxT("u6")));
-            OPTION_PARSE(unsigned long, squ.unk7, ParseUnsigned(child, wxT(RAWXML_SID_SQUAREUNKNOWNS), wxT("u7")));
-            if (child.hasProp("u8")) {
-                OPTION_PARSE(unsigned long, squ.unk8, ParseUnsigned(child, wxT(RAWXML_SID_SQUAREUNKNOWNS), wxT("u8")));
-                squ.use_unk8 = true;
-            }
+            OPTION_PARSE(unsigned long, squ.min_height, ParseUnsigned(child, wxT(RAWXML_SID_SQUAREUNKNOWNS), wxT("minHeight")));
+            OPTION_PARSE(unsigned long, squ.max_height, ParseUnsigned(child, wxT(RAWXML_SID_SQUAREUNKNOWNS), wxT("maxHeight")));
             OPTION_PARSE(unsigned long, squ.unk9, ParseUnsigned(child, wxT(RAWXML_SID_SQUAREUNKNOWNS), wxT("u9")));
 
             if (child.hasProp("flags")) {

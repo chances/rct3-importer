@@ -40,20 +40,35 @@ using namespace std;
 const char* ovlSIDManager::NAME = "SceneryItem";
 const char* ovlSIDManager::TAG = "sid";
 
-void cSidSquareUnknowns::Fill(r3::SceneryItemData* i) {
+void cSidSquareUnknowns::Fill(r3::SceneryItemData* i) const {
     i->flags2 = 0;
     for (unsigned long x = 0; x<32; ++x) {
         if (flag[x])
             i->flags2 += (1 << x);
     }
-    i->unk2 = unk6;
-    i->unk3 = unk7;
-    if (use_unk8)
-        *(i->unk4) = unk8;
-    else
+    i->unk2 = min_height;
+    i->unk3 = max_height;
+
+    int height = GetHeight();
+    if (height) {
+        for(int h = 0; h < (height/32); ++h)
+            i->unk4[h] = 0xffffffff;
+        if (height % 32)
+            i->unk4[height / 32] = (1 << (height % 32)) - 1;
+    } else
         i->unk4 = NULL;
     i->unk5 = unk9;
 }
+
+/** @brief GetHeightSize
+  *
+  * @todo: document this function
+  */
+int cSidSquareUnknowns::GetHeightSize() const {
+    int height = GetHeight();
+    return ((height / 32) + (height % 32)?1:0) * 4;
+}
+
 
 void cSidImporterUnknowns::Fill(r3::SceneryItem* i) {
     i->flags1 = 0;
@@ -187,13 +202,13 @@ void ovlSIDManager::AddSID(const cSid& sid) {
     if (sid.squareunknowns.size()) {
         if (sid.squareunknowns.size()>1) {
             for (unsigned long x = 0; x < sid.position.xsquares * sid.position.ysquares; ++x) {
-                if (sid.squareunknowns[x].use_unk8) {
-                    m_commonsize += sizeof(unsigned long);
+                if (sid.squareunknowns[x].GetHeight()) {
+                    m_commonsize += sid.squareunknowns[x].GetHeightSize();
                 }
             }
         } else {
-            if (sid.squareunknowns[0].use_unk8) {
-                m_commonsize += sid.position.xsquares * sid.position.ysquares * sizeof(unsigned long);
+            if (sid.squareunknowns[0].GetHeight()) {
+                m_commonsize += sid.position.xsquares * sid.position.ysquares * sid.squareunknowns[0].GetHeightSize();
             }
         }
     }
@@ -266,15 +281,15 @@ void ovlSIDManager::Make(cOvlInfo* info) {
         if (it->second.squareunknowns.size()) {
             for (unsigned long x = 0; x < it->second.position.xsquares * it->second.position.ysquares; ++x) {
                 if (it->second.squareunknowns.size() >= (it->second.position.xsquares * it->second.position.ysquares)) {
-                    if (it->second.squareunknowns[x].use_unk8) {
+                    if (it->second.squareunknowns[x].GetHeight()) {
                         c_sid->data[x].unk4 = reinterpret_cast<unsigned long*>(c_commondata);
-                        c_commondata += sizeof(unsigned long);
+                        c_commondata += it->second.squareunknowns[x].GetHeightSize();
                         GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->data[x].unk4));
                     }
                 } else {
-                    if (it->second.squareunknowns[0].use_unk8) {
+                    if (it->second.squareunknowns[0].GetHeight()) {
                         c_sid->data[x].unk4 = reinterpret_cast<unsigned long*>(c_commondata);
-                        c_commondata += sizeof(unsigned long);
+                        c_commondata += it->second.squareunknowns[0].GetHeightSize();
                         GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->data[x].unk4));
                     }
                 }

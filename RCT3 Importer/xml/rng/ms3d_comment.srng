@@ -6,18 +6,23 @@
 			<srng:interleave>
 				<srng:element name="name" occurs="?" type="string"/>
 				<srng:element name="path" occurs="?" type="string"/>
-				<srng:element name="noshadow" occurs="?"/>
+				<srng:element name="animation" occurs="?" type="string"/>
+				<srng:element name="noshadow" occurs="?">
+					<srng:empty/>
+				</srng:element>
 				<srng:element name="lod" occurs="*">
 					<srng:attribute name="name" type="string"/>
 					<srng:attribute name="distance" type="float"/>
+					<srng:attribute name="forceanim" occurs="?">
+					  <srng:choice>
+					    <srng:value>0</srng:value>
+					    <srng:value>1</srng:value>
+					  </srng:choice>
+					</srng:attribute>
 					<srng:interleave>
 						<srng:element name="mesh" occurs="+" type="string"/>
-						<srng:element name="bone" occurs="+" type="string"/>
+						<srng:element name="bone" occurs="*" type="string"/>
 					</srng:interleave>
-				</srng:element>
-				<srng:element name="rename" occurs="*">
-					<srng:attribute name="from" type="string"/>
-					<srng:attribute name="to" type="string"/>
 				</srng:element>
 			</srng:interleave>
 		</srng:element>

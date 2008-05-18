@@ -50,12 +50,12 @@
 					<Add option="-DDEBUG" />
 					<Add option="-D__WXDEBUG__" />
 					<Add option="-DUNICODE" />
-					<Add directory="$(#wx3.lib)\base-unicode-debug-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\base-unicode-debug-static-2.9" />
 				</Compiler>
 				<Linker>
 					<Add library="libRawParseud" />
 					<Add library="libOVLDumpd" />
-					<Add library="3DHelpud" />
+					<Add library="3DHelpubd" />
 					<Add library="WXHelpbud" />
 					<Add library="libASE" />
 					<Add library="wx_baseud-2.9" />

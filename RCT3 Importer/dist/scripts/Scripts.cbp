@@ -20,7 +20,9 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
-		<Unit filename="Blender/export_model_xml.py" />
+		<Unit filename="Blender\bake_nla_to_action.py" />
+		<Unit filename="Blender\export_model_xml.py" />
+		<Unit filename="Blender\readme.txt" />
 		<Extensions>
 			<code_completion />
 			<AutoVersioning>

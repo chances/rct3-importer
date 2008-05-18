@@ -11,6 +11,8 @@
 
 #include "wx_pch.h"
 
+#include <wx/gdicmn.h>
+
 #include <Magick++.h>
 
 #include "wxgmagick.h"
