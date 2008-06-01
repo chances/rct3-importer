@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<article>
+  <title>Creating Flat Rides</title>
+  <section>
+    <title>Introduction</title>
+    <para>Before we start:</para>
+    <warning>
+      <para>This tutorial is not for beginners, it requires sound knowledge of
+      modelling, creating CS and animating. I will <emphasis>not</emphasis>
+      explain that here! Also you need to do a lot of experimentation
+      yourself, I'll only answer questions about tools I created, not about
+      other apps.</para>
+    </warning>
+    <para>What you'll need:</para>
+    <itemizedlist>
+      <listitem>
+        <para>As personal assets you need computer savvyness, patience and fun
+        experimentating. A high frustration tolerance also doesn't
+        hurt.</para>
+      </listitem>
+      <listitem>
+        <para>A modeller that is able to produce animation and knowledge how
+        to do that or a lot of patience to animate by hand. For now I suggest
+        Blender and this tutorial will focus on that.</para>
+      </listitem>
+      <listitem>
+        <para>A way to create splines. Basically the same reasoning as
+        animations. I also recommend Blender for that.</para>
+      </listitem>
+      <listitem>
+        <para>Recent beta versions of the importer and ovlmake.</para>
+      </listitem>
+      <listitem>
+        <para>Recommended, but not necessary, is a good xml editor. Try
+        <application>XML Copy Editor</application>.</para>
+      </listitem>
+    </itemizedlist>
+    <para>To finish the introduction, a brief overview of what you need to
+    do:</para>
+    <itemizedlist>
+      <listitem>
+        <para>Create the model</para>
+      </listitem>
+      <listitem>
+        <para>Animate it. You'll need four separate animations. This includes
+        creation of the bone skeleton and effect bones.</para>
+      </listitem>
+      <listitem>
+        <para>Create at least three splines</para>
+      </listitem>
+      <listitem>
+        <para>Assemble the above in the importer</para>
+      </listitem>
+      <listitem>
+        <para>Write an xml file for ovlmake and create the ride with it</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+  <section>
+    <title>Creating the model</title>
+    <para>Create your model as you would for custom scenery. Things you need
+    to keep in mind are:</para>
+    <itemizedlist>
+      <listitem>
+        <para>Things that need to be animated need to be in separate meshes.
+        That's not a limitation of RCT3, but of the current toolchain.
+        Unfortunately there is no easy way to fix that, so you'll have to live
+        with it.</para>
+      </listitem>
+      <listitem>
+        <para>Rides usually have a higher polygon count, so if you have
+        1000-3000, you're well wihin the limits of the rides RCT3 has. But if
+        you go that high, you need to provide LODs, otherwise your ride will
+        disappear quite fast.</para>
+      </listitem>
+      <listitem>
+        <para>Model your ride in rest (not running) state. For most things
+        that's somewhat obvious, but I'm personally tempted to model
+        restraints in closed state, if you're as well, resist that temptation!
+        Restraints need to be in open/released state.</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+  <section>
+    <title>Animating the model</title>
+    <para>As written in the introduction, you'll need to create four
+    animations.</para>
+    <orderedlist>
+      <listitem>
+        <para>The rest animation. This is pretty trivial. As you know, bones
+        need to be <quote>animated</quote> to their positions, and this is the
+        animation that does it as long as the ride does not run. This
+        animation also seems to run a full cycle after the last peep got to
+        it's seat, so in most cases to speed things up, make this only one
+        frame, that's enough. There are also rides in RCT3 where this
+        <quote>really</quote> animates some parts of the ride, but in my hands
+        that didn't work. I'm not sure what needs to be done to make it work,
+        maybe only parts not bearing peep effect points can be animated, I
+        don't know.</para>
+      </listitem>
+      <listitem>
+        <para>The start up animation. This brings the ride up to run. It
+        consists of everything before the part that will be repeated if the
+        user selects multiple circuits. Things usually done here are closing
+        the restraints, pulling things up and speeding up rotations (you can
+        see that in action in exactly this order on my Jumpin' Jack
+        ride).</para>
+      </listitem>
+      <listitem>
+        <para>The loop animation. The main animation. This part is repeated if
+        the user selects multiple circuits.</para>
+      </listitem>
+      <listitem>
+        <para>The stop animation. The logic inverse to the start up animation,
+        ie slow down, return to the rest position and open the
+        restraints.</para>
+      </listitem>
+    </orderedlist>
+    <section>
+      <title>A few general notes about effect bones</title>
+      <para>In animated CS (and flat rides are in fact pretty much only an
+      advanced form of animated CS), effect points are identical to bones, so
+      I will call them effect bones. It is usually not recommended to have
+      meshes moved by effect bones. I've seen it work and not work, so better
+      take no chances.</para>
+      <important>
+        <para>In contrast to most of the effect points used in CS, for all
+        I'll mention here not only position but also orientation
+        matters!</para>
+      </important>
+      <para>There's four effect point types I want to mention here. Lights
+      also work, but I won't go into detail about them. All of the following
+      use a running number sybolized by <quote>XX</quote>.</para>
+      <itemizedlist>
+        <listitem>
+          <para>peepXX. Mandatory. These represent the peeps on the ride and
+          the number (somewhat obviously) determines the ride's capacity. I so
+          far only used sitting positions, and they differ from benches. The
+          point is somewhat more intuitive and needs to be approximately at
+          the end of the peeps bottom (butt). I don't know where they have to
+          be for standing positions.</para>
+        </listitem>
+        <listitem>
+          <para>inspectionpointXX. Mandatory. The mechanic will walk there to
+          inspect and repair the ride. So far I've only seen one
+          (inspectionpoint01).</para>
+        </listitem>
+        <listitem>
+          <para>cameraXX. On-ride camera, peep category.</para>
+        </listitem>
+        <listitem>
+          <para>staticXX. On-ride camera, static category. Despite the name,
+          these can be animated as well.</para>
+        </listitem>
+      </itemizedlist>
+      <para>I'll explain how to properly set up orientation in Blender below.
+      If you do it in a other way, you're on your own.</para>
+    </section>
+    <section>
+      <title>Animating in Blender</title>
+      <para>Blender offers a plethora of possibilities to animate. My script
+      only supports 2/3 of one, but as you'll see, that's enough =)</para>
+      <para>To easily support transferral of animated models (and splines)
+      from Blender to the Importer/ovlmake I've designed a special model file
+      format and provided an export script for this format. All further
+      explanations regarding Blender require you to use this script and
+      format. In the script directory you'll find a readme explaining the
+      script options and some general notes as well as an explanation of the
+      second script I'll mention later. Now would be a good time to read this
+      readme. I'll repeat the most important information, but read in
+      nevertheless.</para>
+      <important>
+        <para>The export script ignores all things whose name starts with a
+        <quote>_</quote> (underscore). You can use this for helper objects and
+        bones needed for the animation, taking pictures or recording a movie
+        of your ride in Blender to ensure they don't accidentally get
+        exported.</para>
+      </important>
+      <para>RCT3-compatible animation in Blender is done by using an armature
+      and recording Loc (Translation) and Quat (Rotation) IPOs for poses.
+      Always make sure you record all channels of a certain IPO type (XYZ for
+      Loc and QXYZ for Quat). Other types of animation (mostly object
+      animation and Scale IPOs for poses) are not supported. The Blender
+      entity that is exported as an animation is an Action. There is a way to
+      use the NLA, more on that later.</para>
+      <section>
+        <title>Creating the Armature</title>
+        <para>Create the armature as described in lots of Blender animation
+        tutorials.</para>
+        <important>
+          <para>After adding the armature, <emphasis>immediately</emphasis>
+          make sure it's origin is 0,0,0 and that rotation and scale is
+          applied to object data. <emphasis>Never</emphasis> transform your
+          armature object!</para>
+        </important>
+        <para>Now start to add bones. Make sure the rest pose (the one you see
+        in edit mode) is also the rest pose of yoru ride! You can use bone
+        constraints, but you need to keep some caveats in mind, see
+        below.</para>
+      </section>
+      <section>
+        <title>Effect bones</title>
+        <para>Unfortunately there is no easy way to show a bone's coordinate
+        system in Blender (at least none I found). Therefore there is an
+        alternate way to create effect bones in a more convenient and (imo)
+        intuitive way. Three types of Blender objects will be exported as
+        bones:</para>
+        <orderedlist>
+          <listitem>
+            <para>Empties. An Empty is a catch-all effect bone marker. There
+            is a special mode mostly for peep bones. Normally peeps would look
+            in -X direction of the Empty. I fond that a bit unintuitive, so if
+            you set the Empties display size to less than 0.6 (I normally use
+            0.5), it will be exported as if rotated 180°, so just point the
+            X-Axis the way the peep should look. The same is necessary if you
+            want to use the Empty as a camera, but there's a better
+            way.</para>
+          </listitem>
+          <listitem>
+            <para>Cameras. A camera can be used like an Empty, but it is
+            transformed in a way that if used for an on-ride camera, it will
+            look in the correct direction (not quite trivial, as untransformed
+            Cameras look down in Blender). You need to name the camera
+            properly though, as the name is taken as is (e.g.
+            <quote>static01</quote>). If you set the lens value of the camera
+            to 15.5, you'll have approxymately the same view through the
+            camera in Blender as in RCT3.</para>
+          </listitem>
+          <listitem>
+            <para>Lamps. A lamp lamp will be exported as a light effect bone.
+            There are basically three modes.</para>
+            <itemizedlist>
+              <listitem>
+                <para>Full automatic mode. I will not discuss that here as it
+                doesn't work reliably in connection with armature based
+                animation.</para>
+              </listitem>
+              <listitem>
+                <para>Half-automatic mode. The recommended way. You need to
+                name your Lamp lightstartXX_ (note the underscore!). XX is the
+                running number of your light effect bones. The exact light
+                effect bone type is determined from the Lamp's settings. The
+                <guibutton>Ray Shadow</guibutton> button determines whether
+                the light shines (activated) or not (not activated). The
+                <guibutton>OnlyShadow</guibutton> button determines whether
+                the bulb is shown (not activated) or not (activated). So
+                combinations of these two select lightstart, nblightstart and
+                simplelightstart. <guibutton>Ray Shadow</guibutton> off and
+                <guibutton>OnlyShadow</guibutton> on would mean a non-shining
+                light without a bulb and is not supported. The lamps distance
+                value is taken as the radius (0.5 will give 50cm). Normally,
+                the lights colour is taken form the Lamps colour. If you want
+                to have a recolourable light, activate the
+                <guibutton>Sphere</guibutton> button. The Energy value will
+                then determine which colour option will be taken (rounded to
+                full value: &lt;=1: first, 2: second, &gt;=3 third).</para>
+                <note>
+                  <para>To keep those from interfereing with lighting set up
+                  for rendering in Blender, put your Lamps for light effect
+                  bones on a separate layer and activate the
+                  <guibutton>Layer</guibutton> button for them.</para>
+                </note>
+              </listitem>
+              <listitem>
+                <para>Manual mode: just name your Lamps as you would in the
+                importer. Refer to the script readme if Blenders name lengh
+                limit kicks in, but make sure the Object name doesn't end with
+                an underscore in that case!</para>
+              </listitem>
+            </itemizedlist>
+          </listitem>
+        </orderedlist>
+      </section>
+      <section>
+        <title>Excurse: bone constraints</title>
+        <para>Bone constraints are tremendously useful in some cases, but you
+        need to keep a few caveats in mind.</para>
+        <itemizedlist>
+          <listitem>
+            <para>Never record keyframes on bones affected by bone
+            constraints, Blender does not do that correctly. As soon as you
+            use bone constraints, you need to bake your actions (See the
+            script readme).</para>
+          </listitem>
+          <listitem>
+            <para>This also affects your rest state! You need to manually edit
+            your bones into their constrained states in rest state. So if your
+            pose is in rest state, no bones may move when you switch in and
+            out of edit mode.</para>
+          </listitem>
+          <listitem>
+            <para>The TrackTo constraint is one of the most useful ones, but
+            may need special attention to work flawless. For the helper bones
+            you might need, remember to start their names with an underscore
+            so they don't get exported.</para>
+            <orderedlist>
+              <listitem>
+                <para>Do not track objects whose position or orientation is
+                influenced by constraints on other bones. If you need to do
+                that, place a helper bone there and track that.</para>
+              </listitem>
+              <listitem>
+                <para>Do not have two bones track each-other. Make one track
+                the other and place a helper bone at the first ones position
+                and have the other bone track that (if you wonder why you may
+                want to do that, think pneumatic pistons).</para>
+              </listitem>
+              <listitem>
+                <para>In general it's less error-prone to generally track only
+                bones.</para>
+              </listitem>
+            </orderedlist>
+          </listitem>
+        </itemizedlist>
+      </section>
+      <section>
+        <title>Assigning objects to your Armature</title>
+        <para>The easiest and least error-prone way to assign your objects (be
+        they meshes or other objects for effect bones) to your Armature is to
+        use bone parenting. Put the Armature in pose mode, then first select
+        the object you want to assign and Shift-select the bone you want to
+        assign it to. Then press <keycombo>
+            <keycap>Ctrl</keycap>
+            <keycap>P</keycap>
+          </keycombo> and select <guimenuitem>Bone</guimenuitem>.</para>
+      </section>
+      <section>
+        <title>Animating</title>
+        <para>First I would suggest you to record all bones for your rest
+        animation in rest state. I also suggest to switch Blender to 30 frames
+        per second, that's what RCT3 uses. You need to keep in mind that
+        RCT3's animations are time based and start from zero. Blender uses
+        frames and starts at frame 1. So if you want to have a keyframe after
+        1 second in RCT3, you need to place it on frame 31.</para>
+        <para>Then you have two options.</para>
+        <section>
+          <title>Make separate actions <quote>by hand</quote></title>
+          <para>Record start up, loop and stop animations as separate actions.
+          I'd suggest to always record LocRot frames. The start up action
+          should start with a keyframe in rest state. The loop actions should
+          start with the identical pose keyframe that the start up action ends
+          with and return to that pose with the last keyframe. The stop action
+          starts again with that pose and returns to the rest pose.</para>
+        </section>
+        <section>
+          <title>Use the NLA</title>
+          <para>Create a couple of micro-actions for move patterns of your
+          ride (remember to start their names with an underscore) and assemble
+          the full program in the NLA. For these micro-actions I suggest only
+          recording what you really need (Loc/Rot/LocRot) so they mix
+          flawlessly. Use frame markers to mark the first frame of the start
+          up part (usually that will be frame 1), the loop part and the stop
+          part. Give those markers names (e.g. <quote>start</quote>,
+          <quote>loop</quote> and <quote>stop</quote>). Then use my Bake NLA
+          to Action script to create actions from these parts (don't forget to
+          activate <guibutton>Auto Split</guibutton>). The script can be found
+          in the Animation menu of a script window.</para>
+        </section>
+      </section>
+      <section>
+        <title>Export</title>
+        <para>Export options are explained in the readme, make sure you
+        understand them. If you use grouping, don't forget to include your
+        armature in all groups. Use one group per LOD. But before you actually
+        export, you should create the required splines.</para>
+      </section>
+    </section>
+  </section>
+  <section>
+    <title>Creating splines</title>
+    <para>A flat ride requires at least three splines. RCT3 splines are cubic
+    bézier curves, that means each spline point has two control points that
+    affect the curve shape. They mark paths for peeps to follow. We
+    need:</para>
+    <orderedlist>
+      <listitem>
+        <para>A circular loop spline. This defines a round course around the
+        primeter of the ride. It is used by the peeps to travel from the
+        entrance to the seat splines and back from the seat splines to the
+        exit. The same holds true for the mechanic and the mechanic
+        spline.</para>
+      </listitem>
+      <listitem>
+        <para>One or more seat splines. Those are used by the peeps to travel
+        from the loop spline to their effect bones and back.</para>
+      </listitem>
+      <listitem>
+        <para>A mechanic spline. Used by the mechanic to travel from the loop
+        spline to the inspectionpoint effect bone.</para>
+      </listitem>
+    </orderedlist>
+    <para>In general, peeps can only enter and leave splines at spline points!
+    This has the following consequences:</para>
+    <orderedlist>
+      <listitem>
+        <para>The loop spline should have spline points where entrances and
+        exits can be placed. Imagine the RCT3 grid below your ride and place
+        points near the center of outward facing square edeges.</para>
+      </listitem>
+      <listitem>
+        <para>The loop spline must have a spline point where a seat or the
+        mechanic spline branches off. Additionally only one spline can branch
+        off at the same spline point!</para>
+      </listitem>
+      <listitem>
+        <para>If a seat spline leads to more than one peep effect bone, it
+        needs a spline point near each. If a peep effect bone has no spline
+        point next to it, the peep can beam to it but will not be able to get
+        out.</para>
+      </listitem>
+    </orderedlist>
+    <para>Finally, do not move the control points too far away from their
+    spline point. I recommend going no farther away than half the distance
+    between the spline point and the next spline point in the direction of the
+    control point along the curve. To be safe, I'd keep it around 1/3 the
+    distance.</para>
+    <section>
+      <title>Splines in Blender</title>
+      <para>Use a Bézier Circle for the loop and Bézier Curves for the seat
+      and mech splines.</para>
+    </section>
+  </section>
+  <section>
+    <title>The Importer</title>
+    <para>This section is preliminary and doesn't explain anything about flat
+    rides at all yet. It for now just gives a basic rundown on things new in
+    the importer for you to keep in mind if you want to experiment.</para>
+    <itemizedlist>
+      <listitem>
+        <para>All changes affect only the creation of scenery ovls</para>
+      </listitem>
+      <listitem>
+        <para>The importer now saves scenery settings in a entirely new
+        format, so old versions are not able to open them.</para>
+      </listitem>
+      <listitem>
+        <para>It can still open old (scn) files. It can also open
+        ovlcompiler/ovlmake files and 3D model files. This is an
+        <quote>import</quote> in the sense other applications use the word. In
+        the case of model files, it tries to make the best of the information
+        provided. This mainly affects ms3d and my own modxml format. The
+        latter is a special 3D model file format I created for the purpose of
+        importing. So far there is only a Blender export script for it
+        (provided in the attached archive).</para>
+        <para>You (in some cases obviously) cannot save back into these
+        formats, only the new xml format is supported for that. Also most
+        information is not automatically updated (by that I mean if you change
+        the original file, it will not be updated in the scenery file if you
+        reload it). Only the <quote>classic</quote> thing, the 3D data of
+        model files, is automatically updated.</para>
+      </listitem>
+      <listitem>
+        <para>The format of the configuration file changed as well, so you
+        need to reenter it. Currently I recommend putting this version in a
+        new directory and not overwriting the stable version anyways.</para>
+      </listitem>
+      <listitem>
+        <para>Adding animation made changing the coordinate system support
+        necessary (the Fix Orientation matrix). Animations need to be fixed as
+        well, but cannot easily support a full matrix for transformation, so I
+        took this out of the model transformation matrix. Just choose the
+        correct one in the respective dropdown list. The default is saved with
+        the matrix, so press the button as in the old version (but don't edit
+        the matrix). The correct choice is usually Right-Handed, Z-Up (or Y-Up
+        for MilkShape).</para>
+      </listitem>
+      <listitem>
+        <para>The ovl-name was split up into a choice box for the directory,
+        an edit box for the name itself and a prefix edit box. The 'A' button
+        next to the name tries to automatically name it as was done in the old
+        importer version.</para>
+        <para>The prefix box needs a bit of more explanation. I chose to
+        prefix more internal things, as I'm not sure whether splines and
+        animations may become troublesome if names collide. Therefore every
+        name written into the ovls is prefixed. Normally you don't need to
+        care about that, but if you reference ovls either from the game itself
+        or created by earlier versions of the importer, you need to put
+        texture names into square brackets when assigning them in the mesh
+        settings.</para>
+      </listitem>
+      <listitem>
+        <para>You might have noticed that you cannot really edit animation in
+        the importer. That's a decision I made to keep he work I need to do on
+        the UI minimal. Any way that would have fulfilled my own quality
+        standards would have taken a lot of work. Therefore animation has to
+        come from other sources: </para>
+        <para><emphasis>Model files.</emphasis> Supported are MS3D and MODXML.
+        The first might not work fully correctly. People are testing this for
+        me and I hope to get it working as good as possible. The second has
+        the disadvantage that the current export script does not write Blender
+        animations. But the format is very simple, so you can write them by
+        hand. Blender can write resting animations, but I'll explain about
+        them in a different update </para>
+        <para><emphasis>ovlcompiler style xml files.</emphasis> Note that the
+        syntax changed a bit. Refer to the readmes.</para>
+        <para><emphasis>Other scenery xml files.</emphasis></para>
+      </listitem>
+      <listitem>
+        <para>You can use the <guibutton>L</guibutton> button beside the
+        animation list to load animations from these files. A right double
+        click on the button will clear the list before opening the load window
+        (in case you want to update changed animations). Of course the
+        <guibutton>L</guibutton> button does the same for all other lists
+        where it is present (the right double click is not yet implemented
+        everywhere).</para>
+      </listitem>
+      <listitem>
+        <para>You <emphasis>can</emphasis> edit on animations the animation
+        name, bone names and the coordinate system.</para>
+      </listitem>
+      <listitem>
+        <para>Animations need to be assigned to a lod to affect the model.
+        Animated scenery only uses one animation per lod, so the importer will
+        warn you if you add more. Some things need more animations. These are
+        for example toilets, rides, ride entrances and exits. The assignment
+        can be done in the lod edit window or with the respective button next
+        to the animation list (<guibutton>^</guibutton>).</para>
+      </listitem>
+      <listitem>
+        <para>All in all, animations and bone positions are very strange in
+        RCT3. I currently recommend to always add translation and rotation
+        keyframes if you want to animate a bone. Strictly speaking this is not
+        necessary, but RCT3 can do some strange things if not both are given.
+        Basically as soon as you animate a bone or one of it's parents you
+        need to animate the bone into place at the start, the bone position is
+        not enough. If neither it nor one of it's parents is animated, you do
+        not need to do this. That may sound strange at first, but is relevant
+        for effect bones, especially if they require a rotation (peeps,
+        particles or fireworks for example).</para>
+      </listitem>
+      <listitem>
+        <para>Parent-child relationships and bone positions are read from ms3d
+        and modxml files. If you need to update these, press the A button next
+        to the bone list in the model window.</para>
+      </listitem>
+      <listitem>
+        <para>If you need to manually edit bone positions, you should be aware
+        of the roles of pos1 and pos2.</para>
+        <itemizedlist>
+          <listitem>
+            <para>pos1 is relative to the parent bone.</para>
+          </listitem>
+          <listitem>
+            <para>pos2 is absolute in model space.</para>
+          </listitem>
+        </itemizedlist>
+        <para>So usually if a bone has no parent, edit pos1 and deactivate
+        pos2. If it has a parent, edit pos2 and calculate pos1 from it (Q
+        button, Calculate). This requires correct setup of the pos2 matrix of
+        the parent bone.</para>
+      </listitem>
+    </itemizedlist>
+  </section>
+</article>

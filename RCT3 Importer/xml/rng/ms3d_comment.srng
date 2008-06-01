@@ -6,7 +6,16 @@
 			<srng:interleave>
 				<srng:element name="name" occurs="?" type="string"/>
 				<srng:element name="path" occurs="?" type="string"/>
-				<srng:element name="animation" occurs="?" type="string"/>
+				<srng:group occurs="?">
+					<srng:element name="animation" type="string"/>
+					<srng:element name="animation" occurs="*" type="string">
+						<srng:attribute name="frame">
+							<srng:data type="unsignedInt">
+								<srng:param name="minInclusive">1</srng:param>
+							</srng:data>
+						</srng:attribute>
+					</srng:element>
+				</srng:group>
 				<srng:element name="noshadow" occurs="?">
 					<srng:empty/>
 				</srng:element>
@@ -22,6 +31,7 @@
 					<srng:interleave>
 						<srng:element name="mesh" occurs="+" type="string"/>
 						<srng:element name="bone" occurs="*" type="string"/>
+						<srng:element name="animation" occurs="*" type="string"/>
 					</srng:interleave>
 				</srng:element>
 			</srng:interleave>

@@ -84,15 +84,20 @@ inline void fixMS3DRotation(txyz& v) {
 
 cMS3DLoader::cMS3DLoader(const wxChar *filename): c3DLoader(filename) {
 wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s)"), filename);
-    if (cXmlInputOutputCallbackString::Init())
-        XMLCPP_RES_ADD(ms3d_comment, rng);
+//    if (cXmlInputOutputCallbackString::Init())
+//        XMLCPP_RES_ADD(ms3d_comment, rng);
 
-    std::auto_ptr<CMS3DFile> ms3df(new CMS3DFile());
+    cXmlInputOutputCallbackString::Init();
+    XMLCPP_RES_ADD_ONCE(ms3d_comment, rnc);
+
+    auto_ptr<CMS3DFile> ms3df(new CMS3DFile());
     if (!ms3df->LoadFromFile(wxString(filename).mb_str(wxConvFile)))
         throw E3DLoaderNotMyBeer();
 
     wxFileName f(filename);
-    wxString animationname = _("Default");
+    map<unsigned int, wxString> animations;
+    animations[0] = _("Default");
+    //wxString animationname = animations[0];
 
 wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename, ms3df->GetNumGroups(), ms3df->GetNumVertices());
 
@@ -101,7 +106,7 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
         cXmlDoc comm(c.comment, NULL, NULL, XML_PARSE_DTDLOAD);
         if (comm) {
             try {
-                cXmlValidatorRNVRelaxNG val(XMLCPP_RES_USE(ms3d_comment, rng).c_str());
+                cXmlValidatorRNVRelaxNG val(XMLCPP_RES_USE(ms3d_comment, rnc).c_str());
                 if (!val) {
                     wxString error(_("Internal Error: could not load ms3d comment schema:\n"));
                     foreach(const cXmlStructuredError& se, val.getStructuredErrors()) {
@@ -131,7 +136,14 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
                             temp.MakeAbsolute(f.GetPathWithSep());
                             m_path = temp.GetFullPath();
                         } else if (n("animation")) {
-                            animationname = n.wxcontent();
+                            unsigned long frame = 0;
+                            parseULongC(n.getPropVal("frame"), frame);
+                            if (frame) {
+                                animations[frame] = n.wxcontent();
+                            } else {
+                                animations[0] = n.wxcontent();
+//                                animationname = animations[0];
+                            }
                         } else if (n("noshadow")) {
                             m_noshadow = true;
                         } else if (n("lod")) {
@@ -143,13 +155,15 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
                             gr.m_forceanim = forceanim;
                             foreach(const cXmlNode& ch, n.children()) {
                                 if (ch("mesh")) {
-                                    gr.m_meshes.insert(ch.content());
+                                    gr.m_meshes.insert(ch.wxcontent());
                                 } else if (ch("bone")) {
-                                    gr.m_bones.insert(ch.content());
+                                    gr.m_bones.insert(ch.wxcontent());
+                                } else if (ch("animation")) {
+                                    gr.m_animations.push_back(ch.wxcontent());
                                 }
                             }
-                            if (gr.m_bones.size() || forceanim)
-                                gr.m_animations.insert(animationname);
+                            if ((!gr.m_animations.size()) && (gr.m_bones.size() || forceanim))
+                                gr.m_animations.push_back(animations[0]);
                             m_groups[gr.m_name] = gr;
                         }
                     }
@@ -433,8 +447,12 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
         m_meshId.push_back(cmesh.m_name);
     }
 
-    c3DAnimation ani;
-    ani.m_name = animationname;
+    //c3DAnimation ani;
+    //ani.m_name = animationname;
+    typedef pair<unsigned int, wxString> animpair;
+    foreach(const animpair& an, animations) {
+        m_animations[an.second].m_name = an.second;
+    }
 
     for (int m = 0; m < ms3df->GetNumJoints(); m++) {
         ms3d_joint_t * joint;
@@ -449,6 +467,8 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
         m_bones[bone.m_name] = bone;
         m_boneId.push_back(bone.m_name);
     }
+
+    float fps = ms3df->GetAnimationFPS();
 
     for (int m = 0; m < ms3df->GetNumJoints(); m++) {
         ms3d_joint_t * joint;
@@ -478,18 +498,29 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
         posm.push_back(matrixGetRotationZ(rot.Z));
         posm.push_back(matrixGetTranslation(pos.X, pos.Y, pos.Z));
         m_bones[m_boneId[m]].m_pos[1] = matrixMultiply(posm);
-        ani.m_bones[m_boneId[m]].m_name = m_boneId[m];
+        //ani.m_bones[m_boneId[m]].m_name = m_boneId[m];
+        foreach(const animpair& an, animations) {
+            m_animations[an.second].m_bones[m_boneId[m]].m_name = m_boneId[m];
+        }
+
+        c3DAnimation* ani = &m_animations[animations[0]];
 
 #ifdef DUMP_ANIDATA
         wxLogMessage("  Translation frames:");
 #endif
         for (int i = 0; i < joint->numKeyFramesTrans; ++i) {
             txyz pf;
-            pf.Time = joint->keyFramesTrans[i].time;
+            unsigned int frame = roundf(joint->keyFramesTrans[i].time * fps);
+            pf.Time = static_cast<float>(frame - 1) / fps;
             pf.X = joint->position[0] + joint->keyFramesTrans[i].position[0];
             pf.Y = joint->position[1] + joint->keyFramesTrans[i].position[1];
             pf.Z = joint->position[2] + joint->keyFramesTrans[i].position[2];
-            ani.m_bones[m_boneId[m]].m_translations.push_back(pf);
+            ani->m_bones[m_boneId[m]].m_translations.push_back(pf);
+            if (has(animations, frame)) {
+                // Need to switch to the next animation
+                ani = &m_animations[animations[frame]];
+                ani->m_bones[m_boneId[m]].m_translations.push_back(pf);
+            }
 #ifdef DUMP_ANIDATA
         wxLogMessage("    %f: raw <%f/%f/%f>, written  <%f/%f/%f>", pf.Time,
             joint->keyFramesTrans[i].position[0],joint->keyFramesTrans[i].position[1],joint->keyFramesTrans[i].position[2],
@@ -497,17 +528,26 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
             );
 #endif
         }
+
+        ani = &m_animations[animations[0]];
+
 #ifdef DUMP_ANIDATA
         wxLogMessage("  Rotation frames:");
 #endif
         for (int i = 0; i < joint->numKeyFramesRot; ++i) {
             txyz pf;
-            pf.Time = joint->keyFramesTrans[i].time;
+            int frame = roundf(joint->keyFramesRot[i].time * fps);
+            pf.Time = static_cast<float>(frame - 1) / fps;
             pf.X = joint->rotation[0] + joint->keyFramesRot[i].rotation[0];
             pf.Y = joint->rotation[1] + joint->keyFramesRot[i].rotation[1];
             pf.Z = joint->rotation[2] + joint->keyFramesRot[i].rotation[2];
             fixMS3DRotation(pf);
-            ani.m_bones[m_boneId[m]].m_rotations.push_back(pf);
+            ani->m_bones[m_boneId[m]].m_rotations.push_back(pf);
+            if (has(animations, frame)) {
+                // Need to switch to the next animation
+                ani = &m_animations[animations[frame]];
+                ani->m_bones[m_boneId[m]].m_rotations.push_back(pf);
+            }
 #ifdef DUMP_ANIDATA
         wxLogMessage("    %f: raw <%f/%f/%f>, written  <%f/%f/%f>", pf.Time,
             joint->keyFramesRot[i].rotation[0],joint->keyFramesRot[i].rotation[1],joint->keyFramesRot[i].rotation[2],
@@ -532,9 +572,28 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
     }
 
     calculateBonePos1();
-    if (ani.m_bones.size()) {
-        m_animations[ani.m_name] = ani;
+
+    // Delete animation(s) if they are not animated
+    if (m_animations.size()) {
+        vector<wxString> todelete;
+        foreach(c3DAnimation::pair& an, m_animations) {
+            bool deleteme = true;
+            foreach(c3DAnimBone::pair& bn, an.second.m_bones) {
+                if (bn.second.m_translations.size() || bn.second.m_rotations.size()) {
+                    deleteme = false;
+                    break;
+                }
+            }
+            if (deleteme)
+                todelete.push_back(an.first);
+        }
+        foreach(const wxString& d, todelete) {
+            m_animations.erase(d);
+        }
     }
+    //if (ani.m_bones.size()) {
+    //    m_animations[ani.m_name] = ani;
+    //}
 
     if (!m_groups.size())
         makeDefaultGroup(wxFileName(filename).GetName());

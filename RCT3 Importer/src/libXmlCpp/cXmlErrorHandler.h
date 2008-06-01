@@ -31,6 +31,10 @@
 #include <vector>
 #include <libxml/xmlerror.h>
 
+#ifdef XMLCPP_USE_WXWIDGETS
+#include <wx/string.h>
+#endif
+
 namespace xmlcpp {
 
 void structurederrorwrap(void* ptr, xmlErrorPtr err);
@@ -79,11 +83,14 @@ protected:
     void releaseErrors();
     void transferErrors(cXmlErrorHandler& from);
     inline void addStructuredError(const cXmlStructuredError& err) { m_structurederrors.push_back(err); }
+    inline void addGenericError(const std::string& err) { m_genericerrors.push_back(err); }
 public:
     inline const std::vector<cXmlStructuredError>& getStructuredErrors() { return m_structurederrors; }
     inline void clearStructuredErrors() { m_structurederrors.clear(); }
     inline const std::vector<std::string>& getGenericErrors() { return m_genericerrors; }
     inline void clearGenericErrors() { m_genericerrors.clear(); }
+
+    inline bool hasErrors() { return m_structurederrors.size() + m_genericerrors.size(); }
 
     inline static const std::vector<cXmlStructuredError>& GetGlobalStructuredErrors() { return g_structurederrors; }
     inline static void ClearGlobalStructuredErrors() { g_structurederrors.clear(); }
@@ -91,6 +98,10 @@ public:
     inline static void ClearGlobalGenericErrors() { g_genericerrors.clear(); }
 
     virtual ~cXmlErrorHandler() {}
+
+#ifdef XMLCPP_USE_WXWIDGETS
+    wxString wxgetErrorList();
+#endif
 };
 
 } // Namespace

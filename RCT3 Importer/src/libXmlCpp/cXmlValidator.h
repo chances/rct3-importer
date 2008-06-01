@@ -34,6 +34,7 @@
 
 #include "cXmlClasses.h"
 #include "cXmlErrorHandler.h"
+#include "cXmlValidatorResult.h"
 
 namespace xmlcpp {
 
@@ -62,7 +63,7 @@ public:
     cXmlValidator(){}
     virtual ~cXmlValidator(){}
 
-    virtual int validate(boost::shared_ptr<xmlDoc>& doc, int options = OPT_NONE) = 0;
+    virtual cXmlValidatorResult validate(boost::shared_ptr<xmlDoc>& doc, cXmlValidatorResult::LEVEL retlevel = cXmlValidatorResult::VR_ERROR, int options = OPT_NONE) = 0;
     virtual bool ok() const = 0;
     virtual int getType() const = 0;
 

@@ -64,6 +64,7 @@ public:
     wxFileName filename;
     wxFileName ovlpath;
     wxString name;
+    wxString prefix;
     unsigned long version;
 //    long error;
 //    wxString objfile;
@@ -124,6 +125,7 @@ public:
 	bool Check();
 	void Make();
 	void MakeToOvl(cOvl& c_ovl);
+	wxString getPrefixed(const wxString& pref);
 	void CleanWork();
 
 	/// Determines if the ovl is a texture ovl.

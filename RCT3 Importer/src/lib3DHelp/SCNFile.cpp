@@ -46,6 +46,11 @@
 #include "xmldefs.h"
 #include "xmlhelper.h"
 
+#include "cXmlInputOutputCallbackString.h"
+#include "cXmlValidatorRNVRelaxNG.h"
+
+#include "rng/rct3xml-ovlcompiler-v1.rnc.gz.h"
+
 #ifndef MAX_PATH
 #define MAX_PATH 256
 #endif
@@ -889,18 +894,39 @@ bool cSCNFile::LoadXML(cXmlDoc& doc) {
     // start processing the XML file
     cXmlNode root = doc.root();
     if (!root(RCT3XML_CSCNFILE)) {
-        throw RCT3Exception(wxString::Format(_("Error loading xml file '%s'. Wrong root tag '%s'. Probably you tried to load a xml file made for a different purpose."), filename.GetFullPath().c_str(), STRING_FOR_FORMAT(root.name())));
+        throw RCT3Exception(wxString::Format(_("Error loading xml file '%s'. Wrong root element '%s'. Probably you tried to load a xml file made for a different purpose."), filename.GetFullPath().c_str(), STRING_FOR_FORMAT(root.name())));
+    }
+
+    if (READ_RCT3_VALIDATE()) {
+        cXmlInputOutputCallbackString::Init();
+        XMLCPP_RES_ADD_ONCE(rct3xml_ovlcompiler_v1, rnc);
     }
 
     wxString path = filename.GetPath();
 
     // Peak at version to detect ovlcompiler xml
-    if (root.hasProp("version")) {
+    if (root.ns() == XML_NAMESPACE_SCENERY) {
         return FromNode(root, path, 0);
-    } else {
+    } else if (root.ns() == XML_NAMESPACE_COMPILER) {
+        if (READ_RCT3_VALIDATE()) {
+            cXmlValidatorRNVRelaxNG val(XMLCPP_RES_USE(rct3xml_ovlcompiler_v1, rnc).c_str());
+            if (!val) {
+                wxString error(_("Internal Error: could not load ovlcompiler schema:\n"));
+                error += val.wxgetErrorList();
+                throw RCT3Exception(error);
+            }
+            if (doc.validate(val)) {
+                wxString error(_("Invalid ovlcompiler xml file:\n"));
+                error += val.wxgetErrorList();
+                throw RCT3Exception(error);
+            }
+        }
+
         version = VERSION_CSCNFILE_FIRSTXML;
         name = filename.GetName();
         return FromCompilerXml(root, path);
+    } else {
+        throw RCT3Exception(wxString::Format(_("Error loading xml file '%s'. Root element has no or unsupported namespace. Probably you forgot or mistyped the namespace declaration."), filename.GetFullPath().c_str()));
     }
 
 }
@@ -976,9 +1002,9 @@ bool cSCNFile::FromCompilerXml(cXmlNode& node, const wxString& path) {
             }
             wxLogDebug(wxT("Fix tag found: %s %s (%d)"), hand.c_str(), up.c_str(), static_cast<unsigned int>(ori));
         } else if (child(COMPILER_REFERENCE)) {
-            wxString ref = child.wxgetPropVal("path");
+            wxString ref = child.wxcontent();
             if (ref.IsEmpty())
-                throw RCT3Exception(_("REFERENCE tag misses path attribute."));
+                throw RCT3Exception(_("REFERENCE tag misses content."));
             references.Add(ref);
         } else if (child(COMPILER_OPTIONS)) {
             wxString te = child.wxgetPropVal("lods", "1");
@@ -1010,8 +1036,8 @@ bool cSCNFile::FromCompilerXml(cXmlNode& node, const wxString& path) {
         cLOD lod;
         lod.animated = true;
         lod.modelname = animatedmodels[0].name;
-        if (animations.size())
-            lod.animations.push_back(animations[0].name);
+        foreach(const cAnimation& an, animations)
+            lod.animations.push_back(an.name);
         switch (option_lods) {
             case 1: {
                     lod.distance = 4000;
@@ -1279,6 +1305,7 @@ bool cSCNFile::FromNode(cXmlNode& node, const wxString& path, unsigned long vers
         return false;
 
     name = node.wxgetPropVal("name");
+    prefix = node.wxgetPropVal("prefix");
 
     // Read ovl file
     ovlpath = node.wxgetPropVal("file", ".\\");
@@ -1348,6 +1375,8 @@ bool cSCNFile::FromNode(cXmlNode& node, const wxString& path, unsigned long vers
 cXmlNode cSCNFile::GetNode(const wxString& path) {
     cXmlNode node(RCT3XML_CSCNFILE);
     node.prop("name", name);
+    if (!prefix.IsEmpty())
+        node.prop("prefix", prefix);
     wxFileName temp = ovlpath;
     temp.MakeRelativeTo(path);
     node.prop("file", temp.GetPathWithSep());
@@ -1383,6 +1412,16 @@ bool cSCNFile::Check() {
     CleanWork();
 
     m_work.reset(new cSCNFile(*this));
+
+    if (name.IsEmpty()) {
+        wxLogError(_("No name set!"));
+        return false;
+    }
+
+    if (prefix.IsEmpty()) {
+        wxLogWarning(_("You should set a prefix!"));
+        warning = true;
+    }
 
 
     /////////////////////////////////////////////////////
@@ -1615,7 +1654,7 @@ void cSCNFile::Make() {
 
     try {
         wxFileName ovlfile = ovlpath;
-        ovlfile.SetName(name);
+        ovlfile.SetName(prefix+name);
         cOvl c_ovl(std::string(ovlfile.GetFullPath().mb_str(wxConvFile)));
         MakeToOvl(c_ovl);
         c_ovl.Save();
@@ -1625,6 +1664,18 @@ void cSCNFile::Make() {
         throw RCT3Exception(wxString::Format(_("Error from image library: %s"), wxString(e.what(), wxConvLocal).c_str()));
     }
 }
+
+/** @brief getPrefixed
+  *
+  * @todo: document this function
+  */
+wxString cSCNFile::getPrefixed(const wxString& pref) {
+    if ((pref[0] == '[') && (pref[pref.size()-1] == ']'))
+        return pref.AfterFirst('[').BeforeLast(']');
+    else
+        return prefix + pref;
+}
+
 
 #define PARSE_ALGO(arg, def) \
     { \
@@ -1706,7 +1757,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
             wxLogVerbose(_("Adding SVD: ") + name);
             ovlSVDManager* c_svd = c_ovl.GetManager<ovlSVDManager>();
             cSceneryItemVisual c_svis;
-            c_svis.name = name.ToAscii();
+            c_svis.name = getPrefixed(name).ToAscii();
             c_svis.sivflags = sivsettings.sivflags;
             c_svis.sway = sivsettings.sway;
             c_svis.brightness = sivsettings.brightness;
@@ -1721,22 +1772,22 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
             for (cLOD::iterator it = m_work->lods.begin(); it != m_work->lods.end(); ++it) {
                 cSceneryItemVisualLOD c_slod;
                 wxLogVerbose(_("  Adding LOD: ") + it->modelname);
-                c_slod.name = it->modelname.ToAscii();
+                c_slod.name = getPrefixed(it->modelname).ToAscii();
                 c_slod.distance = it->distance;
                 c_slod.unk2 = it->unk2;
                 c_slod.unk4 = it->unk4;
                 c_slod.unk14 = it->unk14;
                 if (it->animated) {
                     c_slod.meshtype = r3::Constants::SVD::LOD_Type::Animated;
-                    c_slod.boneshape = it->modelname.ToAscii();
+                    c_slod.boneshape = getPrefixed(it->modelname).ToAscii();
                     if (it->animations.size()) {
                         for (cStringIterator its = it->animations.begin(); its != it->animations.end(); ++its) {
-                            c_slod.animations.push_back(std::string(its->ToAscii()));
+                            c_slod.animations.push_back(std::string(getPrefixed(*its).ToAscii()));
                         }
                     }
                 } else {
                     c_slod.meshtype = r3::Constants::SVD::LOD_Type::Static;
-                    c_slod.staticshape = it->modelname.ToAscii();
+                    c_slod.staticshape = getPrefixed(it->modelname).ToAscii();
                 }
                 c_svis.lods.push_back(c_slod);
             }
@@ -1762,7 +1813,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
 //                        if (!i_mesh->disabled)
 //                            mesh_count++;
 //                    }
-                c_mod.name = i_mod->name.ToAscii();
+                c_mod.name = getPrefixed(i_mod->name).ToAscii();
 
                 // Determine transformation matrices
                 MATRIX transformMatrix;
@@ -1831,7 +1882,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                         //progress.Update(++progress_count);
                         cStaticShape2 c_ss2;
                         wxLogVerbose(_("  Adding group: ") + i_mesh->Name);
-                        c_ss2.fts = i_mesh->FTX.ToAscii();
+                        c_ss2.fts = getPrefixed(i_mesh->FTX).ToAscii();
                         c_ss2.texturestyle = i_mesh->TXS.ToAscii();
                         c_ss2.placetexturing = i_mesh->place;
                         c_ss2.textureflags = i_mesh->flags;
@@ -1939,7 +1990,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
 //                        if (!i_mesh->disabled)
 //                            mesh_count++;
 //                    }
-                c_bs1.name = i_mod->name.ToAscii();
+                c_bs1.name = getPrefixed(i_mod->name).ToAscii();
                 c_bs1.bones.push_back(cBoneStruct(true));
 
                 // Determine transformation matrices
@@ -2020,7 +2071,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
                         //progress.Update(++progress_count);
                         cBoneShape2 c_bs2;
                         wxLogVerbose(_("  Adding group: ") + i_mesh->Name);
-                        c_bs2.fts = i_mesh->FTX.ToAscii();
+                        c_bs2.fts = getPrefixed(i_mesh->FTX).ToAscii();
                         c_bs2.texturestyle = i_mesh->TXS.ToAscii();
                         c_bs2.placetexturing = i_mesh->place;
                         c_bs2.textureflags = i_mesh->flags;
@@ -2113,7 +2164,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
             ovlBANManager* c_ban = c_ovl.GetManager<ovlBANManager>();
             for (cAnimation::iterator i_anim = m_work->animations.begin(); i_anim != m_work->animations.end(); ++i_anim) {
                 cBoneAnim c_item;
-                c_item.name = i_anim->name.ToAscii();
+                c_item.name = getPrefixed(i_anim->name).ToAscii();
                 wxLogVerbose(_("Adding animation: ") + i_anim->name);
                 for (cBoneAnimation::iterator i_bone = i_anim->boneanimations.begin(); i_bone != i_anim->boneanimations.end(); ++i_bone) {
                     cBoneAnimBone c_bone;
@@ -2143,7 +2194,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
 
             cFlexiTextureInfoStruct c_ftis;
             wxLogVerbose(_("Adding texture: ") + i_ftx->Name);
-            c_ftis.name = i_ftx->Name.ToAscii();
+            c_ftis.name = getPrefixed(i_ftx->Name).ToAscii();
             c_ftis.fps = i_ftx->FPS;
             c_ftis.recolourable = i_ftx->Recolorable;
 
@@ -2241,7 +2292,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
         foreach(cImpSpline& cspl, m_work->splines) {
             cSpline spl;
             wxLogVerbose(_("Adding spline: ") + cspl.spline.m_name);
-            spl.name = cspl.spline.m_name.ToAscii();
+            spl.name = getPrefixed(cspl.spline.m_name).ToAscii();
             spl.cyclic = cspl.spline.m_cyclic;
             spl.nodes = cspl.spline.GetFixed(cspl.usedorientation);
             c_spl->AddSpline(spl);

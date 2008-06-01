@@ -14,6 +14,7 @@
 #include "boneanim.h"
 #include "boneshape.h"
 #include "staticshape.h"
+#include "manifoldmesh.h"
 
 namespace r3 {
 
@@ -92,7 +93,7 @@ struct SceneryItemVisual_V {
 };
 
 struct SceneryItemVisual_Sext {
-    uint32_t                    unk12;
+    ManifoldMesh*               proxy_ref;      ///< ManifoldMesh Proxy, whatever that is
 };
 
 struct SceneryItemVisual_S {

@@ -39,6 +39,7 @@
 #include "cXmlClasses.h"
 #include "cXmlInitHandler.h"
 #include "cXmlErrorHandler.h"
+#include "cXmlValidatorResult.h"
 
 namespace xmlcpp {
 
@@ -94,8 +95,8 @@ namespace xmlcpp {
         /**
          * Returns 0 on success, -1 on internal error and number of errors otherwise.
          */
-        int validate(cXmlValidator& val);
-        int validate(cXmlValidator& val, int options);
+        cXmlValidatorResult validate(cXmlValidator& val, cXmlValidatorResult::LEVEL deflevel = cXmlValidatorResult::VR_ERROR);
+        cXmlValidatorResult validate(cXmlValidator& val, int options, cXmlValidatorResult::LEVEL deflevel = cXmlValidatorResult::VR_ERROR);
         int xInclude();
 
         inline bool ok() const { return m_doc.get(); }

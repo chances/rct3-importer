@@ -38,6 +38,12 @@ namespace xmlcpp {
 
 #define XMLCPP_RES_ADD(resname, type) xmlcpp::cXmlInputOutputCallbackString::addInternal("/" #type "/" #resname "." #type, resname ## _ ## type, resname ## _ ## type ## _size, resname ## _ ## type ## _size_unzipped)
 #define XMLCPP_RES_USE(resname, type) xmlcpp::cXmlInputOutputCallbackString::getInternalName("/" #type "/" #resname "." #type)
+#define XMLCPP_RES_HAS(resname, type) xmlcpp::cXmlInputOutputCallbackString::hasFileInternal("/" #type "/" #resname "." #type)
+#define XMLCPP_RES_GET(resname, type) xmlcpp::cXmlInputOutputCallbackString::getInternal("/" #type "/" #resname "." #type)
+#define XMLCPP_RES_ADD_ONCE(resname, type) \
+    if (!XMLCPP_RES_HAS(resname, type)) { \
+        XMLCPP_RES_ADD(resname, type); \
+    }
 class cXmlInputOutputCallbackString : public cXmlInitHandler, public cXmlOutputCallback, public cXmlInputCallback {
 public:
     static const char* PROTOCOL;
@@ -55,8 +61,14 @@ public:
         return std::string(cXmlInputOutputCallbackString::PROTOCOL)+std::string(cXmlInputOutputCallbackString::INTERNAL)+filename;
     }
     static const std::string& get(const std::string& filename);
+    static inline const std::string& getInternal(const std::string& filename) {
+        return get(std::string(cXmlInputOutputCallbackString::INTERNAL)+filename);
+    }
     static void remove(const std::string& filename);
     static bool hasFile(const std::string& filename);
+    static inline bool hasFileInternal(const std::string& filename) {
+        return hasFile(std::string(cXmlInputOutputCallbackString::INTERNAL)+filename);
+    }
 
     static cXmlInputOutputCallbackString* g_instance;
 private:

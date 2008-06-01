@@ -89,6 +89,7 @@
 		<Unit filename="..\..\include\flexitexture.h" />
 		<Unit filename="..\..\include\guiicon.h" />
 		<Unit filename="..\..\include\icontexture.h" />
+		<Unit filename="..\..\include\manifoldmesh.h" />
 		<Unit filename="..\..\include\morphmesh.h" />
 		<Unit filename="..\..\include\ovlstructs.h" />
 		<Unit filename="..\..\include\path.h" />

@@ -36,6 +36,15 @@ struct RideOption {
         RideOptionOption option;
         float_t unk2;
     };
+    /**
+     * Type 4 Option
+     * This option sets limits, mainly on rates. The ride option option sets, which
+     * rates are affected.
+     * For rates it works like this: If the value is below this option, the rates are
+     * halved.
+     * Probably also determines how moch peeps want to pay and how long they want to
+     * wait.
+     **/
     struct _type_04 {
         RideOptionOption option;
         float_t unk2;
@@ -48,6 +57,11 @@ struct RideOption {
         RideOptionOption option;
         float_t unk2;
     };
+    /**
+     * Type 8 Option
+     * This option sets the ride's rates. The ride option option sets, which
+     * value determins application of those rates.
+     **/
     struct _type_08 {
         float_t excitement;
         float_t intensity;
@@ -94,10 +108,10 @@ struct Ride_V {
     uint32_t            attractivity_v; ///< For soaked and wild: 0xFFFFFFFF
     uint32_t            seating;
     RideOption**        options;        ///< List terminated by a unrelocated zero pointer
-    uint32_t            unk4;           ///< Seen 1
-    int32_t             unk5;           ///< Seen -1, 1 (Spiral Slide, FunHouse, LionShow, TigerShow, DolphinShow, KillerWhaleShow)
+    uint32_t            min_circuits;   ///< Seen 1
+    int32_t             max_circuits;   ///< Seen -1, 1 (Spiral Slide, FunHouse, LionShow, TigerShow, DolphinShow, KillerWhaleShow)
                                         /**<
-                                         * Probably cycle number. -1 = user selectable
+                                         * Probably cycle number. -1 = default? -> 6
                                          */
     uint32_t            entry_fee;
 };

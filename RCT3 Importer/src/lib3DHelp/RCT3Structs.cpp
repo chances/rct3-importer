@@ -378,44 +378,24 @@ bool cMeshStruct::FromCompilerXml(cXmlNode& node, const wxString& path) {
         throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Missing ftx or txs attribute."), Name.c_str()));
     }
 
-    if (node.hasProp("placing")) {
-        wxString placing = wxString::FromUTF8(node.getPropVal("placing", "both").c_str()).Lower();
-        if (placing.IsSameAs(wxT("texture"))) {
+    if (node.hasProp("transparency")) {
+        wxString placing = wxString::FromUTF8(node.getPropVal("transparency", "none").c_str()).Lower();
+        if (placing.IsSameAs(wxT("masked"))) {
             place = 1;
-        } else if (placing.IsSameAs(wxT("glass"))) {
+        } else if (placing.IsSameAs(wxT("regular"))) {
             place = 2;
-        } else if (placing.IsSameAs(wxT("both"))) {
-            place = 0;
-        } else if (placing.IsSameAs(wxT("transparent"))) {
-            place = 1;
-        } else if (placing.IsSameAs(wxT("glassy"))) {
-            place = 2;
-        } else if (placing.IsSameAs(wxT("solid"))) {
+        } else if (placing.IsSameAs(wxT("none"))) {
             place = 0;
         } else {
-            throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Unknown placing value '%s'."), Name.c_str(), placing.c_str()));
+            throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Unknown transparency value '%s'."), Name.c_str(), placing.c_str()));
         }
-        wxLogWarning(_("The 'placing' attribute is deprecated. Please use 'transparency'."));
     } else {
-        if (node.hasProp("transparency")) {
-            wxString placing = wxString::FromUTF8(node.getPropVal("transparency", "none").c_str()).Lower();
-            if (placing.IsSameAs(wxT("masked"))) {
-                place = 1;
-            } else if (placing.IsSameAs(wxT("regular"))) {
-                place = 2;
-            } else if (placing.IsSameAs(wxT("none"))) {
-                place = 0;
-            } else {
-                throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Unknown transparency value '%s'."), Name.c_str(), placing.c_str()));
-            }
-        } else {
-            unsigned long right_value = 0;
-            if (TXS.StartsWith(wxT("SIAlphaMask")))
-                right_value = 1;
-            else if (TXS.StartsWith(wxT("SIAlpha")) || TXS.IsSameAs(wxT("SIGlass")) || TXS.IsSameAs(wxT("SIGlass")))
-                right_value = 2;
-            place = right_value;
-        }
+        unsigned long right_value = 0;
+        if (TXS.StartsWith(wxT("SIAlphaMask")))
+            right_value = 1;
+        else if (TXS.StartsWith(wxT("SIAlpha")) || TXS.IsSameAs(wxT("SIGlass")) || TXS.IsSameAs(wxT("SIGlass")))
+            right_value = 2;
+        place = right_value;
     }
 
     if (node.getPropVal("sortx", &temp)) {
@@ -2057,6 +2037,58 @@ void cAnimatedModel::AddNodeContent(cXmlNode& node, const wxString& path, bool d
 // cBoneAnimation
 //
 ///////////////////////////////////////////////////////////////
+
+/** @brief decimateRotations
+  *
+  * @todo: document this function
+  */
+int cBoneAnimation::decimateRotations(float threshold, float bailout) {
+    int oldframe = 0;
+    vector<int> delframes;
+    for(int i = 1; i < rotations.size()-1; ++i) {
+        float timediff = rotations[i+1].v.Time - rotations[oldframe].v.Time;
+        float timeoff = rotations[i].v.Time - rotations[oldframe].v.Time;
+        float x = rotations[oldframe].v.X + ((rotations[i+1].v.X - rotations[oldframe].v.X)*timeoff/timediff);
+        float y = rotations[oldframe].v.Y + ((rotations[i+1].v.Y - rotations[oldframe].v.Y)*timeoff/timediff);
+        float z = rotations[oldframe].v.Z + ((rotations[i+1].v.Z - rotations[oldframe].v.Z)*timeoff/timediff);
+        if (((fabs(x - rotations[i].v.X) > threshold) || (fabs(y - rotations[i].v.Y) > threshold) || (fabs(z - rotations[i].v.Z) > threshold)) ||
+            ((fabs(rotations[oldframe].v.X - rotations[i].v.X) >= bailout) || (fabs(rotations[oldframe].v.Y - rotations[i].v.Y) >= bailout) || (fabs(rotations[oldframe].v.Z - rotations[i].v.Z) > bailout))) {
+            oldframe = i;
+        } else {
+            delframes.push_back(i);
+        }
+    }
+    for(vector<int>::reverse_iterator it = delframes.rbegin(); it != delframes.rend(); ++it) {
+        rotations.erase(rotations.begin() + (*it));
+    }
+    return delframes.size();
+}
+
+/** @brief decimateTranslations
+  *
+  * @todo: document this function
+  */
+int cBoneAnimation::decimateTranslations(float threshold) {
+    int oldframe = 0;
+    vector<int> delframes;
+    for(int i = 1; i < translations.size()-1; ++i) {
+        float timediff = translations[i+1].v.Time - translations[oldframe].v.Time;
+        float timeoff = translations[i].v.Time - translations[oldframe].v.Time;
+        float x = translations[oldframe].v.X + ((translations[i+1].v.X - translations[oldframe].v.X)*timeoff/timediff);
+        float y = translations[oldframe].v.Y + ((translations[i+1].v.Y - translations[oldframe].v.Y)*timeoff/timediff);
+        float z = translations[oldframe].v.Z + ((translations[i+1].v.Z - translations[oldframe].v.Z)*timeoff/timediff);
+        if ((fabs(x - translations[i].v.X) > threshold) || (fabs(y - translations[i].v.Y) > threshold) || (fabs(z - translations[i].v.Z) > threshold)) {
+            oldframe = i;
+        } else {
+            delframes.push_back(i);
+        }
+    }
+    for(vector<int>::reverse_iterator it = delframes.rbegin(); it != delframes.rend(); ++it) {
+        translations.erase(translations.begin() + (*it));
+    }
+    return delframes.size();
+}
+
 
 #define COMPILER_TRANSLATE "translate"
 #define COMPILER_ROTATE "rotate"

@@ -97,6 +97,8 @@ bool cXmlValidatorMulti::read(boost::shared_ptr<cXmlValidator>& into, cXmlDoc& s
         } else {
             // Broken XML
             transferErrors(schema);
+            if (!hasErrors())
+                addGenericError("Internal error: XML broken, but no errors reported!");
             return false;
         }
     } else {
@@ -128,12 +130,14 @@ bool cXmlValidatorMulti::read(boost::shared_ptr<cXmlValidator>& into, cXmlDoc& s
     }
 
     if (!into) {
-        genericerrorcallback("Passed unsupported schema type to multi validator.");
+        addGenericError("Passed unsupported schema type to multi validator.");
         return false;
     }
 
     if (!into->ok()) {
         transferErrors(*into.get());
+        if (!hasErrors())
+            addGenericError("Internal error: First validator broken, but no errors reported! Type: " + cXmlValidator::getTypeName(into->getType()));
         return false;
     }
 
@@ -170,32 +174,38 @@ int cXmlValidatorMulti::getType() const {
 }
 
 
-int cXmlValidatorMulti::validate(boost::shared_ptr<xmlDoc>& doc, int options) {
+cXmlValidatorResult cXmlValidatorMulti::validate(boost::shared_ptr<xmlDoc>& doc, cXmlValidatorResult::LEVEL retlevel, int options) {
     if (!ok())
         throw eXml("Tried to validate with invalid multi validator");
     if (!doc)
         throw eXml("Tried to validate broken document");
 
+    //cXmlValidatorResult res(retlevel);
+
     clearGenericErrors();
     clearStructuredErrors();
 
-    int ret = MULTI_NOERROR;
+    //int ret = MULTI_NOERROR;
 
-    int first = m_primary->validate(doc, options);
+    cXmlValidatorResult first = m_primary->validate(doc, retlevel, options);
     if (!first) {
         if (m_secondary) {
-            if (m_secondary->validate(doc, options)) {
-                ret = MULTI_SECONDARY;
+            cXmlValidatorResult sec = m_secondary->validate(doc, retlevel, options);
+            if (sec) {
+                first.multi = MULTI_SECONDARY;
+                first.merge(sec);
             }
         }
     } else {
-        ret = MULTI_PRIMARY;
+        first.multi = MULTI_PRIMARY;
         if (m_secondary) {
             m_secondary->clearGenericErrors();
             m_secondary->clearStructuredErrors();
             if (m_runSecondary) {
-                if (m_secondary->validate(doc, options)) {
-                    ret = MULTI_BOTH;
+                cXmlValidatorResult sec = m_secondary->validate(doc, retlevel, options);
+                if (sec) {
+                    first.multi = MULTI_BOTH;
+                    first.merge(sec);
                 }
             }
         }
@@ -204,7 +214,7 @@ int cXmlValidatorMulti::validate(boost::shared_ptr<xmlDoc>& doc, int options) {
     if (m_secondary) {
         transferErrors(*m_secondary.get());
     }
-    return ret;
+    return first;
 }
 
 

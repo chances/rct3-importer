@@ -30,6 +30,7 @@
 
 #include "wx_pch.h"
 
+#include <wx/busyinfo.h>
 #include <wx/valgen.h>
 
 #include "colhtmllbox.h"
@@ -42,6 +43,9 @@
 
 #include "wxdlgAnimation.h"
 #include "wxdlgAnimation_HTLB.h"
+#include "wxdlgDecimate.h"
+
+using namespace std;
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -245,6 +249,62 @@ void dlgAnimation::OnBoneClear(wxCommandEvent& WXUNUSED(event)) {
     m_htlbBones->SetSelection(-1);
     UpdateBone();
 }
+
+struct DecimInfo {
+    wxString b;
+    int tr;
+    int ro;
+    DecimInfo(const wxString& n): b(n), tr(0), ro(0) {}
+};
+
+/** @brief OnDecimate
+  *
+  * @todo: document this function
+  */
+void dlgAnimation::OnDecimate(wxCommandEvent& event) {
+    boost::shared_ptr<dlgDecimate> dlg(new dlgDecimate(this), wxWindowDestroyer);
+    int sel = m_htlbBones->GetSelection();
+    if ((sel < 0) || (sel >= m_animation.boneanimations.size())) {
+        dlg->m_choiceBones->Enable(false);
+    }
+
+    if (dlg->ShowModal() == wxID_OK) {
+        vector<DecimInfo> decims;
+        wxString info;
+        {
+            wxBusyCursor busy;
+            wxBusyInfo binfo("Decimating, please wait...");
+            float r = Deg2Rad(dlg->m_rotbail);
+            if (dlg->m_bones) {
+                DecimInfo d(m_animation.boneanimations[sel].name);
+                if ((dlg->m_frames == 0) || (dlg->m_frames == 1)) {
+                    d.tr = m_animation.boneanimations[sel].decimateTranslations(dlg->m_threshold);
+                }
+                if ((dlg->m_frames == 0) || (dlg->m_frames == 2)) {
+                    d.ro = m_animation.boneanimations[sel].decimateRotations(dlg->m_threshold, r);
+                }
+                decims.push_back(d);
+            } else {
+                foreach(cBoneAnimation& b, m_animation.boneanimations) {
+                    DecimInfo d(b.name);
+                    if ((dlg->m_frames == 0) || (dlg->m_frames == 1)) {
+                        d.tr = b.decimateTranslations(dlg->m_threshold);
+                    }
+                    if ((dlg->m_frames == 0) || (dlg->m_frames == 2)) {
+                        d.ro = b.decimateRotations(dlg->m_threshold, r);
+                    }
+                    decims.push_back(d);
+                }
+            }
+            foreach(DecimInfo& d, decims) {
+                if (d.tr || d.ro)
+                    info += wxString::Format(_("Bone %s: Removed %d translations and %d rotations.\n"), d.b.c_str(), d.tr, d.ro);
+            }
+        }
+        wxMessageBox(info, _("Information"));
+    }
+}
+
 
 ////////////////////////////////////////////////////////////////////////
 //

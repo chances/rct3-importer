@@ -228,6 +228,35 @@ struct Constants {
                 Swim =                     0x22
             };
         };
+        struct Option_Application_Type {
+            enum {
+                Base =                      0x00,
+                Circuits =                  0x02,
+                Car_Count =                 0x03,
+                Ride_Duration =             0x04,
+                Scenery_Max =               0x05, ///< Maximal scenery influence
+                Train_Count =               0x06,
+                Train_Type_Order =          0x07, ///< Influence per index in the train tye list
+                Launch_Speed =              0x09,
+                Slow_Lift_Chain =           0x0A, ///< Applied if the chain speed is very slow
+                Lift_Chain_Speed =          0x0B,
+                Speed_Max =                 0x0D,
+                Speed_Mean =                0x0E,
+                Ride_Length =               0x0F,
+                Max_Positive_V_GForce =     0x10,
+                Max_Negative_V_GForce =     0x11,
+                Max_Lateral_GForce =        0x12,
+                Airtime =                   0x13,
+                Drops =                     0x14,
+                Max_Drop_Height =           0x15,
+                Inversions =                0x16,
+                Tunnel_Length =             0x18,
+                Terraforming =              0x19,
+                Scenery_Influence =         0x20, ///< Amount of scenery influence
+                Lateral_GForce_Mean =       0x22,
+                Vertical_GForce_Mean =      0x23
+            };
+        };
     };
 
     struct SVD {
@@ -316,6 +345,49 @@ struct Constants {
             //new for Wild!
                 Animal_Fence =              45, //???
                 Animal_Misc =               46  //???
+            };
+        };
+    };
+
+    struct TRR {
+        struct Start_Preset {
+            enum {
+                Circle =                        0,
+                Launched =                      1,
+                Reverse_Tilted =                2,
+                Boat =                          3,
+                Race =                          4,
+                Shuttle =                       5,
+                Upwards =                       6,
+                Freefall =                      7,
+                Up_and_Down =                   8,
+                Minigolf =                      9,
+                Slide =                        10,
+                Reverse_Cable_Lifthill =       11,
+                Water_Transport =              12,
+                Aquarium =                     13,
+                Multiple_Powerlaunch =         14,
+                Lazy_River =                   15
+            };
+        };
+        struct Start_Possibilities {
+            enum {
+                Circle =                        0x00000001,
+                Launched =                      0x00000002,
+                Reverse_Tilted =                0x00000004,
+                Boat =                          0x00000008,
+                Race =                          0x00000010,
+                Shuttle =                       0x00000020,
+                Upwards =                       0x00000040,
+                Freefall =                      0x00000080,
+                Up_and_Down =                   0x00000100,
+                Minigolf =                      0x00000200,
+                Slide =                         0x00000400,
+                Reverse_Cable_Lifthill =        0x00000800,
+                Water_Transport =               0x00001000,
+                Aquarium =                      0x00002000,
+                Multiple_Powerlaunch =          0x00004000,
+                Lazy_River =                    0x00008000
             };
         };
     };

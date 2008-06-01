@@ -177,8 +177,8 @@ void ovlSTAManager::Make(cOvlInfo* info) {
             unsigned long c = 0;
             for (vector<cStallItem>::iterator iit = it->second.items.begin(); iit != it->second.items.end(); ++iit) {
                 GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(iit->item.c_str(), ovlCIDManager::TAG),
-                                     reinterpret_cast<unsigned long*>(&c_stall->Items[c].CID));
-                c_stall->Items[c].CID = NULL;
+                                     reinterpret_cast<unsigned long*>(&c_stall->Items[c].cid_ref));
+                c_stall->Items[c].cid_ref = NULL;
                 c_stall->Items[c].cost = iit->cost;
                 c++;
             }
@@ -217,7 +217,7 @@ void ovlSTAManager::Make(cOvlInfo* info) {
             unsigned long c = 0;
             for (vector<cStallItem>::iterator iit = it->second.items.begin(); iit != it->second.items.end(); ++iit) {
                 GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(iit->item.c_str(), ovlCIDManager::TAG),
-                                     reinterpret_cast<unsigned long*>(&c_stall->Items[c].CID));
+                                     reinterpret_cast<unsigned long*>(&c_stall->Items[c].cid_ref));
                 c_stall->Items[c].cost = iit->cost;
                 c++;
             }

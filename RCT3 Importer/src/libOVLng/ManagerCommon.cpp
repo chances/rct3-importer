@@ -463,8 +463,8 @@ void cRide::Fill(r3::Ride_V* r) const {
     r->attractivity_v = attractivity;
     r->seating = seating;
     r->entry_fee = entry_fee;
-    r->unk4 = unk4;
-    r->unk5 = unk5;
+    r->min_circuits = min_circuits;
+    r->max_circuits = max_circuits;
     for (int i = 0; i < options.size(); ++i) {
         options[i].Fill(r->options[i]);
     }

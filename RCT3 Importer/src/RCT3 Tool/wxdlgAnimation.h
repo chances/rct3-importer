@@ -108,6 +108,8 @@ protected:
     void OnBoneClear(wxCommandEvent& event);
 
     void OnBoneName(wxCommandEvent& event);
+
+    virtual void OnDecimate( wxCommandEvent& event );
 private:
     cAnimation m_animation;
     cBoneAnimation* m_currentbone;

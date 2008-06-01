@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<grammar xmlns="http://relaxng.sourceforge.net/ns/shorthand" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://rct3.sourceforge.net/rct3xml/installer-package">
+	<include href="rct3xml-installer-shared-v1.rng"/>
+	<start>
+		<ref name="package"/>
+	</start>
+	<define name="package">
+		<element name="package">
+			<attribute name="version">
+				<value>1</value>
+			</attribute>
+			<interleave>
+				<ref name="packageinfo"/>
+				<ref name="content"/>
+				<optional>
+					<ref name="options"/>
+				</optional>
+			</interleave>
+		</element>
+	</define>
+	<define name="packageinfo">
+		<element name="packageinfo">
+			<attribute name="transformversion" occurs="?" type="unsignedInt"/>
+			<interleave>
+				<element name="name">
+					<attribute name="version" type="unsignedInt"/>
+					<ref name="guidvalue"/>
+				</element>
+				<element name="shortname" occurs="?" type="string"/>
+				<element name="author" occurs="+" ref="guidvalue"/>
+				<element name="releasedate" occurs="?" type="date"/>
+				<element name="dependency" occurs="*">
+					<ref name="guidvalue"/>
+					<attribute name="version" ref="version"/>
+					<attribute name="optional" occurs="?" type="string"/>
+				</element>
+				<element name="provides" occurs="*">
+					<ref name="guidvalue"/>
+					<attribute name="version" ref="version"/>
+					<attribute name="optional" occurs="?" type="string"/>
+				</element>
+				<element name="readme" occurs="*">
+					<attribute name="title" occurs="?" type="string"/>
+					<data type="string"/>
+				</element>
+				<element name="screenshot" occurs="*">
+					<attribute name="title" occurs="?" type="string"/>
+					<data type="string"/>
+				</element>
+			</interleave>
+		</element>
+	</define>
+	<define name="content">
+		<element name="content">
+			<attribute name="script" type="string"/>
+			<interleave>
+				<element name="translation">
+					<attribute name="language">
+						<choice>
+							<value type="string">English</value>
+							<value type="string">BrazilianPortuguese</value>
+							<value type="string">Danish</value>
+							<value type="string">Dutch</value>
+							<value type="string">Finnish</value>
+							<value type="string">French</value>
+							<value type="string">German</value>
+							<value type="string">Italian</value>
+							<value type="string">Norwegian</value>
+							<value type="string">Spanish</value>
+							<value type="string">Swedish</value>
+						</choice>
+					</attribute>
+					<attribute name="script" type="string"/>
+				</element>
+			</interleave>
+		</element>
+	</define>
+	<define name="options">
+		<element name="options">
+			<choice occurs="+">
+				<element name="prefab">
+					<attribute name="type" type="string"/>
+					<attribute name="default" type="string"/>
+				</element>
+			</choice>
+		</element>
+	</define>
+</grammar>

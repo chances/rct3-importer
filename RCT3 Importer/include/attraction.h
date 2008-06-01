@@ -27,27 +27,27 @@ struct Attraction_V {
         uint32_t        type;               ///< second byte 02 siginifies AttractionA
         uint8_t         typech[4];
     };
-	wchar_t*            name_ref;
-	wchar_t*            description_ref;
-	GUISkinItem*        icon_ref;
-	uint32_t            unk2;               ///< Probably cost, maybe upkeep? 0 for changing rooms, viewing gallery stub and most tracked rides
-	int32_t             unk3;               ///< Probably refund, maybe upkeep? 0 for changing rooms, viewing gallery stub and most tracked rides
-	uint32_t            unk4;               ///< Always 0
-	uint32_t            unk5;               ///< Always 0
-	uint32_t            base_upkeep;        ///< Basal Upkeep
-	                            /**<
-	                             * Seen:
-	                             *   - 0 for ZeroG Trampolin, Merry-Go-Round, Fun House and Crooked House
-	                             *   - 40 for Spinning Steel Coaster
-	                             *   - 125 for Endless and Drifting Coaster
-	                             *   - 1500 for Stalls
-	                             *   - 4960 for Changing Rooms and all other AnimatedRides and TrackedRides
-	                             **/
-	Spline*             spline_ref;         ///< A loop on flat rides
-	uint32_t            path_count;          ///< Count for the next struct
-	Spline**            paths_ref;          ///< splines for peep paths. Last is the mechanic's path
-	uint32_t            flags;
-	int32_t             max_height;         ///< maximal build height over ground.
+    wchar_t*            name_ref;
+    wchar_t*            description_ref;
+    GUISkinItem*        icon_ref;
+    uint32_t            unk2;               ///< Probably cost, maybe upkeep? 0 for changing rooms, viewing gallery stub and most tracked rides
+    int32_t             unk3;               ///< Probably refund, maybe upkeep? 0 for changing rooms, viewing gallery stub and most tracked rides
+    uint32_t            unk4;               ///< Always 0
+    uint32_t            unk5;               ///< Always 0
+    uint32_t            base_upkeep;        ///< Basal Upkeep
+                                /**<
+                                 * Seen:
+                                 *   - 0 for ZeroG Trampolin, Merry-Go-Round, Fun House and Crooked House
+                                 *   - 40 for Spinning Steel Coaster
+                                 *   - 125 for Endless and Drifting Coaster
+                                 *   - 1500 for Stalls
+                                 *   - 4960 for Changing Rooms and all other AnimatedRides and TrackedRides
+                                 **/
+    Spline*             spline_ref;         ///< A loop on flat rides
+    uint32_t            path_count;          ///< Count for the next struct
+    Spline**            paths_ref;          ///< splines for peep paths. Last is the mechanic's path
+    uint32_t            flags;
+    int32_t             max_height;         ///< maximal build height over ground.
 };
 
 /// General attraction structure extension (Soaked)

@@ -646,7 +646,7 @@ void c3DLoader::makeDefaultGroup(const wxString& name) {
         foreach(const c3DBone::pair& bn, m_bones)
             gr.m_bones.insert(bn.first);
         foreach(const c3DAnimation::pair& an, m_animations)
-            gr.m_animations.insert(an.first);
+            gr.m_animations.push_back(an.first);
         m_groups[gr.m_name] = gr;
     }
 }

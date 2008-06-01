@@ -524,7 +524,9 @@ cXmlValidatorRNVRelaxNG::~cXmlValidatorRNVRelaxNG() {
             cXmlInputOutputCallbackString::add(string(cXmlInputOutputCallbackString::INTERNAL)+"/xsl/" #resname ".xsl", t); \
         }
 
-#define INIT_XSL_RESOURCE(resname) cXmlInputOutputCallbackString::addInternal("/xsl/" #resname ".xsl", resname ## _xsl, resname ## _xsl_size, resname ## _xsl_size_unzipped);
+//#define INIT_XSL_RESOURCE(resname) cXmlInputOutputCallbackString::addInternal("/xsl/" #resname ".xsl", resname ## _xsl, resname ## _xsl_size, resname ## _xsl_size_unzipped);
+
+#define INIT_XSL_RESOURCE(resname) XMLCPP_RES_ADD(resname, xsl)
 
 void cXmlValidatorRNVRelaxNG::Init() {
     if (!g_resinit) {
@@ -543,21 +545,22 @@ void cXmlValidatorRNVRelaxNG::Init() {
             cXmlInputOutputCallbackString::add(string(cXmlInputOutputCallbackString::INTERNAL)+"/rnc/relaxng.rnc", t);
         }
 */
-        cXmlInputOutputCallbackString::addInternal("/rnc/relaxng.rnc", relaxng_rng, relaxng_rng_size, relaxng_rng_size_unzipped);
-        INIT_XSL_RESOURCE(incelim)
-        INIT_XSL_RESOURCE(inc)
-        INIT_XSL_RESOURCE(elim)
-        INIT_XSL_RESOURCE(strip)
-        INIT_XSL_RESOURCE(clean)
-        INIT_XSL_RESOURCE(RngToRncClassic)
+        //cXmlInputOutputCallbackString::addInternal("/rnc/relaxng.rnc", relaxng_rng, relaxng_rng_size, relaxng_rng_size_unzipped);
+        XMLCPP_RES_ADD(relaxng, rnc);
+        INIT_XSL_RESOURCE(incelim);
+        INIT_XSL_RESOURCE(inc);
+        INIT_XSL_RESOURCE(elim);
+        INIT_XSL_RESOURCE(strip);
+        INIT_XSL_RESOURCE(clean);
+        INIT_XSL_RESOURCE(RngToRncClassic);
 #ifdef XMLCPP_USE_RNV_SHORTRNG
-        INIT_XSL_RESOURCE(ShortRNG)
+        INIT_XSL_RESOURCE(ShortRNG);
 #endif
 #ifdef XMLCPP_USE_RNV_EXAMPLOTRON
-        INIT_XSL_RESOURCE(examplotron)
+        INIT_XSL_RESOURCE(examplotron);
 #endif
 #ifdef XMLCPP_USE_INLINED_SCHEMATRON
-        INIT_XSL_RESOURCE(RNG2Schtrn)
+        INIT_XSL_RESOURCE(RNG2Schtrn);
 #endif
 #endif
 
@@ -957,11 +960,13 @@ void do_node(cXmlNode& node, RNVValidationContext& ctx) {
     }
 }
 
-int cXmlValidatorRNVRelaxNG::validate(boost::shared_ptr<xmlDoc>& doc, int options) {
+cXmlValidatorResult cXmlValidatorRNVRelaxNG::validate(boost::shared_ptr<xmlDoc>& doc, cXmlValidatorResult::LEVEL retlevel, int options) {
     if (!ok())
         throw eXml("Tried to validate with invalid RelaxNG schema");
     if (!doc)
         throw eXml("Tried to validate broken document");
+
+    cXmlValidatorResult res(retlevel);
 
     clearGenericErrors();
     clearStructuredErrors();
@@ -972,8 +977,10 @@ int cXmlValidatorRNVRelaxNG::validate(boost::shared_ptr<xmlDoc>& doc, int option
     cXmlDoc work(doc);
 
     cXmlNode root(work.root());
-    if (!root.ok())
-        return -1;
+    if (!root.ok()) {
+        res.internal_error = true;
+        return res;
+    }
 
     claimRNV();
     RNVValidationContext ctx;
@@ -982,6 +989,12 @@ int cXmlValidatorRNVRelaxNG::validate(boost::shared_ptr<xmlDoc>& doc, int option
     ctx.init();
     do_node(root, ctx);
     releaseRNV();
+
+    res.error = getStructuredErrors().size() + getGenericErrors().size();
+    if ((!res.error) && (!ctx.ok)) {
+        // Something went wrong, but no error was reported?!?
+        res.internal_error = true;
+    }
 
 /*
     cXmlNode root(result.getRoot());
@@ -1012,7 +1025,7 @@ int cXmlValidatorRNVRelaxNG::validate(boost::shared_ptr<xmlDoc>& doc, int option
         child.go_next();
     }
 */
-    return ctx.ok?0:1;
+    return res;
 }
 
 void cXmlValidatorRNVRelaxNG::claimRNV() {

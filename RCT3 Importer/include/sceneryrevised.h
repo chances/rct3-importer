@@ -331,20 +331,36 @@ struct SceneryItemData //set all to 0 and see what happens
 //	unsigned long unkf62:1;
 //	unsigned long unkf63:1;
 //	unsigned long unkf64:1;
-	unsigned long flags2;
-	long unk2;         ///< Unk 6 in the importer
-                                /**<
-                                 * Seems to be minimal blocking height
-                                 **/
-	long unk3;         ///< Unk 7 in the importer
-                                /**<
-                                 * Seems to be maximal blocking height
-                                 **/
-	unsigned long *unk4;        ///< Unk 8 in the importer
-                                /**<
-                                 * Points to (2^(unk3-unk2))-1
-                                 * Can be bigger than a long
-                                 **/
+    union {
+        uint32_t    flags2;
+        uint32_t    flags;
+    };
+
+    /**
+     * Unk 6 in the importer
+     * Seems to be minimal blocking height
+     **/
+    union {
+        int32_t     unk2;
+        int32_t     min_height_block;
+    };
+    /**
+     * Unk 7 in the importer
+     * Seems to be maximal blocking height
+     **/
+    union {
+        int32_t     unk3;
+        int32_t     max_height_block;
+    };
+    /**
+     * Unk 8 in the importer
+     * Points to (2^(unk3-unk2))-1
+     * Can be bigger than a long
+     **/
+    union {
+        uint32_t*   unk4;
+        uint32_t*   block_bits;
+    };
 	unsigned long unk5;         ///< Unk 9 in the importer
 };
 

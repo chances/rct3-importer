@@ -443,10 +443,10 @@ void cRawParser::Parse(cXmlNode& node) {
             wxLogVerbose(wxString::Format(_("Importing from %s..."), filename.GetFullPath().c_str()));
             cSCNFile c_scn(filename.GetFullPath());
             if (!name.IsEmpty()) {
-                if (useprefix)
-                    c_scn.name = wxString(m_prefix.c_str(), wxConvLocal) + name;
-                else
-                    c_scn.name = name;
+                c_scn.name = name;
+            }
+            if (useprefix && (m_prefix != "")) {
+                c_scn.prefix = wxString(m_prefix.c_str(), wxConvLocal);
             }
 
             if (m_mode == MODE_BAKE) {

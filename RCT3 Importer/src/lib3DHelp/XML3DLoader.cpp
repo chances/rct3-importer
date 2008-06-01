@@ -455,11 +455,11 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
 
         foreach(const cXmlNode& entries, xgroup.children()) {
             if (entries("mesh")) {
-                cgroup.m_meshes.insert(entries());
+                cgroup.m_meshes.insert(entries.wxcontent());
             } else if (entries("bone")) {
-                cgroup.m_bones.insert(entries());
+                cgroup.m_bones.insert(entries.wxcontent());
             } else if (entries("animation")) {
-                cgroup.m_animations.insert(entries());
+                cgroup.m_animations.push_back(entries.wxcontent());
             } else if (entries("metadata")) {
                 if (entries.getPropVal("role") == "rct3") {
                     foreach(const cXmlNode& met, entries.children()) {

@@ -36,10 +36,9 @@ XML Format
 The following is an example of the XML that ovlcompiler understands
 
 <?xml version="1.0"?>
-<!DOCTYPE ovlcompiler SYSTEM "../ovlcompiler.dtd">
-<ovl>
+<ovl xmlns="http://rct3.sourceforge.net/rct3xml/ovlcompiler">
   <bsh name="test" model="C:\test.ASE">
-    <geomobj name="TEST" bone="1" ftx="texture" txs="SIOpaque" />
+    <geomobj name="TEST" bone="testbone" ftx="texture" txs="SIOpaque" />
     <bone name="testbone">
         <pos1>1.0 0.0 0.0 0.0   0.0 1.0 0.0 0.0   0.0 0.0 1.0 0.0   0.0 0.0 0.0 1.0</pos1>
         <pos2>1.0 0.0 0.0 0.0   0.0 1.0 0.0 0.0   0.0 0.0 1.0 0.0   0.0 0.0 0.0 1.0</pos2>
@@ -75,14 +74,13 @@ bsh:        bsh describes the bone meshes, a child of ovl
             model:          The path of the .ase or .ms3d file that contains the mesh data.
 geomobj:    geomobj describes the mappings between meshes in the model file, bone numbers and textures. Geomobj elements are children of bsh elements, there should be at least one geomobj.
             name:           The name of the mesh as given in the model file. This is case sensitive.
-            bone:           The number of the bone to which this mesh is to be assigned. If the attribute is not specified then the root bone 0 is used. The root bone is generated automatically by the compiler.
+            bone:           The name of the bone to which this mesh is to be assigned. If the attribute is not specified then the root bone is used. The root bone is generated automatically by the compiler.
             ftx:            The name of the texture to use. Textures are specified using "ftx" elements at the "ovl" level.
             txs:            The style with which the texture should be applied to the model.
-            placing:        The texture placing setting. Optional. Can be "both" (default), "texture" or "glass" (the latter is called 'Unknown' in the Importer).
-                            New in ovlmake 0.3: you can alternatively use "solid", "transparent" or "glassy" respectively. Those reflect better what this setting actually means.
+            transparency:   The texture transparency setting (formerly "placing"). Optional. Can be "none", "masked" or "regular". If you omit it, the proper setting for your texture style will be chosen, so usually there is no good reason to add this!
             flags:          The texture flags setting. Optional. Can be "none" (default), "sign", "terrain", "cliff", "water", "watermask", "billboard" or "animatedbillboard"
-                            Note: If you set this to "sign", the txs attribute will be ignored (and you can leave it out).
-                                  If you set it to something else (not "sign" or "none"), both ftx and txs attributes will be ignored (and you can leave them out).
+                            Note: If you set this to "sign", you may not add a txs attribute.
+                                  If you set it to something else (not "sign" or "none"), you may not add both ftx and txs attributes.
             doublesided:    Determines wether faces are textured on one side (0, default) or both sides (1). Optional.
 bone:       Describes the bones in the object. A child of bsh. There can be many bones in an object.
             name:           The name of the bone. This is matched against bone names in the ban element.
@@ -101,8 +99,7 @@ ftx:        ftx describes a texture, a child of ovl. Optional if you use texture
             name:           The name of the texture, this is matched against names given in ftx attribute of the geomobj node.
             image:          The path of the .bmp file that contains the image map for this texture. Images must be 8bpp, with a height and width that is a power of 2.
             alpha:          The path of the .bmp file that contains the alpha map for this texture. Can be left blank. Images must be 8bpp, with a height and width that is a power of 2.
-reference:  References a texture ovl.
-            path:           Gives the relative path to the texture ovl as seen from the final place of the ovl file, WITHOUT ".common.ovl".
+reference:  References a texture ovl. Gives the relative path to the texture ovl as seen from the final place of the ovl file, WITHOUT ".common.ovl".
 
 
 The above example illustrates an animation which rotates and raises the "TEST" mesh that can be found in c:\test.ase.
@@ -145,7 +142,7 @@ Movement of one bone can be specified with respect to another bone, eg. a hand b
         <pos1>1.0 0.0 0.0 0.0   0.0 1.0 0.0 0.0   0.0 0.0 1.0 0.0   0.0 0.0 0.0 1.0</pos1>
         <pos2>1.0 0.0 0.0 0.0   0.0 1.0 0.0 0.0   0.0 0.0 1.0 0.0   0.0 0.0 0.0 1.0</pos2>
     </bone>
-    <bone name="childbone" parent="1">
+    <bone name="childbone" parent="parentbone">
         <pos1>1.0 0.0 0.0 0.0   0.0 1.0 0.0 0.0   0.0 0.0 1.0 0.0   0.0 0.0 0.0 1.0</pos1>
         <pos2>1.0 0.0 0.0 0.0   0.0 1.0 0.0 0.0   0.0 0.0 1.0 0.0   0.0 0.0 0.0 1.0</pos2>
     </bone>
@@ -166,9 +163,9 @@ Animations can be used to move the effects point around. If a "start" point coin
 
 References
 ~~~~~~~~~~~~~~
-References must have one attribute, 'path', which gives the relative path to the texture ovl as seen from the final place of the ovl file, WITHOUT ".common.ovl". Following the recommendations in the Importer, an example would be:
+References give the relative path to the texture ovl as seen from the final place of the ovl file, WITHOUT ".common.ovl". Following the recommendations in the Importer, an example would be:
 
-    <reference path="../shared/thecook-test-texture" />
+    <reference>../shared/thecook-test-texture</reference>
 
 
 Known Issues

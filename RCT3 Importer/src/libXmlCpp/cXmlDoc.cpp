@@ -262,14 +262,14 @@ xmlNsPtr cXmlDoc::getNs(const std::string& prefix, xmlNodePtr node) {
     return xmlSearchNs(m_doc.get(), node?node:xmlDocGetRootElement(m_doc.get()), (prefix=="")?NULL:reinterpret_cast<const xmlChar*>(prefix.c_str()));
 }
 
-int cXmlDoc::validate(cXmlValidator& val) {
-    return val.validate(m_doc, cXmlValidator::OPT_NONE);
+cXmlValidatorResult cXmlDoc::validate(cXmlValidator& val, cXmlValidatorResult::LEVEL deflevel) {
+    return val.validate(m_doc, deflevel, cXmlValidator::OPT_NONE);
 }
 
-int cXmlDoc::validate(cXmlValidator& val, int options) {
+cXmlValidatorResult cXmlDoc::validate(cXmlValidator& val, int options,  cXmlValidatorResult::LEVEL deflevel) {
     if (!m_doc)
         throw eXmlInvalid("Tried to validate bad document");
-    return val.validate(m_doc, options);
+    return val.validate(m_doc, deflevel, options);
 }
 
 int cXmlDoc::xInclude() {

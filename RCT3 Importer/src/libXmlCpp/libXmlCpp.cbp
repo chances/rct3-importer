@@ -10,42 +10,44 @@
 				<Option compiler="gcc" />
 			</Target>
 			<Target title="Debug Slim">
-				<Option output="../../lib/libXmlCpp_slimd" prefix_auto="1" extension_auto="1" />
+				<Option output="..\..\lib\libXmlCpp_slimd" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../lib/obj/libXmlCpp/DebugSl" />
+				<Option object_output="..\..\lib\obj\libXmlCpp\DebugSl" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-DXMLCPP_SLIM" />
-					<Add directory="$(#wx.lib)/base-ansi-debug-static-2.8" />
+					<Add directory="$(#wx.lib)\wx\include\msw-ansi-debug-static-2.8" />
+					<Add directory="$(#wx.include)" />
 				</Compiler>
 				<Linker>
-					<Add directory="C:/Development/wxWidgets/lib/gcc_lib" />
+					<Add directory="C:\Development\wxWidgets\lib\gcc_lib" />
 				</Linker>
 			</Target>
 			<Target title="Release Slim">
-				<Option output="../../lib/libXmlCpp_slim" prefix_auto="1" extension_auto="1" />
+				<Option output="..\..\lib\libXmlCpp_slim" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../lib/obj/libXmlCpp/ReleaseSl/" />
+				<Option object_output="..\..\lib\obj\libXmlCpp\ReleaseSl\" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
 					<Add option="-O2" />
 					<Add option="-DXMLCPP_SLIM" />
-					<Add directory="$(#wx.lib)/base-ansi-release-static-2.8" />
+					<Add directory="$(#wx.lib)\wx\include\msw-ansi-release-static-2.8" />
+					<Add directory="$(#wx.include)" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add directory="C:/Development/wxWidgets/lib/gcc_lib" />
+					<Add directory="C:\Development\wxWidgets\lib\gcc_lib" />
 				</Linker>
 			</Target>
 			<Target title="Debug Unicode Slim">
-				<Option output="../../lib/libXmlCpp_slimud" prefix_auto="1" extension_auto="1" />
+				<Option output="..\..\lib\libXmlCpp_slimud" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../lib/obj/libXmlCpp/DebugUniSl" />
+				<Option object_output="..\..\lib\obj\libXmlCpp\DebugUniSl" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -54,16 +56,16 @@
 					<Add option="-DXMLCPP_USE_WXWIDGETS" />
 					<Add option="-DXMLCPP_SLIM" />
 					<Add directory="$(#wx3.include)" />
-					<Add directory="$(#wx3.lib)/wx/include/base-unicode-debug-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\base-unicode-debug-static-2.9" />
 				</Compiler>
 				<Linker>
-					<Add directory="C:/Development/wxWidgets/lib/gcc_lib" />
+					<Add directory="C:\Development\wxWidgets\lib\gcc_lib" />
 				</Linker>
 			</Target>
 			<Target title="Release Unicode Slim">
-				<Option output="../../lib/libXmlCpp_slimu" prefix_auto="1" extension_auto="1" />
+				<Option output="..\..\lib\libXmlCpp_slimu" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../lib/obj/libXmlCpp/ReleaseUniSl/" />
+				<Option object_output="..\..\lib\obj\libXmlCpp\ReleaseUniSl\" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -73,48 +75,50 @@
 					<Add option="-DXMLCPP_USE_WXWIDGETS" />
 					<Add option="-DXMLCPP_SLIM" />
 					<Add directory="$(#wx3.include)" />
-					<Add directory="$(#wx3.lib)/wx/include/base-unicode-release-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\base-unicode-release-static-2.9" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add directory="C:/Development/wxWidgets/lib/gcc_lib" />
+					<Add directory="C:\Development\wxWidgets\lib\gcc_lib" />
 				</Linker>
 			</Target>
 			<Target title="Debug Full">
-				<Option output="../../lib/libXmlCppd" prefix_auto="1" extension_auto="1" />
+				<Option output="..\..\lib\libXmlCppd" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../lib/obj/libXmlCpp/Debug" />
+				<Option object_output="..\..\lib\obj\libXmlCpp\Debug" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
 					<Add option="-g" />
-					<Add directory="$(#wx.lib)/base-ansi-debug-static-2.8" />
+					<Add directory="$(#wx.lib)\wx\include\msw-ansi-debug-static-2.8" />
+					<Add directory="$(#wx.include)" />
 				</Compiler>
 				<Linker>
-					<Add directory="C:/Development/wxWidgets/lib/gcc_lib" />
+					<Add directory="C:\Development\wxWidgets\lib\gcc_lib" />
 				</Linker>
 			</Target>
 			<Target title="Release Full">
-				<Option output="../../lib/libXmlCpp" prefix_auto="1" extension_auto="1" />
+				<Option output="..\..\lib\libXmlCpp" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../lib/obj/libXmlCpp/Release/" />
+				<Option object_output="..\..\lib\obj\libXmlCpp\Release\" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
 					<Add option="-O2" />
-					<Add directory="$(#wx.lib)/base-ansi-release-static-2.8" />
+					<Add directory="$(#wx.lib)\wx\include\msw-ansi-release-static-2.8" />
+					<Add directory="$(#wx.include)" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add directory="C:/Development/wxWidgets/lib/gcc_lib" />
+					<Add directory="C:\Development\wxWidgets\lib\gcc_lib" />
 				</Linker>
 			</Target>
 			<Target title="Debug Unicode Full">
-				<Option output="../../lib/libXmlCppud" prefix_auto="1" extension_auto="1" />
+				<Option output="..\..\lib\libXmlCppud" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../lib/obj/libXmlCpp/DebugUni" />
+				<Option object_output="..\..\lib\obj\libXmlCpp\DebugUni" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -122,16 +126,16 @@
 					<Add option="-g" />
 					<Add option="-DXMLCPP_USE_WXWIDGETS" />
 					<Add directory="$(#wx3.include)" />
-					<Add directory="$(#wx3.lib)/wx/include/base-unicode-debug-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\base-unicode-debug-static-2.9" />
 				</Compiler>
 				<Linker>
-					<Add directory="C:/Development/wxWidgets/lib/gcc_lib" />
+					<Add directory="C:\Development\wxWidgets\lib\gcc_lib" />
 				</Linker>
 			</Target>
 			<Target title="Release Unicode Full">
-				<Option output="../../lib/libXmlCppu" prefix_auto="1" extension_auto="1" />
+				<Option output="..\..\lib\libXmlCppu" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="../../lib/obj/libXmlCpp/ReleaseUni/" />
+				<Option object_output="..\..\lib\obj\libXmlCpp\ReleaseUni\" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option projectLinkerOptionsRelation="2" />
@@ -140,11 +144,11 @@
 					<Add option="-O2" />
 					<Add option="-DXMLCPP_USE_WXWIDGETS" />
 					<Add directory="$(#wx3.include)" />
-					<Add directory="$(#wx3.lib)/wx/include/base-unicode-release-static-2.9" />
+					<Add directory="$(#wx3.lib)\wx\include\base-unicode-release-static-2.9" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add directory="C:/Development/wxWidgets/lib/gcc_lib" />
+					<Add directory="C:\Development\wxWidgets\lib\gcc_lib" />
 				</Linker>
 			</Target>
 		</Build>
@@ -171,6 +175,7 @@
 			<Add option="-DLIBXML_STATIC" />
 			<Add option="-DXMLCPP_USE_XSLT" />
 			<Add option="-DXMLCPP_USE_EXSLT" />
+			<Add option="-DXMLCPP_USE_WXWIDGETS" />
 			<Add option="-DSTDC_HEADERS=1" />
 			<Add option="-DHAVE_SYS_TYPES_H=1" />
 			<Add option="-DHAVE_SYS_STAT_H=1" />
@@ -193,8 +198,9 @@
 			<Add option="-DHAVE_STRTOL=1" />
 			<Add option="-DHAVE_LIBEXPAT=1" />
 			<Add option='-DUNISTD_H=&quot;&lt;unistd.h&gt;&quot;' />
-			<Add directory="$(#system.include)/libxml2" />
-			<Add directory="../../xml" />
+			<Add directory="$(#system.include)\libxml2" />
+			<Add directory="..\..\xml" />
+			<Add directory="..\..\include" />
 		</Compiler>
 		<Unit filename="cXmlClasses.h">
 			<Option target="Debug Slim" />
@@ -456,6 +462,7 @@
 			<Option target="Debug Unicode Full" />
 			<Option target="Release Unicode Full" />
 		</Unit>
+		<Unit filename="cXmlValidatorResult.h" />
 		<Unit filename="cXmlValidatorSchematron.cpp">
 			<Option target="Debug Slim" />
 			<Option target="Release Slim" />
@@ -556,7 +563,7 @@
 			<Option target="Debug Unicode Full" />
 			<Option target="Release Unicode Full" />
 		</Unit>
-		<Unit filename="rnv/ary.c">
+		<Unit filename="rnv\ary.c">
 			<Option compilerVar="CC" />
 			<Option target="Debug Slim" />
 			<Option target="Release Slim" />
@@ -567,7 +574,7 @@
 			<Option target="Debug Unicode Full" />
 			<Option target="Release Unicode Full" />
 		</Unit>
-		<Unit filename="rnv/ary.h">
+		<Unit filename="rnv\ary.h">
 			<Option target="Debug Slim" />
 			<Option target="Release Slim" />
 			<Option target="Debug Unicode Slim" />
@@ -577,7 +584,7 @@
 			<Option target="Debug Unicode Full" />
 			<Option target="Release Unicode Full" />
 		</Unit>
-		<Unit filename="rnv/drv.c">
+		<Unit filename="rnv\drv.c">
 			<Option compilerVar="CC" />
 			<Option target="Debug Slim" />
 			<Option target="Release Slim" />
@@ -588,7 +595,7 @@
 			<Option target="Debug Unicode Full" />
 			<Option target="Release Unicode Full" />
 		</Unit>
-		<Unit filename="rnv/drv.h">
+		<Unit filename="rnv\drv.h">
 			<Option target="Debug Slim" />
 			<Option target="Release Slim" />
 			<Option target="Debug Unicode Slim" />
@@ -598,30 +605,7 @@
 			<Option target="Debug Unicode Full" />
 			<Option target="Release Unicode Full" />
 		</Unit>
-		<Unit filename="rnv/dsl.c">
-			<Option compilerVar="CC" />
-			<Option compile="0" />
-			<Option link="0" />
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/dsl.h">
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/dxl.c">
+		<Unit filename="rnv\dsl.c">
 			<Option compilerVar="CC" />
 			<Option compile="0" />
 			<Option link="0" />
@@ -634,7 +618,7 @@
 			<Option target="Debug Unicode Full" />
 			<Option target="Release Unicode Full" />
 		</Unit>
-		<Unit filename="rnv/dxl.h">
+		<Unit filename="rnv\dsl.h">
 			<Option target="Debug Slim" />
 			<Option target="Release Slim" />
 			<Option target="Debug Unicode Slim" />
@@ -644,280 +628,7 @@
 			<Option target="Debug Unicode Full" />
 			<Option target="Release Unicode Full" />
 		</Unit>
-		<Unit filename="rnv/er.c">
-			<Option compilerVar="CC" />
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/er.h">
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/ht.c">
-			<Option compilerVar="CC" />
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/ht.h">
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/m.c">
-			<Option compilerVar="CC" />
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/m.h">
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/rn.c">
-			<Option compilerVar="CC" />
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/rn.h">
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/rnc.c">
-			<Option compilerVar="CC" />
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/rnc.h">
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/rnd.c">
-			<Option compilerVar="CC" />
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/rnd.h">
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/rnl.c">
-			<Option compilerVar="CC" />
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/rnl.h">
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/rnv.c">
-			<Option compilerVar="CC" />
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/rnv.h">
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/rnx.c">
-			<Option compilerVar="CC" />
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/rnx.h">
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/rx.c">
-			<Option compilerVar="CC" />
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/rx.h">
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/s.c">
-			<Option compilerVar="CC" />
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/s.h">
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/sc.c">
-			<Option compilerVar="CC" />
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/sc.h">
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/u.c">
-			<Option compilerVar="CC" />
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/u.h">
-			<Option target="Debug Slim" />
-			<Option target="Release Slim" />
-			<Option target="Debug Unicode Slim" />
-			<Option target="Release Unicode Slim" />
-			<Option target="Debug Full" />
-			<Option target="Release Full" />
-			<Option target="Debug Unicode Full" />
-			<Option target="Release Unicode Full" />
-		</Unit>
-		<Unit filename="rnv/xcl.c">
+		<Unit filename="rnv\dxl.c">
 			<Option compilerVar="CC" />
 			<Option compile="0" />
 			<Option link="0" />
@@ -930,7 +641,17 @@
 			<Option target="Debug Unicode Full" />
 			<Option target="Release Unicode Full" />
 		</Unit>
-		<Unit filename="rnv/xmlc.c">
+		<Unit filename="rnv\dxl.h">
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\er.c">
 			<Option compilerVar="CC" />
 			<Option target="Debug Slim" />
 			<Option target="Release Slim" />
@@ -941,7 +662,7 @@
 			<Option target="Debug Unicode Full" />
 			<Option target="Release Unicode Full" />
 		</Unit>
-		<Unit filename="rnv/xmlc.h">
+		<Unit filename="rnv\er.h">
 			<Option target="Debug Slim" />
 			<Option target="Release Slim" />
 			<Option target="Debug Unicode Slim" />
@@ -951,7 +672,7 @@
 			<Option target="Debug Unicode Full" />
 			<Option target="Release Unicode Full" />
 		</Unit>
-		<Unit filename="rnv/xsd.c">
+		<Unit filename="rnv\ht.c">
 			<Option compilerVar="CC" />
 			<Option target="Debug Slim" />
 			<Option target="Release Slim" />
@@ -962,7 +683,7 @@
 			<Option target="Debug Unicode Full" />
 			<Option target="Release Unicode Full" />
 		</Unit>
-		<Unit filename="rnv/xsd.h">
+		<Unit filename="rnv\ht.h">
 			<Option target="Debug Slim" />
 			<Option target="Release Slim" />
 			<Option target="Debug Unicode Slim" />
@@ -972,7 +693,7 @@
 			<Option target="Debug Unicode Full" />
 			<Option target="Release Unicode Full" />
 		</Unit>
-		<Unit filename="rnv/xsd_tm.c">
+		<Unit filename="rnv\m.c">
 			<Option compilerVar="CC" />
 			<Option target="Debug Slim" />
 			<Option target="Release Slim" />
@@ -983,7 +704,293 @@
 			<Option target="Debug Unicode Full" />
 			<Option target="Release Unicode Full" />
 		</Unit>
-		<Unit filename="rnv/xsd_tm.h">
+		<Unit filename="rnv\m.h">
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\rn.c">
+			<Option compilerVar="CC" />
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\rn.h">
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\rnc.c">
+			<Option compilerVar="CC" />
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\rnc.h">
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\rnd.c">
+			<Option compilerVar="CC" />
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\rnd.h">
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\rnl.c">
+			<Option compilerVar="CC" />
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\rnl.h">
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\rnv.c">
+			<Option compilerVar="CC" />
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\rnv.h">
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\rnx.c">
+			<Option compilerVar="CC" />
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\rnx.h">
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\rx.c">
+			<Option compilerVar="CC" />
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\rx.h">
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\s.c">
+			<Option compilerVar="CC" />
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\s.h">
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\sc.c">
+			<Option compilerVar="CC" />
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\sc.h">
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\u.c">
+			<Option compilerVar="CC" />
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\u.h">
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\xcl.c">
+			<Option compilerVar="CC" />
+			<Option compile="0" />
+			<Option link="0" />
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\xmlc.c">
+			<Option compilerVar="CC" />
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\xmlc.h">
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\xsd.c">
+			<Option compilerVar="CC" />
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\xsd.h">
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\xsd_tm.c">
+			<Option compilerVar="CC" />
+			<Option target="Debug Slim" />
+			<Option target="Release Slim" />
+			<Option target="Debug Unicode Slim" />
+			<Option target="Release Unicode Slim" />
+			<Option target="Debug Full" />
+			<Option target="Release Full" />
+			<Option target="Debug Unicode Full" />
+			<Option target="Release Unicode Full" />
+		</Unit>
+		<Unit filename="rnv\xsd_tm.h">
 			<Option target="Debug Slim" />
 			<Option target="Release Slim" />
 			<Option target="Debug Unicode Slim" />
@@ -1013,17 +1020,17 @@
 			<Option target="Debug Unicode Full" />
 			<Option target="Release Unicode Full" />
 		</Unit>
-		<Unit filename="xsl/Makefile.mak">
+		<Unit filename="xsl\Makefile.mak">
 			<Option compile="1" />
 			<Option compiler="gcc" use="1" buildCommand="mingw32-make -f $file" />
 			<Option target="Prebuild" />
 		</Unit>
-		<Unit filename="xsl/iso_schematron_skeleton.xsl">
+		<Unit filename="xsl\iso_schematron_skeleton.xsl">
 			<Option weight="0" />
 			<Option compiler="gcc" use="1" buildCommand="xsltproc -o $file.stripped xsl/strip.xsl $file" />
 			<Option target="Prebuild" />
 		</Unit>
-		<Unit filename="xsl/iso_schematron_skeleton.xsl.h">
+		<Unit filename="xsl\iso_schematron_skeleton.xsl.h">
 			<Option target="Debug Slim" />
 			<Option target="Release Slim" />
 			<Option target="Debug Unicode Slim" />
@@ -1033,12 +1040,12 @@
 			<Option target="Debug Unicode Full" />
 			<Option target="Release Unicode Full" />
 		</Unit>
-		<Unit filename="xsl/iso_simple.xsl">
+		<Unit filename="xsl\iso_simple.xsl">
 			<Option weight="0" />
 			<Option compiler="gcc" use="1" buildCommand="xsltproc -o $file.stripped xsl/strip.xsl $file" />
 			<Option target="Prebuild" />
 		</Unit>
-		<Unit filename="xsl/iso_simple.xsl.h">
+		<Unit filename="xsl\iso_simple.xsl.h">
 			<Option target="Debug Slim" />
 			<Option target="Release Slim" />
 			<Option target="Debug Unicode Slim" />

@@ -54,7 +54,7 @@ public:
     bool read(const std::string& buffer);
     bool read(const char* URL);
 
-    virtual int validate(boost::shared_ptr<xmlDoc>& doc, int options = OPT_NONE);
+    virtual cXmlValidatorResult validate(boost::shared_ptr<xmlDoc>& doc, cXmlValidatorResult::LEVEL retlevel = cXmlValidatorResult::VR_ERROR, int options = OPT_NONE);
 
     virtual bool ok() const { return m_context && m_parser && m_schema; }
     inline bool operator!() const { return !ok(); }

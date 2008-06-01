@@ -49,6 +49,11 @@ public:
     virtual void OnReloadSchema( wxCommandEvent& event );
     virtual void OnReloadXml( wxCommandEvent& event );
 
+    virtual void OnSchemaCompiler( wxCommandEvent& event );
+    virtual void OnSchemaRaw( wxCommandEvent& event );
+    virtual void OnSchemaModel( wxCommandEvent& event );
+    virtual void OnSchemaMS3D( wxCommandEvent& event );
+
     virtual void OnSchemaProfile10( wxCommandEvent& event );
     virtual void OnSchemaProfile100( wxCommandEvent& event );
     virtual void OnSchemaProfile1000( wxCommandEvent& event );
@@ -60,10 +65,21 @@ public:
     virtual void OnKeyframe( wxCommandEvent& event );
 
 private:
+    enum {
+        INT_EXTERNAL = 0,
+        INT_SCENERY,
+        INT_COMPILER,
+        INT_RAW,
+        INT_MODEL,
+        INT_MS3D,
+
+        INT_UNDEFINED
+    };
     boost::shared_ptr<wxFileDialog> m_fdlgSchema;
     boost::shared_ptr<wxFileDialog> m_fdlgFile;
     xmlcpp::cXmlValidatorMulti m_val;
     bool m_schemachanged;
+    int m_internal;
     wxString m_xmlfile;
     boost::shared_ptr<dlgKeyframes> m_kf;
 

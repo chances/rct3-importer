@@ -29,6 +29,7 @@
 
 #include "cXmlException.h"
 #include "cXmlNode.h"
+#include "pretty.h"
 
 //#define DUMP
 //#define DUMPINIT
@@ -194,6 +195,25 @@ void cXmlErrorHandler::transferErrors(cXmlErrorHandler& from) {
         m_genericerrors.insert(m_genericerrors.end(), from.m_genericerrors.begin(), from.m_genericerrors.end());
     }
 }
+
+#ifdef XMLCPP_USE_WXWIDGETS
+
+/** @brief wxgetErrorList
+  *
+  * @todo: document this function
+  */
+wxString cXmlErrorHandler::wxgetErrorList() {
+    wxString error;
+    foreach(const cXmlStructuredError& se, getStructuredErrors()) {
+        error += wxString::Format(wxT("Line %d: %s\n"), se.line,
+            wxString::FromUTF8(se.message.c_str()).c_str());
+    }
+    foreach(const std::string& ge, getGenericErrors())
+        error += wxString::FromUTF8(ge.c_str()) + "\n";
+    return error;
+}
+
+#endif
 
 } // Namespace
 

@@ -282,13 +282,13 @@ void ovlSIDManager::Make(cOvlInfo* info) {
             for (unsigned long x = 0; x < it->second.position.xsquares * it->second.position.ysquares; ++x) {
                 if (it->second.squareunknowns.size() >= (it->second.position.xsquares * it->second.position.ysquares)) {
                     if (it->second.squareunknowns[x].GetHeight()) {
-                        c_sid->data[x].unk4 = reinterpret_cast<unsigned long*>(c_commondata);
+                        c_sid->data[x].unk4 = reinterpret_cast<uint32_t*>(c_commondata);
                         c_commondata += it->second.squareunknowns[x].GetHeightSize();
                         GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->data[x].unk4));
                     }
                 } else {
                     if (it->second.squareunknowns[0].GetHeight()) {
-                        c_sid->data[x].unk4 = reinterpret_cast<unsigned long*>(c_commondata);
+                        c_sid->data[x].unk4 = reinterpret_cast<uint32_t*>(c_commondata);
                         c_commondata += it->second.squareunknowns[0].GetHeightSize();
                         GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->data[x].unk4));
                     }

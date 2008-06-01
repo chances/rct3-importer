@@ -44,6 +44,9 @@
 #define READ_RCT3_WARNOVERWRITE()       wxcRead<bool>(wxT("RCT3/WarnOverwrite"), true)
 #define WRITE_RCT3_WARNOVERWRITE(v)    wxcWrite<bool>(wxT("RCT3/WarnOverwrite"), v)
 
+#define READ_RCT3_VALIDATE()            wxcRead<bool>(wxT("RCT3/Validate"), true)
+#define WRITE_RCT3_VALIDATE(v)         wxcWrite<bool>(wxT("RCT3/Validate"), v)
+
 #define READ_RCT3_TRIANGLESORT_X()     wxcRead<wxString>(wxT("RCT3/TriangleSortX"), wxString(cTriangleSortAlgorithm::GetDefaultName(), wxConvLocal))
 #define WRITE_RCT3_TRIANGLESORT_X(v)  wxcWrite<wxString>(wxT("RCT3/TriangleSortX"), v)
 

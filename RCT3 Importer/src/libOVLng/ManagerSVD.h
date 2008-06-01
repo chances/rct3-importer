@@ -94,7 +94,7 @@ public:
 	unsigned long unk9; //seen 0 so far
 	unsigned long unk10; //seen 0 so far
 	unsigned long unk11; //seen 0 so far
-	unsigned long unk12; //seen 0 so far
+	//unsigned long unk12; //seen 0 so far
 	unsigned long unk13; //billboard related
 
 	cSceneryItemVisual() {
@@ -109,7 +109,7 @@ public:
 	    unk9 = 0;
 	    unk10 = 0;
 	    unk11 = 0;
-	    unk12 = 0;
+	    //unk12 = 0;
 	    unk13 = 0xFFFFFFFF;
 	}
 	void Fill(r3::SceneryItemVisual_V* siv);

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<grammar xmlns="http://relaxng.sourceforge.net/ns/shorthand" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://rct3.sourceforge.net/rct3xml/installer-lists">
+	<include href="rct3xml-installer-shared-v1.rng"/>
+	<start>
+		<choice>
+			<element name="packagelist">
+				<attribute name="version">
+					<value type="unsignedInt">1</value>
+				</attribute>
+				<attribute name="releasedate" type="date"/>
+				<element name="package" occurs="+">
+					<attribute name="name" type="string"/>
+					<attribute name="shortname" occurs="?" type="string"/>
+					<attribute name="guid" ref="guid"/>
+					<attribute name="version" occurs="?" ref="version"/>
+					<interleave>
+						<choice>
+							<attribute name="authorguid" ref="guid"/>
+							<element name="author" occurs="+">
+								<attribute name="guid" ref="guid"/>
+							</element>
+						</choice>
+						<a:documentation>Optional element content gives reason for the warning</a:documentation>
+						<element name="warning" occurs="*">
+							<attribute name="type" type="unsignedInt"/>
+							<attribute name="version" occurs="?" ref="version"/>
+							<optional>
+								<data type="string"/>
+							</optional>
+						</element>
+					</interleave>
+				</element>
+			</element>
+			<element name="authorlist">
+				<attribute name="version">
+					<value type="unsignedInt">1</value>
+				</attribute>
+				<attribute name="releasedate" type="date"/>
+				<element name="author" occurs="+">
+					<attribute name="name" type="string"/>
+					<attribute name="guid" ref="guid"/>
+				</element>
+			</element>
+		</choice>
+	</start>
+</grammar>

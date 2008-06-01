@@ -78,9 +78,9 @@ void cSceneryItemVisual::Fill(r3::SceneryItemVisual_V* siv) {
         lods[i].Fill(siv->lods[i]);
     }
     if (sivflags & r3::Constants::SVD::Flags::Soaked) {
-        reinterpret_cast<r3::SceneryItemVisual_S*>(siv)->s.unk12 = unk12;
+        reinterpret_cast<r3::SceneryItemVisual_S*>(siv)->s.proxy_ref = NULL;
     } else if (sivflags & r3::Constants::SVD::Flags::Wild) {
-        reinterpret_cast<r3::SceneryItemVisual_W*>(siv)->s.unk12 = unk12;
+        reinterpret_cast<r3::SceneryItemVisual_W*>(siv)->s.proxy_ref = NULL;
         reinterpret_cast<r3::SceneryItemVisual_W*>(siv)->w.unk13 = unk13;
     }
 }

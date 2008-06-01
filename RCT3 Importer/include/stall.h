@@ -14,16 +14,13 @@
 #include "guiicon.h"
 #include "sceneryrevised.h"
 #include "attraction.h"
+#include "carrieditems.h"
 
 #include "spline.h"
 
 namespace r3 {
 
-struct StallItem
-{
-	char *CID;
-	unsigned long cost;
-};
+struct StallItem;
 struct StallStr
 {
     char *Name;
@@ -92,12 +89,6 @@ struct StallB
 	Attraction_S *att;
 	SceneryItem *SID;
 };
-struct ChangingRoom
-{
-	Attraction_S *att;
-	SceneryItem *SID;
-	unsigned char *spline;
-};
 struct SpecialAttractionB
 {
 	unsigned long unk;
@@ -121,6 +112,87 @@ struct SpecialAttractionA
 	unsigned long unk9;
 	long unk10;
 	SceneryItem *SID;
+};
+
+struct StallItem {
+	CarriedItem*    cid_ref;
+	uint32_t        cost;
+};
+
+struct Stall_V {
+    /*
+	unsigned long type; //7 = food, 8 = drinks, 9 = misc, 14 = info/umbrella
+	wchar_t* Name;
+	wchar_t* Description;
+	GUISkinItem *GSI;
+	unsigned long unk2;
+	long unk3;
+	unsigned long unk4;
+	unsigned long unk5;
+	unsigned long unk6;
+	unsigned char *spline;
+	unsigned long unk7;
+	unsigned long unk8;
+	unsigned long unk9;
+	long unk10;
+	*/
+	Attraction_V    att;
+	SceneryItem*    sid_ref;
+	uint32_t        item_count;
+	StallItem*      items;
+	uint32_t        unk11;
+	uint32_t        unk12;
+	uint32_t        unk13;
+	uint32_t        unk14;
+	uint32_t        unk15;
+	uint32_t        unk16;
+};
+
+struct Stall_SW {
+	unsigned long   unk1;
+	unsigned long   item_count;
+	StallItem*      items;
+	uint32_t        unk11;
+	uint32_t        unk12;
+	uint32_t        unk13;
+	uint32_t        unk14;
+	uint32_t        unk15;
+	uint32_t        unk16;
+	Attraction_S*   att;
+	SceneryItem*    sid_ref;
+};
+
+struct SpecialAttraction_V {
+    /*
+	unsigned long AttractionType; //13 = 1st aid, 12 = ATM, 11 = toilet
+	wchar_t* Name;
+	wchar_t* Description;
+	GUISkinItem *GSI;
+	unsigned long unk2;
+	long unk3;
+	unsigned long unk4;
+	unsigned long unk5;
+	unsigned long unk6;
+	Spline* spline;
+	unsigned long unk7;
+	unsigned long unk8;
+	unsigned long unk9;
+	long unk10;
+	*/
+	Attraction_V    att;
+	SceneryItem*    sid_ref;
+};
+
+struct SpecialAttraction_SW {
+	uint32_t        unk;
+	Attraction_S*   att;
+	SceneryItem*    sid_ref;
+};
+
+struct ChangingRoom {
+	Attraction_S*   att;
+	SceneryItem*    sid_ref;
+	Spline*         spline_ref;
 };
 
 };

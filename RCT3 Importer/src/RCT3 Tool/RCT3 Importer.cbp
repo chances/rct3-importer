@@ -321,6 +321,18 @@
 			<Option target="Debug" />
 			<Option target="Debug (Public)" />
 		</Unit>
+		<Unit filename="wxdlgDecimate.cpp">
+			<Option virtualFolder="wx\" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Debug (Public)" />
+		</Unit>
+		<Unit filename="wxdlgDecimate.h">
+			<Option virtualFolder="wx\" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Debug (Public)" />
+		</Unit>
 		<Unit filename="wxdlgEffect.cpp">
 			<Option virtualFolder="wx\" />
 			<Option target="Release" />

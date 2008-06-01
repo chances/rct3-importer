@@ -13,6 +13,8 @@
 #ifndef TRACKSECTION_H_INCLUDED
 #define TRACKSECTION_H_INCLUDED
 
+#include "sceneryrevised.h"
+
 namespace r3 {
 
 struct TrackSectionChainStruct {
@@ -23,7 +25,7 @@ struct TrackSectionChainStruct {
 
 struct TrackSection_V {
         char* internalname;
-        SceneryItem* SID;
+        SceneryItem* sid_ref;
         unsigned long entry_curve;	// Probably curve related
         unsigned long exit_curve;	// Probablycurve related
         unsigned long special_curves;	// Special curve types

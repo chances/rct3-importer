@@ -554,10 +554,10 @@
 				</attribute>
 				<attribute name="attractivity" occurs="?" type="unsignedByte"/>
 				<attribute name="entryFee" occurs="?" type="unsignedInt"/>
+				<attribute name="minCircuits" occurs="?" type="unsignedInt"/>
+				<attribute name="maxCircuits" occurs="?" type="int"/>
 				<interleave>
 					<element name="rideStaticUnknowns" occurs="?">
-						<attribute name="u4" occurs="?" type="unsignedInt"/>
-						<attribute name="u5" occurs="?" type="int"/>
 						<attribute name="u11" occurs="?" type="unsignedInt"/>
 						<attribute name="u12" occurs="?" type="unsignedInt"/>
 						<attribute name="u13" occurs="?" type="int"/>

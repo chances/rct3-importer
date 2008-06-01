@@ -102,14 +102,23 @@ bool cXmlValidatorRelaxNG::read(const char* URL) {
     return ok();
 }
 
-int cXmlValidatorRelaxNG::validate(boost::shared_ptr<xmlDoc>& doc, int options) {
+cXmlValidatorResult cXmlValidatorRelaxNG::validate(boost::shared_ptr<xmlDoc>& doc, cXmlValidatorResult::LEVEL retlevel, int options) {
     if (!ok())
         throw eXml("Tried to validate with invalid relaxng schema");
+
+    cXmlValidatorResult res(retlevel);
 
     clearGenericErrors();
     clearStructuredErrors();
 
-    return xmlRelaxNGValidateDoc(m_context, doc.get());
+    int valok = xmlRelaxNGValidateDoc(m_context, doc.get());
+    res.error = getStructuredErrors().size() + getGenericErrors().size();
+    if ((!res.error) && valok) {
+        // Something went wrong, but no error was reported?!?
+        res.internal_error = true;
+    }
+
+    return res;
 }
 
 

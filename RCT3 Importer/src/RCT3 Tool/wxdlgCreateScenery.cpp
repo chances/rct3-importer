@@ -243,6 +243,7 @@ dlgCreateScenery::dlgCreateScenery(wxWindow *parent):rcdlgCreateScenery(parent) 
 //    t_text->GetContainingSizer()->Replace(t_text, m_textPath);
 //    t_text->Destroy();
 
+    m_textPrefix->SetValidator(wxExtendedValidator(&m_SCN.prefix));
     m_textName->SetValidator(wxExtendedValidator(&m_SCN.name));
     m_textPath->SetValidator(wxExtendedValidator(&m_SCN.ovlpath, true, true, true));
 
@@ -1849,15 +1850,16 @@ WX_DECLARE_STRING_HASH_MAP(char *, ovlNameLookup);
 void dlgCreateScenery::OnAutoName(wxCommandEvent& event) {
     int textures = m_SCN.flexitextures.size();
     int other = m_SCN.models.size() + m_SCN.animatedmodels.size() + m_SCN.lods.size() + m_SCN.animations.size();
+    m_textPrefix->SetValue(m_prefix);
     if (textures && (!other)) {
-        m_textName->SetValue(m_prefix + m_theme + wxT("-texture"));
+        m_textName->SetValue(m_theme + wxT("-texture"));
     } else if (other) {
         wxString name = m_SCN.filename.GetName();
         if (name.IsEmpty()) {
             ::wxMessageBox(_("Cannot autoname in unsaved state."), _("Error"), wxOK | wxICON_ERROR, this);
             return;
         }
-        m_textName->SetValue(m_prefix + name);
+        m_textName->SetValue(name);
     } else {
         ::wxMessageBox(_("Cannot autoname as long as you didn't add any data."), _("Error"), wxOK | wxICON_ERROR, this);
     }

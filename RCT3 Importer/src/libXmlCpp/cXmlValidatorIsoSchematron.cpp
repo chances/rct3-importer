@@ -113,11 +113,13 @@ bool cXmlValidatorIsoSchematron::read(const char* URL, const std::map<std::strin
     return read(temp, options);
 }
 
-int cXmlValidatorIsoSchematron::validate(boost::shared_ptr<xmlDoc>& doc, int options) {
+cXmlValidatorResult cXmlValidatorIsoSchematron::validate(boost::shared_ptr<xmlDoc>& doc, cXmlValidatorResult::LEVEL retlevel, int options) {
     if (!ok())
         throw eXml("Tried to validate with invalid schematron schema");
     if (!doc)
         throw eXml("Tried to validate broken document");
+
+    cXmlValidatorResult res(retlevel);
 
     clearGenericErrors();
     clearStructuredErrors();
@@ -132,11 +134,13 @@ int cXmlValidatorIsoSchematron::validate(boost::shared_ptr<xmlDoc>& doc, int opt
     }
 
     cXmlDoc result = m_transform.transform(doc.get());
-    int errors = 0;
+    //int errors = 0;
 
     cXmlNode root(result.root());
-    if (!root.ok())
-        return -1;
+    if (!root.ok()) {
+        res.internal_error = true;
+        return res;
+    }
 
     cXmlNode child(root.children());
     string pattern = "Unnamed pattern";
@@ -157,14 +161,20 @@ int cXmlValidatorIsoSchematron::validate(boost::shared_ptr<xmlDoc>& doc, int opt
                 string role = child.getPropVal("role", "0");
                 if (role == "none") {
                     error.level = XML_ERR_NONE;
-                    errors--; // Will be upped down below
+                    //errors--; // Will be upped down below
+                    res.none++;
                 } else if (role == "warning") {
                     error.level = XML_ERR_WARNING;
+                    res.warning++;
                 } else if (role == "fatal") {
                     error.level = XML_ERR_FATAL;
+                    res.fatal++;
                 } else {
                     sscanf(role.c_str(), "%d", &error.int1);
+                    res.error++;
                 }
+            } else {
+                res.error++;
             }
 
             if (path) {
@@ -198,11 +208,11 @@ int cXmlValidatorIsoSchematron::validate(boost::shared_ptr<xmlDoc>& doc, int opt
             }
 
             addStructuredError(error);
-            errors++;
+            //errors++;
         }
         child.go_next();
     }
-    return errors;
+    return res;
 }
 
 

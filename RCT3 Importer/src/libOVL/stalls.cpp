@@ -49,7 +49,7 @@ unsigned long StallData::ComputeItemSize()
 	    {
             for (unsigned int j = 0;j < Stalls[i]->itemcount;j++)
             {
-                AddStringSize(Stalls[i]->items[j].CID);
+                AddStringSize(reinterpret_cast<char*>(Stalls[i]->items[j].cid_ref));
                 symbolrefcount++;
                 Stallsize += sizeof(StallItem);
             }
@@ -152,8 +152,8 @@ void StallData::AddData(unsigned long *data,unsigned long *itemdata)
    		    relocations.push((unsigned long *)&datas[i].Items);
             for (unsigned int j = 0;j < Stalls[i]->itemcount;j++)
             {
-                AddRef2((unsigned long *)&items[itempos].CID,Stalls[i]->items[j].CID,":cid");
-                items[itempos].CID = 0;
+                AddRef2((unsigned long *)&items[itempos].cid_ref,reinterpret_cast<char*>(Stalls[i]->items[j].cid_ref),":cid");
+                items[itempos].cid_ref = 0;
                 items[itempos].cost = Stalls[i]->items[j].cost;
                 itempos++;
             }

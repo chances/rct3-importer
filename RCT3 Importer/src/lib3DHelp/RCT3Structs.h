@@ -458,6 +458,9 @@ public:
 
     cBoneAnimation(): name(wxT("")), axis(false) {};
 
+    int decimateTranslations(float threshold);
+    int decimateRotations(float threshold, float bailout);
+
     bool FromCompilerXml(xmlcpp::cXmlNode& node, const wxString& path);
 
     virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);

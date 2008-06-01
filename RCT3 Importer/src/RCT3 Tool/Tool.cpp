@@ -2107,10 +2107,10 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                     fwrite(&s->ItemCount,4,1,f);
                     for (unsigned int j = 0;j < s->ItemCount;j++)
                     {
-                        len = strlen(s->Items[j].CID);
+                        len = strlen(reinterpret_cast<char*>(s->Items[j].cid_ref));
                         len++;
                         fwrite(&len, 4, 1, f);
-                        fwrite(s->Items[j].CID, len, 1, f);
+                        fwrite(reinterpret_cast<char*>(s->Items[j].cid_ref), len, 1, f);
                         fwrite(&s->Items[j].cost,4,1,f);
                     }
                     fwrite(&s->Unk11,4,1,f);
@@ -2434,8 +2434,8 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                             for (unsigned int j = 0;j < s->ItemCount;j++)
                             {
                                 fread(&len, 4, 1, f);
-                                s->Items[j].CID = new char[len];
-                                fread(s->Items[j].CID, len, 1, f);
+                                s->Items[j].cid_ref = reinterpret_cast<CarriedItem*>(new char[len]);
+                                fread(reinterpret_cast<char*>(s->Items[j].cid_ref), len, 1, f);
                                 fread(&s->Items[j].cost,4,1,f);
                             }
                         }
@@ -2712,8 +2712,8 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                             for (unsigned int j = 0;j < s->ItemCount;j++)
                             {
                                 fread(&len, 4, 1, f);
-                                s->Items[j].CID = new char[len];
-                                fread(s->Items[j].CID, len, 1, f);
+                                s->Items[j].cid_ref = reinterpret_cast<CarriedItem*>(new char[len]);
+                                fread(s->Items[j].cid_ref, len, 1, f);
                                 fread(&s->Items[j].cost,4,1,f);
                             }
                         }

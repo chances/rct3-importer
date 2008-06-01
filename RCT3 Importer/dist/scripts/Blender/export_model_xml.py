@@ -289,6 +289,7 @@ def write(filename):
               objects = scn.objects.selected
           elif scn.objects:
               objects = scn.objects
+          lights = 0
           for obj in objects:
               if obj.parent != arm_obj:
                   continue
@@ -297,10 +298,17 @@ def write(filename):
                   continue
 
               bone_mat = None
+              n = get_Name(obj)
               if obj.getType() == 'Empty':
                   bone_mat = getMatrix_Empty(obj)
               if obj.getType() == 'Camera':
                   bone_mat = getMatrix_Camera(obj)
+              if obj.getType() == 'Lamp':
+                  bone_mat = obj.matrix.copy()
+                  l = obj.getData()
+                  if l.type != Lamp.Types['Lamp']:
+                     continue
+                  n = make_lampName(l, lights, n)
               else:
                   continue
 
@@ -323,7 +331,7 @@ def write(filename):
               ex_bone.append(ex_bone_t)
               ex_bone.append(ex_bone_r)
 
-              ex_bones.append([get_Name(obj), ex_bone])
+              ex_bones.append([n, ex_bone])
 
       ex_act[aname] = ex_bones
 
@@ -443,16 +451,23 @@ def make_boneName(obj, type = None, name = None):
 
 
 
-def make_lampName(lamp, lights):
-   s = ""
+def make_lampName(lamp, lights, name):
+   s = "lightstart"
+   pre = False
+   if (name.startswith("light") or name.startswith("nblight") or name.startswith("simplelight")):
+      if name.endswith("_"):
+          s = name[:-1]
+          pre = True
+      else:
+          return name
    if lamp.mode & Lamp.Modes['RayShadow']:
       # light should shine
       if lamp.mode & Lamp.Modes['OnlyShadow']:
          # no bulb
-         s = "nblightstart"
+         s = "nb" + s
       else:
          # bulb
-         s = "lightstart"
+         pass
    else:
       # light should not shine
       if lamp.mode & Lamp.Modes['OnlyShadow']:
@@ -460,11 +475,12 @@ def make_lampName(lamp, lights):
          return ""
       else:
          # bulb
-         s = "simplelightstart"
+         s = "simple" + s
 
    lights += 1
 
-   s += "%02d" % lights
+   if not pre:
+      s += "%02d" % lights
 
    if lamp.mode & Lamp.Modes['NoSpecular']:
       s += "_torch"
@@ -479,7 +495,10 @@ def make_lampName(lamp, lights):
    else:
       s += "_r%dg%db%d" % (lamp.col[0] *  255, lamp.col[1] * 255, lamp.col[2] * 255)
 
-   s += "_radius%d" % lamp.dist
+   if lamp.dist < 1.0:
+        s += "_radius%dcm" % (lamp.dist * 100.0)
+   else:
+        s += "_radius%d" % lamp.dist
    return s
 
 
@@ -726,8 +745,8 @@ def set_lists(file, exp_list, objects, matTable, worldTable):
             continue
 
          s = get_Name(current_obj);
-         if not (s.startswith("light") or s.startswith("nblight") or s.startswith("simplelight")):
-            s = make_lampName(l, lights)
+         #if not (s.startswith("light") or s.startswith("nblight") or s.startswith("simplelight")):
+         s = make_lampName(l, lights, s)
          if s == "":
             continue
 
@@ -1403,8 +1422,8 @@ def write_groups(file):
 
             fakelights = 0
             s = get_Name(obj);
-            if not (s.startswith("light") or s.startswith("nblight") or s.startswith("simplelight")):
-               s = make_lampName(l, lights)
+            #if not (s.startswith("light") or s.startswith("nblight") or s.startswith("simplelight")):
+            s = make_lampName(l, lights, s)
             if s == "":
                continue
             groupobjs.append(obj)
@@ -1422,8 +1441,8 @@ def write_groups(file):
             elif grobj.getType() == 'Lamp':
                l = grobj.getData()
                s = get_Name(grobj);
-               if not (s.startswith("light") or s.startswith("nblight") or s.startswith("simplelight")):
-                  s = make_lampName(l, lights)
+               #if not (s.startswith("light") or s.startswith("nblight") or s.startswith("simplelight")):
+               s = make_lampName(l, lights, s)
                file.write("%s<bone>%s</bone>\n" % ((Tab*2), s))
             else:
                file.write("%s<bone>%s</bone>\n" % ((Tab*2), get_Name(grobj)))

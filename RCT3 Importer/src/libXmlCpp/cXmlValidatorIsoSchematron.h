@@ -65,7 +65,7 @@ public:
 
     inline cXmlDoc& schema() { return m_schema; };
 
-    virtual int validate(boost::shared_ptr<xmlDoc>& doc, int options = OPT_NONE);
+    virtual cXmlValidatorResult validate(boost::shared_ptr<xmlDoc>& doc, cXmlValidatorResult::LEVEL retlevel = cXmlValidatorResult::VR_ERROR, int options = OPT_NONE);
 
     virtual bool ok() const { return m_transform.ok(); }
     inline bool operator!() const { return !ok(); }

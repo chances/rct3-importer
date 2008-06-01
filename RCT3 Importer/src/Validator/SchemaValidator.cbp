@@ -81,6 +81,7 @@
 			<Add directory="$(#mingw.include)\libxml2" />
 			<Add directory="..\lib3DHelp" />
 			<Add directory="..\..\include" />
+			<Add directory="..\..\xml" />
 		</Compiler>
 		<Linker>
 			<Add library="exslt" />

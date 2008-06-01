@@ -3,7 +3,7 @@
 <!-- $Id: relaxng.rng,v 1.31 2002/05/30 06:07:43 jjc Exp $ -->
 <grammar datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes"
          ns="http://relaxng.org/ns/structure/1.0"
-         xmlns="http://relaxng.org/ns/structure/1.0">
+         xmlns="http://relaxng.sourceforge.net/ns/shorthand">
   <start>
     <ref name="pattern"/>
   </start>

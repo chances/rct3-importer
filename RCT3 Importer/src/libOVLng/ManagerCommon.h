@@ -113,7 +113,7 @@ public:
             unsigned char type_b;
             unsigned char version;
             unsigned short unused;
-        };
+        } __attribute__((__packed__));
     };
 	std::string name;
 	std::string description;
@@ -186,8 +186,8 @@ public:
     unsigned long seating;
     std::vector<cRideOption> options;
     unsigned long entry_fee;
-    unsigned long unk4;           ///< Seen 1
-    long unk5;           ///< Seen -1, 1 (Spiral Slide, FunHouse, LionShow, TigerShow, DolphinShow, KillerWhaleShow)
+    unsigned long min_circuits;           ///< Seen 1
+    long max_circuits;           ///< Seen -1, 1 (Spiral Slide, FunHouse, LionShow, TigerShow, DolphinShow, KillerWhaleShow)
     unsigned long unk11;          ///< Seen 3
     unsigned long unk12;          ///< Seen 3
     long unk13;          ///< Seen -2
@@ -200,8 +200,8 @@ public:
         attractivity = 55;
         seating = 0;
         entry_fee = 100;
-        unk4 = 1;
-        unk5 = -1;
+        min_circuits = 1;
+        max_circuits = -1;
         unk11 = 3;
         unk12 = 3;
         unk13 = -2;

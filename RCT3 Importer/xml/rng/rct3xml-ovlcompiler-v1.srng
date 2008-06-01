@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<srng:grammar xmlns:srng="http://relaxng.sourceforge.net/ns/shorthand" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://rct3.sourceforge.net/rct3xml/ovlcompiler">
+	<srng:start>
+		<srng:element name="ovl">
+			<srng:attribute name="name" occurs="?" type="string" />
+			<srng:attribute name="file" occurs="?" type="string" />
+			<srng:element name="fix" occurs="?">
+				<srng:attribute name="handedness" occurs="?">
+					<srng:choice>
+						<srng:value>left</srng:value>
+						<srng:value>right</srng:value>
+					</srng:choice>
+				</srng:attribute>
+				<srng:attribute name="up" occurs="?">
+					<srng:choice>
+						<srng:value>x</srng:value>
+						<srng:value>y</srng:value>
+						<srng:value>z</srng:value>
+					</srng:choice>
+				</srng:attribute>
+			</srng:element>
+			<srng:element name="bsh" minOccurs="1" maxOccurs="4">
+				<srng:attribute name="name" type="string"/>
+				<srng:attribute name="model" type="string"/>
+				<srng:element name="geomobj" occurs="+">
+					<srng:attribute name="name" type="string"/>
+					<srng:attribute name="bone" occurs="?" type="string"/>
+					<srng:attribute name="transparency" occurs="?">
+						<srng:choice>
+							<srng:value>none</srng:value>
+							<srng:value>masked</srng:value>
+							<srng:value>regular</srng:value>
+						</srng:choice>
+					</srng:attribute>
+					<srng:attribute name="doublesided" occurs="?">
+						<srng:choice>
+							<srng:value>0</srng:value>
+							<srng:value>1</srng:value>
+						</srng:choice>
+					</srng:attribute>
+					<srng:attribute name="sortx" occurs="?" ref="sortalgo"/>
+					<srng:attribute name="sorty" occurs="?" ref="sortalgo"/>
+					<srng:attribute name="sortz" occurs="?" ref="sortalgo"/>
+					<srng:choice>
+						<srng:group>
+							<srng:attribute name="flags" occurs="?">
+								<srng:value>none</srng:value>
+							</srng:attribute>
+							<srng:attribute name="ftx" type="string"/>
+							<srng:attribute name="txs" type="string"/>
+						</srng:group>
+						<srng:group>
+							<srng:attribute name="flags" occurs="?">
+								<srng:value>sign</srng:value>
+							</srng:attribute>
+							<srng:attribute name="ftx" type="string"/>
+						</srng:group>
+						<srng:attribute name="flags" occurs="?">
+							<srng:choice>
+								<srng:value>terrain</srng:value>
+								<srng:value>cliff</srng:value>
+								<srng:value>water</srng:value>
+								<srng:value>watermask</srng:value>
+								<srng:value>billboard</srng:value>
+								<srng:value>animatedbillboard</srng:value>
+							</srng:choice>
+						</srng:attribute>
+					</srng:choice>
+				</srng:element>
+				<srng:element name="bone" occurs="*">
+					<srng:attribute name="name" type="string"/>
+					<srng:attribute name="parent" occurs="?" type="string"/>
+					<srng:element name="pos1" ref="bonematrix"/>
+					<srng:element name="pos2" occurs="?" ref="bonematrix"/>
+				</srng:element>
+			</srng:element>
+			<srng:element name="ban" occurs="+">
+				<srng:attribute name="name" type="string"/>
+				<srng:element name="bone" occurs="+">
+					<srng:attribute name="name" type="string"/>
+					<srng:element name="translate" ref="txyz" occurs="*"/>
+					<srng:element name="rotate" ref="txyz" occurs="*"/>
+				</srng:element>
+			</srng:element>
+			<srng:element name="ftx" occurs="*">
+				<srng:attribute name="name" type="string"/>
+				<srng:attribute name="image" type="string"/>
+				<srng:attribute name="alpha" occurs="?" type="string"/>
+			</srng:element>
+			<srng:element name="reference" occurs="*" type="string"/>
+			<srng:element name="options" occurs="?">
+				<srng:attribute name="lods">
+					<srng:choice>
+						<srng:value>1</srng:value>
+						<srng:value>3</srng:value>
+						<srng:value>4</srng:value>
+					</srng:choice>
+				</srng:attribute>
+			</srng:element>
+		</srng:element>
+	</srng:start>
+
+	<srng:define name="bonematrix">
+		<srng:list>
+			<srng:data type="decimal"/>
+			<srng:data type="decimal"/>
+			<srng:data type="decimal"/>
+			<srng:data type="decimal"/>
+			<srng:data type="decimal"/>
+			<srng:data type="decimal"/>
+			<srng:data type="decimal"/>
+			<srng:data type="decimal"/>
+			<srng:data type="decimal"/>
+			<srng:data type="decimal"/>
+			<srng:data type="decimal"/>
+			<srng:data type="decimal"/>
+			<srng:data type="decimal"/>
+			<srng:data type="decimal"/>
+			<srng:data type="decimal"/>
+			<srng:data type="decimal"/>
+		</srng:list>
+	</srng:define>
+
+	<srng:define name="txyz">
+		<srng:attribute name="time" type="decimal"/>
+		<srng:list>
+			<srng:data type="decimal"/>
+			<srng:data type="decimal"/>
+			<srng:data type="decimal"/>
+		</srng:list>
+	</srng:define>
+	
+	<srng:define name="sortalgo">
+		<srng:choice>
+			<srng:value>min</srng:value>
+			<srng:value>max</srng:value>
+			<srng:value>mean</srng:value>
+			<srng:value>minmax</srng:value>
+			<srng:value>maxmin</srng:value>
+			<srng:value>angle45</srng:value>
+			<srng:value>minXZbyY</srng:value>
+			<srng:value>minXZbyOther</srng:value>
+			<srng:value>minYbyX</srng:value>
+			<srng:value>minYbyZ</srng:value>
+			<srng:value>mininv</srng:value>
+			<srng:value>minmaxinv</srng:value>
+		</srng:choice>
+	</srng:define>
+</srng:grammar>

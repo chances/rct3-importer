@@ -44,8 +44,8 @@ const char* ovlCHGManager::NAME = "ChangingRoom";
 const char* ovlCHGManager::TAG = "chg";
 
 void cChangingRoom::Fill(r3::ChangingRoom* chg) {
-    chg->SID = NULL;
-    chg->spline = NULL;
+    chg->sid_ref = NULL;
+    chg->spline_ref = NULL;
     attraction.Fill(chg->att);
 }
 
@@ -121,13 +121,13 @@ void ovlCHGManager::Make(cOvlInfo* info) {
         GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.description.c_str(), ovlTXTManager::TAG),
                              reinterpret_cast<unsigned long*>(&c_item->att->v.description_ref));
         GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.sid.c_str(), ovlSIDManager::TAG),
-                             reinterpret_cast<unsigned long*>(&c_item->SID));
+                             reinterpret_cast<unsigned long*>(&c_item->sid_ref));
         GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.icon.c_str(), ovlGSIManager::TAG),
                              reinterpret_cast<unsigned long*>(&c_item->att->v.icon_ref));
         GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.spline.c_str(), ovlSPLManager::TAG),
                              reinterpret_cast<unsigned long*>(&c_item->att->v.spline_ref));
         GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.spline.c_str(), ovlSPLManager::TAG),
-                             reinterpret_cast<unsigned long*>(&c_item->spline));
+                             reinterpret_cast<unsigned long*>(&c_item->spline_ref));
 
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
 

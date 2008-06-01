@@ -243,8 +243,10 @@ public:
     void SetDefaultRef(const wxString& prefix, const wxString& theme) {
         m_defaultRef = wxT("../shared/") + prefix + theme + wxT("-texture");
         m_prefix = prefix;
+        m_SCN.prefix = prefix;
         m_theme = theme;
         UpdateAll();
+        TransferDataToWindow();
     };
     wxString GetOVLPath();
 

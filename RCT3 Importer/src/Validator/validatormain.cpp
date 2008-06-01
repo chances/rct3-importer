@@ -30,6 +30,7 @@
 
 #include "cXmlDoc.h"
 #include "cXmlNode.h"
+#include "cXmlInputOutputCallbackString.h"
 #include "cXmlValidatorIsoSchematron.h"
 #include "cXmlValidatorMulti.h"
 #include "cXmlValidatorRNVRelaxNG.h"
@@ -41,6 +42,11 @@
 #include "pretty.h"
 #include "version.h"
 
+#include "rng/rct3xml-ovlcompiler-v1.rngi.gz.h"
+#include "rng/rct3xml-raw-v1.rngi.gz.h"
+#include "rng/model.rngi.gz.h"
+#include "rng/ms3d_comment.rngi.gz.h"
+
 #define wxStyledTextEventHandler(func) \
     (wxObjectEventFunction)(wxEventFunction)wxStaticCastEvent(wxStyledTextEventFunction, &func)
 
@@ -48,6 +54,12 @@ using namespace std;
 using namespace xmlcpp;
 
 frmMain::frmMain(wxWindow* parent):rcfrmMain(parent) {
+    cXmlInputOutputCallbackString::Init();
+    XMLCPP_RES_ADD(rct3xml_ovlcompiler_v1, rngi);
+    XMLCPP_RES_ADD(rct3xml_raw_v1, rngi);
+    XMLCPP_RES_ADD(model, rngi);
+    XMLCPP_RES_ADD(ms3d_comment, rngi);
+
     m_fdlgSchema.reset(new wxFileDialog(this, _("Select schema for validaton"), wxT(""), wxT(""),
         _("All supported schema files|*.xml;*.rnc;*.rng;*.srng;*.shrng;*.sch|RelaxNG|*.rnc;*.rng;*.srng|"
           "Short Hand RelaxNG|*.srng;*.shrng|Schematron|*.sch|Examplotron|*.xml|All files|*.*")), wxWindowDestroyer);
@@ -67,6 +79,7 @@ frmMain::frmMain(wxWindow* parent):rcfrmMain(parent) {
     m_stcSchematron->SetReadOnly(true);
 
     m_schemachanged = true;
+    m_internal = INT_UNDEFINED;
 
 	this->Connect( m_stcMain->GetId(), wxEVT_STC_CHARADDED, wxStyledTextEventHandler(frmMain::OnSTCCharAdded) );
 	this->Connect( m_stcSchema->GetId(), wxEVT_STC_CHARADDED, wxStyledTextEventHandler(frmMain::OnSTCCharAdded) );
@@ -282,14 +295,76 @@ void frmMain::OnReloadXml( wxCommandEvent& event ) {
 }
 
 void frmMain::OnReloadSchema( wxCommandEvent& event ) {
-    wxString val = m_fsSchema->GetValue();
-    if (!val.IsEmpty()) {
-        m_stcSchema->LoadFile(val);
-        m_schemachanged = true;
-        if (!m_xmlfile.IsEmpty())
-            DoValidate();
+    switch (m_internal) {
+        case INT_EXTERNAL: {
+            wxString val = m_fsSchema->GetValue();
+            if (!val.IsEmpty()) {
+                m_stcSchema->LoadFile(val);
+                m_schemachanged = true;
+            }
+            break;
+        }
+        case INT_COMPILER: {
+            m_stcSchema->SetText(XMLCPP_RES_GET(rct3xml_ovlcompiler_v1, rngi));
+            m_schemachanged = true;
+            break;
+        }
+        case INT_RAW: {
+            m_stcSchema->SetText(XMLCPP_RES_GET(rct3xml_raw_v1, rngi));
+            m_schemachanged = true;
+            break;
+        }
+        case INT_MODEL: {
+            m_stcSchema->SetText(XMLCPP_RES_GET(model, rngi));
+            m_schemachanged = true;
+            break;
+        }
+        case INT_MS3D: {
+            m_stcSchema->SetText(XMLCPP_RES_GET(ms3d_comment, rngi));
+            m_schemachanged = true;
+            break;
+        }
     }
+    if (!m_xmlfile.IsEmpty())
+        DoValidate();
 }
+
+/** @brief OnSchemaCompiler
+  *
+  * @todo: document this function
+  */
+void frmMain::OnSchemaCompiler(wxCommandEvent& event) {
+    m_internal = INT_COMPILER;
+    OnReloadSchema(event);
+}
+
+/** @brief OnSchemaRaw
+  *
+  * @todo: document this function
+  */
+void frmMain::OnSchemaRaw(wxCommandEvent& event) {
+    m_internal = INT_RAW;
+    OnReloadSchema(event);
+}
+
+/** @brief OnSchemaModel
+  *
+  * @todo: document this function
+  */
+void frmMain::OnSchemaModel(wxCommandEvent& event) {
+    m_internal = INT_MODEL;
+    OnReloadSchema(event);
+}
+
+/** @brief OnSchemaMS3D
+  *
+  * @todo: document this function
+  */
+void frmMain::OnSchemaMS3D(wxCommandEvent& event) {
+    m_internal = INT_MS3D;
+    OnReloadSchema(event);
+}
+
 
 void frmMain::OnSTCChange (wxStyledTextEvent &event) {
     m_schemachanged = true;
@@ -299,8 +374,8 @@ void frmMain::OnSTCChange (wxStyledTextEvent &event) {
 void frmMain::OnSchema( wxCommandEvent& event ) {
     m_stcSchema->ClearAll();
     m_stcSchema->LoadFile(event.GetString());
-    m_statusBar->SetStatusText(_("Undetermined"), 1);
     m_schemachanged = true;
+    m_internal = false;
     DoValidate();
 
 #if 0
@@ -414,6 +489,8 @@ void frmMain::OnValidate( wxCommandEvent& event ) {
 
 bool frmMain::DoValidate() {
     try {
+    if (m_schemachanged)
+        m_statusBar->SetStatusText(_("Undetermined"), 1);
     string schema(m_stcSchema->GetText().utf8_str());
 
     m_lbResults->Clear();

@@ -2,20 +2,20 @@ OvlMake
 =======
 Note: OvlMake is released under the GPLv3. Among a lot of things mostly concerning developers, for users this means you USE IT AT YOUR OWN RISK!
 See License.txt for more information.
+Starting with version 0.4 input xml files are validated and ovlmake bails out on errors.
 
 Introduction
 ------------
 OvlMake is the successor to OvlCompliler, a command line tool to compile simple xml files into ovl files. OvlCompiler was written by the_cook to provide a tool enabling creation of animated scenery for RCT3.
-OvlMake is fully compatible with OvlCompiler, it basically works the same way. Therefore please read the_cook's original readme, which I've included ("OvlCompiler ReadMe.txt") before continuing here (of course you need to type 'ovlmake' intead of 'ovlcompiler' :-) ).
+Starting with v0.4, ovlmake is no longer fully compatible with ovlcompiler! Therefore please read the_cook's original readme, which I've included ("OvlCompiler ReadMe.txt") before continuing here (of course you need to type 'ovlmake' intead of 'ovlcompiler' :-) ) and modified for all changes. The order of elements now matters as well, so you need to give everything in the order they are explained.
 
 Improvements over OvlCompiler
 -----------------------------
 * You don't need to give an output file. !!!Please read below to understand what happens if you omit it.!!!
 * OvlMake supports a few command line options. Run it without giving an input file to see them.
 * You don't need to care about matching the name attributes of the bsh and ban tags anymore. They also don't need to match the filename of the xml or ovl file.
-* You can give more than one ban tag, but only the first will be used. More will generate a warning as there is no sensible way they can be used within the limits of ovlcompiler's xml syntax. Best forget I told you it's possible =)
+* You can give more than one ban tag, but more than one will generate a warning as normal animated CS makes only use of one.
 * Minor LOD support, affects how multiple bsh tags are handled. See below for more info.
-* Within the bsh tag you can reference bones via number (as described for ovlcompiler) or by name. This applies to the bone attribute of geomobj tags and the parent attribute of bone tags.
 * The root ovl tag supports two new attributes, 'name' and 'file'. These influence what happens if you don't give an output filename (read below for a full explanation).
 * Able to handle all image formats the importer can.
 * OvlMake is basically a command line tool wrapping the library that will do the work in the next importer version, basically this means a full rewrite of ovlcompiler. All the original bugs therefore have been replaced by a bunch of entirely new ones =)
@@ -38,7 +38,7 @@ If you give an output file name, it supercedes any information given in the file
 
 Minor LOD support
 -----------------
-By default, ovlmake acts like ovlcompiler and writes one LOD at 4000 distance. Starting with version 0.1.3, you can add an 'options' tag with a 'lods' attribute. You can set this attribute to 1, 3 or 4. Example:
+By default, ovlmake acts like ovlcompiler and writes one LOD at 4000 distance. Starting with version 0.1.3, you can add an 'options' element with a 'lods' attribute. This element has to come last within the ovl element. You can set this attribute to 1, 3 or 4. Example:
 <options lods="3" />
 If you define 4 lods, the last one will be static. Distances are 40/100/4000 for 3, 40/100/300/4000 for 4 lods.
 How exactly ovlmake proceeds depends on the number of bsh tags you define.
@@ -53,7 +53,7 @@ Proper Transparency
 -------------------
 After a very long time I now found out how to do proper transparency and, as far as possible, got rid of the X-ray effect. By "as far as possible" I mean that after lots of experiments I came to the conclusion that for some objects you cannot fully prevent X-ray (even some original game objects show X-ray if you look closely). Still I think that the X-ray left is a lot less severe than before, it seems to only affect the object itself and then (probably) only parts of the same mesh. It also seems to occur mostly looking at the object from the left, provided you didn't rotate it. Left is in relation from your original view when you start a sandbox (ie looking at the entrace from insed the park.
 As to when this X-ray occurs I can give no good explanation. In general I'd say the more complex the object is, the likelier it is to occur. It may also include some unknown voodoo. If your object shows it, I've provided a few cunstomization options that may help or not. To understand them, I first need to explain how proper transparency in RCT3 works.
-Meshes are stored in OVLs in two data chunks, one contains a list of all the vertices and the other the faces (triangles) as three indices into the vertex list. For transparent objects (geomobj tags in ovlcompiler xml files with placing texture or glass / importer scn files with meshes set to placing Texture Only or Unknown), the ovl file stores the face list three times, each one sorted along one axis. Now the crux is how the faces need to be sorted. From original ovls it seems to me that only the lowest coordinate (in the sorted direction) of the triangle matters. Still I have implemented several sorting algorithms that take other things into account.
+Meshes are stored in OVLs in two data chunks, one contains a list of all the vertices and the other the faces (triangles) as three indices into the vertex list. For transparent objects (geomobj tags in ovlcompiler xml files with transparency masked or regular / importer scn files with meshes set to placing Texture Only or Unknown), the ovl file stores the face list three times, each one sorted along one axis. Now the crux is how the faces need to be sorted. From original ovls it seems to me that only the lowest coordinate (in the sorted direction) of the triangle matters. Still I have implemented several sorting algorithms that take other things into account.
 To set the sorting algorithm, you have several options. The first is to set default algorithms via the ovlmake command line. You can set an over all default with the -t or --trianglesort command line options. If necessary, you can set defaults for the single axis with --trianglesortx, --trianglesorty and --trianglesortz.
 The second option is to set algorithms for each mesh. You can do that with sortx, sorty and sortz attributes in geomobj tags for ovlcompiler xml files or mesh tags in importer scenery xml files. Note that these attributes supercede whatever you give with commandline options.
 Note that the axis are the in-game axis, so y is up.

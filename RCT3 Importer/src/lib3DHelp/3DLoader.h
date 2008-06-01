@@ -110,7 +110,7 @@ public:
     float m_loddistance;
     std::set<wxString> m_meshes;
     std::set<wxString> m_bones;
-    std::set<wxString> m_animations;
+    std::vector<wxString> m_animations;
     bool m_forceanim;
 
     c3DGroup(): m_loddistance(-1.0), m_forceanim(false) {}
