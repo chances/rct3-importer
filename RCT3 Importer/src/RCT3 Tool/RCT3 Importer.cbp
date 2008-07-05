@@ -233,6 +233,16 @@
 			<Option target="Debug" />
 			<Option target="Debug (Public)" />
 		</Unit>
+		<Unit filename="version_wrap.cpp">
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Debug (Public)" />
+		</Unit>
+		<Unit filename="version_wrap.h">
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Debug (Public)" />
+		</Unit>
 		<Unit filename="win_predefine.h">
 			<Option target="Release" />
 			<Option target="Debug" />
@@ -453,6 +463,18 @@
 			<Option target="Debug" />
 			<Option target="Debug (Public)" />
 		</Unit>
+		<Unit filename="wxdlgSpline.cpp">
+			<Option virtualFolder="wx\" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Debug (Public)" />
+		</Unit>
+		<Unit filename="wxdlgSpline.h">
+			<Option virtualFolder="wx\" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Debug (Public)" />
+		</Unit>
 		<Unit filename="wxdlgStall.cpp">
 			<Option virtualFolder="wx\" />
 			<Option target="Release" />
@@ -511,6 +533,13 @@
 			<Option target="Debug (Public)" />
 		</Unit>
 		<Unit filename="xrc\misc.fbp">
+			<Option compile="1" />
+			<Option weight="0" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Debug (Public)" />
+		</Unit>
+		<Unit filename="xrc\spline.fbp">
 			<Option compile="1" />
 			<Option weight="0" />
 			<Option target="Release" />
@@ -746,7 +775,7 @@
 			<debugger />
 			<AutoVersioning>
 				<Scheme minor_max="10" build_max="0" rev_max="0" rev_rand_max="1" build_times_to_increment_minor="100" />
-				<Settings autoincrement="0" date_declarations="1" do_auto_increment="1" ask_to_increment="0" language="C++" svn="0" svn_directory="" header_path="version.h" />
+				<Settings autoincrement="0" date_declarations="1" do_auto_increment="1" ask_to_increment="0" language="C++" svn="1" svn_directory="C:\Development\svn" header_path="version.h" />
 				<Changes_Log show_changes_editor="0" app_title="released version %M.%m.%b of %p" changeslog_path="ChangesLog.txt" />
 			</AutoVersioning>
 		</Extensions>

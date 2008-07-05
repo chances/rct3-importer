@@ -43,13 +43,13 @@ friend void do_node(cXmlNode& node, RNVValidationContext& ctx);
 public:
     enum {
         ERRSTAGE_UNKNOWN =          0,      ///< Unknown stage, probably before parsing began or internal
-        ERRSTAGE_RNC,                       ///< RNC lexing error
-        ERRSTAGE_RNG_PARSE,                 ///< XML parsing error in rng file
-        ERRSTAGE_RNG_VALIDATION,            ///< RNG does not validate against relaxng.rng
-        ERRSTAGE_RNG_INCELIM,               ///< Error during incelim transform
-        ERRSTAGE_RNG_CONVERSION,            ///< Error during conversion to rnc
         ERRSTAGE_RNG_SHORTRNG,              ///< Error during conversion of ShortRNG to rng
         ERRSTAGE_RNG_EXAMPLOTRON,           ///< Error during conversion of examplotron to rng
+        ERRSTAGE_RNG_INCELIM,               ///< Error during incelim transform
+        ERRSTAGE_RNG_PARSE,                 ///< XML parsing error in rng file
+        ERRSTAGE_RNG_VALIDATION,            ///< RNG does not validate against relaxng.rng
+        ERRSTAGE_RNG_CONVERSION,            ///< Error during conversion to rnc
+        ERRSTAGE_RNC,                       ///< RNC lexing error
         ERRSTAGE_OK =             100
     };
 private:
@@ -104,6 +104,8 @@ public:
     virtual int getType() const {
         return m_type;
     }
+
+    inline int getErrorStage() const { return m_errstage; }
 // Slim stuff at end
 private:
 #ifdef XMLCPP_USE_RNV_RNG

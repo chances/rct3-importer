@@ -75,7 +75,10 @@ bool cXmlValidatorIsoSchematron::read(cXmlDoc& doc, const std::map<std::string, 
     cXmlDoc temp = schemash.transform(doc);
 
     if (!temp.ok()) {
+        transferErrors(schemash);
         transferErrors(temp);
+        if (!hasErrors())
+            addGenericError("Internal error: validaton xsl generation failed, but no errors reported!");
         return false;
     }
 
@@ -83,6 +86,8 @@ bool cXmlValidatorIsoSchematron::read(cXmlDoc& doc, const std::map<std::string, 
 
     if (!m_transform.ok()) {
         transferErrors(m_transform);
+        if (!hasErrors())
+            addGenericError("Internal error: Transform broken, but no errors reported!");
     }
 
     return ok();
@@ -94,6 +99,8 @@ bool cXmlValidatorIsoSchematron::read(const std::string& buffer, const std::map<
 
     if (!temp.ok()) {
         transferErrors(temp);
+        if (!hasErrors())
+            addGenericError("Internal error: schema from buffer failed, but no errors reported!");
         return false;
     }
     temp.xInclude();
@@ -106,6 +113,8 @@ bool cXmlValidatorIsoSchematron::read(const char* URL, const std::map<std::strin
 
     if (!temp.ok()) {
         transferErrors(temp);
+        if (!hasErrors())
+            addGenericError("Internal error: schema from file failed, but no errors reported!");
         return false;
     }
     temp.xInclude();

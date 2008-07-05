@@ -27,6 +27,7 @@
 #include "matrix.h"
 #include <math.h>
 #include <float.h>
+#include <string.h>
 
 using namespace r3;
 

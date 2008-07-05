@@ -505,6 +505,17 @@ cXmlNode cXmlNode::properties() {
     return m_node?cXmlNode(m_node->properties, m_owner):cXmlNode();
 }
 
+/** @brief line
+  *
+  * @todo: document this function
+  */
+unsigned short cXmlNode::line() const {
+    if (!element())
+        return 0;
+    return getRaw()->line;
+}
+
+
 cXmlNode& cXmlNode::operator= (const cXmlNode& node) {
     assign(node);
     return *this;

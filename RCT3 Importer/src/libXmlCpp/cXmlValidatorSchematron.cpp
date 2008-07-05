@@ -106,14 +106,23 @@ bool cXmlValidatorSchematron::read(const char* URL, int options) {
     return ok();
 }
 
-int cXmlValidatorSchematron::validate(boost::shared_ptr<xmlDoc>& doc, int options) {
+cXmlValidatorResult cXmlValidatorSchematron::validate(boost::shared_ptr<xmlDoc>& doc, cXmlValidatorResult::LEVEL retlevel, int options) {
     if (!ok())
         throw eXml("Tried to validate with invalid schematron schema");
+
+    cXmlValidatorResult res(retlevel);
 
     clearGenericErrors();
     clearStructuredErrors();
 
-    return xmlSchematronValidateDoc(m_context, doc.get());
+    int valok = xmlSchematronValidateDoc(m_context, doc.get());
+    res.error = getStructuredErrors().size() + getGenericErrors().size();
+    if ((!res.error) && valok) {
+        // Something went wrong, but no error was reported?!?
+        res.internal_error = true;
+    }
+
+    return res;
 }
 
 

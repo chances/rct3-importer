@@ -42,9 +42,9 @@
 
 using namespace r3;
 
-extern std::vector <StallStr *> Stalls;
+extern std::vector <r3old::StallStr *> Stalls;
 extern std::vector<cText> cTextStrings;
-extern std::vector <Scenery *> SceneryItems;
+extern std::vector <r3old::Scenery *> SceneryItems;
 extern bool save;
 extern int CurrentStall;
 

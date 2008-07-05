@@ -62,7 +62,7 @@ public:
     bool read(const std::string& buffer, int options = XML_SCHEMATRON_OUT_ERROR);
     bool read(const char* URL, int options = XML_SCHEMATRON_OUT_ERROR);
 
-    virtual cXmlValidatorResult validate(boost::shared_ptr<xmlDoc>& doc, cXmlValidatorResult::LEVEL retlevel = cXmlValidatorResult::ERROR, int options = OPT_NONE);
+    virtual cXmlValidatorResult validate(boost::shared_ptr<xmlDoc>& doc, cXmlValidatorResult::LEVEL retlevel = cXmlValidatorResult::VR_ERROR, int options = OPT_NONE);
     virtual int getType() const { return VAL_SCHEMATRON; }
 
     virtual bool ok() const { return m_context && m_parser && m_schema; }

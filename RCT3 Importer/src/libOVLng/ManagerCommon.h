@@ -138,7 +138,7 @@ public:
 	};
 	unsigned long addonascn;
 	unsigned long unk12;
-	unsigned long unk13;
+	unsigned long ui_deactivation;
 
 	cAttraction() {
 	    // default to generic stall
@@ -152,12 +152,25 @@ public:
 	    unk10 = 12;
 	    addonascn = r3::Constants::Addon::Vanilla;
 	    unk12 = r3::Constants::Attraction::Unknown12::Generic_Stall;
-	    unk13 = r3::Constants::Attraction::Unknown13::Default;
+	    ui_deactivation = r3::Constants::Attraction::UI_Deactivation::None;
 	}
     void Fill(r3::Attraction_V* attv) const; // Automatically casts to Attraction_S/W depending on type
     inline void Fill(r3::Attraction_S* att) const { Fill(reinterpret_cast<r3::Attraction_V*>(att)); }
-    void Fill(r3::StallA* sta) const;
-    void Fill(r3::SpecialAttractionA* sp) const;
+    void Fill(r3old::StallA* sta) const;
+    void Fill(r3old::SpecialAttractionA* sp) const;
+    inline bool soaked() const { return ((type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Soaked_Hi); }
+    inline bool wild() const { return (type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi; }
+    inline bool isnew() const { return (type & r3::Constants::Addon::Soaked_Hi); }
+
+    void MakePointers(r3::Attraction_S** ptr, unsigned char*& uni_ptr, unsigned char*& com_ptr, ovlRelocationManager* rel) const;
+    void MakePointers(r3::Attraction_V* ptr, unsigned char*& uni_ptr, unsigned char*& com_ptr, ovlRelocationManager* rel) const;
+
+    void MakeSymRefs(r3::Attraction_S* ptr, ovlLodSymRefManager* lsr, ovlStringTable* st) const;
+    void MakeSymRefs(r3::Attraction_V* ptr, ovlLodSymRefManager* lsr, ovlStringTable* st) const;
+
+    unsigned long GetCommonSize() const;
+    unsigned long GetUniqueSize() const;
+    void DoAdd(ovlStringTable* st, ovlLodSymRefManager* lsr) const;
 };
 
 class cRideOption {
@@ -180,6 +193,27 @@ public:
     void Fill(r3::RideOption* r) const;
 };
 
+class cRideStationLimit {
+public:
+    long x_pos;
+    long z_pos;
+    long height;
+    unsigned long flags;
+
+    cRideStationLimit() {
+        x_pos = 0;
+        z_pos = 0;
+        height = 0;
+        flags = r3::Constants::SharedRide::Station_Limit_Flags::To_Minus_X |
+                r3::Constants::SharedRide::Station_Limit_Flags::To_Plus_Z |
+                r3::Constants::SharedRide::Station_Limit_Flags::To_Plus_X |
+                r3::Constants::SharedRide::Station_Limit_Flags::To_Minus_Z |
+                r3::Constants::SharedRide::Station_Limit_Flags::Entrance |
+                r3::Constants::SharedRide::Station_Limit_Flags::Exit;
+    }
+    void Fill(r3::RideStationLimit* r) const;
+};
+
 class cRide {
 public:
     unsigned long attractivity;
@@ -188,6 +222,7 @@ public:
     unsigned long entry_fee;
     unsigned long min_circuits;           ///< Seen 1
     long max_circuits;           ///< Seen -1, 1 (Spiral Slide, FunHouse, LionShow, TigerShow, DolphinShow, KillerWhaleShow)
+    std::vector<cRideStationLimit> stationlimits;
     unsigned long unk11;          ///< Seen 3
     unsigned long unk12;          ///< Seen 3
     long unk13;          ///< Seen -2
@@ -215,9 +250,24 @@ public:
     void Fill(r3::Ride_S* r) const;
     void Fill(r3::Ride_W* r) const;
 
+    void MakePointers(r3::Ride_S** ptr, unsigned char*& uni_ptr, unsigned char*& com_ptr, const cAttraction& att, ovlRelocationManager* rel) const;
+    void MakePointers(r3::Ride_V* ptr, unsigned char*& uni_ptr, unsigned char*& com_ptr, const cAttraction& att, ovlRelocationManager* rel) const;
+
+    void MakeSymRefs(r3::Ride_S* ptr, const cAttraction& att, ovlLodSymRefManager* lsr, ovlStringTable* st) const;
+    void MakeSymRefs(r3::Ride_V* ptr, const cAttraction& att, ovlLodSymRefManager* lsr, ovlStringTable* st) const;
+
+
+    unsigned long GetCommonSize(const cAttraction& att) const;
+    unsigned long GetUniqueSize(const cAttraction& att) const;
+    void DoAdd(ovlStringTable* st, ovlLodSymRefManager* lsr) const;
+
 };
 
 // "Fake" classes for consistent access to file tags
+class ovlTKSManager: public ovlOVLManager {
+public:
+    static const char* TAG;
+};
 class ovlTXSManager: public ovlOVLManager {
 public:
     static const char* TAG;

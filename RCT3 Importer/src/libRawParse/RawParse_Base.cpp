@@ -25,6 +25,21 @@
 
 #include "RawParse_cpp.h"
 
+#include "cXmlInputOutputCallbackString.h"
+#include "cXmlValidatorIsoSchematron.h"
+#include "cXmlValidatorMulti.h"
+#include "cXmlValidatorRNVRelaxNG.h"
+
+#include "rng/rct3xml-raw-v1.rnc.gz.h"
+#include "rng/rct3xml-raw-v1.sch.gz.h"
+
+wxString FinishNodeError(const wxString& message, const cXmlNode& node) {
+    if (node.line())
+        return message + wxString::Format(" (Line %hd).", node.line());
+    else
+        return message + ".";
+}
+
 void cRawParser::FillAllBakes(wxSortedArrayString& tofill) {
     tofill.push_back(wxT(RAWXML_VARIABLES));
     tofill.push_back(wxT(RAWXML_IMPORT));
@@ -35,6 +50,27 @@ void cRawParser::FillAllBakes(wxSortedArrayString& tofill) {
     tofill.push_back(wxT(RAWXML_TEX));
     tofill.push_back(wxT(RAWXML_TXT));
 //    tofill.push_back(wxT(RAWBAKE_XML));
+}
+
+boost::shared_ptr<cXmlValidator> cRawParser::Validator() {
+    cXmlInputOutputCallbackString::Init();
+    XMLCPP_RES_ADD_ONCE(rct3xml_raw_v1, rnc);
+    XMLCPP_RES_ADD_ONCE(rct3xml_raw_v1, sch);
+
+    boost::shared_ptr<cXmlValidatorMulti> val(new cXmlValidatorMulti());
+    val->primary(boost::shared_ptr<cXmlValidator>(new cXmlValidatorRNVRelaxNG(XMLCPP_RES_USE(rct3xml_raw_v1, rnc).c_str())));
+    val->secondary(boost::shared_ptr<cXmlValidator>(new cXmlValidatorIsoSchematron(XMLCPP_RES_USE(rct3xml_raw_v1, sch).c_str())));
+    if (!val->primary()->ok()) {
+        wxString error(_("Internal Error: could not load raw RelaxNG schema:\n"));
+        error += val->primary()->wxgetErrorList();
+        throw RCT3Exception(error);
+    }
+    if (!val->secondary()->ok()) {
+        wxString error(_("Internal Error: could not load raw Schematron schema:\n"));
+        error += val->secondary()->wxgetErrorList();
+        throw RCT3Exception(error);
+    }
+    return val;
 }
 
 void cRawParser::Process(const wxFSFileName& file, const wxFileName& outputdir, const wxFileName& output) {
@@ -187,7 +223,7 @@ void cRawParser::Load(cXmlNode& root) {
         throw RCT3Exception(wxT("cRawParser::Load, root is broken"));
     bool subonly = false;
 
-    fprintf(stderr, "\n");
+    wxLogMessage("-----");
     wxLogVerbose(wxString::Format(_("Parsing from raw xml %s."), m_input.GetFullPath().c_str()));
 
     for (cRawParserVars::iterator it = m_variables.begin(); it != m_variables.end(); ++it) {
@@ -282,7 +318,7 @@ void cRawParser::Load(cXmlNode& root) {
             wxLogMessage(_("Writing ovl from raw: ")+m_output.GetFullPath()+wxT(".common.ovl"));
         } else {
             subonly = true;
-            wxLogMessage(_("Parsing subovl-only raw. Base output dir: ")+m_outputbasedir.GetPathWithSep());
+            wxLogMessage(_("Parsing rawovl context. Base output dir: ")+m_outputbasedir.GetPathWithSep());
         }
 
         // Start parsing
@@ -291,10 +327,10 @@ void cRawParser::Load(cXmlNode& root) {
         if ((!subonly) && (!m_dryrun) && (m_mode != MODE_BAKE)) {
             wxLogVerbose(wxString::Format(_("Saving OVL '%s'..."), m_output.GetFullPath().c_str()));
             m_ovl.Save();
-            wxLogMessage(wxString::Format(_("OVL '%s' written successfully."), m_output.GetFullPath().c_str()));
+            wxLogMessage(_("...Success!"));
         }
     } else {
-        throw RCT3Exception(wxT("cRawParser::Load, wrong root"));
+        throw RCT3Exception(FinishNodeError(wxT("cRawParser::Load, wrong root"), root));
     }
 
 }

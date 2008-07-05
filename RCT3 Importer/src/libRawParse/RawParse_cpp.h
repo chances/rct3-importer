@@ -75,6 +75,7 @@
 #define RAWXML_STA "sta"
 #define RAWXML_SVD "svd"
 #define RAWXML_TEX "tex"
+#define RAWXML_TRR "trr"
 #define RAWXML_TXT "txt"
 #define RAWXML_WAI "wai"
 
@@ -173,16 +174,16 @@
 #define RAWXML_SHS_EFFECT           "shseffect"
 #define RAWXML_SHS_EFFECT_POS       "position"
 
-#define RAWXML_SID_GROUP            "sidgroup"
-#define RAWXML_SID_TYPE             "sidtype"
-#define RAWXML_SID_POSITION         "sidposition"
-#define RAWXML_SID_COLOURS          "sidcolours"
-#define RAWXML_SID_SVD              "sidvisual"
-#define RAWXML_SID_IMPORTERUNKNOWNS "sidimporterunknowns"
-#define RAWXML_SID_EXTRA            "sidextra"
-#define RAWXML_SID_SQUAREUNKNOWNS   "sidsquareunknowns"
-#define RAWXML_SID_STALLUNKNOWNS    "sidstallunknowns"
-#define RAWXML_SID_PARAMETER        "sidparameter"
+#define RAWXML_SID_GROUP            "group"
+#define RAWXML_SID_TYPE             "type"
+#define RAWXML_SID_POSITION         "position"
+#define RAWXML_SID_COLOURS          "colours"
+//#define RAWXML_SID_SVD              "sidvisual"
+#define RAWXML_SID_IMPORTERUNKNOWNS "importerUnknowns"
+#define RAWXML_SID_EXTRA            "extra"
+#define RAWXML_SID_SQUAREUNKNOWNS   "squareUnknowns"
+#define RAWXML_SID_STALLUNKNOWNS    "stallUnknowns"
+#define RAWXML_SID_PARAMETER        "parameter"
 
 #define RAWXML_SPL_NODE             "splnode"
 #define RAWXML_SPL_LENGTH           "spllength"
@@ -198,6 +199,22 @@
 
 #define RAWXML_TEX_TEXTURE          "texture"
 
+#define RAWXML_TRR_SECTION          "trackSection"
+#define RAWXML_TRR_SECTION_UNIQUE   "trackSectionRemoveDuplicates"
+#define RAWXML_TRR_TRAIN            "train"
+#define RAWXML_TRR_PATH             "trackPath"
+#define RAWXML_TRR_SPECIALS         "specials"
+#define RAWXML_TRR_OPTIONS          "options"
+#define RAWXML_TRR_STATION          "station"
+#define RAWXML_TRR_LAUNCHED         "launched"
+#define RAWXML_TRR_CHAIN            "chain"
+#define RAWXML_TRR_CONSTANT         "specials"
+#define RAWXML_TRR_COST             "cost"
+#define RAWXML_TRR_SPLINES          "splines"
+#define RAWXML_TRR_TOWER            "tower"
+#define RAWXML_TRR_SOAKED           "soaked"
+#define RAWXML_TRR_WILD             "wild"
+
 #define RAWXML_WAI_PARAMETERS       "waiparameters"
 #define RAWXML_WAI_UNKNOWNS         "waiunknowns"
 
@@ -211,6 +228,7 @@
 #define RAWXML_RIDE_OPTION          "rideOption"
 #define RAWXML_RIDE_OPTION_PARAMETER "parameter"
 #define RAWXML_RIDE_STATIC_UNK      "rideStaticUnknowns"
+#define RAWXML_RIDE_STATION_LIMIT   "rideStationLimit"
 
 
 #define RAWXML_IMPORT    "import"
@@ -348,4 +366,7 @@ class RCT3InvalidValueException: public RCT3Exception {
 public:
     RCT3InvalidValueException(const wxString& message):RCT3Exception(message){};
 };
+
+wxString FinishNodeError(const wxString& message, const cXmlNode& node);
+
 

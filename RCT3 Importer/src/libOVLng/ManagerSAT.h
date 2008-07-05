@@ -48,8 +48,8 @@ public:
 	    attraction.unk6 = r3::Constants::Attraction::BaseUpkeep::Other;
 	    attraction.unk12 = r3::Constants::Attraction::Unknown12::Default;
     };
-    void Fill(r3::SpecialAttractionA* sp);
-    void Fill(r3::SpecialAttractionB* sp);
+    void Fill(r3old::SpecialAttractionA* sp);
+    void Fill(r3old::SpecialAttractionB* sp);
 };
 
 class ovlSATManager: public ovlOVLManager {

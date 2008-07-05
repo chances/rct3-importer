@@ -316,6 +316,7 @@
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
 		</Unit>
+		<Unit filename="valchb.h" />
 		<Unit filename="valext.cpp">
 			<Option virtualFolder="validators\" />
 			<Option target="Debug" />

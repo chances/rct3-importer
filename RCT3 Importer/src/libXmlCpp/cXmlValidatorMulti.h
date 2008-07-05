@@ -59,6 +59,14 @@ public:
     bool readSecondary(const std::string& buffer, const char* URL = NULL);
     bool readSecondary(const char* URL);
 
+    virtual void resetErrors() {
+        cXmlErrorHandler::resetErrors();
+        if (m_primary)
+            m_primary->resetErrors();
+        if (m_secondary)
+            m_secondary->resetErrors();
+    }
+
     boost::shared_ptr<cXmlValidator>& primary() { return m_primary; }
     void primary(const boost::shared_ptr<cXmlValidator>& val) {
         m_primary = val;

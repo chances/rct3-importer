@@ -28,6 +28,8 @@
 
 #include "LodSymRefManager.h"
 
+#include <stdlib.h>
+
 #include "OVLDebug.h"
 #include "OVLException.h"
 #include "RelocationManager.h"
@@ -287,6 +289,7 @@ void ovlLodSymRefManager::AddSymRef(cOvlType type) {
 }
 
 SymbolRefStruct* ovlLodSymRefManager::MakeSymRef(cOvlType type, char* symbol, unsigned long *ref) {
+    DUMP_LOG("ovlLodSymRefManager::MakeSymRef(%s)", symbol);
     if (!m_symrefs[type])
         throw EOvl("ovlLodSymRefManager::MakeSymRef called before assignment");
     if (!m_relman)

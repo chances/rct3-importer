@@ -34,6 +34,7 @@
 #include "cXmlException.h"
 
 //#define DUMPINIT
+//#define DUMPDEBUG
 
 using namespace std;
 
@@ -66,8 +67,12 @@ fprintf(stderr, "~cXsltStylesheet() / ");
 }
 
 void cXsltStylesheet::Init() {
+    //m_ctx.reset();
     m_sheet.reset();
     m_parameters.clear();
+#ifdef DUMPDEBUG
+    xsltSetLoaderFunc(cXsltStylesheet::xsltDocLoaderFunc);
+#endif
 }
 
 void cXsltStylesheet::assignSheet(xsltStylesheetPtr newsheet) {
@@ -79,7 +84,9 @@ bool cXsltStylesheet::read(cXmlDoc& doc) {
     if (!doc.ok())
         throw eXmlInvalid("Tried to parse xslt from bad document");
 
+    xsltSetGenericErrorFunc(this, genericerrorwrap);
     assignSheet(xsltParseStylesheetDoc(xmlCopyDoc(doc.getRaw(), 1)));
+    xsltSetGenericErrorFunc(NULL, NULL);
     if (ok())
         m_doc = doc.get();
     return ok();
@@ -87,7 +94,9 @@ bool cXsltStylesheet::read(cXmlDoc& doc) {
 
 bool cXsltStylesheet::read(const char* filename) {
     Init();
+    xsltSetGenericErrorFunc(this, genericerrorwrap);
     assignSheet(xsltParseStylesheetFile(reinterpret_cast<const xmlChar*>(filename)));
+    xsltSetGenericErrorFunc(NULL, NULL);
     return ok();
 }
 
@@ -98,6 +107,11 @@ void cXsltStylesheet::addParameter(const string& name, const string& value) {
 void cXsltStylesheet::setParameters(const std::map<std::string, std::string>& parameters) {
     m_parameters = parameters;
 }
+
+#define TRANSFORM_CTX() \
+    boost::shared_ptr<xsltTransformContext> ctx(xsltNewTransformContext(m_sheet.get(), doc), xsltFreeTransformContext); \
+    xsltSetTransformErrorFunc(ctx.get(), this, genericerrorwrap);
+
 
 cXmlDoc cXsltStylesheet::transform(cXmlDoc& doc) {
     if (!doc.ok())
@@ -112,6 +126,8 @@ cXmlDoc cXsltStylesheet::transform(xmlDocPtr doc) {
     if (!ok())
         throw eXmlInvalid("Tried to transform document with bad stylesheet");
 
+    TRANSFORM_CTX()
+
     const char* params[(m_parameters.size()*2) + 1];
     params[m_parameters.size()*2] = NULL;
     int i = 0;
@@ -119,7 +135,8 @@ cXmlDoc cXsltStylesheet::transform(xmlDocPtr doc) {
         params[(i*2)] = it->first.c_str();
         params[(i*2)+1] = it->second.c_str();
     }
-    return cXmlDoc(xsltApplyStylesheet(m_sheet.get(), doc, params), true);
+    //return cXmlDoc(xsltApplyStylesheet(m_sheet.get(), doc, params), true);
+    return cXmlDoc(xsltApplyStylesheetUser(m_sheet.get(), doc, params, NULL, NULL, ctx.get()), true);
 }
 
 string cXsltStylesheet::transformToString(cXmlDoc& doc) {
@@ -170,6 +187,18 @@ cXmlDoc cXsltStylesheet::getDoc() {
     m_doc = ret.get();
     return ret;
 }
+
+#ifdef DUMPDEBUG
+xmlDocPtr cXsltStylesheet::xsltDocLoaderFunc (const xmlChar* URI, xmlDictPtr dict, int options, void* ctxt, xsltLoadType type) {
+fprintf(stderr, "cXsltStylesheet::xsltDocLoaderFunc() %d %s\n", type, URI);
+fflush(stderr);
+
+    xsltSetLoaderFunc(NULL);
+    xmlDocPtr tmp = xsltDocDefaultLoader(URI, dict, options, ctxt, type);
+    xsltSetLoaderFunc(cXsltStylesheet::xsltDocLoaderFunc);
+    return tmp;
+}
+#endif
 
 
 } // namespace xmlcpp

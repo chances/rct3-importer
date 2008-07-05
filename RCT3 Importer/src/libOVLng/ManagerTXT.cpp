@@ -28,6 +28,8 @@
 
 #include "ManagerTXT.h"
 
+#include <stdlib.h>
+
 #include "OVLException.h"
 
 using namespace std;

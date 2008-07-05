@@ -66,6 +66,7 @@
 #include "wxdlgLOD.h"
 #include "wxdlgModel.h"
 #include "wxdlgSave.h"
+#include "wxdlgSpline.h"
 #include "wxdlgTexture.h"
 
 const long idToolBar = ::wxNewId();
@@ -1678,7 +1679,6 @@ void dlgCreateScenery::OnAnimationDel(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void dlgCreateScenery::OnAnimationAddToLod(wxCommandEvent& WXUNUSED(event)) {
-// TODO (tobi#1#): OnAnimationAddToLod
     int lod = m_htlbLOD->GetSelection();
     int ani = m_htlbAnimation->GetSelection();
     if ((ani < 0) or (lod < 0))
@@ -1818,7 +1818,17 @@ void dlgCreateScenery::OnSplineCopy(wxCommandEvent& event) {
   * @todo: document this function
   */
 void dlgCreateScenery::OnSplineEdit(wxCommandEvent& event) {
-// TODO (belgabor#1#): implement
+    int sel = m_htlbSpline->GetSelection();
+    if (sel < 0)
+        return;
+    dlgSpline *dialog = new dlgSpline(this, m_SCN.splines[sel]);
+    if (dialog->ShowModal() == wxID_OK) {
+        m_SCN.splines[sel] = dialog->GetSpline();
+        MakeDirty();
+        m_htlbSpline->UpdateContents();
+        UpdateControlState();
+    }
+    dialog->Destroy();
 }
 
 /** @brief OnSplineDown

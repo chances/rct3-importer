@@ -89,13 +89,17 @@ public:
     inline void clearStructuredErrors() { m_structurederrors.clear(); }
     inline const std::vector<std::string>& getGenericErrors() { return m_genericerrors; }
     inline void clearGenericErrors() { m_genericerrors.clear(); }
+    virtual void resetErrors() {
+        clearStructuredErrors();
+        clearGenericErrors();
+    }
 
     inline bool hasErrors() { return m_structurederrors.size() + m_genericerrors.size(); }
 
-    inline static const std::vector<cXmlStructuredError>& GetGlobalStructuredErrors() { return g_structurederrors; }
-    inline static void ClearGlobalStructuredErrors() { g_structurederrors.clear(); }
-    inline static const std::vector<std::string>& GetGlobalGenericErrors() { return g_genericerrors; }
-    inline static void ClearGlobalGenericErrors() { g_genericerrors.clear(); }
+    inline static const std::vector<cXmlStructuredError>& getGlobalStructuredErrors() { return g_structurederrors; }
+    inline static void clearGlobalStructuredErrors() { g_structurederrors.clear(); }
+    inline static const std::vector<std::string>& getGlobalGenericErrors() { return g_genericerrors; }
+    inline static void clearGlobalGenericErrors() { g_genericerrors.clear(); }
 
     virtual ~cXmlErrorHandler() {}
 

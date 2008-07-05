@@ -686,7 +686,7 @@ bool cFlexiTextureFrame::Check(cFlexiTexture* parent) {
     try {
         checkRCT3Texture(texture().GetFullPath());
     } catch (RCT3TextureException& e) {
-        throw RCT3Exception(wxString::Format(_("Texture '%s', file '%s': %s"), parent->Name.c_str(), texture().GetFullPath().fn_str(), e.what()));
+        throw RCT3Exception(wxString::Format(_("Texture '%s', file '%s': %s"), parent->Name.c_str(), texture().GetFullPath().c_str(), e.wxwhat().c_str()));
     }
 
     if (alphasource() == CFTF_ALPHA_EXTERNAL) {
@@ -1438,6 +1438,10 @@ bool cModel::CheckMeshes(bool animated) {
         return false;
     }
 
+    if ((fileorientation != ORIENTATION_UNKNOWN) && (fileorientation != usedorientation)) {
+        wxLogWarning(_("Model '%s': Model file suggests a different orientation."), name.c_str());
+    }
+
     int valid_meshes = 0;
     int c_mesh = 0;
     for (cMeshStruct::iterator i_mesh = meshstructs.begin(); i_mesh != meshstructs.end(); ++i_mesh) {
@@ -1493,6 +1497,11 @@ bool cModel::CheckMeshes(bool animated) {
     if (!valid_meshes) {
         fatal_error = true;
         wxLogWarning(_("Model '%s': No usable groups left. Model invalid."), name.c_str());
+        return false;
+    }
+    if (valid_meshes>31) {
+        fatal_error = true;
+        wxLogWarning(_("Model '%s': More than 31 activated groups. Model invalid."), name.c_str());
         return false;
     }
     return true;

@@ -58,6 +58,7 @@
 #include "SCNFile.h"
 #include "RCT3Exception.h"
 #include "OVLException.h"
+#include "gximage.h"
 #include "pretty.h"
 #include "RawParse.h"
 #include "lib3Dconfig.h"
@@ -75,11 +76,23 @@ using namespace r3;
 using namespace std;
 using namespace xmlcpp;
 
+inline void maximize(int& domax, const int withmax) {
+    if (withmax>domax)
+        domax = withmax;
+}
+
 void printVersion() {
     wxString strdate = _("Built on ") + wxString(AutoVersion::DATE, wxConvLocal) + wxT(".")
                           + wxString(AutoVersion::MONTH, wxConvLocal) + wxT(".")
                           + wxString(AutoVersion::YEAR, wxConvLocal);
-    wxString strversion = wxString::Format(wxT("ovlmake v%ld.%ld, Build %ld, "), AutoVersion::MAJOR, AutoVersion::MINOR, AutoVersion::BUILD)+ wxString(AutoVersion::STATUS, wxConvLocal);
+    wxString strversion = wxString::Format(wxT("ovlmake v%ld.%ld, Build %ld, svn %s, "), AutoVersion::MAJOR, AutoVersion::MINOR, AutoVersion::BUILD, AutoVersion::SVN_REVISION)+ wxString(AutoVersion::STATUS, wxConvLocal);
+    wxString compversion("Compiler: ");
+#ifdef __GNUC__
+    compversion += "GCC ";
+#else
+    compversion += "Non-GCC ";
+#endif
+    compversion += wxString(__VERSION__);
 #ifdef UNICODE
     strdate += wxT(", Unicode");
 #else
@@ -89,10 +102,14 @@ void printVersion() {
     strdate += wxT(" Debug");
 #endif
     strdate += _(" version");
-    wxString line(wxT('-'), (strdate.size()>strversion.size())?strdate.size():strversion.size());
+    int linelen = strdate.size();
+    maximize(linelen, strversion.size());
+    maximize(linelen, compversion.size());
+    wxString line(wxT('-'), linelen);
     fprintf(stderr, "\n%s\n", UNIPTR(line));
     fprintf(stderr, "%s\n", UNIPTR(strversion));
-    fprintf(stderr, "%s", UNIPTR(strdate));
+    fprintf(stderr, "%s\n", UNIPTR(strdate));
+    fprintf(stderr, "%s", UNIPTR(compversion));
     fprintf(stderr, "\nCopyright (C) 2008 Belgabor");
     fprintf(stderr, "\n%s\n\n", UNIPTR(line));
     fprintf(stderr, "This program comes with ABSOLUTELY NO WARRANTY.\n");
@@ -100,17 +117,36 @@ void printVersion() {
     fprintf(stderr, "under certain conditions; see License.txt for details.\n\n");
 }
 
+void logXmlErrors(cXmlErrorHandler* err, bool verbose) {
+    foreach(const std::string& ge, err->getGenericErrors())
+        wxLogError(wxString::FromUTF8(ge.c_str()));
+    foreach(const cXmlStructuredError& se, err->getStructuredErrors()) {
+        wxString message = wxString::Format(_("Line %d: %s"), se.line, wxString::FromUTF8(se.message.c_str()).c_str());
+        if (se.level == XML_ERR_NONE) {
+            wxLogMessage(message);
+        } else if (se.level == XML_ERR_WARNING) {
+            wxLogWarning(message);
+        } else {
+            wxLogError(message);
+        }
+        if (verbose)
+            wxLogVerbose(wxString::Format(_("   XPath: %s"), wxString::FromUTF8(se.getPath().c_str()).c_str()));
+    }
+}
+
 int DoCompile(const wxCmdLineParser& parser) {
     int ret = 0;
     try {
+        bool verbose = parser.Found(wxT("v"));
         if (!parser.Found(wxT("s"))) {
             printVersion();
-            wxLog::SetVerbose(parser.Found(wxT("v")));
+            wxLog::SetVerbose(verbose);
             if (parser.Found(wxT("q")))
                 wxLog::SetLogLevel(wxLOG_Warning);
         } else {
             wxLog::SetLogLevel(wxLOG_Error);
         }
+        WRITE_RCT3_REPORTVALIDATION(true);
         wxString p;
         wxFSFileName inputfile;
         wxString inputfilestr;
@@ -120,6 +156,12 @@ int DoCompile(const wxCmdLineParser& parser) {
         bool checkonly = parser.Found(wxT("check"));
         bool dryrun = parser.Found(wxT("dryrun"));
         bool install = parser.Found(wxT("install"));
+        if (parser.Found("novalid")) {
+            wxLogVerbose(_("Validation disabled"));
+            WRITE_RCT3_VALIDATE(false);
+        } else if (parser.Found("deep")) {
+            WRITE_RCT3_DEEPVALIDATE(true);
+        }
         {
             wxString sortalgo;
             if (parser.Found(wxT("t"), &sortalgo)) {
@@ -196,6 +238,7 @@ int DoCompile(const wxCmdLineParser& parser) {
             cXmlDoc doc;
 
 #ifdef LIBXMLTEST
+{
             {
                 xmlcpp::cXmlDoc doc2;
                 xmlcpp::cXmlInputOutputCallbackString::Init();
@@ -300,6 +343,7 @@ int DoCompile(const wxCmdLineParser& parser) {
                         }
                     }
                 } // Performance test
+
 #endif
 
 //                val.read("test.rnc");
@@ -351,6 +395,7 @@ int DoCompile(const wxCmdLineParser& parser) {
 //                    wxLogError(wxT("%s in line %d. Error %d"), wxString(err->message, wxConvUTF8).c_str(), err->line, err->code);
                 }
             }
+}
 #endif
 
 //            if (doc.Load(inputfile.GetFullPath())) {
@@ -361,6 +406,42 @@ int DoCompile(const wxCmdLineParser& parser) {
                         throw RCT3Exception(_("You cannot convert raw xml files"));
 
                     wxLogMessage(_("Processing raw xml file..."));
+
+                    if (READ_RCT3_VALIDATE()) {
+                        wxLogMessage(_("Validating..."));
+                        boost::shared_ptr<cXmlValidator> val = cRawParser::Validator();
+                        cXmlValidatorResult res = doc.validate(*val, cXmlValidator::OPT_DETERMINE_NODE_BY_XPATH, cXmlValidatorResult::VR_NONE);
+                        if (res) {
+                            /*
+                            foreach(const std::string& ge, val->getGenericErrors())
+                                wxLogError(wxString::FromUTF8(ge.c_str()));
+                            foreach(const cXmlStructuredError& se, val->getStructuredErrors()) {
+                                wxString message = wxString::Format(_("Line %d: %s"), se.line, wxString::FromUTF8(se.message.c_str()).c_str());
+                                if (se.level == XML_ERR_NONE) {
+                                    wxLogMessage(message);
+                                } else if (se.level == XML_ERR_WARNING) {
+                                    wxLogWarning(message);
+                                } else {
+                                    wxLogError(message);
+                                }
+                                if (verbose)
+                                    wxLogVerbose(wxString::Format(_("   XPath: %s"), wxString::FromUTF8(se.getPath().c_str()).c_str()));
+                            }
+                            */
+                            logXmlErrors(val.get(), verbose);
+                        }
+                        if (res(parser.Found("strict")?cXmlValidatorResult::VR_WARNING:cXmlValidatorResult::VR_ERROR)) {
+                            wxLogMessage(_("...Failed!"));
+                            return -1;
+                        }
+                        wxLogMessage(_("...Ok!"));
+                    }
+
+                    if (checkonly) {
+                        wxLogMessage(_("Remember, for raw xml files, check only mode means only validation is done."));
+                        return 0;
+                    }
+
                     WRITE_RCT3_EXPERTMODE(true);
                     if (!parser.Found(wxT("v")))
                         WRITE_RCT3_MOREEXPERTMODE(true);
@@ -417,6 +498,7 @@ int DoCompile(const wxCmdLineParser& parser) {
                     c_scn.Load();
                 }
             } else {
+                logXmlErrors(&doc, verbose);
                 throw RCT3Exception(_("Error in xml file"));
             }
         } else if (inputfile.GetExt().Lower() == wxT("ms3d")) {
@@ -626,8 +708,21 @@ int main(int argc, char **argv)
 
     // *&^$% GraphicsMagick
     wxFileName app = wxString(wxArgv[0]);
+    if (!app.IsAbsolute())
+        app.MakeAbsolute();
+    /*
     wxString appenv = wxT("MAGICK_CONFIGURE_PATH=") + app.GetPathWithSep();
     putenv(appenv.mb_str(wxConvLocal));
+    */
+    try {
+//        fprintf(stderr, "All .mgk files expected in '%s'.\n", static_cast<const char*>(app.GetPathWithSep().mb_str(wxConvLocal)));
+        wxGXImage::CheckGraphicsMagick(app.GetPathWithSep());
+    } catch (exception& e) {
+        fprintf(stderr, "Error initializing the graphics library:\n");
+        fprintf(stderr, "%s\n", e.what());
+        fprintf(stderr, "All .mgk files expected in '%s'.\n", static_cast<const char*>(app.GetPathWithSep().mb_str(wxConvLocal)));
+        return -1;
+    }
 
     //wxFileSystem::AddHandler(new wxZipFSHandler);
     wxFileSystem::AddHandler(new wxArchiveFSHandler);
@@ -662,6 +757,8 @@ int main(int argc, char **argv)
         { wxCMD_LINE_SWITCH, "v", "verbose", "enable verbose logging" },
         { wxCMD_LINE_SWITCH, "q", "quiet", "in quiet mode only warnings and errors are shown" },
         { wxCMD_LINE_SWITCH, "s", "silent", "in silent mode only errors are shown" },
+        { wxCMD_LINE_SWITCH, NULL, "novalid", "do not validate xml files" },
+        { wxCMD_LINE_SWITCH, NULL, "deep", "do a deep validation of some xml files (warning: this can take a long time!)" },
 
         { wxCMD_LINE_PARAM,  NULL, NULL, "input file", wxCMD_LINE_VAL_STRING },
         { wxCMD_LINE_PARAM,  NULL, NULL, "output file", wxCMD_LINE_VAL_STRING, wxCMD_LINE_PARAM_OPTIONAL },
@@ -683,6 +780,9 @@ int main(int argc, char **argv)
         { wxCMD_LINE_SWITCH, "v", "verbose", "enable verbose logging" },
         { wxCMD_LINE_SWITCH, "q", "quiet", "in quiet mode only warnings and errors are shown" },
         { wxCMD_LINE_SWITCH, "s", "silent", "in silent mode only errors are shown" },
+        { wxCMD_LINE_SWITCH, NULL, "novalid", "do not validate xml files" },
+        { wxCMD_LINE_SWITCH, NULL, "deep", "do a deep validation of some xml files (warning: this can take a long time!)" },
+        { wxCMD_LINE_SWITCH, NULL, "strict", "treat validation warnings as errors" },
         { wxCMD_LINE_SWITCH, NULL, "dryrun", "only show which files would be generated, do not actually write output" },
         { wxCMD_LINE_SWITCH, NULL, "install", "install ovls to RCT3 (output file is ignored)" },
         { wxCMD_LINE_OPTION, NULL, "installdir", "name install directory (implies --install)" },

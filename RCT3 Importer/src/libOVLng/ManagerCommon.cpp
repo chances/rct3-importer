@@ -31,7 +31,12 @@
 
 #include <math.h>
 
+#include "pretty.h"
+
 #include "OVLException.h"
+#include "ManagerGSI.h"
+#include "ManagerSPL.h"
+#include "ManagerTXT.h"
 
 #ifdef __BORLANDC__
 #define fabsf fabs
@@ -40,7 +45,14 @@
 using namespace r3;
 using namespace std;
 
+const char* ovlTKSManager::TAG = "tks";
 const char* ovlTXSManager::TAG = "txs";
+
+////////////////////////////////////////////////////////////////////////
+//
+//  Triangle Sort Algorithms
+//
+////////////////////////////////////////////////////////////////////////
 
 const cTriangleSortAlgorithm::Algorithm cTriangleSortAlgorithm::DEFAULT = cTriangleSortAlgorithm::MINMAX;
 
@@ -260,6 +272,11 @@ bool cTriangleSortAlgorithm::operator() (const VECTOR& a1, const VECTOR& a2, con
 }
 
 
+////////////////////////////////////////////////////////////////////////
+//
+//  cAttraction
+//
+////////////////////////////////////////////////////////////////////////
 
 void cAttraction::Fill(Attraction_V* attv) const {
     Attraction_W* att = reinterpret_cast<Attraction_W*>(attv);
@@ -283,7 +300,7 @@ void cAttraction::Fill(Attraction_V* attv) const {
         att->s.unk12 = unk12;
     }
     if ((type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
-        att->w.unk13 = unk13;
+        att->w.ui_deactivation = ui_deactivation;
     }
 /*
     if ((type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
@@ -328,7 +345,7 @@ void cAttraction::Fill(Attraction_V* attv) const {
 */
 }
 
-void cAttraction::Fill(StallA* sta) const {
+void cAttraction::Fill(r3old::StallA* sta) const {
     sta->type = type & 0xFF; // low byte only
     sta->unk2 = unk2;
     sta->unk3 = unk3;
@@ -341,9 +358,118 @@ void cAttraction::Fill(StallA* sta) const {
     sta->unk10 = unk10;
 }
 
-void cAttraction::Fill(SpecialAttractionA* sp) const {
-    Fill(reinterpret_cast<StallA*>(sp));
+void cAttraction::Fill(r3old::SpecialAttractionA* sp) const {
+    Fill(reinterpret_cast<r3old::StallA*>(sp));
 }
+
+/** @brief DoAdd
+  *
+  * @todo: document this function
+  */
+void cAttraction::DoAdd(ovlStringTable* st, ovlLodSymRefManager* lsr) const {
+    lsr->AddSymRef(OVLT_UNIQUE);
+    st->AddSymbolString(name, ovlTXTManager::TAG);
+    lsr->AddSymRef(OVLT_UNIQUE);
+    st->AddSymbolString(description, ovlTXTManager::TAG);
+    // The following is not an error, if not set these are symref'd to :gsi and :spl
+    lsr->AddSymRef(OVLT_UNIQUE);
+    st->AddSymbolString(icon, ovlGSIManager::TAG);
+    lsr->AddSymRef(OVLT_UNIQUE);
+    st->AddSymbolString(spline, ovlSPLManager::TAG);
+
+    foreach(const string& spl, splines) {
+        lsr->AddSymRef(OVLT_UNIQUE);
+        st->AddSymbolString(spl, ovlSPLManager::TAG);
+    }
+}
+
+/** @brief GetUniqueSize
+  *
+  * @todo: document this function
+  */
+unsigned long cAttraction::GetUniqueSize() const {
+    int usize = 0;
+    if (soaked())
+        usize = sizeof(Attraction_S);
+    else if (wild())
+        usize = sizeof(Attraction_W);
+    // Spline pointers
+    usize += splines.size() * 4;
+    return usize;
+}
+
+/** @brief GetCommonSize
+  *
+  * @todo: document this function
+  */
+unsigned long cAttraction::GetCommonSize() const {
+    return 0;
+}
+
+
+/** @brief MakeSymRefs
+  *
+  * @todo: document this function
+  */
+void cAttraction::MakeSymRefs(r3::Attraction_V* ptr, ovlLodSymRefManager* lsr, ovlStringTable* st) const {
+    lsr->MakeSymRef(OVLT_UNIQUE, st->FindSymbolString(name, ovlTXTManager::TAG), reinterpret_cast<unsigned long*>(&ptr->name_ref));
+    lsr->MakeSymRef(OVLT_UNIQUE, st->FindSymbolString(description, ovlTXTManager::TAG), reinterpret_cast<unsigned long*>(&ptr->description_ref));
+    lsr->MakeSymRef(OVLT_UNIQUE, st->FindSymbolString(icon, ovlGSIManager::TAG), reinterpret_cast<unsigned long*>(&ptr->icon_ref));
+    lsr->MakeSymRef(OVLT_UNIQUE, st->FindSymbolString(spline, ovlSPLManager::TAG), reinterpret_cast<unsigned long*>(&ptr->spline_ref));
+
+    for (int i = 0; i < splines.size(); ++i) {
+        lsr->MakeSymRef(OVLT_UNIQUE, st->FindSymbolString(splines[i], ovlSPLManager::TAG),
+                             reinterpret_cast<unsigned long*>(&ptr->paths_ref[i]));
+    }
+}
+
+/** @brief MakeSymRefs
+  *
+  * @todo: document this function
+  */
+void cAttraction::MakeSymRefs(r3::Attraction_S* ptr, ovlLodSymRefManager* lsr, ovlStringTable* st) const {
+    MakeSymRefs(&ptr->v, lsr, st);
+}
+
+/** @brief MakePointers
+  *
+  * @todo: document this function
+  */
+void cAttraction::MakePointers(Attraction_S** ptr, unsigned char*& uni_ptr, unsigned char*& com_ptr, ovlRelocationManager* rel) const {
+    *ptr = reinterpret_cast<Attraction_S*>(uni_ptr);
+    if (soaked()) {
+        uni_ptr += sizeof(Attraction_S);
+    } else {
+        uni_ptr += sizeof(Attraction_W);
+    }
+    rel->AddRelocation(reinterpret_cast<unsigned long*>(ptr));
+
+    if (splines.size()) {
+        (*ptr)->v.paths_ref = reinterpret_cast<Spline**>(uni_ptr);
+        uni_ptr += splines.size() * 4;
+        rel->AddRelocation(reinterpret_cast<unsigned long*>(&(*ptr)->v.paths_ref));
+    }
+}
+
+/** @brief MakePointers
+  *
+  * @todo: document this function
+  */
+void cAttraction::MakePointers(Attraction_V* ptr, unsigned char*& uni_ptr, unsigned char*& com_ptr, ovlRelocationManager* rel) const {
+    if (splines.size()) {
+        ptr->paths_ref = reinterpret_cast<Spline**>(uni_ptr);
+        uni_ptr += splines.size() * 4;
+        rel->AddRelocation(reinterpret_cast<unsigned long*>(&ptr->paths_ref));
+    }
+}
+
+
+////////////////////////////////////////////////////////////////////////
+//
+//  cRideOption
+//
+////////////////////////////////////////////////////////////////////////
+
 
 /** @brief GetSize
   *
@@ -352,8 +478,12 @@ void cAttraction::Fill(SpecialAttractionA* sp) const {
 unsigned long cRideOption::GetSize() const {
     switch (type) {
         case 0: return 4;
+        case 1: return 2*4;
         case 2: return 3*4;
+        case 3: return 3*4;
         case 4: return 3*4;
+        case 5: return 3*4;
+        case 6: return 3*4;
         case 7: return 3*4;
         case 8: return 6*4;
         case 9: return 4*4;
@@ -373,8 +503,12 @@ void cRideOption::SetType(unsigned long t) {
     type = t;
     switch (type) {
         case 0: break;
+        case 1: return;
         case 2: return;
+        case 3: return;
         case 4: return;
+        case 5: return;
+        case 6: return;
         case 7: return;
         case 8: {
                 param[3] = 1.0;
@@ -405,14 +539,33 @@ void cRideOption::Fill(r3::RideOption* r) const {
     switch (type) {
         case 0:
             break;
+        case 1: {
+                r->type_01.option = option;
+            }
+            break;
         case 2: {
                 r->type_02.option = option;
                 r->type_02.unk2 = param[0];
             }
             break;
+        case 3: {
+                r->type_03.option = option;
+                r->type_03.unk2 = param[0];
+            }
+            break;
         case 4: {
                 r->type_04.option = option;
                 r->type_04.unk2 = param[0];
+            }
+            break;
+        case 5: {
+                r->type_05.option = option;
+                r->type_05.unk2 = param[0];
+            }
+            break;
+        case 6: {
+                r->type_06.option = option;
+                r->type_06.unk2 = param[0];
             }
             break;
         case 7: {
@@ -455,6 +608,135 @@ void cRideOption::Fill(r3::RideOption* r) const {
     }
 }
 
+
+
+////////////////////////////////////////////////////////////////////////
+//
+//  cRideStationLimit
+//
+////////////////////////////////////////////////////////////////////////
+
+/** @brief Fill
+  *
+  * @todo: document this function
+  */
+void cRideStationLimit::Fill(r3::RideStationLimit* r) const {
+    r->x = x_pos;
+    r->z = z_pos;
+    r->height = height;
+    r->flags = flags;
+}
+
+
+
+////////////////////////////////////////////////////////////////////////
+//
+//  cRide
+//
+////////////////////////////////////////////////////////////////////////
+
+/** @brief DoAdd
+  *
+  * @todo: document this function
+  */
+void cRide::DoAdd(ovlStringTable* st, ovlLodSymRefManager* lsr) const {
+    return;
+}
+
+/** @brief MakePointers
+  *
+  * @todo: document this function
+  */
+void cRide::MakePointers(Ride_S** ptr, unsigned char*& uni_ptr, unsigned char*& com_ptr, const cAttraction& att, ovlRelocationManager* rel) const {
+    *ptr = reinterpret_cast<Ride_S*>(uni_ptr);
+    if (att.soaked()) {
+        uni_ptr += sizeof(Ride_S);
+    } else {
+        uni_ptr += sizeof(Ride_W);
+    }
+    rel->AddRelocation(reinterpret_cast<unsigned long*>(ptr));
+
+    att.MakePointers(&(*ptr)->s.att, uni_ptr, com_ptr, rel);
+
+    (*ptr)->v.options = reinterpret_cast<RideOption**>(com_ptr);
+    com_ptr += (options.size()+1) * 4;
+    rel->AddRelocation(reinterpret_cast<unsigned long*>(&(*ptr)->v.options));
+    for (int i = 0; i < options.size(); ++i) {
+        (*ptr)->v.options[i] = reinterpret_cast<RideOption*>(com_ptr);
+        com_ptr += options[i].GetSize();
+        rel->AddRelocation(reinterpret_cast<unsigned long*>(&(*ptr)->v.options[i]));
+    }
+    (*ptr)->v.options[options.size()] = NULL;
+
+    if (stationlimits.size()) {
+        (*ptr)->s.extras = reinterpret_cast<RideStationLimit*>(com_ptr);
+        com_ptr += stationlimits.size() * sizeof(RideStationLimit);
+        rel->AddRelocation(reinterpret_cast<unsigned long*>(&(*ptr)->s.extras));
+    } else {
+        (*ptr)->s.extras = NULL;
+    }
+}
+
+/** @brief MakePointers
+  *
+  * @todo: document this function
+  */
+void cRide::MakePointers(Ride_V* ptr, unsigned char*& uni_ptr, unsigned char*& com_ptr, const cAttraction& att, ovlRelocationManager* rel) const {
+
+    ptr->options = reinterpret_cast<RideOption**>(com_ptr);
+    com_ptr += (options.size()+1) * 4;
+    rel->AddRelocation(reinterpret_cast<unsigned long*>(&ptr->options));
+    for (int i = 0; i < options.size(); ++i) {
+        ptr->options[i] = reinterpret_cast<RideOption*>(com_ptr);
+        com_ptr += options[i].GetSize();
+        rel->AddRelocation(reinterpret_cast<unsigned long*>(&ptr->options[i]));
+    }
+    ptr->options[options.size()] = NULL;
+}
+
+/** @brief GetUniqueSize
+  *
+  * @todo: document this function
+  */
+unsigned long cRide::GetUniqueSize(const cAttraction& att) const {
+    if (att.soaked())
+        return sizeof(Ride_S);
+    if (att.wild())
+        return sizeof(Ride_W);
+    return 0;
+}
+
+/** @brief GetCommonSize
+  *
+  * @todo: document this function
+  */
+unsigned long cRide::GetCommonSize(const cAttraction& att) const {
+    // Options
+    int csize = 0;
+    csize += (options.size()+1) * 4;
+    csize += GetOptionsSize();
+    if (att.isnew()) {
+        csize += stationlimits.size() * sizeof(RideStationLimit);
+    }
+    return csize;
+}
+
+/** @brief MakeSymRefs
+  *
+  * @todo: document this function
+  */
+void cRide::MakeSymRefs(r3::Ride_V* ptr, const cAttraction& att, ovlLodSymRefManager* lsr, ovlStringTable* st) const {
+    return;
+}
+
+/** @brief MakeSymRefs
+  *
+  * @todo: document this function
+  */
+void cRide::MakeSymRefs(r3::Ride_S* ptr, const cAttraction& att, ovlLodSymRefManager* lsr, ovlStringTable* st) const {
+    att.MakeSymRefs(ptr->s.att, lsr, st);
+}
+
 /** @brief Fill
   *
   * @todo: document this function
@@ -478,8 +760,10 @@ void cRide::Fill(r3::Ride_S* r) const {
     Fill(&r->v);
     r->v.attractivity_v = 0xFFFFFFFF;
     r->s.attractivity_sw = attractivity;
-    r->s.extra_count = 0;
-    r->s.extras = NULL;
+    r->s.extra_count = stationlimits.size();
+    for (int i = 0; i < stationlimits.size(); ++i) {
+        stationlimits[i].Fill(&r->s.extras[i]);
+    }
     r->s.unk11 = unk11;
     r->s.unk12 = unk12;
     r->s.unk13 = unk13;

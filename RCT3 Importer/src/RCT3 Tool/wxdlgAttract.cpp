@@ -42,9 +42,9 @@
 
 using namespace r3;
 
-extern std::vector <AttractionStr *> Attractions;
+extern std::vector <r3old::AttractionStr *> Attractions;
 extern std::vector<cText> cTextStrings;
-extern std::vector <Scenery *> SceneryItems;
+extern std::vector <r3old::Scenery *> SceneryItems;
 extern bool save;
 extern int CurrentAttraction;
 

@@ -30,15 +30,23 @@
 
 #include <map>
 
+#include "confhelp.h"
 #include "gximage.h"
+#include "lib3Dconfig.h"
 #include "matrix.h"
 #include "xmldefs.h"
 #include "xmlhelper.h"
 
 #include "cXmlDoc.h"
+#include "cXmlInputOutputCallbackString.h"
 #include "cXmlNode.h"
+#include "cXmlValidatorIsoSchematron.h"
+#include "cXmlValidatorRNVRelaxNG.h"
 #include "cXmlXPath.h"
 #include "cXmlXPathResult.h"
+
+#include "rng/model.rnc.gz.h"
+#include "rng/model.sch.gz.h"
 
 using namespace r3;
 using namespace std;
@@ -176,6 +184,50 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
 
     if (doc.root().ns() != XML_NAMESPACE_MODEL)
         throw E3DLoaderNotMyBeer();
+
+    if (READ_RCT3_VALIDATE()) {
+        cXmlInputOutputCallbackString::Init();
+        XMLCPP_RES_ADD_ONCE(model, rnc);
+
+        if (READ_RCT3_REPORTVALIDATION()) {
+            wxLogMessage(wxString::Format(_("Validating %s..."), filename));
+        }
+        cXmlValidatorRNVRelaxNG val(XMLCPP_RES_USE(model, rnc).c_str());
+        if (!val) {
+            wxString error(_("Internal Error: could not load modxml schema:\n"));
+            error += val.wxgetErrorList();
+            throw E3DLoader(error);
+        }
+        if (doc.validate(val)) {
+            wxString error(_("Invalid modxml file:\n"));
+            error += val.wxgetErrorList();
+            throw E3DLoader(error);
+        }
+
+        if (READ_RCT3_DEEPVALIDATE()) {
+            XMLCPP_RES_ADD_ONCE(model, sch);
+            if (READ_RCT3_REPORTVALIDATION()) {
+                wxLogMessage(wxString::Format(_("Deep validating %s..."), filename));
+            }
+            cXmlValidatorIsoSchematron val(XMLCPP_RES_USE(model, sch).c_str());
+            if (!val) {
+                wxString error(_("Internal Error: could not load modxml schema:\n"));
+                error += val.wxgetErrorList();
+                throw E3DLoader(error);
+            }
+            if (doc.validate(val)) {
+                wxString error(_("Invalid modxml file:\n"));
+                error += val.wxgetErrorList();
+                throw E3DLoader(error);
+            }
+
+        }
+
+        if (READ_RCT3_REPORTVALIDATION()) {
+            wxLogMessage(_("...Ok!"));
+        }
+    }
+
 
     cXmlXPath path(doc, "mod", XML_NAMESPACE_MODEL);
 

@@ -354,6 +354,9 @@ void dlgEffectBase::DoQuickMenu(const int id, wxArrayString& names, std::vector<
             dialog->GetStack(names, transforms);
             dialog->Destroy();
         }
+    } else if (id == XRCID2("menu_quickeffect_load", snr[nr])) {
+// TODO (belgabor#1#): Implement
+        wxMessageBox(_("Not implemented"));
     } else {
         std::map<int, const c3DBone*>::iterator vec = m_IdMap[nr].find(id);
         if (vec != m_IdMap[nr].end()) {
@@ -548,10 +551,10 @@ bool dlgEffect::Validate() {
 void dlgEffect::OnLoad(wxCommandEvent& WXUNUSED(event)) {
     wxFileDialog *dialog = new wxFileDialog(
                                      this,
-                                     _T("Open Scenery File (Load effect point)"),
+                                     _("Open Scenery File (Load effect point)"),
                                      wxEmptyString,
                                      wxEmptyString,
-                                     _T("Scenery Files (*.scn)|*.scn"),
+                                     cSCNFile::GetSupportedFilesFilter()+_("|All Files (*.*)|*.*"),
                                      wxFD_FILE_MUST_EXIST|wxFD_CHANGE_DIR,
                                      wxDefaultPosition,
                                      wxSize(600,400)
@@ -806,56 +809,53 @@ void dlgBone::SetBone(const cModelBone& bn) {
 ////////////////////////////////////////////////////////////////////////
 
 void dlgBone::OnLoad(wxCommandEvent& WXUNUSED(event)) {
-    wxFileDialog *dialog = new wxFileDialog(
+   boost::shared_ptr<wxFileDialog> dialog(new wxFileDialog(
                                      this,
-                                     _T("Open Scenery File (Load bone)"),
+                                     _("Open Scenery File (Load bone)"),
                                      wxEmptyString,
                                      wxEmptyString,
-                                     _T("Scenery Files (*.scn, *.xml)|*.scn;*.xml"),
+                                     cSCNFile::GetSupportedFilesFilter()+_("|All Files (*.*)|*.*"),
                                      wxFD_FILE_MUST_EXIST|wxFD_CHANGE_DIR,
                                      wxDefaultPosition,
                                      wxSize(600,400)
-                                 );
+                                 ), wxWindowDestroyer);
     dialog->SetDirectory(::wxGetApp().g_workdir.GetPath());
     if (dialog->ShowModal() == wxID_OK) {
         ::wxGetApp().g_workdir.AssignDir(wxFileName(dialog->GetPath()).GetPath());
-        cSCNFile *texscn = new cSCNFile(dialog->GetPath().fn_str());
-        if (texscn) {
+        auto_ptr<cSCNFile> texscn(new cSCNFile(dialog->GetPath().fn_str()));
+        if (texscn.get()) {
             unsigned int i;
             bool ef_present = false;
-            for (i = 0; i < texscn->models.size(); i++) {
-                if (texscn->models[i].effectpoints.size() != 0) {
+            for (i = 0; i < texscn->animatedmodels.size(); i++) {
+                if (texscn->animatedmodels[i].modelbones.size() != 0) {
                     ef_present = true;
                     break;
                 }
             }
             if (!ef_present) {
-                wxMessageBox(_("The selected scenery file contains no effect points."), _("Warning"), wxOK | wxICON_WARNING, this);
-                delete texscn;
-                dialog->Destroy();
+                wxMessageBox(_("The selected scenery file contains no bones."), _("Warning"), wxOK | wxICON_WARNING, this);
                 return;
             }
             wxArrayString choices;
-            std::vector<cEffectPoint> epchoices;
-            for (i = 0; i < texscn->models.size(); i++) {
-                for (cEffectPoint::iterator ms = texscn->models[i].effectpoints.begin(); ms != texscn->models[i].effectpoints.end(); ms++) {
-                    choices.Add(texscn->models[i].name + wxT(", ") + ms->name);
-                    epchoices.push_back(*ms);
+            std::vector<cModelBone> epchoices;
+            foreach(const cAnimatedModel& am, texscn->animatedmodels) {
+                foreach(const cModelBone& bn, am.modelbones) {
+                    choices.Add(am.name + wxT(", ") + bn.name);
+                    epchoices.push_back(bn);
                 }
             }
             if (choices.size() > 0) {
-                int choice = ::wxGetSingleChoiceIndex(dialog->GetPath(), _("Choose effect point to import"), choices, this);
+                int choice = ::wxGetSingleChoiceIndex(dialog->GetPath(), _("Choose bone to import"), choices, this);
                 if (choice >= 0) {
-// FIXME (tobi#1#): Make load work for bones
-//                    SetEffect(epchoices[choice]);
+                    SetBone(epchoices[choice]);
+                    m_bn.meshes.clear();
+                    m_bn.parent = "";
                     TransferDataToWindow();
                     UpdateAll();
                 }
             }
-            delete texscn;
         }
     }
-    dialog->Destroy();
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -969,7 +969,11 @@ void dlgBone::OnClearClick(wxCommandEvent& WXUNUSED(event)) {
 ////////////////////////////////////////////////////////////////////////
 
 void dlgBone::OnQuickMenu2(wxCommandEvent& event) {
-    DoQuickMenu(event.GetId(), m_bn.position2names, m_bn.positions2, 1);
+    if (event.GetId() == XRCID("menu_quickeffect_pos12"))
+// TODO (belgabor#1#): Implement
+        wxMessageBox(_("Not implemented"));
+    else
+        DoQuickMenu(event.GetId(), m_bn.position2names, m_bn.positions2, 1);
 }
 
 void dlgBone::OnEdit1Click(wxCommandEvent& WXUNUSED(event)) {

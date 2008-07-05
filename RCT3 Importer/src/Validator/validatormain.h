@@ -51,6 +51,7 @@ public:
 
     virtual void OnSchemaCompiler( wxCommandEvent& event );
     virtual void OnSchemaRaw( wxCommandEvent& event );
+    virtual void OnSchemaScenery( wxCommandEvent& event );
     virtual void OnSchemaModel( wxCommandEvent& event );
     virtual void OnSchemaMS3D( wxCommandEvent& event );
 
@@ -83,9 +84,15 @@ private:
     wxString m_xmlfile;
     boost::shared_ptr<dlgKeyframes> m_kf;
 
+    void MarkLine(wxStyledTextCtrl* ctl, int line, int level);
+
     void InitXMLSTC(wxStyledTextCtrl* ctl);
+    void InitCommonSTC(wxStyledTextCtrl* ctl);
     bool DoValidate();
     void DoProfileValidation(int times);
+
+    void DisplayRelaxNG();
+    void DisplaySchematron();
 };
 
 #endif // MANAGERMAIN_H_INCLUDED

@@ -20,14 +20,14 @@ public:
     long unk3;
     char *sid;
     unsigned long itemcount;
-    r3::StallItem *items;
+    r3old::StallItem *items;
     unsigned long unk11;
     unsigned long unk12;
     unsigned long unk13;
     unsigned long unk14;
     unsigned long unk15;
     unsigned long unk16;
-    StallData(char *Name,unsigned long StallType,char *NameString,char *DescriptionString,unsigned long Unk2,long Unk3,char *SID,unsigned long ItemCount,r3::StallItem *Items,unsigned long Unk11,unsigned long Unk12,unsigned long Unk13,unsigned long Unk14,unsigned long Unk15,unsigned long Unk16);
+    StallData(char *Name,unsigned long StallType,char *NameString,char *DescriptionString,unsigned long Unk2,long Unk3,char *SID,unsigned long ItemCount,r3old::StallItem *Items,unsigned long Unk11,unsigned long Unk12,unsigned long Unk13,unsigned long Unk14,unsigned long Unk15,unsigned long Unk16);
     ~StallData();
     static std::vector<StallData *> Stalls;
     static int LoaderNumber;

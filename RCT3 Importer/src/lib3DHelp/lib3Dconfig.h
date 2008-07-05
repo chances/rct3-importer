@@ -47,6 +47,12 @@
 #define READ_RCT3_VALIDATE()            wxcRead<bool>(wxT("RCT3/Validate"), true)
 #define WRITE_RCT3_VALIDATE(v)         wxcWrite<bool>(wxT("RCT3/Validate"), v)
 
+#define READ_RCT3_REPORTVALIDATION()    wxcRead<bool>(wxT("RCT3/ReportValidate"), false) // Only for ovlmake
+#define WRITE_RCT3_REPORTVALIDATION(v) wxcWrite<bool>(wxT("RCT3/ReportValidate"), v)
+
+#define READ_RCT3_DEEPVALIDATE()        wxcRead<bool>(wxT("RCT3/DeepValidate"), false)
+#define WRITE_RCT3_DEEPVALIDATE(v)     wxcWrite<bool>(wxT("RCT3/DeepValidate"), v)
+
 #define READ_RCT3_TRIANGLESORT_X()     wxcRead<wxString>(wxT("RCT3/TriangleSortX"), wxString(cTriangleSortAlgorithm::GetDefaultName(), wxConvLocal))
 #define WRITE_RCT3_TRIANGLESORT_X(v)  wxcWrite<wxString>(wxT("RCT3/TriangleSortX"), v)
 

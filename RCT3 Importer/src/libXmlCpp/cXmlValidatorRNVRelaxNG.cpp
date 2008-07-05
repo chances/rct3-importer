@@ -26,6 +26,7 @@
 #include "cXmlValidatorRNVRelaxNG.h"
 
 #include <algorithm>
+#include <boost/format.hpp>
 
 #include "cXmlException.h"
 #include "cXmlInputOutputCallbackString.h"
@@ -42,6 +43,8 @@
 #include "rnv/rnl.h"
 #include "rnv/rnv.h"
 #include "rnv/rnx.h"
+#include "rnv/rx.h"
+#include "rnv/xsd.h"
 
 #ifdef XMLCPP_USE_RNV_RNG
 #include "rng/relaxng.rnc.gz.h"
@@ -389,119 +392,257 @@ void cXmlValidatorRNVRelaxNG::verror_handler(int erno,va_list ap) {
                 error.message = "Unknown RNC lexing error.";
             }
         } else if (erno&ERBIT_RNV) {
+            // Validation error
             if (g_nodecontext) {
                 error.node = g_nodecontext;
                 error.line = g_nodecontext->line;
             }
-            switch (runerrno) {
-            case RNV_ER_ELEM:
-                error.message = "element ";
-                tempstr = va_arg(ap, char*);
-                if (tempstr) {
-                    error.message += tempstr;
-                    error.str1 = tempstr;
-                    if (error.str1.size())
-                        error.message += ":";
-                } else
-                    error.message += "";
-                tempstr = va_arg(ap, char*);
-                if (tempstr) {
-                    error.message += tempstr;
-                    error.str2 = tempstr;
-                } else
-                    error.message += "?";
-                error.message += " not allowed";
-                break;
-            case RNV_ER_AKEY:
-                error.message = "attribute ";
-                tempstr = va_arg(ap, char*);
-                if (tempstr) {
-                    error.message += tempstr;
-                    error.str1 = tempstr;
-                    if (error.str1.size())
-                        error.message += ":";
-                } else
-                    error.message += "";
-                tempstr = va_arg(ap, char*);
-                if (tempstr) {
-                    error.message += tempstr;
-                    error.str2 = tempstr;
-                    error.attribute = tempstr;
-                } else
-                    error.message += "?";
-                error.message += " not allowed";
-                break;
-            case RNV_ER_AVAL:
-                error.message = "attribute ";
-                tempstr = va_arg(ap, char*);
-                if (tempstr) {
-                    error.message += tempstr;
-                    error.str1 = tempstr;
-                    if (error.str1.size())
-                        error.message += ":";
-                } else
-                    error.message += "";
-                tempstr = va_arg(ap, char*);
-                if (tempstr) {
-                    error.message += tempstr;
-                    error.str2 = tempstr;
-                    error.attribute = tempstr;
-                } else
-                    error.message += "?";
-                error.message += " with invalid value \"";
-                tempstr = va_arg(ap, char*);
-                if (tempstr) {
-                    error.message += tempstr;
-                    error.str3 = tempstr;
-                } else
-                    error.message += "?";
-                error.message += "\"";
-                break;
-            case RNV_ER_EMIS:
-                error.message = "incomplete content";
-                break;
-            case RNV_ER_AMIS:
-                error.message = "missing attributes of ";
-                tempstr = va_arg(ap, char*);
-                if (tempstr) {
-                    error.message += tempstr;
-                    error.str1 = tempstr;
-                    if (error.str1.size())
-                        error.message += ":";
-                } else
-                    error.message += "";
-                tempstr = va_arg(ap, char*);
-                if (tempstr) {
-                    error.message += tempstr;
-                    error.str2 = tempstr;
-                } else
-                    error.message += "?";
-                break;
-            case RNV_ER_UFIN:
-                error.message = "unfinished content of element ";
-                tempstr = va_arg(ap, char*);
-                if (tempstr) {
-                    error.message += tempstr;
-                    error.str1 = tempstr;
-                    if (error.str1.size())
-                        error.message += ":";
-                } else
-                    error.message += "";
-                tempstr = va_arg(ap, char*);
-                if (tempstr) {
-                    error.message += tempstr;
-                    error.str2 = tempstr;
-                } else
-                    error.message += "?";
-                break;
-            case RNV_ER_TEXT:
-                error.message = "invalid data or text not allowed";
-                break;
-            case RNV_ER_NOTX:
-                error.message = "text not allowed";
-                break;
-            default:
-                assert(0);
+            if (runerrno&ERBIT_DRV) {
+                // Datatype library error
+                runerrno &= ~ERBIT_DRV;
+                if (runerrno&ERBIT_XSD) {
+                    // XML Schema datatye library error
+                    runerrno &= ~ERBIT_XSD;
+                    error.message = "XML Schema datatypes: ";
+                    if (runerrno&ERBIT_RX) {
+                        // Regular expressions
+                        error.message += "regular expressions: ";
+                        switch(runerrno) {
+                        case RX_ER_BADCH:
+                            error.message += "bad character";
+                            break;
+                        case RX_ER_UNFIN:
+                            error.message += "unfinished expression";
+                            break;
+                        case RX_ER_NOLSQ:
+                            error.message += "'[' expected";
+                            break;
+                        case RX_ER_NORSQ:
+                            error.message += "']' expected";
+                            break;
+                        case RX_ER_NOLCU:
+                            error.message += "'{' expected";
+                            break;
+                        case RX_ER_NORCU:
+                            error.message += "'}' expected";
+                            break;
+                        case RX_ER_NOLPA:
+                            error.message += "'(' expected";
+                            break;
+                        case RX_ER_NORPA:
+                            error.message += "')' expected";
+                            break;
+                        case RX_ER_BADCL:
+                            error.message += "unknown class";
+                            break;
+                        case RX_ER_NODGT:
+                            error.message += "digit expected";
+                            break;
+                        case RX_ER_DNUOB:
+                            error.message += "reversed bounds";
+                            break;
+                        case RX_ER_NOTRC:
+                            error.message += "range or class expected";
+                            break;
+                        default:
+                            error.message += boost::str(boost::format("unknown error code: 0x%x") % runerrno);
+                        }
+                    } else {
+                        switch(runerrno) {
+                        case XSD_ER_TYP:
+                            error.message += "unknown type '";
+                            tempstr = va_arg(ap, char*);
+                            if (tempstr) {
+                                error.message += tempstr;
+                                error.str1 = tempstr;
+                            } else
+                                error.message += "?";
+                            error.message += "'";
+                            break;
+                        case XSD_ER_PAR:
+                            error.message += "unknown parameter '";
+                            tempstr = va_arg(ap, char*);
+                            if (tempstr) {
+                                error.message += tempstr;
+                                error.str1 = tempstr;
+                            } else
+                                error.message += "?";
+                            error.message += "'";
+                            break;
+                        case XSD_ER_PARVAL:
+                            error.message += "invalid parameter value ";
+                            tempstr = va_arg(ap, char*);
+                            if (tempstr) {
+                                error.message += tempstr;
+                                error.str1 = tempstr;
+                            } else
+                                error.message += "?";
+                            error.message += "='";
+                            tempstr = va_arg(ap, char*);
+                            if (tempstr) {
+                                error.message += tempstr;
+                                error.str2 = tempstr;
+                            } else
+                                error.message += "?";
+                            error.message += "'";
+                            break;
+                        case XSD_ER_VAL:
+                            error.message += "invalid typed value '";
+                            tempstr = va_arg(ap, char*);
+                            if (tempstr) {
+                                error.message += tempstr;
+                                error.str1 = tempstr;
+                            } else
+                                error.message += "?";
+                            error.message += "' for type ";
+                            tempstr = va_arg(ap, char*);
+                            if (tempstr) {
+                                error.message += tempstr;
+                                error.str2 = tempstr;
+                            } else
+                                error.message += "?";
+                            break;
+                        case XSD_ER_NPAT:
+                            error.message += "no more than 16 patterns per type are supported";
+                            break;
+                        case XSD_ER_WS:
+                            error.message += "the builtin derived datatype that specifies the desired value for the whiteSpace facet should be used instead of 'whiteSpace'";
+                            break;
+                        case XSD_ER_ENUM:
+                            error.message += "'value' should be used instead of 'enumeration'";
+                            break;
+                        default:
+                            error.message += boost::str(boost::format("unknown error code: 0x%x") % runerrno);
+                        }
+                    }
+                } else {
+                    switch (runerrno) {
+                    case DRV_ER_NODTL:
+                        error.message = "no datatype library for URI '";
+                        tempstr = va_arg(ap, char*);
+                        if (tempstr) {
+                            error.message += tempstr;
+                            error.str1 = tempstr;
+                        } else
+                            error.message += "?";
+                        error.message += "'";
+                        break;
+                    default:
+                        error.message = boost::str(boost::format("unknown rnv datatype library error code: 0x%x") % runerrno);
+                    }
+                }
+            } else {
+                // "True" validation error
+                switch (runerrno) {
+                case RNV_ER_ELEM:
+                    error.message = "element ";
+                    tempstr = va_arg(ap, char*);
+                    if (tempstr) {
+                        error.message += tempstr;
+                        error.str1 = tempstr;
+                        if (error.str1.size())
+                            error.message += ":";
+                    } else
+                        error.message += "";
+                    tempstr = va_arg(ap, char*);
+                    if (tempstr) {
+                        error.message += tempstr;
+                        error.str2 = tempstr;
+                    } else
+                        error.message += "?";
+                    error.message += " not allowed";
+                    break;
+                case RNV_ER_AKEY:
+                    error.message = "attribute ";
+                    tempstr = va_arg(ap, char*);
+                    if (tempstr) {
+                        error.message += tempstr;
+                        error.str1 = tempstr;
+                        if (error.str1.size())
+                            error.message += ":";
+                    } else
+                        error.message += "";
+                    tempstr = va_arg(ap, char*);
+                    if (tempstr) {
+                        error.message += tempstr;
+                        error.str2 = tempstr;
+                        error.attribute = tempstr;
+                    } else
+                        error.message += "?";
+                    error.message += " not allowed";
+                    break;
+                case RNV_ER_AVAL:
+                    error.message = "attribute ";
+                    tempstr = va_arg(ap, char*);
+                    if (tempstr) {
+                        error.message += tempstr;
+                        error.str1 = tempstr;
+                        if (error.str1.size())
+                            error.message += ":";
+                    } else
+                        error.message += "";
+                    tempstr = va_arg(ap, char*);
+                    if (tempstr) {
+                        error.message += tempstr;
+                        error.str2 = tempstr;
+                        error.attribute = tempstr;
+                    } else
+                        error.message += "?";
+                    error.message += " with invalid value \"";
+                    tempstr = va_arg(ap, char*);
+                    if (tempstr) {
+                        error.message += tempstr;
+                        error.str3 = tempstr;
+                    } else
+                        error.message += "?";
+                    error.message += "\"";
+                    break;
+                case RNV_ER_EMIS:
+                    error.message = "incomplete content";
+                    break;
+                case RNV_ER_AMIS:
+                    error.message = "missing attributes of ";
+                    tempstr = va_arg(ap, char*);
+                    if (tempstr) {
+                        error.message += tempstr;
+                        error.str1 = tempstr;
+                        if (error.str1.size())
+                            error.message += ":";
+                    } else
+                        error.message += "";
+                    tempstr = va_arg(ap, char*);
+                    if (tempstr) {
+                        error.message += tempstr;
+                        error.str2 = tempstr;
+                    } else
+                        error.message += "?";
+                    break;
+                case RNV_ER_UFIN:
+                    error.message = "unfinished content of element ";
+                    tempstr = va_arg(ap, char*);
+                    if (tempstr) {
+                        error.message += tempstr;
+                        error.str1 = tempstr;
+                        if (error.str1.size())
+                            error.message += ":";
+                    } else
+                        error.message += "";
+                    tempstr = va_arg(ap, char*);
+                    if (tempstr) {
+                        error.message += tempstr;
+                        error.str2 = tempstr;
+                    } else
+                        error.message += "?";
+                    break;
+                case RNV_ER_TEXT:
+                    error.message = "invalid data or text not allowed";
+                    break;
+                case RNV_ER_NOTX:
+                    error.message = "text not allowed";
+                    break;
+                default:
+                    error.message = boost::str(boost::format("unknown rnv validation error code: 0x%x") % runerrno);
+                }
             }
         }
 
@@ -740,6 +881,8 @@ bool cXmlValidatorRNVRelaxNG::ParseShortRNG(cXmlDoc& schema, const char* URL) {
         transferErrors(shorted);
         return false;
     }
+    //shorted.getRaw()->URL = xmlStrdup(schema.getRaw()->URL);
+    shorted.setURL(schema.getURL());
 
     m_rng = shorted;
 

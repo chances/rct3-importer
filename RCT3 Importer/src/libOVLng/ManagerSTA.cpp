@@ -43,7 +43,7 @@ const char* ovlSTAManager::LOADER = "FGDK";
 const char* ovlSTAManager::NAME = "Stall";
 const char* ovlSTAManager::TAG = "sta";
 
-void cStallUnknowns::Fill(r3::StallA* sta) {
+void cStallUnknowns::Fill(r3old::StallA* sta) {
     sta->unk11 = unk1;
     sta->unk12 = unk2;
     sta->unk13 = unk3;
@@ -51,7 +51,7 @@ void cStallUnknowns::Fill(r3::StallA* sta) {
     sta->unk15 = unk5;
     sta->unk16 = unk6;
 }
-void cStallUnknowns::Fill(r3::StallB* sta) {
+void cStallUnknowns::Fill(r3old::StallB* sta) {
     sta->unk2 = unk1;
     sta->unk3 = unk2;
     sta->unk4 = unk3;
@@ -60,7 +60,7 @@ void cStallUnknowns::Fill(r3::StallB* sta) {
     sta->unk7 = unk6;
 }
 
-void cStall::Fill(r3::StallA* sta) {
+void cStall::Fill(r3old::StallA* sta) {
     sta->Name = NULL;
     sta->Description = NULL;
     sta->GSI = NULL;
@@ -68,7 +68,7 @@ void cStall::Fill(r3::StallA* sta) {
     attraction.Fill(sta);
     unknowns.Fill(sta);
 }
-void cStall::Fill(r3::StallB* sta) {
+void cStall::Fill(r3old::StallB* sta) {
     attraction.Fill(sta->att);
     unknowns.Fill(sta);
 }
@@ -92,7 +92,7 @@ void ovlSTAManager::AddStall(const cStall& stall) {
     // The following depends on the type of stall structure we want to write
     if (stall.attraction.type & r3::Constants::Addon::Soaked_Hi) {
         // Stall2
-        m_size += sizeof(StallB);
+        m_size += sizeof(r3old::StallB);
         if ((stall.attraction.type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
             m_size += sizeof(Attraction_W);
         } else {
@@ -100,7 +100,7 @@ void ovlSTAManager::AddStall(const cStall& stall) {
         }
     } else {
         // Stall
-        m_size += sizeof(StallA);
+        m_size += sizeof(r3old::StallA);
     }
     // Both share items
     m_size += stall.items.size() * sizeof(StallItem);
@@ -139,8 +139,8 @@ void ovlSTAManager::Make(cOvlInfo* info) {
         if (it->second.attraction.type & r3::Constants::Addon::Soaked_Hi) {
             // Stall2
             // Assign structs
-            StallB* c_stall = reinterpret_cast<StallB*>(c_data);
-            c_data += sizeof(StallB);
+            r3old::StallB* c_stall = reinterpret_cast<r3old::StallB*>(c_data);
+            c_data += sizeof(r3old::StallB);
 
             c_stall->att = reinterpret_cast<Attraction_S*>(c_data);
             if ((it->second.attraction.type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
@@ -152,8 +152,8 @@ void ovlSTAManager::Make(cOvlInfo* info) {
 
             if (it->second.items.size()) {
                 c_stall->itemcount = it->second.items.size();
-                c_stall->Items = reinterpret_cast<StallItem*>(c_data);
-                c_data += c_stall->itemcount * sizeof(StallItem);
+                c_stall->Items = reinterpret_cast<r3old::StallItem*>(c_data);
+                c_data += c_stall->itemcount * sizeof(r3old::StallItem);
                 GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_stall->Items));
             } else {
                 c_stall->itemcount = 0;
@@ -187,13 +187,13 @@ void ovlSTAManager::Make(cOvlInfo* info) {
         } else {
             // Stall
             // Assign structs
-            StallA* c_stall = reinterpret_cast<StallA*>(c_data);
-            c_data += sizeof(StallA);
+            r3old::StallA* c_stall = reinterpret_cast<r3old::StallA*>(c_data);
+            c_data += sizeof(r3old::StallA);
 
             if (it->second.items.size()) {
                 c_stall->itemcount = it->second.items.size();
-                c_stall->Items = reinterpret_cast<StallItem*>(c_data);
-                c_data += c_stall->itemcount * sizeof(StallItem);
+                c_stall->Items = reinterpret_cast<r3old::StallItem*>(c_data);
+                c_data += c_stall->itemcount * sizeof(r3old::StallItem);
                 GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_stall->Items));
             } else {
                 c_stall->itemcount = 0;

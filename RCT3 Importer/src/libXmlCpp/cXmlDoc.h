@@ -91,6 +91,11 @@ namespace xmlcpp {
         xmlNsPtr getNs(const std::string& prefix = "", xmlNodePtr node = NULL);
         inline xmlNsPtr defaultNs(xmlNodePtr node = NULL) { return getNs("", node); }
 
+        void setName(const char* name);
+        inline const char* getName() const { return ok()?m_doc->name:NULL; }
+        void setURL(const char* URL);
+        inline const char* getURL() const { return ok()?reinterpret_cast<const char*>(m_doc->URL):NULL; }
+
         /// Validate the document with a validator
         /**
          * Returns 0 on success, -1 on internal error and number of errors otherwise.

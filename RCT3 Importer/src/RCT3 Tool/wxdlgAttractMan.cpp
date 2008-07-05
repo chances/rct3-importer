@@ -39,7 +39,7 @@
 
 using namespace r3;
 
-extern std::vector <AttractionStr *> Attractions;
+extern std::vector <r3old::AttractionStr *> Attractions;
 extern bool save;
 int CurrentAttraction;
 
@@ -66,7 +66,7 @@ void dlgAttractMan::OnAdd(wxCommandEvent& WXUNUSED(event))
     dlgAttract *dialog = new dlgAttract(NULL);
     if (dialog->ShowModal() == wxID_OK)
     {
-        AttractionStr *s = new AttractionStr;
+        r3old::AttractionStr *s = new r3old::AttractionStr;
         s->Name = strdup(dialog->Name.c_str());
         s->AttractionType = dialog->AttractionType;
         s->NameString = strdup(dialog->NameString.c_str());
@@ -91,7 +91,7 @@ void dlgAttractMan::OnEdit(wxCommandEvent& WXUNUSED(event))
     dlgAttract *dialog = new dlgAttract(NULL);
     if (CurrentAttraction != -1)
     {
-        AttractionStr *s = Attractions[CurrentAttraction];
+        r3old::AttractionStr *s = Attractions[CurrentAttraction];
         dialog->Name = *(new wxString(s->Name));
         dialog->AttractionType = s->AttractionType;
         dialog->NameString = *(new wxString(s->NameString));
@@ -102,14 +102,14 @@ void dlgAttractMan::OnEdit(wxCommandEvent& WXUNUSED(event))
     }
     if (dialog->ShowModal() == wxID_OK)
     {
-        AttractionStr *s;
+        r3old::AttractionStr *s;
         if (CurrentAttraction != -1)
         {
             s = Attractions[CurrentAttraction];
         }
         else
         {
-            s = new AttractionStr;
+            s = new r3old::AttractionStr;
         }
         s->Name = strdup(dialog->Name.c_str());
         s->AttractionType = dialog->AttractionType;

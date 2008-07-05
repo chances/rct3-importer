@@ -32,6 +32,7 @@
 #include <sstream>
 
 #include "OVLDException.h"
+#include "pretty.h"
 
 using namespace std;
 
@@ -900,6 +901,79 @@ void cOVLDump::SetString(unsigned long id, const char* newstr) {
         }
         i++;
     }
+}
+
+/** @brief GetSymbolReference
+  *
+  * @todo: document this function
+  */
+string cOVLDump::GetSymbolReference(void* ptr) const {
+    if (has(m_symbolreferences, ptr)) {
+        return m_symbolreferences.find(ptr)->second;
+    } else {
+        return "- NA -";
+    }
+}
+
+/** @brief GetStringFromVarPtr
+  *
+  * @todo: document this function
+  */
+string cOVLDump::GetStringFromVarPtr(void* ptr) const {
+    long rel = RelocationFromVarPtr(ptr);
+    if (rel >= 0) {
+        if (has(m_relmap, rel)) {
+            return reinterpret_cast<char*>(m_targets.find(*reinterpret_cast<unsigned long*>(ptr))->second);
+        } else {
+            return "- NA -";
+        }
+    } else {
+        return "- ILLEGAL VARIABLE -";
+    }
+}
+
+/** @brief IdentifyVarPtr
+  *
+  * @todo: document this function
+  */
+string cOVLDump::IdentifyVarPtr(void* ptr) const {
+    if (has(m_symbolreferences, ptr)) {
+        return m_symbolreferences.find(ptr)->second;
+    } else {
+        long rel = RelocationFromVarPtr(ptr);
+        if (rel >= 0) {
+            if (has(m_relmap, rel)) {
+                return reinterpret_cast<char*>(m_targets.find(*reinterpret_cast<unsigned long*>(ptr))->second);
+            } else {
+                if (*reinterpret_cast<unsigned long*>(ptr))
+                    return "- MORON! -";
+                else
+                    return "- 0 -";
+            }
+        } else {
+            return "- ILLEGAL VARIABLE -";
+        }
+    }
+}
+
+
+#define RCL(v) reinterpret_cast<long>(v)
+
+/** @brief RelocationFromPointer
+  *
+  * @todo: document this function
+  */
+long cOVLDump::RelocationFromVarPtr(void* ptr) const {
+    for(int f = 0; f < 2; ++f) {
+        for(int b = 0; b < 9; ++b) {
+            foreach(const OvlFileBlock& block, m_fileblocks[f][b].blocks) {
+                if ((RCL(ptr) >= RCL(block.data)) && (RCL(ptr) < (RCL(block.data) + block.size))) {
+                    return block.reloffset + RCL(ptr) - RCL(block.data);
+                }
+            }
+        }
+    }
+    return -1;
 }
 
 

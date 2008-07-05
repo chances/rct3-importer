@@ -93,9 +93,11 @@
 		<Unit filename="..\..\include\morphmesh.h" />
 		<Unit filename="..\..\include\ovlstructs.h" />
 		<Unit filename="..\..\include\path.h" />
+		<Unit filename="..\..\include\pretty.h" />
 		<Unit filename="..\..\include\rct3basetypes.h" />
 		<Unit filename="..\..\include\rct3constants.h" />
 		<Unit filename="..\..\include\scenery.h" />
+		<Unit filename="..\..\include\sceneryold.h" />
 		<Unit filename="..\..\include\sceneryrevised.h" />
 		<Unit filename="..\..\include\sceneryvisual.h" />
 		<Unit filename="..\..\include\sharedride.h" />
@@ -235,6 +237,12 @@
 			<Option virtualFolder="Structure Managers\" />
 		</Unit>
 		<Unit filename="ManagerTEX.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerTRR.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerTRR.h">
 			<Option virtualFolder="Structure Managers\" />
 		</Unit>
 		<Unit filename="ManagerTXT.cpp">

@@ -36,10 +36,12 @@
 
 unsigned int checkRCT3Texture(const wxString& texture) {
     wxGXImage img;
+    if (!wxFileName::FileExists(texture))
+        throw RCT3TextureException(wxString::Format(_("File does not exist: %s"), texture.c_str()));
     try {
         img.FromFile(texture);
     } catch (Magick::Exception& e) {
-        throw RCT3TextureException(wxString::Format(_("File open error: %s"), e.what()));
+        throw RCT3TextureException(wxString(_("File open error: ")) + wxString::FromUTF8(e.what()));
     }
     if (READ_RCT3_TEXTURE() != RCT3_TEXTURE_ERROR_OUT)
         return std::max(img.GetWidth(), img.GetHeight());
@@ -51,7 +53,7 @@ unsigned int checkRCT3Texture(const wxString& texture) {
         if ((1 << local_log2(img.GetWidth())) != img.GetWidth())
             throw RCT3TextureException(_("The width/height of the texture is not a power of 2."));
     } catch (Magick::Exception& e) {
-        throw RCT3TextureException(wxString::Format(_("Image Error during check: %s"), e.what()));
+        throw RCT3TextureException(wxString(_("Image Error during check: %s")) + wxString::FromUTF8(e.what()));
     }
     return img.GetWidth();
 }

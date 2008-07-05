@@ -28,7 +28,8 @@
 
 #include "cXmlException.h"
 
-#define DUMP
+//#define DUMP
+//#define DUMPDEBUG
 //#define DUMPINIT
 
 using namespace std;
@@ -121,10 +122,18 @@ fflush(stderr);
             if (id != -1) {
                 cXmlInputCallbackContext* c = new cXmlInputCallbackContext(*it, id);
                 g_contexts.insert(c);
+#ifdef DUMPDEBUG
+fprintf(stderr, "openfunc_in %s SUCCESS\n", filename);
+fflush(stderr);
+#endif
                 return c;
             } // else give other handlers a chance
         }
     }
+#ifdef DUMPDEBUG
+fprintf(stderr, "openfunc_in %s FAIL\n", filename);
+fflush(stderr);
+#endif
     return NULL;
 }
 

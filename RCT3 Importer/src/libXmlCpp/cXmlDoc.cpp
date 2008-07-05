@@ -262,6 +262,35 @@ xmlNsPtr cXmlDoc::getNs(const std::string& prefix, xmlNodePtr node) {
     return xmlSearchNs(m_doc.get(), node?node:xmlDocGetRootElement(m_doc.get()), (prefix=="")?NULL:reinterpret_cast<const xmlChar*>(prefix.c_str()));
 }
 
+#define DICT_FREE(str, dict)						\
+	if ((str) && ((!dict) || 				\
+	    (xmlDictOwns(dict, (const xmlChar *)(str)) == 0)))	\
+	    xmlFree((char *)(str));
+
+/** @brief setURL
+  *
+  * @todo: document this function
+  */
+void cXmlDoc::setURL(const char* URL) {
+    if (!m_doc)
+        throw eXmlInvalid("Tried to set URL for bad document");
+
+    DICT_FREE(m_doc->URL, m_doc->dict)
+    m_doc->URL = xmlStrdup(reinterpret_cast<const xmlChar*>(URL));
+}
+
+/** @brief setName
+  *
+  * @todo: document this function
+  */
+void cXmlDoc::setName(const char* name) {
+    if (!m_doc)
+        throw eXmlInvalid("Tried to set name for bad document");
+
+    DICT_FREE(m_doc->name, m_doc->dict)
+    m_doc->name = reinterpret_cast<char*>(xmlStrdup(reinterpret_cast<const xmlChar*>(name)));
+}
+
 cXmlValidatorResult cXmlDoc::validate(cXmlValidator& val, cXmlValidatorResult::LEVEL deflevel) {
     return val.validate(m_doc, deflevel, cXmlValidator::OPT_NONE);
 }

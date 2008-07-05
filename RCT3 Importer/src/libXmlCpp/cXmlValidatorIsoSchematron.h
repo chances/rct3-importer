@@ -57,6 +57,10 @@ public:
         Init();
         read(doc, options);
     }
+    cXmlValidatorIsoSchematron(const char* URL, const std::map<std::string, std::string>& options = (std::map<std::string, std::string>()) ):cXmlValidator() {
+        Init();
+        read(URL, options);
+    }
     virtual ~cXmlValidatorIsoSchematron();
 
     bool read(cXmlDoc& doc, const std::map<std::string, std::string>& options = (std::map<std::string, std::string>()) );
@@ -64,6 +68,7 @@ public:
     bool read(const char* URL, const std::map<std::string, std::string>& options = (std::map<std::string, std::string>()) );
 
     inline cXmlDoc& schema() { return m_schema; };
+    inline cXsltStylesheet& transform() { return m_transform; };
 
     virtual cXmlValidatorResult validate(boost::shared_ptr<xmlDoc>& doc, cXmlValidatorResult::LEVEL retlevel = cXmlValidatorResult::VR_ERROR, int options = OPT_NONE);
 

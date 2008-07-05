@@ -39,7 +39,7 @@
 
 using namespace r3;
 
-extern std::vector <StallStr *> Stalls;
+extern std::vector <r3old::StallStr *> Stalls;
 extern bool save;
 int CurrentStall;
 
@@ -66,7 +66,7 @@ void dlgStallMan::OnAdd(wxCommandEvent& WXUNUSED(event))
     dlgStall *dialog = new dlgStall(NULL);
     if (dialog->ShowModal() == wxID_OK)
     {
-        StallStr *s = new StallStr;
+        r3old::StallStr *s = new r3old::StallStr;
         s->Name = strdup(dialog->Name.c_str());
         s->StallType = dialog->StallType;
         s->NameString = strdup(dialog->NameString.c_str());
@@ -100,7 +100,7 @@ void dlgStallMan::OnEdit(wxCommandEvent& WXUNUSED(event))
     dlgStall *dialog = new dlgStall(NULL);
     if (CurrentStall != -1)
     {
-        StallStr *s = Stalls[CurrentStall];
+        r3old::StallStr *s = Stalls[CurrentStall];
         dialog->Name = *(new wxString(s->Name));
         dialog->StallType = s->StallType;
         dialog->NameString = *(new wxString(s->NameString));
@@ -117,14 +117,14 @@ void dlgStallMan::OnEdit(wxCommandEvent& WXUNUSED(event))
     }
     if (dialog->ShowModal() == wxID_OK)
     {
-        StallStr *s;
+        r3old::StallStr *s;
         if (CurrentStall != -1)
         {
             s = Stalls[CurrentStall];
         }
         else
         {
-            s = new StallStr;
+            s = new r3old::StallStr;
         }
         s->Name = strdup(dialog->Name.c_str());
         s->StallType = dialog->StallType;

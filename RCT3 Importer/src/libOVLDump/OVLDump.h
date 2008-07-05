@@ -138,6 +138,12 @@ public:
     std::map<void*, std::string>& GetSymbolReferences() {
         return m_symbolreferences;
     }
+
+    std::string GetSymbolReference(void* ptr) const;
+    std::string GetStringFromVarPtr(void* ptr) const;
+    std::string IdentifyVarPtr(void* ptr) const;
+
+    long RelocationFromVarPtr(void* ptr) const;
 };
 
 #endif

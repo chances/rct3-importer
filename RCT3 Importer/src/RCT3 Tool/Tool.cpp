@@ -77,7 +77,7 @@
 
 #include "wxapp.h"
 
-#include "version.h"
+#include "version_wrap.h"
 
 using namespace r3;
 
@@ -125,18 +125,18 @@ struct MeshStruct {
 */
 std::vector <Icon *> Icons;
 std::vector <IconTexture *> IconTextures;
-std::vector <Scenery *> SceneryItems;
+std::vector <r3old::Scenery *> SceneryItems;
 //std::vector <EffectPoint *> EffectPoints;
 //std::vector <char *> References;
 std::vector<cText> cTextStrings;
-std::vector <StallStr *> Stalls;
-std::vector <AttractionStr *> Attractions;
+std::vector <r3old::StallStr *> Stalls;
+std::vector <r3old::AttractionStr *> Attractions;
 
 //std::vector < EffectPoint * >::iterator EffectPointsIterator;
 std::vector<cText>::iterator TextStringsIterator;
 std::vector < Icon * >::iterator IconsIterator;
 std::vector < IconTexture * >::iterator IconTexturesIterator;
-std::vector < Scenery * >::iterator SceneryItemsIterator;
+std::vector < r3old::Scenery * >::iterator SceneryItemsIterator;
 const char *stdstyle = "Style\\Themed\\";
 char themefile[MAX_PATH]="";
 
@@ -869,11 +869,11 @@ BOOL CALLBACK SIDEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                                 delete SceneryItems[CurrentScenery]->wallname;
                             }
                         } else {
-                            Scenery *t = new Scenery;
+                            r3old::Scenery *t = new r3old::Scenery;
                             SceneryItems.push_back(t);
                             CurrentScenery = SceneryItems.size() - 1;
                         }
-                        Scenery *s = SceneryItems[CurrentScenery];
+                        r3old::Scenery *s = SceneryItems[CurrentScenery];
 
                         s->location = temp;
 
@@ -1066,7 +1066,7 @@ BOOL CALLBACK SIDEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                     ofn.Flags = OFN_EXPLORER | OFN_HIDEREADONLY | OFN_NOCHANGEDIR | OFN_OVERWRITEPROMPT;
                     if (GetSaveFileName(&ofn)) {
                         SetDlgItemText(hwnd, IDC_SID_SHOW_PATH, sfile);
-                        SIDData *s = new SIDData;
+                        r3old::SIDData *s = new r3old::SIDData;
                         temp = new char[posxlen + 1];
                         GetDlgItemText(hwnd, IDC_XPOS, temp, posxlen + 1);
                         s->position.x = (float) atof(temp);
@@ -1176,7 +1176,7 @@ BOOL CALLBACK SIDEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                         s->sizeflag = sizeflag;
                         s->extra = extra;
                         FILE *f = fopen(sfile, "wb");
-                        fwrite(s, sizeof(SIDData), 1, f);
+                        fwrite(s, sizeof(r3old::SIDData), 1, f);
                         fclose(f);
                     }
                 }
@@ -1196,10 +1196,10 @@ BOOL CALLBACK SIDEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY | OFN_DONTADDTORECENT |
                 OFN_NOCHANGEDIR;
             if (GetOpenFileName(&ofn)) {
-                SIDData *s = new SIDData;
+                r3old::SIDData *s = new r3old::SIDData;
                 FILE *f = fopen(sfile, "rb");
                 SetDlgItemText(hwnd, IDC_SID_SHOW_PATH, sfile);
-                fread(s, sizeof(SIDData), 1, f);
+                fread(s, sizeof(r3old::SIDData), 1, f);
                 fclose(f);
                 SetDlgItemInt(hwnd, IDC_XSQUARES, s->sizex, FALSE);
                 SetDlgItemInt(hwnd, IDC_YSQUARES, s->sizey, FALSE);
@@ -1742,8 +1742,7 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
         save = false;
         SetMenu(hwnd, LoadMenu(hInst, MAKEINTRESOURCE(IDR_MAIN)));
         {
-            wxString title = wxString::Format(wxT("RCT3 Importer v%ld.%ld%s (Build %ld)"),
-                AutoVersion::MAJOR, AutoVersion::MINOR, AutoVersion::STATUS_SHORT, AutoVersion::BUILD);
+            wxString title = GetAppVersion();
             SetWindowText(hwnd, title.c_str());
         }
         SendDlgItemMessage(hwnd, IDC_THEME, LB_ADDSTRING, 0, (LPARAM) "Generic");
@@ -1949,7 +1948,7 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 len = SceneryItems.size();
                 fwrite(&len, 4, 1, f);
                 for (unsigned long i = 0; i < SceneryItems.size(); i++) {
-                    Scenery *s = SceneryItems[i];
+                    r3old::Scenery *s = SceneryItems[i];
                     len = strlen(s->ovl);
                     len++;
                     fwrite(&len, 4, 1, f);
@@ -2084,7 +2083,7 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 fwrite(&len, 4, 1, f);
                 for (unsigned int i = 0;i < Stalls.size();i++)
                 {
-                    StallStr *s = Stalls[i];
+                    r3old::StallStr *s = Stalls[i];
                     len = strlen(s->Name);
                     len++;
                     fwrite(&len, 4, 1, f);
@@ -2124,7 +2123,7 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 fwrite(&len, 4, 1, f);
                 for (unsigned int i = 0;i < Attractions.size();i++)
                 {
-                    AttractionStr *s = Attractions[i];
+                    r3old::AttractionStr *s = Attractions[i];
                     len = strlen(s->Name);
                     len++;
                     fwrite(&len, 4, 1, f);
@@ -2279,7 +2278,7 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 }
                 fread(&len, 4, 1, f);
                 for (i = 0; i < len; i++) {
-                    Scenery *t = new Scenery;
+                    r3old::Scenery *t = new r3old::Scenery;
                     fread(&len2, 4, 1, f);
                     t->ovl = new char[len2];
                     fread(t->ovl, len2, 1, f);
@@ -2411,7 +2410,7 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                     fread(&stallcount, 4, 1, f);
                     for (unsigned int i = 0;i < stallcount;i++)
                     {
-                        StallStr *s = new StallStr;
+                        r3old::StallStr *s = new r3old::StallStr;
                         fread(&len, 4, 1, f);
                         s->Name = new char[len];
                         fread(s->Name, len, 1, f);
@@ -2430,7 +2429,7 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                         fread(&s->ItemCount,4,1,f);
                         if (s->ItemCount)
                         {
-                            s->Items = new StallItem[s->ItemCount];
+                            s->Items = new r3old::StallItem[s->ItemCount];
                             for (unsigned int j = 0;j < s->ItemCount;j++)
                             {
                                 fread(&len, 4, 1, f);
@@ -2457,7 +2456,7 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                     fread(&attractioncount, 4, 1, f);
                     for (unsigned int i = 0;i < attractioncount;i++)
                     {
-                        AttractionStr *s = new AttractionStr;
+                        r3old::AttractionStr *s = new r3old::AttractionStr;
                         fread(&len, 4, 1, f);
                         s->Name = new char[len];
                         fread(s->Name, len, 1, f);
@@ -2557,7 +2556,7 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 }
                 fread(&len, 4, 1, f);
                 for (i = 0; i < len; i++) {
-                    Scenery *t = new Scenery;
+                    r3old::Scenery *t = new r3old::Scenery;
                     fread(&len2, 4, 1, f);
                     t->ovl = new char[len2];
                     fread(t->ovl, len2, 1, f);
@@ -2689,7 +2688,7 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                     fread(&stallcount, 4, 1, f);
                     for (unsigned int i = 0;i < stallcount;i++)
                     {
-                        StallStr *s = new StallStr;
+                        r3old::StallStr *s = new r3old::StallStr;
                         fread(&len, 4, 1, f);
                         s->Name = new char[len];
                         fread(s->Name, len, 1, f);
@@ -2708,7 +2707,7 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                         fread(&s->ItemCount,4,1,f);
                         if (s->ItemCount)
                         {
-                            s->Items = new StallItem[s->ItemCount];
+                            s->Items = new r3old::StallItem[s->ItemCount];
                             for (unsigned int j = 0;j < s->ItemCount;j++)
                             {
                                 fread(&len, 4, 1, f);
@@ -2735,7 +2734,7 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                     fread(&attractioncount, 4, 1, f);
                     for (unsigned int i = 0;i < attractioncount;i++)
                     {
-                        AttractionStr *s = new AttractionStr;
+                        r3old::AttractionStr *s = new r3old::AttractionStr;
                         fread(&len, 4, 1, f);
                         s->Name = new char[len];
                         fread(s->Name, len, 1, f);
@@ -2846,11 +2845,12 @@ bool ToolApp::OnInit()
         ::wxMessageBox(wxString::Format(_("LibOVL version mismatch.\nThis importer version was compiled against libovl v%d.\nFound was libovl v%d."), LIBOVL_VERSION, ovl_version), _("Fatal Error"), wxOK);
         return false;
     }
-
+/*
     if (sizeof(Magick::Quantum) != 1) {
         ::wxMessageBox(_("Compiled against GraphicsMagick with wrong quantum size. 8 bit quantum required"), _("Error"), wxOK);
         return false;
     }
+*/
 
 	bool wxsOK = true;
 	::wxInitAllImageHandlers();
@@ -2865,10 +2865,20 @@ bool ToolApp::OnInit()
     delete[] dir;
     wxConfig::Set(new wxFileConfig(wxT("RCT3 Importer"), wxT("Freeware"), g_appdir+wxT("RCT3 Importer.conf"), wxT(""), wxCONFIG_USE_LOCAL_FILE));
 
+    try {
+        wxGXImage::CheckGraphicsMagick(app.GetPathWithSep());
+    } catch (exception& e) {
+        wxString err = _("Error initializing the graphics library:\n");
+        err += wxString(e.what(), wxConvLocal);
+        err += wxString::Format(_("\nAll .mgk files expected in '%s'."), g_appdir.c_str());
+        wxMessageBox(err, _("Error"), wxOK);
+        return -1;
+    }
+/*
     // *&^$% GraphicsMagick
     wxString appenv = wxT("MAGICK_CONFIGURE_PATH=") + g_appdir;
     putenv(appenv.c_str());
-
+*/
 //    g_config = new RCT3Config(g_appdir);
 //    g_config->Load();
 /*
@@ -3135,7 +3145,7 @@ bool InstallTheme(HWND hwnd) {
     }
     for (unsigned long i = 0; i < SceneryItems.size(); i++) {
 //        char fname[_MAX_FNAME];
-        Scenery *sc = SceneryItems[i];
+        r3old::Scenery *sc = SceneryItems[i];
         char *ovlfile = sc->ovl;
         _splitpath(sc->ovl, NULL, NULL, temp, NULL);
         strchr(temp, '.')[0] = 0;

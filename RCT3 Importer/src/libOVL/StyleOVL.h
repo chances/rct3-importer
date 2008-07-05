@@ -14,14 +14,14 @@
 #include "CommonOVL.h"
 #include "guiicon.h"
 #include "icontexture.h"
-#include "scenery.h"
+#include "sceneryrevised.h"
 #include "DisplayText.h"
 #include "terraintype.h"
 #include "stall.h"
 #include "path.h"
 
 #ifdef BUILDING_DLL
-extern std::vector <Scenery *> SceneryItems;
+extern std::vector <r3old::Scenery *> SceneryItems;
 #endif
 
 extern unsigned long loadercount;
@@ -44,7 +44,7 @@ char *AddSymbol(const char *SymbolName, const char *Type);
 char *AddString(const char *String);
 char *FindString(const char *name, const char *type);
 
-LIBOVL_API void AddStyleOVLInfo_SceneryItem(Scenery *scn);
+LIBOVL_API void AddStyleOVLInfo_SceneryItem(r3old::Scenery *scn);
 LIBOVL_API void DeleteStyleOVLInfo_SceneryItems();
 LIBOVL_API void AddStyleOVLInfo_IconTexture(IconTexture *ict);
 LIBOVL_API void DeleteStyleOVLInfo_IconTextures();
@@ -52,9 +52,9 @@ LIBOVL_API void AddStyleOVLInfo_Icon(Icon *ico);
 LIBOVL_API void DeleteStyleOVLInfo_Icons();
 LIBOVL_API void AddStyleOVLInfo_TextString(Text *txt);
 LIBOVL_API void DeleteStyleOVLInfo_TextStrings();
-LIBOVL_API void AddStyleOVLInfo_Stalls(r3::StallStr *str);
+LIBOVL_API void AddStyleOVLInfo_Stalls(r3old::StallStr *str);
 LIBOVL_API void DeleteStyleOVLInfo_Stalls();
-LIBOVL_API void AddStyleOVLInfo_Attractions(r3::AttractionStr *str);
+LIBOVL_API void AddStyleOVLInfo_Attractions(r3old::AttractionStr *str);
 LIBOVL_API void DeleteStyleOVLInfo_Attractions();
 
 LIBOVL_API unsigned long CreateStyleOvl(char *filename, unsigned long ThemeCode);

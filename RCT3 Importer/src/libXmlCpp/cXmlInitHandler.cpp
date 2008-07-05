@@ -38,7 +38,7 @@
 
 //#define DUMP
 //#define DUMPINIT
-#define DUMPBASEINIT
+//#define DUMPBASEINIT
 
 using namespace std;
 
@@ -56,6 +56,7 @@ cXmlInitHandler::cXmlInitHandler():m_singleton(false) {
         xmlSubstituteEntitiesDefault(1); // For xslt
         xmlLoadExtDtdDefaultValue = 1;
 #ifdef XMLCPP_USE_XSLT
+        xsltInit();
         xsltRegisterAllExtras();
 #endif
 #ifdef XMLCPP_USE_EXSLT

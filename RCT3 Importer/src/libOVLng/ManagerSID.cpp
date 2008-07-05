@@ -41,11 +41,13 @@ const char* ovlSIDManager::NAME = "SceneryItem";
 const char* ovlSIDManager::TAG = "sid";
 
 void cSidSquareUnknowns::Fill(r3::SceneryItemData* i) const {
-    i->flags2 = 0;
+    i->flags2 = flags;
+    /*
     for (unsigned long x = 0; x<32; ++x) {
         if (flag[x])
             i->flags2 += (1 << x);
     }
+    */
     i->unk2 = min_height;
     i->unk3 = max_height;
 
@@ -57,7 +59,7 @@ void cSidSquareUnknowns::Fill(r3::SceneryItemData* i) const {
             i->unk4[height / 32] = (1 << (height % 32)) - 1;
     } else
         i->unk4 = NULL;
-    i->unk5 = unk9;
+    i->supports = supports;
 }
 
 /** @brief GetHeightSize
@@ -70,74 +72,89 @@ int cSidSquareUnknowns::GetHeightSize() const {
 }
 
 
-void cSidImporterUnknowns::Fill(r3::SceneryItem* i) {
-    i->flags1 = 0;
+void cSidImporterUnknowns::Fill(r3::SceneryItem_V* i) {
+    i->flags = flags;
+    /*
     for (unsigned long x = 0; x<32; ++x) {
         if (flag[x])
-            i->flags1 += (1 << x);
+            i->flags += (1 << x);
     }
+    */
     i->unk4 = unk1;
     i->unk17 = unk2;
 }
 
-void cSidUnknowns::Fill(r3::SceneryItem* i) {
-    unk27 = unk27;
-    unk28 = unk28;
-    unk34 = unk34;
-    unk35 = unk35;
-    unk36 = unk36;
-    unk37 = unk37;
-    unk38 = unk38;
-    unk39 = unk39;
-    unk40 = unk40;
-    unk41 = unk41;
-    unk44 = unk44;
-    unk45 = unk45;
-    unk46 = unk46;
-    unk47 = unk47;
-    unk48 = unk48;
+void cSidUnknowns::Fill(r3::SceneryItem_V* i) {
+    i->unk27 = unk27;
+    i->unk28 = unk28;
+    i->unk34 = unk34;
+    i->unk35 = unk35;
+    i->unk36 = unk36;
+    i->unk37 = unk37;
+    i->unk38 = unk38;
+    i->unk39 = unk39;
+    i->unk40 = unk40;
+    i->unk41 = unk41;
+    i->unk44 = unk44;
+// TODO (belgabor#1#): Implement
+    i->chunked_anr_unk1 = 0;
+    i->chunked_anr_animation_chunks = 0;
+    i->chunked_anr_unk2 = 0;
+    i->chunked_anr_unk3 = 0;
+/*
+    i->unk45 = unk45;
+    i->unk46 = unk46;
+    i->unk47 = unk47;
+    i->unk48 = unk48;
+*/
 }
 
-void cSidDefaultColours::Fill(r3::SceneryItem* i) {
-    i->defaultcol1 = defaultcol[0];
-    i->defaultcol2 = defaultcol[1];
-    i->defaultcol3 = defaultcol[2];
+void cSidDefaultColours::Fill(r3::SceneryItem_V* i) {
+    i->default_col1 = defaultcol[0];
+    i->default_col2 = defaultcol[1];
+    i->default_col3 = defaultcol[2];
 }
 
-void cSidPosition::Fill(r3::SceneryItem* i) {
-    i->positioningtype = positioningtype;
-    i->xsquares = xsquares;
-    i->ysquares = ysquares;
-    i->xpos = xpos;
-    i->ypos = ypos;
-    i->zpos = zpos;
-    i->xsize = xsize;
-    i->ysize = ysize;
-    i->zsize = zsize;
+void cSidPosition::Fill(r3::SceneryItem_V* i) {
+    i->position_type = positioningtype;
+    i->squares_x = xsquares;
+    i->squares_z = zsquares;
+    i->position_x = xpos;
+    i->position_y = ypos;
+    i->position_z = zpos;
+    i->size_x = xsize;
+    i->size_y = ysize;
+    i->size_z = zsize;
 }
 
-void cSidUI::Fill(r3::SceneryItem* i) {
+void cSidUI::Fill(r3::SceneryItem_V* i) {
     i->type = type;
     i->cost = cost;
     i->removal_cost = removal_cost;
 }
 
-void cSidExtra::Fill(r3::SceneryItem* i) {
-    i->extraversion = version;
-}
-void cSidExtra::FillExtra1(r3::SceneryItemExtra1* e) {
-    e->SoundsUnk = SoundsUnk;
-    e->unk2 = unk2;
-    e->AddonPack = AddonPack;
-    e->GenericAddon = GenericAddon;
-}
-void cSidExtra::FillExtra2(r3::SceneryItemExtra2* e) {
-    FillExtra1(reinterpret_cast<r3::SceneryItemExtra1*>(e));
-    e->unkf = unkf;
-    e->billboardaspect = billboardaspect;
+void cSidExtra::Fill(r3::SceneryItem_V* i) {
+    i->structure_version = version;
+    if (version == 1)
+        Fill(reinterpret_cast<r3::SceneryItem_S*>(i));
+    else if (version == 2)
+        Fill(reinterpret_cast<r3::SceneryItem_W*>(i));
 }
 
-void cSid::Fill(r3::SceneryItem* i) {
+void cSidExtra::Fill(r3::SceneryItem_S* e) {
+    e->s.sounds_extra = SoundsUnk;
+    e->s.unk2 = unk2;
+    e->s.addon_pack = AddonPack;
+    e->s.generic_addon = GenericAddon;
+}
+
+void cSidExtra::Fill(r3::SceneryItem_W* e) {
+    Fill(reinterpret_cast<r3::SceneryItem_S*>(e));
+    e->w.unkf = unkf;
+    e->w.billboard_aspect = billboardaspect;
+}
+
+void cSid::Fill(r3::SceneryItem_V* i) {
     ui.Fill(i);
     position.Fill(i);
     colours.Fill(i);
@@ -146,8 +163,8 @@ void cSid::Fill(r3::SceneryItem* i) {
     unknowns.Fill(i);
     extra.Fill(i);
 
-    for (unsigned long x = 0; x < position.xsquares * position.ysquares; ++x) {
-        if (squareunknowns.size() < position.xsquares * position.ysquares) {
+    for (unsigned long x = 0; x < position.xsquares * position.zsquares; ++x) {
+        if (squareunknowns.size() < position.xsquares * position.zsquares) {
             if (squareunknowns.size() == 0) {
                 cSidSquareUnknowns uk;
                 uk.Fill(&i->data[x]);
@@ -160,12 +177,12 @@ void cSid::Fill(r3::SceneryItem* i) {
     }
 
     // Unsupported stuff
-    i->unk13count = 0;
-    i->unk14 = NULL;
-    i->SoundsCount = 0;
-    i->Sounds = NULL;
-    i->carcount = 0;
-    i->cars = NULL;
+    i->track_struct_count = 0;
+    i->track_structs = NULL;
+    i->sound_count = 0;
+    i->sounds = NULL;
+    i->individual_animation_anr_name_count = 0;
+    i->individual_animation_anr_names = NULL;
 }
 
 void ovlSIDManager::AddSID(const cSid& sid) {
@@ -182,33 +199,36 @@ void ovlSIDManager::AddSID(const cSid& sid) {
         throw EOvl("ovlSIDManager::AddSID called without menu name");
     if (sid.ui.icon == "")
         throw EOvl("ovlSIDManager::AddSID called without menu icon");
-    if ((sid.squareunknowns.size()>1) && (sid.squareunknowns.size() != (sid.position.xsquares * sid.position.ysquares)))
+    if ((sid.squareunknowns.size()>1) && (sid.squareunknowns.size() != (sid.position.xsquares * sid.position.zsquares)))
         throw EOvl("ovlSIDManager::AddSID called with illegal numer of square unknowns");
+    if (sid.extra.version > 2)
+        throw EOvl("ovlSIDManager::AddSID called without illegal structure version");
 
     m_sids[sid.name] = sid;
 
     // Sizes
     // Main struct
-    m_size += sizeof(SceneryItem);
     if (sid.extra.version == 1)
-        m_size += sizeof(SceneryItemExtra1);
+        m_size += sizeof(SceneryItem_S);
     else if (sid.extra.version == 2)
-        m_size += sizeof(SceneryItemExtra2);
+        m_size += sizeof(SceneryItem_W);
+    else
+        m_size += sizeof(SceneryItem_V);
     // SVD pointers
     m_size += sid.svds.size() * 4;
     // Data
-    m_commonsize += sid.position.xsquares * sid.position.ysquares * sizeof(SceneryItemData);
+    m_commonsize += sid.position.xsquares * sid.position.zsquares * sizeof(SceneryItemData);
     // Unknown 8
     if (sid.squareunknowns.size()) {
         if (sid.squareunknowns.size()>1) {
-            for (unsigned long x = 0; x < sid.position.xsquares * sid.position.ysquares; ++x) {
+            for (unsigned long x = 0; x < sid.position.xsquares * sid.position.zsquares; ++x) {
                 if (sid.squareunknowns[x].GetHeight()) {
                     m_commonsize += sid.squareunknowns[x].GetHeightSize();
                 }
             }
         } else {
             if (sid.squareunknowns[0].GetHeight()) {
-                m_commonsize += sid.position.xsquares * sid.position.ysquares * sid.squareunknowns[0].GetHeightSize();
+                m_commonsize += sid.position.xsquares * sid.position.zsquares * sid.squareunknowns[0].GetHeightSize();
             }
         }
     }
@@ -254,33 +274,30 @@ void ovlSIDManager::Make(cOvlInfo* info) {
 
     for (map<string, cSid>::iterator it = m_sids.begin(); it != m_sids.end(); ++it) {
         // Assign structs
-        SceneryItem* c_sid = reinterpret_cast<SceneryItem*>(c_data);
-        c_data += sizeof(SceneryItem);
+        SceneryItem_V* c_sid = reinterpret_cast<SceneryItem_V*>(c_data);
 
         // Assign extra if necessary
         if (it->second.extra.version == 1) {
-            SceneryItemExtra1* c_ex = reinterpret_cast<SceneryItemExtra1*>(c_data);
-            c_data += sizeof(SceneryItemExtra1);
-            it->second.extra.FillExtra1(c_ex);
+            c_data += sizeof(SceneryItem_S);
         } else if (it->second.extra.version == 2) {
-            SceneryItemExtra2* c_ex = reinterpret_cast<SceneryItemExtra2*>(c_data);
-            c_data += sizeof(SceneryItemExtra2);
-            it->second.extra.FillExtra2(c_ex);
+            c_data += sizeof(SceneryItem_W);
+        } else {
+            c_data += sizeof(SceneryItem_V);
         }
 
         // Assign svd pointers
-        c_sid->svd = reinterpret_cast<SceneryItemVisual_V**>(c_data);
+        c_sid->svds_ref = reinterpret_cast<SceneryItemVisual_V**>(c_data);
         c_data += it->second.svds.size() * 4;
-        memset(c_sid->svd, 0, it->second.svds.size() * 4); // Set 0, symbolref targets
-        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->svd));
+        memset(c_sid->svds_ref, 0, it->second.svds.size() * 4); // Set 0, symbolref targets
+        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->svds_ref));
 
         // Assign common
         c_sid->data = reinterpret_cast<SceneryItemData*>(c_commondata);
-        c_commondata += it->second.position.xsquares * it->second.position.ysquares * sizeof(SceneryItemData);
+        c_commondata += it->second.position.xsquares * it->second.position.zsquares * sizeof(SceneryItemData);
         GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->data));
         if (it->second.squareunknowns.size()) {
-            for (unsigned long x = 0; x < it->second.position.xsquares * it->second.position.ysquares; ++x) {
-                if (it->second.squareunknowns.size() >= (it->second.position.xsquares * it->second.position.ysquares)) {
+            for (unsigned long x = 0; x < it->second.position.xsquares * it->second.position.zsquares; ++x) {
+                if (it->second.squareunknowns.size() >= (it->second.position.xsquares * it->second.position.zsquares)) {
                     if (it->second.squareunknowns[x].GetHeight()) {
                         c_sid->data[x].unk4 = reinterpret_cast<uint32_t*>(c_commondata);
                         c_commondata += it->second.squareunknowns[x].GetHeightSize();
@@ -299,18 +316,18 @@ void ovlSIDManager::Make(cOvlInfo* info) {
             c_sid->params = reinterpret_cast<SceneryParams*>(c_commondata);
             c_commondata += it->second.parameters.size() * sizeof(SceneryParams);
             GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->params));
-            c_sid->count = it->second.parameters.size();
+            c_sid->param_count = it->second.parameters.size();
         } else {
             c_sid->params = NULL;
-            c_sid->count = 0;
+            c_sid->param_count = 0;
         }
 
         it->second.Fill(c_sid);
         // 'Simple' strings
         c_sid->supports = GetStringTable()->FindString(it->second.position.supports.c_str());
         GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->supports));
-        c_sid->OvlName = GetStringTable()->FindString(it->second.ovlpath.c_str());
-        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->OvlName));
+        c_sid->ovl_path = GetStringTable()->FindString(it->second.ovlpath.c_str());
+        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->ovl_path));
         for (unsigned long c = 0; c < it->second.parameters.size(); ++c) {
             c_sid->params[c].type = GetStringTable()->FindString(it->second.parameters[c].name.c_str());
             GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->params[c].type));
@@ -323,19 +340,19 @@ void ovlSIDManager::Make(cOvlInfo* info) {
         GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_sid), false, c_symbol);
 
         GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.ui.name.c_str(), ovlTXTManager::TAG),
-                             reinterpret_cast<unsigned long*>(&c_sid->Name));
+                             reinterpret_cast<unsigned long*>(&c_sid->name_ref));
         GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.ui.icon.c_str(), ovlGSIManager::TAG),
-                             reinterpret_cast<unsigned long*>(&c_sid->icon));
+                             reinterpret_cast<unsigned long*>(&c_sid->icon_ref));
         if ((it->second.ui.group != "") && (it->second.ui.groupicon != "")) {
             GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.ui.group.c_str(), ovlTXTManager::TAG),
-                                 reinterpret_cast<unsigned long*>(&c_sid->groupname));
+                                 reinterpret_cast<unsigned long*>(&c_sid->group_name_ref));
             GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.ui.groupicon.c_str(), ovlGSIManager::TAG),
-                                 reinterpret_cast<unsigned long*>(&c_sid->groupicon));
+                                 reinterpret_cast<unsigned long*>(&c_sid->group_icon_ref));
         }
-        c_sid->svdcount = it->second.svds.size();
+        c_sid->svd_count = it->second.svds.size();
         for (unsigned long c = 0; c < it->second.svds.size(); ++c) {
             GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.svds[c].c_str(), ovlSVDManager::TAG),
-                                 reinterpret_cast<unsigned long*>(&c_sid->svd[c]));
+                                 reinterpret_cast<unsigned long*>(&c_sid->svds_ref[c]));
         }
 
 

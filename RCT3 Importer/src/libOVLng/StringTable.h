@@ -35,6 +35,14 @@
 
 #include "OVLClasses.h"
 
+#define STRINGLIST_ASSIGN(var, name, alwaysassign, st, rm) \
+    if (alwaysassign || (name != "")) { \
+        var = st->FindString(name); \
+        rm->AddRelocation(reinterpret_cast<unsigned long*>(&var)); \
+    } else { \
+        var = NULL; \
+    }
+
 class ovlStringTable {
 private:
     std::list<std::string> m_strings;

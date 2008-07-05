@@ -63,8 +63,8 @@ public:
         unk5 = 8;
         unk6 = 9;
     }
-    void Fill(r3::StallA* sta);
-    void Fill(r3::StallB* sta);
+    void Fill(r3old::StallA* sta);
+    void Fill(r3old::StallB* sta);
 };
 
 class cStall {
@@ -76,8 +76,8 @@ public:
     std::string sid;
 
     cStall() {};
-    void Fill(r3::StallA* sta);
-    void Fill(r3::StallB* sta);
+    void Fill(r3old::StallA* sta);
+    void Fill(r3old::StallB* sta);
 };
 
 class ovlSTAManager: public ovlOVLManager {

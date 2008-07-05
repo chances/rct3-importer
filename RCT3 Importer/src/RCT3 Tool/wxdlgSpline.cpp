@@ -1,7 +1,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// OVL dumping library
-// Copyright (C) 2007 Tobias Minch
+// Spline Dialog
+// Copyright (C) 2008 Tobias Minch
+//
+// Part of rct3tool
+// Copyright 2005 Jonathan Wilson
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -20,32 +23,26 @@
 // Written by
 //   Tobias Minich - belgabor@gmx.de
 //
-// Based on the ovl dumper by Jonathan Wilson
+// Parts of this code are based on code written for rct3tool (Copyright 2005
+// Jonathan Wilson).
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "wxdlgSpline.h"
 
-#include "ovldumperstructs.h"
+#include <wx/valgen.h>
+#include "valext.h"
+#include "valchb.h"
 
-#include <string.h>
+dlgSpline::dlgSpline( wxWindow* parent, const cImpSpline& spline ): rcdlgSpline(parent), m_spline(spline) {
+    SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
 
-#include "OVLDException.h"
+    m_textName->SetValidator(wxExtendedValidator(&m_spline.spline.m_name, false));
+    m_choiceCoordinateSystem->SetValidator(wxGenericValidator(reinterpret_cast<int*>(&m_spline.usedorientation)));
+    m_cbCyclic->SetValidator(wxCheckBoxValidator<unsigned long>(&m_spline.spline.m_cyclic));
+    m_staticPoints->SetLabel(wxString::Format(_("Nodes: %d"), m_spline.spline.m_nodes.size()));
 
-void OvlSymbol::SetData(unsigned long data) {
-    if (IsPointer)
-        throw EOvlD("Tried to set data for a pointer symbol.");
-
-    orgsymbol->data = reinterpret_cast<unsigned long *>(data);
-}
-
-void OvlStringTableEntry::SetString(const char* newstr) const {
-    unsigned long len = strlen(newstr);
-    if (len > orglength)
-        throw EOvlD("Tried to set string: too long.");
-
-    if (len != orglength) {
-        for (unsigned long l = 0; l < orglength; ++l)
-            orgstring[l] = 0;
-    }
-    strcpy(orgstring, newstr);
+    Fit();
+    Layout();
+    GetSizer()->SetSizeHints(this);
 }

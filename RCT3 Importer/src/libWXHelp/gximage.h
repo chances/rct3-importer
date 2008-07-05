@@ -16,7 +16,7 @@
 
 #include <Magick++.h>
 
-#include "wx/control.h"
+#include <wx/control.h>
 
 #include "wx/icon.h"
 #include "wx/bitmap.h"
@@ -227,6 +227,8 @@ public:
         ret *= rhs;
         return ret;
     }
+
+    static bool CheckGraphicsMagick(const wxString& apppath);
 
 #ifdef USE_SQUISH
     const int GetDxtBufferSize(const int dxt) const {

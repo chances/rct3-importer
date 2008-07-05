@@ -13,7 +13,7 @@
 #include "StyleOVL.h"
 #include "stalls.h"
 
-using namespace r3;
+using namespace r3old;
 
 std::vector<StallData *> StallData::Stalls;
 int StallData::LoaderNumber;

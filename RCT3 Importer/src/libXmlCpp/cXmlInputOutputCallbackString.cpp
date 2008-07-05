@@ -25,6 +25,7 @@
 #include "cXmlInputOutputCallbackString.h"
 
 #include <boost/shared_array.hpp>
+#include <strings.h>
 #include <zlib.h>
 
 #include "cXmlException.h"

@@ -44,6 +44,7 @@
 
 #include "rng/rct3xml-ovlcompiler-v1.rngi.gz.h"
 #include "rng/rct3xml-raw-v1.rngi.gz.h"
+#include "rng/rct3xml-scenery-v1.rngi.gz.h"
 #include "rng/model.rngi.gz.h"
 #include "rng/ms3d_comment.rngi.gz.h"
 
@@ -57,6 +58,7 @@ frmMain::frmMain(wxWindow* parent):rcfrmMain(parent) {
     cXmlInputOutputCallbackString::Init();
     XMLCPP_RES_ADD(rct3xml_ovlcompiler_v1, rngi);
     XMLCPP_RES_ADD(rct3xml_raw_v1, rngi);
+    XMLCPP_RES_ADD(rct3xml_scenery_v1, rngi);
     XMLCPP_RES_ADD(model, rngi);
     XMLCPP_RES_ADD(ms3d_comment, rngi);
 
@@ -72,6 +74,7 @@ frmMain::frmMain(wxWindow* parent):rcfrmMain(parent) {
     InitXMLSTC(m_stcMain);
     InitXMLSTC(m_stcSchema);
     InitXMLSTC(m_stcRNG);
+    InitCommonSTC(m_stcRNC);
     InitXMLSTC(m_stcSchematron);
 
     m_stcRNC->SetReadOnly(true);
@@ -133,15 +136,10 @@ frmMain::frmMain(wxWindow* parent):rcfrmMain(parent) {
 }
 
 void frmMain::InitXMLSTC(wxStyledTextCtrl* ctl) {
-    ctl->SetTabWidth (4);
-    ctl->SetUseTabs (true);
-    ctl->SetTabIndents (true);
-    ctl->SetBackSpaceUnIndents (true);
     ctl->SetLexer(wxSTC_LEX_XML);
     ctl->SetIndentationGuides(true);
-    ctl->MarkerDefine (0, wxSTC_MARK_CIRCLE, _T("BLACK"), _T("YELLOW"));
-    ctl->MarkerDefine (1, wxSTC_MARK_CIRCLE, _T("BLACK"), _T("RED"));
-    ctl->MarkerDefine (2, wxSTC_MARK_CIRCLE, _T("BLACK"), _T("BLACK"));
+    InitCommonSTC(ctl);
+
     ctl->MarkerDefine (wxSTC_MARKNUM_FOLDER,        wxSTC_MARK_BOXPLUS, _T("WHITE"), _T("BLACK"));
     ctl->MarkerDefine (wxSTC_MARKNUM_FOLDEROPEN,    wxSTC_MARK_BOXMINUS, _T("WHITE"), _T("BLACK"));
     ctl->MarkerDefine (wxSTC_MARKNUM_FOLDERSUB,     wxSTC_MARK_VLINE,     _T("BLACK"), _T("BLACK"));
@@ -149,14 +147,6 @@ void frmMain::InitXMLSTC(wxStyledTextCtrl* ctl) {
     ctl->MarkerDefine (wxSTC_MARKNUM_FOLDEROPENMID, wxSTC_MARK_BOXMINUSCONNECTED, _T("WHITE"), _T("BLACK"));
     ctl->MarkerDefine (wxSTC_MARKNUM_FOLDERMIDTAIL, wxSTC_MARK_TCORNER,     _T("BLACK"), _T("BLACK"));
     ctl->MarkerDefine (wxSTC_MARKNUM_FOLDERTAIL,    wxSTC_MARK_LCORNER,     _T("BLACK"), _T("BLACK"));
-
-    wxFont font (8, wxMODERN, wxNORMAL, wxNORMAL);
-    ctl->StyleSetFont (wxSTC_STYLE_DEFAULT, font);
-    ctl->StyleSetForeground (wxSTC_STYLE_DEFAULT, *wxBLACK);
-    ctl->StyleSetBackground (wxSTC_STYLE_DEFAULT, *wxWHITE);
-    ctl->StyleSetForeground (wxSTC_STYLE_LINENUMBER, wxColour (_T("DARK GREY")));
-    ctl->StyleSetBackground (wxSTC_STYLE_LINENUMBER, *wxWHITE);
-    ctl->StyleSetForeground(wxSTC_STYLE_INDENTGUIDE, wxColour (_T("DARK GREY")));
 
     ctl->StyleSetForeground (wxSTC_H_TAG, wxColor(0,0,160));
     ctl->StyleSetBackground (wxSTC_H_TAG, *wxWHITE);
@@ -167,15 +157,6 @@ void frmMain::InitXMLSTC(wxStyledTextCtrl* ctl) {
     ctl->StyleSetForeground (wxSTC_H_COMMENT, wxColor(128,128,128));
     ctl->StyleSetBackground (wxSTC_H_COMMENT, *wxWHITE);
     ctl->StyleSetItalic (wxSTC_H_COMMENT, true);
-
-    ctl->SetMarginType (0, wxSTC_MARGIN_NUMBER);
-    ctl->StyleSetForeground (wxSTC_STYLE_LINENUMBER, wxColour (_T("DARK GREY")));
-    ctl->StyleSetBackground (wxSTC_STYLE_LINENUMBER, *wxWHITE);
-    ctl->SetMarginWidth (0, 40); // start out not visible
-
-    ctl->SetMarginType (1, wxSTC_MARGIN_SYMBOL);
-    ctl->SetMarginWidth (1, 15);
-    ctl->SetMarginSensitive (1, true);
 
     ctl->SetMarginType (2, wxSTC_MARGIN_SYMBOL);
     ctl->SetMarginMask (2, wxSTC_MASK_FOLDERS);
@@ -196,6 +177,35 @@ void frmMain::InitXMLSTC(wxStyledTextCtrl* ctl) {
 
 }
 
+void frmMain::InitCommonSTC(wxStyledTextCtrl* ctl) {
+    ctl->SetTabWidth (4);
+    ctl->SetUseTabs (true);
+    ctl->SetTabIndents (true);
+    ctl->SetBackSpaceUnIndents (true);
+
+    ctl->MarkerDefine (0, wxSTC_MARK_DOTDOTDOT, _T("BLACK"), _T("BLACK"));
+    ctl->MarkerDefine (1, wxSTC_MARK_CIRCLE, _T("BLACK"), _T("YELLOW"));
+    ctl->MarkerDefine (2, wxSTC_MARK_CIRCLE, _T("BLACK"), _T("RED"));
+    ctl->MarkerDefine (3, wxSTC_MARK_CIRCLE, _T("BLACK"), _T("BLACK"));
+
+    wxFont font (8, wxMODERN, wxNORMAL, wxNORMAL);
+    ctl->StyleSetFont (wxSTC_STYLE_DEFAULT, font);
+    ctl->StyleSetForeground (wxSTC_STYLE_DEFAULT, *wxBLACK);
+    ctl->StyleSetBackground (wxSTC_STYLE_DEFAULT, *wxWHITE);
+    ctl->StyleSetForeground (wxSTC_STYLE_LINENUMBER, wxColour (_T("DARK GREY")));
+    ctl->StyleSetBackground (wxSTC_STYLE_LINENUMBER, *wxWHITE);
+    ctl->StyleSetForeground(wxSTC_STYLE_INDENTGUIDE, wxColour (_T("DARK GREY")));
+
+    ctl->SetMarginType (0, wxSTC_MARGIN_NUMBER);
+    ctl->StyleSetForeground (wxSTC_STYLE_LINENUMBER, wxColour (_T("DARK GREY")));
+    ctl->StyleSetBackground (wxSTC_STYLE_LINENUMBER, *wxWHITE);
+    ctl->SetMarginWidth (0, 40); // start out not visible
+
+    ctl->SetMarginType (1, wxSTC_MARGIN_SYMBOL);
+    ctl->SetMarginWidth (1, 15);
+    ctl->SetMarginSensitive (1, true);
+
+}
 
 frmMain::~frmMain() {
 /*
@@ -305,12 +315,19 @@ void frmMain::OnReloadSchema( wxCommandEvent& event ) {
             break;
         }
         case INT_COMPILER: {
+            m_fsSchema->SetValue(XMLCPP_RES_USE(rct3xml_ovlcompiler_v1, rngi));
             m_stcSchema->SetText(XMLCPP_RES_GET(rct3xml_ovlcompiler_v1, rngi));
             m_schemachanged = true;
             break;
         }
         case INT_RAW: {
+            m_fsSchema->SetValue(XMLCPP_RES_USE(rct3xml_raw_v1, rngi));
             m_stcSchema->SetText(XMLCPP_RES_GET(rct3xml_raw_v1, rngi));
+            m_schemachanged = true;
+            break;
+        }
+        case INT_SCENERY: {
+            m_stcSchema->SetText(XMLCPP_RES_GET(rct3xml_scenery_v1, rngi));
             m_schemachanged = true;
             break;
         }
@@ -344,6 +361,15 @@ void frmMain::OnSchemaCompiler(wxCommandEvent& event) {
   */
 void frmMain::OnSchemaRaw(wxCommandEvent& event) {
     m_internal = INT_RAW;
+    OnReloadSchema(event);
+}
+
+/** @brief OnSchemaScenery
+  *
+  * @todo: document this function
+  */
+void frmMain::OnSchemaScenery(wxCommandEvent& event) {
+    m_internal = INT_SCENERY;
     OnReloadSchema(event);
 }
 
@@ -488,6 +514,8 @@ void frmMain::OnValidate( wxCommandEvent& event ) {
 }
 
 bool frmMain::DoValidate() {
+    wxBusyCursor bc;
+    m_statusBar->SetStatusText(_("Parsing schema..."), 0);
     try {
     if (m_schemachanged)
         m_statusBar->SetStatusText(_("Undetermined"), 1);
@@ -498,11 +526,18 @@ bool frmMain::DoValidate() {
     m_stcRNG->ClearAll();
     m_stcRNC->ClearAll();
     m_stcSchematron->ClearAll();
+    cXmlErrorHandler::clearGlobalGenericErrors();
+    cXmlErrorHandler::clearGlobalStructuredErrors();
+    m_val.resetErrors();
 
     if (m_schemachanged) {
         m_stcSchema->MarkerDeleteAll(-1);
-        if (!m_val.read(schema)) {
+        wxString val = m_fsSchema->GetValue();
+        if (!m_val.read(schema, val.IsEmpty()?NULL:static_cast<const char*>(val.utf8_str()))) {
             m_statusBar->SetStatusText(_("Loading schema failed"), 0);
+            DisplayRelaxNG();
+            DisplaySchematron();
+            /*
             for (vector<cXmlStructuredError>::const_iterator it = m_val.getStructuredErrors().begin(); it != m_val.getStructuredErrors().end(); ++it) {
                 m_lbResults->Append(wxString::Format(wxT("Line %d: %s (Path: %s)"), it->line,
                     wxString::FromUTF8(it->message.c_str()).c_str(), wxString::FromUTF8(it->getPath().c_str()).c_str()));
@@ -510,6 +545,7 @@ bool frmMain::DoValidate() {
             }
             for (std::vector<std::string>::const_iterator it = m_val.getGenericErrors().begin(); it != m_val.getGenericErrors().end(); ++it)
                 m_lbResults->Append(wxString::FromUTF8(it->c_str()));
+            */
             return false;
         }
     }
@@ -518,6 +554,9 @@ bool frmMain::DoValidate() {
 
     m_schemachanged = false;
 
+    DisplayRelaxNG();
+    DisplaySchematron();
+/*
     cXmlValidatorRNVRelaxNG* valrng = dynamic_cast<cXmlValidatorRNVRelaxNG*>(m_val.primary().get());
     if (valrng) {
         if (valrng->rng()) {
@@ -529,21 +568,15 @@ bool frmMain::DoValidate() {
         m_stcRNC->SetText(valrng->rnc());
         m_stcRNC->SetReadOnly(true);
     }
-
-    cXmlValidatorIsoSchematron* valsch = dynamic_cast<cXmlValidatorIsoSchematron*>(m_val.primary().get());
-    if (!valsch)
-        valsch = dynamic_cast<cXmlValidatorIsoSchematron*>(m_val.secondary().get());
-    if (valsch) {
-        m_stcSchematron->SetReadOnly(false);
-        m_stcSchematron->SetText(valsch->schema().wxwrite(true));
-        m_stcSchematron->SetReadOnly(true);
-    }
+*/
 
 
+
+    m_statusBar->SetStatusText(_("Validating..."), 0);
     cXmlDoc doc;
     string x = static_cast<const char *>(m_stcMain->GetText().utf8_str());
     try {
-        doc.read(x, NULL, "UTF-8", XML_PARSE_DTDLOAD);
+        doc.read(x, m_xmlfile.utf8_str(), "UTF-8", XML_PARSE_DTDLOAD);
     } catch (exception& e) {
         wxMessageBox(e.what());
     }
@@ -552,29 +585,19 @@ bool frmMain::DoValidate() {
         for (vector<cXmlStructuredError>::const_iterator it = doc.getStructuredErrors().begin(); it != doc.getStructuredErrors().end(); ++it) {
             m_lbResults->Append(wxString::Format(wxT("Line %d: %s (Path: %s)"), it->line,
                 wxString::FromUTF8(it->message.c_str()).c_str(), wxString::FromUTF8(it->getPath().c_str()).c_str()));
-            m_stcMain->MarkerAdd(it->line-1, 1);
+            MarkLine(m_stcMain, it->line, it->level);
         }
         for (std::vector<std::string>::const_iterator it = doc.getGenericErrors().begin(); it != doc.getGenericErrors().end(); ++it)
             m_lbResults->Append(wxString::FromUTF8(it->c_str()));
         return false;
     }
     m_lbResults->Append(doc.root().wxns());
-    if (doc.validate(m_val, cXmlValidator::OPT_DETERMINE_NODE_BY_XPATH)) {
+    if (doc.validate(m_val, cXmlValidator::OPT_DETERMINE_NODE_BY_XPATH, cXmlValidatorResult::VR_NONE)) {
         m_statusBar->SetStatusText(_("Validation failed"), 0);
         for (vector<cXmlStructuredError>::const_iterator it = m_val.getStructuredErrors().begin(); it != m_val.getStructuredErrors().end(); ++it) {
             m_lbResults->Append(wxString::Format(wxT("Line %d: %s (Path: %s)"), it->line,
                 wxString::FromUTF8(it->message.c_str()).c_str(), wxString::FromUTF8(it->getPath().c_str()).c_str()));
-            if (it->level == XML_ERR_WARNING) {
-                //if (!m_stcMain->MarkerGet(it->line-1))
-                    m_stcMain->MarkerAdd(it->line-1, 0);
-            } else if (it->level == XML_ERR_FATAL) {
-                //m_stcMain->MarkerDelete(it->line-1, -1);
-                m_stcMain->MarkerAdd(it->line-1, 2);
-            } else {
-                //if (!m_stcMain->MarkerGet(it->line-1)>2) {
-                    m_stcMain->MarkerAdd(it->line-1, 1);
-                //}
-            }
+            MarkLine(m_stcMain, it->line, it->level);
         }
         for (std::vector<std::string>::const_iterator it = m_val.getGenericErrors().begin(); it != m_val.getGenericErrors().end(); ++it)
             m_lbResults->Append(wxString::FromUTF8(it->c_str()));
@@ -585,6 +608,111 @@ bool frmMain::DoValidate() {
     } catch (exception& e) {
         wxMessageBox(e.what());
         return false;
+    }
+}
+
+/** @brief MarkLine
+  *
+  * @todo: document this function
+  */
+void frmMain::MarkLine(wxStyledTextCtrl* ctl, int line, int level) {
+    if (level == XML_ERR_NONE) {
+        ctl->MarkerAdd(line-1, 0);
+    } else if (level == XML_ERR_WARNING) {
+        ctl->MarkerAdd(line-1, 1);
+    } else if (level == XML_ERR_FATAL) {
+        ctl->MarkerAdd(line-1, 3);
+    } else {
+        ctl->MarkerAdd(line-1, 2);
+    }
+
+}
+
+/** @brief DisplayRelaxNG
+  *
+  * @todo: document this function
+  */
+void frmMain::DisplayRelaxNG() {
+    cXmlValidatorRNVRelaxNG* valrng = dynamic_cast<cXmlValidatorRNVRelaxNG*>(m_val.primary().get());
+    if (valrng) {
+        int valerr = valrng->getErrorStage();
+
+        if (valerr > cXmlValidatorRNVRelaxNG::ERRSTAGE_RNG_PARSE) {
+            // We should have a rng (if it's not rnc)
+            if (valrng->rng()) {
+                m_stcRNG->SetReadOnly(false);
+                m_stcRNG->SetText(valrng->rng().wxwrite(true));
+                m_stcRNG->SetReadOnly(true);
+            }
+            if (valerr > cXmlValidatorRNVRelaxNG::ERRSTAGE_RNG_CONVERSION) {
+                // We should have RNC
+                m_stcRNC->SetReadOnly(false);
+                m_stcRNC->SetText(valrng->rnc());
+                m_stcRNC->SetReadOnly(true);
+
+                if (valerr != cXmlValidatorRNVRelaxNG::ERRSTAGE_OK) {
+                    // Error must be in RNC
+                    for (vector<cXmlStructuredError>::const_iterator it = m_val.getStructuredErrors().begin(); it != m_val.getStructuredErrors().end(); ++it) {
+                        m_lbResults->Append(wxString::Format(wxT("Line %d: %s (Path: %s)"), it->line,
+                            wxString::FromUTF8(it->message.c_str()).c_str(), wxString::FromUTF8(it->getPath().c_str()).c_str()));
+                        MarkLine(m_stcRNC, it->line, it->level);
+                    }
+                }
+
+            } else {
+                // Error in rng
+                for (vector<cXmlStructuredError>::const_iterator it = m_val.getStructuredErrors().begin(); it != m_val.getStructuredErrors().end(); ++it) {
+                    m_lbResults->Append(wxString::Format(wxT("Line %d: %s (Path: %s)"), it->line,
+                        wxString::FromUTF8(it->message.c_str()).c_str(), wxString::FromUTF8(it->getPath().c_str()).c_str()));
+                    MarkLine(m_stcRNG, it->line, it->level);
+                }
+            }
+        } else {
+            // Error in schema file
+            for (vector<cXmlStructuredError>::const_iterator it = m_val.getStructuredErrors().begin(); it != m_val.getStructuredErrors().end(); ++it) {
+                m_lbResults->Append(wxString::Format(wxT("Line %d: %s (Path: %s)"), it->line,
+                    wxString::FromUTF8(it->message.c_str()).c_str(), wxString::FromUTF8(it->getPath().c_str()).c_str()));
+                MarkLine(m_stcSchema, it->line, it->level);
+            }
+        }
+
+        if (valerr != cXmlValidatorRNVRelaxNG::ERRSTAGE_OK) {
+            for (std::vector<std::string>::const_iterator it = m_val.getGenericErrors().begin(); it != m_val.getGenericErrors().end(); ++it)
+                m_lbResults->Append(wxString::FromUTF8(it->c_str()));
+        }
+    }
+}
+
+/** @brief DisplaySchematron
+  *
+  * @todo: document this function
+  */
+void frmMain::DisplaySchematron() {
+    cXmlValidatorIsoSchematron* valsch = dynamic_cast<cXmlValidatorIsoSchematron*>(m_val.primary().get());
+    if (!valsch)
+        valsch = dynamic_cast<cXmlValidatorIsoSchematron*>(m_val.secondary().get());
+    if (valsch) {
+        foreach(const std::string& ge, valsch->getGenericErrors())
+            m_lbResults->Append(wxString::FromUTF8(ge.c_str()));
+        foreach(const cXmlStructuredError& se, valsch->getStructuredErrors()) {
+            m_lbResults->Append(wxString::Format(wxT("Line %d: %s (Path: %s)"), se.line,
+                wxString::FromUTF8(se.message.c_str()).c_str(), wxString::FromUTF8(se.getPath().c_str()).c_str()));
+            //m_stcSchema->MarkerAdd(it->line-1, 1);
+        }
+
+        foreach(const std::string& ge, cXmlErrorHandler::getGlobalGenericErrors())
+            m_lbResults->Append(wxString::FromUTF8(ge.c_str()));
+/*
+        foreach(const cXmlStructuredError& se, cXmlErrorHandler::getGlobalStructuredErrors()) {
+            m_lbResults->Append(wxString::Format(wxT("Line %d: %s (Path: %s)"), se.line,
+                wxString::FromUTF8(se.message.c_str()).c_str(), wxString::FromUTF8(se.getPath().c_str()).c_str()));
+            //m_stcSchema->MarkerAdd(it->line-1, 1);
+        }
+*/
+        m_stcSchematron->SetReadOnly(false);
+        m_stcSchematron->SetText(valsch->schema().wxwrite(true));
+//        m_stcSchematron->SetText(valsch->transform().getDoc().wxwrite(true));
+        m_stcSchematron->SetReadOnly(true);
     }
 }
 

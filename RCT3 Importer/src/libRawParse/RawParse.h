@@ -60,6 +60,7 @@ enum eRawOvlMode {
 
 class cAttraction;
 class cRide;
+class cRideStationLimit;
 
 class cRawDatablock {
 private:
@@ -113,6 +114,7 @@ private:
     void Load(xmlcpp::cXmlNode& root);
     cOvlType ParseType(const xmlcpp::cXmlNode& node, const wxString& nodes, const wxString& attribute = wxT("target"));
     wxString ParseString(const xmlcpp::cXmlNode& node, const wxString& nodes, const wxString& attribute, bool* variable, bool addprefix = false);
+    wxString HandleStringContent(const wxString& content, bool* variable, bool addprefix = false);
     void ParseStringOption(std::string& str, const xmlcpp::cXmlNode& node, const wxString& attribute, bool* variable, bool addprefix = false);
     void ParseStringOption(wxString& str, const xmlcpp::cXmlNode& node, const wxString& attribute, bool* variable, bool addprefix = false);
     unsigned long ParseUnsigned(const xmlcpp::cXmlNode& node, const wxString& nodes, const wxString& attribute);
@@ -123,6 +125,7 @@ private:
 
     void ParseAttraction(const xmlcpp::cXmlNode& node, cAttraction& attraction);
     void ParseRide(const xmlcpp::cXmlNode& node, cRide& ride);
+    void ParseRideStationLimit(const xmlcpp::cXmlNode& node, cRideStationLimit& limit);
 
     c3DLoaderOrientation ParseOrientation(const xmlcpp::cXmlNode& node, const wxString& nodes, c3DLoaderOrientation defori = ORIENTATION_LEFT_YUP);
 
@@ -156,6 +159,7 @@ private:
     void ParseSTA(xmlcpp::cXmlNode& node);
     void ParseSVD(xmlcpp::cXmlNode& node);
     void ParseTEX(xmlcpp::cXmlNode& node);
+    void ParseTRR(xmlcpp::cXmlNode& node);
     void ParseWAI(xmlcpp::cXmlNode& node);
 
     void ParseSet(const xmlcpp::cXmlNode& node, bool command = false, const wxString& tag = wxT(RAWXML_SET));
@@ -224,6 +228,7 @@ public:
     }
 
     static void FillAllBakes(wxSortedArrayString& tofill);
+    static boost::shared_ptr<xmlcpp::cXmlValidator> Validator();
 };
 
 #endif

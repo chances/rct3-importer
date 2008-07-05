@@ -107,6 +107,7 @@
 			<Add directory="..\libXmlCpp" />
 			<Add directory="$(#system.include)\libxml2" />
 			<Add directory="$(#mingw.include)" />
+			<Add directory="..\..\xml" />
 		</Compiler>
 		<Unit filename="RawParse.h" />
 		<Unit filename="RawParse_BakeScenery.cpp" />
@@ -121,7 +122,7 @@
 		<Unit filename="RawParse_StructParse_CHG_CID_FTX.cpp" />
 		<Unit filename="RawParse_StructParse_PTD_QTD_SAT_SHS.cpp" />
 		<Unit filename="RawParse_StructParse_SID_SPL_STA.cpp" />
-		<Unit filename="RawParse_StructParse_SVD_TEX_WAI.cpp" />
+		<Unit filename="RawParse_StructParse_SVD_TEX_TRR_WAI.cpp" />
 		<Unit filename="RawParse_cpp.h" />
 		<Unit filename="wx_pch.h">
 			<Option weight="0" />

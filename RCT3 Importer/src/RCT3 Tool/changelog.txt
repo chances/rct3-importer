@@ -285,6 +285,3 @@ Todos:
 // NOTE (tobi#1#): Load model settings as overlay
 // NOTE (tobi#1#): Load matrices from files
 // NOTE (tobi#9#): Wizard
-// NOTE (tobi#1#): Make tooltips optional
-// NOTE (tobi#1#): Colors for face count
-// NOTE (tobi#1#): Pester people with > 3000 faces

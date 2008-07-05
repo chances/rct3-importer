@@ -53,6 +53,11 @@ bool parseULong_(std::string& str, unsigned long& a) {
     return parse(str.c_str(), uint_p[assign_a(a)], space_p).full;
 }
 
+bool parseHexULong_(std::string& str, unsigned long& a) {
+    boost::algorithm::trim(str);
+    return parse(str.c_str(), hex_p[assign_a(a)], space_p).full;
+}
+
 bool parseMatrixRow(std::string& str, float& a, float& b, float& c, float& d) {
     boost::algorithm::trim(str);
     real_parser<float, real_parser_policies<float> > real_pf;

@@ -18,6 +18,7 @@
 #include "MS3DFile.h"
 #include <set>
 #include <stdio.h>
+#include <strings.h>
 
 #include "wxLocalLog.h"
 

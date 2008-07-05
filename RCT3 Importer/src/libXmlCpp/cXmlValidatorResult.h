@@ -76,6 +76,9 @@ struct cXmlValidatorResult {
         return ok(level);
     }
 
+    // Logic reversed, false means no error.
+    inline bool operator() (LEVEL lev) const { return !ok(lev); }
+
     typedef LEVEL cXmlValidatorResult::*unspecified_bool_type;
     // Logic reversed, false means no error.
     inline operator unspecified_bool_type() const { return ok()?NULL:(&cXmlValidatorResult::level); }

@@ -182,8 +182,7 @@ cXmlValidatorResult cXmlValidatorMulti::validate(boost::shared_ptr<xmlDoc>& doc,
 
     //cXmlValidatorResult res(retlevel);
 
-    clearGenericErrors();
-    clearStructuredErrors();
+    resetErrors();
 
     //int ret = MULTI_NOERROR;
 

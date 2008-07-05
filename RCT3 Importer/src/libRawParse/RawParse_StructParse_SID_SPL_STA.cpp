@@ -60,7 +60,7 @@ void cRawParser::ParseSID(cXmlNode& node) {
         } else if (child(RAWXML_SID_POSITION)) {
             OPTION_PARSE(unsigned long, sid.position.positioningtype, ParseUnsigned(child, wxT(RAWXML_SID_POSITION), wxT("type")));
             OPTION_PARSE(unsigned long, sid.position.xsquares, ParseUnsigned(child, wxT(RAWXML_SID_POSITION), wxT("xsquares")));
-            OPTION_PARSE(unsigned long, sid.position.ysquares, ParseUnsigned(child, wxT(RAWXML_SID_POSITION), wxT("ysquares")));
+            OPTION_PARSE(unsigned long, sid.position.zsquares, ParseUnsigned(child, wxT(RAWXML_SID_POSITION), wxT("zsquares")));
             OPTION_PARSE(float, sid.position.xpos, ParseFloat(child, wxT(RAWXML_SID_POSITION), wxT("xpos")));
             OPTION_PARSE(float, sid.position.ypos, ParseFloat(child, wxT(RAWXML_SID_POSITION), wxT("ypos")));
             OPTION_PARSE(float, sid.position.zpos, ParseFloat(child, wxT(RAWXML_SID_POSITION), wxT("zpos")));
@@ -74,10 +74,12 @@ void cRawParser::ParseSID(cXmlNode& node) {
             OPTION_PARSE(unsigned long, sid.colours.defaultcol[2], ParseUnsigned(child, wxT(RAWXML_SID_COLOURS), wxT("choice3")));
         } else if (child(RAWXML_SID_SQUAREUNKNOWNS)) {
             cSidSquareUnknowns squ;
-            OPTION_PARSE(unsigned long, squ.min_height, ParseUnsigned(child, wxT(RAWXML_SID_SQUAREUNKNOWNS), wxT("minHeight")));
-            OPTION_PARSE(unsigned long, squ.max_height, ParseUnsigned(child, wxT(RAWXML_SID_SQUAREUNKNOWNS), wxT("maxHeight")));
-            OPTION_PARSE(unsigned long, squ.unk9, ParseUnsigned(child, wxT(RAWXML_SID_SQUAREUNKNOWNS), wxT("u9")));
+            OPTION_PARSE(long, squ.min_height, ParseSigned(child, wxT(RAWXML_SID_SQUAREUNKNOWNS), wxT("minHeight")));
+            OPTION_PARSE(long, squ.max_height, ParseSigned(child, wxT(RAWXML_SID_SQUAREUNKNOWNS), wxT("maxHeight")));
+            OPTION_PARSE(unsigned long, squ.supports, ParseUnsigned(child, wxT(RAWXML_SID_SQUAREUNKNOWNS), wxT("supports")));
+            OPTION_PARSE(unsigned long, squ.flags, ParseUnsigned(child, wxT(RAWXML_SID_SQUAREUNKNOWNS), wxT("flags")));
 
+/*
             if (child.hasProp("flags")) {
                 wxString flags = ParseString(child, wxT(RAWXML_SID_SQUAREUNKNOWNS), wxT("flags"), NULL);
                 if (flags.Length() != 32)
@@ -93,11 +95,13 @@ void cRawParser::ParseSID(cXmlNode& node) {
                     }
                 }
             }
-
+*/
             sid.squareunknowns.push_back(squ);
         } else if (child(RAWXML_SID_IMPORTERUNKNOWNS)) {
             OPTION_PARSE(unsigned long, sid.importerunknowns.unk1, ParseUnsigned(child, wxT(RAWXML_SID_IMPORTERUNKNOWNS), wxT("u1")));
             OPTION_PARSE(unsigned long, sid.importerunknowns.unk2, ParseUnsigned(child, wxT(RAWXML_SID_IMPORTERUNKNOWNS), wxT("u2")));
+            OPTION_PARSE(unsigned long, sid.importerunknowns.flags, ParseUnsigned(child, wxT(RAWXML_SID_IMPORTERUNKNOWNS), wxT("flags")));
+            /*
             if (child.hasProp("flags")) {
                 wxString flags = ParseString(child, wxT(RAWXML_SID_IMPORTERUNKNOWNS), wxT("flags"), NULL);
                 if (flags.Length() != 32)
@@ -113,7 +117,7 @@ void cRawParser::ParseSID(cXmlNode& node) {
                     }
                 }
             }
-
+            */
         } else if (child(RAWXML_SID_STALLUNKNOWNS)) {
             sid.stallunknowns.MakeStall();
             OPTION_PARSE(unsigned long, sid.stallunknowns.unk1, ParseUnsigned(child, wxT(RAWXML_SID_STALLUNKNOWNS), wxT("u1")));
@@ -122,9 +126,11 @@ void cRawParser::ParseSID(cXmlNode& node) {
             OPTION_PARSE(unsigned long, sid.extra.version, ParseUnsigned(child, wxT(RAWXML_SID_EXTRA), wxT("version")));
             OPTION_PARSE(unsigned long, sid.extra.AddonPack, ParseUnsigned(child, wxT(RAWXML_SID_EXTRA), wxT("addonpack")));
             OPTION_PARSE(long, sid.extra.billboardaspect, ParseSigned(child, wxT(RAWXML_SID_EXTRA), wxT("billboardaspect")));
-        } else if (child(RAWXML_SID_SVD)) {
+        } else if (child(RAWXML_SVD)) {
             USE_PREFIX(child);
-            svd = ParseString(node, wxT(RAWXML_SVD), wxT("name"), NULL, useprefix);
+            svd = HandleStringContent(child(), NULL, useprefix);
+            if (svd.IsEmpty())
+                throw RCT3Exception(FinishNodeError(wxString::Format(_("An svd in sid tag '%s' is empty."), name.c_str()), child));
             sid.svds.push_back(std::string(svd.ToAscii()));
         } else if (child(RAWXML_SID_PARAMETER)) {
             cSidParam param;
@@ -136,7 +142,7 @@ void cRawParser::ParseSID(cXmlNode& node) {
             }
             sid.parameters.push_back(param);
         } else if (child.element()) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in sid tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()));
+            throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in sid tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()), child));
         }
 
         child.go_next();

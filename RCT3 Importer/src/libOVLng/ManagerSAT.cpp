@@ -42,14 +42,14 @@ const char* ovlSATManager::LOADER = "FGDK";
 const char* ovlSATManager::NAME = "SpecialAttraction";
 const char* ovlSATManager::TAG = "sat";
 
-void cSpecialAttraction::Fill(r3::SpecialAttractionA* sp) {
+void cSpecialAttraction::Fill(r3old::SpecialAttractionA* sp) {
     sp->Name = NULL;
     sp->Description = NULL;
     sp->GSI = NULL;
     sp->spline = NULL;
     attraction.Fill(sp);
 }
-void cSpecialAttraction::Fill(r3::SpecialAttractionB* sp) {
+void cSpecialAttraction::Fill(r3old::SpecialAttractionB* sp) {
     if ((attraction.type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
         sp->unk = r3::Constants::Addon::Wild;
     } else {
@@ -76,7 +76,7 @@ void ovlSATManager::AddAttraction(const cSpecialAttraction& item) {
     // The following depends on the type of stall structure we want to write
     if (item.attraction.type & r3::Constants::Addon::Soaked_Hi) {
         // SpecialAttraction2
-        m_size += sizeof(SpecialAttractionB);
+        m_size += sizeof(r3old::SpecialAttractionB);
         if ((item.attraction.type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
             m_size += sizeof(Attraction_W);
         } else {
@@ -84,7 +84,7 @@ void ovlSATManager::AddAttraction(const cSpecialAttraction& item) {
         }
     } else {
         // SpecialAttraction
-        m_size += sizeof(SpecialAttractionA);
+        m_size += sizeof(r3old::SpecialAttractionA);
     }
 
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
@@ -116,8 +116,8 @@ void ovlSATManager::Make(cOvlInfo* info) {
         if (it->second.attraction.type & r3::Constants::Addon::Soaked_Hi) {
             // SpecialAttraction2
             // Assign structs
-            SpecialAttractionB* c_att = reinterpret_cast<SpecialAttractionB*>(c_data);
-            c_data += sizeof(SpecialAttractionB);
+            r3old::SpecialAttractionB* c_att = reinterpret_cast<r3old::SpecialAttractionB*>(c_data);
+            c_data += sizeof(r3old::SpecialAttractionB);
 
             c_att->att = reinterpret_cast<Attraction_S*>(c_data);
             if ((it->second.attraction.type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
@@ -147,8 +147,8 @@ void ovlSATManager::Make(cOvlInfo* info) {
         } else {
             // Stall
             // Assign structs
-            SpecialAttractionA* c_att = reinterpret_cast<SpecialAttractionA*>(c_data);
-            c_data += sizeof(SpecialAttractionA);
+            r3old::SpecialAttractionA* c_att = reinterpret_cast<r3old::SpecialAttractionA*>(c_data);
+            c_data += sizeof(r3old::SpecialAttractionA);
 
             it->second.Fill(c_att);
 

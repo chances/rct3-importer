@@ -50,6 +50,7 @@
 #include "cXmlValidatorRNVRelaxNG.h"
 
 #include "rng/rct3xml-ovlcompiler-v1.rnc.gz.h"
+#include "rng/rct3xml-scenery-v1.rnc.gz.h"
 
 #ifndef MAX_PATH
 #define MAX_PATH 256
@@ -900,15 +901,38 @@ bool cSCNFile::LoadXML(cXmlDoc& doc) {
     if (READ_RCT3_VALIDATE()) {
         cXmlInputOutputCallbackString::Init();
         XMLCPP_RES_ADD_ONCE(rct3xml_ovlcompiler_v1, rnc);
+        XMLCPP_RES_ADD_ONCE(rct3xml_scenery_v1, rnc);
     }
 
     wxString path = filename.GetPath();
 
     // Peak at version to detect ovlcompiler xml
     if (root.ns() == XML_NAMESPACE_SCENERY) {
+        if (READ_RCT3_VALIDATE()) {
+            if (READ_RCT3_REPORTVALIDATION()) {
+                wxLogMessage(_("Validating..."));
+            }
+            cXmlValidatorRNVRelaxNG val(XMLCPP_RES_USE(rct3xml_scenery_v1, rnc).c_str());
+            if (!val) {
+                wxString error(_("Internal Error: could not load scenery schema:\n"));
+                error += val.wxgetErrorList();
+                throw RCT3Exception(error);
+            }
+            if (doc.validate(val)) {
+                wxString error(_("Invalid scenery xml file:\n"));
+                error += val.wxgetErrorList();
+                throw RCT3Exception(error);
+            }
+            if (READ_RCT3_REPORTVALIDATION()) {
+                wxLogMessage(_("...Ok!"));
+            }
+        }
         return FromNode(root, path, 0);
     } else if (root.ns() == XML_NAMESPACE_COMPILER) {
         if (READ_RCT3_VALIDATE()) {
+            if (READ_RCT3_REPORTVALIDATION()) {
+                wxLogMessage(_("Validating..."));
+            }
             cXmlValidatorRNVRelaxNG val(XMLCPP_RES_USE(rct3xml_ovlcompiler_v1, rnc).c_str());
             if (!val) {
                 wxString error(_("Internal Error: could not load ovlcompiler schema:\n"));
@@ -919,6 +943,9 @@ bool cSCNFile::LoadXML(cXmlDoc& doc) {
                 wxString error(_("Invalid ovlcompiler xml file:\n"));
                 error += val.wxgetErrorList();
                 throw RCT3Exception(error);
+            }
+            if (READ_RCT3_REPORTVALIDATION()) {
+                wxLogMessage(_("...Ok!"));
             }
         }
 
@@ -1413,9 +1440,11 @@ bool cSCNFile::Check() {
 
     m_work.reset(new cSCNFile(*this));
 
-    if (name.IsEmpty()) {
-        wxLogError(_("No name set!"));
-        return false;
+    if (!READ_RCT3_EXPERTMODE()) {
+        if (name.IsEmpty()) {
+            wxLogError(_("No name set!"));
+            return false;
+        }
     }
 
     if (prefix.IsEmpty()) {
@@ -1661,7 +1690,7 @@ void cSCNFile::Make() {
     } catch (EOvl& e) {
         throw RCT3Exception(wxString::Format(_("Error during OVL creation: %s"), wxString(e.what(), wxConvLocal).c_str()));
     } catch (Magick::Exception& e) {
-        throw RCT3Exception(wxString::Format(_("Error from image library: %s"), wxString(e.what(), wxConvLocal).c_str()));
+        throw RCT3Exception(wxString::Format(_("Error from image library (during OVL creation): %s"), wxString(e.what(), wxConvLocal).c_str()));
     }
 }
 

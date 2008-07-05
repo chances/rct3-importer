@@ -39,21 +39,23 @@
 
 class cSidSquareUnknowns {
 public:
-    bool flag[32];
-    unsigned long min_height; // SIDData unk2
-    unsigned long max_height; // SIDData unk3
+    //bool flag[32];
+    unsigned long flags;
+    long min_height; // SIDData unk2
+    long max_height; // SIDData unk3
     //bool use_unk8;
     //unsigned long unk8; // SIDData unk4
-    unsigned long unk9; // SIDData unk5
+    unsigned long supports; // SIDData unk5
 
     cSidSquareUnknowns() {
-        for (int i = 0; i < 32; ++i)
-            flag[i] = false;
+//        for (int i = 0; i < 32; ++i)
+//            flag[i] = false;
+        flags = 0;
         min_height = 0;
         max_height = 0;
         //use_unk8 = false;
         //unk8 = 0;
-        unk9 = 0;
+        supports = 0;
     }
     void Fill(r3::SceneryItemData* i) const;
     int GetHeightSize() const;
@@ -64,17 +66,19 @@ public:
 
 class cSidImporterUnknowns {
 public:
-    bool flag[32];
+    //bool flag[32];
+    unsigned long flags;
     unsigned long unk1; // unk4
     unsigned long unk2; // unk17
 
     cSidImporterUnknowns() {
-        for (int i = 0; i < 32; ++i)
-            flag[i] = false;
+//        for (int i = 0; i < 32; ++i)
+//            flag[i] = false;
+        flags = 0;
         unk1 = 0;
         unk2 = 0;
     }
-    void Fill(r3::SceneryItem* i);
+    void Fill(r3::SceneryItem_V* i);
 };
 
 class cSidStallUnknowns {
@@ -90,9 +94,9 @@ public:
         unk1 = 1440;
         unk2 = 2880;
     }
-    void Fill(r3::SceneryItem* i) {
-        i->stallunknown1 = unk1;
-        i->stallunknown2 = unk2;
+    void Fill(r3::SceneryItem_V* i) {
+        i->stall_unknown1 = unk1;
+        i->stall_unknown2 = unk2;
     }
 };
 
@@ -109,10 +113,6 @@ public:
 	unsigned long unk40; //is 0
 	unsigned long unk41; //is 0
 	unsigned long unk44; //is 0
-	unsigned long unk45; //is 0 except for trampoline
-	unsigned long unk46; //is 0 except for trampoline
-	unsigned long unk47; //is 0 except for trampoline
-	unsigned long unk48; //is 0 except for trampoline
 
     cSidUnknowns() {
         unk27 = 0;
@@ -126,12 +126,8 @@ public:
         unk40 = 0;
         unk41 = 0;
         unk44 = 0;
-        unk45 = 0;
-        unk46 = 0;
-        unk47 = 0;
-        unk48 = 0;
     }
-    void Fill(r3::SceneryItem* i);
+    void Fill(r3::SceneryItem_V* i);
 };
 
 class cSidDefaultColours {
@@ -143,14 +139,14 @@ public:
         defaultcol[1] = 0;
         defaultcol[2] = 0;
     }
-    void Fill(r3::SceneryItem* i);
+    void Fill(r3::SceneryItem_V* i);
 };
 
 class cSidPosition {
 public:
 	unsigned short positioningtype;
 	unsigned long xsquares;
-	unsigned long ysquares;
+	unsigned long zsquares;
 	float xpos;
 	float ypos;
 	float zpos;
@@ -162,7 +158,7 @@ public:
     cSidPosition() {
         positioningtype = r3::Constants::SID::Position::Tile_Full;
         xsquares = 1;
-        ysquares = 1;
+        zsquares = 1;
         xpos = 0.0;
         ypos = 0.0;
         zpos = 0.0;
@@ -170,7 +166,7 @@ public:
         ysize = 4.0;
         zsize = 4.0;
     }
-    void Fill(r3::SceneryItem* i);
+    void Fill(r3::SceneryItem_V* i);
 };
 
 class cSidUI {
@@ -188,7 +184,7 @@ public:
         cost = 0;
         removal_cost = 0;
     }
-    void Fill(r3::SceneryItem* i);
+    void Fill(r3::SceneryItem_V* i);
 };
 
 class cSidExtra {
@@ -210,9 +206,9 @@ public:
         unkf = -1.0;
         billboardaspect = -1;
     }
-    void Fill(r3::SceneryItem* i);
-    void FillExtra1(r3::SceneryItemExtra1* e);
-    void FillExtra2(r3::SceneryItemExtra2* e);
+    void Fill(r3::SceneryItem_V* i);
+    void Fill(r3::SceneryItem_S* e);
+    void Fill(r3::SceneryItem_W* e);
 };
 
 class cSidParam {
@@ -243,7 +239,7 @@ public:
     std::vector<cSidParam> parameters;
 
     cSid(){};
-    void Fill(r3::SceneryItem* i);
+    void Fill(r3::SceneryItem_V* i);
 };
 
 class ovlSIDManager: public ovlOVLManager {

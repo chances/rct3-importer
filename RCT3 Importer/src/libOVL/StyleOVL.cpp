@@ -19,7 +19,7 @@
 #include "stalls.h"
 #include "attract.h"
 
-using namespace r3;
+using namespace r3old;
 
 
 extern FILE *f;
@@ -711,7 +711,7 @@ LIBOVL_API bool saveStyleOVL()
 		sids += sizeof(SceneryItemData);
 		long *s3 = (long *)sids;
 		sids += 4;
-		SceneryItemVisual_V **svd = (SceneryItemVisual_V **)sids;
+		r3::SceneryItemVisual_V **svd = (r3::SceneryItemVisual_V **)sids;
 		unsigned int SymbolsToResolve = 5;
 		if (!sc->wallicon)
 		{

@@ -53,6 +53,14 @@ inline bool parseULongC(const std::string& str, unsigned long& a) {
 inline bool parseULong(std::string& str, unsigned long& a) {
     return parseULong_(str, a);
 }
+bool parseHexULong_(std::string& str, unsigned long& a);
+inline bool parseHexULong(const std::string& str, unsigned long& a) {
+    std::string s = str;
+    return parseHexULong_(s, a);
+}
+inline bool parseHexULong(std::string& str, unsigned long& a) {
+    return parseHexULong_(str, a);
+}
 bool parseMatrixRow(std::string& str, float& a, float& b, float& c, float& d);
 bool parseMatrix(std::string& str, r3::MATRIX& m);
 bool parseCompilerVector(std::string& str, r3::txyz& v);

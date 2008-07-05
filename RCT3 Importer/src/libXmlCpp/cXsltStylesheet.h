@@ -32,6 +32,7 @@
 #include <map>
 #include <string>
 #include <libxml/parser.h>
+#include <libxslt/documents.h>
 #include <libxslt/xsltInternals.h>
 #include <boost/shared_ptr.hpp>
 
@@ -69,11 +70,14 @@ public:
 protected:
 private:
     boost::shared_ptr<xsltStylesheet> m_sheet;
+    //boost::shared_ptr<xsltTransformContext> m_ctx;
     boost::shared_ptr<xmlDoc> m_doc;
     std::map<std::string, std::string> m_parameters;
 
     void Init();
     void assignSheet(xsltStylesheetPtr newsheet);
+
+    static xmlDocPtr xsltDocLoaderFunc (const xmlChar * URI, xmlDictPtr dict, int options, void* ctxt, xsltLoadType type);
 };
 
 } // namespace xmlcpp

@@ -13,7 +13,7 @@
 #include "StyleOVL.h"
 #include "attract.h"
 
-using namespace r3;
+using namespace r3old;
 
 std::vector<AttractionData *> AttractionData::Attractions;
 int AttractionData::LoaderNumber;

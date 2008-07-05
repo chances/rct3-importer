@@ -9,8 +9,8 @@
       <object class="wxMenuItem" name="menu_quickeffect_calculate">
         <label>_Calculate</label>
       </object>
-      <object class="wxMenu" name="menu_quickeffect_ovm1">
-        <label>From one-_vertex mesh...</label>
+      <object class="wxMenu" name="menu_quickeffect_bone1">
+        <label>From model file bone...</label>
       </object>
       <object class="wxMenuItem" name="menu_quickeffect_this1">
         <label>From _this object...</label>
@@ -25,8 +25,8 @@
       <object class="wxMenuItem" name="menu_quickeffect_pos2">
         <label>_Enter position...</label>
       </object>
-      <object class="wxMenu" name="menu_quickeffect_ovm2">
-        <label>From one-_vertex mesh...</label>
+      <object class="wxMenu" name="menu_quickeffect_bone2">
+        <label>From model file bone...</label>
       </object>
       <object class="wxMenuItem" name="menu_quickeffect_pos12">
         <label>From _position 1</label>

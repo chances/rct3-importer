@@ -214,6 +214,9 @@ public:
     /// Get first property
     cXmlNode properties();
 
+    /// Get line number
+    unsigned short line() const;
+
     inline xmlNodePtr getRaw() const { return m_node; }
     inline xmlNodePtr getRaw(const boost::shared_ptr<xmlDoc>& newowner = boost::shared_ptr<xmlDoc>()) {
         if (newowner) {
