@@ -27,6 +27,8 @@
 
 #include "OVLDebug.h"
 
+#include <fstream>
+
 #include "ManagerOVL.h"
 
 #include "OVLException.h"
@@ -77,7 +79,7 @@ ovlStringTable* ovlOVLManager::GetStringTable() {
 ovlRelocationManager* ovlOVLManager::GetRelocationManager() {
     return &m_ovl->m_relmanager;
 }
-
+/*
 void ovlOVLManager::WriteLoader(FILE* f) {
     if (!f)
         throw EOvl("ovlOVLManager("+string(Tag())+")::WriteLoader called with no file");
@@ -96,6 +98,27 @@ void ovlOVLManager::WriteLoader(FILE* f) {
     len = strlen(Tag());
     fwrite(&len, 2, 1, f);
     fwrite(Tag(), len, 1, f);
+}
+*/
+
+void ovlOVLManager::WriteLoader(fstream& f) {
+    if (!f.is_open())
+        throw EOvl("ovlOVLManager("+string(Tag())+")::WriteLoader called with closed file");
+
+    unsigned short len = strlen(Loader());
+    f.write(reinterpret_cast<char*>(&len), 2);
+    f.write(Loader(), len);
+
+    len = strlen(Name());
+    f.write(reinterpret_cast<char*>(&len), 2);
+    f.write(Name(), len);
+
+    unsigned long type = Type();
+    f.write(reinterpret_cast<char*>(&type), 4);
+
+    len = strlen(Tag());
+    f.write(reinterpret_cast<char*>(&len), 2);
+    f.write(Tag(), len);
 }
 
 void ovlOVLManager::Make(cOvlInfo* info) {

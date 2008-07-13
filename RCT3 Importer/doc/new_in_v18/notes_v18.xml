@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<article>
+  <title>Roller Coaster Tycoon® 3 Importer v18</title>
+  <articleinfo>
+    <date>13.7.2008</date>
+    <author>
+      <surname>Belgabor</surname>
+    </author>
+  </articleinfo>
+  <xi:include href="general.xml" xmlns:xi="http://www.w3.org/2001/XInclude"
+              xpointer="element(/1)" />
+  <section>
+    <title>Proper transparency</title>
+    <para>After a very long time I now found out how to do proper transparency
+    and, as far as possible, got rid of the X-ray effect. By <quote>as far as
+    possible</quote> I mean that after lots of experiments I came to the
+    conclusion that for some objects you cannot fully prevent X-ray (even some
+    original game objects show X-ray if you look closely). Still I think that
+    the X-ray left is a lot less severe than before, it seems to only affect
+    the object itself and then (probably) only parts of the same mesh. It also
+    seems to occur mostly looking at the object from the left, provided you
+    didn't rotate it. Left is in relation from your original view when you
+    start a sandbox (ie looking at the entrace from inside the park. As to
+    when this X-ray occurs I can give no good explanation. In general I'd say
+    the more complex the object is, the likelier it is to occur. It may also
+    include some unknown voodoo. If your object shows it, I've provided a few
+    customization options that may help or not. To understand them, I first
+    need to explain how proper transparency in RCT3 works.</para>
+    <para>Meshes are stored in OVLs in two data chunks, one contains a list of
+    all the vertices and the other the faces (triangles) as three indices into
+    the vertex list. For transparent objects, the ovl file stores the face
+    list three times, each one sorted along one axis. Now the crux is how the
+    faces need to be sorted. From original ovls it seems to me that only the
+    lowest coordinate (in the sorted direction) of the triangle matters. Still
+    I have implemented several sorting algorithms that take other things into
+    account. You can only influence the triangle sorting mechanism in ovlmake
+    (see respective readme), the Importer normally uses the default
+    <quote>minmax</quote> algorithm.</para>
+    <para>RCT3 knows three transparency modes, none, masked and regular. The
+    importer sets this automatically accorting to the texture style, so there
+    is no reason for you to change it (although you can do so in the
+    <guilabel>Transparency</guilabel> column). If it doesn't match the texture
+    style, the importer displays it in red.</para>
+  </section>
+  <section>
+    <title>Trees, or manipulating normals</title>
+    <para>If you have tried to create trees or plants with foliage, you may
+    have noticed that lighting seems to be different from the ones in the
+    game. This works by forcing the mesh normals of foliage to point straight
+    upwards (Credit goes to TNStickBoy70 for discovering this) and you can do
+    this by setting the <guilabel>Normals</guilabel> column to + whatever axis
+    points up in your model (usually matching your coordinate system).</para>
+  </section>
+  <section>
+    <title><application>MilkShape</application> support</title>
+    <para>The Importer now reads the comments for various things from ms3d
+    files and uses them to automatically fill some information for scenery.
+    This only works if you load a ms3d file as a scenery file.</para>
+    <note>
+      <para>MilkShape indexes animation keyframes by frame index, starting at
+      1. RCT3 uses time codes starting at 0. The Importer manages this, but
+      you need to keep in mind that if you want a keyframe to occur after 1
+      second, you need to set it at frame 31 in MilkShape (it uses 30 fps by
+      default, which you should keep as RCT3 does as well).</para>
+    </note>
+    <section>
+      <title>Model comment</title>
+      <para>The model comment is the most complex and therefore uses a simple
+      xml syntax. I won't go into much detail at them moment, so I'll just
+      gine you an example and add a few brief notes.</para>
+      <programlisting>&lt;ms3d&gt;
+  &lt;name&gt;TestObject&lt;/name&gt;
+  &lt;animation&gt;testobject_anim_rest&lt;/animation&gt;
+  &lt;animation frame="1"&gt;testobject_anim_start&lt;/animation&gt;
+  &lt;animation frame="120"&gt;testobject_anim_run&lt;/animation&gt;
+  &lt;lod name="vlod" distance="200"&gt;
+    &lt;mesh&gt;Base&lt;/mesh&gt;
+    &lt;mesh&gt;AnimatedStuff_Hi&lt;/mesh&gt;
+    &lt;bone&gt;parent&lt;/bone&gt;
+    &lt;bone&gt;child&lt;/bone&gt;
+  &lt;/lod&gt;
+  &lt;lod name="vlod" distance="4000"&gt;
+    &lt;mesh&gt;Base&lt;/mesh&gt;
+    &lt;mesh&gt;AnimatedStuff_Low&lt;/mesh&gt;
+    &lt;bone&gt;parent&lt;/bone&gt;
+    &lt;bone&gt;child&lt;/bone&gt;
+  &lt;/lod&gt;
+&lt;/ms3d&gt;</programlisting>
+      <para>The <emphasis>animation</emphasis> element(s) name(s) the
+      animation(s) in the Importer. The <emphasis>frame</emphasis> attribute
+      can be used to split the MilkShape animation into multiple animations in
+      the importer (the number is a MilkShape frame index, so the example uses
+      the first frame alone as the rest animation and as first frame of the
+      start animation).</para>
+      <para>The <emphasis>lod</emphasis> element defines both models and LODs
+      that use them. The syntax should be obvious from the example. The bone
+      names you need to use are the redefined ones (see <xref
+      linkend="s_joint_comment" />).</para>
+    </section>
+    <section>
+      <title>Group comment</title>
+      <para>The group comment is a list of whitespace delimited simple tags
+      defining mesh settings (I recommend using newlines to separate, ie one
+      per line).</para>
+      <para>Tags you can use:</para>
+      <itemizedlist>
+        <listitem>
+          <para><emphasis>ds</emphasis> or <emphasis>doublesided</emphasis>
+          Makes the mesh double-sided.</para>
+        </listitem>
+        <listitem>
+          <para>A flags tag (<emphasis>sign</emphasis>,
+          <emphasis>terrain</emphasis>, <emphasis>cliff</emphasis>,
+          <emphasis>water</emphasis>, <emphasis>watermask</emphasis>,
+          <emphasis>billboard</emphasis> or
+          <emphasis>animatedbillboard</emphasis>)</para>
+        </listitem>
+        <listitem>
+          <para>A texture style (e.g. <emphasis>SIOpaque</emphasis>,
+          <emphasis>SIAlpha</emphasis>)</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+    <section>
+      <title>Material comment</title>
+      <para>The material comment is a list of whitespace delimited simple tags
+      defining texture settings (I recommend using newlines to separate, ie
+      one per line).</para>
+      <para>Tags you can use:</para>
+      <itemizedlist>
+        <listitem>
+          <para><emphasis>recol</emphasis> Sets the texture recolourable.
+          Needs to be followed by a tag consisting of the texture choices, 1
+          for first, 2 for second and 3 for third. These need to be in order
+          (e.g. to activate all choices, use <quote>recol 123</quote>).</para>
+        </listitem>
+        <listitem>
+          <para><emphasis>ref</emphasis> Marks the texture as being
+          referenced, i.e. it will not be automatically added. Needs to be
+          followed either by the texture ovl reference path (may not contain
+          space characters) or <quote>-</quote>. In the first case the
+          Importer will add the reference path automatically to the reference
+          list. Use the second one if you have already defined the path on a
+          different material or want to add it manually later. Example:
+          <quote>ref ../shared/prefixsSet-textures</quote>.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+    <section id="s_joint_comment">
+      <title>Joint comment</title>
+      <para>The joint comment consists of a single tag defining a new name for
+      the joint. <application>MilkShape</application> has a limit of 32
+      characters for joint names, so if you need more (e.g. for effect bones),
+      use this feature.</para>
+    </section>
+  </section>
+  <section>
+    <title><application>Blender</application></title>
+    <para>Please refer to the readme coming with the
+    <application>Blender</application> scripts.</para>
+  </section>
+</article>

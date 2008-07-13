@@ -44,10 +44,16 @@ public:
     virtual void OnSchema( wxCommandEvent& event );
     virtual void OnSTCMarginClick (wxStyledTextEvent &event);
     virtual void OnSTCChange (wxStyledTextEvent &event);
+    //virtual void OnSTCKeyDown (wxKeyEvent &event);
     virtual void OnSTCCharAdded (wxStyledTextEvent &event);
     virtual void OnValidate( wxCommandEvent& event );
     virtual void OnReloadSchema( wxCommandEvent& event );
     virtual void OnReloadXml( wxCommandEvent& event );
+
+    virtual void OnInsertXInclude( wxCommandEvent& event );
+    virtual void OnAbbreviation( wxCommandEvent& event );
+    virtual void OnAbbreviationFull( wxCommandEvent& event );
+    virtual void OnApplyXIncludes( wxCommandEvent& event );
 
     virtual void OnSchemaCompiler( wxCommandEvent& event );
     virtual void OnSchemaRaw( wxCommandEvent& event );
@@ -83,6 +89,8 @@ private:
     int m_internal;
     wxString m_xmlfile;
     boost::shared_ptr<dlgKeyframes> m_kf;
+    typedef std::map<wxString, wxString>::iterator abbfind;
+    std::map<wxString, wxString> m_abbreviations;
 
     void MarkLine(wxStyledTextCtrl* ctl, int line, int level);
 
@@ -90,6 +98,9 @@ private:
     void InitCommonSTC(wxStyledTextCtrl* ctl);
     bool DoValidate();
     void DoProfileValidation(int times);
+    void DoAbbreviation(bool quick);
+
+    void SaveFile();
 
     void DisplayRelaxNG();
     void DisplaySchematron();

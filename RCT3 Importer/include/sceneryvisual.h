@@ -93,7 +93,7 @@ struct SceneryItemVisual_V {
 };
 
 struct SceneryItemVisual_Sext {
-    ManifoldMesh*               proxy_ref;      ///< ManifoldMesh Proxy, whatever that is
+    ManifoldMesh*               proxy_ref;      ///< ManifoldMesh Proxy, whatever that is. Maybe related to water interaction
 };
 
 struct SceneryItemVisual_S {

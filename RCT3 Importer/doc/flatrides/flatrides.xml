@@ -3,6 +3,12 @@
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <article>
   <title>Creating Flat Rides</title>
+  <articleinfo>
+    <date>24.6.2008</date>
+    <author>
+      <surname>Belgabor</surname>
+    </author>
+  </articleinfo>
   <section>
     <title>Introduction</title>
     <para>Before we start:</para>
@@ -30,10 +36,11 @@
         animations. I also recommend Blender for that.</para>
       </listitem>
       <listitem>
-        <para>Recent beta versions of the importer and ovlmake.</para>
+        <para>Recent beta versions of the importer and
+        <application>ovlmake</application>.</para>
       </listitem>
       <listitem>
-        <para>Recommended, but not necessary, is a good xml editor. Try
+        <para>Recommended, but not necessary, is a good XML editor. Try
         <application>XML Copy Editor</application>.</para>
       </listitem>
     </itemizedlist>
@@ -54,7 +61,8 @@
         <para>Assemble the above in the importer</para>
       </listitem>
       <listitem>
-        <para>Write an xml file for ovlmake and create the ride with it</para>
+        <para>Write an XML file for <application>ovlmake</application> and
+        create the ride with it</para>
       </listitem>
     </itemizedlist>
   </section>
@@ -65,13 +73,13 @@
     <itemizedlist>
       <listitem>
         <para>Things that need to be animated need to be in separate meshes.
-        That's not a limitation of RCT3, but of the current toolchain.
+        That's not a limitation of RCT3, but of the current tool chain.
         Unfortunately there is no easy way to fix that, so you'll have to live
         with it.</para>
       </listitem>
       <listitem>
         <para>Rides usually have a higher polygon count, so if you have
-        1000-3000, you're well wihin the limits of the rides RCT3 has. But if
+        1000-3000, you're well within the limits of the rides RCT3 has. But if
         you go that high, you need to provide LODs, otherwise your ride will
         disappear quite fast.</para>
       </listitem>
@@ -80,6 +88,7 @@
         that's somewhat obvious, but I'm personally tempted to model
         restraints in closed state, if you're as well, resist that temptation!
         Restraints need to be in open/released state.</para>
+        <para>Also make sure to center your ride around the origin.</para>
       </listitem>
     </itemizedlist>
   </section>
@@ -114,8 +123,8 @@
       </listitem>
       <listitem>
         <para>The stop animation. The logic inverse to the start up animation,
-        ie slow down, return to the rest position and open the
-        restraints.</para>
+        <abbrev>i.e.</abbrev> slow down, return to the rest position and open
+        the restraints.</para>
       </listitem>
     </orderedlist>
     <section>
@@ -132,7 +141,7 @@
       </important>
       <para>There's four effect point types I want to mention here. Lights
       also work, but I won't go into detail about them. All of the following
-      use a running number sybolized by <quote>XX</quote>.</para>
+      use a running number symbolized by <quote>XX</quote>.</para>
       <itemizedlist>
         <listitem>
           <para>peepXX. Mandatory. These represent the peeps on the ride and
@@ -169,22 +178,80 @@
       format. In the script directory you'll find a readme explaining the
       script options and some general notes as well as an explanation of the
       second script I'll mention later. Now would be a good time to read this
-      readme. I'll repeat the most important information, but read in
+      readme. I'll repeat the most important information, but read it
       nevertheless.</para>
       <important>
-        <para>The export script ignores all things whose name starts with a
+        <para>The export script ignores all things whose names start with a
         <quote>_</quote> (underscore). You can use this for helper objects and
         bones needed for the animation, taking pictures or recording a movie
         of your ride in Blender to ensure they don't accidentally get
         exported.</para>
       </important>
       <para>RCT3-compatible animation in Blender is done by using an armature
-      and recording Loc (Translation) and Quat (Rotation) IPOs for poses.
-      Always make sure you record all channels of a certain IPO type (XYZ for
-      Loc and QXYZ for Quat). Other types of animation (mostly object
-      animation and Scale IPOs for poses) are not supported. The Blender
-      entity that is exported as an animation is an Action. There is a way to
-      use the NLA, more on that later.</para>
+      and recording Loc (Translation) and Quat (Rotation) IPOs for poses in
+      Pose Actions. Always make sure you record all channels of a certain IPO
+      type (XYZ for Loc and QXYZ for Quat). Other types of animation (mostly
+      object animation and Scale IPOs for poses) are not supported. The
+      Blender entity that is exported as an animation is an Action. There is a
+      way to use the NLA, more on that later.</para>
+      <warning>
+        <para>The export script is not very error/crap tolerant (or rather not
+        at all). If you get an error make sure you have no</para>
+        <itemizedlist>
+          <listitem>
+            <para>Meshes that are not UV-mapped</para>
+          </listitem>
+          <listitem>
+            <para>Actions or anything with an empty name</para>
+          </listitem>
+          <listitem>
+            <para>Actions without keyframes</para>
+          </listitem>
+        </itemizedlist>
+      </warning>
+      <note>
+        <para>Deleting actions in Blender is unfortunately very cumbersome, so
+        I'll explain it to you.</para>
+        <orderedlist>
+          <listitem>
+            <para>Open an action window</para>
+          </listitem>
+          <listitem>
+            <para>Select the action you want to delete</para>
+          </listitem>
+          <listitem>
+            <para>Deactivate the <guibutton>F</guibutton>-button next to the
+            action name</para>
+          </listitem>
+          <listitem>
+            <para>Select a different action you do <emphasis>not</emphasis>
+            want to delete.</para>
+          </listitem>
+          <listitem>
+            <para>Check the action drop list and make sure that there is a
+            small circle left to the action you want to delete (just look, do
+            not select it!). This circle means the action is not used anymore
+            and therefore will not be saved.</para>
+          </listitem>
+          <listitem>
+            <para>Save the blend file</para>
+          </listitem>
+          <listitem>
+            <para>Reload the blend file</para>
+          </listitem>
+        </orderedlist>
+        <para>The reason for this is the way Blender manages data. Blender
+        does not delete data when you delete it somewhere, it is just not used
+        by anything (<quote>unlinked</quote>). Blender discards unlinked
+        things during saving, but only in the saved file. So to get rid of
+        these things, you need to save and reload. Actions are special because
+        of the <acronym>NLA</acronym> and some other things you may want to
+        do, unlinked actions are somewhat normal. Therefore Blender by default
+        sets the fake user property on them. This means they are always
+        considered used/linked, even if no real using object exists. This
+        property is manipulated with the
+        <guibutton>F</guibutton>-button.</para>
+      </note>
       <section>
         <title>Creating the Armature</title>
         <para>Create the armature as described in lots of Blender animation
@@ -193,10 +260,15 @@
           <para>After adding the armature, <emphasis>immediately</emphasis>
           make sure it's origin is 0,0,0 and that rotation and scale is
           applied to object data. <emphasis>Never</emphasis> transform your
-          armature object!</para>
+          armature object! <emphasis role="bold">This is the absolutely most
+          important thing to do! Otherwise you'll run into a lot of problems
+          later!</emphasis></para>
+          <para><emphasis role="bold">Only ever use one Armature
+          object</emphasis> in a blend file. More will usually lead to
+          errors.</para>
         </important>
         <para>Now start to add bones. Make sure the rest pose (the one you see
-        in edit mode) is also the rest pose of yoru ride! You can use bone
+        in edit mode) is also the rest pose of your ride! You can use bone
         constraints, but you need to keep some caveats in mind, see
         below.</para>
       </section>
@@ -211,11 +283,11 @@
           <listitem>
             <para>Empties. An Empty is a catch-all effect bone marker. There
             is a special mode mostly for peep bones. Normally peeps would look
-            in -X direction of the Empty. I fond that a bit unintuitive, so if
-            you set the Empties display size to less than 0.6 (I normally use
-            0.5), it will be exported as if rotated 180°, so just point the
-            X-Axis the way the peep should look. The same is necessary if you
-            want to use the Empty as a camera, but there's a better
+            in -X direction of the Empty. I found that a bit unintuitive, so
+            if you set the Empties display size to less than 0.6 (I normally
+            use 0.5), it will be exported as if rotated 180°, so just point
+            the X-Axis the way the peep should look. The same is necessary if
+            you want to use the Empty as a camera, but there's a better
             way.</para>
           </listitem>
           <listitem>
@@ -225,7 +297,7 @@
             Cameras look down in Blender). You need to name the camera
             properly though, as the name is taken as is (e.g.
             <quote>static01</quote>). If you set the lens value of the camera
-            to 15.5, you'll have approxymately the same view through the
+            to 15.5, you'll have approximately the same view through the
             camera in Blender as in RCT3.</para>
           </listitem>
           <listitem>
@@ -257,7 +329,7 @@
                 then determine which colour option will be taken (rounded to
                 full value: &lt;=1: first, 2: second, &gt;=3 third).</para>
                 <note>
-                  <para>To keep those from interfereing with lighting set up
+                  <para>To keep those from interfering with lighting set up
                   for rendering in Blender, put your Lamps for light effect
                   bones on a separate layer and activate the
                   <guibutton>Layer</guibutton> button for them.</para>
@@ -274,7 +346,7 @@
         </orderedlist>
       </section>
       <section>
-        <title>Excurse: bone constraints</title>
+        <title>Digression: bone constraints</title>
         <para>Bone constraints are tremendously useful in some cases, but you
         need to keep a few caveats in mind.</para>
         <itemizedlist>
@@ -292,9 +364,9 @@
           </listitem>
           <listitem>
             <para>The TrackTo constraint is one of the most useful ones, but
-            may need special attention to work flawless. For the helper bones
-            you might need, remember to start their names with an underscore
-            so they don't get exported.</para>
+            may need special attention to work flawlessly. For the helper
+            bones you might need, remember to start their names with an
+            underscore so they don't get exported.</para>
             <orderedlist>
               <listitem>
                 <para>Do not track objects whose position or orientation is
@@ -345,18 +417,19 @@
           starts again with that pose and returns to the rest pose.</para>
         </section>
         <section>
-          <title>Use the NLA</title>
+          <title>Use the <acronym>NLA</acronym></title>
           <para>Create a couple of micro-actions for move patterns of your
           ride (remember to start their names with an underscore) and assemble
-          the full program in the NLA. For these micro-actions I suggest only
-          recording what you really need (Loc/Rot/LocRot) so they mix
-          flawlessly. Use frame markers to mark the first frame of the start
-          up part (usually that will be frame 1), the loop part and the stop
-          part. Give those markers names (e.g. <quote>start</quote>,
-          <quote>loop</quote> and <quote>stop</quote>). Then use my Bake NLA
-          to Action script to create actions from these parts (don't forget to
-          activate <guibutton>Auto Split</guibutton>). The script can be found
-          in the Animation menu of a script window.</para>
+          the full program in the <acronym>NLA</acronym>. For these
+          micro-actions I suggest only recording what you really need
+          (Loc/Rot/LocRot) so they mix flawlessly. Use frame markers to mark
+          the first frame of the start up part (usually that will be frame 1),
+          the loop part and the stop part. Give those markers names (e.g.
+          <quote>start</quote>, <quote>loop</quote> and <quote>stop</quote>).
+          Then use my Bake <acronym>NLA</acronym> to Action script to create
+          actions from these parts (don't forget to activate <guibutton>Auto
+          Split</guibutton>). The script can be found in the Animation menu of
+          a script window.</para>
         </section>
       </section>
       <section>
@@ -365,19 +438,23 @@
         understand them. If you use grouping, don't forget to include your
         armature in all groups. Use one group per LOD. But before you actually
         export, you should create the required splines.</para>
+        <important>
+          <para>Make sure your object/armature is in rest state when
+          exporting!</para>
+        </important>
       </section>
     </section>
   </section>
   <section>
     <title>Creating splines</title>
     <para>A flat ride requires at least three splines. RCT3 splines are cubic
-    bézier curves, that means each spline point has two control points that
+    bézier curves, that means each spline node has two control points that
     affect the curve shape. They mark paths for peeps to follow. We
     need:</para>
     <orderedlist>
       <listitem>
         <para>A circular loop spline. This defines a round course around the
-        primeter of the ride. It is used by the peeps to travel from the
+        perimeter of the ride. It is used by the peeps to travel from the
         entrance to the seat splines and back from the seat splines to the
         exit. The same holds true for the mechanic and the mechanic
         spline.</para>
@@ -391,31 +468,30 @@
         spline to the inspectionpoint effect bone.</para>
       </listitem>
     </orderedlist>
-    <para>In general, peeps can only enter and leave splines at spline points!
+    <para>In general, peeps can only enter and leave splines at spline nodes!
     This has the following consequences:</para>
     <orderedlist>
       <listitem>
-        <para>The loop spline should have spline points where entrances and
+        <para>The loop spline should have spline nodes where entrances and
         exits can be placed. Imagine the RCT3 grid below your ride and place
-        points near the center of outward facing square edeges.</para>
+        nodes near the center of outward facing square edges.</para>
       </listitem>
       <listitem>
-        <para>The loop spline must have a spline point where a seat or the
+        <para>The loop spline must have a spline node where a seat or the
         mechanic spline branches off. Additionally only one spline can branch
-        off at the same spline point!</para>
+        off at the same spline node!</para>
       </listitem>
       <listitem>
         <para>If a seat spline leads to more than one peep effect bone, it
-        needs a spline point near each. If a peep effect bone has no spline
-        point next to it, the peep can beam to it but will not be able to get
+        needs a spline node near each. If a peep effect bone has no spline
+        node next to it, the peep can beam to it but will not be able to get
         out.</para>
       </listitem>
     </orderedlist>
     <para>Finally, do not move the control points too far away from their
-    spline point. I recommend going no farther away than half the distance
-    between the spline point and the next spline point in the direction of the
-    control point along the curve. To be safe, I'd keep it around 1/3 the
-    distance.</para>
+    node. I recommend going no farther away than half the distance between the
+    spline node and the next spline node in the direction of the control point
+    along the curve. To be safe, I'd keep it around 1/3 the distance.</para>
     <section>
       <title>Splines in Blender</title>
       <para>Use a Bézier Circle for the loop and Bézier Curves for the seat
@@ -424,133 +500,917 @@
   </section>
   <section>
     <title>The Importer</title>
-    <para>This section is preliminary and doesn't explain anything about flat
-    rides at all yet. It for now just gives a basic rundown on things new in
-    the importer for you to keep in mind if you want to experiment.</para>
+    <xi:include href="../new_in_v18/general.xml"
+                xmlns:xi="http://www.w3.org/2001/XInclude"
+                xpointer="element(/1)" />
+    <section>
+      <title>Flat rides</title>
+      <para>I assume you've read the previous section, so I'll just go through
+      the things you need to know for flat rides.</para>
+      <important>
+        <para>If you want to create a flat ride, you do not need to set up
+        prefix, name and path. Those will be superseded later anyways.</para>
+      </important>
+      <orderedlist>
+        <listitem>
+          <para>Open your modxml file as if it were a scenery file. This will
+          give you a good starting point. If you used groups in Blender, an
+          ever better one.</para>
+        </listitem>
+        <listitem>
+          <para>Assign your textures as normal.</para>
+        </listitem>
+        <listitem>
+          <para>Create LODs as normal.</para>
+          <important>
+            <para>Do not assign the same animated model to more than one LOD!
+            Copy it if necessary.</para>
+          </important>
+        </listitem>
+        <listitem>
+          <para>Assign your animations to your LODs. The first one is the rest
+          animation, followed by the startup, loop and stop animations.</para>
+        </listitem>
+        <listitem>
+          <para>Save the scenery file. No need to create ovls.</para>
+        </listitem>
+      </orderedlist>
+    </section>
+    <section>
+      <title>Decimating keyframes</title>
+      <para>The process as I described it so far has an unfortunate
+      consequence: lots of keyframes of which many are not really necessary to
+      create the correct animation. Unfortunately it's not easy to detect and
+      remove them, especially for rotational keyframes. To counteract this, I
+      added the possibility to try to remove them within certain
+      constraints.</para>
+      <important>
+        <para>Before you do that, don't do it and test your ride to see how it
+        looks <quote>normally</quote>.</para>
+      </important>
+      <para>In the importer, open an animation by double-clicking it (or
+      selecting and pressing the <guibutton>E</guibutton> button). The Blender
+      script already removes identical keyframes when they don't have a
+      purpose (<abbrev>i.e.</abbrev> it keeps only the first and the last of a
+      constant range). By pressing the <guibutton>Decimate</guibutton> button
+      you can do some advanced keyframe removal. It tries to remove keyframes
+      that are obvious in linear interpolation. As there is always an inherent
+      inexactness in computer floating numbers, you need to give a threshold
+      value. The default in the window works well for translational keyframes,
+      but will hardly remove rotational ones. So you need to go higher and
+      experiment how high you can go before your animation suffers. For my
+      jumpin' jack ride I saw no change up to 0.0005, but I didn't go higher
+      so that might not be the end.</para>
+    </section>
+  </section>
+  <section>
+    <title><application>Ovlmake</application></title>
+    <para><application>Ovlmake</application> has a special input format I
+    called <quote>raw xml</quote>. It's basically ovl files in xml form and
+    therefore almost as user-unfriendly as it can get. Fortunately we'll only
+    need a small subset of available xml elements for flat rides and I'll walk
+    you through it with an example.</para>
+    <para>Calling <application>ovlmake</application> is very simple. I assume
+    you already used <application>ovlmake</application> for scenery creation
+    or at least read the readme files. So you just need to call
+    <application>ovlmake</application> with the xml file you'll create as an
+    argument. There is also an install mode if you give the command line
+    option <quote>--install</quote>. This will directly create the ovl files
+    in your RCT3 directory.</para>
+    <para>Whenever I talk about an <quote>ovl file</quote> in this chapter, I
+    refer to an common/unique pair.</para>
+    <para><application>Ovlmake</application> now verifies xml input files, a
+    process called <quote>validation</quote>. This validation can spawn three
+    types of messages:</para>
     <itemizedlist>
       <listitem>
-        <para>All changes affect only the creation of scenery ovls</para>
+        <para>errors: Showstoppers meaning the file cannot be processed or
+        would surely lead to RCT3 crashes.</para>
       </listitem>
       <listitem>
-        <para>The importer now saves scenery settings in a entirely new
-        format, so old versions are not able to open them.</para>
+        <para>warnings: Things ovlmake is pretty sure are an error, but should
+        compile fine and may be even wanted in some rare cases. If you follow
+        theses instructions, a warning means you did something wrong.</para>
       </listitem>
       <listitem>
-        <para>It can still open old (scn) files. It can also open
-        ovlcompiler/ovlmake files and 3D model files. This is an
-        <quote>import</quote> in the sense other applications use the word. In
-        the case of model files, it tries to make the best of the information
-        provided. This mainly affects ms3d and my own modxml format. The
-        latter is a special 3D model file format I created for the purpose of
-        importing. So far there is only a Blender export script for it
-        (provided in the attached archive).</para>
-        <para>You (in some cases obviously) cannot save back into these
-        formats, only the new xml format is supported for that. Also most
-        information is not automatically updated (by that I mean if you change
-        the original file, it will not be updated in the scenery file if you
-        reload it). Only the <quote>classic</quote> thing, the 3D data of
-        model files, is automatically updated.</para>
-      </listitem>
-      <listitem>
-        <para>The format of the configuration file changed as well, so you
-        need to reenter it. Currently I recommend putting this version in a
-        new directory and not overwriting the stable version anyways.</para>
-      </listitem>
-      <listitem>
-        <para>Adding animation made changing the coordinate system support
-        necessary (the Fix Orientation matrix). Animations need to be fixed as
-        well, but cannot easily support a full matrix for transformation, so I
-        took this out of the model transformation matrix. Just choose the
-        correct one in the respective dropdown list. The default is saved with
-        the matrix, so press the button as in the old version (but don't edit
-        the matrix). The correct choice is usually Right-Handed, Z-Up (or Y-Up
-        for MilkShape).</para>
-      </listitem>
-      <listitem>
-        <para>The ovl-name was split up into a choice box for the directory,
-        an edit box for the name itself and a prefix edit box. The 'A' button
-        next to the name tries to automatically name it as was done in the old
-        importer version.</para>
-        <para>The prefix box needs a bit of more explanation. I chose to
-        prefix more internal things, as I'm not sure whether splines and
-        animations may become troublesome if names collide. Therefore every
-        name written into the ovls is prefixed. Normally you don't need to
-        care about that, but if you reference ovls either from the game itself
-        or created by earlier versions of the importer, you need to put
-        texture names into square brackets when assigning them in the mesh
-        settings.</para>
-      </listitem>
-      <listitem>
-        <para>You might have noticed that you cannot really edit animation in
-        the importer. That's a decision I made to keep he work I need to do on
-        the UI minimal. Any way that would have fulfilled my own quality
-        standards would have taken a lot of work. Therefore animation has to
-        come from other sources: </para>
-        <para><emphasis>Model files.</emphasis> Supported are MS3D and MODXML.
-        The first might not work fully correctly. People are testing this for
-        me and I hope to get it working as good as possible. The second has
-        the disadvantage that the current export script does not write Blender
-        animations. But the format is very simple, so you can write them by
-        hand. Blender can write resting animations, but I'll explain about
-        them in a different update </para>
-        <para><emphasis>ovlcompiler style xml files.</emphasis> Note that the
-        syntax changed a bit. Refer to the readmes.</para>
-        <para><emphasis>Other scenery xml files.</emphasis></para>
-      </listitem>
-      <listitem>
-        <para>You can use the <guibutton>L</guibutton> button beside the
-        animation list to load animations from these files. A right double
-        click on the button will clear the list before opening the load window
-        (in case you want to update changed animations). Of course the
-        <guibutton>L</guibutton> button does the same for all other lists
-        where it is present (the right double click is not yet implemented
-        everywhere).</para>
-      </listitem>
-      <listitem>
-        <para>You <emphasis>can</emphasis> edit on animations the animation
-        name, bone names and the coordinate system.</para>
-      </listitem>
-      <listitem>
-        <para>Animations need to be assigned to a lod to affect the model.
-        Animated scenery only uses one animation per lod, so the importer will
-        warn you if you add more. Some things need more animations. These are
-        for example toilets, rides, ride entrances and exits. The assignment
-        can be done in the lod edit window or with the respective button next
-        to the animation list (<guibutton>^</guibutton>).</para>
-      </listitem>
-      <listitem>
-        <para>All in all, animations and bone positions are very strange in
-        RCT3. I currently recommend to always add translation and rotation
-        keyframes if you want to animate a bone. Strictly speaking this is not
-        necessary, but RCT3 can do some strange things if not both are given.
-        Basically as soon as you animate a bone or one of it's parents you
-        need to animate the bone into place at the start, the bone position is
-        not enough. If neither it nor one of it's parents is animated, you do
-        not need to do this. That may sound strange at first, but is relevant
-        for effect bones, especially if they require a rotation (peeps,
-        particles or fireworks for example).</para>
-      </listitem>
-      <listitem>
-        <para>Parent-child relationships and bone positions are read from ms3d
-        and modxml files. If you need to update these, press the A button next
-        to the bone list in the model window.</para>
-      </listitem>
-      <listitem>
-        <para>If you need to manually edit bone positions, you should be aware
-        of the roles of pos1 and pos2.</para>
-        <itemizedlist>
-          <listitem>
-            <para>pos1 is relative to the parent bone.</para>
-          </listitem>
-          <listitem>
-            <para>pos2 is absolute in model space.</para>
-          </listitem>
-        </itemizedlist>
-        <para>So usually if a bone has no parent, edit pos1 and deactivate
-        pos2. If it has a parent, edit pos2 and calculate pos1 from it (Q
-        button, Calculate). This requires correct setup of the pos2 matrix of
-        the parent bone.</para>
+        <para>notes: Things not easy to validate and that might be an error or
+        not. If you follow these instructions including those things I marked
+        as for validation only, a note usually also means you did something
+        wrong.</para>
       </listitem>
     </itemizedlist>
+    <important>
+      <para>Validation can only catch most semantic errors and some logic
+      errors. Neither does successful validation guarantee a working flat
+      ride, nor do warnings or notes always mean it will not work (that's why
+      they are not errors ;-)). Still, never ignore them without good
+      reason.</para>
+    </important>
+    <section>
+      <title>Complete Example</title>
+      <para>Here is the complete example for reference:</para>
+      <programlisting>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+
+&lt;rawovl basedir="output" installdir="" xmlns="http://rct3.sourceforge.net/rct3xml/raw"&gt;
+  &lt;rawovl basedir="Style\Custom\Belgabor\jumpjack" prefix="belgabor-"&gt;
+    &lt;rawovl file="JumpJack"&gt;
+      &lt;import file="jump.xml" name="JumpJack" id="mainimport"/&gt;
+    &lt;/rawovl&gt;
+    &lt;rawovl file="Style"&gt;
+      &lt;tex name="JumpJackTexture" format="20"&gt;
+        &lt;texture&gt;&lt;data type="file"&gt;icon.png&lt;/data&gt;&lt;/texture&gt;
+      &lt;/tex&gt;
+      &lt;gsi name="JumpJack" tex="JumpJackTexture" left="0" top="0" right="79" bottom="63" /&gt;
+      &lt;txt name="JumpJack" type="text"&gt;Jumpin' Jack&lt;/txt&gt;
+      &lt;txt name="JumpJackDesc" type="text"&gt;Ride inspired by an early walking robot model.&lt;/txt&gt;
+
+      &lt;anr name="JumpJack" nametxt="JumpJack" description="JumpJackDesc" sid="JumpJack"&gt;
+        &lt;attraction type="4" loopSpline="jumpSplineLoop" impref="mainimport"&gt;
+          &lt;attractionPath spline="jumpSplinePeep1" impref="mainimport"/&gt;
+          &lt;attractionPath spline="jumpSplineMech01" impref="mainimport"/&gt;
+        &lt;/attraction&gt; 
+        &lt;ride attractivity="50" entryFee="10" seating="10"&gt;
+          &lt;rideOption type="12"&gt;
+            &lt;parameter&gt;60&lt;/parameter&gt;
+            &lt;parameter&gt;20&lt;/parameter&gt;
+            &lt;parameter&gt;10&lt;/parameter&gt;
+          &lt;/rideOption&gt;
+          &lt;rideOption type="10"&gt;
+            &lt;parameter&gt;10&lt;/parameter&gt;
+          &lt;/rideOption&gt;
+
+          &lt;rideOption type="0"/&gt;
+          &lt;rideOption type="8" suboptionValue="2"&gt;
+            &lt;parameter&gt;0.8&lt;/parameter&gt;
+            &lt;parameter&gt;0.4&lt;/parameter&gt;
+            &lt;parameter&gt;0.3&lt;/parameter&gt;
+            &lt;parameter&gt;0.33&lt;/parameter&gt;
+          &lt;/rideOption&gt;
+
+          &lt;rideOption type="0"/&gt;
+          &lt;rideOption type="8" suboptionValue="5"&gt;
+            &lt;parameter&gt;0.8&lt;/parameter&gt;
+            &lt;parameter&gt;0&lt;/parameter&gt;
+            &lt;parameter&gt;0.04&lt;/parameter&gt;
+            &lt;parameter&gt;1&lt;/parameter&gt;
+          &lt;/rideOption&gt;
+          &lt;rideOption type="8"&gt;
+            &lt;parameter&gt;5&lt;/parameter&gt;
+            &lt;parameter&gt;5&lt;/parameter&gt;
+            &lt;parameter&gt;5&lt;/parameter&gt;
+            &lt;parameter&gt;1&lt;/parameter&gt;
+          &lt;/rideOption&gt;
+
+          &lt;rideOption type="0"/&gt;
+          &lt;rideOption type="11"&gt;
+            &lt;parameter&gt;0&lt;/parameter&gt;
+          &lt;/rideOption&gt;
+        &lt;/ride&gt;
+      &lt;/anr&gt;
+
+      &lt;sid name="JumpJack" nametxt="JumpJack" icon="JumpJack" 
+        ovlpath="Style\Custom\Belgabor\jumpjack\JumpJack" svd="JumpJack"&gt;
+        &lt;type scenerytype="23" /&gt;
+        &lt;position xsize="20" ysize="10" zsize="20" xsquares="5" zsquares="5"/&gt;
+        &lt;colours choice1="21" choice2="11" choice3="6"/&gt;
+        &lt;squareUnknowns flags="1" minHeight="0" maxHeight="7" supports="0"/&gt;
+      &lt;/sid&gt;
+
+      &lt;symbol name="StyleIndex" target="common" type="int" data="0" /&gt;
+
+    &lt;/rawovl&gt;
+  &lt;/rawovl&gt;
+&lt;/rawovl&gt;</programlisting>
+      <para>As you'll probably guess, this is from my Jumpin' Jack
+      ride.</para>
+    </section>
+    <section>
+      <title>Line-by-line Explanation</title>
+      <para>Now I'll explain line by line what they mean and what you need to
+      change or can customize for your own ride. This assumes you know xml, so
+      I won't list closing tags. I will also give some optional elements that
+      do not appear in the example. If not mentioned otherwise, their
+      attributes are optional as well so you can give all or any. The values I
+      give fol those attributes are usually their default values,
+      <abbrev>i.e.</abbrev> the ones ovlmake uses if you omit them.</para>
+      <programlisting>&lt;rawovl basedir="output\" installdir="" xmlns="http://rct3.sourceforge.net/rct3xml/raw"&gt;</programlisting>
+      <para>A rawovl element defines an execution environment for ovlmake.
+      That may sound strange to you, but it has two simple meanings:</para>
+      <orderedlist>
+        <listitem>
+          <para>It defines (an) output directory(-ies) and/or</para>
+        </listitem>
+        <listitem>
+          <para>Creates an ovl file</para>
+        </listitem>
+      </orderedlist>
+      <para>The <emphasis>basedir</emphasis> attribute defines the general
+      output directory and is relative to the current execution environment's
+      path. The path starts out in the directory the xml file is in in normal
+      mode and RCT3's installation directory in install mode. The
+      <emphasis>installdir</emphasis> attribute supercedes
+      <emphasis>basedir</emphasis> in install mode. If this is not given,
+      install mode uses the <emphasis>basedir</emphasis> attribute. So
+      basically the line above tells ovlmake: In normal mode, put everything
+      within in the <quote>output</quote> subdirectory; In install mode, put
+      everything in RCT3's installation directory.</para>
+      <note>
+        <para>To allow <application>ovlmake</application> to do a thorough
+        validation, always end and never start paths
+        (<emphasis>basedir</emphasis>, <emphasis>installdir</emphasis>) with a
+        path separator (<quote>\</quote>) if they are not empty. Strictly
+        speaking it's not necessary for a successful import, but helps you
+        detect errors.</para>
+      </note>
+      <para>The <emphasis>xmlns</emphasis> attribute is standard XML and
+      defines the namespace (you know XML, don't you).</para>
+      <programlisting>  &lt;rawovl basedir="Style\Custom\Belgabor\jumpjack\" prefix="belgabor-"&gt;</programlisting>
+      <para>Now we step into the <quote>Style\Custom\Belgabor\jumpjack</quote>
+      subdirectory. Of course you should replace <quote>Belgabor</quote> with
+      your own nick and <quote>jumpjack</quote> with your flat's name. The
+      latter is equivalent to the theme name in the importer and should not
+      contain any non-ascii characters.</para>
+      <para>The <emphasis>prefix</emphasis> attribute defines the prefix for
+      everything in the opened execution environment. It is used on every
+      internal name. Use your nick with an optional separator.</para>
+      <programlisting>    &lt;rawovl file="JumpJack"&gt;</programlisting>
+      <para>The <emphasis>file</emphasis> attribute tells ovlmake that
+      everything in this <emphasis>rawovl</emphasis> tag should go into an ovl
+      file, in this case named <quote>JumpJack</quote>. Of course you should
+      choose something that fits your ride. This ovl file will contain the
+      model, spline and animation data.</para>
+      <programlisting>      &lt;import file="jump.xml" name="JumpJack" id="mainimport"/&gt;</programlisting>
+      <para>The import element reads data from files the importer can open as
+      scenery files into an ovl. The <emphasis>file</emphasis> attribute gives
+      the filename of the file to fetch data from. It needs to be relative to
+      the location of XML file we are writing. You need to give the file name
+      you saved your scenery data in the importer to here.</para>
+      <para>The execution environment of ovlmake supersedes the name, path and
+      prefix inside the scenery file, that's why we didn't need to give them
+      in the last chapter.</para>
+      <para>The <emphasis>name</emphasis> attribute gives the internal name
+      for the svd structure ovlmake generates from the scenery file. An svd
+      structure ties up all 3D model data that belongs together (models and
+      <acronym>LOD</acronym>s in the importer). You should give your ride name
+      here.</para>
+      <important>
+        <para>For all internal names, use only ASCII characters. In fact try
+        to use only letters, numbers, underscores and dashes.</para>
+      </important>
+      <para>You can import more than one file into the same ovl, but names may
+      not clash. I also recommend putting only one svd structure into one ovl.
+      If you import files without model data (<abbrev>i.e.</abbrev> animation
+      only modxml files), do not give a <emphasis>name</emphasis> attribute to
+      prevent errors. But if you followed this tutorial exactly, you do not
+      need to do this, the one line shown in the example is enough.</para>
+      <para>The <emphasis>id</emphasis> attribute is not necessary for a
+      successful import but helps <application>ovlmake</application> detect
+      errors in the XML validation stage (See the <emphasis>impref</emphasis>
+      attribute below).</para>
+      <programlisting>    &lt;rawovl file="Style"&gt;</programlisting>
+      <para>We create the Style ovl.</para>
+      <programlisting>      &lt;tex name="JumpJackTexture" format="20"&gt;</programlisting>
+      <para>The <emphasis>tex</emphasis> element creates an icon texture. The
+      <emphasis>name</emphasis> attribute gives the internal name, so use
+      something of your own.</para>
+      <para>The <emphasis>format</emphasis> attribute determines which
+      compression format ovlmake will use. Valid options are 18, 19 and 20. If
+      your icon texture does not use transparency or uses binary transparency
+      (fully transparent or not at all), use 18 as it uses less memory. If you
+      have gradual transparency, try 19 and 20 to decide which looks better.
+      19 chooses colour over transparency, 20 vice versa (fyi, the importer
+      always uses 19). For those who know about 3D texture compression
+      formats, 18, 19 and 20 correspond to dxt1, dxt3 and dxt5
+      respectively.</para>
+      <programlisting>        &lt;texture&gt;&lt;data type="file"&gt;icon.png&lt;/data&gt;&lt;/texture&gt;</programlisting>
+      <para>This line gives the bitmap file of your icon texture. Keep
+      everything as is, only replace <quote>icon.png</quote> with the path to
+      your icon texture bitmap, relative to the XML file we're writing.</para>
+      <programlisting>      &lt;gsi name="JumpJack" tex="JumpJackTexture" left="0" top="0" right="79" bottom="63" /&gt;</programlisting>
+      <para>The <emphasis>gsi</emphasis> element creates an icon reference.
+      The <emphasis>name</emphasis> attribute gives the internal name of the
+      icon reference, the <emphasis>tex</emphasis> attribute the internal name
+      of the icon texture it uses.</para>
+      <para>The <emphasis>left</emphasis>, <emphasis>top</emphasis>,
+      <emphasis>right</emphasis> and <emphasis>bottom</emphasis> attributes
+      define the area of the icon on the texture. As you can see from these
+      numbers, an icon for a flat ride has to be 80x64 pixels big.</para>
+      <programlisting>      &lt;txt name="JumpJack" type="text"&gt;Jumpin' Jack&lt;/txt&gt;
+      &lt;txt name="JumpJackDesc" type="text"&gt;Ride inspired by an early walking robot model.&lt;/txt&gt;</programlisting>
+      <para>A <emphasis>txt</emphasis> element creates a text string. We need
+      two, one for the name in the menu and one for the description. The
+      <emphasis>name</emphasis> attribute (again) gives the internal name of
+      the text string. Keep the <emphasis>type</emphasis> attribute as
+      <quote>text</quote> as given in the example. Put your text string inside
+      the <emphasis>txt</emphasis> element.</para>
+      <programlisting>      &lt;anr name="JumpJack" nametxt="JumpJack" description="JumpJackDesc" sid="JumpJack"&gt;</programlisting>
+      <para>The <emphasis>anr</emphasis> element assembles all data that makes
+      for flat ride a flat ride and not a scenery object, so this is where
+      things get interesting. The <emphasis>name</emphasis> attribute is the
+      internal name of the anr structure. The <emphasis>nametxt</emphasis> and
+      <emphasis>description</emphasis> attributes give the internal names of
+      the names strings for your ride's name in the menu and description
+      respectively. The <emphasis>sid</emphasis> attribute gives the internal
+      name of the accompanying sid structure. We will define that
+      below.</para>
+      <programlisting>        &lt;attraction type="4" loopSpline="jumpSplineLoop" impref="mainimport"&gt;</programlisting>
+      <para>The <emphasis>attraction</emphasis> element contains data common
+      to attractions, <abbrev>i.e.</abbrev> objects peeps interact with. The
+      <emphasis>type</emphasis> attribute determines the type of the
+      attraction and with that the menu your ride appears in. For flat rides
+      the following values are sensible:</para>
+      <informaltable>
+        <tgroup cols="2">
+          <colspec colwidth="1*" />
+          <colspec colwidth="2*" />
+          <tbody>
+            <row>
+              <entry>0</entry>
+              <entry>Standard transport ride</entry>
+            </row>
+            <row>
+              <entry>1</entry>
+              <entry>Gentle ride</entry>
+            </row>
+            <row>
+              <entry>2</entry>
+              <entry>Water ride</entry>
+            </row>
+            <row>
+              <entry>3</entry>
+              <entry>Steel coaster</entry>
+            </row>
+            <row>
+              <entry>4</entry>
+              <entry>Thrill ride</entry>
+            </row>
+            <row>
+              <entry>5</entry>
+              <entry>Other ride</entry>
+            </row>
+            <row>
+              <entry>6</entry>
+              <entry>Junior ride</entry>
+            </row>
+            <row>
+              <entry>15</entry>
+              <entry>Wooden coaster</entry>
+            </row>
+            <row>
+              <entry>16</entry>
+              <entry>Suspended coaster</entry>
+            </row>
+            <row>
+              <entry>17</entry>
+              <entry>Water coaster</entry>
+            </row>
+            <row>
+              <entry>19</entry>
+              <entry>Pool ride</entry>
+            </row>
+            <row>
+              <entry>21</entry>
+              <entry>Safari transport ride</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+      <para>The <emphasis>loopSpline</emphasis> attribute gives the name of
+      your loop spline as it appears in the importer (as you named it in
+      Blender).</para>
+      <para>The <emphasis>impref</emphasis> attribute tells ovlmake during the
+      validation step which import is supposed to contain the spline so it can
+      check whether it is actually there.</para>
+      <programlisting>          &lt;attractionPath spline="jumpSplinePeep1" impref="mainimport"/&gt;</programlisting>
+      <para>The <emphasis>attractionPath</emphasis> elements with their
+      <emphasis>spline</emphasis> attribute list the other splines for your
+      ride. Give the peep splines first and the mech spline last.</para>
+      <note>
+        <para>Optional, on the same nesting level as the
+        <emphasis>attractionPath</emphasis> elements.</para>
+        <programlisting>          &lt;attractionMisc baseUpkeep="4960" flags="0" maxHeight="16" /&gt;</programlisting>
+        <para>The <emphasis>baseUpkeep</emphasis> attribute gives the basic
+        ride upkeep. How it works exactly for flats I don't know, but I
+        suspect it's per year and rounded up per month.</para>
+        <para>The <emphasis>flags</emphasis> attribute sets certain options.
+        To get your value, add up the value of all options you want to set.
+        Only a few are known, here is a list:</para>
+        <informaltable>
+          <tgroup cols="2">
+            <colspec colwidth="1*" />
+            <colspec colwidth="2*" />
+            <tbody>
+              <row>
+                <entry>1</entry>
+                <entry>If set, kids may not ride</entry>
+              </row>
+              <row>
+                <entry>16</entry>
+                <entry>If set, the ride has no test mode (no yellow).</entry>
+              </row>
+              <row>
+                <entry>128</entry>
+                <entry>If set, the user can only select <quote>full
+                load</quote>.</entry>
+              </row>
+            </tbody>
+          </tgroup>
+        </informaltable>
+        <para>The <emphasis>maxHeight</emphasis> attribute gives the maximal
+        Height over ground in height steps the ride can be build at.</para>
+      </note>
+      <programlisting>        &lt;ride attractivity="50" entryFee="10" seating="10"&gt;</programlisting>
+      <para>The <emphasis>ride</emphasis> element contains data common to
+      objects peeps can ride.</para>
+      <para>The <emphasis>attractivity</emphasis> attribute determines how
+      many peeps will enter the park when the ride is built by the
+      user.</para>
+      <para>The <emphasis>entryFee</emphasis> attribute determines the preset
+      for the entry fee.</para>
+      <para>The <emphasis>seating</emphasis> attribute determines the peeps'
+      positions/animation on-ride. I've only tested a couple of sitting
+      positions, see above for placement of the peep effect bones. Here is a
+      list of allowed values (note: the explanation is from debugging strings
+      in the RCT3 exe, so in some cases I do not know what exactly it
+      means):</para>
+      <informaltable>
+        <tgroup cols="2">
+          <colspec colwidth="1*" />
+          <colspec colwidth="2*" />
+          <tbody>
+            <row>
+              <entry>0</entry>
+              <entry>Stand</entry>
+            </row>
+            <row>
+              <entry>1</entry>
+              <entry>Sit</entry>
+            </row>
+            <row>
+              <entry>2</entry>
+              <entry>Sledge</entry>
+            </row>
+            <row>
+              <entry>3</entry>
+              <entry>Lay</entry>
+            </row>
+            <row>
+              <entry>4</entry>
+              <entry>Bike</entry>
+            </row>
+            <row>
+              <entry>5</entry>
+              <entry>Car</entry>
+            </row>
+            <row>
+              <entry>6</entry>
+              <entry>Horse</entry>
+            </row>
+            <row>
+              <entry>7</entry>
+              <entry>Row, 1 oar</entry>
+            </row>
+            <row>
+              <entry>8</entry>
+              <entry>Row, 2 oars</entry>
+            </row>
+            <row>
+              <entry>9</entry>
+              <entry>Sit, Virginia Reel</entry>
+            </row>
+            <row>
+              <entry>10</entry>
+              <entry>Sit, harness</entry>
+            </row>
+            <row>
+              <entry>11</entry>
+              <entry>Sit, bar</entry>
+            </row>
+            <row>
+              <entry>12</entry>
+              <entry>Observation (tower?)</entry>
+            </row>
+            <row>
+              <entry>13</entry>
+              <entry>Sit, harness w/ dangling feet</entry>
+            </row>
+            <row>
+              <entry>14</entry>
+              <entry>Horse steeple (?)</entry>
+            </row>
+            <row>
+              <entry>15</entry>
+              <entry>Pedalo</entry>
+            </row>
+            <row>
+              <entry>16</entry>
+              <entry>Pedal bike</entry>
+            </row>
+            <row>
+              <entry>17</entry>
+              <entry>Canoe</entry>
+            </row>
+            <row>
+              <entry>18</entry>
+              <entry>Dinghy</entry>
+            </row>
+            <row>
+              <entry>19</entry>
+              <entry>Lay, front</entry>
+            </row>
+            <row>
+              <entry>20</entry>
+              <entry>Row, left oar</entry>
+            </row>
+            <row>
+              <entry>21</entry>
+              <entry>Row, right oar</entry>
+            </row>
+            <row>
+              <entry>22</entry>
+              <entry>Horse, merry-go-round</entry>
+            </row>
+            <row>
+              <entry>23</entry>
+              <entry>Horse, Steeplechase</entry>
+            </row>
+            <row>
+              <entry>24</entry>
+              <entry>Jump</entry>
+            </row>
+            <row>
+              <entry>25</entry>
+              <entry>Bum bounce (24 and 25 were not really clear, they may be
+              switched)</entry>
+            </row>
+            <row>
+              <entry>26</entry>
+              <entry>Dance</entry>
+            </row>
+            <row>
+              <entry>27</entry>
+              <entry>Surf board</entry>
+            </row>
+            <row>
+              <entry>28</entry>
+              <entry>Wind surf</entry>
+            </row>
+            <row>
+              <entry>29</entry>
+              <entry>Fishing</entry>
+            </row>
+            <row>
+              <entry>30</entry>
+              <entry>Slide, body back</entry>
+            </row>
+            <row>
+              <entry>31</entry>
+              <entry>Slide, ring</entry>
+            </row>
+            <row>
+              <entry>32</entry>
+              <entry>Inflatable</entry>
+            </row>
+            <row>
+              <entry>33</entry>
+              <entry>Sit, stadium</entry>
+            </row>
+            <row>
+              <entry>34</entry>
+              <entry>Swim</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+      <note>
+        <para>There are two optional attributes you may want to give (in fact
+        the above are also optional, but those you likely want to
+        give).</para>
+        <para>The <emphasis>minCircuits</emphasis> and
+        <emphasis>maxCircuits</emphasis> attributes determine how many
+        circuits the user can set. The defaults are <quote>1</quote> and
+        <quote>-1</quote> respectively, the -1 telling RCT3 ho use its
+        internal default, which is 6 for flat rides.</para>
+      </note>
+      <para>Then a couple of <emphasis>rideOption</emphasis> elements follow.
+      These set a couple of further options. The <emphasis>type</emphasis>
+      attribute determines what is set. Keep the option types in the order
+      displayed in the example, it's the most common order for normal flat
+      rides in the game. Each option has zero to four parameters, depending on
+      the type. I'll try to explain the types in the order it makes sense to
+      explain them, not in the order they appear.</para>
+      <programlisting>          &lt;rideOption type="0"/&gt;</programlisting>
+      <para>The type 0 option has no parameters and acts as a separator. Flat
+      rides theoretically shouldn't need them, but most of the original ones
+      have them so put them in.</para>
+      <programlisting>          &lt;rideOption type="12"&gt;
+            &lt;parameter&gt;60&lt;/parameter&gt;
+            &lt;parameter&gt;20&lt;/parameter&gt;
+            &lt;parameter&gt;10&lt;/parameter&gt;
+          &lt;/rideOption&gt;</programlisting>
+      <para>The type 12 option is not fully understood. As you can see, it
+      requires three parameters. It somehow influences how much peeps are
+      willing to pay for the ride.</para>
+      <programlisting>          &lt;rideOption type="10"&gt;
+            &lt;parameter&gt;10&lt;/parameter&gt;
+          &lt;/rideOption&gt;</programlisting>
+      <para>The type 10 option determines how fast the ride breaks. The higher
+      the parameter, the faster the ride durability decreases. Set this high
+      to have it break down fast if you want to test your mechanic
+      spline/effect point setup. Setting this to 0 makes it not break down at
+      all. If this works forever or similar to the no-repair cheat is
+      currently unknown.</para>
+      <programlisting>          &lt;rideOption type="8"&gt;
+            &lt;parameter&gt;5&lt;/parameter&gt;
+            &lt;parameter&gt;5&lt;/parameter&gt;
+            &lt;parameter&gt;5&lt;/parameter&gt;
+            &lt;parameter&gt;1&lt;/parameter&gt;
+          &lt;/rideOption&gt;</programlisting>
+      <para>The type 8 option sets excitement, intensity and nausea values for
+      the ride. As you can see, the option can also take a
+      <emphasis>subOption</emphasis> attribute, which in this case determines
+      when those ratings apply. The option without
+      <emphasis>subOption</emphasis> attribute sets the base values. Suboption
+      5 sets the maximal influence of surrounding scenery. Suboption 2 sets
+      the values added per circuit.</para>
+      <para>The first three parameters correspond to excitement, intensity and
+      nausea respectively. The fourth parameter is a factor applied to all of
+      the above to get the final value added. What this is good for is open
+      for speculation, but I guess it was added to be able to set the first
+      three parameters to the maximal influence and used the factor to
+      calculate that down per instance (<abbrev>e.g.</abbrev> for a circuit of
+      6 allowed, there are lots of other such settings applying to other input
+      values, but those are only used on tracked rides).</para>
+      <programlisting>          &lt;rideOption type="11"&gt;
+            &lt;parameter&gt;0&lt;/parameter&gt;
+          &lt;/rideOption&gt;</programlisting>
+      <para>Completely unknown. I saw parameters of mostly 0 or 1, most have
+      0.</para>
+      <programlisting>      &lt;sid name="JumpJack" nametxt="JumpJack" icon="JumpJack" 
+        ovlpath="Style\Custom\Belgabor\jumpjack\JumpJack" svd="JumpJack"&gt;</programlisting>
+      <para>The <emphasis>sid</emphasis> element creates a sid structure
+      necessary for all objects you can place in RCT. The
+      <emphasis>name</emphasis> attribute gives the internal name of the
+      structure (the one you used in the <emphasis>sid</emphasis> attribute of
+      the <emphasis>anr</emphasis> element). The <emphasis>nametxt</emphasis>
+      attribute is again the name text string's internal name. The
+      <emphasis>icon</emphasis> attribute gives the internal name of the
+      respective icon reference.</para>
+      <para>The <emphasis>ovlpath</emphasis> attribute is the path of the ovl
+      that contains your ride's 3D object relative to RCT3's installation
+      directory. The <emphasis>svd</emphasis> attribute is the internal name
+      of the svd structure in it (the one you set via the
+      <emphasis>name</emphasis> attribute of the <emphasis>import</emphasis>
+      element above). An error in one of these two causes the well-known "no
+      :sid for :svd"-error.</para>
+      <note>
+        <para>The <emphasis>ovlpath</emphasis> attribute is not easy to
+        validate. Successful validation (and a meaningful note that something
+        went wrong) depends on two things: You followed the instructions about
+        using path separators in path attributes given above and you only use
+        an <emphasis>installdir</emphasis> attribute in the root
+        <emphasis>rawovl</emphasis> element and this
+        <emphasis>installdir</emphasis> attribute is empty (as in this
+        example).</para>
+        <para>If you do <emphasis role="bold">not</emphasis> get a note that
+        something is wrong, it's pretty sure correct. Usually you only get
+        false positives.</para>
+      </note>
+      <programlisting>        &lt;type scenerytype="23" /&gt;</programlisting>
+      <para>Do not change. The value 23 means the sid structure describes a
+      (flat) ride.</para>
+      <programlisting>        &lt;position xsize="20" ysize="10" zsize="20" xsquares="5" zsquares="5"/&gt;</programlisting>
+      <para>The <emphasis>sidposition</emphasis> element describes the size
+      and (optionally) position of your object. I'll only explain the size
+      aspect here.</para>
+      <para>The <emphasis>xsize</emphasis>, <emphasis>ysize</emphasis> and
+      <emphasis>zsize</emphasis> attributes give the size of your object in
+      modeller units in the <emphasis role="bold">game coordinate
+      system</emphasis>. That means coming from Blender, you should enter the
+      size in y-direction, z-direction and x-direction respectively. Round up
+      xsize and zsize to the next full RCT3 square, ysize to the next full
+      number.</para>
+      <para>The <emphasis>xsquares</emphasis> and
+      <emphasis>zsquares</emphasis> attributes give the size of the object in
+      RCT3 grid squares. Enter xsize / 4 into xsquares and zsize / 4 into
+      ysquares. If you don't get round numbers, you did something wrong. These
+      are extremely important as they define the size of the base of your
+      ride.</para>
+      <para>Optionally you can add a <emphasis>supports</emphasis> attribute
+      to get supports, but you need to activate collision detection to really
+      get them (see below). Valid values are: adventure, crazygolf,
+      crazygolfholes, girder, ornate, pathasphalt, pathcrazy, pathdirt,
+      pathleafy, marble, pathtarmac, flatqueueset1, romanpillar, scaffolding,
+      space, spooky, steel, ts1, ts2, ts3, ts4, ts5, flatwildwest, aquarium,
+      aquariumcorner, defaultpool, defaultpoolpath, defaultpoolsmall, sand,
+      pathunderwater, ts1a, ts6, ts7 and ts8. Usually this is
+      <quote>scaffolding</quote> for flat rides.</para>
+      <programlisting>        &lt;colours choice1="21" choice2="11" choice3="6"/&gt;</programlisting>
+      <para>Optional, gives the default colours for recolourable textures and
+      lights.</para>
+      <programlisting>        &lt;squareUnknowns flags="1" minHeight="0" maxHeight="7" supports="0"/&gt;</programlisting>
+      <para>Optional. You can leave this out if you do not want collision
+      detection for your ride. All attributes are optional. Personally I found
+      rides hard to place as RCT3 only shows the base size shadow if collision
+      detection is enabled. Actually you have three choices. Do not give this
+      element, give it once (as in the example) or give it once for every
+      square of your ride (yes, that would mean you'd have to give 25 in the
+      example). The latter option sets collision detection for each individual
+      square (see <xref linkend="s_adv_raw" />).</para>
+      <para>The <emphasis>flags</emphasis> attribute sets flags 33-64 known
+      from the importer. The example shows what you minimally need to set for
+      working collision detection. These are bitflags, so add up
+      2<superscript>FlagNo - 33</superscript> for every flag. If you want
+      supports, you need to activate Flag 34 as well, so you would need to set
+      <emphasis>flags</emphasis> to 3 (1 + 2).</para>
+      <para>The <emphasis>minHeight</emphasis> and
+      <emphasis>maxHeight</emphasis> attributes correspond to unknown 6 and 7
+      in the importer and define from where to where the square is considered
+      <quote>filled</quote>. You need to use rounded modeller units. The
+      <emphasis>supports</emphasis> attribute is unknown 9 in the importer and
+      needs to be set to 1 along setting <emphasis>flags</emphasis> to 3 to
+      have supports (of course you also need to name supports in the
+      <emphasis>position</emphasis> element). </para>
+      <para>In case you miss unknown 8, it is (and needs to be) automatically
+      calculated from <emphasis>minHeight</emphasis> and
+      <emphasis>maxHeight</emphasis>.</para>
+      <programlisting>      &lt;symbol name="StyleIndex" target="common" type="int" data="0" /&gt;</programlisting>
+      <para>Determines the theme type of your ride. Leave everything as it is,
+      only change the <emphasis>data</emphasis> attribute if necessary. This
+      is rather more important for rides than for CS as it determines the
+      default entry and exit of your ride. Here is a list of available
+      options, I omitted those that don't have a themed ride
+      entry/exit:</para>
+      <informaltable>
+        <tgroup cols="2">
+          <colspec colwidth="1*" />
+          <colspec colwidth="2*" />
+          <tbody>
+            <row>
+              <entry>0</entry>
+              <entry>Generic</entry>
+            </row>
+            <row>
+              <entry>1</entry>
+              <entry>Western</entry>
+            </row>
+            <row>
+              <entry>2</entry>
+              <entry>Spooky</entry>
+            </row>
+            <row>
+              <entry>3</entry>
+              <entry>Sci-fi</entry>
+            </row>
+            <row>
+              <entry>4</entry>
+              <entry>Adventure</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </informaltable>
+    </section>
+    <section id="s_adv_raw">
+      <title>Advanced topics</title>
+      <para>This section will explain how you can do some nifty things
+      regarding collision detection and entries and exits. <xref
+      linkend="a_ori" /> visualizes an example 3x3 ride and helps you to find
+      out the correct settings for the result you want to achieve.</para>
+      <figure float="1" id="a_ori">
+        <title>Picture visualizing the orientation of a 3x3 ride in game when
+        not rotated by the player. Four squares have been marked to illustrate
+        the index for <emphasis>squareUnknown</emphasis> elements and
+        <emphasis>xPos</emphasis>/<emphasis>zPos</emphasis> for
+        <emphasis>rideStationLimit</emphasis> elements.</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="orientation.png" scale="40" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>The first thing we'll need to discuss are flags. As you've learned
+      above, Flags 33-64 from the importer are actually per square. The
+      others, 1-32, are as presented in the importer per object. To set them,
+      add a <emphasis>importerUnknowns</emphasis> element and set its
+      <emphasis>flags</emphasis> attribute.</para>
+      <programlisting>        &lt;importerUnknowns flags="0x00200000"/&gt;</programlisting>
+      <para>It needs to be at the same level as the
+      <emphasis>squareUnknowns</emphasis> elements, so I suggest adding it
+      just above the first one. Here I used the hexadecimal notation for the
+      value which is an alternative to the one presented above (integer
+      number). It sets Flag 22 (the integer representation would be
+      <quote>2097152</quote>, which looks a lot less orderly, doesn't it?)
+      which activates exact ride bases (we'll come to that next, basically
+      everything I'll say about <emphasis>squareUnknowns</emphasis> elements
+      depends on this setting), if it's not activated, the ride base will
+      always encompass all squares. Another flag interesting for flat rides is
+      Flag 17, which removes th9e base completely and makes it placeable on
+      water only, like the whale and dolphin shows (to set, use
+      <quote>0x00010000</quote>).</para>
+      <para>To make use of exact ride bases, we need to give one
+      <emphasis>squareUnknowns</emphasis> element per square. To keep things
+      manageable, I'll switch to a 3x3 example as seen in the picture
+      above.</para>
+      <programlisting>        &lt;squareUnknowns flags="0" minHeight="0" maxHeight="0" supports="0"/&gt; &lt;!-- Index 0 --&gt;
+        &lt;squareUnknowns flags="1" minHeight="0" maxHeight="7" supports="0"/&gt;
+        &lt;squareUnknowns flags="1" minHeight="0" maxHeight="0" supports="0"/&gt; &lt;!-- Index 2 --&gt;
+
+        &lt;squareUnknowns flags="1" minHeight="0" maxHeight="7" supports="0"/&gt; &lt;!-- Index 3 --&gt;
+        &lt;squareUnknowns flags="1" minHeight="0" maxHeight="7" supports="0"/&gt;
+        &lt;squareUnknowns flags="1" minHeight="0" maxHeight="7" supports="0"/&gt;
+
+        &lt;squareUnknowns flags="1" minHeight="1" maxHeight="7" supports="0"/&gt;
+        &lt;squareUnknowns flags="1" minHeight="0" maxHeight="7" supports="0"/&gt;
+        &lt;squareUnknowns flags="1" minHeight="1" maxHeight="1" supports="0"/&gt; &lt;!-- Index 8 --&gt;</programlisting>
+      <para>As you can see the index mentioned in the picture is a zero-based
+      list index, so the first element you give corresponds to the top square
+      in the picture and the last one to the bottom one. Mostly I've set up
+      the ride to be 7 units high with collision detection, but the corner
+      squares have special settings.</para>
+      <para>The top corner (index 0) has collision detection switched off. It
+      will not have a base and not highlight while placing.</para>
+      <para>The left corner (index 2) has collision detection, but both
+      <emphasis>minHeight</emphasis> and <emphasis>maxHeight</emphasis> are 0,
+      therefore it does not have a <quote>blocked volume</quote>. The part
+      will have a base and highlight while placing. It will block paths on the
+      ground, but not scenery.</para>
+      <para>The right corner (index 6, not indicated) also has collision
+      detection and has a <quote>blocked volume</quote>, but it starts above
+      ground. It will not have a base, but highlight during placing. It blocks
+      both paths and (collision-detection enabled) scenery overlapping it's
+      volume.</para>
+      <para>The bottom corner (index 8) has collision detection, starts above
+      ground and does not have a <quote>blocked volume</quote>. As the
+      previous one, it will not have a base, but highlight during placing. It
+      does not block scenery, but blocks paths if it <quote>cuts</quote> their
+      volume (usually 4h above the path).</para>
+      <para>To summarize, if a square</para>
+      <itemizedlist>
+        <listitem>
+          <para>has collision detection enabled, it will highlight during
+          placing.</para>
+        </listitem>
+        <listitem>
+          <para>has height 0 inside its min/max range, it will show a
+          base.</para>
+        </listitem>
+        <listitem>
+          <para>has an actual volume blocked, it will block
+          collision-detection enabled scenery.</para>
+        </listitem>
+        <listitem>
+          <para>will block paths, if the path's volume (4h above it) overlaps
+          <emphasis>minHeight</emphasis> and/or
+          <emphasis>maxHeight</emphasis>.</para>
+        </listitem>
+        <listitem>
+          <para>rides act like scenery.</para>
+        </listitem>
+      </itemizedlist>
+      <para>The second topic is limiting where the player can place the ride
+      entrance and exit. You can see this in action for example on the sky
+      swing, the dolphin show and the whale show. This feature was introduced
+      in Soaked!, so first we need to tell <application>ovlmake</application>
+      to write Soaked! stuctures. To do that, add a
+      <emphasis>version</emphasis> attribute to the
+      <emphasis>attraction</emphasis> element and set it to 2 (note that if
+      you want to keep the <emphasis>version</emphasis> attribute and go back
+      to vanilla structures, you need to set it to 0).</para>
+      <programlisting>        &lt;attraction type="4" <emphasis role="bold">version="2"</emphasis> loopSpline="jumpSplineLoop" impref="mainimport"&gt;</programlisting>
+      <para>Now to add station limits to your ride, you need to add
+      <emphasis>rideStationLimit</emphasis> elements to your
+      <emphasis>ride</emphasis> element, on the same level as the
+      <emphasis>rideOption</emphasis> elements. I suggest adding them after
+      those.</para>
+      <important>
+        <para>As soon as you add one or more
+        <emphasis>rideStationLimit</emphasis> elements, RCT3 deactivates all
+        default placement possibilities (<abbrev>i.e.</abbrev> everywhere
+        around the square base of the ride).</para>
+      </important>
+      <para>So if you wanted to restore the default, you'd need to add:</para>
+      <programlisting>          &lt;rideStationLimit xPos="0" zPos="0" flags="0x00000039"/&gt;
+          &lt;rideStationLimit xPos="1" zPos="0" flags="0x00000038"/&gt;
+          &lt;rideStationLimit xPos="2" zPos="0" flags="0x0000003C"/&gt;
+
+          &lt;rideStationLimit xPos="0" zPos="1" flags="0x00000031"/&gt;
+          &lt;rideStationLimit xPos="2" zPos="1" flags="0x00000034"/&gt;
+
+          &lt;rideStationLimit xPos="0" zPos="2" flags="0x00000033"/&gt;
+          &lt;rideStationLimit xPos="1" zPos="2" flags="0x00000032"/&gt;
+          &lt;rideStationLimit xPos="2" zPos="2" flags="0x00000036"/&gt;</programlisting>
+      <para>The <emphasis>xPos</emphasis> and <emphasis>zPos</emphasis>
+      attributes select the square as illustrated in the picture above. The
+      <emphasis>flags</emphasis> attribute selects what (entrance and/or exit)
+      can be placed on which edge of the square. You need to add up the values
+      for the edges (see <xref linkend="a_ori" />) and for the entrance (16 or
+      0x10 hex) and/or exit (32 or 0x20 hex) you want enabled.</para>
+      <para>The nifty thing is that you can also enable placement within the
+      ride square if your collision detection settings allow it. If you allow
+      an entrance/exit to be placed on the same square from different ride
+      squares, there seems to be a bug that in some orientations RCT3 shows
+      the red <quote>cannot place</quote> shadow. Nevertheless if you actually
+      try to do it, it works.</para>
+    </section>
   </section>
 </article>

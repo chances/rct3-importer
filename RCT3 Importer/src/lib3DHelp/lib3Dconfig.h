@@ -38,6 +38,9 @@
 #define READ_RCT3_MOREEXPERTMODE()    wxcRead<bool>(wxT("RCT3/MoreExpertMode"), false)
 #define WRITE_RCT3_MOREEXPERTMODE(v) wxcWrite<bool>(wxT("RCT3/MoreExpertMode"), v)
 
+#define READ_RCT3_WARNPREFIX()        wxcRead<bool>(wxT("RCT3/WarnPrefix"), true)
+#define WRITE_RCT3_WARNPREFIX(v)     wxcWrite<bool>(wxT("RCT3/WarnPrefix"), v)
+
 #define READ_RCT3_SPLITBONES()       wxcRead<bool>(wxT("RCT3/SplitBones"), true)
 #define WRITE_RCT3_SPLITBONES(v)    wxcWrite<bool>(wxT("RCT3/SplitBones"), v)
 

@@ -31,6 +31,8 @@
 #include "ManagerGSI.h"
 #include "ManagerTXT.h"
 
+#define RAWXML_METADATA "metadata"
+
 void cRawParser::Parse(cXmlNode& node) {
     std::string oldprefix = m_prefix;
     ParseStringOption(m_prefix, node, wxT("prefix"), NULL, false);
@@ -166,6 +168,8 @@ void cRawParser::Parse(cXmlNode& node) {
             wxString guid = ParseString(child, wxT(RAWXML_DATAREF), wxT("guid"), NULL);
             guid.MakeUpper();
             m_datareferences[guid] = child;
+        } else if (child(RAWXML_METADATA)) {
+            // Ignore
         } else if (child(RAWXML_SET)) {
             ParseSet(child);
         } else if (child(RAWXML_UNSET)) {
@@ -445,6 +449,7 @@ void cRawParser::Parse(cXmlNode& node) {
             if (!name.IsEmpty()) {
                 c_scn.name = name;
             }
+            c_scn.prefix = "";
             if (useprefix && (m_prefix != "")) {
                 c_scn.prefix = wxString(m_prefix.c_str(), wxConvLocal);
             }
@@ -555,6 +560,9 @@ void cRawParser::Parse(cXmlNode& node) {
 //                continue;
 //            }
             ParseTEX(child);
+        } else if (child(RAWXML_TKS)) {
+            BAKE_SKIP(child);
+            ParseTKS(child);
         } else if (child(RAWXML_TRR)) {
             BAKE_SKIP(child);
             ParseTRR(child);

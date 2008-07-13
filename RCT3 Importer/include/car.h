@@ -98,51 +98,51 @@ struct RideCar_V {
     float_t             water_float1;   // Seen 0
     float_t             water_float2;   // Seen 0
     float_t             water_float3;   // Seen 0
-    int32_t             unk20;          ///< -1, 1 or 3.
+    int32_t             anim_start;     ///< -1, 1 or 3.
                                         /**<
                                          * -1 Most common
                                          * 1 Several. Among them are eg the tour boats, but also others. No idea
                                          * 3 for rotating tower cars (observation towers and rotodrop)
                                          **/
-    int32_t             unk21;          // Seen -1
-    int32_t             unk22;          // Seen -1
-    int32_t             unk23;          // Seen -1
-    uint32_t            unk24;          // Seen 0
-    uint32_t            unk25;          // Seen 1
-    uint32_t            unk26;          // Seen 2
-    int32_t             unk27;          // Seen -1
-    int32_t             unk28;          // Seen -1
-    int32_t             unk29;          // Seen -1
-    int32_t             unk30;          // Seen -1
-    int32_t             unk31;          // Seen -1
-    int32_t             unk32;          // Seen -1
-    int32_t             unk33;          // Seen -1
-    int32_t             unk34;          // Seen -1
-    int32_t             unk35;          // Seen -1
-    int32_t             unk36;          // Seen -1
-    int32_t             unk37;          // Seen -1
-    int32_t             unk38;          // Seen -1
-    int32_t             unk39;          // Seen -1
-    uint32_t            unk40;
-    uint32_t            unk41;
-    uint32_t            unk42;
-    uint32_t            unk43;
-    uint32_t            unk44;
-    uint32_t            unk45;
-    uint32_t            unk46;
-    uint32_t            unk47;
-    uint32_t            unk48;
-    uint32_t            unk49;
-    SceneryItemVisual_V* axelsvd_ref;
-    uint32_t            unk51;
-    uint32_t            unk52;          // Seen 4
-    uint32_t            unk53;          // Seen 4
-    uint32_t            unk54;
-    float_t             unk55;          // Seen -1.0
-    int32_t             unk56;          // Seen -1
-    float_t             unk57;          // Seen -1.0
-    float_t             unk58;          // Seen -1.0
-    float_t             unk59;          // Seen -1.0
+    int32_t             anim_run;       // Seen -1
+    int32_t             anim_stop;      // Seen -1
+    int32_t             anim_station_idle;  // Seen -1
+    int32_t             anim_belt_open;          // Seen 0
+    int32_t             anim_belt_idle;          // Seen 1
+    int32_t             anim_belt_close;          // Seen 2
+    int32_t             anim_unknown01;          // Always -1
+    int32_t             anim_doors_open;          // Seen -1
+    int32_t             anim_doors_open_idle;          // Seen -1
+    int32_t             anim_doors_close;          // Seen -1
+    int32_t             anim_unknown02;          // Always -1
+    int32_t             anim_row_both;          // Seen -1
+    int32_t             anim_row_left;          // Seen -1
+    int32_t             anim_row_right;          // Seen -1
+    int32_t             anim_canoe_station_idle;          // Seen -1
+    int32_t             anim_canoe_idle_front;          // Seen -1
+    int32_t             anim_canoe_idle_back;          // Seen -1
+    int32_t             anim_canoe_row_idle;          // Seen -1
+    int32_t             anim_canoe_row;          // Seen -1
+    uint32_t            car_type_count;
+    uint32_t*           car_types;
+    SceneryItemVisual_V* wheels_right_ref;          // Always 0
+    uint32_t            flip_left;          // Usually 0, Some 1; Left svd flipped, so a right one can be (re)used
+    SceneryItemVisual_V* wheels_left_ref;          // Always 0
+    uint32_t            unk45;          // Always 0
+    SceneryItemVisual_V* wheels_right2_ref;          // Always 0
+    uint32_t            flip_left2;          // Usually 0, Some 1
+    SceneryItemVisual_V* wheels_left2_ref;          // Always 0
+    uint32_t            unk49;          // Always 0
+    SceneryItemVisual_V* axel_front_ref;
+    SceneryItemVisual_V* axel_rear_ref;
+    uint32_t            axel_front_type;          // Usually 4 (= None), can be 1-4
+    uint32_t            axel_rear_type;          // Usually 4 (= None), can be 1-4
+    uint32_t            unk54;          // Seen 0
+    float_t             unk55;          // Seen -1.0, 0
+    int32_t             unk56;          // Seen -1, 0
+    float_t             unk57;          // Seen -1.0, rarely 40, 150 or 400 on Slides and SkyRider
+    float_t             unk58;          // Seen -1.0, 4.0, rarely 0.18, 0.2,
+    float_t             unk59;          // Seen -1.0, 0.0
     float_t             unk60;          // Seen -1.0
 };
 
@@ -180,7 +180,7 @@ struct RideCar_Wext {
                                          */
     float_t             unk81;          // Seen 4.1
     uint32_t            unk82;          // Seen 0
-    int32_t             unk83;          // Seen -1
+    int32_t             anim_rudder;    // Seen -1
     uint32_t            unk84;          // Seen 0
 };
 
@@ -206,12 +206,14 @@ struct RideTrain_V {
     uint32_t    	    minimum_cars;       /// the minimum number of cars for this train
     uint32_t    	    maximum_cars;		/// the maximum number of cars for this train
     uint32_t    	    initial_cars;		/// the initial number of cars for this train when the ride is created
-    float_t	     	    unkfloats1[35];		/// 35 unknown floats, unk12 - unk46
+    float_t	     	    unkfloats1[33];		/// 35 unknown floats, unk12 - unk44
+    Spline*             liftcar_left_ref;
+    Spline*             liftcar_right_ref;
     char*	     	    configuration;      /// Platform? Seen "NoPlatform"
 };
 
 struct RideTrain_Sext {
-    uint32_t    	    unk48;			    ///< Seen 2
+    uint32_t    	    version;			///< 2 soaked, 3 wild
     char*	     	    carname;            ///< Probably equivalent to name in V structure
     uint32_t    	    unk50;              ///< Seen 0, 1, 2
     uint32_t    	    unk51;              ///< Seen 0

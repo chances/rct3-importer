@@ -265,7 +265,7 @@ public:
         return m_bones[m_boneId[bone]];
     }
     virtual inline c3DBone& GetBone(const wxString& bone) {
-        if (!has(m_bones, bone))
+        if (!pretty::has(m_bones, bone))
             throw E3DLoader(wxString::Format(_("Unknown bone '%s'."), bone.c_str()));
         return m_bones[bone];
     }

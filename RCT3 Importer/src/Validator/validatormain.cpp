@@ -26,7 +26,11 @@
 
 #include "validator_keyframes.h"
 
+#include <boost/tokenizer.hpp>
+#include <boost/fusion/view/reverse_view.hpp>
 #include <wx/aboutdlg.h>
+#include <wx/file.h>
+#include <wx/textfile.h>
 
 #include "cXmlDoc.h"
 #include "cXmlNode.h"
@@ -51,6 +55,7 @@
 #define wxStyledTextEventHandler(func) \
     (wxObjectEventFunction)(wxEventFunction)wxStaticCastEvent(wxStyledTextEventFunction, &func)
 
+using namespace pretty;
 using namespace std;
 using namespace xmlcpp;
 
@@ -66,7 +71,7 @@ frmMain::frmMain(wxWindow* parent):rcfrmMain(parent) {
         _("All supported schema files|*.xml;*.rnc;*.rng;*.srng;*.shrng;*.sch|RelaxNG|*.rnc;*.rng;*.srng|"
           "Short Hand RelaxNG|*.srng;*.shrng|Schematron|*.sch|Examplotron|*.xml|All files|*.*")), wxWindowDestroyer);
     m_fdlgFile.reset(new wxFileDialog(this, _("Select xml file to validate"), wxT(""), wxT(""),
-        _("XML files|*.xml|All files|*.*")), wxWindowDestroyer);
+        _("XML files|*.xml;*.modxml|Plain XML files|*.xml|Model XML files|*.modxml|All files|*.*")), wxWindowDestroyer);
     m_fsSchema->Assign(m_fdlgSchema.get());
 
     m_kf.reset(new dlgKeyframes(this, m_stcMain), wxWindowDestroyer);
@@ -85,11 +90,21 @@ frmMain::frmMain(wxWindow* parent):rcfrmMain(parent) {
     m_internal = INT_UNDEFINED;
 
 	this->Connect( m_stcMain->GetId(), wxEVT_STC_CHARADDED, wxStyledTextEventHandler(frmMain::OnSTCCharAdded) );
+	//this->Connect( m_stcMain->GetId(), wxEVT_KEY_DOWN, wxKeyEventHandler(frmMain::OnSTCKeyDown) );
 	this->Connect( m_stcSchema->GetId(), wxEVT_STC_CHARADDED, wxStyledTextEventHandler(frmMain::OnSTCCharAdded) );
 	this->Connect( m_stcSchema->GetId(), wxEVT_STC_CHANGE, wxStyledTextEventHandler(frmMain::OnSTCChange) );
     this->Connect( m_fsSchema->GetId(), wxEVT_COMMAND_COMBOBOX_SELECTED, wxCommandEventHandler( frmMain::OnSchema ) );
 
-
+    m_abbreviations["xml"] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n|";
+    m_abbreviations["rawr"] = "<rawovl basedir=\"$(basedir:output\\)\" installdir=\"$(installdir)\" xmlns=\"http://rct3.sourceforge.net/rct3xml/raw\">\n\t|\n</rawovl>\n";
+    m_abbreviations["rawb"] = "<rawovl basedir=\"$(basedir)\">\n\t|\n</rawovl>\n";
+    m_abbreviations["raw"] = "<rawovl file=\"$(file:|)\">\n\t|\n</rawovl>\n";
+    m_abbreviations["iimport"] = "<import file=\"$(Scenery file to import;Scenery Files|*.xml;*.modxml;*.ms3d;*.scn)\" name=\"$(name:|)\" id=\"mainimport\"/>\n|";
+    m_abbreviations["import"] = "<import file=\"$(Scenery file to import;Scenery Files|*.xml;*.modxml;*.ms3d;*.scn)\" name=\"$(name:|)\"/>\n|";
+    m_abbreviations["sid"] = "<sid name=\"$(name:|)\" nametxt=\"$(name)\" icon=\"$(name)\" ovlpath=\"$(ovlpath:Style\\Custom\\)\" svd=\"$(name)\">\n\t<position xsize=\"4\" ysize=\"4\" zsize=\"4\" xsquares=\"1\" zsquares=\"1\"/>\n</sid>\n|";
+    m_abbreviations["tex"] = "<tex name=\"$(name:|)\" format=\"20\">\n\t<texture><data type=\"file\">$(texture;Image files|*.png;*.bmp;*.jpg;*.jpeg|All files|*.*)</data></texture>\n</tex>\n|";
+    m_abbreviations["gsi"] = "<gsi name=\"$(name:|)\" tex=\"$(tex)\" left=\"$(left:0)\" top=\"$(top:0)\" right=\"$(right:63)\" bottom=\"$(bottom:63)\"/>\n|";
+    m_abbreviations["txt"] = "<txt name=\"$(name:|)\" type=\"text\">|</txt>\n";
 /*
     m_mgr.SetManagedWindow(this);
 
@@ -253,6 +268,16 @@ void frmMain::OnSTCCharAdded(wxStyledTextEvent &event) {
     }
 }
 
+/** @brief OnSTCKey
+  *
+  * @todo: document this function
+  *
+void frmMain::OnSTCKeyDown(wxKeyEvent &event) {
+    m_lbResults->Append(wxString::Format(_("Key %d"), event.GetKeyCode()));
+
+}
+*/
+
 void frmMain::OnMenuLoad( wxCommandEvent& event ) {
     if (m_fdlgFile->ShowModal() == wxID_OK) {
         m_xmlfile = m_fdlgFile->GetPath();
@@ -265,7 +290,13 @@ void frmMain::OnMenuLoad( wxCommandEvent& event ) {
   * @todo: document this function
   */
 void frmMain::OnMenuSaveAs(wxCommandEvent& event) {
-
+    boost::shared_ptr<wxFileDialog> savedlg( new wxFileDialog(this, _("Save XML file..."), wxT(""), wxT(""),
+        _("XML files|*.xml;*.modxml|Plain XML files|*.xml|Model XML files|*.modxml|All files|*.*"), wxFD_SAVE|wxFD_OVERWRITE_PROMPT), wxWindowDestroyer);
+    if (savedlg->ShowModal() == wxID_OK) {
+        m_xmlfile = savedlg->GetPath();
+        SaveFile();
+        //m_stcMain->SaveFile(m_xmlfile);
+    }
 }
 
 /** @brief OnMenuSave
@@ -273,8 +304,11 @@ void frmMain::OnMenuSaveAs(wxCommandEvent& event) {
   * @todo: document this function
   */
 void frmMain::OnMenuSave(wxCommandEvent& event) {
-    if (m_xmlfile.IsEmpty())
+    if (!m_xmlfile.IsEmpty())
+        SaveFile();
+    else
         OnMenuSaveAs(event);
+/*
     if (wxFileName(m_xmlfile).FileExists()) {
         ::wxRenameFile(m_xmlfile, m_xmlfile+".validatorsavebackup");
         if (!m_stcMain->SaveFile(m_xmlfile+".validatorsave")) {
@@ -292,13 +326,53 @@ void frmMain::OnMenuSave(wxCommandEvent& event) {
     } else {
         m_stcMain->SaveFile(m_xmlfile);
     }
+*/
+}
+
+/** @brief SaveFile
+  *
+  * @todo: document this function
+  */
+void frmMain::SaveFile() {
+    if (wxFileName(m_xmlfile).FileExists()) {
+        /*
+        ::wxRenameFile(m_xmlfile, m_xmlfile+".validatorsavebackup");
+        if (!m_stcMain->SaveFile(m_xmlfile+".validatorsave")) {
+            wxLogError(_("Saving Failed!"));
+            return;
+        }
+        m_stcMain->SaveFile(m_xmlfile);
+        if ((wxFileName(m_xmlfile).GetSize() == wxInvalidSize) || (wxFileName(m_xmlfile+".validatorsave").GetSize() == wxInvalidSize) ||
+            (wxFileName(m_xmlfile).GetSize() != wxFileName(m_xmlfile+".validatorsave").GetSize())) {
+            wxLogError(_("Saving Failed!"));
+            return;
+        }
+        */
+        //::wxRenameFile(m_xmlfile+".validatorsavebackup", m_xmlfile+".bak");
+        ::wxRenameFile(m_xmlfile, m_xmlfile+".bak");
+        //::wxRemoveFile(m_xmlfile+".validatorsave");
+//    } else {
+//        m_stcMain->SaveFile(m_xmlfile);
+    }
+    wxFile savefile(m_xmlfile, wxFile::write);
+    savefile.Write(m_stcMain->GetTextRaw(), strlen(m_stcMain->GetTextRaw()));
+
 }
 
 
 
 void frmMain::OnReloadXml( wxCommandEvent& event ) {
     if (!m_xmlfile.IsEmpty()) {
-        m_stcMain->LoadFile(m_xmlfile);
+        //m_stcMain->LoadFile(m_xmlfile);
+        wxFile loadfile(m_xmlfile, wxFile::read);
+        wxFileOffset size = loadfile.SeekEnd(0);
+        loadfile.Seek(0);
+
+        boost::shared_array<char> buf(new char[size+1]);
+        buf[size+1] = '0';
+        loadfile.Read(buf.get(), size);
+        m_stcMain->SetTextRaw(buf.get());
+
         if (m_val)
             DoValidate();
     }
@@ -345,6 +419,229 @@ void frmMain::OnReloadSchema( wxCommandEvent& event ) {
     if (!m_xmlfile.IsEmpty())
         DoValidate();
 }
+
+/** @brief OnApplyXIncludes
+  *
+  * @todo: document this function
+  */
+void frmMain::OnApplyXIncludes(wxCommandEvent& event) {
+    if (m_xmlfile.IsEmpty()) {
+        wxMessageBox(_("You have no XML file loaded or not saved your current work."));
+        return;
+    }
+    cXmlDoc doc;
+    string x = static_cast<const char *>(m_stcMain->GetText().utf8_str());
+    try {
+        doc.read(x, m_xmlfile.utf8_str(), "UTF-8", XML_PARSE_DTDLOAD);
+    } catch (exception& e) {
+        wxMessageBox(e.what());
+    }
+    if (!doc) {
+        m_lbResults->Append(_("Parsing xml failed"));
+        for (vector<cXmlStructuredError>::const_iterator it = doc.getStructuredErrors().begin(); it != doc.getStructuredErrors().end(); ++it) {
+            m_lbResults->Append(wxString::Format(wxT("Line %d: %s (Path: %s)"), it->line,
+                wxString::FromUTF8(it->message.c_str()).c_str(), wxString::FromUTF8(it->getPath().c_str()).c_str()));
+            m_stcMain->MarkerAdd(it->line-1, 0);
+        }
+        for (std::vector<std::string>::const_iterator it = doc.getGenericErrors().begin(); it != doc.getGenericErrors().end(); ++it)
+            m_lbResults->Append(wxString::FromUTF8(it->c_str()));
+        return;
+    }
+    int inc = doc.xInclude();
+    if (inc < 0) {
+        m_lbResults->Append(_("XInclude error"));
+    } else {
+        m_lbResults->Append(wxString::Format(_("Resolved %d XIncludes"), inc));
+    }
+    m_stcMain->SetText(doc.wxwrite(true));
+}
+
+/** @brief OnInsertXInclude
+  *
+  * @todo: document this function
+  */
+void frmMain::OnInsertXInclude(wxCommandEvent& event) {
+    if (m_xmlfile.IsEmpty()) {
+        wxMessageBox(_("You have no XML file loaded or not saved your current work."));
+        return;
+    }
+    if (m_fdlgFile->ShowModal() == wxID_OK) {
+        wxFileName xi(m_fdlgFile->GetPath());
+        xi.MakeRelativeTo(wxFileName(m_xmlfile).GetPathWithSep());
+        int inspos = m_stcMain->GetCurrentPos();
+        m_stcMain->InsertText(inspos, wxString::Format("<xi:include href=\"%s\" xmlns:xi=\"http://www.w3.org/2001/XInclude\" xpointer=\"element(/1)\" />", xi.GetFullPath().c_str()));
+    }
+}
+
+struct AbbreviationMacro {
+    typedef vector<AbbreviationMacro> vec;
+    int start;
+    int length;
+    wxString name;
+    wxString def;
+    wxString replaceby;
+    enum {
+        Mode_None,
+        Mode_Absolute,
+        Mode_Relative
+    } getfile;
+
+    AbbreviationMacro(int st): start(st), length(2), getfile(Mode_None) {}
+    AbbreviationMacro& Finalize() {
+        if (getfile == Mode_None)
+            replaceby = def;
+        return *this;
+    }
+};
+
+/** @brief OnAbbreviationFull
+  *
+  * @todo: document this function
+  */
+void frmMain::OnAbbreviationFull(wxCommandEvent& event) {
+    DoAbbreviation(false);
+}
+
+/** @brief OnAbbreviation
+  *
+  * @todo: document this function
+  */
+void frmMain::OnAbbreviation(wxCommandEvent& event) {
+    DoAbbreviation(true);
+}
+
+/** @brief DoAbbreviation
+  *
+  * @todo: document this function
+  */
+void frmMain::DoAbbreviation(bool quick) {
+    int currentLine = m_stcMain->GetCurrentLine();
+    int lineInd = m_stcMain->GetLineIndentation(currentLine);
+    wxString indentstr;
+    if (m_stcMain->GetUseTabs())
+        indentstr = wxString('\t', lineInd / m_stcMain->GetTabWidth());
+    else
+        indentstr = wxString('\t', lineInd);
+    int inspos = m_stcMain->PositionFromLine(currentLine);
+    wxString line = m_stcMain->GetLine(currentLine);
+    int curlinpos = m_stcMain->GetCurrentPos() - inspos;
+    wxString token = line.Left(curlinpos).AfterLast(' ').AfterLast('\t').AfterLast('\r').AfterLast('\n');
+
+    abbfind abb = m_abbreviations.find(token);
+    if (abb != m_abbreviations.end()) {
+        m_stcMain->DelWordLeft();
+        int newpos = m_stcMain->GetCurrentPos();
+        wxString full = abb->second;
+        string pr;
+
+        AbbreviationMacro::vec macros;
+        AbbreviationMacro currentmacro(0);
+        bool primed = false;
+        bool inside = false;
+        bool indef = false;
+        int pos = -1;
+        int parlevel = 0;
+        foreach(const wxUniChar& ch, full) {
+            ++pos;
+            if (inside) {
+                ++currentmacro.length;
+                if (ch == '(')
+                    ++parlevel;
+                if (ch == ')') {
+                    if (parlevel) {
+                        --parlevel;
+                    } else {
+                        inside = false;
+                        macros.push_back(currentmacro.Finalize());
+                        continue;
+                    }
+                }
+                if (!indef) {
+                    if (ch == ':') {
+                        indef = true;
+                    } else if (ch == '|') {
+                        indef = true;
+                        currentmacro.getfile = AbbreviationMacro::Mode_Absolute;
+                    } else if (ch == ';') {
+                        indef = true;
+                        currentmacro.getfile = AbbreviationMacro::Mode_Relative;
+                    } else {
+                        currentmacro.name += ch;
+                    }
+                } else {
+                    currentmacro.def += ch;
+                }
+            } else if (!primed) {
+                if (ch == '$')
+                    primed = true;
+            } else {
+                if (ch == '(') {
+                    primed = false;
+                    inside = true;
+                    indef = false;
+                    currentmacro = AbbreviationMacro(pos-1);
+                } else {
+                    if (ch != '$') {
+                        primed = false;
+                    }
+                }
+            }
+        }
+
+        foreach(AbbreviationMacro& m, macros) {
+            if (m.getfile != AbbreviationMacro::Mode_None) {
+                wxString extensions;
+                if (m.def.IsEmpty())
+                    extensions = _("All files|*.*");
+                else
+                    extensions = m.def;
+                boost::shared_ptr<wxFileDialog> exdlg( new wxFileDialog(this,
+                    wxString::Format(_("Select file for macro '%s'..."), m.name),
+                    wxT(""), wxT(""), extensions), wxWindowDestroyer);
+                if (exdlg->ShowModal() == wxID_OK) {
+                    wxFileName fi(exdlg->GetPath());
+                    if ((m.getfile == AbbreviationMacro::Mode_Relative) && (!m_xmlfile.IsEmpty())) {
+                        fi.MakeRelativeTo(wxFileName(m_xmlfile).GetPathWithSep());
+                    }
+                    m.replaceby = fi.GetFullPath();
+                } else {
+                    return;
+                }
+            }
+        }
+
+        foreach(const AbbreviationMacro& m, reverse_view<AbbreviationMacro::vec>(macros)) {
+            m_lbResults->Append(wxString::Format(_("%d/%d %s/%s/%s"), m.start, m.length, m.name, m.def, m.replaceby));
+            full.replace(m.start, m.length, m.replaceby);
+        }
+
+        boost::char_separator<char> sep("\r\n");
+        typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+        tokenizer tok(string(full.utf8_str()), sep);
+        bool first = true;
+        foreach(const string& tline, tok) {
+            if (!first) {
+                pr += '\n';
+                pr += indentstr.utf8_str();
+            } else
+                first = false;
+            pr += tline;
+        }
+        wxString final(wxString::FromUTF8(pr.c_str()));
+        int gopos = final.Find('|');
+        final.Replace("|", "", true);
+
+        m_stcMain->InsertText(newpos, final);
+        if (gopos != wxNOT_FOUND) {
+            newpos += gopos;
+            m_stcMain->SetCurrentPos(newpos);
+            m_stcMain->SetSelection(newpos, newpos);
+        }
+    } else {
+        m_lbResults->Append(wxString::Format(_("Abbreviation '%s' not defined."), token.c_str()));
+    }
+}
+
 
 /** @brief OnSchemaCompiler
   *

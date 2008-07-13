@@ -78,10 +78,10 @@ public:
     cAnimation::vec animations;
     cImpSpline::vec splines;
     cLOD::vec lods;
-    wxArrayString references;
+    cReference::vec references;
 
     template<class T>
-    inline typename T::vec& collection() { return T::breakme; }
+    inline typename T::vec& collection() { return T::breakme_scnfile_collection; }
 
 //    wxArrayString tmpmeshlist;
 
@@ -171,6 +171,8 @@ template<>
 inline cImpSpline::vec& cSCNFile::collection<cImpSpline>() { return splines; }
 template<>
 inline cLOD::vec& cSCNFile::collection<cLOD>() { return lods; }
+template<>
+inline cReference::vec& cSCNFile::collection<cReference>() { return references; }
 
 
 #endif // SCNFILE_H_INCLUDED

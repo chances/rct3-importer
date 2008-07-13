@@ -73,6 +73,7 @@ const long idToolBar = ::wxNewId();
 const long tbLoadCache = ::wxNewId();
 const long tbClearCache = ::wxNewId();
 
+using namespace pretty;
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -592,6 +593,11 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
                 } else if (!m_SCN.animatedmodels.size()) {
                     m_nbModels->ChangeSelection(0);
                 }
+                if (m_SCN.splines.size() && (!m_SCN.animations.size())) {
+                    m_nbAnSpline->ChangeSelection(1);
+                } else if (!m_SCN.splines.size()) {
+                    m_nbAnSpline->ChangeSelection(0);
+                }
             } catch (RCT3Exception& e) {
                 wxLogError(_("Error loading scenery file.\n") + e.wxwhat());
                 m_SCN = cSCNFile();
@@ -1023,7 +1029,7 @@ void dlgCreateScenery::OnReferenceDel(wxCommandEvent& WXUNUSED(event)) {
     int sel = m_htlbReferences->GetSelection();
     if (sel<0)
         return;
-    m_textReference->ChangeValue(m_SCN.references[sel]);
+    m_textReference->ChangeValue(m_SCN.references[sel].name);
     m_SCN.references.erase(m_SCN.references.begin() + sel);
 
     MakeDirty();
@@ -1044,6 +1050,14 @@ void dlgCreateScenery::OnReferenceClear(wxCommandEvent& WXUNUSED(event)) {
     m_htlbReferences->UpdateContents();
     m_htlbReferences->SetSelection(-1);
     UpdateControlState();
+}
+
+/** @brief OnReferenceLoad
+  *
+  * @todo: document this function
+  */
+void dlgCreateScenery::OnReferenceLoad(wxCommandEvent& event) {
+    implementLoad<cReference>();
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -1100,10 +1114,14 @@ void dlgCreateScenery::OnModelEdit(wxCommandEvent& WXUNUSED(event)) {
         return;
     dlgModel *dialog = new dlgModel(this);
     if (m_SCN.models[sel].error.size()) {
-        wxString errtext = m_SCN.models[sel].error[0];
+        wxString errtext;// = m_SCN.models[sel].error[0];
+        /*
         while (m_SCN.models[sel].error.erase(m_SCN.models[sel].error.begin()) != m_SCN.models[sel].error.end()) {
             errtext += wxT("\n\n") + m_SCN.models[sel].error[0];
         }
+        */
+        foreach(wxString& err, m_SCN.models[sel].error)
+            errtext += (errtext.IsEmpty()?wxT(""):wxT("\n\n")) + err;
         ::wxMessageBox(errtext, wxString(m_SCN.models[sel].fatal_error?_("Error"):_("Warning")) + _(" during model file loading"), wxOK | (m_SCN.models[sel].fatal_error?wxICON_ERROR:wxICON_WARNING), this);
         m_SCN.models[sel].error.clear();
     }
@@ -1326,7 +1344,7 @@ void dlgCreateScenery::OnAModelConvert(wxCommandEvent& WXUNUSED(event)) {
         }
     }
     if (infolost) {
-        if (::wxMessageBox(_("During the conversion all additional information of the animated model will be lost (Bone <-> Group assignment, bone parent and position 2 settings).\nDo you want to continue?"), _("Question"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this)==wxNO)
+        if (::wxMessageBox(_("During the conversion all additional information of the animated model will be lost (Bone <-> Group assignment, bone parent and position 1 settings if position2 is activated).\nDo you want to continue?"), _("Question"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this)==wxNO)
             return;
     }
 
@@ -1538,6 +1556,35 @@ void dlgCreateScenery::OnLODClear(wxCommandEvent& WXUNUSED(event)) {
     MakeDirty();
     m_htlbLOD->UpdateContents();
     m_htlbLOD->SetSelection(-1);
+    UpdateControlState();
+}
+
+/** @brief OnLODsRDClick
+  *
+  * @todo: document this function
+  */
+void dlgCreateScenery::OnLODsRDClick(wxMouseEvent& event) {
+    int sel = m_htlbLOD->GetSelection();
+    if ((sel<1) || (sel >= m_SCN.lods.size()))
+        return;
+
+    m_SCN.lods[sel].animations = m_SCN.lods[0].animations;
+
+    MakeDirty();
+    m_htlbLOD->UpdateContents();
+    UpdateControlState();
+}
+
+/** @brief OnLODRDClear
+  *
+  * @todo: document this function
+  */
+void dlgCreateScenery::OnLODRDClear(wxMouseEvent& event) {
+    foreach(cLOD& lod, m_SCN.lods) {
+        lod.animations.clear();
+    }
+    MakeDirty();
+    m_htlbLOD->UpdateContents();
     UpdateControlState();
 }
 
@@ -1918,18 +1965,18 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
     bool was_going = false;
 
     // For progress display
-    unsigned int meshes = 0;
-    unsigned int textures = 0;
-    unsigned int progress_count = 0;
+//    unsigned int meshes = 0;
+//    unsigned int textures = 0;
+//    unsigned int progress_count = 0;
 
-    bool filenameok = false;
-    int diaret = wxID_OK;
+//    bool filenameok = false;
+//    int diaret = wxID_OK;
 
     TransferDataFromWindow();
 
     //cSCNFile work = m_SCN;
-    wxFileName sfile;
-    wxFileDialog *dialog = NULL;
+//    wxFileName sfile;
+//    wxFileDialog *dialog = NULL;
 
 // If debugging, use the log window
 #ifndef __WXDEBUG__
@@ -1952,26 +1999,35 @@ void dlgCreateScenery::OnCreate(wxCommandEvent& WXUNUSED(event)) {
     }
 #endif
 
-    if (!cont)
-        goto deinitlogger;
+//    if (!cont)
+//        goto deinitlogger;
 
-    try {
-        wxBusyCursor bc;
-        was_going = true;
-        m_SCN.Make();
-    } catch (RCT3Exception& e) {
-        wxLogError(e.what());
-        error = true;
-    } catch (EOvl& e) {
-        wxLogError(e.what());
-        error = true;
-    } catch (std::exception& e) {
-        wxLogError(_("Unknown exception during creation: %s"), e.what());
-        error = true;
+    if (cont) {
+        try {
+            wxBusyCursor bc;
+            was_going = true;
+            m_SCN.Make();
+            if (m_SCN.IsTextureOVL()) {
+                textureovl = true;
+                foreach(const cFlexiTexture& tex, m_SCN.flexitextures)
+                    ::wxGetApp().g_texturecache.push_back(tex.Name);
+                ::wxGetApp().g_texturecache.sort();
+                ::wxGetApp().g_texturecache.unique();
+            }
+        } catch (RCT3Exception& e) {
+            wxLogError(e.what());
+            error = true;
+        } catch (EOvl& e) {
+            wxLogError(e.what());
+            error = true;
+        } catch (std::exception& e) {
+            wxLogError(_("Unknown exception during creation: %s"), e.what());
+            error = true;
+        }
     }
 
 
-deinitlogger:
+//deinitlogger:
     if (was_going) {
         if (error) {
             wxLog::FlushActive();

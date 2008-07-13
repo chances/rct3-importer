@@ -2,7 +2,7 @@
 //
 // New OVL creation library
 // Manager class for TRR structures
-// Copyright (C) 2007 Tobias Minch
+// Copyright (C) 2008 Tobias Minch
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,6 +35,7 @@
 
 #include "ManagerSPL.h"
 #include "ManagerSVD.h"
+#include "ManagerTKS.h"
 #include "OVLException.h"
 
 using namespace r3;
@@ -303,8 +304,8 @@ void cTrackedRide::Fill(r3::TrackedRide_S* trr, ovlStringTable* tab, ovlRelocati
 
     trr->common.track_path = 0;
     trr->common.v2 = -1;
-    trr->extraarrays = 0;
-    trr->extraarray_count = 0;
+    trr->group_definition_count = 0;
+    trr->group_definitions = 0;
     trr->common.blocks_possible |= 0x0100;
     trr->track_section_count_sw = sections.size();
     trr->track_path_count = trackpaths.size();

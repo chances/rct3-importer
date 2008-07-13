@@ -6,18 +6,21 @@
 namespace r3 {
 
 struct RideStationLimit {
-    uint32_t x;        ///< Shows: index, skycoaster: 0 or 10
-    uint32_t y;         ///< skycoaster: 15-18, Shows: 6
-    uint32_t unk3;         ///< skycoaster, Shows: 0
+    int32_t x;              ///< Shows: index, skycoaster: 0 or 10
+    int32_t z;              ///< skycoaster: 15-18, Shows: 6
+    int32_t height;         ///< In height steps
     uint32_t flags;         ///< skycoaster: 49 or 52, 52 confirms to index = 10, Shows: 50
                             /**<
                              * 0x00000001 to -x?
-                             * 0x00000002 to +y?
+                             * 0x00000002 to +z?
                              * 0x00000004 to +x?
+                             * 0x00000008 to -z?
                              * 0x00000010 Entrance
                              * 0x00000020 Exit
                              * 0x00000040 Flip?
                              * 0x00000100 Flip?
+                             * 0x00000200 Slide End?
+                             * 0x00000400 ... to Lift Hill? 400 alone is between slide end and lift hill. 600 where hill/slide ends
                              **/
 };
 
@@ -36,6 +39,11 @@ struct RideOption {
         RideOptionOption option;
         float_t unk2;
     };
+    /// Guesstimation
+    struct _type_03 {
+        RideOptionOption option;
+        float_t unk2;
+    };
     /**
      * Type 4 Option
      * This option sets limits, mainly on rates. The ride option option sets, which
@@ -46,6 +54,11 @@ struct RideOption {
      * wait.
      **/
     struct _type_04 {
+        RideOptionOption option;
+        float_t unk2;
+    };
+    /// Guesstimation
+    struct _type_05 {
         RideOptionOption option;
         float_t unk2;
     };
@@ -92,7 +105,9 @@ struct RideOption {
         _type_00 type_00;
         _type_01 type_01;
         _type_02 type_02;
+        _type_03 type_03;
         _type_04 type_04;
+        _type_05 type_05;
         _type_06 type_06;
         _type_07 type_07;
         _type_08 type_08;
@@ -122,8 +137,8 @@ struct Ride_Sext {
     uint32_t            attractivity_sw;///< Seen 55, Reese: 30, Shows: 50, FunHouse: 45. Probably Attractivity
     uint32_t            extra_count;
     RideStationLimit*   extras;         ///< Limits where entrance and exit may be placed
-    uint32_t            unk11;          ///< Seen 3
-    uint32_t            unk12;          ///< Seen 3
+    uint32_t            unk11;          ///< Seen 2, 3
+    uint32_t            unk12;          ///< Seen 2, 3
     int32_t             unk13;          ///< Seen -2
     int32_t             unk14;          ///< Seen -2
     int32_t             unk15;          ///< Seen -2

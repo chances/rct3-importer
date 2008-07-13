@@ -75,6 +75,7 @@ protected:
 
     void OnReferenceAdd(wxCommandEvent& event);
     void OnReferenceDel(wxCommandEvent& event);
+    void OnReferenceLoad(wxCommandEvent& event);
     void OnReferenceClear(wxCommandEvent& event);
 
     void OnModelUp(wxSpinEvent& event);
@@ -102,7 +103,9 @@ protected:
     void OnLODCopy(wxCommandEvent& event);
     void OnLODDel(wxCommandEvent& event);
     void OnLODAuto(wxCommandEvent& event);
+    void OnLODsRDClick(wxMouseEvent& event);
     void OnLODClear(wxCommandEvent& event);
+    void OnLODRDClear(wxMouseEvent& event);
 
     void OnVisualNormal(wxCommandEvent& event);
     void OnVisualSwayingTree(wxCommandEvent& event);
@@ -263,5 +266,7 @@ template<>
 inline wxColourHtmlListBox* dlgCreateScenery::listbox<cAnimation>() { return m_htlbAnimation; }
 template<>
 inline wxColourHtmlListBox* dlgCreateScenery::listbox<cImpSpline>() { return m_htlbSpline; }
+template<>
+inline wxColourHtmlListBox* dlgCreateScenery::listbox<cReference>() { return m_htlbReferences; }
 
 #endif // WXDLGCREATESCENERY_H_INCLUDED

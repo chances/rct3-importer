@@ -12,15 +12,20 @@
 #define __STALL_H__
 
 #include "guiicon.h"
+#include "sceneryold.h"
 #include "sceneryrevised.h"
 #include "attraction.h"
 #include "carrieditems.h"
 
 #include "spline.h"
 
-namespace r3 {
+namespace r3old {
 
-struct StallItem;
+struct StallItem {
+	void*           cid_ref;
+	uint32_t        cost;
+};
+
 struct StallStr
 {
     char *Name;
@@ -65,7 +70,7 @@ struct StallA
 	unsigned long unk8;
 	unsigned long unk9;
 	long unk10;
-	SceneryItem *SID;
+	r3old::SceneryItem *SID;
 	unsigned long itemcount;
 	StallItem *Items;
 	unsigned long unk11;
@@ -86,14 +91,14 @@ struct StallB
 	unsigned long unk5;
 	unsigned long unk6;
 	unsigned long unk7;
-	Attraction_S *att;
-	SceneryItem *SID;
+	r3::Attraction_S *att;
+	r3old::SceneryItem *SID;
 };
 struct SpecialAttractionB
 {
 	unsigned long unk;
-	Attraction_S* att;
-	SceneryItem* SID;
+	r3::Attraction_S* att;
+	r3old::SceneryItem* SID;
 };
 struct SpecialAttractionA
 {
@@ -106,13 +111,17 @@ struct SpecialAttractionA
 	unsigned long unk4;
 	unsigned long unk5;
 	unsigned long unk6;
-	Spline* spline;
+	r3::Spline* spline;
 	unsigned long unk7;
 	unsigned long unk8;
 	unsigned long unk9;
 	long unk10;
-	SceneryItem *SID;
+	r3old::SceneryItem *SID;
 };
+
+};
+
+namespace r3 {
 
 struct StallItem {
 	CarriedItem*    cid_ref;
@@ -137,7 +146,7 @@ struct Stall_V {
 	long unk10;
 	*/
 	Attraction_V    att;
-	SceneryItem*    sid_ref;
+	SceneryItem_V*  sid_ref;
 	uint32_t        item_count;
 	StallItem*      items;
 	uint32_t        unk11;
@@ -159,7 +168,7 @@ struct Stall_SW {
 	uint32_t        unk15;
 	uint32_t        unk16;
 	Attraction_S*   att;
-	SceneryItem*    sid_ref;
+	SceneryItem_V*  sid_ref;
 };
 
 struct SpecialAttraction_V {
@@ -180,18 +189,18 @@ struct SpecialAttraction_V {
 	long unk10;
 	*/
 	Attraction_V    att;
-	SceneryItem*    sid_ref;
+	SceneryItem_V*  sid_ref;
 };
 
 struct SpecialAttraction_SW {
 	uint32_t        unk;
 	Attraction_S*   att;
-	SceneryItem*    sid_ref;
+	SceneryItem_V*  sid_ref;
 };
 
 struct ChangingRoom {
 	Attraction_S*   att;
-	SceneryItem*    sid_ref;
+	SceneryItem_V*  sid_ref;
 	Spline*         spline_ref;
 };
 

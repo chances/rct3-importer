@@ -159,6 +159,7 @@ private:
     void ParseSTA(xmlcpp::cXmlNode& node);
     void ParseSVD(xmlcpp::cXmlNode& node);
     void ParseTEX(xmlcpp::cXmlNode& node);
+    void ParseTKS(xmlcpp::cXmlNode& node);
     void ParseTRR(xmlcpp::cXmlNode& node);
     void ParseWAI(xmlcpp::cXmlNode& node);
 

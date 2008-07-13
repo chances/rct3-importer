@@ -50,7 +50,7 @@ struct AnimatedRide_V {
 	uint32_t            entry_fee;    ///< Default entry fee
 */
     Ride_V              ride;
-    SceneryItem*        sid_ref;
+    SceneryItem_V*      sid_ref;
 	uint32_t            unk22;        ///< Seen 0
 	uint32_t            unk23;        ///< Seen 0
 	uint32_t            unk24;        ///< Seen 0
@@ -77,7 +77,7 @@ struct AnimatedRide_SW {
         Ride_S*         ride_sub_s;
         Ride_W*         ride_sub_w;
     };
-    SceneryItem*        sid_ref;
+    SceneryItem_V*      sid_ref;
     uint32_t            unk8;           ///< Seen 0
     uint32_t            unk9;           ///< Seen 0
     uint32_t            showitem_count;

@@ -228,6 +228,12 @@
 			<Option target="Debug" />
 			<Option target="Debug (Public)" />
 		</Unit>
+		<Unit filename="starcomboctrl.h">
+			<Option virtualFolder="wx\" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Debug (Public)" />
+		</Unit>
 		<Unit filename="version.h">
 			<Option target="Release" />
 			<Option target="Debug" />

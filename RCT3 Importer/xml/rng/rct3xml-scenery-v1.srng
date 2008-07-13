@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<srng:grammar 
+	xmlns:srng="http://relaxng.sourceforge.net/ns/shorthand" 
+	xmlns:sch="http://purl.oclc.org/dsdl/schematron" 
+	ns="http://rct3.sourceforge.net/rct3xml/scenery"
+	datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+	
+	<srng:start>
+		<srng:element name="ovl">
+			<srng:attribute name="version" type="int"/>
+			<srng:attribute name="name" occurs="?" type="string"/>
+			<srng:attribute name="prefix" occurs="?" type="string"/>
+			<srng:attribute name="file" occurs="?" type="string"/>
+			
+			<srng:ref name="siv"/>
+			<srng:element name="textures" occurs="?">
+				<srng:ref name="texture"/>
+			</srng:element>
+			<srng:element name="models" occurs="?">
+				<srng:ref name="model"/>
+			</srng:element>
+			<srng:element name="animatedmodels" occurs="?">
+				<srng:ref name="animatedmodel"/>
+			</srng:element>
+			<srng:element name="animations" occurs="?">
+				<srng:ref name="animation"/>
+			</srng:element>
+			<srng:element name="splines" occurs="?">
+				<srng:ref name="spline"/>
+			</srng:element>
+			<srng:element name="lods" occurs="?">
+				<srng:ref name="lod"/>
+			</srng:element>
+			<srng:element name="references" occurs="?">
+				<srng:element name="reference" occurs="*">
+					<srng:attribute name="path" type="string"/>
+				</srng:element>
+			</srng:element>
+			
+		</srng:element>
+	</srng:start>
+	
+	<srng:define name="siv">
+		<srng:element name="siv" occurs="?">
+			<srng:attribute name="sivflags" occurs="?" type="unsignedInt"/>
+			<srng:attribute name="sway" occurs="?" type="decimal"/>
+			<srng:attribute name="brightness" occurs="?" type="decimal"/>
+			<srng:attribute name="unknown" occurs="?" type="decimal"/>
+			<srng:attribute name="scale" occurs="?" type="decimal"/>
+			<srng:attribute name="unk6" occurs="?" type="unsignedInt"/>
+			<srng:attribute name="unk7" occurs="?" type="unsignedInt"/>
+			<srng:attribute name="unk8" occurs="?" type="unsignedInt"/>
+			<srng:attribute name="unk9" occurs="?" type="unsignedInt"/>
+			<srng:attribute name="unk10" occurs="?" type="unsignedInt"/>
+			<srng:attribute name="unk11" occurs="?" type="unsignedInt"/>
+		</srng:element>
+	</srng:define>
+	
+	<srng:define name="texture">
+		<srng:element name="texture" occurs="*">
+			<srng:attribute name="name" type="string"/>
+			<srng:attribute name="fps" occurs="?" type="int"/>
+			<srng:ref name="recolorable"/>
+			<srng:element name="textureanim" occurs="*">
+				<srng:attribute name="frame" type="unsignedInt"/>
+				<srng:attribute name="count" occurs="?">
+					<srng:data type="int">
+						<srng:param name="minInclusive">1</srng:param>
+					</srng:data>
+				</srng:attribute>
+			</srng:element>
+			<srng:element name="textureframe" occurs="+">
+				<srng:attribute name="texture" type="string"/>
+				<srng:ref name="recolorable"/>
+				<srng:attribute name="alphacutoff" occurs="?" type="unsignedByte"/>
+				<srng:choice>
+					<srng:attribute name="alphasource" occurs="?">
+						<srng:choice>
+							<srng:value>0</srng:value>
+							<srng:value>1</srng:value>
+						</srng:choice>
+					</srng:attribute>
+					<srng:group>
+						<srng:attribute name="alphasource">
+							<srng:value>2</srng:value>
+						</srng:attribute>
+						<srng:attribute name="alpha" type="string"/>
+					</srng:group>
+				</srng:choice>
+			</srng:element>
+		</srng:element>
+	</srng:define>
+	
+	<srng:define name="model">
+		<srng:element name="model" occurs="*">
+			<srng:attribute name="name" type="string"/>
+			<srng:attribute name="file" type="string"/>
+			<srng:ref name="orientation"/>
+			
+			<srng:ref name="matrix" occurs="*"/>
+			<srng:ref name="mesh"/>
+			<srng:element name="effectpoint" occurs="*">
+				<srng:attribute name="name" type="string"/>
+				<srng:ref name="matrix" occurs="+"/>
+			</srng:element>
+		</srng:element>
+	</srng:define>
+	
+	<srng:define name="animatedmodel">
+		<srng:element name="animatedmodel" occurs="*">
+			<srng:attribute name="name" type="string"/>
+			<srng:attribute name="file" type="string"/>
+			<srng:ref name="orientation"/>
+			
+			<srng:ref name="matrix" occurs="*"/>
+			<srng:ref name="mesh"/>
+			<srng:element name="modelbone" occurs="*">
+				<srng:attribute name="name" type="string"/>
+				<srng:attribute name="parent" occurs="?" type="string"/>
+				<srng:attribute name="usepos2" occurs="?">
+					<srng:choice>
+						<srng:value>0</srng:value>
+						<srng:value>1</srng:value>
+					</srng:choice>
+				</srng:attribute>
+				<srng:element name="positions1">
+					<srng:ref name="matrix" occurs="+"/>
+				</srng:element>
+				<srng:element name="positions2" occurs="?">
+					<srng:ref name="matrix" occurs="*"/>
+				</srng:element>
+				<srng:element name="bmesh" occurs="*">
+					<srng:attribute name="name" type="string"/>
+				</srng:element>
+			</srng:element>
+		</srng:element>
+	</srng:define>
+	
+	<srng:define name="animation">
+		<srng:element name="animation" occurs="*">
+			<srng:attribute name="name" type="string"/>
+			<srng:ref name="orientation"/>
+			<srng:element name="boneanimation" occurs="*">
+				<srng:attribute name="name" type="string"/>
+				<srng:attribute name="axis" occurs="?">
+					<srng:choice>
+						<srng:value>0</srng:value>
+						<srng:value>1</srng:value>
+					</srng:choice>
+				</srng:attribute>
+				<srng:element name="translations">
+					<srng:ref name="txyz" occurs="*"/>
+				</srng:element>
+				<srng:element name="rotations">
+					<srng:ref name="txyz" occurs="*"/>
+				</srng:element>
+			</srng:element>
+		</srng:element>
+	</srng:define>
+	
+	<srng:define name="spline">
+		<srng:element name="spline" occurs="*">
+			<srng:attribute name="name" type="string"/>
+			<srng:ref name="orientation"/>
+			<srng:attribute name="cyclic" occurs="?">
+				<srng:choice>
+					<srng:value>0</srng:value>
+					<srng:value>1</srng:value>
+				</srng:choice>
+			</srng:attribute>
+			<srng:element name="node" occurs="+">
+				<srng:attribute name="x" type="decimal"/>
+				<srng:attribute name="y" type="decimal"/>
+				<srng:attribute name="z" type="decimal"/>
+				<srng:attribute name="cp1x" type="decimal"/>
+				<srng:attribute name="cp1y" type="decimal"/>
+				<srng:attribute name="cp1z" type="decimal"/>
+				<srng:attribute name="cp2x" type="decimal"/>
+				<srng:attribute name="cp2y" type="decimal"/>
+				<srng:attribute name="cp2z" type="decimal"/>
+			</srng:element>
+		</srng:element>
+	</srng:define>
+	
+	<srng:define name="lod">
+		<srng:element name="lod" occurs="*">
+			<srng:attribute name="modelname" type="string"/>
+			<srng:attribute name="animated" occurs="?">
+				<srng:choice>
+					<srng:value>0</srng:value>
+					<srng:value>1</srng:value>
+				</srng:choice>
+			</srng:attribute>
+			<srng:attribute name="distance">
+				<srng:data type="decimal">
+					<srng:param name="minInclusive">0</srng:param>
+				</srng:data>
+			</srng:attribute>
+			<srng:attribute name="unk2" occurs="?" type="unsignedInt"/>
+			<srng:attribute name="unk4" occurs="?" type="unsignedInt"/>
+			<srng:attribute name="unk14" occurs="?" type="unsignedInt"/>
+			<srng:element name="lodanim" occurs="*">
+				<srng:attribute name="name" type="string"/>
+			</srng:element>
+		</srng:element>
+	</srng:define>
+	
+	<srng:define name="txyz">
+		<srng:element name="txyz">
+			<srng:attribute name="time" type="decimal"/>
+			<srng:attribute name="x" type="decimal"/>
+			<srng:attribute name="y" type="decimal"/>
+			<srng:attribute name="z" type="decimal"/>
+		</srng:element>
+	</srng:define>
+	
+	<srng:define name="mesh">
+		<srng:element name="mesh" occurs="*">
+			<srng:attribute name="name" type="string"/>
+			<srng:attribute name="disabled" occurs="?">
+				<srng:choice>
+					<srng:value>0</srng:value>
+					<srng:value>1</srng:value>
+				</srng:choice>
+			</srng:attribute>
+			<srng:attribute name="ftx" occurs="?" type="string"/>
+			<srng:attribute name="txs" occurs="?" type="string"/>
+			<srng:choice>
+				<srng:attribute name="place" occurs="?" ref="transparencyvalue"/>
+				<srng:attribute name="transparency" occurs="?" ref="transparencyvalue"/>
+			</srng:choice>
+			<srng:attribute name="flags" occurs="?" type="unsignedInt"/>
+			<srng:attribute name="unknown" occurs="?">
+				<srng:choice>
+					<srng:value>1</srng:value>
+					<srng:value>3</srng:value>
+				</srng:choice>
+			</srng:attribute>
+			<srng:attribute name="fudgenormals" occurs="?">
+				<srng:data type="int">
+					<srng:param name="minInclusive">0</srng:param>
+					<srng:param name="maxInclusive">7</srng:param>
+				</srng:data>
+			</srng:attribute>
+			<srng:attribute name="sortx" occurs="?" type="string"/>
+			<srng:attribute name="sorty" occurs="?" type="string"/>
+			<srng:attribute name="sortz" occurs="?" type="string"/>
+		</srng:element>
+	</srng:define>
+	
+	<srng:define name="recolorable">
+		<srng:attribute name="recolorable" occurs="?">
+			<srng:data type="int">
+				<srng:param name="minInclusive">0</srng:param>
+				<srng:param name="maxInclusive">7</srng:param>
+			</srng:data>
+		</srng:attribute>
+	</srng:define>
+	<srng:define name="transparencyvalue">
+		<srng:data type="int">
+			<srng:param name="minInclusive">0</srng:param>
+			<srng:param name="maxInclusive">2</srng:param>
+		</srng:data>
+	</srng:define>
+	<srng:define name="orientation">
+		<srng:attribute name="orientation" occurs="?">
+			<srng:data type="int">
+				<srng:param name="minInclusive">0</srng:param>
+				<srng:param name="maxInclusive">6</srng:param>
+			</srng:data>
+		</srng:attribute>
+	</srng:define>
+	<srng:define name="matrix">
+		<srng:element name="matrix">
+			<srng:attribute name="name" type="string"/>
+			<srng:element name="row1" ref="matrixrow"/>
+			<srng:element name="row2" ref="matrixrow"/>
+			<srng:element name="row3" ref="matrixrow"/>
+			<srng:element name="row4" ref="matrixrow"/>
+		</srng:element>
+	</srng:define>
+	<srng:define name="matrixrow">
+		<srng:list>
+			<srng:data type="decimal"/>
+			<srng:data type="decimal"/>
+			<srng:data type="decimal"/>
+			<srng:data type="decimal"/>
+		</srng:list>
+	</srng:define>
+</srng:grammar>

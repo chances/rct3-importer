@@ -78,6 +78,9 @@ dlgLoadFromFile::dlgLoadFromFile(wxWindow* parent, cRCT3Xml& client, int type, b
         case Type_Textures:
             name = cFlexiTexture::getPlural();
             break;
+        case Type_References:
+            name = cReference::getPlural();
+            break;
         default:
             throw RCT3Exception(wxT("Internal error: unsupported type"));
     }
@@ -120,6 +123,10 @@ void dlgLoadFromFile::OnFileSelect(wxCommandEvent& event) {
                 break;
             case Type_Textures: {
                     FillSingular<cFlexiTexture>();
+                }
+                break;
+            case Type_References: {
+                    FillSingular<cReference>();
                 }
                 break;
             default:
@@ -169,6 +176,10 @@ void dlgLoadFromFile::OnLoad(wxCommandEvent& event) {
                         break;
                     case Type_Textures: {
                             LoadSingular<cFlexiTexture>(i);
+                        }
+                        break;
+                    case Type_References: {
+                            LoadSingular<cReference>(i);
                         }
                         break;
                     default:

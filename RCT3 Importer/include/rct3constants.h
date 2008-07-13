@@ -89,10 +89,32 @@ struct Constants {
                 Generic_Stall =             2  ///< Also used for Doughnut and French Fries
             };
         };
-        struct Unknown13 {
+        struct UI_Deactivation {
             enum {
-                Default =                   0,
-                Animal_House_Ride =    606208  ///< Insect, Reptile and Nocturnal House
+                None =                      0x00000000,
+                Flag =                      0x00000001, ///< Open/Test/Close Flag
+                Details =                   0x00000002,
+                Guest_Thoughts =            0x00000004,
+                Finances =                  0x00000008,
+                Customers =                 0x00000010,
+                Unknown_1 =                 0x00000020,
+                Unknown_2 =                 0x00000040,
+                Unknown_3 =                 0x00000080,
+                Unknown_4 =                 0x00000100,
+                Unknown_5 =                 0x00000200,
+                Unknown_6 =                 0x00000400,
+                Unknown_7 =                 0x00000800,
+                Unknown_8 =                 0x00001000,
+                Unknown_9 =                 0x00002000,
+                Vehicles =                  0x00004000,
+                Test_Results =              0x00008000,
+                Operating_Mode =            0x00010000,
+                Maintenance =               0x00020000,
+                Construction =              0x00040000, ///< also deactivated (without this flag) on animal houses
+                Graphs =                    0x00080000,
+                Unknown_10 =                0x00100000,
+                Animal_House_Ride =         0x00094000  ///< Insect, Reptile and Nocturnal House
+                // Unknowns had no effect on tracked rides, more than 0x00100000 was not tested
             };
         };
     };
@@ -198,8 +220,8 @@ struct Constants {
                 Bike =                     0x04,
                 Car =                      0x05,
                 Horse =                    0x06,
-                Row1Oar =                  0x07,
-                Row2Oar =                  0x08,
+                Row1Oar =                  0x07, // Not used in full extended state
+                Row2Oar =                  0x08, // Not used in full extended state
                 SitVReel =                 0x09,
                 SitHarness =               0x0A,
                 SitBar =                   0x0B,
@@ -207,7 +229,7 @@ struct Constants {
                 Sit_Harness_Feet_Dangle =  0x0D,
                 Horse_Steeple =            0x0E,
                 Pedalo =                   0x0F,
-                Pedal_Bike =               0x10,
+                Pedal_Bike =               0x10, // Not used in full extended state
                 Canoe =                    0x11,
                 Dinghy =                   0x12,
                 Lay_Front =                0x13,
@@ -215,17 +237,19 @@ struct Constants {
                 Row_R_Oar =                0x15,
                 Horse_Merry_Go_Round =     0x16,
                 Horse_Steeplechase =       0x17,
-                Jump =                     0x18, // or 0x19
+                Jump =                     0x18, // or 0x19, Not directly used
                 Bum_Bounce =               0x19, // or 0x18
                 Dance =                    0x1A,
+                MAX_V =                    0x1B,
                 Surf_Board =               0x1B,
                 Wind_Surf =                0x1C,
-                Fishing =                  0x1D,
+                Fishing =                  0x1D, // Not used in full extended state
                 Slide_Body_Back =          0x1E,
                 Slide_Ring =               0x1F,
-                Inflatable =               0x20,
+                Inflatable =               0x20, // Not used in anr/ric in full extended state
                 Sit_Stadium =              0x21,
-                Swim =                     0x22
+                Swim =                     0x22,
+                MAX_SW =                   0x23
             };
         };
         struct Option_Application_Type {
@@ -255,6 +279,20 @@ struct Constants {
                 Scenery_Influence =         0x20, ///< Amount of scenery influence
                 Lateral_GForce_Mean =       0x22,
                 Vertical_GForce_Mean =      0x23
+            };
+        };
+        struct Station_Limit_Flags {
+            enum {
+                To_Minus_X =                0x00000001,
+                To_Plus_Z =                 0x00000002,
+                To_Plus_X =                 0x00000004,
+                To_Minus_Z =                0x00000008,
+                Entrance =                  0x00000010,
+                Exit =                      0x00000020,
+                Flip01 =                    0x00000040,
+                Flip02 =                    0x00000100,
+                Slide_End =                 0x00000200,
+                Slide_End_to_Lifthill =     0x00000400  ///< 400 alone is between slide end and lift hill. 600 where hill/slide ends
             };
         };
     };
@@ -292,6 +330,58 @@ struct Constants {
                 Path_Center =               6,
                 Corner =                    7,
                 Path_Edge_Join =            8
+            };
+        };
+        struct Flags {
+            enum {
+                Unknown_01 =            0x00000001,
+                Unknown_02 =            0x00000002, ///< Never set?
+                Unknown_03 =            0x00000004,
+                Unknown_04 =            0x00000008,
+                Delete_On_Ground_Change=0x00000010,
+                Ground_Change =         0x00000020, ///< Goes with ground if non-colliding, blocks ground change otherwise
+                Unknown_07 =            0x00000040,
+                Unknown_08 =            0x00000080,
+                Support_Block =         0x00000100, ///< Blocks supports (from above only, may require collision detection
+                Unknown_10 =            0x00000200, ///< Set on track pieces (seen on Giant Flume)
+                Unknown_11 =            0x00000400, ///< Never set?
+                Unknown_12 =            0x00000800, ///< Never set?
+                Skew =                  0x00001000, ///< Object skews with ground (like fences). Might depend on other things
+                Smooth_Height =         0x00002000, ///< Smooth height change, not in increments.
+                Unknown_15 =            0x00004000, ///< Never set?
+                Unknown_16 =            0x00008000, ///< Never set?
+                Water_Only =            0x00010000, ///< Removes base of flats and makes them placable on water only.
+                Unknown_18 =            0x00020000, ///< Never set?
+                Unknown_19 =            0x00040000, ///< Never set?
+                Unknown_20 =            0x00080000, ///< Never set?
+                Unknown_21 =            0x00100000, ///< Never set?
+                Exact_Fence =           0x00200000, ///< On rides, fence only around parts touching the floor (collision detection)
+                Unknown_23 =            0x00400000, ///< Never set?
+                Fences =                0x00800000, ///< Set for fences and fence-like objects. Purpose unknown.
+                Unknown_25 =            0x01000000, ///< Never set?
+                Billboard_Menu =        0x02000000, ///< Puts object in billboard menu
+                Unknown_27 =            0x04000000, ///< Never set?
+                Unknown_28 =            0x08000000, ///< Never set?
+                Unknown_29 =            0x10000000, ///< Never set?
+                Unknown_30 =            0x20000000, ///< Never set?
+                Unknown_31 =            0x40000000, ///< Never set?
+                Unknown_32 =            0x80000000, ///< Never set?
+            };
+        };
+        struct Square_Flags {
+            enum {
+                Collision =             0x00000001, ///< Activates collision detection
+                Supports =              0x00000002, ///< Show supports. Needs Collision and the respective setting
+                Unknown_35 =            0x00000004, ///< Never set?
+                Unknown_36 =            0x00000008,
+                Unknown_37 =            0x00000010,
+                Unknown_38 =            0x00000020,
+                Unknown_39 =            0x00000040,
+                Unknown_40 =            0x00000080,
+                Unknown_41 =            0x00000100,
+                Unknown_42 =            0x00000200,
+                Unknown_43 =            0x00000400,
+                Unknown_44 =            0x00000800
             };
         };
         struct Type {
@@ -388,6 +478,230 @@ struct Constants {
                 Aquarium =                      0x00002000,
                 Multiple_Powerlaunch =          0x00004000,
                 Lazy_River =                    0x00008000
+            };
+        };
+        struct Group_Flags {
+            enum {
+                Type_Group_Name =               0x00000000,
+                Type_Track_Ref =                0x00000001,
+                Type_Nothing =                  0x00000002,
+                Unknown_01 =                    0x00000100, ///< Condition: Not there, absence imlpcitily means There
+                Unknown_02 =                    0x00000200, ///< Only on ring slide
+                Unknown_03 =                    0x00000400, ///< Only on ring slide
+                Unknown_04 =                    0x00000800, ///< If we want to build backwards A, preview B
+                Unknown_05 =                    0x00001000  ///< If we want to build forwards A, preview B
+            };
+        };
+    };
+    struct TKS {
+        struct Special_Part {
+            enum {
+                None =                           0,
+                Breakes =                        1,
+                Block_Breakes =                  2,
+                Station =                        3,
+                Photosection =                   4,
+                S_Curve =                        5,
+                 Banked_Rise_Left_45_CT9 =       5,
+                S_Curve_Tilted =                 6,
+                Corkscrew =                      7,
+                 Half_Loop_Inv_Small_33 =        7,
+                 Banked_Rise_Right_45_CT9 =      7,
+                 S_Curve_to_S_Curve_Wide_TB25 =  7,
+                Corkscrew_Large =                8,
+                 S_Curve_Wide_to_S_Curve_TB25 =  8,
+                Half_Loop =                      9,
+                Quarter_Loop =                  10,
+                Half_Loop_Large =               11,
+                Loop =                          12,
+                Figure_8_Loop =                 13,
+                Inline_Twist =                  14,
+                 Vertical_Chain_Left =          14,
+                 Zero_G_Roll_Medium_45_Right_CT9 = 14,
+                Barrel_Roll =                   15,
+                 Vertical_Chain =               15,
+                Overbanked_Turn_Small =         16,
+                Overbanked_Turn_Large =         17,
+                Overbanked_Turn_Medslope =      18,
+                Helix_Up =                      19,
+                 Half_Loop_Down_Medium_33 =     19,
+                 Overbanked_Turn_Small_Right_34 = 19,
+                Helix_Down =                    20,
+                 Half_Loop_Down_Large_33 =      20,
+                Helix_Up_Small =                21,
+                Helix_Up_Large =                22,
+                Quarter_Helix =                 23, // Inverted?
+                Holding_Bleak =                 24,
+                Lift_Hill_Curved =              25,
+                Spinning_Control_Toggle =       26,
+                Reverser =                      27,
+                Lift_Hill_Launched =            28,
+                Lift_Hill_Cable =               29,
+                Transfer_Upper =                30,
+                Transfer_Lower =                31,
+                Lift_End =                      32, // Top and Bottom
+                Tilt_Section =                  33,
+                Drop_95_Degrees =               34,
+                Spinning_Tunnel =               36,
+                Log_Reverser =                  37,
+                Log_Bumps =                     38,
+                Water_Splash =                  39,
+                Rapids =                        40,
+                Waterfall =                     41,
+                 Launch_Section_CT9 =           41,
+                Whirlpool =                     42,
+                Zero_G_Roll_Steep =             43,
+                 Zero_G_Roll_Medium_45_Left_CT5=43,
+                Zero_G_Roll_Medium =            44,
+                Lift_Middle =                   47, // Also Elevator, Giant Slide Middle & Top
+                Diving_Loop_90_Left =           50,
+                 Golf_Hole_01 =                 50,
+                Diving_Loop_90_Right =          51,
+                 Golf_Hole_02 =                 51,
+                Golf_Hole_03 =                  52,
+                Golf_Hole_04 =                  53,
+                Golf_Hole_05 =                  54,
+                Golf_Hole_06 =                  55,
+                Vertical_Tight_Curve =          59,
+                Steep_Slope_to_Vertical =       60,
+                Vertical_to_Steep_Slope =       61,
+                Serpent_Head =                  62,
+                Serpent_Tail =                  63,
+                Helix_Down_Small =              64,
+                Helix_Down_Large =              65,
+                Water_Spray =                   66,
+                Inv_Station_Middle_End =        67, // Track27
+                Aquarium_Arch =                 68,
+                Aquarium_Circle =               69,
+                Aquarium_Inside_L =             70,
+                Aquarium_Inside_Wall =          71,
+                Aquarium_Ray =                  73,
+                Spiral_Lift_Hill_Bottom =       74,
+                Spiral_Lift_Hill_Middle =       75,
+                Spiral_Lift_Hill_Top =          76,
+                Rapids_White_Water_01 =         77,
+                Rapids_White_Water_02 =         78,
+                Straight_to_Vertical_Small =    80,
+                Straight_to_Vertical_Medium =   81,
+                Slide_Station_Transition =      82,
+                Slide_Bowl =                    83,
+                Slide_Funnel =                  84,
+                Slide_End =                     85,
+                Slide_End_to_Lift_Hill =        86,
+                Flying_Snake_Dive =             88,
+                Diving_Loop =                   89,
+                Corkscrew_Loose =               90,
+                Rotating_Tower_Base =           91,
+                Rotating_Tower_Vartical =       92,
+                Rotating_Tower_Cap_180 =        93,
+                Rotating_Tower_Cap_90_CW =      94,
+                Loop_Tilt_Incline =             96,
+                Straight_to_Vertical_Large =    97,
+                Inv_Straight_to_Vertical_Small =99,
+                Vertical_to_Straight_Large =            100,
+                Vertical_to_Straight_Small =            101,
+                Vertical_to_Inv_Straight_Large =        102,
+                Vertical_to_Inv_Straight_Small =        103,
+                Steep_Slope_to_Straight_Short =         104,
+                Steep_Slope_to_Straight_Short_Chain =   105,
+                Straight_to_Steep_Slope_Short =         106,
+                Straight_to_Steep_Slope_Short_Chain =   107,
+                Half_Loop_Large_33 =                    108,
+                Half_Loop_Medium_33 =                   109,
+                Half_Loop_Small_33 =                    110,
+                Half_Loop_Down_Small_33 =               111,
+                Half_Loop_Inv_Large_33 =                112,
+                Half_Loop_Inv_Down_Large_33 =           113,
+                Half_Loop_Inv_Medium_33 =               114,
+                Half_Loop_Inv_Down_Medium_33 =          115,
+                Half_Loop_Inv_Down_Small_33 =           116,
+                Straight_to_Vertical_Down_Inv_Large =   117,
+                Vertical_to_Straight_Inv_Large =        118,
+                Straight_to_Vertical_Down_Large =       119,
+                Vertical_to_Straight_Down_Large =       120,
+                Loop_Large_Left =                       121,
+                Loop_Large_Right =                      122,
+                Loop_Small_Left =                       123,
+                Loop_Small_Right =                      124,
+                Overbanked_Turn_Small_Left_34 =         125,
+                Vertical_to_Inv_Straight_Down_Large =   126,
+                Inv_Corkscrew =                         127, // Tr5
+                Inv_Corkscrew_Large =                   128  // Tr5
+            };
+        };
+        struct Direction {
+            enum {
+                Straight =                              0,
+                Left =                                  1,
+                Right =                                 2
+            };
+        };
+        struct Flags {
+            enum {
+                Start_Section =                     0x00000001, ///< Player can start building with this section
+                Chain =                             0x00000002,
+                Special =                           0x00000004,
+                Capped =                            0x00000008, ///< Usually capped or wide
+                Transfer =                          0x00000010, ///< Heartline coaster, reverse at mid of spline
+                Cable_Lift =                        0x00000020,
+                Station =                           0x00000040,
+                Tower_Ride_Base =                   0x00000080,
+                Hold =                              0x00000100, ///< Train is held for X seconds. Enables respective animations
+                Lift_Bottom =                       0x00000200,
+                Lift_Middle =                       0x00000400,
+                Lift_Top =                          0x00000800,
+                Water_Option =                      0x00001000,
+                Station_End_Suspended_Mono =        0x00002000,
+                Accelerating =                      0x00004000, ///< Launch sections
+                Rapids_Tight_Curve =                0x00008000,
+                Reverser =                          0x00010000, ///< Extra spline turns car
+                Alternate_Spline =                  0x00020000, ///< Extra spline is alternate car spline
+                Trigger_Alternate_Spline =          0x00040000, ///< Triggers alternate spline (see previous) in next section
+                Unknown_Special =                   0x00200000, ///< Usually but not allways on capped versions. Also on lifts. Cannot fall off?
+                Extended_Structure =                0x00400000, ///< Structure is Soaked/Wild extended
+                Serpent_Head =                      0x00800000, ///< Maybe cable lift house?
+                Booster =                           0x01000000, ///< Aqua Blaster
+                Aquarium =                          0x02000000,
+                Ring_Slide_Station_1 =              0x08000000,
+                Ring_Slide_Station_2 =              0x20000000
+            };
+        };
+        struct Slope {
+            enum {
+                Flat =          0,
+                Medium_Up =     1,
+                Medium_Down =   2,
+                Steep_Up =      3,
+                Steep_Down =    4,
+                Vertical_Up =   5,
+                Vertical_Down = 6,
+                Auto_End =      7       ///< Only used for chair lift end
+            };
+        };
+        struct Bank {
+            enum {
+                Flat =          0,
+                Half_Left =     1,
+                Left =          2,
+                Inv_Half_Left = 3,
+                Inv =           4,
+                Inv_Half_Right= 5,
+                Right =         6,
+                Half_Right =    7
+            };
+        };
+        struct Splitter_Half {
+            enum {
+                Not_Splittable = 0,
+                Left           = 1,
+                Right          = 2
+            };
+        };
+        struct Rotator_Type {
+            enum {
+                None =          0,
+                Rotate_180 =    1,
+                Rotate_90CW =   2
             };
         };
     };

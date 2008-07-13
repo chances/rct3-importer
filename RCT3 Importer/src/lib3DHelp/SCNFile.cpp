@@ -972,6 +972,7 @@ bool cSCNFile::FromCompilerXml(cXmlNode& node, const wxString& path) {
     int option_lods = 1;
 
     name = node.wxgetPropVal("name", name);
+    prefix = node.wxgetPropVal("prefix", prefix);
 
     // Read ovl file
     ovlpath = node.wxgetPropVal("file", ".\\");
@@ -1032,7 +1033,7 @@ bool cSCNFile::FromCompilerXml(cXmlNode& node, const wxString& path) {
             wxString ref = child.wxcontent();
             if (ref.IsEmpty())
                 throw RCT3Exception(_("REFERENCE tag misses content."));
-            references.Add(ref);
+            references.push_back(ref);
         } else if (child(COMPILER_OPTIONS)) {
             wxString te = child.wxgetPropVal("lods", "1");
             if (te == wxT("1")) {
@@ -1264,7 +1265,7 @@ bool cSCNFile::FromModelFile(boost::shared_ptr<c3DLoader>& model) {
         cModel& accmod = animated?amod:mod;
 
         accmod.name = gr.first;
-        if (!accmod.Load(model->GetFilename())) {
+        if (!accmod.Load(model->GetFilename(), false)) {
             if (accmod.fatal_error) {
                 foreach(const wxString& err, accmod.error)
                     wxLogError(err);
@@ -1371,6 +1372,8 @@ bool cSCNFile::FromNode(cXmlNode& node, const wxString& path, unsigned long vers
         CSCNFILE_READVECTOR(animations, cAnimation, RCT3XML_CANIMATION, RCT3XML_CSCNFILE_ANIMATIONS)
         CSCNFILE_READVECTOR(splines, cImpSpline, RCT3XML_CSPLINE, RCT3XML_CSCNFILE_SPLINES)
         CSCNFILE_READVECTOR(lods, cLOD, RCT3XML_CLOD, RCT3XML_CSCNFILE_LODS)
+        CSCNFILE_READVECTOR(references, cReference, RCT3XML_REFERENCE, RCT3XML_CSCNFILE_REFERENCES)
+/*
         } else if (child(RCT3XML_CSCNFILE_REFERENCES)) {
             cXmlNode subchild = child.children();
             while (subchild) {
@@ -1381,6 +1384,7 @@ bool cSCNFile::FromNode(cXmlNode& node, const wxString& path, unsigned long vers
                 }
                 ++subchild;
             }
+*/
         }
 
         ++child;
@@ -1419,8 +1423,10 @@ cXmlNode cSCNFile::GetNode(const wxString& path) {
     CSCNFILE_WRITEVECTOR(animations, cAnimation::iterator, RCT3XML_CSCNFILE_ANIMATIONS)
     CSCNFILE_WRITEVECTOR(splines, cImpSpline::iterator, RCT3XML_CSCNFILE_SPLINES)
     CSCNFILE_WRITEVECTOR(lods, cLOD::iterator, RCT3XML_CSCNFILE_LODS)
+    CSCNFILE_WRITEVECTOR(references, cReference::iterator, RCT3XML_CSCNFILE_REFERENCES)
 
     //parent = new wxXmlNode(node, wxXML_ELEMENT_NODE, RCT3XML_CSCNFILE_REFERENCES);
+    /*
     tempnode = cXmlNode(RCT3XML_CSCNFILE_REFERENCES);
     for (cStringIterator it = references.begin(); it != references.end(); it++) {
         //wxXmlNode* newchild = new wxXmlNode(parent, wxXML_ELEMENT_NODE, RCT3XML_REFERENCE);
@@ -1429,6 +1435,8 @@ cXmlNode cSCNFile::GetNode(const wxString& path) {
         tempnode.appendChildren(newchild);
     }
     node.appendChildren(tempnode);
+    */
+
 
     return node;
 }
@@ -1447,7 +1455,7 @@ bool cSCNFile::Check() {
         }
     }
 
-    if (prefix.IsEmpty()) {
+    if (prefix.IsEmpty() && READ_RCT3_WARNPREFIX()) {
         wxLogWarning(_("You should set a prefix!"));
         warning = true;
     }
@@ -1773,9 +1781,9 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
 //    }
 
     // References
-    for (cStringIterator it = references.begin(); it != references.end(); ++it) {
-        wxLogVerbose(_("Adding Reference: ") + *it);
-        c_ovl.AddReference(it->mb_str(wxConvFile));
+    foreach(const cReference& ref, references) {
+        wxLogVerbose(_("Adding Reference: ") + ref.name);
+        c_ovl.AddReference(ref.name.ToAscii());
     }
 
     // SVD, shapes & animations

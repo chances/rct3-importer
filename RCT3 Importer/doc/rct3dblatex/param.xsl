@@ -4,5 +4,6 @@
 <xsl:param name="doc.lot.show"></xsl:param>
 <xsl:param name="imagedata.default.scale">maxheight=1cm</xsl:param>
 <xsl:param name="latex.hyperparam">colorlinks,pdfstartview=FitV,linktocpage=false</xsl:param>
-
+<xsl:param name="latex.class.article">scrartcl</xsl:param>
+<xsl:param name="latex.class.options">a4paper, DIV14, 12pt, version=last</xsl:param>
 </xsl:stylesheet>

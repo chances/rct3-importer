@@ -46,6 +46,7 @@
 
 #include "rng/ms3d_comment.rnc.gz.h"
 
+using namespace pretty;
 using namespace r3;
 using namespace std;
 using namespace xmlcpp;
@@ -664,7 +665,8 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
                         break;
                     }
                     case Ref: {
-                        tex.m_file = token;
+                        if (token != "-")
+                            tex.m_file = token;
                         tokenmode = Normal;
                         break;
                     }

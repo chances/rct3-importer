@@ -1225,6 +1225,7 @@ EVT_COMMAND(wxID_ANY, wxEVT_WRAPPER, dlgModel::OnWrapperEdit)
 EVT_COMMAND(wxID_ANY, wxEVT_DOUPDATE, dlgModel::OnDoUpdate)
 //EVT_AUI_PANE_MAXIMIZE(dlgModel::OnPaneMaximize)
 
+EVT_COMBOBOX(XRCID("m_textModelName"), dlgModel::OnNameAuto)
 EVT_COMBOBOX(XRCID("m_textModelFile"), dlgModel::OnModelOpen)
 
 EVT_BUTTON(XRCID("m_btMatrixEdit"), dlgModel::OnMatrixEdit)
@@ -1251,7 +1252,7 @@ EVT_BUTTON(XRCID("m_btEffectClear"), dlgModel::OnEffectClear)
 EVT_BUTTON(XRCID("m_btLoad"), dlgModel::OnLoad)
 END_EVENT_TABLE()
 
-dlgModel::dlgModel(wxWindow *parent, bool animated):m_model(NULL), m_animated(animated) {
+dlgModel::dlgModel(wxWindow *parent, bool animated):m_model(NULL), m_animated(animated), m_loadoverlay(false) {
     m_hookhandler = NULL;
 
     if (m_animated)
@@ -1282,7 +1283,12 @@ dlgModel::dlgModel(wxWindow *parent, bool animated):m_model(NULL), m_animated(an
     m_panModel = new wxPanel();
     InitModelFromXRC(m_panModel);
 
-    wxTextCtrl *t_text = XRCCTRL(*m_panModel,"m_textModelFile",wxTextCtrl);
+    wxTextCtrl *t_text  = XRCCTRL(*m_panModel,"m_textModelName",wxTextCtrl);
+    m_textModelName = new wxStarComboCtrl(m_panModel, XRCID("m_textModelName"));
+    t_text->GetContainingSizer()->Replace(t_text, m_textModelName);
+    t_text->Destroy();
+
+    t_text = XRCCTRL(*m_panModel,"m_textModelFile",wxTextCtrl);
     wxFileDialog *filedlg = new wxFileDialog(
                                this,
                                _("Open Model File"),
@@ -1656,11 +1662,25 @@ void dlgModel::UpdateControlState() {
 
 }
 
+/** @brief OnNameAuto
+  *
+  * @todo: document this function
+  */
+void dlgModel::OnNameAuto(wxCommandEvent& event) {
+    wxFileName t = m_model->file;
+    m_textModelName->SetText(t.GetName());
+}
+
 void dlgModel::OnModelOpen(wxCommandEvent& event) {
     ::wxGetApp().g_workdir.AssignDir(wxFileName(event.GetString()).GetPath());
-    wxFileName oldfile = m_model->file;
+    boost::shared_ptr<cModel> backup;
+    if (m_animated)
+        backup.reset(new cAnimatedModel(m_amodel));
+    else
+        backup.reset(new cModel(m_smodel));
+    //wxFileName oldfile = m_model->file;
     TransferDataFromWindow();
-    if (m_model->Load(event.GetString())) {
+    if (m_model->Load(event.GetString(), m_loadoverlay)) {
         if (m_model->fileorientation != ORIENTATION_UNKNOWN) {
             if (m_model->fileorientation != m_model->usedorientation) {
                 if (READ_RCT3_ORIENTATION() == ORIENTATION_UNKNOWN) {
@@ -1672,6 +1692,17 @@ void dlgModel::OnModelOpen(wxCommandEvent& event) {
                 }
             }
         }
+
+        if (m_loadoverlay) {
+            if (m_model->error.size()) {
+                wxString errtext;
+                foreach(wxString& err, m_model->error)
+                    errtext += (errtext.IsEmpty()?wxT(""):wxT("\n\n")) + err;
+                ::wxMessageBox(errtext, wxString(m_model->fatal_error?_("Error"):_("Warning")) + _(" during model file loading"), wxOK | (m_model->fatal_error?wxICON_ERROR:wxICON_WARNING), this);
+                m_model->error.clear();
+            }
+        }
+
         TransferDataToWindow();
         UpdateAll();
 /*
@@ -1697,8 +1728,12 @@ void dlgModel::OnModelOpen(wxCommandEvent& event) {
 */
     } else {
         ::wxMessageBox(m_model->error[0], _("Error"), wxOK | wxICON_ERROR, this);
-        m_model->file = oldfile;
+        if (m_animated)
+            m_amodel = *dynamic_cast<cAnimatedModel*>(backup.get());
+        else
+            m_smodel = *backup.get();
     }
+    m_loadoverlay = false;
 }
 
 void dlgModel::OnControlUpdate(wxCommandEvent& WXUNUSED(event)) {
@@ -2180,7 +2215,11 @@ void plibErrorCallback ( enum ulSeverity severity, char* msg ) {
 }
 */
 void dlgModel::OnLoad(wxCommandEvent& WXUNUSED(event)) {
-// TODO (tobi#1#): Load animated models
+// TODO (belgabor#1#): Load animated models
+    //wxMessageBox(_("This functionality is currently disabled. Please use the 'L' button in the Create Scenery window."));
+    m_loadoverlay = true;
+    m_textModelFile->OnButtonClick();
+/*
     wxFileDialog *dialog = new wxFileDialog(
                                      this,
                                      _T("Open Scenery File (Load model)"),
@@ -2218,5 +2257,6 @@ void dlgModel::OnLoad(wxCommandEvent& WXUNUSED(event)) {
         }
     }
     dialog->Destroy();
+*/
 }
 

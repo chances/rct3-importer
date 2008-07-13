@@ -128,7 +128,7 @@ void wxReferenceListBox::UpdateContents() {
 }
 
 wxString wxReferenceListBox::OnGetItem(size_t n) const {
-    return wxT("<font size='2'>")+wxEncodeHtmlEntities(m_contents->references[n])+wxT("</font>");
+    return wxT("<font size='2'>")+wxEncodeHtmlEntities(m_contents->references[n].name)+wxT("</font>");
 }
 
 ////////////////////////////////////////////////////////////////////////

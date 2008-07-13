@@ -40,6 +40,7 @@
 #include "exdataview.h"
 #include "fileselectorcombo.h"
 #include "RCT3Structs.h"
+#include "starcomboctrl.h"
 
 class wxMeshListModel;
 /*
@@ -78,7 +79,7 @@ class dlgBone;
 class dlgModel : public wxDialog {
     friend class dlgBone;
 protected:
-    wxTextCtrl* m_textModelName;
+    wxStarComboCtrl* m_textModelName;
     wxChoice* m_choiceCoordinateSystem;
     wxButton* m_btMatrixEdit;
     wxButton* m_btMatrixSave;
@@ -112,6 +113,7 @@ protected:
     void OnChar(wxKeyEvent& event);
     //void OnPaneMaximize(wxAuiManagerEvent& event);
 
+    void OnNameAuto(wxCommandEvent& event);
     void OnModelOpen(wxCommandEvent& event);
     void OnControlUpdate(wxCommandEvent& event);
 
@@ -155,6 +157,7 @@ private:
     wxArrayString m_textures;
     wxAuiManager m_mgr;
     wxEvtHandler* m_hookhandler;
+    bool m_loadoverlay;
 
     void InitWidgetsFromXRC(wxWindow *parent) {
         wxXmlResource::Get()->LoadObject(this,parent,_T("dlgModel"), _T("wxDialog"));
@@ -193,7 +196,7 @@ private:
     }
     void InitModelFromXRC(wxWindow *parent) {
         wxXmlResource::Get()->LoadObject(parent,this,_T("panModelModel"), _T("wxPanel"));
-        m_textModelName = XRCCTRL(*parent,"m_textModelName",wxTextCtrl);
+        //m_textModelName = XRCCTRL(*parent,"m_textModelName",wxTextCtrl);
         m_choiceCoordinateSystem = XRCCTRL(*this,"m_choiceCoordinateSystem",wxChoice);
         m_btMatrixEdit = XRCCTRL(*parent,"m_btMatrixEdit",wxButton);
         m_btMatrixSave = XRCCTRL(*parent,"m_btMatrixSave",wxButton);

@@ -2,12 +2,13 @@
 
 Precompile: all
 cleanPrecompile: clean
-rct3xml-raw-v1-all: rct3xml-raw-v1.rnc.gz.h rct3xml-raw-v1.rngi.gz.h 
+rct3xml-raw-v1-all: rct3xml-raw-v1.rnc.gz.h rct3xml-raw-v1.sch.gz.h rct3xml-raw-v1.rngi.gz.h 
 rct3xml-ovlcompiler-v1-all: rct3xml-ovlcompiler-v1.rnc.gz.h rct3xml-ovlcompiler-v1.rngi.gz.h
+rct3xml-scenery-v1-all: rct3xml-scenery-v1.rnc.gz.h rct3xml-scenery-v1.rngi.gz.h
 ms3d_comment-all: ms3d_comment.rnc.gz.h ms3d_comment.rngi.gz.h
 model-all: model.rnc.gz.h model.sch.gz.h model.rngi.gz.h
 relaxng-all: relaxng.rnc.gz.h
-all: rct3xml-raw-v1-all rct3xml-ovlcompiler-v1-all ms3d_comment-all model-all relaxng-all
+all: rct3xml-raw-v1-all rct3xml-ovlcompiler-v1-all rct3xml-scenery-v1-all ms3d_comment-all model-all relaxng-all
 
 rct3xml-raw-v1.rng: rct3xml-shared-v1.rng rct3xml-installer-shared-v1.rng
 

@@ -402,6 +402,8 @@ int DoCompile(const wxCmdLineParser& parser) {
             if (doc.read(inputfilestr.mb_str(wxConvUTF8), NULL, XML_PARSE_DTDLOAD)) {
                 cXmlNode root(doc.root());
                 if (root(RAWXML_ROOT)) {
+                    doc.xInclude();
+
                     if (convert)
                         throw RCT3Exception(_("You cannot convert raw xml files"));
 
@@ -440,6 +442,18 @@ int DoCompile(const wxCmdLineParser& parser) {
                     if (checkonly) {
                         wxLogMessage(_("Remember, for raw xml files, check only mode means only validation is done."));
                         return 0;
+                    }
+
+                    cXmlXPath path(doc, "raw", XML_NAMESPACE_RAW);
+                    cXmlXPathResult metas = path("//raw:metadata[@role='ovlmake']");
+                    for (int s = 0; s < metas.size(); ++s) {
+                        cXmlNode meta = metas[s];
+
+                        foreach(const cXmlNode& entry, meta.children()) {
+                            if (entry("noPrefixWarn")) {
+                                WRITE_RCT3_WARNPREFIX(false);
+                            }
+                        }
                     }
 
                     WRITE_RCT3_EXPERTMODE(true);
@@ -628,8 +642,10 @@ int DoCompile(const wxCmdLineParser& parser) {
         if (!checkonly) {
             // Copy as wxFileName gets confused by common.ovl
             wxFileName temp = outputfile;
-            if (!convert)
+            if (!convert) {
+                temp.SetName(c_scn.prefix + outputfile.GetName());
                 temp.SetExt(wxT("common.ovl"));
+            }
             if (temp.GetPath().IsEmpty())
                 temp.SetPath(wxT("."));
             if (temp.FileExists()) {
@@ -650,9 +666,9 @@ int DoCompile(const wxCmdLineParser& parser) {
             c_scn.ovlpath = outputfile.GetPathWithSep();
             if (checkonly) {
                 wxLogMessage(_("Checking ")+inputfile.GetFullPath());
-                wxLogMessage(_("The file would be compiled  to ")+outputfile.GetPathWithSep()+outputfile.GetName()+wxT(".common.ovl"));
+                wxLogMessage(_("The file would be compiled  to ")+outputfile.GetPathWithSep()+c_scn.prefix+outputfile.GetName()+wxT(".common.ovl"));
             } else
-                wxLogMessage(_("Compiling ")+inputfile.GetFullPath()+_(" to ")+outputfile.GetPathWithSep()+outputfile.GetName()+wxT(".common.ovl"));
+                wxLogMessage(_("Compiling ")+inputfile.GetFullPath()+_(" to ")+outputfile.GetPathWithSep()+c_scn.prefix+outputfile.GetName()+wxT(".common.ovl"));
             wxLogMessage(_("Performing sanity check..."));
             if (!c_scn.Check()) {
                 ret = 1;

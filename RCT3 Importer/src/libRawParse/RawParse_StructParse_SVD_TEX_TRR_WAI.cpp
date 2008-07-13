@@ -32,8 +32,52 @@
 
 #include "ManagerSVD.h"
 #include "ManagerTEX.h"
+#include "ManagerTKS.h"
 #include "ManagerTRR.h"
 #include "ManagerWAI.h"
+
+
+#define RAWXML_TKS_SPEED            "speed"
+#define RAWXML_TKS_BASIC            "basic"
+#define RAWXML_TKS_BASIC_ENTRY      "entry"
+#define RAWXML_TKS_BASIC_EXIT       "exit"
+#define RAWXML_TKS_SPEED            "speed"
+#define RAWXML_TKS_SPLINES          "splines"
+#define RAWXML_TKS_SPLINES_CAR      "car"
+#define RAWXML_TKS_SPLINES_JOIN     "join"
+#define RAWXML_TKS_SPLINES_EXTRA    "extra"
+#define RAWXML_TKS_SPLINES_WATER    "water"
+#define RAWXML_TKS_ANIMATIONS       "animations"
+#define RAWXML_TKS_OPTIONS          "options"
+//#define RAWXML_UNKNOWNS "unknowns"
+#define RAWXML_TKS_SOAKED           "soaked"
+#define RAWXML_TKS_SOAKED_PATH      "path"
+//#define RAWXML_RIDE_STATION_LIMIT   "rideStationLimit"
+#define RAWXML_TKS_SOAKED_SPEED     "speedSplines"
+//#define RAWXML_TKS_SPLINES          "splines"
+#define RAWXML_TKS_WILD             "wild"
+
+#define RAWXML_TRR_SECTION          "trackSection"
+#define RAWXML_TRR_SECTION_UNIQUE   "trackSectionRemoveDuplicates"
+#define RAWXML_TRR_TRAIN            "train"
+#define RAWXML_TRR_PATH             "trackPath"
+#define RAWXML_TRR_SPECIALS         "specials"
+#define RAWXML_TRR_OPTIONS          "options"
+#define RAWXML_TRR_STATION          "station"
+#define RAWXML_TRR_LAUNCHED         "launched"
+#define RAWXML_TRR_CHAIN            "chain"
+#define RAWXML_TRR_CONSTANT         "constant"
+#define RAWXML_TRR_COST             "cost"
+#define RAWXML_TRR_SPLINES          "splines"
+#define RAWXML_TRR_TOWER            "tower"
+#define RAWXML_TRR_SOAKED           "soaked"
+#define RAWXML_TRR_WILD             "wild"
+
+#define RAWXML_TEX_TEXTURE          "texture"
+
+#define RAWXML_WAI_PARAMETERS       "waiparameters"
+#define RAWXML_WAI_UNKNOWNS         "waiunknowns"
+
 
 void cRawParser::ParseSVD(cXmlNode& node) {
     USE_PREFIX(node);
@@ -50,14 +94,14 @@ void cRawParser::ParseSVD(cXmlNode& node) {
     while (child) {
         DO_CONDITION_COMMENT(child);
 
-        if (child(RAWXML_SVD_UNK)) {
-            OPTION_PARSE(float, svd.unk4, ParseFloat(child, wxT(RAWXML_SVD_UNK), wxT("u4")));
-            OPTION_PARSE(unsigned long, svd.unk6, ParseUnsigned(child, wxT(RAWXML_SVD_UNK), wxT("u6")));
-            OPTION_PARSE(unsigned long, svd.unk7, ParseUnsigned(child, wxT(RAWXML_SVD_UNK), wxT("u7")));
-            OPTION_PARSE(unsigned long, svd.unk8, ParseUnsigned(child, wxT(RAWXML_SVD_UNK), wxT("u8")));
-            OPTION_PARSE(unsigned long, svd.unk9, ParseUnsigned(child, wxT(RAWXML_SVD_UNK), wxT("u9")));
-            OPTION_PARSE(unsigned long, svd.unk10, ParseUnsigned(child, wxT(RAWXML_SVD_UNK), wxT("u10")));
-            OPTION_PARSE(unsigned long, svd.unk11, ParseUnsigned(child, wxT(RAWXML_SVD_UNK), wxT("u11")));
+        if (child(RAWXML_UNKNOWNS)) {
+            OPTION_PARSE(float, svd.unk4, ParseFloat(child, wxT(RAWXML_UNKNOWNS), wxT("u4")));
+            OPTION_PARSE(unsigned long, svd.unk6, ParseUnsigned(child, wxT(RAWXML_UNKNOWNS), wxT("u6")));
+            OPTION_PARSE(unsigned long, svd.unk7, ParseUnsigned(child, wxT(RAWXML_UNKNOWNS), wxT("u7")));
+            OPTION_PARSE(unsigned long, svd.unk8, ParseUnsigned(child, wxT(RAWXML_UNKNOWNS), wxT("u8")));
+            OPTION_PARSE(unsigned long, svd.unk9, ParseUnsigned(child, wxT(RAWXML_UNKNOWNS), wxT("u9")));
+            OPTION_PARSE(unsigned long, svd.unk10, ParseUnsigned(child, wxT(RAWXML_UNKNOWNS), wxT("u10")));
+            OPTION_PARSE(unsigned long, svd.unk11, ParseUnsigned(child, wxT(RAWXML_UNKNOWNS), wxT("u11")));
         } else if (child(RAWXML_SVD_LOD)) {
             USE_PREFIX(child);
             cSceneryItemVisualLOD lod;
@@ -74,16 +118,16 @@ void cRawParser::ParseSVD(cXmlNode& node) {
             while (subchild) {
                 DO_CONDITION_COMMENT(subchild);
 
-                if (subchild(RAWXML_SVD_LOD_UNK)) {
-                    OPTION_PARSE(unsigned long, lod.unk2, ParseUnsigned(child, wxT(RAWXML_SVD_LOD_UNK), wxT("u2")));
-                    OPTION_PARSE(unsigned long, lod.unk4, ParseUnsigned(child, wxT(RAWXML_SVD_LOD_UNK), wxT("u4")));
-                    OPTION_PARSE(float, lod.unk7, ParseFloat(child, wxT(RAWXML_SVD_LOD_UNK), wxT("u7")));
-                    OPTION_PARSE(float, lod.unk8, ParseFloat(child, wxT(RAWXML_SVD_LOD_UNK), wxT("u8")));
-                    OPTION_PARSE(float, lod.unk9, ParseFloat(child, wxT(RAWXML_SVD_LOD_UNK), wxT("u9")));
-                    OPTION_PARSE(float, lod.unk10, ParseFloat(child, wxT(RAWXML_SVD_LOD_UNK), wxT("u10")));
-                    OPTION_PARSE(float, lod.unk11, ParseFloat(child, wxT(RAWXML_SVD_LOD_UNK), wxT("u11")));
-                    OPTION_PARSE(float, lod.unk12, ParseFloat(child, wxT(RAWXML_SVD_LOD_UNK), wxT("u12")));
-                    OPTION_PARSE(unsigned long, lod.unk14, ParseUnsigned(child, wxT(RAWXML_SVD_LOD_UNK), wxT("u14")));
+                if (subchild(RAWXML_UNKNOWNS)) {
+                    OPTION_PARSE(unsigned long, lod.unk2, ParseUnsigned(child, wxT(RAWXML_UNKNOWNS), wxT("u2")));
+                    OPTION_PARSE(unsigned long, lod.unk4, ParseUnsigned(child, wxT(RAWXML_UNKNOWNS), wxT("u4")));
+                    OPTION_PARSE(float, lod.unk7, ParseFloat(child, wxT(RAWXML_UNKNOWNS), wxT("u7")));
+                    OPTION_PARSE(float, lod.unk8, ParseFloat(child, wxT(RAWXML_UNKNOWNS), wxT("u8")));
+                    OPTION_PARSE(float, lod.unk9, ParseFloat(child, wxT(RAWXML_UNKNOWNS), wxT("u9")));
+                    OPTION_PARSE(float, lod.unk10, ParseFloat(child, wxT(RAWXML_UNKNOWNS), wxT("u10")));
+                    OPTION_PARSE(float, lod.unk11, ParseFloat(child, wxT(RAWXML_UNKNOWNS), wxT("u11")));
+                    OPTION_PARSE(float, lod.unk12, ParseFloat(child, wxT(RAWXML_UNKNOWNS), wxT("u12")));
+                    OPTION_PARSE(unsigned long, lod.unk14, ParseUnsigned(child, wxT(RAWXML_UNKNOWNS), wxT("u14")));
                 } else if (subchild(RAWXML_SVD_LOD_ANIMATION)) {
                     USE_PREFIX(subchild);
                     wxString anim = UTF8STRINGWRAP(subchild.content());
@@ -93,7 +137,7 @@ void cRawParser::ParseSVD(cXmlNode& node) {
                     else
                         lod.animations.push_back(std::string(anim.ToAscii()));
                 } else if (subchild.element()) {
-                    throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in svd(%s)/svdlod(%s)."), STRING_FOR_FORMAT(subchild.name()), name.c_str(), lodname.c_str()));
+                    throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in svd(%s)/svdlod(%s)."), STRING_FOR_FORMAT(subchild.name()), name.c_str(), lodname.c_str()), subchild));
                 }
 
                 subchild.go_next();
@@ -101,7 +145,7 @@ void cRawParser::ParseSVD(cXmlNode& node) {
 
             svd.lods.push_back(lod);
         } else if (child.element()) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in svd tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()));
+            throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in svd tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()), child));
         }
 
         child.go_next();
@@ -140,23 +184,23 @@ void cRawParser::ParseTEX(cXmlNode& node) {
                 datanode.go_next();
 
             if (!datanode)
-                throw RCT3Exception(wxString::Format(_("Tag tex(%s)/texture misses data."), name.c_str()));
+                throw RCT3Exception(FinishNodeError(wxString::Format(_("Tag tex(%s)/texture misses data."), name.c_str()), child));
 
             cRawDatablock data = GetDataBlock(wxString::Format(_("tag tex(%s)/texture"), name.c_str()), datanode);
             if (data.datatype().IsEmpty()) {
-                throw RCT3Exception(wxString::Format(_("Could not determine data type in tag tex(%s)/texture."), name.c_str()));
+                throw RCT3Exception(FinishNodeError(wxString::Format(_("Could not determine data type in tag tex(%s)/texture."), name.c_str()), child));
             } else if (data.datatype().IsSameAs(wxT("processed"))) {
                 unsigned long datadim = cTexture::GetDimension(texture.texture.format, data.datasize());
                 if (!mip.dimension)
                     mip.dimension = datadim;
                 if (mip.dimension != datadim)
-                    throw RCT3Exception(wxString::Format(_("Dimension mismatch in tag tex(%s)/texture."), name.c_str()));
+                    throw RCT3Exception(FinishNodeError(wxString::Format(_("Dimension mismatch in tag tex(%s)/texture."), name.c_str()), child));
                 mip.data = data.data();
             } else {
                 wxGXImage img;
                 img.read(data.data().get(), data.datasize(), std::string(data.datatype().mb_str(wxConvLocal)));
                 if (!img.Ok())
-                    throw RCT3Exception(wxString::Format(_("Error decoding image in tag tex(%s)/texture."), name.c_str()));
+                    throw RCT3Exception(FinishNodeError(wxString::Format(_("Error decoding image in tag tex(%s)/texture."), name.c_str()), child));
                 img.flip();
                 if (!mainimage.Ok())
                     mainimage = img;
@@ -180,27 +224,27 @@ void cRawParser::ParseTEX(cXmlNode& node) {
                         img.DxtCompress(mip.data.get(), wxDXT5);
                         break;
                     default:
-                        throw RCT3Exception(wxString::Format(_("Unknown format 0x%02lx in tag tex(%s)/texture."), texture.texture.format, name.c_str()));
+                        throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown format 0x%02lx in tag tex(%s)/texture."), texture.texture.format, name.c_str()), child));
                 }
             }
 
             texture.texture.mips.insert(mip);
         } else if (child.element()) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in tex(%s) tag."), STRING_FOR_FORMAT(child.name()), name.c_str()));
+            throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in tex(%s) tag."), STRING_FOR_FORMAT(child.name()), name.c_str()), child));
         }
         child.go_next();
     }
 
     if (mips) {
         if ((texture.texture.mips.size() > 1) && (mips != texture.texture.mips.size()))
-            throw RCT3Exception(wxString::Format(_("Mip count mismatch in tag tex(%s)."), name.c_str()));
+            throw RCT3Exception(FinishNodeError(wxString::Format(_("Mip count mismatch in tag tex(%s)."), name.c_str()), node));
         if ((texture.texture.mips.size() == 1) && (mips > 1)) {
             if (!mainimage.Ok())
-                throw RCT3Exception(wxString::Format(_("Cannot auto-generate mips in tag tex(%s)."), name.c_str()));
+                throw RCT3Exception(FinishNodeError(wxString::Format(_("Cannot auto-generate mips in tag tex(%s)."), name.c_str()), node));
             for (unsigned long i = 1; i < mips; ++i) {
                 mainimage.Rescale(mainimage.GetWidth() / 2, mainimage.GetHeight() / 2);
                 if (mainimage.GetWidth() < 4) {
-                    wxLogWarning(wxString::Format(_("Too many mips requested in tag tex(%s)."), name.c_str()));
+                    wxLogWarning(FinishNodeError(wxString::Format(_("Too many mips requested in tag tex(%s)."), name.c_str()), node));
                     break;
                 }
                 cTextureMIP mip;
@@ -220,7 +264,7 @@ void cRawParser::ParseTEX(cXmlNode& node) {
                         mainimage.DxtCompress(mip.data.get(), wxDXT5);
                         break;
                     default:
-                        throw RCT3Exception(wxString::Format(_("Unknown format 0x%02lx in tag tex(%s)."), texture.texture.format, name.c_str()));
+                        throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown format 0x%02lx in tag tex(%s)."), texture.texture.format, name.c_str()), node));
                 }
                 texture.texture.mips.insert(mip);
             }
@@ -348,6 +392,198 @@ void cRawParser::ParseTEX(cXmlNode& node) {
     }
 }
 
+#define ParseEntryExit(node, strct, tag) \
+    OPTION_PARSE(unsigned long, strct.curve, ParseUnsigned(node, tag, wxT("curve"))); \
+    OPTION_PARSE(unsigned long, strct.flags, ParseUnsigned(node, tag, wxT("flags"))); \
+    OPTION_PARSE(unsigned long, strct.unknown, ParseUnsigned(node, tag, wxT("unknown"))); \
+    OPTION_PARSE(unsigned long, strct.slope, ParseUnsigned(node, tag, wxT("slope"))); \
+    OPTION_PARSE(unsigned long, strct.bank, ParseUnsigned(node, tag, wxT("bank"))); \
+    ParseStringOption(strct.group, child, wxT("group"), NULL); \
+
+#define ParseSplinePair(node, strct, tag) \
+    strct.left = ParseString(node, tag, wxT("left"), NULL, useprefix).ToAscii(); \
+    strct.right = ParseString(node, tag, wxT("right"), NULL, useprefix).ToAscii();
+
+void cRawParser::ParseTKS(cXmlNode& node) {
+    USE_PREFIX(node);
+    cTrackSection section;
+    section.name = ParseString(node, wxT(RAWXML_TKS), wxT("name"), NULL, useprefix).ToAscii();
+    section.internalname = ParseString(node, wxT(RAWXML_TKS), wxT("internalname"), NULL, false).ToAscii();
+    OPTION_PARSE(unsigned long, section.version, ParseUnsigned(node, RAWXML_TKS, wxT("version")));
+    section.sid = ParseString(node, wxT(RAWXML_TKS), wxT("sid"), NULL, useprefix).ToAscii();
+    wxLogVerbose(wxString::Format(_("Adding tks %s to %s."), wxString(section.name.c_str()).c_str(), m_output.GetFullPath().c_str()));
+
+    foreach (const cXmlNode& child, node.children()) {
+        USE_PREFIX(child);
+        DO_CONDITION_COMMENT_FOR(child);
+
+        if (child(RAWXML_TKS_SPEED)) {
+            cTrackSectionSpeed speed;
+            speed.unk01 = ParseFloat(child, RAWXML_TKS_SPEED, wxT("u1"));
+            speed.unk02 = ParseFloat(child, RAWXML_TKS_SPEED, wxT("u2"));
+            speed.unk03 = ParseFloat(child, RAWXML_TKS_SPEED, wxT("u3"));
+            OPTION_PARSE(float, speed.unk04, ParseFloat(child, RAWXML_TKS_SPEED, wxT("u4")));
+            OPTION_PARSE(float, speed.unk05, ParseFloat(child, RAWXML_TKS_SPEED, wxT("u5")));
+            section.speeds.push_back(speed);
+        } else if (child(RAWXML_TKS_BASIC)) {
+            OPTION_PARSE(unsigned long, section.basic.special, ParseUnsigned(child, RAWXML_TKS_BASIC, wxT("special")));
+            OPTION_PARSE(unsigned long, section.basic.direction, ParseUnsigned(child, RAWXML_TKS_BASIC, wxT("direction")));
+
+            foreach(const cXmlNode& subchild, child.children()) {
+                USE_PREFIX(subchild);
+                DO_CONDITION_COMMENT_FOR(subchild);
+
+                if (subchild(RAWXML_TKS_BASIC_ENTRY)) {
+                    ParseEntryExit(subchild, section.basic.entry, RAWXML_TKS_BASIC_ENTRY);
+                } else if (subchild(RAWXML_TKS_BASIC_EXIT)) {
+                    ParseEntryExit(subchild, section.basic.exit, RAWXML_TKS_BASIC_EXIT);
+                } else if (subchild.element()) {
+                    throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in tks/basic tag."), STRING_FOR_FORMAT(subchild.name())), subchild));
+                }
+            }
+        } else if (child(RAWXML_TKS_SPLINES)) {
+            foreach(const cXmlNode& subchild, child.children()) {
+                USE_PREFIX(subchild);
+                DO_CONDITION_COMMENT_FOR(subchild);
+
+                if (subchild(RAWXML_TKS_SPLINES_CAR)) {
+                    ParseSplinePair(subchild, section.splines.car, RAWXML_TKS_SPLINES_CAR);
+                } else if (subchild(RAWXML_TKS_SPLINES_JOIN)) {
+                    ParseSplinePair(subchild, section.splines.join, RAWXML_TKS_SPLINES_JOIN);
+                } else if (subchild(RAWXML_TKS_SPLINES_EXTRA)) {
+                    ParseSplinePair(subchild, section.splines.extra, RAWXML_TKS_SPLINES_EXTRA);
+                } else if (subchild(RAWXML_TKS_SPLINES_WATER)) {
+                    ParseSplinePair(subchild, section.splines.water, RAWXML_TKS_SPLINES_WATER);
+                } else if (subchild.element()) {
+                    throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in tks/splines tag."), STRING_FOR_FORMAT(subchild.name())), subchild));
+                }
+            }
+        } else if (child(RAWXML_TKS_ANIMATIONS)) {
+            OPTION_PARSE(long, section.animations.stopped, ParseSigned(child, RAWXML_TKS_ANIMATIONS, wxT("stopped")));
+            OPTION_PARSE(long, section.animations.starting, ParseSigned(child, RAWXML_TKS_ANIMATIONS, wxT("starting")));
+            OPTION_PARSE(long, section.animations.running, ParseSigned(child, RAWXML_TKS_ANIMATIONS, wxT("running")));
+            OPTION_PARSE(long, section.animations.stopping, ParseSigned(child, RAWXML_TKS_ANIMATIONS, wxT("stopping")));
+            OPTION_PARSE(long, section.animations.hold_after_train_stop, ParseSigned(child, RAWXML_TKS_ANIMATIONS, wxT("holdAfterTrainStop")));
+            OPTION_PARSE(long, section.animations.hold_loop, ParseSigned(child, RAWXML_TKS_ANIMATIONS, wxT("holdLoop")));
+            OPTION_PARSE(long, section.animations.hold_before_release, ParseSigned(child, RAWXML_TKS_ANIMATIONS, wxT("holdBeforeRelease")));
+            OPTION_PARSE(long, section.animations.hold_leaving, ParseSigned(child, RAWXML_TKS_ANIMATIONS, wxT("holdLeaving")));
+            OPTION_PARSE(long, section.animations.hold_after_train_left, ParseSigned(child, RAWXML_TKS_ANIMATIONS, wxT("holdAfterTrainLeft")));
+            OPTION_PARSE(long, section.animations.pre_station_leave, ParseSigned(child, RAWXML_TKS_ANIMATIONS, wxT("preStationLeave")));
+            OPTION_PARSE(long, section.animations.rotating_tower_idle, ParseSigned(child, RAWXML_TKS_ANIMATIONS, wxT("rotatingTowerIdle")));
+        } else if (child(RAWXML_UNKNOWNS)) {
+            OPTION_PARSE(unsigned long, section.unknowns.unk15, ParseUnsigned(child, RAWXML_UNKNOWNS, wxT("u15")));
+            OPTION_PARSE(unsigned long, section.unknowns.unk16, ParseUnsigned(child, RAWXML_UNKNOWNS, wxT("u16")));
+            OPTION_PARSE(unsigned long, section.unknowns.unk17, ParseUnsigned(child, RAWXML_UNKNOWNS, wxT("u17")));
+            OPTION_PARSE(unsigned long, section.unknowns.unk22, ParseUnsigned(child, RAWXML_UNKNOWNS, wxT("u22")));
+            OPTION_PARSE(unsigned long, section.unknowns.unk23, ParseUnsigned(child, RAWXML_UNKNOWNS, wxT("u23")));
+            OPTION_PARSE(unsigned long, section.unknowns.unk24, ParseUnsigned(child, RAWXML_UNKNOWNS, wxT("u24")));
+            OPTION_PARSE(unsigned long, section.unknowns.unk45, ParseUnsigned(child, RAWXML_UNKNOWNS, wxT("u45")));
+            OPTION_PARSE(unsigned long, section.unknowns.unk47, ParseUnsigned(child, RAWXML_UNKNOWNS, wxT("u47")));
+            OPTION_PARSE(unsigned long, section.unknowns.unk53, ParseUnsigned(child, RAWXML_UNKNOWNS, wxT("u53")));
+            OPTION_PARSE(unsigned long, section.unknowns.unk68, ParseUnsigned(child, RAWXML_UNKNOWNS, wxT("u68")));
+            OPTION_PARSE(unsigned long, section.unknowns.unk69, ParseUnsigned(child, RAWXML_UNKNOWNS, wxT("u69")));
+            OPTION_PARSE(float, section.unknowns.unk77, ParseFloat(child, RAWXML_UNKNOWNS, wxT("u77")));
+            OPTION_PARSE(float, section.unknowns.unk78, ParseFloat(child, RAWXML_UNKNOWNS, wxT("u78")));
+            OPTION_PARSE(float, section.unknowns.unk79, ParseFloat(child, RAWXML_UNKNOWNS, wxT("u79")));
+        } else if (child(RAWXML_TKS_OPTIONS)) {
+            OPTION_PARSE(unsigned long, section.options.tower_ride_base_flag, ParseUnsigned(child, RAWXML_TKS_OPTIONS, wxT("towerRideBase")));
+            OPTION_PARSE(float, section.options.tower_unkf01, ParseFloat(child, RAWXML_TKS_OPTIONS, wxT("tower")));
+            OPTION_PARSE(float, section.options.water_splash01, ParseFloat(child, RAWXML_TKS_OPTIONS, wxT("waterSplash01")));
+            OPTION_PARSE(float, section.options.water_splash02, ParseFloat(child, RAWXML_TKS_OPTIONS, wxT("waterSplash02")));
+            OPTION_PARSE(float, section.options.reverser_val, ParseFloat(child, RAWXML_TKS_OPTIONS, wxT("reverser")));
+            OPTION_PARSE(float, section.options.elevator_top_val, ParseFloat(child, RAWXML_TKS_OPTIONS, wxT("elevatorTop")));
+            OPTION_PARSE(float, section.options.rapids01, ParseFloat(child, RAWXML_TKS_OPTIONS, wxT("rapids01")));
+            OPTION_PARSE(float, section.options.rapids02, ParseFloat(child, RAWXML_TKS_OPTIONS, wxT("rapids02")));
+            OPTION_PARSE(float, section.options.rapids03, ParseFloat(child, RAWXML_TKS_OPTIONS, wxT("rapids03")));
+            OPTION_PARSE(float, section.options.whirlpool01, ParseFloat(child, RAWXML_TKS_OPTIONS, wxT("whirlpool01")));
+            OPTION_PARSE(float, section.options.whirlpool02, ParseFloat(child, RAWXML_TKS_OPTIONS, wxT("whirlpool02")));
+            ParseStringOption(section.options.chair_lift_station_end, child, wxT("chairLiftStationEnd"), NULL);
+        } else if (child(RAWXML_TKS_SOAKED)) {
+            ParseStringOption(section.soaked.loop_path, child, wxT("loopSpline"), NULL, useprefix);
+            OPTION_PARSE(float, section.soaked.tower_unkf2, ParseFloat(child, RAWXML_TKS_SOAKED, wxT("tower")));
+            OPTION_PARSE(float, section.soaked.aquarium_val, ParseFloat(child, RAWXML_TKS_SOAKED, wxT("aquarium")));
+            ParseStringOption(section.soaked.auto_group, child, wxT("autoGroup"), NULL);
+            OPTION_PARSE(long, section.soaked.giant_flume_val, ParseSigned(child, RAWXML_TKS_SOAKED, wxT("giantFlume")));
+            OPTION_PARSE(unsigned long, section.soaked.entry_wide_flag, ParseUnsigned(child, RAWXML_TKS_SOAKED, wxT("entryWide")));
+            OPTION_PARSE(unsigned long, section.soaked.exit_wide_flag, ParseUnsigned(child, RAWXML_TKS_SOAKED, wxT("exitWide")));
+            OPTION_PARSE(float, section.soaked.speed_spline_val, ParseFloat(child, RAWXML_TKS_SOAKED, wxT("speedSpline")));
+            OPTION_PARSE(float, section.soaked.slide_end_to_lifthill_val, ParseFloat(child, RAWXML_TKS_SOAKED, wxT("slideEndToLifthill")));
+            OPTION_PARSE(unsigned long, section.soaked.soaked_options, ParseUnsigned(child, RAWXML_TKS_SOAKED, wxT("flags")));
+
+            foreach(const cXmlNode& subchild, child.children()) {
+                USE_PREFIX(subchild);
+                DO_CONDITION_COMMENT_FOR(subchild);
+
+                if (subchild(RAWXML_TKS_SOAKED_PATH)) {
+                    string path;
+                    ParseStringOption(path, subchild, wxT("spline"), NULL, useprefix);
+                    section.soaked.paths.push_back(path);
+                } else if (subchild(RAWXML_RIDE_STATION_LIMIT)) {
+                    cRideStationLimit limit;
+                    ParseRideStationLimit(subchild, limit);
+                    section.soaked.ride_station_limits.push_back(limit);
+                } else if (subchild(RAWXML_TKS_SOAKED_SPEED)) {
+                    cTrackSectionSpeedSplines speeds;
+                    speeds.speed = ParseFloat(subchild, RAWXML_TKS_SOAKED_SPEED, wxT("speed"));
+
+                    foreach(const cXmlNode& speedchild, child.children()) {
+                        USE_PREFIX(speedchild);
+                        DO_CONDITION_COMMENT_FOR(speedchild);
+
+                        if (speedchild(RAWXML_TKS_SPLINES)) {
+                            ParseSplinePair(speedchild, speeds.splines, RAWXML_TKS_SPLINES);
+                        } else if (speedchild.element()) {
+                            throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in tks/soked/speedSplines tag."), STRING_FOR_FORMAT(speedchild.name())), speedchild));
+                        }
+                    }
+                    section.soaked.speeds.push_back(speeds);
+                } else if (subchild("groupIsAtEntry")) {
+                    string gr(subchild());
+                    boost::trim(gr);
+                    section.soaked.groups_is_at_entry.push_back(gr);
+                } else if (subchild("groupIsAtExit")) {
+                    string gr(subchild());
+                    boost::trim(gr);
+                    section.soaked.groups_is_at_exit.push_back(gr);
+                } else if (subchild("groupRequireAtEntry")) {
+                    string gr(subchild());
+                    boost::trim(gr);
+                    section.soaked.groups_must_have_at_entry.push_back(gr);
+                } else if (subchild("groupRequireAtExit")) {
+                    string gr(subchild());
+                    boost::trim(gr);
+                    section.soaked.groups_must_have_at_exit.push_back(gr);
+                } else if (subchild("groupRefuseAtEntry")) {
+                    string gr(subchild());
+                    boost::trim(gr);
+                    section.soaked.groups_must_not_be_at_entry.push_back(gr);
+                } else if (subchild("groupRefuseAtExit")) {
+                    string gr(subchild());
+                    boost::trim(gr);
+                    section.soaked.groups_must_not_be_at_exit.push_back(gr);
+                } else if (subchild.element()) {
+                    throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in tks/soaked tag."), STRING_FOR_FORMAT(subchild.name())), subchild));
+                }
+            }
+
+        } else if (child(RAWXML_TKS_WILD)) {
+            OPTION_PARSE(unsigned long, section.wild.splitter_half, ParseUnsigned(child, RAWXML_TKS_WILD, wxT("splitterHalf")));
+            ParseStringOption(section.wild.splitter_joined_other_ref, child, wxT("splitterJoint"), NULL, useprefix);
+            OPTION_PARSE(unsigned long, section.wild.rotator_type, ParseUnsigned(child, RAWXML_TKS_WILD, wxT("rotatorType")));
+            OPTION_PARSE(float, section.wild.animal_house, ParseFloat(child, RAWXML_TKS_WILD, wxT("animalHouse")));
+            ParseStringOption(section.wild.alternate_text_lookup, child, wxT("alteranteTextLookup"), NULL);
+            OPTION_PARSE(float, section.wild.tower_cap01, ParseFloat(child, RAWXML_TKS_WILD, wxT("towerCap01")));
+            OPTION_PARSE(float, section.wild.tower_cap02, ParseFloat(child, RAWXML_TKS_WILD, wxT("towerCap02")));
+        } else if (child.element()) {
+            throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in tks tag."), STRING_FOR_FORMAT(child.name())), child));
+        }
+    }
+
+    ovlTKSManager* c_tks = m_ovl.GetManager<ovlTKSManager>();
+    c_tks->AddSection(section);
+    wxLogVerbose(wxString::Format(_("Adding tks %s to %s. -- Done"), wxString(section.name.c_str()).c_str(), m_output.GetFullPath().c_str()));
+}
+
 bool TrackSectionSort(const cTrackedRideSection& a, const cTrackedRideSection& b) {
     return stricmp(a.name.c_str(), b.name.c_str())<0;
 }
@@ -373,15 +609,22 @@ void cRawParser::ParseTRR(cXmlNode& node) {
             ParseRide(child, ride.ride);
         } else if (child(RAWXML_TRR_SECTION)) {
             cTrackedRideSection section;
+            unsigned long split = 1;
             string sect(child());
             boost::trim(sect);
             OPTION_PARSE(unsigned long, section.cost, ParseUnsigned(child, RAWXML_TRR_SECTION, wxT("cost")));
+            OPTION_PARSE(unsigned long, split, ParseUnsigned(child, RAWXML_TRR_SECTION, wxT("split")));
 
-            boost::char_separator<char> sep(" ,");
-            typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-            tokenizer tok(sect, sep);
-            foreach(const string& token, tok) {
-                section.name = token;
+            if (split) {
+                boost::char_separator<char> sep(" ,");
+                typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+                tokenizer tok(sect, sep);
+                foreach(const string& token, tok) {
+                    section.name = token;
+                    ride.sections.push_back(section);
+                }
+            } else {
+                section.name = sect;
                 ride.sections.push_back(section);
             }
         } else if (child(RAWXML_TRR_SECTION_UNIQUE)) {
@@ -393,11 +636,11 @@ void cRawParser::ParseTRR(cXmlNode& node) {
             ride.trackpaths.push_back(boost::trim_copy(child()));
         } else if (child(RAWXML_TRR_SPECIALS)) {
             ParseStringOption(ride.specials.cable_lift, child, wxT("cableLift"), NULL);
-            OPTION_PARSE(unsigned long, ride.specials.cable_lift_unk1, ParseUnsigned(child, RAWXML_TRR_SPECIALS, wxT("cableLift_u1")));
-            OPTION_PARSE(unsigned long, ride.specials.cable_lift_unk2, ParseUnsigned(child, RAWXML_TRR_SPECIALS, wxT("cableLift_u2")));
+            OPTION_PARSE(float, ride.specials.cable_lift_unk1, ParseFloat(child, RAWXML_TRR_SPECIALS, wxT("cableLift_u1")));
+            OPTION_PARSE(float, ride.specials.cable_lift_unk2, ParseFloat(child, RAWXML_TRR_SPECIALS, wxT("cableLift_u2")));
             ParseStringOption(ride.specials.lift_car, child, wxT("liftCar"), NULL);
-            OPTION_PARSE(unsigned long, ride.specials.unk28, ParseUnsigned(child, RAWXML_TRR_SPECIALS, wxT("u28")));
-            OPTION_PARSE(unsigned long, ride.specials.unk29, ParseUnsigned(child, RAWXML_TRR_SPECIALS, wxT("u29")));
+            OPTION_PARSE(float, ride.specials.unk28, ParseFloat(child, RAWXML_TRR_SPECIALS, wxT("u28")));
+            OPTION_PARSE(float, ride.specials.unk29, ParseFloat(child, RAWXML_TRR_SPECIALS, wxT("u29")));
         } else if (child(RAWXML_TRR_OPTIONS)) {
             OPTION_PARSE(unsigned long, ride.options.only_on_water, ParseUnsigned(child, RAWXML_TRR_OPTIONS, wxT("onlyOnWater")));
             OPTION_PARSE(unsigned long, ride.options.blocks_possible, ParseUnsigned(child, RAWXML_TRR_OPTIONS, wxT("blocksPossible")));
@@ -410,7 +653,7 @@ void cRawParser::ParseTRR(cXmlNode& node) {
             OPTION_PARSE(unsigned long, ride.station.start_preset, ParseUnsigned(child, RAWXML_TRR_STATION, wxT("startPreset")));
             OPTION_PARSE(unsigned long, ride.station.start_possibilities, ParseUnsigned(child, RAWXML_TRR_STATION, wxT("startPossibilities")));
             OPTION_PARSE(float, ride.station.station_roll_speed, ParseFloat(child, RAWXML_TRR_STATION, wxT("stationRollSpeed")));
-            OPTION_PARSE(long, ride.station.modus_flags, ParseSigned(child, RAWXML_TRR_STATION, wxT("modusFlags")));
+            OPTION_PARSE(unsigned long, ride.station.modus_flags, ParseUnsigned(child, RAWXML_TRR_STATION, wxT("modusFlags")));
         } else if (child(RAWXML_TRR_LAUNCHED)) {
             OPTION_PARSE(float, ride.launched.preset, ParseFloat(child, RAWXML_TRR_LAUNCHED, wxT("preset")));
             OPTION_PARSE(float, ride.launched.min, ParseFloat(child, RAWXML_TRR_LAUNCHED, wxT("min")));
@@ -444,8 +687,8 @@ void cRawParser::ParseTRR(cXmlNode& node) {
             ParseStringOption(ride.splines.car_swing, child, wxT("carSwing"), NULL);
             OPTION_PARSE(float, ride.splines.free_space_profile_height, ParseFloat(child, RAWXML_TRR_SPLINES, wxT("profileHight")));
         } else if (child(RAWXML_TRR_TOWER)) {
-            OPTION_PARSE(unsigned long, ride.tower.top_duration, ParseUnsigned(child, RAWXML_TRR_TOWER, wxT("topDuration")));
-            OPTION_PARSE(unsigned long, ride.tower.top_distance, ParseUnsigned(child, RAWXML_TRR_TOWER, wxT("topDistance")));
+            OPTION_PARSE(float, ride.tower.top_duration, ParseFloat(child, RAWXML_TRR_TOWER, wxT("topDuration")));
+            OPTION_PARSE(float, ride.tower.top_distance, ParseFloat(child, RAWXML_TRR_TOWER, wxT("topDistance")));
             ParseStringOption(ride.tower.top, child, wxT("top"), NULL);
             ParseStringOption(ride.tower.mid, child, wxT("mid"), NULL);
             ParseStringOption(ride.tower.other_top, child, wxT("otherTop"), NULL);
@@ -501,7 +744,7 @@ void cRawParser::ParseTRR(cXmlNode& node) {
             OPTION_PARSE(unsigned long, ride.wild.split_flag, ParseUnsigned(child, RAWXML_TRR_WILD, wxT("splitFlag")));
             ParseStringOption(ride.wild.internalname, child, wxT("name"), NULL);
         } else if (child.element()) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in trr tag."), STRING_FOR_FORMAT(child.name())));
+            throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in trr tag."), STRING_FOR_FORMAT(child.name())), child));
         }
     }
 
@@ -547,7 +790,7 @@ void cRawParser::ParseWAI(cXmlNode& node) {
             OPTION_PARSE(float, wai.unk19, ParseFloat(child, wxT(RAWXML_WAI_UNKNOWNS), wxT("u19")));
             OPTION_PARSE(float, wai.unk20, ParseFloat(child, wxT(RAWXML_WAI_UNKNOWNS), wxT("u20")));
         } else if (child.element()) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in wai tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()));
+            throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in wai tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()), child));
         }
 
         child.go_next();

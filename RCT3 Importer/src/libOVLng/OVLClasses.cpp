@@ -27,9 +27,14 @@
 
 #include "OVLClasses.h"
 
+#include <fstream>
+#include <unistd.h>
+
 #include "ManagerOVL.h"
 #include "OVLException.h"
 #include "ovlstructs.h"
+
+#include "pretty.h"
 
 using namespace std;
 
@@ -52,11 +57,15 @@ unsigned long cOvlFileClass::MakeRelOffsets(unsigned long from) {
     }
     return currel;
 }
-
+/*
 void cOvlFileClass::Write(const map<string, ovlOVLManager*>& managers, const vector<ovlExtraChunk*>& extra) {
+    if (!access(filename.c_str(), F_OK)) {
+        if (remove(filename.c_str()))
+            throw EOvl("cOvlFileClass::Write: cannot delete existing file before writing");
+    }
     FILE* f = fopen(filename.c_str(),"wb");
     if (!f)
-        throw EOvl("cOvlFileClass::Write: cannot open unique file for writing");
+        throw EOvl("cOvlFileClass::Write: cannot open file for writing");
 
     // Header 1
     OvlHeader h;
@@ -120,8 +129,78 @@ void cOvlFileClass::Write(const map<string, ovlOVLManager*>& managers, const vec
     fclose(f);
 
 }
+*/
+void cOvlFileClass::WriteStreamed(const map<string, ovlOVLManager*>& managers, const vector<ovlExtraChunk*>& extra) {
+    fstream fstr(filename.c_str(), fstream::out | fstream::binary | fstream::trunc);
+    if (!fstr.is_open())
+        throw EOvl("cOvlFileClass::WriteStreamed: cannot open file for writing");
+
+    // Header 1
+    OvlHeader h;
+    h.magic = 0x4B524746;
+    h.References = references.size();
+    h.reserved = 0;
+    h.version = 1;
+    fstr.write(reinterpret_cast<char*>(&h), sizeof(OvlHeader));
+
+    // References
+    for (unsigned int i = 0;i < references.size();i++) {
+        unsigned short len = static_cast<unsigned short>(references[i].length());
+        fstr.write(reinterpret_cast<char*>(&len),2);
+        fstr.write(references[i].c_str(),len);
+    }
+
+    // Header 2
+    OvlHeader2 h2;
+    h2.FileTypeCount = managers.size();
+    h2.unk = 0;
+    fstr.write(reinterpret_cast<char*>(&h2), sizeof(OvlHeader2));
+
+    // Loaders
+    for (map<string, ovlOVLManager*>::const_iterator it = managers.begin(); it != managers.end(); ++it) {
+        it->second->WriteLoader(fstr);
+    }
+
+    // Write the number of files of each type
+    for (unsigned int i = 0;i < 9;i++) {
+        unsigned long count = types[i].files.size();
+        fstr.write(reinterpret_cast<char*>(&count),4);
+    }
+
+    // Write the files themselves.
+    for (unsigned int i = 0;i < 9;i++) {
+        for (unsigned long j = 0;j < types[i].files.size();j++) {
+            fstr.write(reinterpret_cast<char*>(&types[i].files[j]->size),4);
+            fstr.write(reinterpret_cast<char*>(types[i].files[j]->data), types[i].files[j]->size);
+        }
+    }
+
+    // Write fixups
+    unsigned long size = fixups.size();
+    fstr.write(reinterpret_cast<char*>(&size),4);
+//    while (fixups.empty() == false) {
+//        unsigned long c_fixup = fixups.front();
+//        fixups.pop();
+//        fwrite(&c_fixup, sizeof(unsigned long), 1, f);
+//    }
+//    for(set<unsigned long>::iterator it = fixups.begin(); it != fixups.end(); ++it) {
+    foreach(const unsigned long& fixup, fixups) {
+        fstr.write(reinterpret_cast<const char*>(&fixup),4);
+    }
+
+    // Write Extradata
+//    for (vector<ovlExtraChunk*>::const_iterator it = extra.begin(); it != extra.end(); ++it) {
+    foreach(const ovlExtraChunk* chunk, extra) {
+        fstr.write(reinterpret_cast<const char*>(&chunk->size),4);
+        fstr.write(reinterpret_cast<const char*>(chunk->data),chunk->size);
+    }
+
+    // Close file
+    fstr.close();
+
+}
 
 void cOvlInfo::WriteFiles(const map<string, ovlOVLManager*>& managers, const ovlLodSymRefManager& lsrman) {
-    OpenFiles[OVLT_COMMON].Write(managers, lsrman.GetExtraChunks(OVLT_COMMON));
-    OpenFiles[OVLT_UNIQUE].Write(managers, lsrman.GetExtraChunks(OVLT_UNIQUE));
+    OpenFiles[OVLT_COMMON].WriteStreamed(managers, lsrman.GetExtraChunks(OVLT_COMMON));
+    OpenFiles[OVLT_UNIQUE].WriteStreamed(managers, lsrman.GetExtraChunks(OVLT_UNIQUE));
 }

@@ -27,44 +27,52 @@
 
 #include "RawParse_cpp.h"
 
+#include <boost/format.hpp>
+
 inline void makeTXYZ(cXmlNode& parent, const wxString& name, const txyz& t) {
-    cXmlNode ret = parent.newChild(name.mb_str(wxConvUTF8));
-    ret.addProp("time", wxString::Format(wxT("%f"), t.Time).mb_str(wxConvUTF8));
-    ret.addProp("x", wxString::Format(wxT("%f"), t.X).mb_str(wxConvUTF8));
-    ret.addProp("y", wxString::Format(wxT("%f"), t.Y).mb_str(wxConvUTF8));
-    ret.addProp("z", wxString::Format(wxT("%f"), t.Z).mb_str(wxConvUTF8));
+    cXmlNode ret = parent.newChild(name.utf8_str());
+    ret.prop("time", boost::str(boost::format("%8f") % t.Time));
+    ret.prop("x", boost::str(boost::format("%8f") % t.X));
+    ret.prop("y", boost::str(boost::format("%8f") % t.Y));
+    ret.prop("z", boost::str(boost::format("%8f") % t.Z));
 }
 
 cXmlNode XmlMakeMatrixNode(cXmlNode& parent, const MATRIX& matrix, const wxString& name, const wxString& matrixname = wxT("")) {
-    cXmlNode node(parent.newChild(name.mb_str(wxConvUTF8)));
+    cXmlNode node(parent.newChild(name.utf8_str()));
     if (name != wxT(""))
-        node.addProp("name", matrixname.mb_str(wxConvUTF8));
-    //wxXmlNode* childnode = new wxXmlNode(node, wxXML_ELEMENT_NODE, wxT("row1"));
-    //wxXmlNode* textnode = new wxXmlNode(childnode, wxXML_TEXT_NODE, wxT(""));
-    node.newTextChild("row1", wxString::Format(wxT("%8f %8f %8f %8f"), matrix._11, matrix._12, matrix._13, matrix._14).mb_str(wxConvUTF8));
-    node.newTextChild("row2", wxString::Format(wxT("%8f %8f %8f %8f"), matrix._21, matrix._22, matrix._23, matrix._24).mb_str(wxConvUTF8));
-    node.newTextChild("row3", wxString::Format(wxT("%8f %8f %8f %8f"), matrix._31, matrix._32, matrix._33, matrix._34).mb_str(wxConvUTF8));
-    node.newTextChild("row4", wxString::Format(wxT("%8f %8f %8f %8f"), matrix._41, matrix._42, matrix._43, matrix._44).mb_str(wxConvUTF8));
+        node.wxprop("name", matrixname);
+
+    cXmlNode row1("row1", boost::str(boost::format("%8f %8f %8f %8f") % matrix._11 % matrix._12 % matrix._13 % matrix._14).c_str());
+    node.appendChildren(row1);
+
+    cXmlNode row2("row2", boost::str(boost::format("%8f %8f %8f %8f") % matrix._21 % matrix._22 % matrix._23 % matrix._24).c_str());
+    node.appendChildren(row2);
+
+    cXmlNode row3("row3", boost::str(boost::format("%8f %8f %8f %8f") % matrix._31 % matrix._32 % matrix._33 % matrix._34).c_str());
+    node.appendChildren(row3);
+
+    cXmlNode row4("row4", boost::str(boost::format("%8f %8f %8f %8f") % matrix._41 % matrix._42 % matrix._43 % matrix._44).c_str());
+    node.appendChildren(row4);
 
     return node;
 }
 
 void BakeScenery(cXmlNode& root, const cSCNFile& scn) {
 
-    for (wxArrayString::const_iterator its = scn.references.begin(); its != scn.references.end(); ++its) {
+    foreach(const cReference& ref, scn.references) {
         //XML_ADD(root, makeContentNode(RAWXML_REFERENCE, *its));
-        root.newTextChild(RAWXML_REFERENCE, its->mb_str(wxConvUTF8));
+        root.newTextChild(RAWXML_REFERENCE, ref.name.utf8_str());
     }
 
     if (scn.lods.size()) {
         cXmlNode svd(root.newChild(RAWXML_SVD));
-        svd.addProp("name", scn.name.mb_str(wxConvUTF8));
-        svd.addProp("flags", wxString::Format(wxT("%lu"), scn.sivsettings.sivflags).mb_str(wxConvUTF8));
-        svd.addProp("sway", wxString::Format(wxT("%f"), scn.sivsettings.sway).mb_str(wxConvUTF8));
-        svd.addProp("brightness", wxString::Format(wxT("%f"), scn.sivsettings.brightness).mb_str(wxConvUTF8));
-        svd.addProp("scale", wxString::Format(wxT("%f"), scn.sivsettings.scale).mb_str(wxConvUTF8));
-        cXmlNode svdunk(svd.newChild(RAWXML_SVD_UNK));
-        svdunk.addProp("u4", wxString::Format(wxT("%f"), scn.sivsettings.unknown).mb_str(wxConvUTF8));
+        svd.wxprop("name", scn.name);
+        svd.prop("flags", boost::str(boost::format("0x%08x") % scn.sivsettings.sivflags));
+        svd.prop("sway", boost::str(boost::format("%8f") % scn.sivsettings.sway));
+        svd.prop("brightness", boost::str(boost::format("%8f") % scn.sivsettings.brightness));
+        svd.prop("scale", boost::str(boost::format("%8f") % scn.sivsettings.scale));
+        cXmlNode svdunk(svd.newChild(RAWXML_UNKNOWNS));
+        svdunk.prop("u4", boost::str(boost::format("%8f") % scn.sivsettings.unknown));
         svdunk.addProp("u6", wxString::Format(wxT("%lu"), scn.sivsettings.unk6).mb_str(wxConvUTF8));
         svdunk.addProp("u7", wxString::Format(wxT("%lu"), scn.sivsettings.unk7).mb_str(wxConvUTF8));
         svdunk.addProp("u8", wxString::Format(wxT("%lu"), scn.sivsettings.unk8).mb_str(wxConvUTF8));
@@ -74,8 +82,8 @@ void BakeScenery(cXmlNode& root, const cSCNFile& scn) {
         for (cLOD::const_iterator it = scn.lods.begin(); it != scn.lods.end(); ++it) {
             cXmlNode lod(svd.newChild(RAWXML_SVD_LOD));
             lod.addProp("name", it->modelname.mb_str(wxConvUTF8));
-            lod.addProp("distance", wxString::Format(wxT("%f"), it->distance).mb_str(wxConvUTF8));
-            cXmlNode lodunk(lod.newChild(RAWXML_SVD_LOD_UNK));
+            lod.prop("distance", boost::str(boost::format("%8f") % it->distance));
+            cXmlNode lodunk(lod.newChild(RAWXML_UNKNOWNS));
             lodunk.addProp("u2", wxString::Format(wxT("%lu"), it->unk2).mb_str(wxConvUTF8));
             lodunk.addProp("u4", wxString::Format(wxT("%lu"), it->unk4).mb_str(wxConvUTF8));
             lodunk.addProp("u14", wxString::Format(wxT("%lu"), it->unk14).mb_str(wxConvUTF8));
@@ -252,6 +260,7 @@ void BakeScenery(cXmlNode& root, const cSCNFile& scn) {
             }
         }
     }
+// TODO (belgabor#1#): Spline baking
 
 }
 

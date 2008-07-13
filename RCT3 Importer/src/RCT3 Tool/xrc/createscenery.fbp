@@ -505,7 +505,7 @@
                                                                     <property name="font"></property>
                                                                     <property name="hidden">0</property>
                                                                     <property name="id">ID_DEFAULT</property>
-                                                                    <property name="label">C</property>
+                                                                    <property name="label">D</property>
                                                                     <property name="maximum_size"></property>
                                                                     <property name="minimum_size">20,20</property>
                                                                     <property name="name">m_btTextureCopy</property>
@@ -514,7 +514,7 @@
                                                                     <property name="size">20,20</property>
                                                                     <property name="style"></property>
                                                                     <property name="subclass"></property>
-                                                                    <property name="tooltip">Copy Texture</property>
+                                                                    <property name="tooltip">Duplicate Texture</property>
                                                                     <property name="window_extra_style"></property>
                                                                     <property name="window_name"></property>
                                                                     <property name="window_style"></property>
@@ -1002,6 +1002,58 @@
                                                             </object>
                                                             <object class="sizeritem" expanded="1">
                                                                 <property name="border">5</property>
+                                                                <property name="flag">wxLEFT</property>
+                                                                <property name="proportion">0</property>
+                                                                <object class="wxButton" expanded="1">
+                                                                    <property name="bg"></property>
+                                                                    <property name="context_help"></property>
+                                                                    <property name="default">0</property>
+                                                                    <property name="enabled">1</property>
+                                                                    <property name="fg"></property>
+                                                                    <property name="font"></property>
+                                                                    <property name="hidden">0</property>
+                                                                    <property name="id">ID_DEFAULT</property>
+                                                                    <property name="label">L</property>
+                                                                    <property name="maximum_size"></property>
+                                                                    <property name="minimum_size">20,20</property>
+                                                                    <property name="name">m_btReferenceLoad</property>
+                                                                    <property name="permission">protected</property>
+                                                                    <property name="pos"></property>
+                                                                    <property name="size">20,20</property>
+                                                                    <property name="style">wxNO_BORDER</property>
+                                                                    <property name="subclass"></property>
+                                                                    <property name="tooltip">Load Textures(s) from file</property>
+                                                                    <property name="window_extra_style"></property>
+                                                                    <property name="window_name"></property>
+                                                                    <property name="window_style"></property>
+                                                                    <event name="OnButtonClick">OnReferenceLoad</event>
+                                                                    <event name="OnChar"></event>
+                                                                    <event name="OnEnterWindow"></event>
+                                                                    <event name="OnEraseBackground"></event>
+                                                                    <event name="OnKeyDown"></event>
+                                                                    <event name="OnKeyUp"></event>
+                                                                    <event name="OnKillFocus"></event>
+                                                                    <event name="OnLeaveWindow"></event>
+                                                                    <event name="OnLeftDClick"></event>
+                                                                    <event name="OnLeftDown"></event>
+                                                                    <event name="OnLeftUp"></event>
+                                                                    <event name="OnMiddleDClick"></event>
+                                                                    <event name="OnMiddleDown"></event>
+                                                                    <event name="OnMiddleUp"></event>
+                                                                    <event name="OnMotion"></event>
+                                                                    <event name="OnMouseEvents"></event>
+                                                                    <event name="OnMouseWheel"></event>
+                                                                    <event name="OnPaint"></event>
+                                                                    <event name="OnRightDClick">OnTextureRDLoad</event>
+                                                                    <event name="OnRightDown"></event>
+                                                                    <event name="OnRightUp"></event>
+                                                                    <event name="OnSetFocus"></event>
+                                                                    <event name="OnSize"></event>
+                                                                    <event name="OnUpdateUI"></event>
+                                                                </object>
+                                                            </object>
+                                                            <object class="sizeritem" expanded="1">
+                                                                <property name="border">5</property>
                                                                 <property name="flag">wxBOTTOM|wxRIGHT|wxLEFT</property>
                                                                 <property name="proportion">0</property>
                                                                 <object class="wxButton" expanded="1">
@@ -1414,7 +1466,7 @@
                                                                     <property name="font"></property>
                                                                     <property name="hidden">0</property>
                                                                     <property name="id">ID_DEFAULT</property>
-                                                                    <property name="label">C</property>
+                                                                    <property name="label">D</property>
                                                                     <property name="maximum_size"></property>
                                                                     <property name="minimum_size">20,20</property>
                                                                     <property name="name">m_btModelCopy</property>
@@ -1423,7 +1475,7 @@
                                                                     <property name="size">20,20</property>
                                                                     <property name="style"></property>
                                                                     <property name="subclass"></property>
-                                                                    <property name="tooltip">Copy Model</property>
+                                                                    <property name="tooltip">Duplicate Model</property>
                                                                     <property name="window_extra_style"></property>
                                                                     <property name="window_name"></property>
                                                                     <property name="window_style"></property>
@@ -1981,7 +2033,7 @@
                                                                     <property name="font"></property>
                                                                     <property name="hidden">0</property>
                                                                     <property name="id">ID_DEFAULT</property>
-                                                                    <property name="label">C</property>
+                                                                    <property name="label">D</property>
                                                                     <property name="maximum_size"></property>
                                                                     <property name="minimum_size">20,20</property>
                                                                     <property name="name">m_btAModelCopy</property>
@@ -1990,7 +2042,7 @@
                                                                     <property name="size">20,20</property>
                                                                     <property name="style"></property>
                                                                     <property name="subclass"></property>
-                                                                    <property name="tooltip">Copy Model</property>
+                                                                    <property name="tooltip">Duplicate Model</property>
                                                                     <property name="window_extra_style"></property>
                                                                     <property name="window_name"></property>
                                                                     <property name="window_style"></property>
@@ -2939,7 +2991,7 @@
                                                             <event name="OnMouseEvents"></event>
                                                             <event name="OnMouseWheel"></event>
                                                             <event name="OnPaint"></event>
-                                                            <event name="OnRightDClick"></event>
+                                                            <event name="OnRightDClick">OnLODsRDClick</event>
                                                             <event name="OnRightDown"></event>
                                                             <event name="OnRightUp"></event>
                                                             <event name="OnSetFocus"></event>
@@ -3090,7 +3142,7 @@
                                                                     <property name="font"></property>
                                                                     <property name="hidden">0</property>
                                                                     <property name="id">ID_DEFAULT</property>
-                                                                    <property name="label">C</property>
+                                                                    <property name="label">D</property>
                                                                     <property name="maximum_size"></property>
                                                                     <property name="minimum_size">20,20</property>
                                                                     <property name="name">m_btLODCopy</property>
@@ -3099,7 +3151,7 @@
                                                                     <property name="size">20,20</property>
                                                                     <property name="style"></property>
                                                                     <property name="subclass"></property>
-                                                                    <property name="tooltip">Copy Level of Detail</property>
+                                                                    <property name="tooltip">Duplicate Level of Detail</property>
                                                                     <property name="window_extra_style"></property>
                                                                     <property name="window_name"></property>
                                                                     <property name="window_style"></property>
@@ -3265,7 +3317,7 @@
                                                                     <property name="size">20,20</property>
                                                                     <property name="style">wxNO_BORDER</property>
                                                                     <property name="subclass"></property>
-                                                                    <property name="tooltip">Delete all Levels of Detail</property>
+                                                                    <property name="tooltip">Delete all Levels of Detail&#x0A;Right double-click removes all animation assignments.</property>
                                                                     <property name="window_extra_style"></property>
                                                                     <property name="window_name"></property>
                                                                     <property name="window_style"></property>
@@ -5108,7 +5160,7 @@
                                         <object class="notebookpage" expanded="1">
                                             <property name="bitmap"></property>
                                             <property name="label">Animations</property>
-                                            <property name="select">1</property>
+                                            <property name="select">0</property>
                                             <object class="wxPanel" expanded="1">
                                                 <property name="bg"></property>
                                                 <property name="context_help"></property>
@@ -5358,7 +5410,7 @@
                                                                     <property name="font"></property>
                                                                     <property name="hidden">0</property>
                                                                     <property name="id">ID_DEFAULT</property>
-                                                                    <property name="label">C</property>
+                                                                    <property name="label">D</property>
                                                                     <property name="maximum_size"></property>
                                                                     <property name="minimum_size">20,20</property>
                                                                     <property name="name">m_btAnimationCopy</property>
@@ -5367,7 +5419,7 @@
                                                                     <property name="size">20,20</property>
                                                                     <property name="style"></property>
                                                                     <property name="subclass"></property>
-                                                                    <property name="tooltip">Copy Animation</property>
+                                                                    <property name="tooltip">Duplicate Animation</property>
                                                                     <property name="window_extra_style"></property>
                                                                     <property name="window_name"></property>
                                                                     <property name="window_style"></property>
@@ -5533,7 +5585,7 @@
                                                                     <property name="size">20,20</property>
                                                                     <property name="style">wxNO_BORDER</property>
                                                                     <property name="subclass"></property>
-                                                                    <property name="tooltip">Load Animaton(s) from file</property>
+                                                                    <property name="tooltip">Load Animaton(s) from file&#x0A;Right double-click deletes all first (without confirmation).</property>
                                                                     <property name="window_extra_style"></property>
                                                                     <property name="window_name"></property>
                                                                     <property name="window_style"></property>
@@ -5585,7 +5637,7 @@
                                                                     <property name="size">20,20</property>
                                                                     <property name="style">wxNO_BORDER</property>
                                                                     <property name="subclass"></property>
-                                                                    <property name="tooltip">Delete all Animations</property>
+                                                                    <property name="tooltip">Delete all Animations&#x0A;Right double-click deletes all without confirmation.</property>
                                                                     <property name="window_extra_style"></property>
                                                                     <property name="window_name"></property>
                                                                     <property name="window_style"></property>
@@ -5623,7 +5675,7 @@
                                         <object class="notebookpage" expanded="1">
                                             <property name="bitmap"></property>
                                             <property name="label">Splines</property>
-                                            <property name="select">0</property>
+                                            <property name="select">1</property>
                                             <object class="wxPanel" expanded="1">
                                                 <property name="bg"></property>
                                                 <property name="context_help"></property>
@@ -5873,7 +5925,7 @@
                                                                     <property name="font"></property>
                                                                     <property name="hidden">0</property>
                                                                     <property name="id">ID_DEFAULT</property>
-                                                                    <property name="label">C</property>
+                                                                    <property name="label">D</property>
                                                                     <property name="maximum_size"></property>
                                                                     <property name="minimum_size">20,20</property>
                                                                     <property name="name">m_btSplineCopy</property>
@@ -5882,7 +5934,7 @@
                                                                     <property name="size">20,20</property>
                                                                     <property name="style"></property>
                                                                     <property name="subclass"></property>
-                                                                    <property name="tooltip">Copy Spline</property>
+                                                                    <property name="tooltip">Duplicate Spline</property>
                                                                     <property name="window_extra_style"></property>
                                                                     <property name="window_name"></property>
                                                                     <property name="window_style"></property>
@@ -5996,7 +6048,7 @@
                                                                     <property name="size">20,20</property>
                                                                     <property name="style">wxNO_BORDER</property>
                                                                     <property name="subclass"></property>
-                                                                    <property name="tooltip">Load Spline(s) from file</property>
+                                                                    <property name="tooltip">Load Spline(s) from file&#x0A;Right double-click deletes all first (without confirmation).</property>
                                                                     <property name="window_extra_style"></property>
                                                                     <property name="window_name"></property>
                                                                     <property name="window_style"></property>
@@ -6048,7 +6100,7 @@
                                                                     <property name="size">20,20</property>
                                                                     <property name="style">wxNO_BORDER</property>
                                                                     <property name="subclass"></property>
-                                                                    <property name="tooltip">Delete all Splines</property>
+                                                                    <property name="tooltip">Delete all Splines&#x0A;Right double-click deletes all without confirmation.</property>
                                                                     <property name="window_extra_style"></property>
                                                                     <property name="window_name"></property>
                                                                     <property name="window_style"></property>

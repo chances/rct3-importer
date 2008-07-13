@@ -46,6 +46,9 @@ public:
     void Init(cOvlInfo* info);
 
     void AddRelocation(unsigned long *reloc);
+    inline void AddRelocation(void* reloc) {
+        AddRelocation(reinterpret_cast<unsigned long*>(reloc));
+    }
     void Make();
     //void WriteFixups(FILE* f);
 };

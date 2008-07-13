@@ -90,6 +90,7 @@
 						<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxEXPAND|wxALIGN_CENTER_VERTICAL</flag>
 						<border>5</border>
 						<object class="wxChoice" name="m_choiceCoordinateSystem">
+							<selection>0</selection>
 							<content>
 								<item>Default</item>
 								<item>Right-Handed, X-Up</item>
@@ -493,8 +494,8 @@
 						<border>5</border>
 						<object class="wxButton" name="m_btLoad">
 							<style>wxBU_EXACTFIT|wxNO_BORDER</style>
-							<tooltip>Load mesh settings form an other scenery file.</tooltip>
-							<label>Load</label>
+							<tooltip>Tny to switch model file keeping mesh settings</tooltip>
+							<label>Switch Model File</label>
 							<default>0</default>
 						</object>
 					</object>

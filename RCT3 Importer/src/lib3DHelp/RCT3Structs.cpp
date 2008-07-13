@@ -299,7 +299,7 @@ void cMeshStruct::autoMeshStyle(const wxString& style) {
                 wxString st = t.AfterFirst('_');
                 if (!st.IsEmpty()) {
                     TXS = "SIOpaqueChrome";
-                    FTX = st;
+                    FTX = "[" + st = "]";
                 } else
                     wxLogWarning(_("Unknown mesh option token '%s'"), t.c_str());
             } else
@@ -1043,8 +1043,13 @@ COLOURQUAD* cFlexiTexture::GetBMYPalette() {
 
 cEffectPoint::cEffectPoint(const cModelBone& bone) {
     name = bone.name;
-    transforms = bone.positions1;
-    transformnames = bone.position1names;
+    if (bone.usepos2) {
+        transforms = bone.positions2;
+        transformnames = bone.position2names;
+    } else {
+        transforms = bone.positions1;
+        transformnames = bone.position1names;
+    }
 };
 
 bool cEffectPoint::FromNode(cXmlNode& node, const wxString& path, unsigned long version) {
@@ -1155,7 +1160,7 @@ cMeshStruct cModel::MakeMesh(const boost::shared_ptr<c3DLoader>& obj, unsigned i
     return ms;
 }
 
-bool cModel::Load() {
+bool cModel::Load(bool asoverlay) {
     boost::shared_ptr<c3DLoader> obj = c3DLoader::LoadFile(file.GetFullPath().c_str());
 
     if (!obj.get()) {
@@ -1164,23 +1169,41 @@ bool cModel::Load() {
         return false;
     }
 
-    if (name == wxT(""))
-        name = obj->GetName();
+    wxString newname = obj->GetName();
 
-    if (name == wxT("")) {
+    if (newname == wxT("")) {
         wxFileName t = file;
-        name = t.GetName();
+        newname = t.GetName();
     }
     fatal_error = false;
     error.clear();
 
-    fileorientation = obj->GetOrientation();
-    model_bones = obj->GetBones();
+    if (!asoverlay) {
+        deducedname = newname;
+        if (name.IsEmpty())
+            name = newname;
 
-    meshstructs.clear();
-    // Load the object into mesh structs
-    for (long j = 0; j < obj->GetObjectCount(); j++) {
-        meshstructs.push_back(MakeMesh(obj, j));
+        fileorientation = obj->GetOrientation();
+        model_bones = obj->GetBones();
+
+        meshstructs.clear();
+        // Load the object into mesh structs
+        for (long j = 0; j < obj->GetObjectCount(); j++) {
+            meshstructs.push_back(MakeMesh(obj, j));
+        }
+    } else {
+        if (deducedname.IsEmpty() || name.IsEmpty()) {
+            deducedname = newname;
+            if (name.IsEmpty())
+                name = newname;
+        } else {
+            if (name.StartsWith(deducedname)) {
+                name.Replace(deducedname, newname, false);
+            }
+            deducedname = newname;
+        }
+
+        Sync();
     }
 
     if (obj->GetWarnings().size() > 0) {
@@ -1201,7 +1224,7 @@ bool cModel::Sync() {
 
     // No mesh structs, reinit from the file
     if (meshstructs.size() == 0)
-        return Load();
+        return Load(false);
 
     // Load & check the object file
     boost::shared_ptr<c3DLoader> obj = c3DLoader::LoadFile(file.GetFullPath().c_str());
@@ -1213,6 +1236,15 @@ bool cModel::Sync() {
 
     fileorientation = obj->GetOrientation();
     model_bones = obj->GetBones();
+
+    if (deducedname.IsEmpty()) {
+        deducedname = obj->GetName();
+
+        if (deducedname.IsEmpty()) {
+            wxFileName t = file;
+            deducedname = t.GetName();
+        }
+    }
 
     // Predeclare to make goto work
     wxString notify;
@@ -1916,7 +1948,7 @@ bool cAnimatedModel::FromCompilerXml(cXmlNode& node, const wxString& path) {
     }
 
     fatal_error = false;
-    Load();
+    Load(false);
     if (fatal_error)
         throw RCT3Exception(error[error.size()-1]);
 
@@ -2629,6 +2661,33 @@ cXmlNode cSIVSettings::GetNode(const wxString& path) {
     node.prop("unk11", boost::str(boost::format("%lu") % unk11));
 
     return node;
+}
+
+/** @brief GetNode
+  *
+  * @todo: document this function
+  */
+cXmlNode cReference::GetNode(const wxString& path) {
+    cXmlNode node(RCT3XML_REFERENCE);
+    node.prop("path", name);
+    return node;
+}
+
+/** @brief FromNode
+  *
+  * @todo: document this function
+  */
+bool cReference::FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version) {
+    if (!node)
+        return false;
+    if (!node(RCT3XML_REFERENCE))
+        return false;
+    wxString ref = node.wxgetPropVal("path");
+    if (!ref.IsEmpty())
+        name = ref;
+    else
+        return false;
+    return true;
 }
 
 

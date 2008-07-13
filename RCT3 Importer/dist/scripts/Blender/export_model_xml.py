@@ -157,10 +157,11 @@ def write(filename):
       frames_exp = []
       for fr in frames:
           frames_exp.append((((fr-1) * expfps) / evalfps) + 1)
-      frames_exp = sets.Set(frames_exp)
+      frames_exp = sorted(sets.Set(frames_exp))
 
       print " max frame %d, exported %d" % (maxframe, maxframe_exp)
       for arm in arms.values():
+          print "  Checking armature %s" % (arm.name)
           if arm.name[0] == '_':
              continue
           arm_obj = Blender.Object.Get(arm.name)
@@ -217,11 +218,12 @@ def write(filename):
                       tf = mdiff.translationPart()
                       if (not is_frameSame(tf, old_bone_t)) or (i_exp == maxframe_exp):
                           #print "New Frame %d / %d | %f\n" % (i, i_exp, float(i_exp-1)/float(expfps))
-                          if (old_bone_tt < i_exp_old) and (i_exp != maxframe_exp):
+                          if (old_bone_tt < i_exp_old) and (i_exp != maxframe_exp) or ((not is_frameSame(tf, old_bone_t)) and (i_exp == maxframe_exp) and (not (maxframe_exp == 1))):
                               # Add last frame of a constant range
-                              fr = [float(i_exp_old-1)/float(expfps), old_bone_t]
-                              ex_bone_t.append(fr)
-                              #print "  Old Frame %d | %f\n" % (i_exp_old, float(i_exp_old-1)/float(expfps))
+                              if i_exp_old != old_bone_tt:
+                                fr = [float(i_exp_old-1)/float(expfps), old_bone_t]
+                                ex_bone_t.append(fr)
+                                #print "  Old Frame %d | %f\n" % (i_exp_old, float(i_exp_old-1)/float(expfps))
                           old_bone_t = tf
                           old_bone_tt = i_exp
                           fr = [float(i_exp-1)/float(expfps), tf]
@@ -242,10 +244,11 @@ def write(filename):
                          rf = Mathutils.Vector(rf[0]*math.pi/180.0, rf[1]*math.pi/180.0, rf[2]*math.pi/180.0)
                       #print "Frame %d post: %f %f %f\n" % (i, rf[0], rf[1], rf[2])
                       if (not is_frameSame(rf, old_bone_r)) or (i_exp == maxframe_exp):
-                          if (old_bone_rt < (i_exp_old)) and (i_exp != maxframe_exp):
+                          if ((old_bone_rt < (i_exp_old)) and (i_exp != maxframe_exp)) or ((not is_frameSame(rf, old_bone_r)) and (i_exp == maxframe_exp) and (not (maxframe_exp == 1))):
                               # Add last frame of a constant range
-                              fr = [float(i_exp_old-1)/float(expfps), old_bone_r]
-                              ex_bone_r.append(fr)
+                              if i_exp_old != old_bone_rt:
+                                fr = [float(i_exp_old-1)/float(expfps), old_bone_r]
+                                ex_bone_r.append(fr)
                           old_bone_r = rf
                           old_bone_rt = i_exp
                           fr = [float(i_exp-1)/float(expfps), rf]
@@ -359,7 +362,10 @@ def write(filename):
 
 
    for tex in tex_list.values():
-         file.write("%s<texture name=\"%s\" file=\"%s\">\n" % (Tab, tex['name'], tex['file']))
+         fname = tex['file']
+         if fname.startswith('//'):
+             fname = fname[2:]
+         file.write("%s<texture name=\"%s\" file=\"%s\">\n" % (Tab, tex['name'], fname))
          file.write("%s<metadata role=\"rct3\">\n" % (Tab*2))
          if tex['alpha']:
             file.write("%s<useAlpha/>\n" % (Tab*3))

@@ -197,8 +197,6 @@ void ovlSIDManager::AddSID(const cSid& sid) {
         throw EOvl("ovlSIDManager::AddSID called without ovlpath");
     if (sid.ui.name == "")
         throw EOvl("ovlSIDManager::AddSID called without menu name");
-    if (sid.ui.icon == "")
-        throw EOvl("ovlSIDManager::AddSID called without menu icon");
     if ((sid.squareunknowns.size()>1) && (sid.squareunknowns.size() != (sid.position.xsquares * sid.position.zsquares)))
         throw EOvl("ovlSIDManager::AddSID called with illegal numer of square unknowns");
     if (sid.extra.version > 2)
@@ -242,8 +240,11 @@ void ovlSIDManager::AddSID(const cSid& sid) {
 
     GetLSRManager()->AddSymRef(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(sid.ui.name.c_str(), ovlTXTManager::TAG);
-    GetLSRManager()->AddSymRef(OVLT_UNIQUE);
-    GetStringTable()->AddSymbolString(sid.ui.icon.c_str(), ovlGSIManager::TAG);
+    if (sid.ui.icon != "") {
+        // Tracksections have no icon
+        GetLSRManager()->AddSymRef(OVLT_UNIQUE);
+        GetStringTable()->AddSymbolString(sid.ui.icon.c_str(), ovlGSIManager::TAG);
+    }
     GetStringTable()->AddString(sid.position.supports.c_str()); // Assign even if empty
     if ((sid.ui.group != "") && (sid.ui.groupicon != "")) {
         GetLSRManager()->AddSymRef(OVLT_UNIQUE);
@@ -341,8 +342,10 @@ void ovlSIDManager::Make(cOvlInfo* info) {
 
         GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.ui.name.c_str(), ovlTXTManager::TAG),
                              reinterpret_cast<unsigned long*>(&c_sid->name_ref));
-        GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.ui.icon.c_str(), ovlGSIManager::TAG),
-                             reinterpret_cast<unsigned long*>(&c_sid->icon_ref));
+        if (it->second.ui.icon != "") {
+            GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.ui.icon.c_str(), ovlGSIManager::TAG),
+                                 reinterpret_cast<unsigned long*>(&c_sid->icon_ref));
+        }
         if ((it->second.ui.group != "") && (it->second.ui.groupicon != "")) {
             GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.ui.group.c_str(), ovlTXTManager::TAG),
                                  reinterpret_cast<unsigned long*>(&c_sid->group_name_ref));

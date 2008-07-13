@@ -14,6 +14,7 @@
 #define TRACKEDRIDE_H_INCLUDED
 
 #include "attraction.h"
+#include "sceneryvisual.h"
 #include "sharedride.h"
 #include "tracksection.h"
 
@@ -24,28 +25,28 @@ struct TrackedRideTrackSectionStruct {
 	uint32_t        cost;
 };
 
-struct TrackedRideTrackExtraPair {
+struct TrackedRideGroupDefinitionPair {
     uint32_t        flags;
     union {
-        char*           trackname;
+        char*           group_name;
         TrackSection_V* section_ref;
     };
 };
 
-struct TrackedRideTrackExtra {
-    TrackedRideTrackExtraPair a;
-    TrackedRideTrackExtraPair b;
+struct TrackedRideGroupDefinition {
+    TrackedRideGroupDefinitionPair a;
+    TrackedRideGroupDefinitionPair b;
 };
 
-struct TrackedRideTrackExtraArray {
-    uint32_t                extra_count;
-    TrackedRideTrackExtra*  extras;
+struct TrackedRideGroupDefinitionArray {
+    uint32_t                definition_count;
+    TrackedRideGroupDefinition*  definitions;
 };
 
 struct TrackedRide_Common {
     union {
         uint32_t            track_section_count;            ///< 0xFFFFFFFF signals TrackedRide_S or TrackedRide_W
-        uint32_t            v2;
+        int32_t             v2;
     };
 	TrackSection_V**    track_sections_ref;
 	uint32_t            train_name_count;
@@ -64,7 +65,7 @@ struct TrackedRide_Common {
 	char*               station_name;
 	uint32_t            platform_height_over_track;
 	uint32_t            only_on_water;
-	uint32_t            unk38;                          ///< Markus: always 0
+	int32_t             unk38;                          ///< Usually 0, -3 for MiniSubs
 	uint32_t            start_preset;
 // 20
 	uint32_t            start_possibilities;
@@ -85,9 +86,9 @@ struct TrackedRide_Common {
 	float_t             constant_speed_max;
 	float_t             constant_speed_step;
 	float_t             speed_up_down_variation;
-	uint32_t            unk57;
-	uint32_t            unk58;
-	uint32_t            unk59;
+	uint32_t            unk57;                          ///< Probably related to the upkeep
+	uint32_t            unk58;                          ///< Probably related to the upkeep
+	uint32_t            unk59;                          ///< Probably related to the upkeep
 // 40
 	uint32_t            unk60;
 	uint32_t            unk61;
@@ -98,20 +99,20 @@ struct TrackedRide_Common {
 	float_t             tower_top_duration;
 	float_t	            tower_top_distance;
 	uint32_t            loop_not_allowed;
-	uint32_t            unk69;                          ///< Markus: always 0
+	uint32_t            unk69;                          ///< Always 0
 // 50
-	uint32_t            ride_cost_preview1;             ///< cost preview = 0.75 * preview1 * preview2, rounded to 50 full currency steps
+	uint32_t            ride_cost_preview1;             ///< cost preview = 75 * preview1 * preview2, rounded to 5000 full currency steps
 	uint32_t            ride_cost_preview2;             ///< See above
 	uint32_t            cost_per_4h_height;
 	char*               track_path;                     ///< In S and W structures 0.
-	uint32_t            unk74;                          ///< Markus: always 0
-	uint32_t            unk75;                          ///< Markus: always 0
-	TrackSection_V*     tower_top_ref;
+	TrackSection_V*     other_top_ref;                  ///< Used in Chair lift and Giant Slide
+	TrackSection_V*     other_mid_ref;
+	TrackSection_V*     tower_top_ref;                  ///< Used in Chair lift and Tower rides
 	TrackSection_V*     tower_mid_ref;
 	uint32_t            auto_complete;
 	uint32_t            deconstruct_everywhere;
 // 60
-	uint32_t            modus_flags;
+	int32_t             modus_flags;
 	float_t             chain_speed_min;
 	float_t             chain_speed_max;
 	float_t             chain_speed_step;
@@ -130,66 +131,34 @@ struct TrackedRide_Common {
 	float_t             unk95;                          ///< Markus: always -1.0
 };
 
-/// Tracked ride structure
+/// Tracked ride structure, Vanilla
 /**
  * This is the tracked ride structure used in Vanilla
+ * Storage:
+ *  Main Structure: unique
+ *  Ride Options: common
+ *  track_sections_ref: unique
+ *  train_names: common
+ *  track_section_structs: common
  */
 struct TrackedRide_V {
-/*
-	unsigned long type;
-	wchar_t* name;
-	wchar_t* description;
-	GUISkinItem *icon;
-	unsigned long unk5;   ///< Seen 0. Would map to cost in similar structures
-	unsigned long unk6;   ///< Seen 0. Would map to refund in similar structures
-	unsigned long unk7;   ///< Seen 0
-	unsigned long unk8;   ///< Seen 0
-	unsigned long unk9;   ///< Seen 4960
-	Spline*	loop;
-	unsigned long pathcount;
-	Spline** paths;
-	unsigned long unk13;
-	unsigned long unk14;
-*/
     Attraction_V        att;
-/*
-	uint32_t            attractivity;       ///< How many peeps are drawn into the park by this ride
-	uint32_t            unk16;              ///< Would be seating if similar to AnimatedRideA
-	RideOption**        options;
-	uint32_t            unk18;
-	uint32_t            unk19;
-	uint32_t            unk20;
-*/
     Ride_V              ride;
     TrackedRide_Common  common;
 };
 
-/*
-/// Secondary structure for TrackedRideB
-struct TrackedRideB2 {
-    unsigned long unk1; ///< always 0xFFFFFFFF
-    unsigned long unk2;         ///< Would be seating if similar to AnimatedRideB2
-    RideOption** options;       ///< List terminated by a unrelocated zero pointer
-    unsigned long unk4;         ///< Seen 1
-    long unk5;                  ///< Seen -1, 1 (FunHouse, LionShow, TigerShow, DolphinShow, KillerWhaleShow)
-    unsigned long entryfee;     ///< if similar to AnimatedRideB2!!!
-    AttractionA* att;
-    unsigned long unk8;         ///< Seen 95
-    unsigned long extracount;   ///< if similar to AnimatedRideB2!!!
-    RideExtra* extras;          ///< if similar to AnimatedRideB2!!!
-    unsigned long unk11;        ///< Seen 3
-    unsigned long unk12;        ///< Seen 3
-    long unk13;                 ///< Seen -2
-    long unk14;                 ///< Seen -2
-    long unk15;                 ///< Seen -2
-    unsigned long unk16;        ///< Seen 1. Only present in Wild ovls
-    unsigned long unk17;        ///< Seen 1. Only present in Wild ovls
-};
-*/
 
-/// Soaked animated ride structure
+/// Tracked ride structure, Soaked
 /**
- * This is the animated ride structure used in Soaked
+ * This is the tracked ride structure used in Soaked
+ * Storage:
+ *  Main Structure: unique
+ *  track_sections_ref: unique
+ *  track_section_structs: common
+ *  train_names: common
+ *  ride: unique
+ *  extraarrays: unique
+ *  track_paths: common
  */
 struct TrackedRide_S {
 /*
@@ -274,14 +243,14 @@ struct TrackedRide_S {
         Ride_S*         ride_sub_s;
         Ride_W*         ride_sub_w;
     };
-    uint32_t            soaked_flags;               ///< No idea
-    uint32_t            unk78;                      ///< Always 0
-    uint32_t            unk79;                      ///< Always 0
+    uint32_t            track_section_count_sw;
+	TrackSection_V*     other_top_flipped_ref;
+	TrackSection_V*     other_mid_flipped_ref;
     uint32_t            unk80;                      ///< Always 0
     uint32_t            unk81;                      ///< Always 0
     float_t             unk82;                      ///< Usually 0.001, SkySwinger has 0.5
-    uint32_t                    extraarray_count;
-    TrackedRideTrackExtraArray* extraarrays;
+    uint32_t                    group_definition_count; ///< These define grouping behavior, ie automatically choosing start/mid/end pieces
+    TrackedRideGroupDefinitionArray* group_definitions;
     uint32_t            unk85;                      ///< Always 0
     uint32_t            unk86;                      ///< Always 0
     uint32_t            unk87;                      ///< Usually 0, BodySlide, MasterBlaster, ProSlide, RingSlide and SinkingShip have 2
@@ -304,16 +273,13 @@ struct TrackedRide_S {
 };
 
 struct TrackedRide_Wext {
-    uint32_t            unk104;                     ///< Always 0
-    uint32_t            unk105;                     ///< Usually 0, RoboCoaster has 1
-                                                    /**<
-                                                     * Activating this (alone) does not give the control
-                                                     **/
-    uint32_t            spinner_control;            ///< Usually 0, EuroSpinner has 1
+    SceneryItemVisual_V* splitter_ref;
+    uint32_t            robo_flag;                  ///< Usually 0, 1 activates the joint control
+    uint32_t            spinner_control;            ///< Usually 0, 1 activates the eurospinner control
     uint32_t            unk107;                     ///< Usually 0, BallCoaster, Endless and FrequentFaller 1
     uint32_t            unk108;                     ///< Usually 1, ElephantTransport has 0
-    int32_t             unk109;                     ///< Usually -1, Seizmic has 2
-    uint32_t            unk110;                     ///< Usually 0, Seizmic has 1
+    int32_t             split_val;                  ///< Usually -1, Seizmic has 2
+    uint32_t            split_flag;                 ///< Usually 0, Seizmic has 1
     char*               internalname;
 };
 

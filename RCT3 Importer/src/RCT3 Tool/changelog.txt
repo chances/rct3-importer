@@ -280,8 +280,11 @@ Version 17 (Belgabor):
 * FIX3: Added Extra Parameters for pool items. Ramps don't seem to work and the Life Guard can currently not be done fully (requires two extra parameters, which the importer cannot do).
 * FIX3: Replaced Unknowns 3-5 with Def.Color 1-3
 
+Version 18 (Belgabor):
+* Too much to list
+
 Todos:
-// NOTE (tobi#1#): Test other texture styles for billboards
-// NOTE (tobi#1#): Load model settings as overlay
-// NOTE (tobi#1#): Load matrices from files
-// NOTE (tobi#9#): Wizard
+// NOTE (belgabor#1#): Test other texture styles for billboards
+// NOTE (belgabor#1#): Load model settings as overlay
+// NOTE (belgabor#1#): Load matrices from files
+// NOTE (belgabor#9#): Wizard

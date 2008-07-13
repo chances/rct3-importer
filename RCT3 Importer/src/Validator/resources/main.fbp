@@ -1282,6 +1282,74 @@
                     </object>
                 </object>
                 <object class="wxMenu" expanded="1">
+                    <property name="label">&amp;Edit</property>
+                    <property name="name">m_menuEdit</property>
+                    <property name="permission">protected</property>
+                    <object class="wxMenuItem" expanded="1">
+                        <property name="bitmap"></property>
+                        <property name="checked">0</property>
+                        <property name="enabled">1</property>
+                        <property name="help"></property>
+                        <property name="id">wxID_ANY</property>
+                        <property name="kind">wxITEM_NORMAL</property>
+                        <property name="label">Insert XInclude...</property>
+                        <property name="name">m_menuEditInsertXinclude</property>
+                        <property name="permission">none</property>
+                        <property name="shortcut">Ctrl+I</property>
+                        <property name="unchecked_bitmap"></property>
+                        <event name="OnMenuSelection">OnInsertXInclude</event>
+                        <event name="OnUpdateUI"></event>
+                    </object>
+                    <object class="wxMenuItem" expanded="1">
+                        <property name="bitmap"></property>
+                        <property name="checked">0</property>
+                        <property name="enabled">1</property>
+                        <property name="help"></property>
+                        <property name="id">wxID_ANY</property>
+                        <property name="kind">wxITEM_NORMAL</property>
+                        <property name="label">Replace Abbreviation (Quick)</property>
+                        <property name="name">m_menuItemEditAbbreviation</property>
+                        <property name="permission">none</property>
+                        <property name="shortcut">Ctrl+J</property>
+                        <property name="unchecked_bitmap"></property>
+                        <event name="OnMenuSelection">OnAbbreviation</event>
+                        <event name="OnUpdateUI"></event>
+                    </object>
+                    <object class="wxMenuItem" expanded="1">
+                        <property name="bitmap"></property>
+                        <property name="checked">0</property>
+                        <property name="enabled">1</property>
+                        <property name="help"></property>
+                        <property name="id">wxID_ANY</property>
+                        <property name="kind">wxITEM_NORMAL</property>
+                        <property name="label">Replace Abbreviation</property>
+                        <property name="name">m_menuItemEditAbbreviationFull</property>
+                        <property name="permission">none</property>
+                        <property name="shortcut">Ctrl+Shift+J</property>
+                        <property name="unchecked_bitmap"></property>
+                        <event name="OnMenuSelection">OnAbbreviationFull</event>
+                        <event name="OnUpdateUI"></event>
+                    </object>
+                    <object class="separator" expanded="1">
+                        <property name="permission">none</property>
+                    </object>
+                    <object class="wxMenuItem" expanded="1">
+                        <property name="bitmap"></property>
+                        <property name="checked">0</property>
+                        <property name="enabled">1</property>
+                        <property name="help"></property>
+                        <property name="id">wxID_ANY</property>
+                        <property name="kind">wxITEM_NORMAL</property>
+                        <property name="label">Apply XIncludes</property>
+                        <property name="name">m_menuEditPerformXIncludes</property>
+                        <property name="permission">none</property>
+                        <property name="shortcut"></property>
+                        <property name="unchecked_bitmap"></property>
+                        <event name="OnMenuSelection">OnApplyXIncludes</event>
+                        <event name="OnUpdateUI"></event>
+                    </object>
+                </object>
+                <object class="wxMenu" expanded="1">
                     <property name="label">&amp;Schema</property>
                     <property name="name">m_menuSchema</property>
                     <property name="permission">protected</property>

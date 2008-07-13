@@ -264,10 +264,6 @@ public:
 };
 
 // "Fake" classes for consistent access to file tags
-class ovlTKSManager: public ovlOVLManager {
-public:
-    static const char* TAG;
-};
 class ovlTXSManager: public ovlOVLManager {
 public:
     static const char* TAG;

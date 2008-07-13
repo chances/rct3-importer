@@ -8,14 +8,33 @@
 	version. See the file COPYING for more details.
 */
 
-#ifndef __SCENARY_H__
-#define __SCENARY_H__
-
-#if 0
+#ifndef __SCENERYOLD_H__
+#define __SCENERYOLD_H__
 
 #include "guiicon.h"
 #include "sceneryvisual.h"
 #include "vertex.h"
+
+#ifndef _WAVEFORMATEX_
+#ifndef WAVEFORMATEX
+#define _WAVEFORMATEX_
+
+struct WAVEFORMATEX {
+	short wFormatTag;
+	short nChannels;
+	long  nSamplesPerSec;
+	long  nAvgBytesPerSec;
+	short nBlockAlign;
+	short wBitsPerSample;
+	short cbSize;
+};
+
+#endif
+#endif
+
+namespace r3old {
+
+typedef uint32_t BOOL;
 
 struct Scenery
 {
@@ -448,6 +467,6 @@ struct SceneryItemExtra
 	unsigned long GenericAddon;
 };
 
-#endif
+};
 
 #endif

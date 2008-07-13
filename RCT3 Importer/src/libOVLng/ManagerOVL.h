@@ -67,7 +67,8 @@ public:
     }
 
     virtual void Make(cOvlInfo* info) = 0;
-    virtual void WriteLoader(FILE* f);
+    //virtual void WriteLoader(FILE* f);
+    virtual void WriteLoader(std::fstream& f);
 
     virtual const unsigned long GetSize() const;
     virtual unsigned char* GetData();

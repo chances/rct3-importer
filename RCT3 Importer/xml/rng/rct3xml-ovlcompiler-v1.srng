@@ -5,6 +5,7 @@
 		<srng:element name="ovl">
 			<srng:attribute name="name" occurs="?" type="string" />
 			<srng:attribute name="file" occurs="?" type="string" />
+			<srng:attribute name="prefix" occurs="?" type="string" />
 			<srng:element name="fix" occurs="?">
 				<srng:attribute name="handedness" occurs="?">
 					<srng:choice>

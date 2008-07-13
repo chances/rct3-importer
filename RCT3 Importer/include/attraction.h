@@ -42,6 +42,8 @@ struct Attraction_V {
                                  *   - 125 for Endless and Drifting Coaster
                                  *   - 1500 for Stalls
                                  *   - 4960 for Changing Rooms and all other AnimatedRides and TrackedRides
+                                 *
+                                 * Total upkeep: base_upkeep (+ tracked ride specific) + 8 * seller's wage - 16.
                                  **/
     Spline*             spline_ref;         ///< A loop on flat rides
     uint32_t            path_count;          ///< Count for the next struct
@@ -72,7 +74,8 @@ struct Attraction_S {
 
 /// General attraction structure extension (Wild)
 struct Attraction_Wext {
-	unsigned long unk13;        ///< Usually 0, 606208/0x94000 for Insect, Reptile and Nocturnal House
+	uint32_t            ui_deactivation;    ///< Flags, deactivate certain ui elements
+                                // May influence available ride options
 };
 
 /// General attraction structure (Wild)

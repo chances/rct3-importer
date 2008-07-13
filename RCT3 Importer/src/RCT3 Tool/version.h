@@ -4,30 +4,30 @@
 namespace AutoVersion{
 	
 	//Date Version Types
-	static const char DATE[] = "29";
-	static const char MONTH[] = "06";
+	static const char DATE[] = "13";
+	static const char MONTH[] = "07";
 	static const char YEAR[] = "2008";
-	static const double UBUNTU_VERSION_STYLE = 8.06;
+	static const double UBUNTU_VERSION_STYLE = 8.07;
 	
 	//Software Status
-	static const char STATUS[] = "Alpha";
-	static const char STATUS_SHORT[] = "a";
+	static const char STATUS[] = "Beta";
+	static const char STATUS_SHORT[] = "b";
 	
 	//Standard Version Type
 	static const long MAJOR = 18;
-	static const long MINOR = 14;
-	static const long BUILD = 361;
-	static const long REVISION = 359;
+	static const long MINOR = 1;
+	static const long BUILD = 388;
+	static const long REVISION = 386;
 	
 	//Miscellaneous Version Types
-	static const long BUILDS_COUNT = 1065;
-	#define RC_FILEVERSION 18,14,361,359
-	#define RC_FILEVERSION_STRING "18, 14, 361, 359\0"
-	static const char FULLVERSION_STRING[] = "18.14.361.359";
+	static const long BUILDS_COUNT = 1113;
+	#define RC_FILEVERSION 18,1,388,386
+	#define RC_FILEVERSION_STRING "18, 1, 388, 386\0"
+	static const char FULLVERSION_STRING[] = "18.1.388.386";
 	
 	//SVN Version
-	static const char SVN_REVISION[] = "110";
-	static const char SVN_DATE[] = "2008-04-23T16:45:55.065404Z";
+	static const char SVN_REVISION[] = "113";
+	static const char SVN_DATE[] = "2008-07-05T21:47:32.813114Z";
 	
 	//These values are to keep track of your versioning state, don't modify them.
 	static const long BUILD_HISTORY = 0;

@@ -35,7 +35,12 @@
 		<Unit filename="rct3xml-ovlcompiler-v1.rnc.gz.h" />
 		<Unit filename="rct3xml-ovlcompiler-v1.srng" />
 		<Unit filename="rct3xml-raw-v1.rnc.gz.h" />
+		<Unit filename="rct3xml-raw-v1.rngi.gz.h" />
+		<Unit filename="rct3xml-raw-v1.sch.gz.h" />
 		<Unit filename="rct3xml-raw-v1.srng" />
+		<Unit filename="rct3xml-scenery-v1.rnc.gz.h" />
+		<Unit filename="rct3xml-scenery-v1.rngi.gz.h" />
+		<Unit filename="rct3xml-scenery-v1.srng" />
 		<Unit filename="relaxng.rnc.gz.h" />
 		<Unit filename="relaxng.rng" />
 		<Extensions>

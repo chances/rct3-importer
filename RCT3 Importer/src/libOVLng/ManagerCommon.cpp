@@ -29,6 +29,7 @@
 
 #include "ManagerCommon.h"
 
+#include <assert.h>
 #include <math.h>
 
 #include "pretty.h"
@@ -45,7 +46,6 @@
 using namespace r3;
 using namespace std;
 
-const char* ovlTKSManager::TAG = "tks";
 const char* ovlTXSManager::TAG = "txs";
 
 ////////////////////////////////////////////////////////////////////////
@@ -81,6 +81,8 @@ inline float TriMin(const VECTOR& a, const VECTOR& b, const VECTOR& c, cTriangle
             return TriMin(a.y, b.y, c.y);
         case cTriangleSortAlgorithm::BY_Z:
             return TriMin(a.z, b.z, c.z);
+        default:
+            assert(0);
     }
 }
 
@@ -92,6 +94,8 @@ inline float TriMax(const VECTOR& a, const VECTOR& b, const VECTOR& c, cTriangle
             return TriMax(a.y, b.y, c.y);
         case cTriangleSortAlgorithm::BY_Z:
             return TriMax(a.z, b.z, c.z);
+        default:
+            assert(0);
     }
 }
 
@@ -103,6 +107,8 @@ inline float TriSum(const VECTOR& a, const VECTOR& b, const VECTOR& c, cTriangle
             return a.y + b.y + c.y;
         case cTriangleSortAlgorithm::BY_Z:
             return a.z + b.z + c.z;
+        default:
+            assert(0);
     }
 }
 

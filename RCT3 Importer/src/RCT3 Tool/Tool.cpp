@@ -80,6 +80,9 @@
 #include "version_wrap.h"
 
 using namespace r3;
+using namespace std;
+
+//#define CUSTOM_CATEGORIES
 
 //////////////////////////////////
 //
@@ -1754,9 +1757,11 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
         SendDlgItemMessage(hwnd, IDC_THEME, LB_ADDSTRING, 0, (LPARAM) "$Paradise Island");
         SendDlgItemMessage(hwnd, IDC_THEME, LB_ADDSTRING, 0, (LPARAM) "#Safari");
         SendDlgItemMessage(hwnd, IDC_THEME, LB_ADDSTRING, 0, (LPARAM) "#Prehistoric");
+#ifdef CUSTOM_CATEGORIES
         SendDlgItemMessage(hwnd, IDC_THEME, LB_ADDSTRING, 0, (LPARAM) "Custom");
         SendDlgItemMessage(hwnd, IDC_THEME, LB_ADDSTRING, 0, (LPARAM) "User 1");
         SendDlgItemMessage(hwnd, IDC_THEME, LB_ADDSTRING, 0, (LPARAM) "User 2");
+#endif
         SendDlgItemMessage(hwnd, IDC_THEME, LB_ADDSTRING, 0, (LPARAM) "None");
         SetDlgItemText(hwnd, IDC_NOTES,
                        "Notes about RCT3 Soaked! and RCT3 Wild! expansion packs\r\n"
@@ -2866,7 +2871,7 @@ bool ToolApp::OnInit()
     wxConfig::Set(new wxFileConfig(wxT("RCT3 Importer"), wxT("Freeware"), g_appdir+wxT("RCT3 Importer.conf"), wxT(""), wxCONFIG_USE_LOCAL_FILE));
 
     try {
-        wxGXImage::CheckGraphicsMagick(app.GetPathWithSep());
+        wxGXImage::CheckGraphicsMagick(g_appdir);
     } catch (exception& e) {
         wxString err = _("Error initializing the graphics library:\n");
         err += wxString(e.what(), wxConvLocal);
@@ -3039,7 +3044,11 @@ bool InstallTheme(HWND hwnd) {
 //    wxFileName test2 = test1;
 
     styleval = SendDlgItemMessage(hwnd, IDC_THEME, LB_GETCURSEL, 0, 0);
+#ifdef CUSTOM_CATEGORIES
     if (styleval > 11)
+#else
+    if (styleval > 8)
+#endif
         styleval = 255;
     len = MAX_PATH;
 /*
@@ -3112,7 +3121,7 @@ bool InstallTheme(HWND hwnd) {
     styleovl::CreateStyleOvl(sFileName.fn_str(), styleval);
 #endif
     for (i = 0; i < cTextStrings.size(); i++) {
-// FIXME (tobi#1#): Make textstring give-over sane
+// FIXME (belgabor#1#): Make textstring give-over sane
         Text *txt = new Text;
         txt->name = new char[cTextStrings[i].name.length()+1];
         strcpy(txt->name, cTextStrings[i].name.c_str());

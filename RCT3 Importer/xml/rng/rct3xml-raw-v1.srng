@@ -1,8 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<grammar xmlns="http://relaxng.sourceforge.net/ns/shorthand" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" ns="http://rct3.sourceforge.net/rct3xml/raw">
+<grammar xmlns="http://relaxng.sourceforge.net/ns/shorthand" 
+	xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" 
+	xmlns:sch="http://purl.oclc.org/dsdl/schematron" 
+	datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" 
+	ns="http://rct3.sourceforge.net/rct3xml/raw">
+
+	<sch:ns prefix="mod" uri="http://rct3.sourceforge.net/rct3xml/model"/>
+	<sch:ns prefix="raw" uri="http://rct3.sourceforge.net/rct3xml/raw"/>
+	<sch:ns prefix="sc" uri="http://rct3.sourceforge.net/rct3xml/scenery"/>
+	<sch:ns prefix="math" uri="http://exslt.org/math"/>
+	<sch:ns prefix="str" uri="http://exslt.org/strings"/>
+	
 	<include href="rct3xml-shared-v1.rng"/>
 	<include href="rct3xml-installer-shared-v1.rng"/>
+
+	<sch:pattern>
+		<sch:title>Abstract referece checking rules.</sch:title>
+		<sch:rule id="uniqueness" abstract="true">
+			<sch:let name="ovlpath" value="concat(str:concat(ancestor::raw:rawovl/@basedir),ancestor::raw:rawovl[@file]/@file)" />
+			<sch:assert test="count(ancestor::raw:rawovl[@file]//raw:*[(name() = name(current()/ancestor::*[1])) and (@name = current())]) = 1">The name '<sch:value-of select="."/>' of element <sch:value-of select="name(ancestor::*[1])"/> in ovl <sch:value-of select="concat(str:concat(ancestor::raw:rawovl/@basedir),ancestor::raw:rawovl[@file]/@file)"/> is not unique.</sch:assert>
+		</sch:rule>
+		<sch:rule id="refcheck-gsi" abstract="true">
+			<sch:let name="ovlpath" value="concat(str:concat(ancestor::raw:rawovl/@basedir),ancestor::raw:rawovl[@file]/@file)" />
+			<sch:assert test="//raw:gsi[@name = current()]" role="warning">No gsi element for <sch:value-of select="name()"/> attribute of <sch:value-of select="name(ancestor::*[1])"/> element found (<sch:value-of select="name(ancestor::*[@name])"/> '<sch:value-of select="ancestor-or-self::*[@name]/@name"/>' in ovl '<sch:value-of select="$ovlpath"/>').</sch:assert>
+		</sch:rule>
+		<sch:rule id="refcheck-sid" abstract="true">
+			<sch:let name="ovlpath" value="concat(str:concat(ancestor::raw:rawovl/@basedir),ancestor::raw:rawovl[@file]/@file)" />
+			<sch:assert test="//raw:sid[@name = current()]" role="warning">No sid element for <sch:value-of select="name()"/> attribute of <sch:value-of select="name(ancestor::*[1])"/> element found (<sch:value-of select="name(ancestor::*[@name])"/> '<sch:value-of select="ancestor-or-self::*[@name]/@name"/>' in ovl '<sch:value-of select="$ovlpath"/>').</sch:assert>
+		</sch:rule>
+		<sch:rule id="refcheck-spl" abstract="true">
+			<sch:let name="ovlpath" value="concat(str:concat(ancestor::raw:rawovl/@basedir),ancestor::raw:rawovl[@file]/@file)" />
+			<sch:let name="impref" value="ancestor::*[1]/@impref" />
+			<sch:assert test="(//raw:spl[@name = current()]) or ($impref and (document(str:encode-uri(//raw:import[@id = $impref]/@file, false()), .)//sc:spline[@name = current()]))" role="warning">No spl element for <sch:value-of select="name()"/> attribute of <sch:value-of select="name(ancestor::*[1])"/> element found (<sch:value-of select="name(ancestor::*[@name])"/> '<sch:value-of select="ancestor-or-self::*[@name]/@name"/>' in ovl '<sch:value-of select="$ovlpath"/>').</sch:assert>
+		</sch:rule>
+		<sch:rule id="refcheck-svd" abstract="true">
+			<sch:let name="ovlpath" value="concat(str:concat(ancestor::raw:rawovl/@basedir),ancestor::raw:rawovl[@file]/@file)" />
+			<sch:let name="impref" value="ancestor::*[1]/@impref" />
+			<sch:assert test="(//raw:svd[@name = current()]) or (//raw:import[@name = current()]) or ($impref and (document(str:encode-uri(//raw:import[@id = $impref]/@file, false()), .)/sc:ovl[@name = current()]))" role="warning">No svd element for <sch:value-of select="name()"/> attribute of <sch:value-of select="name(ancestor::*[1])"/> element found (<sch:value-of select="name(ancestor::*[@name])"/> '<sch:value-of select="ancestor-or-self::*[@name]/@name"/>' in ovl '<sch:value-of select="$ovlpath"/>').</sch:assert>
+		</sch:rule>
+		<sch:rule id="refcheck-tex" abstract="true">
+			<sch:let name="ovlpath" value="concat(str:concat(ancestor::raw:rawovl/@basedir),ancestor::raw:rawovl[@file]/@file)" />
+			<sch:assert test="//raw:tex[@name = current()]" role="warning">No tex element for <sch:value-of select="name()"/> attribute of <sch:value-of select="name(ancestor::*[1])"/> element found (<sch:value-of select="name(ancestor::*[@name])"/> '<sch:value-of select="ancestor-or-self::*[@name]/@name"/>' in ovl '<sch:value-of select="$ovlpath"/>').</sch:assert>
+		</sch:rule>
+		<sch:rule id="refcheck-tks" abstract="true">
+			<sch:let name="ovlpath" value="concat(str:concat(ancestor::raw:rawovl/@basedir),ancestor::raw:rawovl[@file]/@file)" />
+			<sch:assert test="//raw:tks[@name = current()]" role="warning">No tks element for <sch:value-of select="name()"/> attribute of <sch:value-of select="name(ancestor::*[1])"/> element found (<sch:value-of select="name(ancestor::*[@name])"/> '<sch:value-of select="ancestor-or-self::*[@name]/@name"/>' in ovl '<sch:value-of select="$ovlpath"/>').</sch:assert>
+		</sch:rule>
+		<sch:rule id="refcheck-txt" abstract="true">
+			<sch:let name="ovlpath" value="concat(str:concat(ancestor::raw:rawovl/@basedir),ancestor::raw:rawovl[@file]/@file)" />
+			<sch:assert test="//raw:txt[@name = current()]" role="warning">No txt element for <sch:value-of select="name()"/> attribute of <sch:value-of select="name(ancestor::*[1])"/> element found (<sch:value-of select="name(ancestor::*[@name])"/> '<sch:value-of select="ancestor-or-self::*[@name]/@name"/>' in ovl '<sch:value-of select="$ovlpath"/>').</sch:assert>
+		</sch:rule>
+	</sch:pattern>
+
+	<sch:pattern>
+		<sch:title>ID/IDREF checking.</sch:title>
+		<sch:rule context="@impref">
+			<sch:assert test="//raw:import[@id=current()]">A <sch:value-of select="name(ancestor::*[1])"/> element's impref attribute asks for unknown import id '<sch:value-of select="."/>'</sch:assert>
+		</sch:rule>
+		<sch:rule context="//raw:import/@id">
+			<sch:assert test="count(//raw:import[@id=current()]) = 1">The import element id '<sch:value-of select="."/>' is not unique.</sch:assert>
+		</sch:rule>
+	</sch:pattern>
+
 	<start>
 		<choice>
 			<ref name="rawovl"/>
@@ -22,6 +82,23 @@
 			<a:documentation>The options are 0 (install/compile dir, default) and 1 (user dir, only makes files when intalling)</a:documentation>
 			<value type="unsignedInt">0</value>
 			<value type="unsignedInt">1</value>
+		</choice>
+	</define>
+	<define name="flag">
+		<choice>
+			<value>0</value>
+			<value>1</value>
+		</choice>
+	</define>
+	<define name="flags">
+		<choice>
+			<data type="unsignedInt"/> <!-- decimal -->
+			<data type="string">  <!-- hexadecimal -->
+				<param name="pattern">(h|0x)[0-9A-Fa-f]{8}</param>
+			</data>
+			<data type="string">  <!-- hexadecimal -->
+				<param name="pattern">b[0-1]{32}</param>
+			</data>
 		</choice>
 	</define>
 	<div>
@@ -68,6 +145,10 @@
 		</define>
 		<define name="TEXReference">
 			<a:documentation>Reference to a tex structure</a:documentation>
+			<data type="string"/>
+		</define>
+		<define name="TKSReference">
+			<a:documentation>Reference to a tks structure</a:documentation>
 			<data type="string"/>
 		</define>
 		<define name="TXSReference">
@@ -189,6 +270,9 @@
 			<data type="string"/>
 		</define>
 	</div>
+	<define name="impref">
+		<attribute name="impref" occurs="?" type="IDREF"/>
+	</define>
 	<define name="baseattrs">
 		<attribute name="comment" occurs="?" type="string">
 			<a:documentation>A comment that is shown when processing the tag.</a:documentation>
@@ -196,6 +280,7 @@
 		<attribute name="useprefix" occurs="?" type="boolean" a:defaultValue="1" />
 		<attribute name="if" occurs="?" type="string"/>
 		<attribute name="ifnot" occurs="?" type="string"/>
+		<ref name="impref"/>
 	</define>
 	<define name="rootattrs">
 		<attribute name="conditions" occurs="?" type="string"/>
@@ -254,6 +339,8 @@
 			<ref name="sta"/>
 			<ref name="svd"/>
 			<ref name="tex"/>
+			<ref name="tks"/>
+			<ref name="trr"/>
 			<ref name="txt"/>
 			<ref name="wai"/>
 			<ref name="reference"/>
@@ -328,11 +415,36 @@
 			<ref name="dataref" occurs="*"/>
 		</element>
 	</define>
+	<define name="anyElement">
+    	<element>
+	      	<anyName/>
+			<choice occurs="*">
+		  		<attribute>
+		    		<anyName/>
+		  		</attribute>
+		  		<ref name="anyElement"/>
+			</choice>
+	    </element>
+	</define>
+	<define name="metadata">
+		<element name="metadata" occurs="*">
+			<attribute name="role" type="string"/>
+			<ref name="anyElement" occurs="+"/>
+		</element>
+	</define>
 	<div>
 		<a:documentation>Structure tags</a:documentation>
+		<sch:pattern>
+			<sch:title>rawovl checking.</sch:title>
+			<sch:rule context="//raw:rawovl/@basedir">
+				<sch:assert test="(current() = '') or ((substring(current(), 1, 1) != '\') and (substring(current(), 1, 1) != '/'))" role="none">The content '<sch:value-of select="."/>' of a <sch:value-of select="name()"/> attribute should not start with a path separator.</sch:assert>
+				<sch:assert test="(current() = '') or (substring(current(), string-length(current())) = '\') or (substring(current(), string-length(current())) = '/')" role="none">The content '<sch:value-of select="."/>' of a <sch:value-of select="name()"/> attribute should end with a path separator.</sch:assert>
+			</sch:rule>
+		</sch:pattern>
 		<define name="rawovl">
 			<element name="rawovl">
 				<ref name="rootattrs"/>
+				<ref name="metadata"/>
 				<ref name="roottags" occurs="*"/>
 				<ref name="ovltags" occurs="+"/>
 			</element>
@@ -344,6 +456,7 @@
 				<choice>
 					<attribute name="include" type="string"/>
 					<group>
+						<ref name="metadata"/>
 						<ref name="roottags" occurs="*"/>
 						<ref name="ovltags" occurs="*"/>
 					</group>
@@ -356,7 +469,10 @@
 				<attribute name="prefix" occurs="?" type="string"/>
 				<choice>
 					<attribute name="include" type="string"/>
-					<ref name="ovltags" occurs="*"/>
+					<group>
+						<ref name="metadata"/>
+						<ref name="ovltags" occurs="*"/>
+					</group>
 				</choice>
 			</element>
 		</define>
@@ -502,34 +618,54 @@
 			</define>
 		</div>
 		<define name="import">
+			<sch:pattern>
+				<sch:title>import checks</sch:title>
+				<sch:rule context="//raw:import/@file">
+					<sch:assert test="document(str:encode-uri(current(),false()),.)/sc:ovl">Failed to load '<sch:value-of select="."/>' for import tag.</sch:assert>
+				</sch:rule>
+			</sch:pattern>
 			<element name="import">
 				<ref name="baseattrs"/>
-				<attribute name="file">
-					<data type="string"/>
-				</attribute>
-				<optional>
-					<attribute name="name">
-						<data type="string"/>
-					</attribute>
-				</optional>
+				<attribute name="file" type="string"/>
+				<attribute name="name" occurs="?" type="string"/>
+				<attribute name="id" occurs="?" type="ID"/>
 			</element>
 		</define>
 		<define name="attraction">
+			<sch:pattern>
+				<sch:title>attraction checks</sch:title>
+				<sch:rule context="//raw:attraction/@icon">
+					<sch:extends rule="refcheck-gsi"/>
+				</sch:rule>
+				<sch:rule context="//raw:attraction/@loopSpline">
+					<sch:extends rule="refcheck-spl"/>
+				</sch:rule>
+				<sch:rule context="//raw:attraction/raw:attractionPath/@spline">
+					<sch:extends rule="refcheck-spl"/>
+				</sch:rule>
+			</sch:pattern>
 			<element name="attraction">
 				<ref name="baseattrs"/>
 				<attribute name="type" occurs="?" type="unsignedShort"/>
-				<attribute name="version" occurs="?" type="unsignedByte"/>
+				<attribute name="version" occurs="?">
+					<choice>
+						<value type="unsignedByte">0</value>
+						<value type="unsignedByte">2</value>
+						<value type="unsignedByte">3</value>
+					</choice>
+				</attribute>
 				<attribute name="icon" occurs="?" ref="GSIReference"/>
 				<attribute name="loopSpline" occurs="?" ref="SPLReference"/>
 				<interleave>
 					<element name="attractionPath" occurs="*">
 						<attribute name="spline" ref="SPLReference"/>
+						<ref name="impref"/>
 					</element>
 					<element name="attractionMisc" occurs="?">
 						<attribute name="baseUpkeep" occurs="?" type="unsignedInt"/>
 						<attribute name="u2" occurs="?" type="unsignedInt"/>
 						<attribute name="u3" occurs="?" type="unsignedInt"/>
-						<attribute name="flags" occurs="?" type="unsignedInt"/>
+						<attribute name="flags" occurs="?" ref="flags"/>
 						<attribute name="maxHeight" occurs="?" type="int"/>
 					</element>
 					<element name="attractionStaticUnknowns" occurs="?">
@@ -539,7 +675,7 @@
 					<element name="attractionExtension" occurs="?">
 						<attribute name="addonAssociation" occurs="?" type="unsignedInt"/>
 						<attribute name="u12" occurs="?" type="unsignedInt"/>
-						<attribute name="u13" occurs="?" type="unsignedInt"/>
+						<attribute name="uiDeactivationFlags" occurs="?" ref="flags"/>
 					</element>
 				</interleave>
 			</element>
@@ -552,7 +688,7 @@
 						<param name="maxInclusive">34</param>
 					</data>
 				</attribute>
-				<attribute name="attractivity" occurs="?" type="unsignedByte"/>
+				<attribute name="attractivity" occurs="?" type="unsignedInt"/>
 				<attribute name="entryFee" occurs="?" type="unsignedInt"/>
 				<attribute name="minCircuits" occurs="?" type="unsignedInt"/>
 				<attribute name="maxCircuits" occurs="?" type="int"/>
@@ -566,12 +702,16 @@
 						<attribute name="u16" occurs="?" type="unsignedInt"/>
 						<attribute name="u17" occurs="?" type="unsignedInt"/>
 					</element>
-					<element name="rideOption" occurs="*">
+					<element name="rideOption" occurs="+">
 						<attribute name="type">
 							<choice>
 								<value type="unsignedInt">0</value>
+								<value type="unsignedInt">1</value>
 								<value type="unsignedInt">2</value>
+								<value type="unsignedInt">3</value>
 								<value type="unsignedInt">4</value>
+								<value type="unsignedInt">5</value>
+								<value type="unsignedInt">6</value>
 								<value type="unsignedInt">7</value>
 								<value type="unsignedInt">8</value>
 								<value type="unsignedInt">9</value>
@@ -584,12 +724,37 @@
 						<attribute name="suboptionGroup" occurs="?" type="unsignedShort"/>
 						<element name="parameter" minOccurs="0" maxOccurs="4" type="float"/>
  					</element>
+ 					<ref name="rideStationLimit"/>
 				</interleave>
 			</element>
+		</define>
+		<define name="rideStationLimit">
+ 			<element name="rideStationLimit" occurs="*">
+ 				<attribute name="xPos" type="int"/>
+ 				<attribute name="zPos" type="int"/>
+ 				<attribute name="height" occurs="?" type="int"/>
+ 				<attribute name="flags" occurs="?" ref="flags" />
+ 			</element>
 		</define>
 		<div>
 			<a:documentation>anr tags</a:documentation>
 			<define name="anr">
+				<sch:pattern>
+					<sch:title>ANR checks</sch:title>
+					<sch:rule context="//raw:anr/@name">
+						<sch:let name="ovlpath" value="concat(str:concat(ancestor::raw:rawovl/@basedir),ancestor::raw:rawovl[@file]/@file)" />
+						<sch:assert test="count(ancestor::raw:rawovl[@file]/raw:anr[@name = current()]) = 1">ANR name '<sch:value-of select="."/>' in ovl <sch:value-of select="concat(str:concat(ancestor::raw:rawovl/@basedir),ancestor::raw:rawovl[@file]/@file)"/> is not unique.</sch:assert>
+					</sch:rule>
+					<sch:rule context="//raw:anr/@nametxt">
+						<sch:extends rule="refcheck-txt"/>
+					</sch:rule>
+					<sch:rule context="//raw:anr/@description">
+						<sch:extends rule="refcheck-txt"/>
+					</sch:rule>
+					<sch:rule context="//raw:anr/@sid">
+						<sch:extends rule="refcheck-sid"/>
+					</sch:rule>
+				</sch:pattern>
 				<element name="anr">
 					<ref name="baseattrs"/>
 					<attribute name="name" type="string"/>
@@ -1262,26 +1427,23 @@
 			</define>
 		</div>
 		<define name="gsi">
+			<sch:pattern>
+				<sch:title>GSI checks</sch:title>
+				<sch:rule context="//raw:gsi/@name">
+					<sch:extends rule="uniqueness"/>
+				</sch:rule>
+				<sch:rule context="//raw:gsi/@tex">
+					<sch:extends rule="refcheck-tex"/>
+				</sch:rule>
+			</sch:pattern>
 			<element name="gsi">
 				<ref name="baseattrs"/>
-				<attribute name="right">
-					<data type="unsignedInt"/>
-				</attribute>
-				<attribute name="left">
-					<data type="unsignedInt"/>
-				</attribute>
-				<attribute name="bottom">
-					<data type="unsignedInt"/>
-				</attribute>
-				<attribute name="top">
-					<data type="unsignedInt"/>
-				</attribute>
-				<attribute name="tex">
-					<ref name="TEXReference"/>
-				</attribute>
-				<attribute name="name">
-					<data type="string"/>
-				</attribute>
+				<attribute name="name" type="string"/>
+				<attribute name="tex" ref="TEXReference"/>
+				<attribute name="right" type="unsignedInt"/>
+				<attribute name="left" type="unsignedInt"/>
+				<attribute name="bottom" type="unsignedInt"/>
+				<attribute name="top" type="unsignedInt"/>
 			</element>
 		</define>
 		<define name="ptd">
@@ -1493,405 +1655,237 @@
 			<define name="shs">
 				<element name="shs">
 					<ref name="baseattrs"/>
-					<attribute name="name">
-						<data type="string"/>
-					</attribute>
+					<attribute name="name" type="string"/>
 					<optional>
-						<element name="boundingboxmin">
-							<ref name="ovlVector"/>
-						</element>
-						<element name="boundingboxmax">
-							<ref name="ovlVector"/>
-						</element>
+						<element name="boundingboxmin" ref="ovlVector"/>
+						<element name="boundingboxmax" ref="ovlVector"/>
 					</optional>
 					<interleave>
-						<oneOrMore>
-							<ref name="shsmesh"/>
-						</oneOrMore>
-						<zeroOrMore>
-							<ref name="shseffect"/>
-						</zeroOrMore>
+						<ref name="shsmesh" occurs="+"/>
+						<ref name="shseffect" occurs="*"/>
 					</interleave>
 				</element>
 			</define>
 			<define name="shsmesh">
-				<element name="shsmesh">
+				<element name="mesh">
 					<ref name="baseattrs"/>
-					<attribute name="ftx">
-						<ref name="FTXReference"/>
+					<attribute name="ftx" ref="FTXReference"/>
+					<attribute name="txs" ref="TXSReference"/>
+					<attribute name="transparency" occurs="?">
+						<choice>
+							<value type="unsignedInt">0</value>
+							<value type="unsignedInt">1</value>
+							<value type="unsignedInt">2</value>
+						</choice>
 					</attribute>
-					<attribute name="txs">
-						<ref name="TXSReference"/>
+					<attribute name="flags" occurs="?" ref="flags"/>
+					<attribute name="support" occurs="?" ref="ovlMeshSupport"/>
+					<attribute name="doublesided" occurs="?">
+						<choice>
+							<value type="unsignedInt">1</value>
+							<value type="unsignedInt">3</value>
+						</choice>
 					</attribute>
-					<optional>
-						<attribute name="transparency">
-							<choice>
-								<value type="unsignedInt">0</value>
-								<value type="unsignedInt">1</value>
-								<value type="unsignedInt">2</value>
-							</choice>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="flags">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="support">
-							<ref name="ovlMeshSupport"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="doublesided">
-							<choice>
-								<value type="unsignedInt">1</value>
-								<value type="unsignedInt">3</value>
-							</choice>
-						</attribute>
-					</optional>
 					<choice>
 						<group>
-							<attribute name="meshname">
-								<data type="string"/>
-							</attribute>
-							<attribute name="modelfile">
-								<data type="string"/>
-							</attribute>
-							<optional>
-								<attribute name="fudge">
-									<ref name="impFudge"/>
-								</attribute>
-							</optional>
+							<attribute name="meshname" type="string"/>
+							<attribute name="modelfile" type="string"/>
+							<attribute name="fudge" occurs="?" ref="impFudge"/>
 							<choice>
 								<group>
-									<optional>
-										<attribute name="handedness">
-											<choice>
-												<value type="string">left</value>
-												<value type="string">right</value>
-											</choice>
-										</attribute>
-									</optional>
-									<optional>
-										<attribute name="up">
-											<choice>
-												<value type="string">x</value>
-												<value type="string">y</value>
-												<value type="string">z</value>
-											</choice>
-										</attribute>
-									</optional>
+									<attribute name="handedness" occurs="?">
+										<choice>
+											<value type="string">left</value>
+											<value type="string">right</value>
+										</choice>
+									</attribute>
+									<attribute name="up" occurs="?">
+										<choice>
+											<value type="string">x</value>
+											<value type="string">y</value>
+											<value type="string">z</value>
+										</choice>
+									</attribute>
 								</group>
-								<optional>
-									<element name="transformation">
-										<ref name="impMatrix"/>
-									</element>
-								</optional>
+								<element name="transformation" occurs="?" ref="impMatrix"/>
 							</choice>
 						</group>
 						<interleave>
-							<oneOrMore>
-								<element name="vertex">
-									<ref name="ovlVertex"/>
-								</element>
-							</oneOrMore>
-							<oneOrMore>
-								<element name="triangle">
-									<attribute name="a">
-										<data type="unsignedInt"/>
-									</attribute>
-									<attribute name="b">
-										<data type="unsignedInt"/>
-									</attribute>
-									<attribute name="c">
-										<data type="unsignedInt"/>
-									</attribute>
-								</element>
-							</oneOrMore>
+							<element name="vertex" occurs="+" ref="ovlVertex"/>
+							<element name="triangle" occurs="+">
+								<attribute name="a">
+									<data type="unsignedInt"/>
+								</attribute>
+								<attribute name="b">
+									<data type="unsignedInt"/>
+								</attribute>
+								<attribute name="c">
+									<data type="unsignedInt"/>
+								</attribute>
+							</element>
 						</interleave>
 					</choice>
 				</element>
 			</define>
 			<define name="shseffect">
-				<element name="shseffect">
+				<element name="effect">
 					<ref name="baseattrs"/>
-					<attribute name="name">
-						<data type="string"/>
-					</attribute>
-					<element name="position">
-						<ref name="impMatrix"/>
-					</element>
+					<attribute name="name" type="string"/>
+					<element name="position" ref="impMatrix"/>
 				</element>
 			</define>
 		</div>
 		<div>
 			<a:documentation>sid tags</a:documentation>
 			<define name="sid">
+				<sch:pattern>
+					<sch:title>SID checks</sch:title>
+					<sch:rule context="//raw:sid/@name">
+						<sch:extends rule="uniqueness"/>
+					</sch:rule>
+					<sch:rule context="//raw:sid/@nametxt">
+						<sch:extends rule="refcheck-txt"/>
+					</sch:rule>
+					<sch:rule context="//raw:sid/@icon">
+						<sch:extends rule="refcheck-gsi"/>
+					</sch:rule>
+					<sch:rule context="//raw:sid/@ovlpath">
+						<sch:let name="importnode" value="//raw:import[@name = current()/ancestor::raw:sid/@svd]"/>
+						<sch:let name="ovlpath" value="concat(str:concat($importnode/ancestor::raw:rawovl/@basedir),$importnode/ancestor::raw:rawovl[@file]/@file)" />
+						<sch:assert test="$importnode" role="none">Could not identify import element for ovlpath checking in sid '<sch:value-of select="ancestor::*[1]/@name"/>'.</sch:assert>
+						<sch:assert test="$ovlpath = concat(/raw:rawovl/@basedir, .)" role="none">The ovlpath attribute '<sch:value-of select="."/>' of sid '<sch:value-of select="ancestor::*[1]/@name"/>' does not seem to be correct (Expected: '<sch:value-of select="$ovlpath"/>' without '<sch:value-of select="/raw:rawovl/@basedir"/>').</sch:assert>
+					</sch:rule>
+					<sch:rule context="//raw:sid/raw:sidgroup/@name">
+						<sch:extends rule="refcheck-txt"/>
+					</sch:rule>
+					<sch:rule context="//raw:sid/raw:sidgroup/@icon">
+						<sch:extends rule="refcheck-gsi"/>
+					</sch:rule>
+					<sch:rule context="//raw:sid/@svd">
+						<sch:extends rule="refcheck-svd"/>
+					</sch:rule>
+					<sch:rule context="//raw:sid/raw:sidvisual/@name">
+						<sch:extends rule="refcheck-svd"/>
+					</sch:rule>
+				</sch:pattern>
 				<element name="sid">
 					<ref name="baseattrs"/>
-					<attribute name="name">
-						<data type="string"/>
-					</attribute>
-					<attribute name="nametxt">
-						<ref name="TXTReference"/>
-					</attribute>
-					<attribute name="icon">
-						<ref name="GSIReference"/>
-					</attribute>
-					<attribute name="ovlpath">
-						<data type="string"/>
-					</attribute>
-					<attribute name="svd">
-						<ref name="SVDReference"/>
-					</attribute>
+					<attribute name="name" type="string"/>
+					<attribute name="nametxt" ref="TXTReference"/>
+					<attribute name="icon" occurs="?" ref="GSIReference"/>
+					<attribute name="ovlpath" type="string"/>
+					<attribute name="svd" ref="SVDReference"/>
 					<interleave>
-						<optional>
-							<ref name="sidgroup"/>
-						</optional>
-						<optional>
-							<ref name="sidtype"/>
-						</optional>
-						<optional>
-							<ref name="sidposition"/>
-						</optional>
-						<optional>
-							<ref name="sidcolours"/>
-						</optional>
-						<optional>
-							<ref name="sidimporterunknowns"/>
-						</optional>
-						<optional>
-							<ref name="sidstallunknowns"/>
-						</optional>
-						<optional>
-							<ref name="sidextra"/>
-						</optional>
-						<zeroOrMore>
-							<ref name="sidvisual"/>
-						</zeroOrMore>
-						<zeroOrMore>
-							<ref name="sidparameter"/>
-						</zeroOrMore>
-						<zeroOrMore>
-							<ref name="sidsquareunknowns"/>
-						</zeroOrMore>
+						<ref name="sidgroup" occurs="?"/>
+						<ref name="sidtype" occurs="?"/>
+						<ref name="sidposition" occurs="?"/>
+						<ref name="sidcolours" occurs="?"/>
+						<ref name="sidimporterunknowns" occurs="?"/>
+						<ref name="sidstallunknowns" occurs="?"/>
+						<ref name="sidextra" occurs="?"/>
+						<ref name="sidvisual" occurs="*"/>
+						<ref name="sidparameter" occurs="*"/>
+						<ref name="sidsquareunknowns" occurs="*"/>
 					</interleave>
 				</element>
 			</define>
 			<define name="sidtype">
-				<element name="sidtype">
+				<element name="type">
 					<ref name="baseattrs"/>
-					<optional>
-						<attribute name="removalcost">
-							<data type="int"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="cost">
-							<data type="int"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="scenerytype">
-							<data type="int">
-								<param name="minInclusive">0</param>
-								<param name="maxInclusive">46</param>
-							</data>
-						</attribute>
-					</optional>
+					<attribute name="removalcost" occurs="?" type="int"/>
+					<attribute name="cost" occurs="?" type="int"/>
+					<attribute name="scenerytype" occurs="?">
+						<data type="int">
+							<param name="minInclusive">0</param>
+							<param name="maxInclusive">46</param>
+						</data>
+					</attribute>
 				</element>
 			</define>
 			<define name="sidcolours">
-				<element name="sidcolours">
+				<element name="colours">
 					<ref name="baseattrs"/>
-					<optional>
-						<attribute name="choice3">
-							<ref name="ovlDefaultColour"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="choice2">
-							<ref name="ovlDefaultColour"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="choice1">
-							<ref name="ovlDefaultColour"/>
-						</attribute>
-					</optional>
+					<attribute name="choice1" occurs="?" ref="ovlDefaultColour"/>
+					<attribute name="choice2" occurs="?" ref="ovlDefaultColour"/>
+					<attribute name="choice3" occurs="?" ref="ovlDefaultColour"/>
 				</element>
 			</define>
 			<define name="sidgroup">
-				<element name="sidgroup">
+				<element name="group">
 					<ref name="baseattrs"/>
-					<attribute name="name">
-						<ref name="TXTReference"/>
-					</attribute>
-					<attribute name="icon">
-						<ref name="GSIReference"/>
-					</attribute>
+					<attribute name="name" ref="TXTReference"/>
+					<attribute name="icon" ref="GSIReference"/>
 				</element>
 			</define>
 			<define name="sidimporterunknowns">
-				<element name="sidimporterunknowns">
+				<element name="importerUnknowns">
 					<ref name="baseattrs"/>
-					<optional>
-						<attribute name="flags">
-							<data type="string">
-								<param name="length">32</param>
-							</data>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u1">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u2">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
+					<attribute name="flags" occurs="?" ref="flags"/>
+					<attribute name="u1" occurs="?" type="unsignedInt"/>
+					<attribute name="u2" occurs="?" type="unsignedInt"/>
 				</element>
 			</define>
 			<define name="sidsquareunknowns">
-				<element name="sidsquareunknowns">
+				<element name="squareUnknowns">
 					<ref name="baseattrs"/>
-					<optional>
-						<attribute name="flags">
-							<data type="string">
-								<param name="length">32</param>
-							</data>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="minHeight">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="maxHeight">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u9">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
+					<attribute name="flags" occurs="?" ref="flags"/>
+					<attribute name="minHeight" occurs="?" type="int"/>
+					<attribute name="maxHeight" occurs="?" type="int"/>
+					<attribute name="supports" occurs="?" ref="flag"/>
 				</element>
 			</define>
 			<define name="sidparameter">
-				<element name="sidparameter">
+				<element name="parameter">
 					<ref name="baseattrs"/>
-					<attribute name="name">
-						<ref name="ovlSidParameters"/>
-					</attribute>
-					<optional>
-						<attribute name="param">
-							<data type="string"/>
-						</attribute>
-					</optional>
+					<attribute name="name" ref="ovlSidParameters"/>
+					<attribute name="param" occurs="?" type="string"/>
 				</element>
 			</define>
 			<define name="sidposition">
-				<element name="sidposition">
+				<element name="position">
 					<ref name="baseattrs"/>
-					<optional>
-						<attribute name="type">
-							<data type="int">
-								<param name="minInclusive">0</param>
-								<param name="maxInclusive">8</param>
-							</data>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="xsquares">
-							<data type="int"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="ysquares">
-							<data type="int"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="xpos">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="ypos">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="zpos">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="xsize">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="ysize">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="zsize">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="supports">
-							<ref name="ovlSidSupports"/>
-						</attribute>
-					</optional>
+					<attribute name="type" occurs="?">
+						<data type="int">
+							<param name="minInclusive">0</param>
+							<param name="maxInclusive">8</param>
+						</data>
+					</attribute>
+					<attribute name="xsquares" occurs="?" type="int"/>
+					<attribute name="zsquares" occurs="?" type="int"/>
+					<attribute name="xpos" occurs="?" type="float"/>
+					<attribute name="ypos" occurs="?" type="float"/>
+					<attribute name="zpos" occurs="?" type="float"/>
+					<attribute name="xsize" occurs="?" type="float"/>
+					<attribute name="ysize" occurs="?" type="float"/>
+					<attribute name="zsize" occurs="?" type="float"/>
+					<attribute name="supports" occurs="?" ref="ovlSidSupports"/>
 				</element>
 			</define>
 			<define name="sidstallunknowns">
-				<element name="sidstallunknowns">
+				<element name="stallUnknowns">
 					<ref name="baseattrs"/>
-					<optional>
-						<attribute name="u2">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u1">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
+					<attribute name="u1" occurs="?" type="unsignedInt"/>
+					<attribute name="u2" occurs="?" type="unsignedInt"/>
 				</element>
 			</define>
 			<define name="sidextra">
-				<element name="sidextra">
+				<element name="extra">
 					<ref name="baseattrs"/>
 					<attribute name="version">
-						<data type="unsignedInt"/>
+						<choice>
+							<value>0</value>
+							<value>1</value>
+							<value>2</value>
+						</choice>
 					</attribute>
-					<optional>
-						<attribute name="addonpack">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="billboardaspect">
-							<data type="int"/>
-						</attribute>
-					</optional>
+					<attribute name="addonpack" occurs="?" type="unsignedInt"/>
+					<attribute name="billboardaspect" occurs="?" type="int"/>
 				</element>
 			</define>
 			<define name="sidvisual">
-				<element name="sidvisual">
+				<element name="svd">
 					<ref name="baseattrs"/>
-					<attribute name="name">
-						<ref name="SVDReference"/>
-					</attribute>
+					<ref name="SVDReference"/>
 				</element>
 			</define>
 		</div>
@@ -1995,222 +1989,432 @@
 			<define name="svd">
 				<element name="svd">
 					<ref name="baseattrs"/>
-					<attribute name="name">
-						<data type="string"/>
-					</attribute>
-					<optional>
-						<attribute name="flags">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="sway">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="brightness">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="scale">
-							<data type="float"/>
-						</attribute>
-					</optional>
+					<attribute name="name" type="string"/>
+					<attribute name="flags" occurs="?" ref="flags"/>
+					<attribute name="sway" occurs="?" type="float"/>
+					<attribute name="brightness" occurs="?" type="float"/>
+					<attribute name="scale" occurs="?" type="float"/>
 					<interleave>
-						<optional>
-							<ref name="svdunknowns"/>
-						</optional>
-						<oneOrMore>
-							<ref name="svdlod"/>
-						</oneOrMore>
+						<ref name="svdunknowns" occurs="?"/>
+						<ref name="svdlod" occurs="+"/>
 					</interleave>
 				</element>
 			</define>
 			<define name="svdunknowns">
-				<element name="svdunknowns">
+				<element name="unknowns">
 					<ref name="baseattrs"/>
-					<optional>
-						<attribute name="u4">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u6">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u7">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u8">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u9">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u10">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u11">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
+					<attribute name="u4" occurs="?" type="float"/>
+					<attribute name="u6" occurs="?" type="unsignedInt"/>
+					<attribute name="u7" occurs="?" type="unsignedInt"/>
+					<attribute name="u8" occurs="?" type="unsignedInt"/>
+					<attribute name="u9" occurs="?" type="unsignedInt"/>
+					<attribute name="u10" occurs="?" type="unsignedInt"/>
+					<attribute name="u11" occurs="?" type="unsignedInt"/>
 				</element>
 			</define>
 			<define name="svdlod">
-				<element name="svdlod">
+				<element name="lod">
 					<ref name="baseattrs"/>
-					<attribute name="name">
-						<data type="string"/>
-					</attribute>
-					<attribute name="distance">
-						<data type="float"/>
-					</attribute>
+					<attribute name="name" type="string"/>
+					<attribute name="distance" type="float"/>
 					<interleave>
-						<optional>
-							<ref name="svdlodunknowns"/>
-						</optional>
+						<ref name="svdlodunknowns" occurs="?"/>
 						<choice>
 							<group>
 								<attribute name="type">
 									<value type="unsignedInt">0</value>
 								</attribute>
-								<attribute name="staticshape">
-									<ref name="SHSReference"/>
-								</attribute>
+								<attribute name="staticshape" ref="SHSReference"/>
 							</group>
 							<group>
 								<attribute name="type">
 									<value type="unsignedInt">3</value>
 								</attribute>
-								<attribute name="boneshape">
-									<ref name="BSHReference"/>
-								</attribute>
-								<zeroOrMore>
-									<element name="svdlodanimation">
-										<ref name="baseattrs"/>
-										<ref name="BANReference"/>
-									</element>
-								</zeroOrMore>
+								<attribute name="boneshape" ref="BSHReference"/>
+								<element name="animation" occurs="*">
+									<ref name="baseattrs"/>
+									<ref name="BANReference"/>
+								</element>
 							</group>
 							<group>
 								<attribute name="type">
 									<value type="unsignedInt">4</value>
 								</attribute>
-								<attribute name="ftx">
-									<ref name="FTXReference"/>
-								</attribute>
-								<attribute name="txs">
-									<ref name="TXSReference"/>
-								</attribute>
+								<attribute name="ftx" ref="FTXReference"/>
+								<attribute name="txs" ref="TXSReference"/>
 							</group>
 						</choice>
 					</interleave>
 				</element>
 			</define>
 			<define name="svdlodunknowns">
-				<element name="svdlodunknowns">
+				<element name="unknowns">
 					<ref name="baseattrs"/>
-					<optional>
-						<attribute name="u2">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u4">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u7">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u8">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u9">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u10">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u11">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u12">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u14">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
+					<attribute name="u2" occurs="?" type="unsignedInt"/>
+					<attribute name="u4" occurs="?" type="unsignedInt"/>
+					<attribute name="u7" occurs="?" type="unsignedInt"/>
+					<attribute name="u8" occurs="?" type="unsignedInt"/>
+					<attribute name="u9" occurs="?" type="unsignedInt"/>
+					<attribute name="u10" occurs="?" type="unsignedInt"/>
+					<attribute name="u11" occurs="?" type="unsignedInt"/>
+					<attribute name="u12" occurs="?" type="unsignedInt"/>
+					<attribute name="u14" occurs="?" type="unsignedInt"/>
 				</element>
 			</define>
 		</div>
 		<define name="tex">
+			<sch:pattern>
+				<sch:title>TEX checks</sch:title>
+				<sch:rule context="//raw:tex/@name">
+					<sch:extends rule="uniqueness"/>
+				</sch:rule>
+			</sch:pattern>
 			<element name="tex">
 				<ref name="baseattrs"/>
-				<attribute name="name">
-					<data type="string"/>
-				</attribute>
-				<optional>
-					<attribute name="format">
-						<choice>
-							<value>2</value>
-							<value>18</value>
-							<value>19</value>
-							<value>20</value>
-							<data type="unsignedInt"/>
-						</choice>
-					</attribute>
-				</optional>
-				<optional>
-					<attribute name="txs">
-						<ref name="TXSReference"/>
-					</attribute>
-				</optional>
-				<optional>
-					<attribute name="mips">
+				<attribute name="name" type="string"/>
+				<attribute name="format" occurs="?">
+					<choice>
+						<value>2</value>
+						<value>18</value>
+						<value>19</value>
+						<value>20</value>
 						<data type="unsignedInt"/>
-					</attribute>
-				</optional>
-				<oneOrMore>
-					<element name="texture">
-						<ref name="baseattrs"/>
-						<optional>
-							<attribute name="dimension">
-								<ref name="ovlTextureDimension"/>
-							</attribute>
-						</optional>
-						<ref name="data"/>
-					</element>
-				</oneOrMore>
+					</choice>
+				</attribute>
+				<attribute name="txs" occurs="?" ref="TXSReference"/>
+				<attribute name="mips" occurs="?" type="unsignedInt"/>
+				<element name="texture" occurs="+">
+					<ref name="baseattrs"/>
+					<attribute name="dimension" occurs="?" ref="ovlTextureDimension"/>
+					<ref name="data"/>
+				</element>
 			</element>
 		</define>
+		<div>
+			<a:documentation>tks tags</a:documentation>
+			<define name="tks">
+				<sch:pattern>
+					<sch:title>TKS checks</sch:title>
+					<sch:rule context="//raw:tks/@name">
+						<sch:extends rule="uniqueness"/>
+					</sch:rule>
+					<sch:rule context="//raw:tks/@sid">
+						<sch:extends rule="refcheck-sid"/>
+					</sch:rule>
+					<sch:rule context="//raw:tks/raw:soaked/@loopSpline">
+						<sch:extends rule="refcheck-spl"/>
+					</sch:rule>
+					<sch:rule context="//raw:tks/raw:soaked/raw:path/@spline">
+						<sch:extends rule="refcheck-spl"/>
+					</sch:rule>
+				</sch:pattern>
+				<element name="tks">
+					<ref name="baseattrs"/>
+					<attribute name="name" type="string"/>
+					<attribute name="internalname" type="string"/>
+					<attribute name="version" occurs="?">
+						<choice>
+							<value>0</value>
+							<value>2</value>
+							<value>3</value>
+						</choice>
+					</attribute>
+					<attribute name="sid" ref="SIDReference"/>
+					<interleave>
+						<element name="speed" occurs="*">
+							<attribute name="u1" type="float"/>
+							<attribute name="u2" type="float"/>
+							<attribute name="u3" type="float"/>
+							<attribute name="u4" occurs="?" type="float"/>
+							<attribute name="u5" occurs="?" type="float"/>
+						</element>
+						<element name="basic" occurs="?">
+							<attribute name="special" occurs="?" type="unsignedInt"/>
+							<attribute name="direction" occurs="?" type="unsignedInt"/>
+							<element name="entry" occurs="?" ref="tksenex"/>
+							<element name="exit" occurs="?" ref="tksenex"/>
+						</element>
+						<element name="splines">
+							<element name="car" ref="tkssplinepair"/>
+							<element name="join" ref="tkssplinepair"/>
+							<element name="extra" occurs="?" ref="tkssplinepair"/>
+							<element name="water" occurs="?" ref="tkssplinepair"/>
+						</element>
+						<element name="animations" occurs="?">
+							<attribute name="stopped" occurs="?" type="int"/>
+							<attribute name="starting" occurs="?" type="int"/>
+							<attribute name="running" occurs="?" type="int"/>
+							<attribute name="stopping" occurs="?" type="int"/>
+							<attribute name="holdAfterTrainStop" occurs="?" type="int"/>
+							<attribute name="holdLoop" occurs="?" type="int"/>
+							<attribute name="holdBeforeRelease" occurs="?" type="int"/>
+							<attribute name="holdLeaving" occurs="?" type="int"/>
+							<attribute name="holdAfterTrainLeft" occurs="?" type="int"/>
+							<attribute name="preStationLeave" occurs="?" type="int"/>
+							<attribute name="rotatingTowerIdle" occurs="?" type="int"/>
+						</element>
+						<element name="unknowns" occurs="?">
+							<attribute name="u15" occurs="?" type="unsignedInt"/>
+							<attribute name="u16" occurs="?" type="unsignedInt"/>
+							<attribute name="u17" occurs="?" type="unsignedInt"/>
+							<attribute name="u22" occurs="?" type="unsignedInt"/>
+							<attribute name="u23" occurs="?" type="unsignedInt"/>
+							<attribute name="u24" occurs="?" type="unsignedInt"/>
+							<attribute name="u45" occurs="?" type="unsignedInt"/>
+							<attribute name="u47" occurs="?" type="unsignedInt"/>
+							<attribute name="u53" occurs="?" type="unsignedInt"/>
+							<attribute name="u68" occurs="?" type="unsignedInt"/>
+							<attribute name="u69" occurs="?" type="unsignedInt"/>
+							<attribute name="u77" occurs="?" type="float"/>
+							<attribute name="u78" occurs="?" type="float"/>
+							<attribute name="u79" occurs="?" type="float"/>
+						</element>
+						<element name="options" occurs="?">
+							<attribute name="towerRideBase" occurs="?" ref="flag"/>
+							<attribute name="tower" occurs="?" type="float"/>
+							<attribute name="waterSplash01" occurs="?" type="float"/>
+							<attribute name="waterSplash02" occurs="?" type="float"/>
+							<attribute name="reverser" occurs="?" type="float"/>
+							<attribute name="elevatorTop" occurs="?" type="float"/>
+							<attribute name="rapids01" occurs="?" type="float"/>
+							<attribute name="rapids02" occurs="?" type="float"/>
+							<attribute name="rapids03" occurs="?" type="float"/>
+							<attribute name="whirlpool01" occurs="?" type="float"/>
+							<attribute name="whirlpool02" occurs="?" type="float"/>
+							<attribute name="chairLiftStationEnd" occurs="?" type="string"/>
+						</element>
+						<element name="soaked" occurs="?">
+							<attribute name="loopSpline" occurs="?" ref="SPLReference"/>
+							<attribute name="tower" occurs="?" type="float"/>
+							<attribute name="aquarium" occurs="?" type="float"/>
+							<attribute name="autoGroup" occurs="?" type="string"/>
+							<attribute name="giantFlume" occurs="?" type="int"/>
+							<attribute name="entryWide" occurs="?" ref="flag"/>
+							<attribute name="exitWide" occurs="?" ref="flag"/>
+							<attribute name="speedSpline" occurs="?" type="float"/>
+							<attribute name="slideEndToLifthill" occurs="?" type="float"/>
+							<attribute name="flags" occurs="?" ref="flags"/>
+							<interleave>
+								<element name="path" occurs="*">
+									<attribute name="spline" ref="SPLReference"/>
+									<ref name="impref"/>
+								</element>
+								<ref name="rideStationLimit"/>
+								<element name="speedSplines" occurs="*">
+									<attribute name="speed" type="float"/>
+									<element name="splines" ref="tkssplinepair"/>
+								</element>
+								<element name="groupIsAtEntry" occurs="*" type="string"/>
+								<element name="groupIsAtExit" occurs="*" type="string"/>
+								<element name="groupRequireAtEntry" occurs="*" type="string"/>
+								<element name="groupRequireAtExit" occurs="*" type="string"/>
+								<element name="groupRefuseAtEntry" occurs="*" type="string"/>
+								<element name="groupRefuseAtExit" occurs="*" type="string"/>
+							</interleave>
+							<ref name="impref"/>
+						</element>
+						<element name="wild" occurs="?">
+							<attribute name="splitterHalf" occurs="?" type="unsignedInt"/>
+							<attribute name="splitterJoint" occurs="?" ref="TKSReference"/>
+							<attribute name="rotatorType" occurs="?" type="unsignedInt"/>
+							<attribute name="animalHouse" occurs="?" type="float"/>
+							<attribute name="alteranteTextLookup" occurs="?" type="string"/>
+							<attribute name="towerCap01" occurs="?" type="float"/>
+							<attribute name="towerCap02" occurs="?" type="float"/>
+						</element>
+					</interleave>
+				</element>
+			</define>
+			<define name="tksenex">
+				<attribute name="curve" occurs="?" type="unsignedInt"/>
+				<attribute name="flags" occurs="?" ref="flags"/>
+				<attribute name="unknown" occurs="?" type="unsignedInt"/>
+				<attribute name="slope" occurs="?" type="unsignedInt"/>
+				<attribute name="bank" occurs="?" type="unsignedInt"/>
+				<attribute name="group" occurs="?" type="string"/>
+			</define>
+			<define name="tkssplinepair">
+				<attribute name="left" type="string"/>
+				<attribute name="right" type="string"/>
+				<ref name="impref"/>
+			</define>
+		</div>
+		<div>
+			<a:documentation>trr tags</a:documentation>
+			<define name="trr">
+				<sch:pattern>
+					<sch:title>TRR checks</sch:title>
+					<sch:rule context="//raw:trr/@name">
+						<sch:extends rule="uniqueness"/>
+					</sch:rule>
+					<sch:rule context="//raw:trr/@nametxt">
+						<sch:extends rule="refcheck-txt"/>
+					</sch:rule>
+					<sch:rule context="//raw:trr/@description">
+						<sch:extends rule="refcheck-txt"/>
+					</sch:rule>
+					<sch:rule context="//raw:trr/raw:attraction">
+						<sch:let name="ovlpath" value="concat(str:concat(ancestor::raw:rawovl/@basedir),ancestor::raw:rawovl[@file]/@file)" />
+						<sch:assert test="@icon">The attraction element of a trr element needs an icon attribute (<sch:value-of select="name(ancestor::*[@name])"/> '<sch:value-of select="ancestor-or-self::*[@name]/@name"/>' in ovl '<sch:value-of select="$ovlpath"/>').</sch:assert>
+					</sch:rule>
+					<sch:rule context="//raw:trr/raw:soaked">
+						<sch:report test="/raw:sectionGroupDefinitionBatch" role="warning">sectionGroupDefinitionBatch not supported yet.</sch:report>
+					</sch:rule>					
+				</sch:pattern>
+				<element name="trr">
+					<ref name="baseattrs"/>
+					<attribute name="name" type="string"/>
+					<attribute name="nametxt" ref="TXTReference"/>
+					<attribute name="description" ref="TXTReference"/>
+					<interleave>
+						<ref name="attraction"/>
+						<ref name="ride" occurs="?"/>
+						<element name="trackSection" occurs="+">
+							<attribute name="cost" occurs="?" type="int"/>
+							<attribute name="split" occurs="?" ref="flag"/>
+							<data type="string"/>
+						</element>
+						<element name="trackSectionRemoveDuplicates" occurs="?">
+							<empty/>
+						</element>
+						<element name="train" occurs="*" type="string"/>
+						<element name="trackPath" occurs="+" type="string"/>
+						<element name="specials" occurs="?">
+							<attribute name="cableLift" occurs="?" type="string"/>
+							<attribute name="cableLift_u1" occurs="?" type="float"/>
+							<attribute name="cableLift_u2" occurs="?" type="float"/>
+							<attribute name="liftCar" occurs="?" type="string"/>
+							<attribute name="u28" occurs="?" type="float"/>
+							<attribute name="u29" occurs="?" type="float"/>
+						</element>
+						<element name="options" occurs="?">
+							<attribute name="onlyOnWater" occurs="?" ref="flag"/>
+							<attribute name="blocksPossible" occurs="?" ref="flag"/>
+							<attribute name="carRotation" occurs="?" ref="flag"/>
+							<attribute name="loopNotAllowed" occurs="?" ref="flag"/>
+							<attribute name="deconstructEverywhere" occurs="?" ref="flag"/>
+						</element>
+						<element name="station" occurs="?">
+							<attribute name="name" occurs="?" type="string"/>
+							<attribute name="platformHeightOverTrack" occurs="?" type="unsignedInt"/>
+							<attribute name="startPreset" occurs="?" type="unsignedInt"/>
+							<attribute name="startPossibilities" occurs="?" ref="flags"/>
+							<attribute name="stationRollSpeed" occurs="?" type="float"/>
+							<attribute name="modusFlags" occurs="?" ref="flags"/>
+						</element>
+						<element name="launched" occurs="?" ref="trrpmms"/>
+						<element name="chain" occurs="?">
+							<ref name="trrpmms"/>
+							<attribute name="lock" occurs="?" type="float"/>
+						</element>
+						<element name="constant" occurs="?">
+							<ref name="trrpmms"/>
+							<attribute name="upDownVariation" occurs="?" type="float"/>
+						</element>
+						<element name="cost" occurs="?">
+							<attribute name="upkeepPerTrain" occurs="?" type="int"/>
+							<attribute name="upkeepPerCar" occurs="?" type="int"/>
+							<attribute name="upkeepPerStation" occurs="?" type="int"/>
+							<attribute name="costPreview1" occurs="?" type="int"/>
+							<attribute name="costPreview2" occurs="?" type="int"/>
+							<attribute name="costPreview3" occurs="?" type="int"/>
+							<attribute name="costPer4h" occurs="?" type="int"/>
+						</element>
+						<element name="splines" occurs="?">
+							<attribute name="autoComplete" occurs="?" ref="flag"/>
+							<attribute name="track" occurs="?" type="string"/>
+							<attribute name="trackBig" occurs="?" type="string"/>
+							<attribute name="car" occurs="?" type="string"/>
+							<attribute name="carSwing" occurs="?" type="string"/>
+							<attribute name="profileHight" occurs="?" type="float"/>
+						</element>
+						<element name="tower" occurs="?">
+							<attribute name="topDuration" occurs="?" type="float"/>
+							<attribute name="topDistance" occurs="?" type="float"/>
+							<attribute name="top" occurs="?" type="string"/>
+							<attribute name="mid" occurs="?" type="string"/>
+							<attribute name="otherTop" occurs="?" type="string"/>
+							<attribute name="otherMid" occurs="?" type="string"/>
+							<attribute name="otherTopFlipped" occurs="?" type="string"/>
+							<attribute name="otherMidFlipped" occurs="?" type="string"/>
+						</element>
+						<element name="unknowns" occurs="?">
+							<attribute name="u31" occurs="?" type="float"/>
+							<attribute name="u32" occurs="?" type="float"/>
+							<attribute name="u33" occurs="?" type="float"/>
+							<attribute name="u34" occurs="?" type="float"/>
+							<attribute name="u38" occurs="?" type="unsignedInt"/>
+							<attribute name="u43" occurs="?" type="float"/>
+							<attribute name="u45" occurs="?" type="float"/>
+							<attribute name="u48" occurs="?" type="float"/>
+							<attribute name="u49" occurs="?" type="float"/>
+							<attribute name="u50" occurs="?" type="float"/>
+							<attribute name="u51" occurs="?" type="float"/>
+							<attribute name="u57" occurs="?" type="unsignedInt"/>
+							<attribute name="u58" occurs="?" type="unsignedInt"/>
+							<attribute name="u59" occurs="?" type="unsignedInt"/>
+							<attribute name="u60" occurs="?" type="unsignedInt"/>
+							<attribute name="u61" occurs="?" type="unsignedInt"/>
+							<attribute name="u69" occurs="?" type="unsignedInt"/>
+							<attribute name="u95" occurs="?" type="float"/>
+						</element>
+						<element name="soaked" occurs="?">
+							<attribute name="u80" occurs="?" type="unsignedInt"/>
+							<attribute name="u81" occurs="?" type="unsignedInt"/>
+							<attribute name="u82" occurs="?" type="float"/>
+							<attribute name="u85" occurs="?" type="unsignedInt"/>
+							<attribute name="u86" occurs="?" type="unsignedInt"/>
+							<attribute name="u87" occurs="?" type="unsignedInt"/>
+							<attribute name="u88" occurs="?" type="int"/>
+							<attribute name="u89" occurs="?" type="float"/>
+							<attribute name="u90" occurs="?" type="float"/>
+							<attribute name="u93" occurs="?" type="float"/>
+							<attribute name="u94" occurs="?" type="float"/>
+							<attribute name="u95" occurs="?" type="unsignedInt"/>
+							<attribute name="u96" occurs="?" type="int"/>
+							<attribute name="u97" occurs="?" type="unsignedInt"/>
+							<attribute name="shortStruct" occurs="?" type="unsignedInt"/>
+							<attribute name="u99" occurs="?" type="float"/>
+							<attribute name="u100" occurs="?" type="float"/>
+							<attribute name="u101" occurs="?" type="float"/>
+							<attribute name="u102" occurs="?" type="float"/>
+							<attribute name="u103" occurs="?" type="float"/>
+							<element name="sectionGroupDefinitionBatch" occurs="*">
+								<element name="sectionGroupDefinition" occurs="+">
+									<attribute name="flagsA" ref="flags"/>
+									<attribute name="nameA" occurs="?" type="string"/>
+									<attribute name="flagsB" ref="flags"/>
+									<attribute name="nameB" occurs="?" type="string"/>
+								</element>
+							</element>
+						</element>
+						<element name="wild" occurs="?">
+							<attribute name="splitter" occurs="?" type="string"/>
+							<attribute name="boneControl" occurs="?" ref="flag"/>
+							<attribute name="spinnerControl" occurs="?" ref="flag"/>
+							<attribute name="u107" occurs="?" ref="flag"/>
+							<attribute name="u108" occurs="?" ref="flag"/>
+							<attribute name="splitVal" occurs="?" type="int"/>
+							<attribute name="splitFlag" occurs="?" ref="flag"/>
+							<attribute name="name" occurs="?" type="string"/>
+						</element>
+					</interleave>
+				</element>
+			</define>
+			<define name="trrpmms">
+				<attribute name="preset" occurs="?" type="float"/>
+				<attribute name="min" occurs="?" type="float"/>
+				<attribute name="max" occurs="?" type="float"/>
+				<attribute name="step" occurs="?" type="float"/>
+			</define>
+		</div>
 		<define name="txt">
+			<sch:pattern>
+				<sch:title>TXT checks</sch:title>
+				<sch:rule context="//raw:txt/@name">
+					<sch:extends rule="uniqueness"/>
+				</sch:rule>
+			</sch:pattern>
 			<element name="txt">
 				<ref name="baseattrs"/>
 				<attribute name="name">

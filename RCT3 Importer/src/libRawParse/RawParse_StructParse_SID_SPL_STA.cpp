@@ -38,7 +38,7 @@ void cRawParser::ParseSID(cXmlNode& node) {
     sid.name = name.ToAscii();
     sid.ovlpath = ParseString(node, wxT(RAWXML_SID), wxT("ovlpath"), NULL).ToAscii();
     sid.ui.name = ParseString(node, wxT(RAWXML_SID), wxT("nametxt"), NULL, useprefix).ToAscii();
-    sid.ui.icon = ParseString(node, wxT(RAWXML_SID), wxT("icon"), NULL, useprefix).ToAscii();
+    ParseStringOption(sid.ui.icon, node, wxT("icon"), NULL, useprefix);
     wxString svd = ParseString(node, wxT(RAWXML_SID), wxT("svd"), NULL, useprefix);
     sid.svds.push_back(std::string(svd.ToAscii()));
     wxLogVerbose(wxString::Format(_("Adding sid %s to %s."), wxString(sid.name.c_str(), wxConvLocal).c_str(), m_output.GetFullPath().c_str()));

@@ -1,8 +1,26 @@
 #ifndef PRETTYFOREACH_H_INCLUDED
 #define PRETTYFOREACH_H_INCLUDED
 
+#include <algorithm>
 #include <boost/foreach.hpp>
+
+namespace pretty {
+
 #define foreach BOOST_FOREACH
+
+template<class T>
+struct reverse_view {
+    typedef typename T::reverse_iterator iterator;
+    typedef typename T::const_reverse_iterator const_iterator;
+    T& sequence;
+
+    reverse_view(T& t): sequence(t) {}
+
+    iterator begin() { return sequence.rbegin(); }
+    const_iterator begin() const { return sequence.rbegin(); }
+    iterator end() { return sequence.rend(); }
+    const_iterator end() const { return sequence.rend(); }
+};
 
 template<class C, class T>
 inline typename C::iterator find_in ( C& container, const T& value ) {
@@ -52,6 +70,8 @@ inline Function for_all ( C& container, Function f ) {
 template<class C, class Function>
 inline Function for_all ( const C& container, Function f ) {
   return std::for_each(container.begin(), container.end(), f);
+}
+
 }
 
 #if 0

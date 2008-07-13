@@ -34,6 +34,7 @@
 #include "OVLDException.h"
 #include "pretty.h"
 
+using namespace pretty;
 using namespace std;
 
 

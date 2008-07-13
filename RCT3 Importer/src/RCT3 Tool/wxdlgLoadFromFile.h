@@ -49,13 +49,14 @@ public:
         Type_Animations,
         Type_Models,
         Type_Splines,
-        Type_Textures
+        Type_Textures,
+        Type_References
     };
     dlgLoadFromFile(wxWindow* parent, cRCT3Xml& client, int type, bool* updated = NULL, wxColourHtmlListBox* update = NULL);
     int ShowModal();
 
     template<class T>
-    static inline int type() { return T::breakme; }
+    static inline int type() { return T::breakme_loadfromfile_type; }
 
 protected:
     virtual void OnInitDialog( wxInitDialogEvent& event );
@@ -120,6 +121,8 @@ template<>
 inline int dlgLoadFromFile::type<cImpSpline>() { return Type_Splines; }
 template<>
 inline int dlgLoadFromFile::type<cFlexiTexture>() { return Type_Textures; }
+template<>
+inline int dlgLoadFromFile::type<cReference>() { return Type_References; }
 
 
 #endif // DLGLOADFROMFILE_H

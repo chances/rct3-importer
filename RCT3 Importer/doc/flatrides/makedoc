@@ -1,0 +1,2 @@
+#!/bin/sh
+docbook2latex -V -t pdf -b pdftex -c ../rct3dblatex/rct3imp.specs -i ../rct3dblatex flatrides.xml

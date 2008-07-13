@@ -2,7 +2,7 @@
 //
 // New OVL creation library
 // Manager class for TRR structures
-// Copyright (C) 2007 Tobias Minch
+// Copyright (C) 2008 Tobias Minch
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License

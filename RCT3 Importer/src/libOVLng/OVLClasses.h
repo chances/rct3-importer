@@ -138,7 +138,8 @@ public:
     cOvlFileClass(){};
     unsigned char* GetBlock(int filetype, unsigned long size);
     unsigned long MakeRelOffsets(unsigned long from);
-    void Write(const std::map<std::string, ovlOVLManager*>& managers, const std::vector<ovlExtraChunk*>& extra);
+    //void Write(const std::map<std::string, ovlOVLManager*>& managers, const std::vector<ovlExtraChunk*>& extra);
+    void WriteStreamed(const std::map<std::string, ovlOVLManager*>& managers, const std::vector<ovlExtraChunk*>& extra);
 };
 
 class cOvlInfo {

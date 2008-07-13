@@ -49,8 +49,6 @@ enum {
 WX_DECLARE_STRING_HASH_MAP(int, cIntMap);
 
 
-#define RCT3XML_REFERENCE "reference"
-
 #define RCT3XML_MATRIX "matrix"
 bool XmlParseMatrixNode(xmlcpp::cXmlNode& node, r3::MATRIX* marix, wxString* name, unsigned long version);
 xmlcpp::cXmlNode XmlMakeMatrixNode(const r3::MATRIX& matrix, const wxString& name);
@@ -331,6 +329,7 @@ public:
     cMeshStruct::vec meshstructs;
     cEffectPoint::vec effectpoints;
     c3DLoaderOrientation usedorientation;
+    wxString deducedname;
 
     c3DLoaderOrientation fileorientation; // This is the orientation reported by the 3DLoader
 	wxArrayString error;
@@ -342,12 +341,12 @@ public:
 	cModel(const cAnimatedModel& model);
 	cModel(r3::MATRIX def, c3DLoaderOrientation ori);
 	cModel(wxString filen): name(wxT("")), file(filen), usedorientation(ORIENTATION_UNKNOWN), fileorientation(ORIENTATION_UNKNOWN), fatal_error(false) {
-        Load();
+        Load(false);
     };
-	virtual bool Load();
-	bool Load(wxFileName filen) {
+	virtual bool Load(bool asoverlay);
+	bool Load(wxFileName filen, bool asoverlay = false) {
 	    file = filen;
-	    return Load();
+	    return Load(asoverlay);
 	}
 	virtual bool Sync();        // Tries to adjust the meshstructs to the contents of the model file.
                                 // Usually called after loading from a SCN file
@@ -428,7 +427,7 @@ public:
 	cAnimatedModel(r3::MATRIX def, c3DLoaderOrientation ori): cModel(def, ori) {};
 	cAnimatedModel(wxString filen): cModel() {
 	    file = filen;
-        Load();
+        Load(false);
     };
 
 	bool Check(cAnimatedModelMap& amodnames);
@@ -571,6 +570,26 @@ public:
     virtual xmlcpp::cXmlNode GetNode(const wxString& path);
     virtual const std::string GetTagName() const {return RCT3XML_CSIVSETTINGS;};
 };
+
+#define RCT3XML_REFERENCE "reference"
+class cReference: public cRCT3Xml {
+DEF_RCT3_VECIT(cReference)
+public:
+    wxString name;
+
+    cReference() {};
+    cReference(const wxString& ref): name(ref) {};
+
+    virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
+    virtual xmlcpp::cXmlNode GetNode(const wxString& path);
+    virtual const std::string GetTagName() const {return RCT3XML_REFERENCE;};
+
+    bool operator==(const wxString& c) const { return c == name; }
+
+    static wxString getSingular() { return _("reference"); }
+    static wxString getPlural() { return _("references"); }
+};
+
 
 template<class T>
 inline const wxString& NameExtractorC(const T& t) { return t.name; }

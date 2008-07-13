@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<grammar xmlns="http://relaxng.sourceforge.net/ns/shorthand" xmlns:sch="http://purl.oclc.org/dsdl/schematron" ns="http://rct3.sourceforge.net/rct3xml/model" xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+<grammar xmlns="http://relaxng.sourceforge.net/ns/shorthand" 
+	xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" 
+	xmlns:sch="http://purl.oclc.org/dsdl/schematron" 
+	ns="http://rct3.sourceforge.net/rct3xml/model" 
+	datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+	
 	<sch:ns prefix="mod" uri="http://rct3.sourceforge.net/rct3xml/model"/>
 	<sch:ns prefix="math" uri="http://exslt.org/math"/>
 	<a:documentation>Shorthand RelaxNG + Schematron Schema to describe 3D models</a:documentation>
