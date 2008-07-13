@@ -16,18 +16,18 @@ namespace AutoVersion{
 	//Standard Version Type
 	static const long MAJOR = 0;
 	static const long MINOR = 4;
-	static const long BUILD = 236;
+	static const long BUILD = 237;
 	static const long REVISION = 1288;
 	
 	//Miscellaneous Version Types
-	static const long BUILDS_COUNT = 910;
-	#define RC_FILEVERSION 0,4,236,1288
-	#define RC_FILEVERSION_STRING "0, 4, 236, 1288\0"
-	static const char FULLVERSION_STRING[] = "0.4.236.1288";
+	static const long BUILDS_COUNT = 911;
+	#define RC_FILEVERSION 0,4,237,1288
+	#define RC_FILEVERSION_STRING "0, 4, 237, 1288\0"
+	static const char FULLVERSION_STRING[] = "0.4.237.1288";
 	
 	//SVN Version
-	static const char SVN_REVISION[] = "113";
-	static const char SVN_DATE[] = "2008-07-05T21:47:32.813114Z";
+	static const char SVN_REVISION[] = "114";
+	static const char SVN_DATE[] = "2008-07-13T03:38:48.817166Z";
 	
 	//These values are to keep track of your versioning state, don't modify them.
 	static const long BUILD_HISTORY = 0;

@@ -20,14 +20,14 @@ namespace AutoVersion{
 	static const long REVISION = 386;
 	
 	//Miscellaneous Version Types
-	static const long BUILDS_COUNT = 1113;
+	static const long BUILDS_COUNT = 1115;
 	#define RC_FILEVERSION 18,1,388,386
 	#define RC_FILEVERSION_STRING "18, 1, 388, 386\0"
 	static const char FULLVERSION_STRING[] = "18.1.388.386";
 	
 	//SVN Version
-	static const char SVN_REVISION[] = "113";
-	static const char SVN_DATE[] = "2008-07-05T21:47:32.813114Z";
+	static const char SVN_REVISION[] = "114";
+	static const char SVN_DATE[] = "2008-07-13T03:38:48.817166Z";
 	
 	//These values are to keep track of your versioning state, don't modify them.
 	static const long BUILD_HISTORY = 0;
