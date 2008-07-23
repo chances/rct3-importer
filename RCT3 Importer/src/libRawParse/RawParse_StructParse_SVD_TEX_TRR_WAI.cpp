@@ -571,7 +571,7 @@ void cRawParser::ParseTKS(cXmlNode& node) {
             ParseStringOption(section.wild.splitter_joined_other_ref, child, wxT("splitterJoint"), NULL, useprefix);
             OPTION_PARSE(unsigned long, section.wild.rotator_type, ParseUnsigned(child, RAWXML_TKS_WILD, wxT("rotatorType")));
             OPTION_PARSE(float, section.wild.animal_house, ParseFloat(child, RAWXML_TKS_WILD, wxT("animalHouse")));
-            ParseStringOption(section.wild.alternate_text_lookup, child, wxT("alteranteTextLookup"), NULL);
+            ParseStringOption(section.wild.alternate_text_lookup, child, wxT("alternateTextLookup"), NULL);
             OPTION_PARSE(float, section.wild.tower_cap01, ParseFloat(child, RAWXML_TKS_WILD, wxT("towerCap01")));
             OPTION_PARSE(float, section.wild.tower_cap02, ParseFloat(child, RAWXML_TKS_WILD, wxT("towerCap02")));
         } else if (child.element()) {

@@ -125,7 +125,7 @@
 					</srng:choice>
 				</srng:attribute>
 				<srng:element name="positions1">
-					<srng:ref name="matrix" occurs="+"/>
+					<srng:ref name="matrix" occurs="*"/>
 				</srng:element>
 				<srng:element name="positions2" occurs="?">
 					<srng:ref name="matrix" occurs="*"/>

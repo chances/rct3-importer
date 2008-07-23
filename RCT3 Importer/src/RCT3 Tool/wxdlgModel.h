@@ -130,6 +130,7 @@ protected:
     void OnEffectCopy(wxCommandEvent& event);
     void OnEffectDel(wxCommandEvent& event);
     void OnEffectAuto(wxCommandEvent& event);
+    void OnEffectAutoQuick(wxMouseEvent& event);
     void OnEffectClear(wxCommandEvent& event);
 
     void OnBoneUp(wxSpinEvent& event);
@@ -139,6 +140,7 @@ protected:
     void OnBoneCopy(wxCommandEvent& event);
     void OnBoneDel(wxCommandEvent& event);
     void OnBoneAuto(wxCommandEvent& event);
+    void OnBoneAutoQuick(wxMouseEvent& event);
     void OnBoneClear(wxCommandEvent& event);
 
     void OnLoad(wxCommandEvent& event);

@@ -50,6 +50,7 @@ public:
     virtual void OnReloadSchema( wxCommandEvent& event );
     virtual void OnReloadXml( wxCommandEvent& event );
 
+    virtual void OnInsertFilename( wxCommandEvent& event );
     virtual void OnInsertXInclude( wxCommandEvent& event );
     virtual void OnAbbreviation( wxCommandEvent& event );
     virtual void OnAbbreviationFull( wxCommandEvent& event );

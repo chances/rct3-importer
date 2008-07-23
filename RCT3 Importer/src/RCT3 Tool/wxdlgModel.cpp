@@ -1339,6 +1339,7 @@ dlgModel::dlgModel(wxWindow *parent, bool animated):m_model(NULL), m_animated(an
         Connect(XRCID("m_btEffectCopy"), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(dlgModel::OnBoneCopy));
         Connect(XRCID("m_btEffectDel"), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(dlgModel::OnBoneDel));
         Connect(XRCID("m_btEffectAuto"), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(dlgModel::OnBoneAuto));
+        m_btEffectAuto->Connect(wxEVT_RIGHT_DCLICK, wxMouseEventHandler(dlgModel::OnBoneAutoQuick), NULL, this);
         Connect(XRCID("m_btEffectClear"), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(dlgModel::OnBoneClear));
     } else {
         SetTitle(_("Edit static model settings"));
@@ -1352,6 +1353,7 @@ dlgModel::dlgModel(wxWindow *parent, bool animated):m_model(NULL), m_animated(an
         Connect(XRCID("m_btEffectCopy"), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(dlgModel::OnEffectCopy));
         Connect(XRCID("m_btEffectDel"), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(dlgModel::OnEffectDel));
         Connect(XRCID("m_btEffectAuto"), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(dlgModel::OnEffectAuto));
+        m_btEffectAuto->Connect(wxEVT_RIGHT_DCLICK, wxMouseEventHandler(dlgModel::OnEffectAutoQuick), NULL, this);
         Connect(XRCID("m_btEffectClear"), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(dlgModel::OnEffectClear));
     }
     wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbEffect"), m_htlbEffect, m_panEffect);
@@ -1911,18 +1913,24 @@ void dlgModel::OnEffectAuto(wxCommandEvent& WXUNUSED(event)) {
         }
     }
 
-/*
-    for (vector<c3DBone>::iterator bn = m_model->model_bones.begin();
-            bn != m_model->model_bones.end(); bn++) {
+    foreach(const c3DBone::pair& bn, m_model->model_bones) {
         cEffectPoint t;
 
-        t.name = bn->m_name;
-        t.transforms.push_back(bn->m_pos[1]);
-        wxString nam = _("Auto-generated form bone '")+bn->m_name+wxT("'");
+        t.name = bn.first;
+        t.transforms.push_back(bn.second.m_pos[1]);
+        wxString nam = _("Auto-generated form bone '")+bn.first+wxT("'");
         t.transformnames.push_back(nam);
         m_model->effectpoints.push_back(t);
     }
-*/
+
+    m_htlbEffect->UpdateContents();
+    m_htlbEffect->SetSelection(-1);
+    UpdateControlState();
+}
+
+void dlgModel::OnEffectAutoQuick(wxMouseEvent& WXUNUSED(event)) {
+    m_model->effectpoints.clear();
+
     foreach(const c3DBone::pair& bn, m_model->model_bones) {
         cEffectPoint t;
 
@@ -2046,35 +2054,42 @@ void dlgModel::OnBoneAuto(wxCommandEvent& WXUNUSED(event)) {
         }
     }
 
-/*
-    for (vector<c3DBone>::iterator bn = m_model->model_bones.begin();
-            bn != m_model->model_bones.end(); bn++) {
+    foreach(const c3DBone::pair& bn, m_model->model_bones) {
         cModelBone t;
 
-        t.name = bn->m_name;
-        t.parent = bn->m_parent;
+        t.name = bn.first;
+        t.parent = bn.second.m_parent;
         t.usepos2 = !t.parent.IsEmpty();
         if (t.usepos2) {
-            t.positions1.push_back(bn->m_pos[0]);
-            wxString nam = _("Auto-generated form bone '")+bn->m_name+wxT("'");
+            t.positions1.push_back(bn.second.m_pos[0]);
+            wxString nam = _("Auto-generated form bone '")+bn.first+wxT("'");
             t.position1names.push_back(nam);
-            t.positions2.push_back(bn->m_pos[1]);
+            t.positions2.push_back(bn.second.m_pos[1]);
             t.position2names.push_back(nam);
         } else {
-            t.positions1.push_back(bn->m_pos[1]);
-            wxString nam = _("Auto-generated form bone '")+bn->m_name+wxT("'");
+            t.positions1.push_back(bn.second.m_pos[1]);
+            wxString nam = _("Auto-generated form bone '")+bn.first+wxT("'");
             t.position1names.push_back(nam);
         }
-        for (cMeshStruct::iterator ms = m_model->meshstructs.begin(); ms != m_model->meshstructs.end(); ++ms) {
-            if (ms->boneassignment.size() == 1) {
-                if (ms->boneassignment.find(t.name) != ms->boneassignment.end()) {
-                    t.meshes.push_back(ms->Name);
+        foreach(const cMeshStruct& ms, m_model->meshstructs) {
+            if (ms.boneassignment.size() == 1) {
+                if (ms.boneassignment.find(t.name) != ms.boneassignment.end()) {
+                    t.meshes.push_back(ms.Name);
                 }
             }
         }
         amodel->modelbones.push_back(t);
     }
-*/
+
+    m_htlbEffect->UpdateContents();
+    m_htlbEffect->SetSelection(-1);
+    UpdateControlState();
+}
+
+void dlgModel::OnBoneAutoQuick(wxMouseEvent& WXUNUSED(event)) {
+    cAnimatedModel* amodel = dynamic_cast<cAnimatedModel*>(m_model);
+    amodel->modelbones.clear();
+
     foreach(const c3DBone::pair& bn, m_model->model_bones) {
         cModelBone t;
 

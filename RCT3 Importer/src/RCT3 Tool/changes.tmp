@@ -1,0 +1,3 @@
+Fixed	Show selected item in list boxes after update
+Fixed	Load error for empty matrix stacks
+New	Right double-click on A to re-auto model bones without confirmation

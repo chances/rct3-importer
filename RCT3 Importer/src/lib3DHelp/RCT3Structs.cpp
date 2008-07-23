@@ -1264,7 +1264,7 @@ bool cModel::Sync() {
         } else if (obj->GetObjectCount() > meshstructs.size()) {
             // New meshes in the model file
             // Warn about it
-            error.push_back(wxString::Format(_("%d new mesh(es) in the model file.\nAs the scn file is too old to map the meshes, the ones known were assigned in order and the new ones appended.\nYou should probably check if everything is allright."),
+            error.push_back(wxString::Format(_("%d new mesh(es) in the model file.\nAs the scn file is too old to map the meshes, the ones known were assigned in order and the new ones appended.\nYou should probably check if everything is alright."),
                         obj->GetObjectCount()-meshstructs.size()));
             // Assign the ones present
             for(unsigned int i = 0; i < meshstructs.size(); i++)
@@ -1275,7 +1275,7 @@ bool cModel::Sync() {
         } else if (obj->GetObjectCount() < meshstructs.size()) {
             // Meshes were removed from the model file
             // Warn about it
-            error.push_back(wxString::Format(_("%d mesh(es) were removed from the model file.\nAs the scn file is too old to map the meshes, the ones known were assigned in order and the rest was deleted.\nYou should probably check if everything is allright."),
+            error.push_back(wxString::Format(_("%d mesh(es) were removed from the model file.\nAs the scn file is too old to map the meshes, the ones known were assigned in order and the rest was deleted.\nYou should probably check if everything is alright."),
                         meshstructs.size()-obj->GetObjectCount()));
             // Assign the ones present
             for(unsigned int i = 0; i < obj->GetObjectCount(); i++)
@@ -1344,7 +1344,7 @@ bool cModel::Sync() {
     // Didn't work. Yay! -.-
     // Special case: Nothing worked, but we have the same number of meshes/objects
     if ((obj->GetObjectCount() == meshstructs.size()) && (obj->GetObjectCount() == msinfile)) {
-        error.push_back(_("The model file contents changed completely.\nAs the number of meshes stayed constant, the settings were transferred in order.\nYou should prabably check if everything is allright."));
+        error.push_back(_("The model file contents changed completely.\nAs the number of meshes stayed constant, the settings were transferred in order.\nYou should probably check if everything is alright."));
         for (unsigned int i = 0; i < obj->GetObjectCount(); i++) {
             meshstructs[i].Name = obj->GetObjectName(i);
         }
@@ -1353,7 +1353,7 @@ bool cModel::Sync() {
 
     // Special case: Meshes/Objects disappeared
     if (nrfound == obj->GetObjectCount()) {
-        error.push_back(_("The model file contents changed, it seems like you deleted at least one mesh.\nAll meshes in the object file could be matched, so probably everything is ok.\nYou should still check if everything is allright."));
+        error.push_back(_("The model file contents changed, it seems like you deleted at least one mesh.\nAll meshes in the object file could be matched, so probably everything is ok.\nYou should still check if everything is alright."));
         meshstructs.clear();
         meshstructs = fixup;
         goto fixupsinglevertexmeshes;
@@ -1388,7 +1388,7 @@ bool cModel::Sync() {
     } else {
         notify += _("\nThe number of meshes in the model file matched.\n(Note: This is the result you probably get if you renamed a mesh in the model file.)");
     }
-    error.push_back(notify + _("\nYou should check if everything is allright."));
+    error.push_back(notify + _("\nYou should check if everything is alright."));
     meshstructs.clear();
     meshstructs = fixup;
 

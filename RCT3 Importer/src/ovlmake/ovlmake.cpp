@@ -409,30 +409,17 @@ int DoCompile(const wxCmdLineParser& parser) {
 
                     wxLogMessage(_("Processing raw xml file..."));
 
+                    boost::shared_ptr<cXmlValidator> val;
+                    bool repeatvalres = false;
+                    cXmlValidatorResult valres;
                     if (READ_RCT3_VALIDATE()) {
                         wxLogMessage(_("Validating..."));
-                        boost::shared_ptr<cXmlValidator> val = cRawParser::Validator();
-                        cXmlValidatorResult res = doc.validate(*val, cXmlValidator::OPT_DETERMINE_NODE_BY_XPATH, cXmlValidatorResult::VR_NONE);
-                        if (res) {
-                            /*
-                            foreach(const std::string& ge, val->getGenericErrors())
-                                wxLogError(wxString::FromUTF8(ge.c_str()));
-                            foreach(const cXmlStructuredError& se, val->getStructuredErrors()) {
-                                wxString message = wxString::Format(_("Line %d: %s"), se.line, wxString::FromUTF8(se.message.c_str()).c_str());
-                                if (se.level == XML_ERR_NONE) {
-                                    wxLogMessage(message);
-                                } else if (se.level == XML_ERR_WARNING) {
-                                    wxLogWarning(message);
-                                } else {
-                                    wxLogError(message);
-                                }
-                                if (verbose)
-                                    wxLogVerbose(wxString::Format(_("   XPath: %s"), wxString::FromUTF8(se.getPath().c_str()).c_str()));
-                            }
-                            */
+                        val = cRawParser::Validator();
+                        valres = doc.validate(*val, cXmlValidator::OPT_DETERMINE_NODE_BY_XPATH, cXmlValidatorResult::VR_NONE);
+                        if (valres) {
                             logXmlErrors(val.get(), verbose);
                         }
-                        if (res(parser.Found("strict")?cXmlValidatorResult::VR_WARNING:cXmlValidatorResult::VR_ERROR)) {
+                        if (valres(parser.Found("strict")?cXmlValidatorResult::VR_WARNING:cXmlValidatorResult::VR_ERROR)) {
                             wxLogMessage(_("...Failed!"));
                             return -1;
                         }
@@ -452,6 +439,10 @@ int DoCompile(const wxCmdLineParser& parser) {
                         foreach(const cXmlNode& entry, meta.children()) {
                             if (entry("noPrefixWarn")) {
                                 WRITE_RCT3_WARNPREFIX(false);
+                            } else if (entry("repeatValidationResult")) {
+                                repeatvalres = true;
+                            } else {
+                                wxLogWarning(wxString::Format(_("Unknown ovlmake metadata element '%s'."), entry.wxname()));
                             }
                         }
                     }
@@ -488,6 +479,13 @@ int DoCompile(const wxCmdLineParser& parser) {
                         wxLogMessage(_("Writing baked raw xml file ") + outputfile.GetFullPath());
                         doc.write(outputfile.GetFullPath(), true);
                     }
+
+                    if (repeatvalres && val && val->ok() && valres) {
+                        wxLogMessage("-----");
+                        wxLogMessage("Validation results:");
+                        logXmlErrors(val.get(), verbose);
+                    }
+
                     if (dryrun) {
                         fprintf(stderr, "\nDryrun results:\n");
                         for (std::vector<wxFileName>::const_iterator it = rovl.GetModifiedFiles().begin(); it != rovl.GetModifiedFiles().end(); ++it) {

@@ -32,7 +32,7 @@
 		<sch:rule id="refcheck-spl" abstract="true">
 			<sch:let name="ovlpath" value="concat(str:concat(ancestor::raw:rawovl/@basedir),ancestor::raw:rawovl[@file]/@file)" />
 			<sch:let name="impref" value="ancestor::*[1]/@impref" />
-			<sch:assert test="(//raw:spl[@name = current()]) or ($impref and (document(str:encode-uri(//raw:import[@id = $impref]/@file, false()), .)//sc:spline[@name = current()]))" role="warning">No spl element for <sch:value-of select="name()"/> attribute of <sch:value-of select="name(ancestor::*[1])"/> element found (<sch:value-of select="name(ancestor::*[@name])"/> '<sch:value-of select="ancestor-or-self::*[@name]/@name"/>' in ovl '<sch:value-of select="$ovlpath"/>').</sch:assert>
+			<sch:assert test="(//raw:spl[@name = current()]) or ($impref and (document(str:encode-uri(//raw:import[@id = $impref]/@file, false()), .)//sc:spline[@name = current()])) or ($impref and (document(str:encode-uri(//raw:import[@id = $impref]/@file, false()), .)//mod:spline[@name = current()]))" role="warning">No spl element for <sch:value-of select="name()"/> attribute of <sch:value-of select="name(ancestor::*[1])"/> element found (<sch:value-of select="name(ancestor::*[@name])"/> '<sch:value-of select="ancestor-or-self::*[@name]/@name"/>' in ovl '<sch:value-of select="$ovlpath"/>').</sch:assert>
 		</sch:rule>
 		<sch:rule id="refcheck-svd" abstract="true">
 			<sch:let name="ovlpath" value="concat(str:concat(ancestor::raw:rawovl/@basedir),ancestor::raw:rawovl[@file]/@file)" />
@@ -621,13 +621,20 @@
 			<sch:pattern>
 				<sch:title>import checks</sch:title>
 				<sch:rule context="//raw:import/@file">
-					<sch:assert test="document(str:encode-uri(current(),false()),.)/sc:ovl">Failed to load '<sch:value-of select="."/>' for import tag.</sch:assert>
+					<sch:assert test="document(str:encode-uri(current(),false()),.)/sc:ovl or document(str:encode-uri(current(),false()),.)/mod:model">Failed to load '<sch:value-of select="."/>' for import tag.</sch:assert>
 				</sch:rule>
 			</sch:pattern>
 			<element name="import">
 				<ref name="baseattrs"/>
 				<attribute name="file" type="string"/>
 				<attribute name="name" occurs="?" type="string"/>
+				<attribute name="use" occurs="?">
+					<choice>
+						<value>main</value>
+						<value>animations</value>
+						<value>splines</value>
+					</choice>
+				</attribute>
 				<attribute name="id" occurs="?" type="ID"/>
 			</element>
 		</define>
@@ -2101,10 +2108,40 @@
 					<sch:rule context="//raw:tks/@sid">
 						<sch:extends rule="refcheck-sid"/>
 					</sch:rule>
+					<sch:rule context="//raw:tks/raw:splines/raw:car/@left">
+						<sch:extends rule="refcheck-spl"/>
+					</sch:rule>
+					<sch:rule context="//raw:tks/raw:splines/raw:car/@right">
+						<sch:extends rule="refcheck-spl"/>
+					</sch:rule>
+					<sch:rule context="//raw:tks/raw:splines/raw:join/@left">
+						<sch:extends rule="refcheck-spl"/>
+					</sch:rule>
+					<sch:rule context="//raw:tks/raw:splines/raw:join/@right">
+						<sch:extends rule="refcheck-spl"/>
+					</sch:rule>
+					<sch:rule context="//raw:tks/raw:splines/raw:extra/@left">
+						<sch:extends rule="refcheck-spl"/>
+					</sch:rule>
+					<sch:rule context="//raw:tks/raw:splines/raw:extra/@right">
+						<sch:extends rule="refcheck-spl"/>
+					</sch:rule>
+					<sch:rule context="//raw:tks/raw:splines/raw:water/@left">
+						<sch:extends rule="refcheck-spl"/>
+					</sch:rule>
+					<sch:rule context="//raw:tks/raw:splines/raw:water/@right">
+						<sch:extends rule="refcheck-spl"/>
+					</sch:rule>
 					<sch:rule context="//raw:tks/raw:soaked/@loopSpline">
 						<sch:extends rule="refcheck-spl"/>
 					</sch:rule>
 					<sch:rule context="//raw:tks/raw:soaked/raw:path/@spline">
+						<sch:extends rule="refcheck-spl"/>
+					</sch:rule>
+					<sch:rule context="//raw:tks/raw:soaked/raw:speedSplines/raw:splines/@left">
+						<sch:extends rule="refcheck-spl"/>
+					</sch:rule>
+					<sch:rule context="//raw:tks/raw:soaked/raw:speedSplines/raw:splines/@right">
 						<sch:extends rule="refcheck-spl"/>
 					</sch:rule>
 				</sch:pattern>
@@ -2218,7 +2255,7 @@
 							<attribute name="splitterJoint" occurs="?" ref="TKSReference"/>
 							<attribute name="rotatorType" occurs="?" type="unsignedInt"/>
 							<attribute name="animalHouse" occurs="?" type="float"/>
-							<attribute name="alteranteTextLookup" occurs="?" type="string"/>
+							<attribute name="alternateTextLookup" occurs="?" type="string"/>
 							<attribute name="towerCap01" occurs="?" type="float"/>
 							<attribute name="towerCap02" occurs="?" type="float"/>
 						</element>

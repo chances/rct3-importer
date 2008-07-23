@@ -85,7 +85,7 @@ unsigned long cTrackSection::GetUniqueSize() const {
             size += sizeof(TrackSection_S);
             size += 10 * 4; // Animation
         } else {
-            size += sizeof(TrackSection_V);
+            size += sizeof(TrackSection_W);
             size += 11 * 4; // Animation
         }
         size += speeds.size() * sizeof(TrackSectionSpeedStruct_SW);

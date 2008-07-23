@@ -190,15 +190,15 @@ struct Constants {
         };
         struct Flags {
             enum {
-                None =                      0,
-                ScrollingSign =            12,
-                WaterWheelChain =          20,
-                Wheels1 =                  36,
-                Wheels2 =                  68,
-                Terrain =               12288,
-                Cliff =                 20480,
-                AnimatedBillboard =     32768,
-                Billboard =             32788
+                None =                  0x00000000, //    0,
+                ScrollingSign =         0x0000000C, //   12,
+                WaterWheelChain =       0x00000014, //   20,
+                Wheels1 =               0x00000024, //   36,
+                Wheels2 =               0x00000044, //   68,
+                Terrain =               0x00003000, //12288,
+                Cliff =                 0x00005000, //20480,
+                AnimatedBillboard =     0x00008000, //32768,
+                Billboard =             0x00008014, //32788
             };
         };
         struct Sides {
@@ -307,13 +307,18 @@ struct Constants {
         };
         struct Flags {
             enum {
-                Greenery =              0x00000001,
-                Flower =                0x00000002,
+                Greenery =              0x00000001, ///< Set on Trees, Shrubs & Fern, also on lots of walls
                 No_Shadow =             0x00000002,
+                Flower =                0x00000002,
                 Rotation =              0x00000004,
-                Unknown =               0x00000070,
+                Unknown01 =             0x00000010,
+                Unknown02 =             0x00000020,
+                Unknown03 =             0x00000040,
+                Animated_Preview =      0x00000800,
+                Unknown_Giant_Ferris =  0x00001000,
                 Soaked =                0x01000000,
-                Wild =                  0x02000000
+                Wild =                  0x02000000,
+                Soaked_or_Wild =        0x03000000
             };
         };
     };
@@ -531,7 +536,7 @@ struct Constants {
                 Helix_Up_Small =                21,
                 Helix_Up_Large =                22,
                 Quarter_Helix =                 23, // Inverted?
-                Holding_Bleak =                 24,
+                Holding_Break =                 24,
                 Lift_Hill_Curved =              25,
                 Spinning_Control_Toggle =       26,
                 Reverser =                      27,

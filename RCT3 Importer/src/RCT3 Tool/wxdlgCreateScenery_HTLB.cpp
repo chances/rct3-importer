@@ -60,6 +60,8 @@ void wxTextureListBox::UpdateContents() {
         SetSelection(wxNOT_FOUND);
     }
     RefreshAll();
+    if (GetSelection() != wxNOT_FOUND)
+        ScrollToLine(GetSelection());
 }
 
 wxString wxTextureListBox::OnGetItem(size_t n) const {
@@ -125,6 +127,8 @@ void wxReferenceListBox::UpdateContents() {
         SetSelection(wxNOT_FOUND);
     }
     RefreshAll();
+    if (GetSelection() != wxNOT_FOUND)
+        ScrollToLine(GetSelection());
 }
 
 wxString wxReferenceListBox::OnGetItem(size_t n) const {
@@ -152,6 +156,8 @@ void wxModelListBox::UpdateContents() {
         SetSelection(wxNOT_FOUND);
     }
     RefreshAll();
+    if (GetSelection() != wxNOT_FOUND)
+        ScrollToLine(GetSelection());
 }
 
 wxString wxModelListBox::OnGetItem(size_t n) const {
@@ -215,6 +221,8 @@ void wxAnimatedModelListBox::UpdateContents() {
         SetSelection(wxNOT_FOUND);
     }
     RefreshAll();
+    if (GetSelection() != wxNOT_FOUND)
+        ScrollToLine(GetSelection());
 }
 
 wxString wxAnimatedModelListBox::OnGetItem(size_t n) const {
@@ -280,6 +288,8 @@ void wxLODListBox::UpdateContents() {
         SetSelection(wxNOT_FOUND);
     }
     RefreshAll();
+    if (GetSelection() != wxNOT_FOUND)
+        ScrollToLine(GetSelection());
 }
 
 wxString wxLODListBox::OnGetItem(size_t n) const {
@@ -329,6 +339,8 @@ void wxAnimationsListBox::UpdateContents() {
         SetSelection(wxNOT_FOUND);
     }
     RefreshAll();
+    if (GetSelection() != wxNOT_FOUND)
+        ScrollToLine(GetSelection());
 }
 
 wxString wxAnimationsListBox::OnGetItem(size_t n) const {
@@ -372,6 +384,8 @@ void wxSplineListBox::UpdateContents() {
         SetSelection(wxNOT_FOUND);
     }
     RefreshAll();
+    if (GetSelection() != wxNOT_FOUND)
+        ScrollToLine(GetSelection());
 }
 
 wxString wxSplineListBox::OnGetItem(size_t n) const {

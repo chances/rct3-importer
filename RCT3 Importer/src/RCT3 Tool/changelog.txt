@@ -285,6 +285,7 @@ Version 18 (Belgabor):
 
 Todos:
 // NOTE (belgabor#1#): Test other texture styles for billboards
-// NOTE (belgabor#1#): Load model settings as overlay
+// NOTE (belgabor#1#): Fix prefix/billboard/terrain interaction
+// NOTE (belgabor#1#): List update scrolling
 // NOTE (belgabor#1#): Load matrices from files
 // NOTE (belgabor#9#): Wizard

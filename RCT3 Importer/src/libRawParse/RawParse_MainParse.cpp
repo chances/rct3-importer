@@ -426,7 +426,10 @@ void cRawParser::Parse(cXmlNode& node) {
             // <import file="scenery file" (name="internal svd name") />
             bool filenamevar;
             wxFSFileName filename = ParseString(child, wxT(RAWXML_IMPORT), wxT("file"), &filenamevar);
-            wxString name = UTF8STRINGWRAP(child.getPropVal("name"));
+            wxString name;
+            ParseStringOption(name, child, wxT("name"), NULL);
+            wxString use;
+            ParseStringOption(use, child, wxT("use"), NULL);
             if (!filename.IsAbsolute()) {
                 filename.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
             }
@@ -461,11 +464,22 @@ void cRawParser::Parse(cXmlNode& node) {
                 child.delProp("file");
                 if (child.children())
                     child.children().detach();
+// TODO (belgabor#1#): bake use attribute
                 BakeScenery(child, *c_scn.m_work);
                 Parse(child); // Bake contained stuff
             } else {
                 wxLogVerbose(wxString::Format(_("Importing %s (%s) to %s."), filename.GetFullPath().c_str(), c_scn.name.c_str(), m_output.GetFullPath().c_str()));
-                c_scn.MakeToOvl(m_ovl);
+                if (use.IsEmpty()) {
+                    c_scn.MakeToOvl(m_ovl);
+                } else if (use == "main") {
+                    c_scn.MakeToOvlMain(m_ovl);
+                } else if (use == "animations") {
+                    c_scn.MakeToOvlAnimations(m_ovl);
+                } else if (use == "splines") {
+                    c_scn.MakeToOvlSplines(m_ovl);
+                } else  {
+                    throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown value '%s' for use attribute in import tag"), use.c_str()), child));
+                }
             }
         } else if (child(RAWXML_ANR)) {
             BAKE_SKIP(child);

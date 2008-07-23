@@ -1735,6 +1735,13 @@ wxString cSCNFile::getPrefixed(const wxString& pref) {
     }
 
 void cSCNFile::MakeToOvl(cOvl& c_ovl) {
+    MakeToOvlMain(c_ovl);
+    if (!m_textureovl)
+        MakeToOvlAnimations(c_ovl);
+    MakeToOvlSplines(c_ovl);
+}
+
+void cSCNFile::MakeToOvlMain(cOvl& c_ovl) {
     if (!m_work)
         Check();
 
@@ -2196,29 +2203,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
         }
 
         // Animations
-        if (m_work->animations.size()) {
-            wxLogDebug(wxT("TRACE cSCNFile::MakeToOvl BAN"));
-            ovlBANManager* c_ban = c_ovl.GetManager<ovlBANManager>();
-            for (cAnimation::iterator i_anim = m_work->animations.begin(); i_anim != m_work->animations.end(); ++i_anim) {
-                cBoneAnim c_item;
-                c_item.name = getPrefixed(i_anim->name).ToAscii();
-                wxLogVerbose(_("Adding animation: ") + i_anim->name);
-                for (cBoneAnimation::iterator i_bone = i_anim->boneanimations.begin(); i_bone != i_anim->boneanimations.end(); ++i_bone) {
-                    cBoneAnimBone c_bone;
-                    c_bone.name = i_bone->name.ToAscii();
-                    wxLogVerbose(_("  Adding bone: ") + i_bone->name);
-                    for (cTXYZ::iterator i_txyz = i_bone->translations.begin(); i_txyz != i_bone->translations.end(); ++i_txyz) {
-                        c_bone.translations.insert(i_txyz->GetFixed(i_anim->usedorientation, false));
-                    }
-                    for (cTXYZ::iterator i_txyz = i_bone->rotations.begin(); i_txyz != i_bone->rotations.end(); ++i_txyz) {
-                        c_bone.rotations.insert(i_txyz->GetFixed(i_anim->usedorientation, true, i_bone->axis));
-                    }
-                    c_item.bones.push_back(c_bone);
-                }
-                c_ban->AddAnimation(c_item);
-            }
-        }
-
+        // put to MakeToOvlAnimations
     }
 
     // Textures
@@ -2322,11 +2307,50 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
         }
     }
 
+}
+
+/** @brief MakeToOvlAnimations
+  *
+  * @todo: document this function
+  */
+void cSCNFile::MakeToOvlAnimations(cOvl& c_ovl) {
+    if (!m_work)
+        Check();
+
+    if (m_work->animations.size()) {
+        wxLogDebug(wxT("TRACE cSCNFile::MakeToOvl BAN"));
+        ovlBANManager* c_ban = c_ovl.GetManager<ovlBANManager>();
+        for (cAnimation::iterator i_anim = m_work->animations.begin(); i_anim != m_work->animations.end(); ++i_anim) {
+            cBoneAnim c_item;
+            c_item.name = getPrefixed(i_anim->name).ToAscii();
+            wxLogVerbose(_("Adding animation: ") + i_anim->name);
+            for (cBoneAnimation::iterator i_bone = i_anim->boneanimations.begin(); i_bone != i_anim->boneanimations.end(); ++i_bone) {
+                cBoneAnimBone c_bone;
+                c_bone.name = i_bone->name.ToAscii();
+                wxLogVerbose(_("  Adding bone: ") + i_bone->name);
+                for (cTXYZ::iterator i_txyz = i_bone->translations.begin(); i_txyz != i_bone->translations.end(); ++i_txyz) {
+                    c_bone.translations.insert(i_txyz->GetFixed(i_anim->usedorientation, false));
+                }
+                for (cTXYZ::iterator i_txyz = i_bone->rotations.begin(); i_txyz != i_bone->rotations.end(); ++i_txyz) {
+                    c_bone.rotations.insert(i_txyz->GetFixed(i_anim->usedorientation, true, i_bone->axis));
+                }
+                c_item.bones.push_back(c_bone);
+            }
+            c_ban->AddAnimation(c_item);
+        }
+    }
+}
+
+/** @brief MakeToOvlSplines
+  *
+  * @todo: document this function
+  */
+void cSCNFile::MakeToOvlSplines(cOvl& c_ovl) {
     // Splines
-    if (m_work->splines.size()) {
+    if (splines.size()) {
         wxLogDebug(wxT("TRACE cSCNFile::MakeToOvl SPL"));
         ovlSPLManager* c_spl = c_ovl.GetManager<ovlSPLManager>();
-        foreach(cImpSpline& cspl, m_work->splines) {
+        foreach(const cImpSpline& cspl, splines) {
             cSpline spl;
             wxLogVerbose(_("Adding spline: ") + cspl.spline.m_name);
             spl.name = getPrefixed(cspl.spline.m_name).ToAscii();
@@ -2336,6 +2360,7 @@ void cSCNFile::MakeToOvl(cOvl& c_ovl) {
         }
     }
 }
+
 
 void cSCNFile::CleanWork() {
     m_work.reset();

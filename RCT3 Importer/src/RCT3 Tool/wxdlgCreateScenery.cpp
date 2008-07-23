@@ -410,7 +410,7 @@ bool dlgCreateScenery::TransferDataFromWindow() {
     if (m_checkRotation->IsChecked())
         flags |= r3::Constants::SVD::Flags::Rotation;
     if (m_checkUnknown->IsChecked())
-        flags |= r3::Constants::SVD::Flags::Unknown;
+        flags |= (r3::Constants::SVD::Flags::Unknown01 & r3::Constants::SVD::Flags::Unknown02 & r3::Constants::SVD::Flags::Unknown03);
     m_SCN.sivsettings.sivflags = flags;
 
     return wxDialog::TransferDataFromWindow();
@@ -427,7 +427,7 @@ bool dlgCreateScenery::TransferDataToWindow() {
     m_checkGreenery->SetValue(m_SCN.sivsettings.sivflags & r3::Constants::SVD::Flags::Greenery);
     m_checkShadow->SetValue(m_SCN.sivsettings.sivflags & r3::Constants::SVD::Flags::No_Shadow);
     m_checkRotation->SetValue(m_SCN.sivsettings.sivflags & r3::Constants::SVD::Flags::Rotation);
-    m_checkUnknown->SetValue(m_SCN.sivsettings.sivflags & r3::Constants::SVD::Flags::Unknown);
+    m_checkUnknown->SetValue(m_SCN.sivsettings.sivflags & (r3::Constants::SVD::Flags::Unknown01 & r3::Constants::SVD::Flags::Unknown02 & r3::Constants::SVD::Flags::Unknown03));
 
     return wxDialog::TransferDataToWindow();
 }

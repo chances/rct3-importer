@@ -125,6 +125,9 @@ public:
 	bool Check();
 	void Make();
 	void MakeToOvl(cOvl& c_ovl);
+	void MakeToOvlMain(cOvl& c_ovl);
+	void MakeToOvlAnimations(cOvl& c_ovl);
+	void MakeToOvlSplines(cOvl& c_ovl);
 	wxString getPrefixed(const wxString& pref);
 	void CleanWork();
 

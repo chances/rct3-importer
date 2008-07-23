@@ -8,6 +8,48 @@
     <author>
       <surname>Belgabor</surname>
     </author>
+    <legalnotice>
+      <para>Copyright (C) 2008 Belgabor, some rights reserved.</para>
+      <para>This work is licensed under a <ulink
+      url="http://creativecommons.org/licenses/by-nc-nd/3.0/">Creative Commons
+      Attribution-NonCommercial-NoDerivs 3.0 License</ulink>.</para>
+    </legalnotice>
+    <revhistory>
+      <revision>
+        <revnumber>1.0</revnumber>
+        <date>24.6.2008</date>
+        <author>
+          <surname>Belgabor</surname>
+        </author>
+        <revdescription>
+          <para>Initial revision</para>
+        </revdescription>
+      </revision>
+      <revision>
+        <revnumber>1.1</revnumber>
+        <date>23.7.2008</date>
+        <author>
+          <surname>Belgabor</surname>
+        </author>
+        <revdescription>
+          <itemizedlist>
+            <listitem>
+              <para>Added license</para>
+            </listitem>
+            <listitem>
+              <para>XML markup for listings (setting language to XML)</para>
+            </listitem>
+            <listitem>
+              <para>More info about rideOption type 12</para>
+            </listitem>
+            <listitem>
+              <para>Note about mech spline being not strictly
+              necessary.</para>
+            </listitem>
+          </itemizedlist>
+        </revdescription>
+      </revision>
+    </revhistory>
   </articleinfo>
   <section>
     <title>Introduction</title>
@@ -468,6 +510,12 @@
         spline to the inspectionpoint effect bone.</para>
       </listitem>
     </orderedlist>
+    <para>Strictly speaking the last one is not necessary if a seat spline
+    leads to the inspectionpoint bone, but in the original rides there is
+    usually a special one. The engine seems to take all splines into account
+    to find the shortest way for peeps to their seat or the machanic to the
+    inspectionpoint, so don't be surprised if peeps follow the mech spline to
+    their seat if it has a node that's nerar to their seat :-).</para>
     <para>In general, peeps can only enter and leave splines at spline nodes!
     This has the following consequences:</para>
     <orderedlist>
@@ -609,7 +657,7 @@
     <section>
       <title>Complete Example</title>
       <para>Here is the complete example for reference:</para>
-      <programlisting>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+      <programlisting language="XML">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
 
 &lt;rawovl basedir="output" installdir="" xmlns="http://rct3.sourceforge.net/rct3xml/raw"&gt;
   &lt;rawovl basedir="Style\Custom\Belgabor\jumpjack" prefix="belgabor-"&gt;
@@ -621,7 +669,7 @@
         &lt;texture&gt;&lt;data type="file"&gt;icon.png&lt;/data&gt;&lt;/texture&gt;
       &lt;/tex&gt;
       &lt;gsi name="JumpJack" tex="JumpJackTexture" left="0" top="0" right="79" bottom="63" /&gt;
-      &lt;txt name="JumpJack" type="text"&gt;Jumpin' Jack&lt;/txt&gt;
+      &lt;txt name="JumpJack" type="text"&gt;Jumpin Jack&lt;/txt&gt;
       &lt;txt name="JumpJackDesc" type="text"&gt;Ride inspired by an early walking robot model.&lt;/txt&gt;
 
       &lt;anr name="JumpJack" nametxt="JumpJack" description="JumpJackDesc" sid="JumpJack"&gt;
@@ -693,7 +741,7 @@
       attributes are optional as well so you can give all or any. The values I
       give fol those attributes are usually their default values,
       <abbrev>i.e.</abbrev> the ones ovlmake uses if you omit them.</para>
-      <programlisting>&lt;rawovl basedir="output\" installdir="" xmlns="http://rct3.sourceforge.net/rct3xml/raw"&gt;</programlisting>
+      <programlisting language="XML">&lt;rawovl basedir="output\" installdir="" xmlns="http://rct3.sourceforge.net/rct3xml/raw"&gt;</programlisting>
       <para>A rawovl element defines an execution environment for ovlmake.
       That may sound strange to you, but it has two simple meanings:</para>
       <orderedlist>
@@ -724,7 +772,7 @@
       </note>
       <para>The <emphasis>xmlns</emphasis> attribute is standard XML and
       defines the namespace (you know XML, don't you).</para>
-      <programlisting>  &lt;rawovl basedir="Style\Custom\Belgabor\jumpjack\" prefix="belgabor-"&gt;</programlisting>
+      <programlisting language="XML">  &lt;rawovl basedir="Style\Custom\Belgabor\jumpjack\" prefix="belgabor-"&gt;</programlisting>
       <para>Now we step into the <quote>Style\Custom\Belgabor\jumpjack</quote>
       subdirectory. Of course you should replace <quote>Belgabor</quote> with
       your own nick and <quote>jumpjack</quote> with your flat's name. The
@@ -733,13 +781,13 @@
       <para>The <emphasis>prefix</emphasis> attribute defines the prefix for
       everything in the opened execution environment. It is used on every
       internal name. Use your nick with an optional separator.</para>
-      <programlisting>    &lt;rawovl file="JumpJack"&gt;</programlisting>
+      <programlisting language="XML">    &lt;rawovl file="JumpJack"&gt;</programlisting>
       <para>The <emphasis>file</emphasis> attribute tells ovlmake that
       everything in this <emphasis>rawovl</emphasis> tag should go into an ovl
       file, in this case named <quote>JumpJack</quote>. Of course you should
       choose something that fits your ride. This ovl file will contain the
       model, spline and animation data.</para>
-      <programlisting>      &lt;import file="jump.xml" name="JumpJack" id="mainimport"/&gt;</programlisting>
+      <programlisting language="XML">      &lt;import file="jump.xml" name="JumpJack" id="mainimport"/&gt;</programlisting>
       <para>The import element reads data from files the importer can open as
       scenery files into an ovl. The <emphasis>file</emphasis> attribute gives
       the filename of the file to fetch data from. It needs to be relative to
@@ -767,9 +815,9 @@
       successful import but helps <application>ovlmake</application> detect
       errors in the XML validation stage (See the <emphasis>impref</emphasis>
       attribute below).</para>
-      <programlisting>    &lt;rawovl file="Style"&gt;</programlisting>
+      <programlisting language="XML">    &lt;rawovl file="Style"&gt;</programlisting>
       <para>We create the Style ovl.</para>
-      <programlisting>      &lt;tex name="JumpJackTexture" format="20"&gt;</programlisting>
+      <programlisting language="XML">      &lt;tex name="JumpJackTexture" format="20"&gt;</programlisting>
       <para>The <emphasis>tex</emphasis> element creates an icon texture. The
       <emphasis>name</emphasis> attribute gives the internal name, so use
       something of your own.</para>
@@ -782,11 +830,11 @@
       always uses 19). For those who know about 3D texture compression
       formats, 18, 19 and 20 correspond to dxt1, dxt3 and dxt5
       respectively.</para>
-      <programlisting>        &lt;texture&gt;&lt;data type="file"&gt;icon.png&lt;/data&gt;&lt;/texture&gt;</programlisting>
+      <programlisting language="XML">        &lt;texture&gt;&lt;data type="file"&gt;icon.png&lt;/data&gt;&lt;/texture&gt;</programlisting>
       <para>This line gives the bitmap file of your icon texture. Keep
       everything as is, only replace <quote>icon.png</quote> with the path to
       your icon texture bitmap, relative to the XML file we're writing.</para>
-      <programlisting>      &lt;gsi name="JumpJack" tex="JumpJackTexture" left="0" top="0" right="79" bottom="63" /&gt;</programlisting>
+      <programlisting language="XML">      &lt;gsi name="JumpJack" tex="JumpJackTexture" left="0" top="0" right="79" bottom="63" /&gt;</programlisting>
       <para>The <emphasis>gsi</emphasis> element creates an icon reference.
       The <emphasis>name</emphasis> attribute gives the internal name of the
       icon reference, the <emphasis>tex</emphasis> attribute the internal name
@@ -795,7 +843,7 @@
       <emphasis>right</emphasis> and <emphasis>bottom</emphasis> attributes
       define the area of the icon on the texture. As you can see from these
       numbers, an icon for a flat ride has to be 80x64 pixels big.</para>
-      <programlisting>      &lt;txt name="JumpJack" type="text"&gt;Jumpin' Jack&lt;/txt&gt;
+      <programlisting language="XML">      &lt;txt name="JumpJack" type="text"&gt;Jumpin Jack&lt;/txt&gt;
       &lt;txt name="JumpJackDesc" type="text"&gt;Ride inspired by an early walking robot model.&lt;/txt&gt;</programlisting>
       <para>A <emphasis>txt</emphasis> element creates a text string. We need
       two, one for the name in the menu and one for the description. The
@@ -803,7 +851,7 @@
       the text string. Keep the <emphasis>type</emphasis> attribute as
       <quote>text</quote> as given in the example. Put your text string inside
       the <emphasis>txt</emphasis> element.</para>
-      <programlisting>      &lt;anr name="JumpJack" nametxt="JumpJack" description="JumpJackDesc" sid="JumpJack"&gt;</programlisting>
+      <programlisting language="XML">      &lt;anr name="JumpJack" nametxt="JumpJack" description="JumpJackDesc" sid="JumpJack"&gt;</programlisting>
       <para>The <emphasis>anr</emphasis> element assembles all data that makes
       for flat ride a flat ride and not a scenery object, so this is where
       things get interesting. The <emphasis>name</emphasis> attribute is the
@@ -813,7 +861,7 @@
       respectively. The <emphasis>sid</emphasis> attribute gives the internal
       name of the accompanying sid structure. We will define that
       below.</para>
-      <programlisting>        &lt;attraction type="4" loopSpline="jumpSplineLoop" impref="mainimport"&gt;</programlisting>
+      <programlisting language="XML">        &lt;attraction type="4" loopSpline="jumpSplineLoop" impref="mainimport"&gt;</programlisting>
       <para>The <emphasis>attraction</emphasis> element contains data common
       to attractions, <abbrev>i.e.</abbrev> objects peeps interact with. The
       <emphasis>type</emphasis> attribute determines the type of the
@@ -881,14 +929,14 @@
       <para>The <emphasis>impref</emphasis> attribute tells ovlmake during the
       validation step which import is supposed to contain the spline so it can
       check whether it is actually there.</para>
-      <programlisting>          &lt;attractionPath spline="jumpSplinePeep1" impref="mainimport"/&gt;</programlisting>
+      <programlisting language="XML">          &lt;attractionPath spline="jumpSplinePeep1" impref="mainimport"/&gt;</programlisting>
       <para>The <emphasis>attractionPath</emphasis> elements with their
       <emphasis>spline</emphasis> attribute list the other splines for your
       ride. Give the peep splines first and the mech spline last.</para>
       <note>
         <para>Optional, on the same nesting level as the
         <emphasis>attractionPath</emphasis> elements.</para>
-        <programlisting>          &lt;attractionMisc baseUpkeep="4960" flags="0" maxHeight="16" /&gt;</programlisting>
+        <programlisting language="XML">          &lt;attractionMisc baseUpkeep="4960" flags="0" maxHeight="16" /&gt;</programlisting>
         <para>The <emphasis>baseUpkeep</emphasis> attribute gives the basic
         ride upkeep. How it works exactly for flats I don't know, but I
         suspect it's per year and rounded up per month.</para>
@@ -919,7 +967,7 @@
         <para>The <emphasis>maxHeight</emphasis> attribute gives the maximal
         Height over ground in height steps the ride can be build at.</para>
       </note>
-      <programlisting>        &lt;ride attractivity="50" entryFee="10" seating="10"&gt;</programlisting>
+      <programlisting language="XML">        &lt;ride attractivity="50" entryFee="10" seating="10"&gt;</programlisting>
       <para>The <emphasis>ride</emphasis> element contains data common to
       objects peeps can ride.</para>
       <para>The <emphasis>attractivity</emphasis> attribute determines how
@@ -1099,19 +1147,26 @@
       rides in the game. Each option has zero to four parameters, depending on
       the type. I'll try to explain the types in the order it makes sense to
       explain them, not in the order they appear.</para>
-      <programlisting>          &lt;rideOption type="0"/&gt;</programlisting>
+      <programlisting language="XML">          &lt;rideOption type="0"/&gt;</programlisting>
       <para>The type 0 option has no parameters and acts as a separator. Flat
       rides theoretically shouldn't need them, but most of the original ones
       have them so put them in.</para>
-      <programlisting>          &lt;rideOption type="12"&gt;
+      <programlisting language="XML">          &lt;rideOption type="12"&gt;
             &lt;parameter&gt;60&lt;/parameter&gt;
             &lt;parameter&gt;20&lt;/parameter&gt;
             &lt;parameter&gt;10&lt;/parameter&gt;
           &lt;/rideOption&gt;</programlisting>
-      <para>The type 12 option is not fully understood. As you can see, it
-      requires three parameters. It somehow influences how much peeps are
-      willing to pay for the ride.</para>
-      <programlisting>          &lt;rideOption type="10"&gt;
+      <para>The type 12 option influences how much peeps are willing to pay
+      for the ride. Like type 8 (see below), the three parameters correspond
+      to excitement, intensity and nausea. To get the maximum yrice peeps are
+      willing to pay, multiply each parameter with the corresponding final
+      ride value and add them up. Finally add a base price which seems to be
+      160 (there doesn't seem to be a way to influence that). As always, money
+      related things are given in small currency denomination
+      (<abbrev>e.g.</abbrev> cents). Credits go to SLiPCoR for nailing this
+      down. He experimented with TrackedRides, so I cannot guarantee it's 100%
+      the same for flats.</para>
+      <programlisting language="XML">          &lt;rideOption type="10"&gt;
             &lt;parameter&gt;10&lt;/parameter&gt;
           &lt;/rideOption&gt;</programlisting>
       <para>The type 10 option determines how fast the ride breaks. The higher
@@ -1120,7 +1175,10 @@
       spline/effect point setup. Setting this to 0 makes it not break down at
       all. If this works forever or similar to the no-repair cheat is
       currently unknown.</para>
-      <programlisting>          &lt;rideOption type="8"&gt;
+      <para>According to SLiPCoR, the game calculates durability decereases
+      every 20 (game) minutes. To find the durability decrease in %, divide
+      the type 10 parameter by 256.</para>
+      <programlisting language="XML">          &lt;rideOption type="8"&gt;
             &lt;parameter&gt;5&lt;/parameter&gt;
             &lt;parameter&gt;5&lt;/parameter&gt;
             &lt;parameter&gt;5&lt;/parameter&gt;
@@ -1141,12 +1199,12 @@
       calculate that down per instance (<abbrev>e.g.</abbrev> for a circuit of
       6 allowed, there are lots of other such settings applying to other input
       values, but those are only used on tracked rides).</para>
-      <programlisting>          &lt;rideOption type="11"&gt;
+      <programlisting language="XML">          &lt;rideOption type="11"&gt;
             &lt;parameter&gt;0&lt;/parameter&gt;
           &lt;/rideOption&gt;</programlisting>
       <para>Completely unknown. I saw parameters of mostly 0 or 1, most have
       0.</para>
-      <programlisting>      &lt;sid name="JumpJack" nametxt="JumpJack" icon="JumpJack" 
+      <programlisting language="XML">      &lt;sid name="JumpJack" nametxt="JumpJack" icon="JumpJack" 
         ovlpath="Style\Custom\Belgabor\jumpjack\JumpJack" svd="JumpJack"&gt;</programlisting>
       <para>The <emphasis>sid</emphasis> element creates a sid structure
       necessary for all objects you can place in RCT. The
@@ -1176,10 +1234,10 @@
         something is wrong, it's pretty sure correct. Usually you only get
         false positives.</para>
       </note>
-      <programlisting>        &lt;type scenerytype="23" /&gt;</programlisting>
+      <programlisting language="XML">        &lt;type scenerytype="23" /&gt;</programlisting>
       <para>Do not change. The value 23 means the sid structure describes a
       (flat) ride.</para>
-      <programlisting>        &lt;position xsize="20" ysize="10" zsize="20" xsquares="5" zsquares="5"/&gt;</programlisting>
+      <programlisting language="XML">        &lt;position xsize="20" ysize="10" zsize="20" xsquares="5" zsquares="5"/&gt;</programlisting>
       <para>The <emphasis>sidposition</emphasis> element describes the size
       and (optionally) position of your object. I'll only explain the size
       aspect here.</para>
@@ -1205,10 +1263,10 @@
       aquariumcorner, defaultpool, defaultpoolpath, defaultpoolsmall, sand,
       pathunderwater, ts1a, ts6, ts7 and ts8. Usually this is
       <quote>scaffolding</quote> for flat rides.</para>
-      <programlisting>        &lt;colours choice1="21" choice2="11" choice3="6"/&gt;</programlisting>
+      <programlisting lang="XML">        &lt;colours choice1="21" choice2="11" choice3="6"/&gt;</programlisting>
       <para>Optional, gives the default colours for recolourable textures and
       lights.</para>
-      <programlisting>        &lt;squareUnknowns flags="1" minHeight="0" maxHeight="7" supports="0"/&gt;</programlisting>
+      <programlisting lang="XML">        &lt;squareUnknowns flags="1" minHeight="0" maxHeight="7" supports="0"/&gt;</programlisting>
       <para>Optional. You can leave this out if you do not want collision
       detection for your ride. All attributes are optional. Personally I found
       rides hard to place as RCT3 only shows the base size shadow if collision
@@ -1230,11 +1288,11 @@
       <emphasis>supports</emphasis> attribute is unknown 9 in the importer and
       needs to be set to 1 along setting <emphasis>flags</emphasis> to 3 to
       have supports (of course you also need to name supports in the
-      <emphasis>position</emphasis> element). </para>
+      <emphasis>position</emphasis> element).</para>
       <para>In case you miss unknown 8, it is (and needs to be) automatically
       calculated from <emphasis>minHeight</emphasis> and
       <emphasis>maxHeight</emphasis>.</para>
-      <programlisting>      &lt;symbol name="StyleIndex" target="common" type="int" data="0" /&gt;</programlisting>
+      <programlisting language="XML">      &lt;symbol name="StyleIndex" target="common" type="int" data="0" /&gt;</programlisting>
       <para>Determines the theme type of your ride. Leave everything as it is,
       only change the <emphasis>data</emphasis> attribute if necessary. This
       is rather more important for rides than for CS as it determines the
@@ -1293,7 +1351,7 @@
       others, 1-32, are as presented in the importer per object. To set them,
       add a <emphasis>importerUnknowns</emphasis> element and set its
       <emphasis>flags</emphasis> attribute.</para>
-      <programlisting>        &lt;importerUnknowns flags="0x00200000"/&gt;</programlisting>
+      <programlisting language="XML">        &lt;importerUnknowns flags="0x00200000"/&gt;</programlisting>
       <para>It needs to be at the same level as the
       <emphasis>squareUnknowns</emphasis> elements, so I suggest adding it
       just above the first one. Here I used the hexadecimal notation for the
@@ -1304,14 +1362,14 @@
       everything I'll say about <emphasis>squareUnknowns</emphasis> elements
       depends on this setting), if it's not activated, the ride base will
       always encompass all squares. Another flag interesting for flat rides is
-      Flag 17, which removes th9e base completely and makes it placeable on
+      Flag 17, which removes the base completely and makes it placeable on
       water only, like the whale and dolphin shows (to set, use
       <quote>0x00010000</quote>).</para>
       <para>To make use of exact ride bases, we need to give one
       <emphasis>squareUnknowns</emphasis> element per square. To keep things
       manageable, I'll switch to a 3x3 example as seen in the picture
       above.</para>
-      <programlisting>        &lt;squareUnknowns flags="0" minHeight="0" maxHeight="0" supports="0"/&gt; &lt;!-- Index 0 --&gt;
+      <programlisting language="XML">        &lt;squareUnknowns flags="0" minHeight="0" maxHeight="0" supports="0"/&gt; &lt;!-- Index 0 --&gt;
         &lt;squareUnknowns flags="1" minHeight="0" maxHeight="7" supports="0"/&gt;
         &lt;squareUnknowns flags="1" minHeight="0" maxHeight="0" supports="0"/&gt; &lt;!-- Index 2 --&gt;
 
@@ -1376,7 +1434,8 @@
       <emphasis>attraction</emphasis> element and set it to 2 (note that if
       you want to keep the <emphasis>version</emphasis> attribute and go back
       to vanilla structures, you need to set it to 0).</para>
-      <programlisting>        &lt;attraction type="4" <emphasis role="bold">version="2"</emphasis> loopSpline="jumpSplineLoop" impref="mainimport"&gt;</programlisting>
+      <programlisting language="XML">        &lt;attraction type="4" <emphasis
+          role="bold">version="2"</emphasis> loopSpline="jumpSplineLoop" impref="mainimport"&gt;</programlisting>
       <para>Now to add station limits to your ride, you need to add
       <emphasis>rideStationLimit</emphasis> elements to your
       <emphasis>ride</emphasis> element, on the same level as the
@@ -1389,7 +1448,7 @@
         around the square base of the ride).</para>
       </important>
       <para>So if you wanted to restore the default, you'd need to add:</para>
-      <programlisting>          &lt;rideStationLimit xPos="0" zPos="0" flags="0x00000039"/&gt;
+      <programlisting language="XML">          &lt;rideStationLimit xPos="0" zPos="0" flags="0x00000039"/&gt;
           &lt;rideStationLimit xPos="1" zPos="0" flags="0x00000038"/&gt;
           &lt;rideStationLimit xPos="2" zPos="0" flags="0x0000003C"/&gt;
 

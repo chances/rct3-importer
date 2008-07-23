@@ -100,6 +100,7 @@ frmMain::frmMain(wxWindow* parent):rcfrmMain(parent) {
     m_abbreviations["rawb"] = "<rawovl basedir=\"$(basedir)\">\n\t|\n</rawovl>\n";
     m_abbreviations["raw"] = "<rawovl file=\"$(file:|)\">\n\t|\n</rawovl>\n";
     m_abbreviations["iimport"] = "<import file=\"$(Scenery file to import;Scenery Files|*.xml;*.modxml;*.ms3d;*.scn)\" name=\"$(name:|)\" id=\"mainimport\"/>\n|";
+    m_abbreviations["simport"] = "<import file=\"$(Scenery file to import;Scenery Files|*.xml;*.modxml;*.ms3d;*.scn)\" use=\"splines\" id=\"$(id:|)\"/>\n|";
     m_abbreviations["import"] = "<import file=\"$(Scenery file to import;Scenery Files|*.xml;*.modxml;*.ms3d;*.scn)\" name=\"$(name:|)\"/>\n|";
     m_abbreviations["sid"] = "<sid name=\"$(name:|)\" nametxt=\"$(name)\" icon=\"$(name)\" ovlpath=\"$(ovlpath:Style\\Custom\\)\" svd=\"$(name)\">\n\t<position xsize=\"4\" ysize=\"4\" zsize=\"4\" xsquares=\"1\" zsquares=\"1\"/>\n</sid>\n|";
     m_abbreviations["tex"] = "<tex name=\"$(name:|)\" format=\"20\">\n\t<texture><data type=\"file\">$(texture;Image files|*.png;*.bmp;*.jpg;*.jpeg|All files|*.*)</data></texture>\n</tex>\n|";
@@ -454,6 +455,24 @@ void frmMain::OnApplyXIncludes(wxCommandEvent& event) {
         m_lbResults->Append(wxString::Format(_("Resolved %d XIncludes"), inc));
     }
     m_stcMain->SetText(doc.wxwrite(true));
+}
+
+/** @brief OnInsertFilename
+  *
+  * @todo: document this function
+  */
+void frmMain::OnInsertFilename(wxCommandEvent& event) {
+    boost::shared_ptr<wxFileDialog> exdlg( new wxFileDialog(this,
+        _("Select file ..."),
+        wxT(""), wxT(""), _("All files|*.*")), wxWindowDestroyer);
+    if (exdlg->ShowModal() == wxID_OK) {
+        wxFileName fi(exdlg->GetPath());
+        if (!m_xmlfile.IsEmpty()) {
+            fi.MakeRelativeTo(wxFileName(m_xmlfile).GetPathWithSep());
+        }
+        m_stcMain->ReplaceSelection(fi.GetFullPath());
+    }
+
 }
 
 /** @brief OnInsertXInclude
