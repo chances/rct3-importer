@@ -289,10 +289,10 @@ struct SceneryItem_V {
 	uint32_t            individual_animation_anr_name_count; //is 0 except for flying saucers and dodgems
 	char**              individual_animation_anr_names;            // List of strings
 	uint32_t            unk44;                  ///< Always 0, never a symref
-	uint32_t            chunked_anr_unk1; //is 0 except for trampoline (3)
-	uint32_t            chunked_anr_animation_chunks; //is 0 except for trampoline (4), parachute drop (12)
-	uint32_t            chunked_anr_unk2; //is 0 except for trampoline (2), parachute drop (1)
-	uint32_t            chunked_anr_unk3; //is 0 except for trampoline (4), parachute drop (1)
+	uint32_t            anr_age_alternatives; //is 0 except for trampoline (3)
+	uint32_t            anr_animation_chunks; //is 0 except for trampoline (4), parachute drop (12)
+	uint32_t            anr_alternate_run_animations; //is 0 except for trampoline (2), parachute drop (1)
+	uint32_t            anr_animation_cycles_per_circuit; //is 0 except for trampoline (4), parachute drop (1)
 };
 
 struct SceneryItem_Sext {

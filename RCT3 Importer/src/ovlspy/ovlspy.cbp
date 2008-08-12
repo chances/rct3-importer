@@ -2,14 +2,14 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="ovlmake" />
+		<Option title="ovlspy" />
 		<Option default_target="Debug DLL" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Release Base Unicode">
-				<Option output="..\..\bin\ovlmake.exe" prefix_auto="0" extension_auto="0" />
+				<Option output="..\..\bin\ovlspy.exe" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="..\..\bin" />
-				<Option object_output="..\..\lib\obj\ovlmake\releaseuni" />
+				<Option object_output="..\..\lib\obj\ovlspy\releaseuni" />
 				<Option external_deps="..\..\lib\lib3DHelpu.a;..\..\lib\libWXHelpbu.a;..\..\lib\libASE.a;..\..\lib\libOVLng.a;..\..\lib\libOVLDump.a;..\..\lib\libRawParseu.a;..\..\lib\libXmlCppu.a;" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -23,20 +23,14 @@
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
-					<Add library="libRawParseu" />
 					<Add library="libOVLDump" />
-					<Add library="3DHelpu" />
-					<Add library="WXHelpbu" />
-					<Add library="libASE" />
 					<Add library="wx_baseu-2.9" />
-					<Add library="libOVLng" />
-					<Add library="XmlCpp_slimu" />
 				</Linker>
 			</Target>
 			<Target title="Debug Base Unicode">
-				<Option output="..\..\bin\ovlmaked.exe" prefix_auto="0" extension_auto="0" />
+				<Option output="..\..\bin\ovlspyd.exe" prefix_auto="0" extension_auto="0" />
 				<Option working_dir="..\..\bin" />
-				<Option object_output="..\..\lib\obj\ovlmake\debuguni" />
+				<Option object_output="..\..\lib\obj\ovlspy\debuguni" />
 				<Option external_deps="..\..\lib\lib3DHelpud.a;..\..\lib\libWXHelpbud.a;..\..\lib\libASEd.a;..\..\lib\libOVLngud.a;..\..\lib\libRawParseud.a;..\..\lib\libOVLDumpd.a;..\..\lib\libXmlCppud.a;" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -53,14 +47,8 @@
 					<Add directory="$(#wx3.lib)\wx\include\base-unicode-debug-static-2.9" />
 				</Compiler>
 				<Linker>
-					<Add library="libRawParseud" />
 					<Add library="libOVLDumpd" />
-					<Add library="3DHelpubd" />
-					<Add library="WXHelpbud" />
-					<Add library="libASE" />
 					<Add library="wx_baseud-2.9" />
-					<Add library="libOVLngud" />
-					<Add library="XmlCpp_slimud" />
 				</Linker>
 			</Target>
 		</Build>
@@ -69,7 +57,6 @@
 			<Add option="-pipe" />
 			<Add option="-fmessage-length=0" />
 			<Add option="-fexceptions" />
-			<Add option='-include &quot;wx_pch.h&quot;' />
 			<Add option="-Winvalid-pch" />
 			<Add option="-fno-strict-aliasing" />
 			<Add option="-DUSE_PCH" />
@@ -82,21 +69,13 @@
 			<Add option="-DXMLCPP_USE_WXWIDGETS" />
 			<Add option="-DXMLCPP_SLIM" />
 			<Add directory="$(#wx3.include)" />
-			<Add directory="..\lib3DHelp" />
 			<Add directory="..\..\include" />
-			<Add directory="..\libWXHelp" />
-			<Add directory="$(#mingw.include)\GraphicsMagick" />
-			<Add directory="$(#mingw.include)\plib" />
-			<Add directory="..\libOVLng" />
 			<Add directory="..\libOVLDump" />
-			<Add directory="..\libRawParse" />
-			<Add directory="..\libXmlCpp" />
 			<Add directory="$(#mingw.include)\libxml2" />
 		</Compiler>
 		<Linker>
 			<Add library="GraphicsMagick++" />
 			<Add library="GraphicsMagick" />
-			<Add library="freetype" />
 			<Add library="exslt" />
 			<Add library="xslt" />
 			<Add library="xml2" />
@@ -110,19 +89,11 @@
 			<Add library="uuid" />
 			<Add library="gdi32" />
 			<Add library="bz2" />
+			<Add library="stdc++" />
 			<Add directory="..\..\lib" />
 		</Linker>
-		<Unit filename="OvlCompiler ReadMe.txt" />
-		<Unit filename="ReadMe 1st.txt" />
-		<Unit filename="changelog.txt" />
-		<Unit filename="ovlmake.cpp" />
-		<Unit filename="todo.txt" />
-		<Unit filename="version.h">
-			<Option target="Release Base Unicode" />
-		</Unit>
-		<Unit filename="wx_pch.h">
-			<Option weight="0" />
-		</Unit>
+		<Unit filename="ovlspy.cpp" />
+		<Unit filename="version.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

@@ -29,6 +29,8 @@
 
 #include "ManagerSID.h"
 
+#include "pretty.h"
+
 #include "ManagerGSI.h"
 #include "ManagerSVD.h"
 #include "ManagerTXT.h"
@@ -96,17 +98,21 @@ void cSidUnknowns::Fill(r3::SceneryItem_V* i) {
     i->unk40 = unk40;
     i->unk41 = unk41;
     i->unk44 = unk44;
-// TODO (belgabor#1#): Implement
-    i->chunked_anr_unk1 = 0;
-    i->chunked_anr_animation_chunks = 0;
-    i->chunked_anr_unk2 = 0;
-    i->chunked_anr_unk3 = 0;
-/*
-    i->unk45 = unk45;
-    i->unk46 = unk46;
-    i->unk47 = unk47;
-    i->unk48 = unk48;
-*/
+}
+
+/** @brief Fill
+  *
+  * @todo: document this function
+  */
+void cSidFlatride::Fill(r3::SceneryItem_V* i) {
+    i->individual_animation_anr_name_count = individual_animations.size();
+    if (!individual_animations.size())
+        i->individual_animation_anr_names = NULL;
+
+    i->anr_age_alternatives = chunked_anr_unk1;
+    i->anr_animation_chunks = chunked_anr_animation_chunks;
+    i->anr_alternate_run_animations = chunked_anr_unk2;
+    i->anr_animation_cycles_per_circuit = chunked_anr_unk3;
 }
 
 void cSidDefaultColours::Fill(r3::SceneryItem_V* i) {
@@ -161,6 +167,7 @@ void cSid::Fill(r3::SceneryItem_V* i) {
     importerunknowns.Fill(i);
     stallunknowns.Fill(i);
     unknowns.Fill(i);
+    flatride.Fill(i);
     extra.Fill(i);
 
     for (unsigned long x = 0; x < position.xsquares * position.zsquares; ++x) {
@@ -181,8 +188,6 @@ void cSid::Fill(r3::SceneryItem_V* i) {
     i->track_structs = NULL;
     i->sound_count = 0;
     i->sounds = NULL;
-    i->individual_animation_anr_name_count = 0;
-    i->individual_animation_anr_names = NULL;
 }
 
 void ovlSIDManager::AddSID(const cSid& sid) {
@@ -232,6 +237,8 @@ void ovlSIDManager::AddSID(const cSid& sid) {
     }
     // Params
     m_commonsize += sid.parameters.size() * sizeof(SceneryParams);
+    // flat rides
+    m_commonsize += sid.flatride.individual_animations.size() * 4; // char pointers
 
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
     GetLSRManager()->AddLoader(OVLT_UNIQUE);
@@ -259,6 +266,9 @@ void ovlSIDManager::AddSID(const cSid& sid) {
     for (vector<cSidParam>::const_iterator it = sid.parameters.begin(); it != sid.parameters.end(); ++it) {
         GetStringTable()->AddString(it->name.c_str());
         GetStringTable()->AddString(it->param.c_str());
+    }
+    foreach(const string& caranim, sid.flatride.individual_animations) {
+        STRINGLIST_ADD(caranim, true);
     }
 
 }
@@ -322,6 +332,11 @@ void ovlSIDManager::Make(cOvlInfo* info) {
             c_sid->params = NULL;
             c_sid->param_count = 0;
         }
+        if (it->second.flatride.individual_animations.size()) {
+            c_sid->individual_animation_anr_names = reinterpret_cast<char**>(c_commondata);
+            c_commondata += it->second.flatride.individual_animations.size() * 4;
+            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->individual_animation_anr_names));
+        }
 
         it->second.Fill(c_sid);
         // 'Simple' strings
@@ -334,6 +349,9 @@ void ovlSIDManager::Make(cOvlInfo* info) {
             GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->params[c].type));
             c_sid->params[c].params = GetStringTable()->FindString(it->second.parameters[c].param.c_str());
             GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->params[c].params));
+        }
+        for(unsigned long c = 0; c < it->second.flatride.individual_animations.size(); ++c) {
+            STRINGLIST_ASSIGN(c_sid->individual_animation_anr_names[c], it->second.flatride.individual_animations[c], true, GetStringTable(), GetRelocationManager());
         }
 
         // Symbol and Loader

@@ -1,15 +1,15 @@
 #!BPY
 
 """
-Name: 'Model XML (.modxml) v0.1'
+Name: 'Model XML (.modxml) v1.1'
 Blender: 244
 Group: 'Export'
 Tooltip: 'Model XML (.modxml)'
 """
 __author__ = "Belgabor"
-__version__ = "0.1"
+__version__ = "1.1"
 __bpydoc__ = """\
--- Model XML (.xml) v0.1 for Blender 2.44 --<br>
+-- Model XML (.xml) v1.1 for Blender 2.44 --<br>
 
 Based on goofos ase exporter v0.6.10
 
@@ -159,6 +159,35 @@ def write(filename):
           frames_exp.append((((fr-1) * expfps) / evalfps) + 1)
       frames_exp = sorted(sets.Set(frames_exp))
 
+      if (len(frames_exp) > 1) and guiTable['KEYONLY'] and (guiTable['KEYONLYMODE'] != '0'):
+          newframes = sets.Set();
+          for i in range(1, len(frames_exp)):
+              frlength = frames_exp[i] - frames_exp[i-1]
+              half = round(frlength / 2)
+              if guiTable['KEYONLYMODE'] == '3':
+                  sixth = round(frlength / 6)
+                  if (half != sixth) and (sixth>0):
+                      newframes.add(frames_exp[i-1] + sixth)
+                      newframes.add(frames_exp[i-1] + half)
+                      newframes.add(frames_exp[i] - sixth)
+              else:
+                  fifteenth = round(frlength / 15)
+                  fifth = round(frlength / 5)
+                  fr = False;
+                  if (fifteenth>0) and (fifteenth != half):
+                      fr = True;
+                      newframes.add(frames_exp[i-1] + fifteenth)
+                      newframes.add(frames_exp[i] - fifteenth)
+                  if (fifth>0) and (fifth != fifteenth) and (fifth != half):
+                      fr = True;
+                      newframes.add(frames_exp[i-1] + fifth)
+                      newframes.add(frames_exp[i] - fifth)
+                  if fr:
+                      newframes.add(frames_exp[i-1] + half)
+          temp = sets.Set(frames_exp)
+          temp.update(newframes)
+          frames_exp = sorted(temp)
+
       print " max frame %d, exported %d" % (maxframe, maxframe_exp)
       for arm in arms.values():
           print "  Checking armature %s" % (arm.name)
@@ -174,8 +203,10 @@ def write(filename):
               ex_bone = []
               ex_bone_t = []
               ex_bone_r = []
+              do_bone = 0;
               if aipos.has_key(bname):
                   print "  Action %s, bone %s" % (aname, bname)
+                  do_bone = 1;
 
                   ipos = aipos[bname]
                   old_bone_t = None
@@ -256,37 +287,39 @@ def write(filename):
                       i_exp_old = i_exp
                       #print "Frame %d %f  trans %f/%f/%f  rot %f/%f/%f" % (i, t, tf[0], tf[1], tf[2], rf[0], rf[1], rf[2])
               else:
-                  # Write rest animation
-                  bone_mat = bone.matrix['ARMATURESPACE'].copy()
-                  if bone.parent:
-                     mp = bone.parent.matrix['ARMATURESPACE'].copy()
-                     mp.invert()
-                     bone_mat = bone_mat * mp
+                  if guiTable['WRITENONANIM']:
+                      # Write rest animation
+                      do_bone = 1;
+                      bone_mat = bone.matrix['ARMATURESPACE'].copy()
+                      if bone.parent:
+                         mp = bone.parent.matrix['ARMATURESPACE'].copy()
+                         mp.invert()
+                         bone_mat = bone_mat * mp
 
-                  ex_bone_t.append([0.0, bone_mat.translationPart()])
-                  if maxframe_exp > 1:
-                     ex_bone_t.append([float(maxframe_exp-1)/float(expfps), bone_mat.translationPart()])
-                  rf = None
-                  if guiTable['ROTFORM'] == 'A':
-                     q = bone_mat.rotationPart().toQuat()
-                     if math.fabs(q.w) > 0.99999:
-                         rf = Mathutils.Vector(0, 1, 0, 0)
-                     else:
-                         rf = Mathutils.Vector(2*math.acos(q.w), q.x/math.sqrt(1.0-(q.w*q.w)), q.y/math.sqrt(1.0-(q.w*q.w)), q.z/math.sqrt(1.0-(q.w*q.w)))
-                  elif guiTable['ROTFORM'] == 'Q':
-                     q = bone_mat.rotationPart().toQuat()
-                     rf = Mathutils.Vector(q.w, q.x, q.y, q.z)
-                  else:
-                     rf = bone_mat.rotationPart().toEuler()
-                     rf = Mathutils.Vector(rf[0]*math.pi/180.0, rf[1]*math.pi/180.0, rf[2]*math.pi/180.0)
-                  ex_bone_r.append([0.0, rf])
-                  if maxframe_exp > 1:
-                     ex_bone_r.append([float(maxframe_exp-1)/float(expfps), rf])
+                      ex_bone_t.append([0.0, bone_mat.translationPart()])
+                      if maxframe_exp > 1:
+                         ex_bone_t.append([float(maxframe_exp-1)/float(expfps), bone_mat.translationPart()])
+                      rf = None
+                      if guiTable['ROTFORM'] == 'A':
+                         q = bone_mat.rotationPart().toQuat()
+                         if math.fabs(q.w) > 0.99999:
+                             rf = Mathutils.Vector(0, 1, 0, 0)
+                         else:
+                             rf = Mathutils.Vector(2*math.acos(q.w), q.x/math.sqrt(1.0-(q.w*q.w)), q.y/math.sqrt(1.0-(q.w*q.w)), q.z/math.sqrt(1.0-(q.w*q.w)))
+                      elif guiTable['ROTFORM'] == 'Q':
+                         q = bone_mat.rotationPart().toQuat()
+                         rf = Mathutils.Vector(q.w, q.x, q.y, q.z)
+                      else:
+                         rf = bone_mat.rotationPart().toEuler()
+                         rf = Mathutils.Vector(rf[0]*math.pi/180.0, rf[1]*math.pi/180.0, rf[2]*math.pi/180.0)
+                      ex_bone_r.append([0.0, rf])
+                      if maxframe_exp > 1:
+                         ex_bone_r.append([float(maxframe_exp-1)/float(expfps), rf])
 
-              ex_bone.append(ex_bone_t)
-              ex_bone.append(ex_bone_r)
-
-              ex_bones.append([bname, ex_bone])
+              if do_bone:
+                  ex_bone.append(ex_bone_t)
+                  ex_bone.append(ex_bone_r)
+                  ex_bones.append([bname, ex_bone])
 
           if scn.objects.selected and guiTable['SELO'] == 1:
               objects = scn.objects.selected
@@ -1475,13 +1508,15 @@ def write_ui(filename):
    guiTable['SELO'] = 1
    guiTable['MESHORI'] = 0
    guiTable['SIMPROT'] = 1
-   guiTable['MAXTIME'] = 1.0
+   guiTable['MAXTIME'] = 0.0
    guiTable['FPS'] = 0
    guiTable['EXPFPS'] = 0
    guiTable['KEYONLY'] = 0
-   guiTable['ROTFORM'] = 'E'
+   guiTable['KEYONLYMODE'] = '0'
+   guiTable['ROTFORM'] = 'Q'
    guiTable['STORE'] = 1
    guiTable['SHOWOPT'] = 1
+   guiTable['WRITENONANIM'] = 1
 
    # Stuff from Goofos ASE exporter I don't dare touch :p
    guiTable['UV'] = 1
@@ -1513,12 +1548,16 @@ def write_ui(filename):
                 guiTable['EXPFPS'] = eprop['EXPFPS']
            if 'KEYONLY' in eprop:
                 guiTable['KEYONLY'] = eprop['KEYONLY']
+           if 'KEYONLYMODE' in eprop:
+                guiTable['KEYONLYMODE'] = eprop['KEYONLYMODE']
            if 'ROTFORM' in eprop:
                 guiTable['ROTFORM'] = eprop['ROTFORM']
            if 'STORE' in eprop:
                 guiTable['STORE'] = eprop['STORE']
            if 'SHOWOPT' in eprop:
                 guiTable['SHOWOPT'] = eprop['SHOWOPT']
+           if 'WRITENONANIM' in eprop:
+                guiTable['WRITENONANIM'] = eprop['WRITENONANIM']
 
 
    if guiTable['SHOWOPT']:
@@ -1535,9 +1574,11 @@ def write_ui(filename):
        EXPORT_FPS = Draw.Create(guiTable['FPS'])
        EXPORT_EXPFPS = Draw.Create(guiTable['EXPFPS'])
        EXPORT_KEYONLY = Draw.Create(guiTable['KEYONLY'])
+       EXPORT_KEYONLYMODE = Draw.Create(guiTable['KEYONLYMODE'])
        EXPORT_ROTFORM = Draw.Create(guiTable['ROTFORM'])
        EXPORT_STORE = Draw.Create(guiTable['STORE'])
        EXPORT_SHOWOPT = Draw.Create(guiTable['SHOWOPT'])
+       EXPORT_WRITENONANIM = Draw.Create(guiTable['WRITENONANIM'])
 
        # Get USER Options
        pup_block = []
@@ -1551,7 +1592,9 @@ def write_ui(filename):
        pup_block.append(('Evaluation FPS', EXPORT_FPS, 0.0, 120.0, 'Evaluate animation as frames per second.'))
        pup_block.append(('Export FPS', EXPORT_EXPFPS, 0.0, 120.0, 'Export animation as frames per second.'))
        pup_block.append(('Keyframes only', EXPORT_KEYONLY, 'Export only defined keyframes without interpolation.'))
-       pup_block.append(('Rotation format _', EXPORT_ROTFORM, 0, 1, 'Rotation keyframe format: ''E''uler, ''A''xis or ''Q''uaternion'))
+       pup_block.append(('  KO-Mode: ', EXPORT_KEYONLYMODE, 0, 1, 'Keyframe-only mode: ''0'' (Zero), ''3'' or ''5'' (see readme)'))
+       pup_block.append(('Rot. format: ', EXPORT_ROTFORM, 0, 1, 'Rotation keyframe format: ''E''uler, ''A''xis or ''Q''uaternion'))
+       pup_block.append(('Write non-animated bones', EXPORT_WRITENONANIM, 'Export non-animated bones in their rest-state.'))
        pup_block.append(('Context...'))
        pup_block.append(('Mesh Origins', EXPORT_MESHORI, 'Export mesh origins as bones'))
        pup_block.append(('Selection Only', EXPORT_SELO, 'Only export objects in visible selection, else export all mesh object.'))
@@ -1576,9 +1619,16 @@ def write_ui(filename):
        guiTable['FPS'] = EXPORT_FPS.val
        guiTable['EXPFPS'] = EXPORT_EXPFPS.val
        guiTable['KEYONLY'] = EXPORT_KEYONLY.val
+       guiTable['KEYONLYMODE'] = EXPORT_KEYONLYMODE.val
        guiTable['ROTFORM'] = EXPORT_ROTFORM.val
        guiTable['STORE'] = EXPORT_STORE.val
        guiTable['SHOWOPT'] = EXPORT_SHOWOPT.val
+       guiTable['WRITENONANIM'] = EXPORT_WRITENONANIM.val
+
+       if (guiTable['ROTFORM'] != 'E') and (guiTable['ROTFORM'] != 'A') and (guiTable['ROTFORM'] != 'Q'):
+           Draw.PupMenu("Error!%t|Invalid rotation format given.")
+           return
+
 
        if guiTable['STORE']:
            if not ('modxml' in curscene.properties):
@@ -1595,9 +1645,11 @@ def write_ui(filename):
            curscene.properties['modxml']['export']['FPS'] = guiTable['FPS']
            curscene.properties['modxml']['export']['EXPFPS'] = guiTable['EXPFPS']
            curscene.properties['modxml']['export']['KEYONLY'] = guiTable['KEYONLY']
+           curscene.properties['modxml']['export']['KEYONLYMODE'] = guiTable['KEYONLYMODE']
            curscene.properties['modxml']['export']['ROTFORM'] = guiTable['ROTFORM']
            curscene.properties['modxml']['export']['STORE'] = guiTable['STORE']
            curscene.properties['modxml']['export']['SHOWOPT'] = guiTable['SHOWOPT']
+           curscene.properties['modxml']['export']['WRITENONANIM'] = guiTable['WRITENONANIM']
 
    Window.WaitCursor(1)
 

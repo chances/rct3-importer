@@ -1,3 +1,10 @@
 Fixed	Show selected item in list boxes after update
 Fixed	Load error for empty matrix stacks
 New	Right double-click on A to re-auto model bones without confirmation
+Fixed	Prefix missing on returned filename if creating from scenery settings dialog
+Fixed	Sense of rotation matrices corrected for right handed coordinate system
+Fixed	Animation import from ms3d
+Fixed	Clear prefix when loading old scn file
+Fixed	Make auto coordinate system from file button work. Also gives somewhat helpful suggestion when no coordinate system information is available.
+Fixed	Up/down spin controls no longer activated if nothing is selected
+New	Toggle for the animation display on LODs

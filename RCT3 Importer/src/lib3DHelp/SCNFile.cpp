@@ -210,6 +210,8 @@ bool cSCNFile::Load() {
     }
     wxLogVerbose(_("Loading %s from SCN file."), name.c_str());
 
+    prefix = "";
+
     // Read sivsettings
     fread(&sivsettings.sivflags, sizeof(unsigned int), 1, f);
     fread(&sivsettings.sway, sizeof(float), 1, f);

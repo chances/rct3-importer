@@ -1227,6 +1227,7 @@ EVT_COMMAND(wxID_ANY, wxEVT_DOUPDATE, dlgModel::OnDoUpdate)
 
 EVT_COMBOBOX(XRCID("m_textModelName"), dlgModel::OnNameAuto)
 EVT_COMBOBOX(XRCID("m_textModelFile"), dlgModel::OnModelOpen)
+EVT_BUTTON(XRCID("m_btCoordinateSystem"), dlgModel::OnSystemAuto)
 
 EVT_BUTTON(XRCID("m_btMatrixEdit"), dlgModel::OnMatrixEdit)
 EVT_BUTTON(XRCID("m_btMatrixSave"), dlgModel::OnMatrixSave)
@@ -1738,6 +1739,26 @@ void dlgModel::OnModelOpen(wxCommandEvent& event) {
     m_loadoverlay = false;
 }
 
+/** @brief OnSystemAuto
+  *
+  * @todo: document this function
+  */
+void dlgModel::OnSystemAuto(wxCommandEvent& event) {
+    if (m_model->fileorientation != ORIENTATION_UNKNOWN) {
+        TransferDataFromWindow();
+        m_model->usedorientation = m_model->fileorientation;
+        TransferDataToWindow();
+    } else {
+        if (::wxMessageBox(_("The model file does not contain coordinate system information. Likely it is an ASE file. Did you use SketchUp or Blender to create it?"), _("Question"), wxYES_NO|wxYES_DEFAULT|wxICON_QUESTION, this) == wxYES) {
+            TransferDataFromWindow();
+            m_model->usedorientation = ORIENTATION_RIGHT_ZUP;
+            TransferDataToWindow();
+        } else {
+            ::wxMessageBox(_("Sorry, you have to find out yourself which coordinate system your modeller uses."));
+        }
+    }
+}
+
 void dlgModel::OnControlUpdate(wxCommandEvent& WXUNUSED(event)) {
     UpdateControlState();
 }
@@ -2120,6 +2141,7 @@ void dlgModel::OnBoneAutoQuick(wxMouseEvent& WXUNUSED(event)) {
     m_htlbEffect->UpdateContents();
     m_htlbEffect->SetSelection(-1);
     UpdateControlState();
+    ::wxBell();
 }
 
 void dlgModel::OnBoneClear(wxCommandEvent& WXUNUSED(event)) {

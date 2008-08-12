@@ -115,6 +115,7 @@ protected:
 
     void OnNameAuto(wxCommandEvent& event);
     void OnModelOpen(wxCommandEvent& event);
+    void OnSystemAuto(wxCommandEvent& event);
     void OnControlUpdate(wxCommandEvent& event);
 
     void OnMatrixEdit(wxCommandEvent& event);

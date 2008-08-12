@@ -301,11 +301,31 @@ wxString wxLODListBox::OnGetItem(size_t n) const {
             m_contents->lods[n].unk14);
     wxString sub = HTML_INSET_START + wxEncodeHtmlEntities(m_contents->lods[n].modelname);
     if (m_contents->lods[n].animations.size()) {
-        sub += wxT("<ul>");
-        for (cStringIterator it = m_contents->lods[n].animations.begin(); it != m_contents->lods[n].animations.end(); it++) {
-            sub += wxT("<li>") + *it + wxT("</li>");
+        switch (m_mode) {
+            case 0: {
+                sub += wxString::Format(_("<br>%d animations assigned."), m_contents->lods[n].animations.size());
+            }
+            break;
+            case 1: {
+                sub += wxT("<ul>");
+                for (cStringIterator it = m_contents->lods[n].animations.begin(); it != m_contents->lods[n].animations.end(); it++) {
+                    sub += wxT("<li>") + *it + wxT("</li>");
+                }
+                sub += wxT("</ul>");
+            }
+            break;
+            default: {
+                bool run = false;
+                sub += "<br>";
+                foreach(const wxString& an, m_contents->lods[n].animations) {
+                    if (run)
+                        sub += ", ";
+                    else
+                        run = true;
+                    sub += an;
+                }
+            }
         }
-        sub += wxT("</ul>");
     }
     sub += wxT("</td><td width=16 valign=top><img width=16 height=16 align=center src='memory:XRC_resource/xrc_bitmap_crystal.cpp$icons_");
     if (m_contents->lods[n].animated)

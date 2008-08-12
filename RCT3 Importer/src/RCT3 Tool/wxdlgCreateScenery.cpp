@@ -291,7 +291,7 @@ dlgCreateScenery::~dlgCreateScenery() {
 
 wxString dlgCreateScenery::GetOVLPath() {
     if (m_SCN.ovlpath.GetPath() != wxT(""))
-        return m_SCN.ovlpath.GetPathWithSep() + m_SCN.name + wxT(".common.ovl");
+        return m_SCN.ovlpath.GetPathWithSep() + m_SCN.prefix + m_SCN.name + wxT(".common.ovl");
     else
         return wxEmptyString;
 }
@@ -299,7 +299,7 @@ wxString dlgCreateScenery::GetOVLPath() {
 void dlgCreateScenery::UpdateControlState() {
     int count = m_SCN.flexitextures.size();
     int sel = m_htlbTexture->GetSelection();
-    m_spinTexture->Enable(count>=2);
+    m_spinTexture->Enable((sel>=0) && (count>=2));
     m_btTextureEdit->Enable((sel>=0) && (sel<count));
     m_btTextureCopy->Enable((sel>=0) && (sel<count));
     m_btTextureDel->Enable((sel>=0) && (sel<count));
@@ -314,7 +314,7 @@ void dlgCreateScenery::UpdateControlState() {
 
     count = m_SCN.models.size();
     sel = m_htlbModel->GetSelection();
-    m_spinModel->Enable(count>=2);
+    m_spinModel->Enable((sel>=0) && (count>=2));
     m_btModelEdit->Enable(sel>=0);
     m_btModelCopy->Enable(sel>=0);
     m_btModelConvert->Enable(sel>=0);
@@ -326,7 +326,7 @@ void dlgCreateScenery::UpdateControlState() {
 
     count = m_SCN.animatedmodels.size();
     sel = m_htlbAModel->GetSelection();
-    m_spinAModel->Enable(count>=2);
+    m_spinAModel->Enable((sel>=0) && (count>=2));
     m_btAModelEdit->Enable(sel>=0);
     m_btAModelCopy->Enable(sel>=0);
     m_btAModelConvert->Enable(sel>=0);
@@ -346,7 +346,7 @@ void dlgCreateScenery::UpdateControlState() {
 
     count = m_SCN.animations.size();
     sel = m_htlbAnimation->GetSelection();
-    m_spinAnimation->Enable(count>=2);
+    m_spinAnimation->Enable((sel>=0) && (count>=2));
     m_btAnimationEdit->Enable((sel>=0) && (sel<count));
     m_btAnimationCopy->Enable((sel>=0) && (sel<count));
     m_btAnimationDel->Enable((sel>=0) && (sel<count));
@@ -368,7 +368,7 @@ void dlgCreateScenery::UpdateControlState() {
 
     count = m_SCN.splines.size();
     sel = m_htlbSpline->GetSelection();
-    m_spinSpline->Enable(count>=2);
+    m_spinSpline->Enable((sel>=0) && (count>=2));
     m_btSplineEdit->Enable((sel>=0) && (sel<count));
     m_btSplineCopy->Enable((sel>=0) && (sel<count));
     m_btSplineDel->Enable((sel>=0) && (sel<count));
@@ -1414,6 +1414,14 @@ void dlgCreateScenery::OnAModelLoad(wxCommandEvent& event) {
 //  dlgCreateScenery, LODs
 //
 ////////////////////////////////////////////////////////////////////////
+
+/** @brief OnLODShowAnimation
+  *
+  * @todo: document this function
+  */
+void dlgCreateScenery::OnLODShowAnimation(wxCommandEvent& event) {
+    m_htlbLOD->setMode(m_cbShowAnim->Get3StateValue());
+}
 
 void dlgCreateScenery::OnLODAdd(wxCommandEvent& WXUNUSED(event)) {
     if (!m_SCN.CheckForModelNameDuplicates()) {

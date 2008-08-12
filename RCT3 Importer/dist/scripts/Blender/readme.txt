@@ -28,7 +28,13 @@ Export FPS - Frames per second for export. Use 30 or something you can divide 30
   It's a bit hard to explain these two. Basically the export script takes a frame number and calculates its time code using Evaluation FPS.
   The Export FPS rating serves both as a maximum frames per second and also to "round" keyframe positions to RCT3 compatible values.
 Keyframes only - Export only kepframes (or every frame). Set this for baked animations and if you don't need Blenders IPO interpolation modes. Either way the export script only writes necessary frames, ie when something changed.
+KO-Mode - Select mode fro keyframe only operation.
+          "0" exports only set keyframes.
+          "3" can add three new keyframes between two set ones, at 1/6, 1/2 and 5/6 of the frame distance (ie for set keyframes at 1 and 31 at 6, 16 and 26).
+          "5" can add up to five new keyframes between two set ones, at 1/15, 1/5, 1/2, 4/5 and 14/15 of the frame distance (ie for set keyframes at 1 and 31 at 3, 11, 16, 21 and 29).
+          Keyframes are only added if they add new information.
 Rotation format - Format of rotationl keyframes. Either "E" for euler angles, "A" for axis/angle or "Q" for quaternions. I currently recommend using "Q".
+Write non-anima - If activated, bones you didn't animate in an Action get added to the exported animation in their rest state.
 Mesh Origins - Exports mesh origins as bones. Not very useful anymore.
 Selection Only - Export only selected things.
 Store Options - Store these options in your blend file so you don't need to reset them whenever you export. This is a property of the current scene, so if you use more than one, you need to set it for every one.

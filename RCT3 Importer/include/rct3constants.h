@@ -237,8 +237,8 @@ struct Constants {
                 Row_R_Oar =                0x15,
                 Horse_Merry_Go_Round =     0x16,
                 Horse_Steeplechase =       0x17,
-                Jump =                     0x18, // or 0x19, Not directly used
-                Bum_Bounce =               0x19, // or 0x18
+                Bum_Bounce =               0x18, // or 0x19, Not directly used
+                Jump =                     0x19, // or 0x18
                 Dance =                    0x1A,
                 MAX_V =                    0x1B,
                 Surf_Board =               0x1B,
@@ -645,8 +645,8 @@ struct Constants {
             enum {
                 Start_Section =                     0x00000001, ///< Player can start building with this section
                 Chain =                             0x00000002,
-                Special =                           0x00000004,
-                Capped =                            0x00000008, ///< Usually capped or wide
+                Forward_Only =                      0x00000004, ///< If not set, the part can be built in or against spline direction. If set, only in spline direction.
+                Capped =                            0x00000008, ///< Capped version. Activates UI element.
                 Transfer =                          0x00000010, ///< Heartline coaster, reverse at mid of spline
                 Cable_Lift =                        0x00000020,
                 Station =                           0x00000040,

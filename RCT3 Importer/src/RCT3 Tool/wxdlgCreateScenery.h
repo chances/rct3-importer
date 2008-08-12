@@ -98,6 +98,7 @@ protected:
     void OnAModelLoad(wxCommandEvent& event);
     void OnAModelClear(wxCommandEvent& event);
 
+	void OnLODShowAnimation( wxCommandEvent& event );
     void OnLODAdd(wxCommandEvent& event);
     void OnLODEdit(wxCommandEvent& event);
     void OnLODCopy(wxCommandEvent& event);

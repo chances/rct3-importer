@@ -46,6 +46,9 @@
               <para>Note about mech spline being not strictly
               necessary.</para>
             </listitem>
+            <listitem>
+              <para>gsi coordinates fixed</para>
+            </listitem>
           </itemizedlist>
         </revdescription>
       </revision>
@@ -668,7 +671,7 @@
       &lt;tex name="JumpJackTexture" format="20"&gt;
         &lt;texture&gt;&lt;data type="file"&gt;icon.png&lt;/data&gt;&lt;/texture&gt;
       &lt;/tex&gt;
-      &lt;gsi name="JumpJack" tex="JumpJackTexture" left="0" top="0" right="79" bottom="63" /&gt;
+      &lt;gsi name="JumpJack" tex="JumpJackTexture" left="0" top="0" right="80" bottom="64" /&gt;
       &lt;txt name="JumpJack" type="text"&gt;Jumpin Jack&lt;/txt&gt;
       &lt;txt name="JumpJackDesc" type="text"&gt;Ride inspired by an early walking robot model.&lt;/txt&gt;
 
@@ -834,15 +837,17 @@
       <para>This line gives the bitmap file of your icon texture. Keep
       everything as is, only replace <quote>icon.png</quote> with the path to
       your icon texture bitmap, relative to the XML file we're writing.</para>
-      <programlisting language="XML">      &lt;gsi name="JumpJack" tex="JumpJackTexture" left="0" top="0" right="79" bottom="63" /&gt;</programlisting>
+      <programlisting language="XML">      &lt;gsi name="JumpJack" tex="JumpJackTexture" left="0" top="0" right="80" bottom="64" /&gt;</programlisting>
       <para>The <emphasis>gsi</emphasis> element creates an icon reference.
       The <emphasis>name</emphasis> attribute gives the internal name of the
       icon reference, the <emphasis>tex</emphasis> attribute the internal name
       of the icon texture it uses.</para>
       <para>The <emphasis>left</emphasis>, <emphasis>top</emphasis>,
       <emphasis>right</emphasis> and <emphasis>bottom</emphasis> attributes
-      define the area of the icon on the texture. As you can see from these
-      numbers, an icon for a flat ride has to be 80x64 pixels big.</para>
+      define the area of the icon on the texture. An icon for a flat ride has
+      to be 80x64 pixels big, <emphasis>right</emphasis> and
+      <emphasis>bottom</emphasis> give the first column/line that's beyond the
+      icon.</para>
       <programlisting language="XML">      &lt;txt name="JumpJack" type="text"&gt;Jumpin Jack&lt;/txt&gt;
       &lt;txt name="JumpJackDesc" type="text"&gt;Ride inspired by an early walking robot model.&lt;/txt&gt;</programlisting>
       <para>A <emphasis>txt</emphasis> element creates a text string. We need

@@ -157,11 +157,41 @@ r3::VERTEX *matrixApplyIP(r3::VERTEX *v, const r3::MATRIX& m, const r3::MATRIX& 
 r3::VERTEX2 matrixApply(const r3::VERTEX2& v, const r3::MATRIX& m, const r3::MATRIX& mnormal);
 r3::VERTEX2 *matrixApplyIP(r3::VERTEX2 *v, const r3::MATRIX& m, const r3::MATRIX& mnormal);
 
+inline r3::MATRIX matrixGetRotation(const float x, const float y, const float z) {
+    r3::MATRIX m = matrixGetRotationX(x);
+    matrixMultiplyIP(m, matrixGetRotationY(y));
+    matrixMultiplyIP(m, matrixGetRotationZ(z));
+    return m;
+}
+
+
 inline void matrixExtractRotation(const r3::MATRIX& m, r3::VECTOR& r, bool alternate = false) {
     float s = alternate?-1:1;
     r.x = atan2(-m.m[1][2]*s, m.m[2][2]*s);
     r.y = asin(m.m[0][2]*s)+(alternate?M_PI:0);
     r.z = atan2(-m.m[0][1]*s, m.m[0][0]*s);
+}
+
+inline void matrixExtractAxisRotation(const r3::MATRIX& m, float& x, float& y, float& z) {
+    float w = -acos((m.m[0][0] + m.m[1][1] + m.m[2][2] - 1.0)/2.0);
+    float s = sqrt(
+                   ((m.m[2][1] - m.m[1][2])*(m.m[2][1] - m.m[1][2])) +
+                   ((m.m[0][2] - m.m[2][0])*(m.m[0][2] - m.m[2][0])) +
+                   ((m.m[1][0] - m.m[0][1])*(m.m[1][0] - m.m[0][1]))
+                  );
+    if (s != 0) {
+        x = w*(m.m[2][1] - m.m[1][2])/s;
+        y = w*(m.m[0][2] - m.m[2][0])/s;
+        z = w*(m.m[1][0] - m.m[0][1])/s;
+    } else {
+        x = 0;
+        y = 0;
+        z = 0;
+    }
+}
+
+inline void matrixExtractAxisRotation(const r3::MATRIX& m, r3::VECTOR& r) {
+    matrixExtractAxisRotation(m, r.x, r.y, r.z);
 }
 
 template <class T>

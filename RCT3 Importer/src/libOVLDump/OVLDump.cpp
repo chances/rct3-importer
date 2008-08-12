@@ -107,13 +107,13 @@ unsigned long crctable[256] = {0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA,
                       0xB40BBE37, 0xC30C8EA1, 0x5A05DF1B, 0x2D02EF8D};
 
 cOVLDump::~cOVLDump() {
-    delete m_data[OVLT_COMMON];
-    delete m_data[OVLT_UNIQUE];
+//    delete m_data[OVLT_COMMON];
+//    delete m_data[OVLT_UNIQUE];
 }
 
 void cOVLDump::Init() {
-    m_data[OVLT_COMMON] = NULL;
-    m_data[OVLT_UNIQUE] = NULL;
+    m_data[OVLT_COMMON].reset();
+    m_data[OVLT_UNIQUE].reset();
 }
 
 void cOVLDump::Load(const char* filename) {
@@ -199,8 +199,8 @@ void cOVLDump::WriteFile(cOvlType type) {
     ofstream f(m_file[type].c_str(), ios::binary | ios::out);
     if (m_injectreferences[type].size()) {
         *mp_referencecount[type] += m_injectreferences[type].size();
-        unsigned long presize = mp_references[type] - m_data[type];
-        f.write(m_data[type], presize);
+        unsigned long presize = mp_references[type] - m_data[type].get();
+        f.write(m_data[type].get(), presize);
         for (vector<string>::iterator it = m_injectreferences[type].begin(); it != m_injectreferences[type].end(); ++it) {
             unsigned short len = it->size();
             f.write(reinterpret_cast<char*>(&len), 2);
@@ -208,7 +208,7 @@ void cOVLDump::WriteFile(cOvlType type) {
         }
         f.write(mp_references[type], m_size[type] - presize);
     } else {
-        f.write(m_data[type], m_size[type]);
+        f.write(m_data[type].get(), m_size[type]);
     }
 }
 
@@ -220,20 +220,24 @@ void cOVLDump::ReadFile(cOvlType type) {
         ifstream f(m_file[type].c_str(), ios::ate | ios::in | ios::binary);
         m_size[type] = f.tellg();
         f.seekg(0, ios::beg);
-        m_data[type] = new char[m_size[type]];
-        f.read(m_data[type], m_size[type]);
+        m_data[type].reset(new char[m_size[type]]);
+        f.read(m_data[type].get(), m_size[type]);
     }
 
     // Header
-    char* c_data = m_data[type];
+    char* c_data = m_data[type].get();
     m_header[type] = *reinterpret_cast<OvlHeader*>(c_data);
     c_data += sizeof(OvlHeader);
+
+    if (m_header[type].magic != 0x4b524746) {
+        throw EOvlD(string("File is not an ovl file: ")+m_file[type].c_str());
+    }
 
     // Extra
     switch (m_header[type].version) {
         case 1: {
                 m_exheader[type].ReferencesE = m_header[type].References;
-                mp_referencecount[type] = &(reinterpret_cast<OvlHeader*>(m_data[type]))->References;
+                mp_referencecount[type] = &(reinterpret_cast<OvlHeader*>(m_data[type].get()))->References;
             }
             break;
         case 4: {
@@ -292,7 +296,7 @@ void cOVLDump::ReadFile(cOvlType type) {
     // References
     mp_references[type] = c_data;
     for (int i = 0; i < m_exheader[type].ReferencesE; ++i) {
-        if (c_data >= m_data[type] + m_size[type] - 1) {
+        if (c_data >= m_data[type].get() + m_size[type] - 1) {
             //return;
             throw EOvlD("File Overflow during refs");
         }
@@ -418,7 +422,7 @@ void cOVLDump::ReadFile(cOvlType type) {
     for (int i = 0; i < 9; ++i) {
         m_fileblocks[type][i].reloffset = m_reloffset;
         for (unsigned long m = 0; m < m_fileblocks[type][i].count; ++m) {
-            if (c_data >= m_data[type] + m_size[type]) {
+            if (c_data >= m_data[type].get() + m_size[type]) {
                 //return;
                 stringstream ss;
                 ss << "File Overflow in " << i << ", " << m;
@@ -430,10 +434,10 @@ void cOVLDump::ReadFile(cOvlType type) {
                 c_data += 4;
                 m_fileblocks[type][i].size += m_fileblocks[type][i].blocks[m].size;
             }
-            if (c_data < m_data[type] + m_size[type]) {
+            if (c_data < m_data[type].get() + m_size[type]) {
                 m_fileblocks[type][i].blocks[m].reloffset = m_reloffset;
                 m_reloffset += m_fileblocks[type][i].blocks[m].size;
-                m_fileblocks[type][i].blocks[m].fileoffset = c_data - m_data[type];
+                m_fileblocks[type][i].blocks[m].fileoffset = c_data - m_data[type].get();
                 if (m_fileblocks[type][i].blocks[m].size) {
                     m_fileblocks[type][i].blocks[m].data = reinterpret_cast<unsigned char*>(c_data);
                     c_data += m_fileblocks[type][i].blocks[m].size;
@@ -609,7 +613,7 @@ void cOVLDump::MakeLoaders(cOvlType type) {
         }
 
         for (int i = 0; i < lo.hasextradata; ++i) {
-            if (m_dataend[type] < m_data[type] + m_size[type]) {
+            if (m_dataend[type] < m_data[type].get() + m_size[type]) {
                 OvlExtraChuck ch;
                 ch.fileoffset = reinterpret_cast<unsigned long>(m_dataend[type]);
                 ch.size = *reinterpret_cast<unsigned long*>(m_dataend[type]);
@@ -794,7 +798,7 @@ void cOVLDump::MakeFlics(cOvlType type) {
 }
 
 void cOVLDump::MakeCRC(cOvlType type) {
-    m_crc[type] = calcCRC(reinterpret_cast<unsigned char*>(m_data[type]), m_size[type], true);
+    m_crc[type] = calcCRC(reinterpret_cast<unsigned char*>(m_data[type].get()), m_size[type], true);
 }
 
 unsigned long cOVLDump::calcCRC(unsigned char* pdata, unsigned long len, bool padded) {

@@ -477,6 +477,120 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
 #ifdef DUMP_ANIDATA
         wxLogMessage("Dumping Bone %s", m_boneId[m].c_str());
 #endif
+
+        MATRIX bone_m = matrixMultiply(
+                matrixGetRotation(joint->rotation[0], joint->rotation[1], joint->rotation[2]),
+                matrixGetTranslation(joint->position[0], joint->position[1], joint->position[2])
+            );
+
+        vector<MATRIX> boneparent;
+        if (joint->parentName) {
+            wxString parent = joint->parentName;
+            if (!parent.IsEmpty()) {
+                findMatrix(ms3df.get(), jointrenames, m_bones[jointrenames[parent]].m_id, boneparent);
+            }
+        }
+        MATRIX boneparent_m = matrixMultiply(boneparent);
+
+#ifdef DUMP_ANIDATA
+        wxLogMessage("  Translation: raw <%f/%f/%f>",
+            joint->position[0],joint->position[1],joint->position[2]
+            );
+        wxLogMessage("  Rotation: raw <%f/%f/%f>",
+            joint->rotation[0],joint->rotation[1],joint->rotation[2]
+            );
+        wxLogMessage("  Matrix:");
+        wxLogMessage("    %f/%f/%f/%f",
+            bone_m.m[0][0], bone_m.m[0][1],bone_m.m[0][2],bone_m.m[0][3]
+            );
+        wxLogMessage("    %f/%f/%f/%f",
+            bone_m.m[1][0], bone_m.m[1][1],bone_m.m[1][2],bone_m.m[1][3]
+            );
+        wxLogMessage("    %f/%f/%f/%f",
+            bone_m.m[2][0], bone_m.m[2][1],bone_m.m[2][2],bone_m.m[2][3]
+            );
+        wxLogMessage("    %f/%f/%f/%f",
+            bone_m.m[3][0], bone_m.m[3][1],bone_m.m[3][2],bone_m.m[3][3]
+            );
+        wxLogMessage("  Parent Matrix:");
+        wxLogMessage("    %f/%f/%f/%f",
+            boneparent_m.m[0][0], boneparent_m.m[0][1],boneparent_m.m[0][2],boneparent_m.m[0][3]
+            );
+        wxLogMessage("    %f/%f/%f/%f",
+            boneparent_m.m[1][0], boneparent_m.m[1][1],boneparent_m.m[1][2],boneparent_m.m[1][3]
+            );
+        wxLogMessage("    %f/%f/%f/%f",
+            boneparent_m.m[2][0], boneparent_m.m[2][1],boneparent_m.m[2][2],boneparent_m.m[2][3]
+            );
+        wxLogMessage("    %f/%f/%f/%f",
+            boneparent_m.m[3][0], boneparent_m.m[3][1],boneparent_m.m[3][2],boneparent_m.m[3][3]
+            );
+#endif
+        m_bones[m_boneId[m]].m_pos[1] = matrixMultiply(bone_m, boneparent_m);
+        foreach(const animpair& an, animations) {
+            m_animations[an.second].m_bones[m_boneId[m]].m_name = m_boneId[m];
+            m_animations[an.second].m_bones[m_boneId[m]].m_axis = true;
+        }
+
+        c3DAnimation* ani = &m_animations[animations[0]];
+
+#ifdef DUMP_ANIDATA
+        wxLogMessage("  Translation frames:");
+#endif
+        for (int i = 0; i < joint->numKeyFramesTrans; ++i) {
+            txyz pf;
+            unsigned int frame = roundf(joint->keyFramesTrans[i].time * fps);
+            pf.Time = static_cast<float>(frame - 1) / fps;
+            MATRIX tr = matrixGetTranslation(joint->keyFramesTrans[i].position[0], joint->keyFramesTrans[i].position[1], joint->keyFramesTrans[i].position[2]);
+            matrixMultiplyIP(tr, bone_m);
+            pf.X = tr._41;
+            pf.Y = tr._42;
+            pf.Z = tr._43;
+            ani->m_bones[m_boneId[m]].m_translations.push_back(pf);
+            if (has(animations, frame)) {
+                // Need to switch to the next animation
+                ani = &m_animations[animations[frame]];
+                ani->m_bones[m_boneId[m]].m_translations.push_back(pf);
+            }
+#ifdef DUMP_ANIDATA
+        wxLogMessage("    %f: raw <%f/%f/%f>, written  <%f/%f/%f>", pf.Time,
+            joint->keyFramesTrans[i].position[0],joint->keyFramesTrans[i].position[1],joint->keyFramesTrans[i].position[2],
+            pf.X, pf.Y, pf.Z
+            );
+#endif
+        }
+
+        ani = &m_animations[animations[0]];
+
+#ifdef DUMP_ANIDATA
+        wxLogMessage("  Rotation frames:");
+#endif
+        for (int i = 0; i < joint->numKeyFramesRot; ++i) {
+            txyz pf;
+            int frame = roundf(joint->keyFramesRot[i].time * fps);
+            pf.Time = static_cast<float>(frame - 1) / fps;
+            MATRIX ro = matrixGetRotation(joint->keyFramesRot[i].rotation[0], joint->keyFramesRot[i].rotation[1], joint->keyFramesRot[i].rotation[2]);
+            matrixMultiplyIP(ro, bone_m);
+            matrixExtractAxisRotation(ro, pf.v);
+            ani->m_bones[m_boneId[m]].m_rotations.push_back(pf);
+            if (has(animations, frame)) {
+                // Need to switch to the next animation
+                ani = &m_animations[animations[frame]];
+                ani->m_bones[m_boneId[m]].m_rotations.push_back(pf);
+            }
+#ifdef DUMP_ANIDATA
+        wxLogMessage("    %f: raw <%f/%f/%f>, written  <%f/%f/%f>", pf.Time,
+            joint->keyFramesRot[i].rotation[0],joint->keyFramesRot[i].rotation[1],joint->keyFramesRot[i].rotation[2],
+            pf.X, pf.Y, pf.Z
+            );
+#endif
+        }
+/*
+        ms3d_joint_t * joint;
+        ms3df->GetJointAt(m, &joint);
+#ifdef DUMP_ANIDATA
+        wxLogMessage("Dumping Bone %s", m_boneId[m].c_str());
+#endif
         txyz pos;
         txyz rot;
         memset(&pos, 0, sizeof(txyz));
@@ -497,6 +611,7 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
         posm.push_back(matrixGetRotationX(rot.X));
         posm.push_back(matrixGetRotationY(rot.Y));
         posm.push_back(matrixGetRotationZ(rot.Z));
+        MATRIX joint_rot_i = matrixInverse(matrixMultiply(posm));
         posm.push_back(matrixGetTranslation(pos.X, pos.Y, pos.Z));
         m_bones[m_boneId[m]].m_pos[1] = matrixMultiply(posm);
         //ani.m_bones[m_boneId[m]].m_name = m_boneId[m];
@@ -513,9 +628,11 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
             txyz pf;
             unsigned int frame = roundf(joint->keyFramesTrans[i].time * fps);
             pf.Time = static_cast<float>(frame - 1) / fps;
-            pf.X = joint->position[0] + joint->keyFramesTrans[i].position[0];
-            pf.Y = joint->position[1] + joint->keyFramesTrans[i].position[1];
-            pf.Z = joint->position[2] + joint->keyFramesTrans[i].position[2];
+            VECTOR tr = vectorMake(joint->keyFramesTrans[i].position[0], joint->keyFramesTrans[i].position[1], joint->keyFramesTrans[i].position[2]);
+            matrixApplyIP(&tr, joint_rot_i);
+            pf.X = joint->position[0] + tr.x;
+            pf.Y = joint->position[1] + tr.y;
+            pf.Z = joint->position[2] + tr.z;
             ani->m_bones[m_boneId[m]].m_translations.push_back(pf);
             if (has(animations, frame)) {
                 // Need to switch to the next animation
@@ -556,6 +673,7 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
             );
 #endif
         }
+*/
     }
 
     for (int m = 0; m < ms3df->GetNumVertices(); ++m) {
@@ -724,6 +842,21 @@ void cMS3DLoader::findPosAndRot(void* ms3df, std::map<wxString, wxString>& renam
         wxString parent = joint->parentName;
         if (!parent.IsEmpty()) {
             findPosAndRot(ms3df, renames, m_bones[renames[parent]].m_id, pos, rot);
+        }
+    }
+
+}
+
+void cMS3DLoader::findMatrix(void* ms3df, std::map<wxString, wxString>& renames, int i, vector<MATRIX>& stack) {
+    ms3d_joint_t* joint;
+    reinterpret_cast<CMS3DFile*>(ms3df)->GetJointAt(i, &joint);
+    stack.push_back(matrixGetRotation(joint->rotation[0], joint->rotation[1], joint->rotation[2]));
+    stack.push_back(matrixGetTranslation(joint->position[0], joint->position[1], joint->position[2]));
+
+    if (joint->parentName) {
+        wxString parent = joint->parentName;
+        if (!parent.IsEmpty()) {
+            findMatrix(ms3df, renames, m_bones[renames[parent]].m_id, stack);
         }
     }
 

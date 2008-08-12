@@ -139,17 +139,6 @@
 #define RAWXML_QTD_SLOPEDOWN        "slopedown"
 #define RAWXML_QTD_SLOPESTRAIGHT    "slopestraight"
 
-#define RAWXML_SID_GROUP            "group"
-#define RAWXML_SID_TYPE             "type"
-#define RAWXML_SID_POSITION         "position"
-#define RAWXML_SID_COLOURS          "colours"
-//#define RAWXML_SID_SVD              "sidvisual"
-#define RAWXML_SID_IMPORTERUNKNOWNS "importerUnknowns"
-#define RAWXML_SID_EXTRA            "extra"
-#define RAWXML_SID_SQUAREUNKNOWNS   "squareUnknowns"
-#define RAWXML_SID_STALLUNKNOWNS    "stallUnknowns"
-#define RAWXML_SID_PARAMETER        "parameter"
-
 #define RAWXML_SPL_NODE             "splnode"
 #define RAWXML_SPL_LENGTH           "spllength"
 #define RAWXML_SPL_DATA             "spldata"

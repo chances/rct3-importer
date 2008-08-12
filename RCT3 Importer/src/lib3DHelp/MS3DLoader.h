@@ -35,6 +35,7 @@ public:
     virtual c3DLoaderOrientation GetOrientation() {return ORIENTATION_RIGHT_YUP;};
 private:
     void findPosAndRot(void* ms3df, std::map<wxString, wxString>& renames, int i, r3::txyz& pos, r3::txyz& rot);
+    void findMatrix(void* ms3df, std::map<wxString, wxString>& renames, int i, std::vector<r3::MATRIX>& stack);
 };
 
 #endif // MS3DLOADER_H_INCLUDED

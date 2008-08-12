@@ -130,6 +130,23 @@ public:
     void Fill(r3::SceneryItem_V* i);
 };
 
+class cSidFlatride {
+public:
+    std::vector<std::string> individual_animations;
+	uint32_t            chunked_anr_unk1; //is 0 except for trampoline (3)
+	uint32_t            chunked_anr_animation_chunks; //is 0 except for trampoline (4), parachute drop (12)
+	uint32_t            chunked_anr_unk2; //is 0 except for trampoline (2), parachute drop (1)
+	uint32_t            chunked_anr_unk3; //is 0 except for trampoline (4), parachute drop (1)
+
+    cSidFlatride() {
+        chunked_anr_unk1 = 0;
+        chunked_anr_animation_chunks = 0;
+        chunked_anr_unk2 = 0;
+        chunked_anr_unk3 = 0;
+    }
+    void Fill(r3::SceneryItem_V* i);
+};
+
 class cSidDefaultColours {
 public:
     unsigned long defaultcol[3];
@@ -234,6 +251,7 @@ public:
     std::vector<cSidSquareUnknowns> squareunknowns;
     cSidStallUnknowns stallunknowns;
     cSidUnknowns unknowns;
+    cSidFlatride flatride;
     cSidExtra extra;
     std::vector<std::string> svds;
     std::vector<cSidParam> parameters;

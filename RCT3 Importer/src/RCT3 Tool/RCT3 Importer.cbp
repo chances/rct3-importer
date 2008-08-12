@@ -126,6 +126,7 @@
 		<Linker>
 			<Add library="GraphicsMagick++" />
 			<Add library="GraphicsMagick" />
+			<Add library="freetype" />
 			<Add library="png" />
 			<Add library="tiff" />
 			<Add library="jpeg" />

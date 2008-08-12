@@ -32,6 +32,8 @@
 #include <string>
 #include <vector>
 
+#include <boost/shared_array.hpp>
+
 #include "ovlstructs.h"
 #include "ovldumperstructs.h"
 
@@ -41,7 +43,7 @@
 class cOVLDump {
 protected:
     std::string m_file[2];
-    char* m_data[2];
+    boost::shared_array<char> m_data[2];
     char* m_dataend[2];
     unsigned long m_size[2];
 
@@ -94,7 +96,7 @@ public:
         return m_header[OVLT_COMMON].version;
     }
 
-    std::string GetFilename(cOvlType type) {
+    std::string GetFilename(cOvlType type) const {
         return m_file[type];
     }
 

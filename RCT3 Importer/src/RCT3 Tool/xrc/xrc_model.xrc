@@ -109,7 +109,7 @@
 						<object class="wxButton" name="m_btCoordinateSystem">
 							<style>wxBU_EXACTFIT</style>
 							<size>20,20</size>
-							<tooltip>Set from model file</tooltip>
+							<tooltip>Automatically set from model file</tooltip>
 							<label>F</label>
 							<default>0</default>
 						</object>

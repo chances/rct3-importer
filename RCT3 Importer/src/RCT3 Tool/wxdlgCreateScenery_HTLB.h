@@ -47,13 +47,18 @@ class wxSceneryListBox : public wxColourHtmlListBox {
 public:
     wxSceneryListBox(wxWindow* parent, wxWindowID id, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize, int n = 0, const wxString choices[] = NULL, long style = 0):
         wxColourHtmlListBox(parent, id, pos, size, style),
-        m_contents(NULL) {}
+        m_contents(NULL), m_mode(1) {}
     virtual void Init(cSCNFile *contents) {
         m_contents = contents;
         UpdateContents();
     }
+    void setMode(int mode) {
+        m_mode = mode;
+        UpdateContents();
+    }
 protected:
     cSCNFile* m_contents;
+    int m_mode;
 };
 
 ////////////////////////////////////////////////////////////////////////

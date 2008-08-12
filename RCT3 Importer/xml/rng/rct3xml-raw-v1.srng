@@ -273,6 +273,14 @@
 	<define name="impref">
 		<attribute name="impref" occurs="?" type="IDREF"/>
 	</define>
+	<define name="validate">
+		<attribute name="validate" occurs="?">
+			<choice>
+				<value>0</value>
+				<value>1</value>
+			</choice>
+		</attribute>
+	</define>
 	<define name="baseattrs">
 		<attribute name="comment" occurs="?" type="string">
 			<a:documentation>A comment that is shown when processing the tag.</a:documentation>
@@ -281,6 +289,7 @@
 		<attribute name="if" occurs="?" type="string"/>
 		<attribute name="ifnot" occurs="?" type="string"/>
 		<ref name="impref"/>
+		<ref name="validate"/>
 	</define>
 	<define name="rootattrs">
 		<attribute name="conditions" occurs="?" type="string"/>
@@ -1790,6 +1799,13 @@
 						<ref name="sidimporterunknowns" occurs="?"/>
 						<ref name="sidstallunknowns" occurs="?"/>
 						<ref name="sidextra" occurs="?"/>
+						<element name="flatRide" occurs="?">
+							<attribute name="ageAlternatives" occurs="?" type="unsignedInt"/>
+							<attribute name="runAnimations" occurs="?" type="unsignedInt"/>
+							<attribute name="cyclesPerCircuit" occurs="?" type="unsignedInt"/>
+							<attribute name="chunkCount" occurs="?" type="unsignedInt"/>
+							<element name="animation" occurs="*" type="string"/>
+						</element>
 						<ref name="sidvisual" occurs="*"/>
 						<ref name="sidparameter" occurs="*"/>
 						<ref name="sidsquareunknowns" occurs="*"/>
@@ -2296,7 +2312,10 @@
 					</sch:rule>
 					<sch:rule context="//raw:trr/raw:soaked">
 						<sch:report test="/raw:sectionGroupDefinitionBatch" role="warning">sectionGroupDefinitionBatch not supported yet.</sch:report>
-					</sch:rule>					
+					</sch:rule>
+					<sch:rule context="//raw:trr/raw:trackSection[@validate='1']">
+						<sch:assert test="//raw:tks[@name = current()]" role="warning">Tracksection &quot;<sch:value-of select="."/>&quot; not found.</sch:assert>
+					</sch:rule>
 				</sch:pattern>
 				<element name="trr">
 					<ref name="baseattrs"/>
@@ -2309,6 +2328,7 @@
 						<element name="trackSection" occurs="+">
 							<attribute name="cost" occurs="?" type="int"/>
 							<attribute name="split" occurs="?" ref="flag"/>
+							<ref name="validate"/>
 							<data type="string"/>
 						</element>
 						<element name="trackSectionRemoveDuplicates" occurs="?">

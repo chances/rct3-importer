@@ -206,24 +206,24 @@ MATRIX matrixGetScale(const VECTOR& v) {
 MATRIX matrixGetRotationX(const float rad) {
     MATRIX m = matrixGetUnity();
     m._22 = cos(rad);
-    m._23 = -sin(rad);
-    m._32 = sin(rad);
+    m._23 = sin(rad);
+    m._32 = -sin(rad);
     m._33 = cos(rad);
     return m;
 }
 MATRIX matrixGetRotationY(const float rad) {
     MATRIX m = matrixGetUnity();
     m._11 = cos(rad);
-    m._31 = -sin(rad);
-    m._13 = sin(rad);
+    m._31 = sin(rad);
+    m._13 = -sin(rad);
     m._33 = cos(rad);
     return m;
 }
 MATRIX matrixGetRotationZ(const float rad) {
     MATRIX m = matrixGetUnity();
     m._11 = cos(rad);
-    m._12 = -sin(rad);
-    m._21 = sin(rad);
+    m._12 = sin(rad);
+    m._21 = -sin(rad);
     m._22 = cos(rad);
     return m;
 }

@@ -500,7 +500,7 @@
                                 <property name="size">20,20</property>
                                 <property name="style">wxBU_EXACTFIT</property>
                                 <property name="subclass"></property>
-                                <property name="tooltip">Set from model file</property>
+                                <property name="tooltip">Automatically set from model file</property>
                                 <property name="window_extra_style"></property>
                                 <property name="window_name"></property>
                                 <property name="window_style"></property>

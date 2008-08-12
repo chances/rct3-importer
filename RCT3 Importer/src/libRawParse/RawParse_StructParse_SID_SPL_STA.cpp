@@ -31,6 +31,19 @@
 #include "ManagerSID.h"
 #include "ManagerSTA.h"
 
+#define RAWXML_SID_GROUP            "group"
+#define RAWXML_SID_TYPE             "type"
+#define RAWXML_SID_POSITION         "position"
+#define RAWXML_SID_COLOURS          "colours"
+//#define RAWXML_SID_SVD              "sidvisual"
+#define RAWXML_SID_IMPORTERUNKNOWNS "importerUnknowns"
+#define RAWXML_SID_EXTRA            "extra"
+#define RAWXML_SID_FLATRIDE         "flatRide"
+#define RAWXML_SID_FLATRIDE_ANIM    "animation"
+#define RAWXML_SID_SQUAREUNKNOWNS   "squareUnknowns"
+#define RAWXML_SID_STALLUNKNOWNS    "stallUnknowns"
+#define RAWXML_SID_PARAMETER        "parameter"
+
 void cRawParser::ParseSID(cXmlNode& node) {
     USE_PREFIX(node);
     cSid sid;
@@ -126,6 +139,26 @@ void cRawParser::ParseSID(cXmlNode& node) {
             OPTION_PARSE(unsigned long, sid.extra.version, ParseUnsigned(child, wxT(RAWXML_SID_EXTRA), wxT("version")));
             OPTION_PARSE(unsigned long, sid.extra.AddonPack, ParseUnsigned(child, wxT(RAWXML_SID_EXTRA), wxT("addonpack")));
             OPTION_PARSE(long, sid.extra.billboardaspect, ParseSigned(child, wxT(RAWXML_SID_EXTRA), wxT("billboardaspect")));
+        } else if (child(RAWXML_SID_FLATRIDE)) {
+            OPTION_PARSE(unsigned long, sid.flatride.chunked_anr_animation_chunks, ParseUnsigned(child, wxT(RAWXML_SID_FLATRIDE), wxT("chunkCount")));
+            if (sid.flatride.chunked_anr_animation_chunks)
+                sid.flatride.chunked_anr_unk2 = 1;
+            OPTION_PARSE(unsigned long, sid.flatride.chunked_anr_unk1, ParseUnsigned(child, wxT(RAWXML_SID_FLATRIDE), wxT("ageAlternatives")));
+            OPTION_PARSE(unsigned long, sid.flatride.chunked_anr_unk2, ParseUnsigned(child, wxT(RAWXML_SID_FLATRIDE), wxT("runAnimations")));
+            OPTION_PARSE(unsigned long, sid.flatride.chunked_anr_unk3, ParseUnsigned(child, wxT(RAWXML_SID_FLATRIDE), wxT("cyclesPerCircuit")));
+            foreach(const cXmlNode& subchild, child.children()) {
+                USE_PREFIX(subchild);
+                DO_CONDITION_COMMENT_FOR(subchild);
+
+                if (subchild(RAWXML_SID_FLATRIDE_ANIM)) {
+                    wxString c = HandleStringContent(subchild(), NULL, useprefix);
+                    if (!c.IsEmpty())
+                        sid.flatride.individual_animations.push_back(static_cast<const char*>(c.ToAscii()));
+                } else if (subchild.element()) {
+                    throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in tks/soaked tag."), STRING_FOR_FORMAT(subchild.name())), subchild));
+                }
+            }
+
         } else if (child(RAWXML_SVD)) {
             USE_PREFIX(child);
             svd = HandleStringContent(child(), NULL, useprefix);
