@@ -56,6 +56,7 @@
 //#include "wxdlgInfo.h"
 #include "wxdlgMatrix.h"
 
+using namespace pretty;
 using namespace r3;
 using namespace std;
 
@@ -483,9 +484,7 @@ public:
             wxCoord w, h;
             dc->GetTextExtent(m_value->Name, &w, &h);
             wxCoord top = (rect.height - h) / 2;
-/*            if (m_value->effectpoint)
-                dc->SetTextForeground(GetStateColour(wxColor(wxT("#A0D2A0")), state));
-            else */ if (!m_value->valid)
+            if (!m_value->valid)
                 dc->SetTextForeground(GetStateColour(wxColor(wxT("#CC0000")), state));
             else if (m_value->disabled)
                 dc->SetTextForeground(GetStateColour(wxColor(wxT("#808080")), state));
@@ -496,6 +495,10 @@ public:
                 dc->SetTextForeground(GetStateColour(wxColor(wxT("#000000")), state));
             }
             dc->DrawText( m_value->Name, rect.x+5, rect.y + top );
+            if (m_value->multibone)
+                dc->DrawBitmap(wxXmlResource::Get()->LoadBitmap(wxT("multibone_on_16x16")), rect.GetRight()-16, rect.GetBottom()-16);
+            else if (m_value->boneassignment.size() > 1)
+                dc->DrawBitmap(wxXmlResource::Get()->LoadBitmap(wxT("multibone_off_16x16")), rect.GetRight()-16, rect.GetBottom()-16);
         }
         return true;
     }
@@ -515,8 +518,13 @@ public:
                 } else if (::wxGetKeyState(WXK_CONTROL)) {
                     wxVariant var = (long) 2;
                     model->SetValue(var, 0, row);
+                } else if (::wxGetKeyState(WXK_ALT)) {
+                    m_value->multibone = true;
                 } else {
-                    m_value->disabled = !m_value->disabled;
+                    if ((m_value->boneassignment.size() > 1) || m_value->multibone)
+                        m_value->multibone = !m_value->multibone;
+                    else
+                        m_value->disabled = !m_value->disabled;
                     model->RowChanged(row);
 /*
                     for(int i = 0; i < 7; i++)
@@ -767,7 +775,6 @@ public:
             wxMeshListTXSRenderer::m_styles.Add(wxT("SIFillZ"));
             */
 
-            // FIXME (belgabor#1#): Use list directly
             wxMeshListTXSRenderer::m_styles.resize(cTextureStyle::getTextureStyles().size());
             copy(cTextureStyle::getTextureStyles().begin(), cTextureStyle::getTextureStyles().end(), wxMeshListTXSRenderer::m_styles.begin());
         }
@@ -1148,10 +1155,10 @@ wxString wxMeshListBox::OnGetItem(size_t n) const {
 ////////////////////////////////////////////////////////////////////////
 
 wxEffectListBox::wxEffectListBox(wxWindow *parent):
-        wxHtmlListBox(parent, wxID_ANY, wxDefaultPosition, wxSize(-1,150), wxSUNKEN_BORDER) {}
+        wxColourHtmlListBox(parent, wxID_ANY, wxDefaultPosition, wxSize(-1,150), wxSUNKEN_BORDER) {}
 
 wxEffectListBox::wxEffectListBox(wxWindow *parent, cModel *content):
-        wxHtmlListBox(parent, wxID_ANY, wxDefaultPosition, wxSize(-1,150), wxSUNKEN_BORDER) {
+        wxColourHtmlListBox(parent, wxID_ANY, wxDefaultPosition, wxSize(-1,150), wxSUNKEN_BORDER) {
     m_contents = content;
     UpdateContents();
     if (m_contents) {
@@ -1357,6 +1364,8 @@ dlgModel::dlgModel(wxWindow *parent, bool animated):m_model(NULL), m_animated(an
         m_btEffectAuto->Connect(wxEVT_RIGHT_DCLICK, wxMouseEventHandler(dlgModel::OnEffectAutoQuick), NULL, this);
         Connect(XRCID("m_btEffectClear"), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(dlgModel::OnEffectClear));
     }
+    Connect(XRCID("m_cbSyncBones"), wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(dlgModel::OnSyncBones));
+    Connect(XRCID("m_cbSortBones"), wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(dlgModel::OnSortBones));
     wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbEffect"), m_htlbEffect, m_panEffect);
 /*
     m_panEffect->Fit();
@@ -1433,6 +1442,18 @@ dlgModel::dlgModel(wxWindow *parent, bool animated):m_model(NULL), m_animated(an
 
     m_btOk->SetId(wxID_OK);
     m_btCancel->SetId(wxID_CANCEL);
+
+    m_menuAutoBones.reset(new wxMenu());
+    wxString menutext = m_animated?_("bones"):_("effect points");
+    Connect(m_menuAutoBones->Append(wxID_ANY, wxString::Format("&Add missing %s", menutext.c_str()))->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(dlgModel::OnMenuAddMissingBones));
+    Connect(m_menuAutoBones->Append(wxID_ANY, wxString::Format("S&ynchronize %s", menutext.c_str()))->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(dlgModel::OnMenuSyncBones));
+    Connect(m_menuAutoBones->Append(wxID_ANY, wxString::Format("&Sort %s", menutext.c_str()))->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(dlgModel::OnMenuSortBones));
+    m_menuAutoBones->AppendSeparator();
+    m_miSyncBones = m_menuAutoBones->AppendCheckItem(wxID_ANY, wxString::Format("Auto-synchronise %s", menutext.c_str()));
+    m_miSortBones = m_menuAutoBones->AppendCheckItem(wxID_ANY, wxString::Format("Auto-sort %s", menutext.c_str()));
+    Connect(m_miSyncBones->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(dlgModel::OnMenuAutoSyncBones));
+    Connect(m_miSortBones->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(dlgModel::OnMenuAutoSortBones));
+
 
 //    m_mgr.GetArtProvider()->SetColour(wxAUI_DOCKART_INACTIVE_CAPTION_COLOUR, wxSystemSettings::GetColour(wxSYS_COLOUR_ACTIVECAPTION));
 //    m_mgr.SetFlags(wxAUI_MGR_ALLOW_FLOATING|wxAUI_MGR_TRANSPARENT_DRAG|wxAUI_MGR_TRANSPARENT_HINT|wxAUI_MGR_ALLOW_ACTIVE_PANE);
@@ -1541,6 +1562,10 @@ void dlgModel::UpdateAll() {
     if (!m_model)
         return;
     ShowTransform();
+    m_cbSyncBones->SetValue(m_model->auto_bones);
+    m_cbSortBones->SetValue(m_model->auto_sort);
+    m_miSyncBones->Check(m_model->auto_bones);
+    m_miSortBones->Check(m_model->auto_sort);
     //m_htlbMesh->UpdateContents();
     m_modelMesh->Cleared();
 /*
@@ -1683,60 +1708,47 @@ void dlgModel::OnModelOpen(wxCommandEvent& event) {
         backup.reset(new cModel(m_smodel));
     //wxFileName oldfile = m_model->file;
     TransferDataFromWindow();
-    if (m_model->Load(event.GetString(), m_loadoverlay)) {
-        if (m_model->fileorientation != ORIENTATION_UNKNOWN) {
-            if (m_model->fileorientation != m_model->usedorientation) {
-                if (READ_RCT3_ORIENTATION() == ORIENTATION_UNKNOWN) {
-                    m_model->usedorientation = m_model->fileorientation;
-                } else {
-                    if (::wxMessageBox(_("The model file you just opened suggests a model orientation different from your current one.\nDo you want to replace the current one with the one suggested in the file?"), _("Question"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this) == wxYES) {
+    try {
+        if (m_model->Load(event.GetString(), m_loadoverlay)) {
+            if (m_model->fileorientation != ORIENTATION_UNKNOWN) {
+                if (m_model->fileorientation != m_model->usedorientation) {
+                    if (READ_RCT3_ORIENTATION() == ORIENTATION_UNKNOWN) {
                         m_model->usedorientation = m_model->fileorientation;
+                    } else {
+                        if (::wxMessageBox(_("The model file you just opened suggests a model orientation different from your current one.\nDo you want to replace the current one with the one suggested in the file?"), _("Question"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this) == wxYES) {
+                            m_model->usedorientation = m_model->fileorientation;
+                        }
                     }
                 }
             }
-        }
 
-        if (m_loadoverlay) {
-            if (m_model->error.size()) {
-                wxString errtext;
-                foreach(wxString& err, m_model->error)
-                    errtext += (errtext.IsEmpty()?wxT(""):wxT("\n\n")) + err;
-                ::wxMessageBox(errtext, wxString(m_model->fatal_error?_("Error"):_("Warning")) + _(" during model file loading"), wxOK | (m_model->fatal_error?wxICON_ERROR:wxICON_WARNING), this);
-                m_model->error.clear();
-            }
-        }
-
-        TransferDataToWindow();
-        UpdateAll();
-/*
-        if (m_model.orientation != ORIENTATION_UNKNOWN) {
-            if (matrixIsEqual(matrixMultiply(m_model.transforms), matrixGetUnity())) {
-                // No transform matrix, set the right one.
-                m_model.transforms.clear();
-                m_model.transformnames.clear();
-                m_model.transforms.push_back(matrixGetFixOrientation(m_model.orientation));
-                m_model.transformnames.push_back(wxT("Fix-up from model file"));
-                ShowTransform();
-            } else if (!matrixIsEqual(matrixMultiply(m_model.transforms), matrixGetFixOrientation(m_model.orientation))) {
-                // Model matrix differs from the current one
-                if (::wxMessageBox(_("The model file you just opened suggests a orientation fix matrix different from your current one.\nDo you want to replace the current one with the one suggested in the file?"), _("Question"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this) == wxYES) {
-                    m_model.transforms.clear();
-                    m_model.transformnames.clear();
-                    m_model.transforms.push_back(matrixGetFixOrientation(m_model.orientation));
-                    m_model.transformnames.push_back(wxT("Fix-up from model file"));
-                    ShowTransform();
+            if (m_loadoverlay) {
+                if (m_model->error.size()) {
+                    wxString errtext;
+                    foreach(wxString& err, m_model->error)
+                        errtext += (errtext.IsEmpty()?wxT(""):wxT("\n\n")) + err;
+                    ::wxMessageBox(errtext, wxString(m_model->fatal_error?_("Error"):_("Warning")) + _(" during model file loading"), wxOK | (m_model->fatal_error?wxICON_ERROR:wxICON_WARNING), this);
+                    m_model->error.clear();
                 }
             }
+
+        } else {
+            ::wxMessageBox(m_model->error[0], _("Error"), wxOK | wxICON_ERROR, this);
+            if (m_animated)
+                m_amodel = *dynamic_cast<cAnimatedModel*>(backup.get());
+            else
+                m_smodel = *backup.get();
         }
-*/
-    } else {
-        ::wxMessageBox(m_model->error[0], _("Error"), wxOK | wxICON_ERROR, this);
+    } catch (E3DLoader& e) {
+        ::wxMessageBox(e.wxwhat(), _("Error"), wxOK | wxICON_ERROR, this);
         if (m_animated)
             m_amodel = *dynamic_cast<cAnimatedModel*>(backup.get());
         else
             m_smodel = *backup.get();
     }
     m_loadoverlay = false;
+    TransferDataToWindow();
+    UpdateAll();
 }
 
 /** @brief OnSystemAuto
@@ -1928,6 +1940,7 @@ void dlgModel::OnEffectDel(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void dlgModel::OnEffectAuto(wxCommandEvent& WXUNUSED(event)) {
+    /*
     if (m_model->effectpoints.size()) {
         if (::wxMessageBox(_("Do you want to delete all current effect point entries before automatically creating new ones?"), _("Question"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this)==wxYES) {
             m_model->effectpoints.clear();
@@ -1947,6 +1960,8 @@ void dlgModel::OnEffectAuto(wxCommandEvent& WXUNUSED(event)) {
     m_htlbEffect->UpdateContents();
     m_htlbEffect->SetSelection(-1);
     UpdateControlState();
+    */
+    PopupMenu(m_menuAutoBones.get());
 }
 
 void dlgModel::OnEffectAutoQuick(wxMouseEvent& WXUNUSED(event)) {
@@ -1978,6 +1993,30 @@ void dlgModel::OnEffectClear(wxCommandEvent& WXUNUSED(event)) {
     m_htlbEffect->UpdateContents();
     m_htlbEffect->SetSelection(-1);
     UpdateControlState();
+}
+
+/** @brief OnSortBones
+  *
+  * @todo: document this function
+  */
+void dlgModel::OnSortBones(wxCommandEvent& event) {
+    m_model->auto_sort = m_cbSortBones->GetValue();
+    if (m_model->auto_sort) {
+        m_model->sortBones();
+    }
+    UpdateAll();
+}
+
+/** @brief OnSyncBones
+  *
+  * @todo: document this function
+  */
+void dlgModel::OnSyncBones(wxCommandEvent& event) {
+    m_model->auto_bones = m_cbSyncBones->GetValue();
+    if (m_model->auto_bones) {
+        m_model->syncBones();
+    }
+    UpdateAll();
 }
 
 
@@ -2022,9 +2061,22 @@ void dlgModel::OnBoneAdd(wxCommandEvent& WXUNUSED(event)) {
     if (dialog->ShowModal() == wxID_OK) {
         cAnimatedModel* amodel = dynamic_cast<cAnimatedModel*>(m_model);
         amodel->modelbones.push_back(dialog->GetBone());
+
+        foreach(cMeshStruct& ms, m_model->meshstructs) {
+            if (ms.multibone) {
+                foreach(const wxString& mname, amodel->modelbones[amodel->modelbones.size()-1].meshes) {
+                    if (mname == ms.Name) {
+                        ms.multibone = false;
+                        break;
+                    }
+                }
+            }
+        }
+
+
         m_htlbEffect->UpdateContents();
         m_htlbEffect->SetSelection(amodel->modelbones.size()-1);
-        UpdateControlState();
+        UpdateAll();
     }
     dialog->Destroy();
 }
@@ -2038,8 +2090,20 @@ void dlgModel::OnBoneEdit(wxCommandEvent& WXUNUSED(event)) {
     dialog->SetBone(amodel->modelbones[sel]);
     if (dialog->ShowModal() == wxID_OK) {
         amodel->modelbones[sel] = dialog->GetBone();
+
+        foreach(cMeshStruct& ms, m_model->meshstructs) {
+            if (ms.multibone) {
+                foreach(const wxString& mname, amodel->modelbones[sel].meshes) {
+                    if (mname == ms.Name) {
+                        ms.multibone = false;
+                        break;
+                    }
+                }
+            }
+        }
+
         m_htlbEffect->UpdateContents();
-        UpdateControlState();
+        UpdateAll();
     }
     dialog->Destroy();
 }
@@ -2068,6 +2132,7 @@ void dlgModel::OnBoneDel(wxCommandEvent& WXUNUSED(event)) {
 }
 
 void dlgModel::OnBoneAuto(wxCommandEvent& WXUNUSED(event)) {
+    /*
     cAnimatedModel* amodel = dynamic_cast<cAnimatedModel*>(m_model);
     if (amodel->modelbones.size()) {
         if (::wxMessageBox(_("Do you want to delete all current effect point entries before automatically creating new ones?"), _("Question"), wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this)==wxYES) {
@@ -2105,6 +2170,8 @@ void dlgModel::OnBoneAuto(wxCommandEvent& WXUNUSED(event)) {
     m_htlbEffect->UpdateContents();
     m_htlbEffect->SetSelection(-1);
     UpdateControlState();
+    */
+    PopupMenu(m_menuAutoBones.get());
 }
 
 void dlgModel::OnBoneAutoQuick(wxMouseEvent& WXUNUSED(event)) {
@@ -2157,6 +2224,81 @@ void dlgModel::OnBoneClear(wxCommandEvent& WXUNUSED(event)) {
     m_htlbEffect->SetSelection(-1);
     UpdateControlState();
 }
+
+////////////////////////////////////////////////////////////////////////
+//
+//  dlgModel, Auto menu
+//
+////////////////////////////////////////////////////////////////////////
+/** @brief OnMenuSortBones
+  *
+  * @todo: document this function
+  */
+void dlgModel::OnMenuSortBones(wxCommandEvent& event) {
+    m_model->sortBones();
+    m_htlbEffect->UpdateContents();
+    m_htlbEffect->SetSelection(-1);
+    UpdateControlState();
+}
+
+/** @brief OnMenuSyncBones
+  *
+  * @todo: document this function
+  */
+void dlgModel::OnMenuSyncBones(wxCommandEvent& event) {
+    m_model->syncBones();
+    m_htlbEffect->UpdateContents();
+    m_htlbEffect->SetSelection(-1);
+    UpdateControlState();
+}
+
+/** @brief OnMenuAddMissingBones
+  *
+  * @todo: document this function
+  */
+void dlgModel::OnMenuAddMissingBones(wxCommandEvent& event) {
+    if (m_animated) {
+        foreach(const c3DBone::pair& bn, m_model->model_bones) {
+            if (!contains_if(m_amodel.modelbones, NamePredicate<cModelBone>(bn.second))) {
+                m_model->addBone(bn.second);
+            }
+        }
+    } else {
+        foreach(const c3DBone::pair& bn, m_model->model_bones) {
+            if (!contains_if(m_model->effectpoints, NamePredicate<cEffectPoint>(bn.second))) {
+                m_model->addBone(bn.second);
+            }
+        }
+    }
+    if (m_model->auto_sort)
+        m_model->sortBones();
+    m_htlbEffect->UpdateContents();
+    m_htlbEffect->SetSelection(-1);
+    UpdateControlState();
+}
+
+/** @brief OnMenuAutoSortBones
+  *
+  * @todo: document this function
+  */
+void dlgModel::OnMenuAutoSortBones(wxCommandEvent& event) {
+    m_model->auto_sort = !m_model->auto_sort;
+    if (m_model->auto_sort)
+        m_model->sortBones();
+    UpdateAll();
+}
+
+/** @brief OnMenuAutoSyncBones
+  *
+  * @todo: document this function
+  */
+void dlgModel::OnMenuAutoSyncBones(wxCommandEvent& event) {
+    m_model->auto_bones = !m_model->auto_bones;
+    if (m_model->auto_bones)
+        m_model->syncBones();
+    UpdateAll();
+}
+
 
 
 ////////////////////////////////////////////////////////////////////////
@@ -2252,7 +2394,6 @@ void plibErrorCallback ( enum ulSeverity severity, char* msg ) {
 }
 */
 void dlgModel::OnLoad(wxCommandEvent& WXUNUSED(event)) {
-// TODO (belgabor#1#): Load animated models
     //wxMessageBox(_("This functionality is currently disabled. Please use the 'L' button in the Create Scenery window."));
     m_loadoverlay = true;
     m_textModelFile->OnButtonClick();

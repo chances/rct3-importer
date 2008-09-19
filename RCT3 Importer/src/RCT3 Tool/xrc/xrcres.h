@@ -16,6 +16,7 @@ void InitXmlStall();
 void InitXmlAttractMan();
 void InitXmlAttract();
 void InitXmlBitmapCrystal();
+void InitXmlBitmapIcons();
 //void InitXmlScenerySettings();
 //void InitXmlAnimation();
 //void InitXmlMisc();
@@ -36,6 +37,7 @@ inline void InitXmlResource() {
     InitXmlAttractMan();
     InitXmlAttract();
     InitXmlBitmapCrystal();
+    InitXmlBitmapIcons();
 //    InitXmlScenerySettings();
 //    InitXmlAnimation();
 //    InitXmlMisc();

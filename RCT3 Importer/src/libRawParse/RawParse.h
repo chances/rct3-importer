@@ -32,6 +32,7 @@
 #include <wx/filename.h>
 //#include <wx/xml/xml.h>
 #include <boost/shared_array.hpp>
+#include <boost/exception/error_info.hpp>
 
 #include "vertex.h"
 
@@ -49,6 +50,8 @@
 #define RAWXML_UNSET     "unset"
 #define RAWXML_VARIABLES "variables"
 #define RAWXML_DATAREF   "dataref"
+
+typedef boost::error_info<struct tag_node_line, int> node_line_info;
 
 WX_DECLARE_STRING_HASH_MAP(wxString, cRawParserVars);
 
@@ -155,6 +158,7 @@ private:
     void ParseSAT(xmlcpp::cXmlNode& node);
     void ParseSHS(xmlcpp::cXmlNode& node);
     void ParseSID(xmlcpp::cXmlNode& node);
+    void ParseSND(xmlcpp::cXmlNode& node);
     void ParseSPL(xmlcpp::cXmlNode& node);
     void ParseSTA(xmlcpp::cXmlNode& node);
     void ParseSVD(xmlcpp::cXmlNode& node);

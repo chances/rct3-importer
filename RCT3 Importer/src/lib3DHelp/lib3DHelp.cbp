@@ -171,6 +171,10 @@
 			<Option target="Release Unicode" />
 			<Option target="Debug Unicode" />
 		</Unit>
+		<Unit filename="wave\RIFFFile.cpp" />
+		<Unit filename="wave\RIFFFile.h" />
+		<Unit filename="wave\WAVE.cpp" />
+		<Unit filename="wave\WAVE.h" />
 		<Unit filename="wxLocalLog.h" />
 		<Unit filename="wx_pch.h">
 			<Option weight="0" />

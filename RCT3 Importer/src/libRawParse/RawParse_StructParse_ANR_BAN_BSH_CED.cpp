@@ -27,10 +27,15 @@
 
 #include "RawParse_cpp.h"
 
+#include <boost/algorithm/string.hpp>
+
 #include "ManagerANR.h"
 #include "ManagerBAN.h"
 #include "ManagerBSH.h"
 #include "ManagerCED.h"
+
+#define RAWXML_ANR_SHOWITEM         "showItem"
+#define RAWXML_CED_MORE             "cedmore"
 
 void cRawParser::ParseANR(cXmlNode& node) {
     USE_PREFIX(node);
@@ -55,6 +60,12 @@ void cRawParser::ParseANR(cXmlNode& node) {
             OPTION_PARSE(unsigned long, animride.unk25, ParseUnsigned(child, RAWXML_ANR "/" RAWXML_UNKNOWNS, wxT("u25")));
             OPTION_PARSE(unsigned long, animride.unk8, ParseUnsigned(child, RAWXML_ANR "/" RAWXML_UNKNOWNS, wxT("u8")));
             OPTION_PARSE(unsigned long, animride.unk9, ParseUnsigned(child, RAWXML_ANR "/" RAWXML_UNKNOWNS, wxT("u9")));
+        } else if (child(RAWXML_ANR_SHOWITEM)) {
+            cAnimatedRideShowItem si;
+            si.animation = ParseUnsigned(child, RAWXML_ANR_SHOWITEM, wxT("animationIndex"));
+            si.name = child();
+            boost::trim(si.name);
+            animride.showitems.push_back(si);
         } else if (child.element()) {
             throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in anr tag."), STRING_FOR_FORMAT(child.name())));
         }
@@ -68,57 +79,96 @@ void cRawParser::ParseANR(cXmlNode& node) {
 void cRawParser::ParseBAN(cXmlNode& node) {
     USE_PREFIX(node);
     cBoneAnim ban;
-    wxString name = ParseString(node, wxT(RAWXML_BAN), wxT("name"), NULL, useprefix);
+    wxString name = ParseString(node, RAWXML_BAN, "name", NULL, useprefix);
     ban.name = name.ToAscii();
-    OPTION_PARSE(float, ban.totaltime, ParseFloat(node, wxT(RAWXML_BAN), wxT("totaltime")));
-    if (ban.totaltime != 0.0)
-        ban.calc_time = false;
-    c3DLoaderOrientation ori = ParseOrientation(node, wxString::Format(wxT("ban(%s) tag"), name.c_str()));
     wxLogVerbose(wxString::Format(_("Adding ban %s to %s."), name.c_str(), m_output.GetFullPath().c_str()));
 
-    cXmlNode child(node.children());
-    while (child) {
-        DO_CONDITION_COMMENT(child);
+    if (node.hasProp("modelFile")) {
+        wxString animname = ParseString(node, RAWXML_BAN, "name", NULL);
+        ParseStringOption(animname, node, "modelAnimation", NULL);
+        wxFSFileName modelfile = ParseString(node, RAWXML_BAN, "modelFile", NULL);
+        if (!modelfile.IsAbsolute())
+            modelfile.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
 
-        if (child(RAWXML_BAN_BONE)) {
-            cBoneAnimBone banim;
-            wxString bonename = ParseString(child, wxT(RAWXML_BAN_BONE), wxT("name"), NULL);
-            banim.name = bonename.ToAscii();
-            cXmlNode subchild(child.children());
-            while (subchild) {
-                DO_CONDITION_COMMENT(subchild);
+        // TODO: baking
 
-                if (subchild(RAWXML_BAN_BONE_TRANSLATION)) {
-                    txyz frame;
-                    frame.Time = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_TRANSLATION), wxT("time"));
-                    frame.X = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_TRANSLATION), wxT("x"));
-                    frame.Y = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_TRANSLATION), wxT("y"));
-                    frame.Z = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_TRANSLATION), wxT("z"));
-                    if (ori != ORIENTATION_LEFT_YUP)
-                        doFixOrientation(frame, ori);
-                    banim.translations.insert(frame);
-                } else if (subchild(RAWXML_BAN_BONE_ROTATION)) {
-                    txyz frame;
-                    frame.Time = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_ROTATION), wxT("time"));
-                    frame.X = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_ROTATION), wxT("x"));
-                    frame.Y = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_ROTATION), wxT("y"));
-                    frame.Z = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_ROTATION), wxT("z"));
-                    if (ori != ORIENTATION_LEFT_YUP)
-                        doFixOrientation(frame, ori);
-                    banim.rotations.insert(frame);
-                } else if (subchild.element()) {
-                    throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ban(%s)/banbone(%s)."), STRING_FOR_FORMAT(subchild.name()), name.c_str(), bonename.c_str()));
-                }
+        boost::shared_ptr<c3DLoader> model(c3DLoader::LoadFile(modelfile.GetFullPath().c_str()));
+        if (!model.get())
+            throw MakeNodeException<RCT3Exception>(_("ban tag: Model file not readable or has unknown format: ") + modelfile.GetFullPath(), node);
 
-                subchild.go_next();
-            }
-
-            ban.bones.push_back(banim);
-        } else if (child.element()) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ban tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()));
+        if (!model->GetAnimations().size()) {
+            throw MakeNodeException<RCT3Exception>(_("ban tag: Model file does not contain animations: ") + modelfile.GetFullPath(), node);
         }
 
-        child.go_next();
+        std::map<wxString, c3DAnimation>::const_iterator sp = model->GetAnimations().find(animname);
+        if (sp == model->GetAnimations().end()) {
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("ban tag: Model file '%s' does not contain animation '%s'."), modelfile.GetFullPath().c_str(), animname.c_str()), node);
+        }
+
+        c3DLoaderOrientation ori = ParseOrientation(node, wxString::Format(wxT("ban(%s) tag"), name.c_str()), model->GetOrientation());
+        ban.calc_time = true;
+
+        foreach(const c3DAnimBone::pair& bone, sp->second.m_bones) {
+            cBoneAnimBone cbone;
+            cbone.name = bone.second.m_name.ToAscii();
+            foreach(const txyz& fr, bone.second.m_translations) {
+                cbone.translations.insert(cTXYZ(fr).GetFixed(ori, false));
+            }
+            foreach(const txyz& fr, bone.second.m_rotations) {
+                cbone.rotations.insert(cTXYZ(fr).GetFixed(ori, true, bone.second.m_axis));
+            }
+            ban.bones.push_back(cbone);
+        }
+
+    } else {
+        c3DLoaderOrientation ori = ParseOrientation(node, wxString::Format(wxT("ban(%s) tag"), name.c_str()));
+        OPTION_PARSE(float, ban.totaltime, ParseFloat(node, wxT(RAWXML_BAN), wxT("totaltime")));
+        if (ban.totaltime != 0.0)
+            ban.calc_time = false;
+        cXmlNode child(node.children());
+        while (child) {
+            DO_CONDITION_COMMENT(child);
+
+            if (child(RAWXML_BAN_BONE)) {
+                cBoneAnimBone banim;
+                wxString bonename = ParseString(child, wxT(RAWXML_BAN_BONE), wxT("name"), NULL);
+                banim.name = bonename.ToAscii();
+                cXmlNode subchild(child.children());
+                while (subchild) {
+                    DO_CONDITION_COMMENT(subchild);
+
+                    if (subchild(RAWXML_BAN_BONE_TRANSLATION)) {
+                        txyz frame;
+                        frame.Time = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_TRANSLATION), wxT("time"));
+                        frame.X = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_TRANSLATION), wxT("x"));
+                        frame.Y = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_TRANSLATION), wxT("y"));
+                        frame.Z = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_TRANSLATION), wxT("z"));
+                        if (ori != ORIENTATION_LEFT_YUP)
+                            doFixOrientation(frame, ori);
+                        banim.translations.insert(frame);
+                    } else if (subchild(RAWXML_BAN_BONE_ROTATION)) {
+                        txyz frame;
+                        frame.Time = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_ROTATION), wxT("time"));
+                        frame.X = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_ROTATION), wxT("x"));
+                        frame.Y = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_ROTATION), wxT("y"));
+                        frame.Z = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_ROTATION), wxT("z"));
+                        if (ori != ORIENTATION_LEFT_YUP)
+                            doFixOrientation(frame, ori);
+                        banim.rotations.insert(frame);
+                    } else if (subchild.element()) {
+                        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in ban(%s)/banbone(%s)."), STRING_FOR_FORMAT(subchild.name()), name.c_str(), bonename.c_str()), subchild);
+                    }
+
+                    subchild.go_next();
+                }
+
+                ban.bones.push_back(banim);
+            } else if (child.element()) {
+                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in ban tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()), child);
+            }
+
+            child.go_next();
+        }
     }
 
     ovlBANManager* c_ban = m_ovl.GetManager<ovlBANManager>();

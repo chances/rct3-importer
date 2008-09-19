@@ -33,7 +33,6 @@
 
 #include <wx/aui/aui.h>
 #include <wx/xrc/xmlres.h>
-#include <wx/htmllbox.h>
 #include <wx/spinbutt.h>
 
 #include "colhtmllbox.h"
@@ -54,7 +53,7 @@ protected:
     virtual wxString OnGetItem(size_t n) const;
 };
 */
-class wxEffectListBox : public wxHtmlListBox {
+class wxEffectListBox : public wxColourHtmlListBox {
 public:
     wxEffectListBox(wxWindow *parent);
     wxEffectListBox(wxWindow *parent, cModel *contents);
@@ -92,9 +91,14 @@ protected:
     wxButton* m_btEffectDel;
     wxButton* m_btEffectAuto;
     wxButton* m_btEffectClear;
+    wxCheckBox* m_cbSyncBones;
+    wxCheckBox* m_cbSortBones;
     wxButton* m_btLoad;
     wxButton* m_btOk;
     wxButton* m_btCancel;
+    boost::shared_ptr<wxMenu> m_menuAutoBones;
+    wxMenuItem* m_miSyncBones;
+    wxMenuItem* m_miSortBones;
 
     wxFileSelectorCombo<wxFileDialog>* m_textModelFile;
 
@@ -143,6 +147,15 @@ protected:
     void OnBoneAuto(wxCommandEvent& event);
     void OnBoneAutoQuick(wxMouseEvent& event);
     void OnBoneClear(wxCommandEvent& event);
+
+    void OnSyncBones(wxCommandEvent& event);
+    void OnSortBones(wxCommandEvent& event);
+
+    void OnMenuAddMissingBones(wxCommandEvent& event);
+    void OnMenuSyncBones(wxCommandEvent& event);
+    void OnMenuSortBones(wxCommandEvent& event);
+    void OnMenuAutoSyncBones(wxCommandEvent& event);
+    void OnMenuAutoSortBones(wxCommandEvent& event);
 
     void OnLoad(wxCommandEvent& event);
 
@@ -230,6 +243,8 @@ private:
         m_btEffectDel = XRCCTRL(*parent,"m_btEffectDel",wxButton);
         m_btEffectAuto = XRCCTRL(*parent,"m_btEffectAuto",wxButton);
         m_btEffectClear = XRCCTRL(*parent,"m_btEffectClear",wxButton);
+        m_cbSyncBones = XRCCTRL(*this,"m_cbSyncBones",wxCheckBox);
+        m_cbSortBones = XRCCTRL(*this,"m_cbSortBones",wxCheckBox);
     }
     void InitButtonsFromXRC(wxWindow *parent) {
         wxXmlResource::Get()->LoadObject(parent,this,_T("panModelButtons"), _T("wxPanel"));

@@ -47,7 +47,7 @@ void cRawParser::Parse(cXmlNode& node) {
                 Parse(child);
             } else {
                 if (child.children())
-                    throw RCT3Exception(FinishNodeError(wxT("A section tag with include attribute may not have content"), child));
+                    throw MakeNodeException<RCT3Exception>("A section tag with include attribute may not have content", child);
 
                 wxFSFileName filename = incfile;
                 wxFSFileName filenamebake = incfile;
@@ -85,7 +85,7 @@ void cRawParser::Parse(cXmlNode& node) {
                 cXmlDoc doc(filename.GetFullPath().mb_str(wxConvUTF8), NULL, XML_PARSE_DTDLOAD);
                 cXmlNode root(doc.root());
                 if (!root(RAWXML_SECTION))
-                    throw RCT3Exception(FinishNodeError(wxString::Format(_("Included section raw xml file has wrong root '%s'."), STRING_FOR_FORMAT(root.name())), child));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Included section raw xml file has wrong root '%s'."), STRING_FOR_FORMAT(root.name())), child);
 
                 wxFSFileName bakebackup = m_bakeroot;
                 wxFSFileName inputbackup = m_input;
@@ -119,7 +119,7 @@ void cRawParser::Parse(cXmlNode& node) {
                 c_raw.Process(child, m_input, m_outputbasedir);
             } else {
                 if (child.children())
-                    throw RCT3Exception(FinishNodeError(wxT("A subovl tag with include attribute may not have content"), child));
+                    throw MakeNodeException<RCT3Exception>("A rawovl tag with include attribute may not have content", child);
 
                 wxFSFileName filename = incfile;
                 if (!filename.IsAbsolute())
@@ -189,7 +189,7 @@ void cRawParser::Parse(cXmlNode& node) {
                 else if (filebase == FILEBASE_USERDIR)
                     filename.MakeAbsolute(m_userdir.GetPathWithSep());
                 else
-                    throw RCT3Exception(FinishNodeError(wxString::Format(_("A check tag has unknown filebase attribute '%ld'"),filebase), child));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("A check tag has unknown filebase attribute '%ld'"),filebase), child);
             }
             if (!filename.FileExists()) {
                 child.go_next();
@@ -209,7 +209,7 @@ void cRawParser::Parse(cXmlNode& node) {
                     }
                 }
             } else {
-                throw RCT3Exception(FinishNodeError(wxString::Format(_("A check tag has unknown for attribute '%s'"), what.c_str()), child));
+                throw MakeNodeException<RCT3Exception>(wxString::Format(_("A check tag has unknown for attribute '%s'"), what.c_str()), child);
             }
         } else if (child(RAWXML_PATCH)) {
             BAKE_SKIP(child);
@@ -223,13 +223,13 @@ void cRawParser::Parse(cXmlNode& node) {
             wxLogVerbose(_("Patch ") + filename.GetFullPath());
             if (!filename.FileExists()) {
                 if ((failmode == FAILMODE_FAIL_FAIL) || (m_mode == MODE_INSTALL))
-                    throw RCT3Exception(FinishNodeError(wxString::Format(_("File '%s' to patch does not exist."), filename.GetFullPath().c_str()), child));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("File '%s' to patch does not exist."), filename.GetFullPath().c_str()), child);
                 wxLogWarning(wxString::Format(_("File '%s' to patch does not exist."), filename.GetFullPath().c_str()));
                 child.go_next();
                 continue;
             } else if (!filename.IsFileWritable()) {
                 if ((failmode == FAILMODE_FAIL_FAIL) || (m_mode == MODE_INSTALL))
-                    throw RCT3Exception(FinishNodeError(wxString::Format(_("File '%s' to patch cannot be written to."), filename.GetFullPath().c_str()), child));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("File '%s' to patch cannot be written to."), filename.GetFullPath().c_str()), child);
                 wxLogWarning(wxString::Format(_("File '%s' to patch cannot be written to."), filename.GetFullPath().c_str()));
                 child.go_next();
                 continue;
@@ -247,7 +247,7 @@ void cRawParser::Parse(cXmlNode& node) {
                     od.Save();
                 }
             } else {
-                throw RCT3Exception(FinishNodeError(wxString::Format(_("A patch tag has unknown what attribute '%s'"), what.c_str()), child));
+                throw MakeNodeException<RCT3Exception>(wxString::Format(_("A patch tag has unknown what attribute '%s'"), what.c_str()), child);
             }
         } else if (child(RAWXML_COPY)) {
             BAKE_SKIP(child);
@@ -264,7 +264,7 @@ void cRawParser::Parse(cXmlNode& node) {
                 else if (filebase == FILEBASE_USERDIR)
                     filename.MakeAbsolute(m_userdir.GetPathWithSep());
                 else
-                    throw RCT3Exception(FinishNodeError(wxString::Format(_("A copy tag has unknown filebase attribute '%ld'"),filebase), child));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("A copy tag has unknown filebase attribute '%ld'"),filebase), child);
             }
             if (!targetname.IsAbsolute()) {
                 if (filebase == FILEBASE_INSTALLDIR)
@@ -272,19 +272,19 @@ void cRawParser::Parse(cXmlNode& node) {
                 else if (filebase == FILEBASE_USERDIR)
                     targetname.MakeAbsolute(m_userdir.GetPathWithSep());
                 else
-                    throw RCT3Exception(FinishNodeError(wxString::Format(_("A copy tag has unknown filebase attribute '%ld'"),filebase), child));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("A copy tag has unknown filebase attribute '%ld'"),filebase), child);
             }
             wxLogVerbose(_("Copy ") + filename.GetFullPath() + _(" to ") + targetname.GetFullPath());
             if (!filename.FileExists()) {
                 if ((failmode == FAILMODE_FAIL_FAIL) || (m_mode == MODE_INSTALL))
-                    throw RCT3Exception(FinishNodeError(wxString::Format(_("File '%s' to copy does not exist."), filename.GetFullPath().c_str()), child));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("File '%s' to copy does not exist."), filename.GetFullPath().c_str()), child);
                 wxLogWarning(wxString::Format(_("File '%s' to copy does not exist."), filename.GetFullPath().c_str()));
                 child.go_next();
                 continue;
             }
             if (!CanBeWrittenTo(targetname)) {
                 if ((failmode == FAILMODE_FAIL_FAIL) || (m_mode == MODE_INSTALL))
-                    throw RCT3Exception(FinishNodeError(wxString::Format(_("File '%s' to copy to cannot be written."), targetname.GetFullPath().c_str()), child));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("File '%s' to copy to cannot be written."), targetname.GetFullPath().c_str()), child);
                 wxLogWarning(wxString::Format(_("File '%s' to copy to cannot be written."), targetname.GetFullPath().c_str()));
                 child.go_next();
                 continue;
@@ -295,7 +295,7 @@ void cRawParser::Parse(cXmlNode& node) {
                 m_newfiles.push_back(targetname);
             if (!m_dryrun) {
                 if (!EnsureDir(targetname))
-                    throw RCT3Exception(FinishNodeError(wxString::Format(_("Failed to dreate directory for file '%s' to copy to."), targetname.GetFullPath().c_str()), child));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Failed to dreate directory for file '%s' to copy to."), targetname.GetFullPath().c_str()), child);
                 ::wxCopyFile(filename.GetFullPath(), targetname.GetFullPath());
             }
         } else if (child(RAWXML_WRITE)) {
@@ -309,11 +309,11 @@ void cRawParser::Parse(cXmlNode& node) {
                 else if (filebase == FILEBASE_USERDIR)
                     targetname.MakeAbsolute(m_userdir.GetPathWithSep());
                 else
-                    throw RCT3Exception(FinishNodeError(wxString::Format(_("A copy tag has unknown filebase attribute '%ld'"),filebase), child));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("A copy tag has unknown filebase attribute '%ld'"),filebase), child);
             }
             if ((m_mode != MODE_BAKE) && (!CanBeWrittenTo(targetname))) {
                 if (m_mode == MODE_INSTALL)
-                    throw RCT3Exception(FinishNodeError(wxString::Format(_("File '%s' cannot be written."), targetname.GetFullPath().c_str()), child));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("File '%s' cannot be written."), targetname.GetFullPath().c_str()), child);
                 wxLogWarning(wxString::Format(_("File '%s' cannot be written."), targetname.GetFullPath().c_str()));
                 child.go_next();
                 continue;
@@ -339,7 +339,7 @@ void cRawParser::Parse(cXmlNode& node) {
                 auto_ptr<wxFSFile> fsfile(fs.OpenFile(wfile.GetFullPath()));
 
                 if (!fsfile.get())
-                    throw RCT3Exception(FinishNodeError(_("write tag: File not readable: ") + wfile.GetFullPath(), child));
+                    throw MakeNodeException<RCT3Exception>(_("write tag: File not readable: ") + wfile.GetFullPath(), child);
 
                 wxInputStream* filestream = fsfile->GetStream(); // Stream is destroyed by wxFSFile
                 filestream->SeekI(0, wxFromEnd);
@@ -370,9 +370,9 @@ void cRawParser::Parse(cXmlNode& node) {
                         case CRYPT_OK:
                             break;
                         case CRYPT_BUFFER_OVERFLOW:
-                            throw RCT3Exception(FinishNodeError(wxString(_("Buffer overflow baking file '")) + wfile.GetFullPath() + _("'."), child));
+                            throw MakeNodeException<RCT3Exception>(wxString(_("Buffer overflow baking file '")) + wfile.GetFullPath() + _("'."), child);
                         default:
-                            throw RCT3Exception(FinishNodeError(wxString(_("Unknown base64 error baking file '")) + wfile.GetFullPath() + _("'."), child));
+                            throw MakeNodeException<RCT3Exception>(wxString(_("Unknown base64 error baking file '")) + wfile.GetFullPath() + _("'."), child);
                     }
                     child.delProp("type");
                     child.addProp("type", "data");
@@ -406,18 +406,18 @@ void cRawParser::Parse(cXmlNode& node) {
                     case CRYPT_OK:
                         break;
                     case CRYPT_INVALID_PACKET:
-                        throw RCT3Exception(FinishNodeError(wxString(_("Decoding error in write tag ")) + targetname.GetFullPath(), child));
+                        throw MakeNodeException<RCT3Exception>(wxString(_("Decoding error in write tag ")) + targetname.GetFullPath(), child);
                     case CRYPT_BUFFER_OVERFLOW:
-                        throw RCT3Exception(FinishNodeError(wxString(_("Buffer overflow decoding write tag ")) + targetname.GetFullPath(), child));
+                        throw MakeNodeException<RCT3Exception>(wxString(_("Buffer overflow decoding write tag ")) + targetname.GetFullPath(), child);
                     default:
-                        throw RCT3Exception(FinishNodeError(wxString(_("Unknown base64 error decoding write tag ")) + targetname.GetFullPath(), child));
+                        throw MakeNodeException<RCT3Exception>(wxString(_("Unknown base64 error decoding write tag ")) + targetname.GetFullPath(), child);
                 }
 
                 EnsureDir(targetname);
                 wxFile f(targetname.GetFullPath(), wxFile::write);
                 f.Write(pdata.get(), outlen);
             } else {
-                throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown type '%s' in write tag '%s'"), type.c_str(), targetname.GetFullPath().c_str()), child));
+                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown type '%s' in write tag '%s'"), type.c_str(), targetname.GetFullPath().c_str()), child);
             }
         } else if (m_dryrun) {
             // The rest creates the file
@@ -478,7 +478,7 @@ void cRawParser::Parse(cXmlNode& node) {
                 } else if (use == "splines") {
                     c_scn.MakeToOvlSplines(m_ovl);
                 } else  {
-                    throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown value '%s' for use attribute in import tag"), use.c_str()), child));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown value '%s' for use attribute in import tag"), use.c_str()), child);
                 }
             }
         } else if (child(RAWXML_ANR)) {
@@ -526,6 +526,8 @@ void cRawParser::Parse(cXmlNode& node) {
         } else if (child(RAWXML_SAT)) {
             BAKE_SKIP(child);
             ParseSAT(child);
+        } else if (child(RAWXML_SHS)) {
+            ParseSHS(child);
         } else if (child(RAWXML_SID)) {
             // <sid name="string" ovlpath="ovl path, relative to install dir" nametxt="txt" icon="gsi" svd="svd">
             //     (All following tags and attributes are optional, if not mentioned otherwise)
@@ -551,8 +553,8 @@ void cRawParser::Parse(cXmlNode& node) {
             // </sid>
             BAKE_SKIP(child);
             ParseSID(child);
-        } else if (child(RAWXML_SHS)) {
-            ParseSHS(child);
+        } else if (child(RAWXML_SND)) {
+            ParseSND(child);
         } else if (child(RAWXML_SPL)) {
             BAKE_SKIP(child);
             ParseSPL(child);
@@ -609,9 +611,9 @@ void cRawParser::Parse(cXmlNode& node) {
                         case CRYPT_OK:
                             break;
                         case CRYPT_BUFFER_OVERFLOW:
-                            throw RCT3Exception(FinishNodeError(wxString(_("Buffer overflow baking text '")) + text + _("' in txt tag ") + name, child));
+                            throw MakeNodeException<RCT3Exception>(wxString(_("Buffer overflow baking text '")) + text + _("' in txt tag ") + name, child);
                         default:
-                            throw RCT3Exception(FinishNodeError(wxString(_("Unknown base64 error baking text '")) + text + _("' in txt tag ") + name, child));
+                            throw MakeNodeException<RCT3Exception>(wxString(_("Unknown base64 error baking text '")) + text + _("' in txt tag ") + name, child);
                     }
                     child.prop("type","raw");
                     child.content(reinterpret_cast<char*>(buf.get()));
@@ -644,17 +646,17 @@ void cRawParser::Parse(cXmlNode& node) {
                     case CRYPT_OK:
                         break;
                     case CRYPT_INVALID_PACKET:
-                        throw RCT3Exception(FinishNodeError(wxString(_("Decoding error in txt tag ")) + name, child));
+                        throw MakeNodeException<RCT3Exception>(wxString(_("Decoding error in txt tag ")) + name, child);
                     case CRYPT_BUFFER_OVERFLOW:
-                        throw RCT3Exception(FinishNodeError(wxString(_("Buffer overflow decoding txt tag ")) + name, child));
+                        throw MakeNodeException<RCT3Exception>(wxString(_("Buffer overflow decoding txt tag ")) + name, child);
                     default:
-                        throw RCT3Exception(FinishNodeError(wxString(_("Unknown base64 error decoding txt tag ")) + name, child));
+                        throw MakeNodeException<RCT3Exception>(wxString(_("Unknown base64 error decoding txt tag ")) + name, child);
                 }
                 ovlTXTManager* c_txt = m_ovl.GetManager<ovlTXTManager>();
                 c_txt->AddText(name.ToAscii(), data.get());
 
             } else {
-                throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown type '%s' in txt tag '%s'."), type.c_str(), name.c_str()), child));
+                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown type '%s' in txt tag '%s'."), type.c_str(), name.c_str()), child);
             }
 
         } else if (child(RAWXML_WAI)) {
@@ -671,7 +673,7 @@ void cRawParser::Parse(cXmlNode& node) {
                 MakeVariable(ref);
             }
             if (ref.IsEmpty())
-                throw RCT3Exception(FinishNodeError(_("REFERENCE tag misses path attribute or content."), child));
+                throw MakeNodeException<RCT3Exception>(_("REFERENCE tag misses path attribute or content."), child);
             wxLogVerbose(wxString::Format(_("Adding reference %s to %s."), ref.c_str(), m_output.GetFullPath().c_str()));
             m_ovl.AddReference(ref.mb_str(wxConvFile));
         } else if (child(RAWXML_SYMBOL)) {
@@ -690,11 +692,11 @@ void cRawParser::Parse(cXmlNode& node) {
                 float f = ParseFloat(child, wxT(RAWXML_SYMBOL), wxT("data"));
                 data = *reinterpret_cast<unsigned long*>(&f);
             } else {
-                throw RCT3Exception(FinishNodeError(wxString::Format(_("symbol tag has unimplemented type value '%s'."), type.c_str()), child));
+                throw MakeNodeException<RCT3Exception>(wxString::Format(_("symbol tag has unimplemented type value '%s'."), type.c_str()), child);
             }
             m_ovl.AddDataSymbol(target, name.ToAscii(), data);
         } else if (child.is(XML_ELEMENT_NODE)) {
-            throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in rawovl tag."), STRING_FOR_FORMAT(child.name())), child));
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in rawovl tag."), STRING_FOR_FORMAT(child.name())), child);
         }
 
         child.go_next();

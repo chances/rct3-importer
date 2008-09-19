@@ -36,6 +36,7 @@
 #include "ManagerTRR.h"
 #include "ManagerWAI.h"
 
+#include "texcheck.h"
 
 #define RAWXML_TKS_SPEED            "speed"
 #define RAWXML_TKS_BASIC            "basic"
@@ -137,7 +138,7 @@ void cRawParser::ParseSVD(cXmlNode& node) {
                     else
                         lod.animations.push_back(std::string(anim.ToAscii()));
                 } else if (subchild.element()) {
-                    throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in svd(%s)/svdlod(%s)."), STRING_FOR_FORMAT(subchild.name()), name.c_str(), lodname.c_str()), subchild));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in svd(%s)/svdlod(%s)."), STRING_FOR_FORMAT(subchild.name()), name.c_str(), lodname.c_str()), subchild);
                 }
 
                 subchild.go_next();
@@ -145,7 +146,7 @@ void cRawParser::ParseSVD(cXmlNode& node) {
 
             svd.lods.push_back(lod);
         } else if (child.element()) {
-            throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in svd tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()), child));
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in svd tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()), child);
         }
 
         child.go_next();
@@ -184,23 +185,24 @@ void cRawParser::ParseTEX(cXmlNode& node) {
                 datanode.go_next();
 
             if (!datanode)
-                throw RCT3Exception(FinishNodeError(wxString::Format(_("Tag tex(%s)/texture misses data."), name.c_str()), child));
+                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Tag tex(%s)/texture misses data."), name.c_str()), child);
 
             cRawDatablock data = GetDataBlock(wxString::Format(_("tag tex(%s)/texture"), name.c_str()), datanode);
             if (data.datatype().IsEmpty()) {
-                throw RCT3Exception(FinishNodeError(wxString::Format(_("Could not determine data type in tag tex(%s)/texture."), name.c_str()), child));
+                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Could not determine data type in tag tex(%s)/texture."), name.c_str()), child);
             } else if (data.datatype().IsSameAs(wxT("processed"))) {
                 unsigned long datadim = cTexture::GetDimension(texture.texture.format, data.datasize());
                 if (!mip.dimension)
                     mip.dimension = datadim;
                 if (mip.dimension != datadim)
-                    throw RCT3Exception(FinishNodeError(wxString::Format(_("Dimension mismatch in tag tex(%s)/texture."), name.c_str()), child));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Dimension mismatch in tag tex(%s)/texture."), name.c_str()), child);
                 mip.data = data.data();
             } else {
                 wxGXImage img;
                 img.read(data.data().get(), data.datasize(), std::string(data.datatype().mb_str(wxConvLocal)));
                 if (!img.Ok())
-                    throw RCT3Exception(FinishNodeError(wxString::Format(_("Error decoding image in tag tex(%s)/texture."), name.c_str()), child));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Error decoding image in tag tex(%s)/texture."), name.c_str()), child);
+
                 img.flip();
                 if (!mainimage.Ok())
                     mainimage = img;
@@ -209,6 +211,12 @@ void cRawParser::ParseTEX(cXmlNode& node) {
                 } else {
                     mip.dimension = img.GetWidth();
                 }
+                try {
+                    checkRCT3Texture(img);
+                } catch (RCT3TextureException& e) {
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Image in tag tex(%s)/texture is not fit for RCT3: "), name.c_str())+e.wxwhat(), child);
+                }
+
                 mip.data = boost::shared_array<unsigned char>(new unsigned char[mip.CalcSize(cTexture::GetBlockSize(texture.texture.format))]);
                 switch (texture.texture.format) {
                     case cTexture::FORMAT_A8R8G8B8:
@@ -224,27 +232,27 @@ void cRawParser::ParseTEX(cXmlNode& node) {
                         img.DxtCompress(mip.data.get(), wxDXT5);
                         break;
                     default:
-                        throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown format 0x%02lx in tag tex(%s)/texture."), texture.texture.format, name.c_str()), child));
+                        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown format 0x%02lx in tag tex(%s)/texture."), texture.texture.format, name.c_str()), child);
                 }
             }
 
             texture.texture.mips.insert(mip);
         } else if (child.element()) {
-            throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in tex(%s) tag."), STRING_FOR_FORMAT(child.name()), name.c_str()), child));
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in tex(%s) tag."), STRING_FOR_FORMAT(child.name()), name.c_str()), child);
         }
         child.go_next();
     }
 
     if (mips) {
         if ((texture.texture.mips.size() > 1) && (mips != texture.texture.mips.size()))
-            throw RCT3Exception(FinishNodeError(wxString::Format(_("Mip count mismatch in tag tex(%s)."), name.c_str()), node));
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Mip count mismatch in tag tex(%s)."), name.c_str()), node);
         if ((texture.texture.mips.size() == 1) && (mips > 1)) {
             if (!mainimage.Ok())
-                throw RCT3Exception(FinishNodeError(wxString::Format(_("Cannot auto-generate mips in tag tex(%s)."), name.c_str()), node));
+                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Cannot auto-generate mips in tag tex(%s)."), name.c_str()), node);
             for (unsigned long i = 1; i < mips; ++i) {
                 mainimage.Rescale(mainimage.GetWidth() / 2, mainimage.GetHeight() / 2);
                 if (mainimage.GetWidth() < 4) {
-                    wxLogWarning(FinishNodeError(wxString::Format(_("Too many mips requested in tag tex(%s)."), name.c_str()), node));
+                    IssueNodeWarning(wxString::Format(_("Too many mips requested in tag tex(%s)."), name.c_str()), node);
                     break;
                 }
                 cTextureMIP mip;
@@ -264,7 +272,7 @@ void cRawParser::ParseTEX(cXmlNode& node) {
                         mainimage.DxtCompress(mip.data.get(), wxDXT5);
                         break;
                     default:
-                        throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown format 0x%02lx in tag tex(%s)."), texture.texture.format, name.c_str()), node));
+                        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown format 0x%02lx in tag tex(%s)."), texture.texture.format, name.c_str()), node);
                 }
                 texture.texture.mips.insert(mip);
             }
@@ -438,7 +446,7 @@ void cRawParser::ParseTKS(cXmlNode& node) {
                 } else if (subchild(RAWXML_TKS_BASIC_EXIT)) {
                     ParseEntryExit(subchild, section.basic.exit, RAWXML_TKS_BASIC_EXIT);
                 } else if (subchild.element()) {
-                    throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in tks/basic tag."), STRING_FOR_FORMAT(subchild.name())), subchild));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in tks/basic tag."), STRING_FOR_FORMAT(subchild.name())), subchild);
                 }
             }
         } else if (child(RAWXML_TKS_SPLINES)) {
@@ -455,7 +463,7 @@ void cRawParser::ParseTKS(cXmlNode& node) {
                 } else if (subchild(RAWXML_TKS_SPLINES_WATER)) {
                     ParseSplinePair(subchild, section.splines.water, RAWXML_TKS_SPLINES_WATER);
                 } else if (subchild.element()) {
-                    throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in tks/splines tag."), STRING_FOR_FORMAT(subchild.name())), subchild));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in tks/splines tag."), STRING_FOR_FORMAT(subchild.name())), subchild);
                 }
             }
         } else if (child(RAWXML_TKS_ANIMATIONS)) {
@@ -533,7 +541,7 @@ void cRawParser::ParseTKS(cXmlNode& node) {
                         if (speedchild(RAWXML_TKS_SPLINES)) {
                             ParseSplinePair(speedchild, speeds.splines, RAWXML_TKS_SPLINES);
                         } else if (speedchild.element()) {
-                            throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in tks/soked/speedSplines tag."), STRING_FOR_FORMAT(speedchild.name())), speedchild));
+                            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in tks/soked/speedSplines tag."), STRING_FOR_FORMAT(speedchild.name())), speedchild);
                         }
                     }
                     section.soaked.speeds.push_back(speeds);
@@ -562,7 +570,7 @@ void cRawParser::ParseTKS(cXmlNode& node) {
                     boost::trim(gr);
                     section.soaked.groups_must_not_be_at_exit.push_back(gr);
                 } else if (subchild.element()) {
-                    throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in tks/soaked tag."), STRING_FOR_FORMAT(subchild.name())), subchild));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in tks/soaked tag."), STRING_FOR_FORMAT(subchild.name())), subchild);
                 }
             }
 
@@ -575,7 +583,7 @@ void cRawParser::ParseTKS(cXmlNode& node) {
             OPTION_PARSE(float, section.wild.tower_cap01, ParseFloat(child, RAWXML_TKS_WILD, wxT("towerCap01")));
             OPTION_PARSE(float, section.wild.tower_cap02, ParseFloat(child, RAWXML_TKS_WILD, wxT("towerCap02")));
         } else if (child.element()) {
-            throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in tks tag."), STRING_FOR_FORMAT(child.name())), child));
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in tks tag."), STRING_FOR_FORMAT(child.name())), child);
         }
     }
 
@@ -744,7 +752,7 @@ void cRawParser::ParseTRR(cXmlNode& node) {
             OPTION_PARSE(unsigned long, ride.wild.split_flag, ParseUnsigned(child, RAWXML_TRR_WILD, wxT("splitFlag")));
             ParseStringOption(ride.wild.internalname, child, wxT("name"), NULL);
         } else if (child.element()) {
-            throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in trr tag."), STRING_FOR_FORMAT(child.name())), child));
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in trr tag."), STRING_FOR_FORMAT(child.name())), child);
         }
     }
 
@@ -790,7 +798,7 @@ void cRawParser::ParseWAI(cXmlNode& node) {
             OPTION_PARSE(float, wai.unk19, ParseFloat(child, wxT(RAWXML_WAI_UNKNOWNS), wxT("u19")));
             OPTION_PARSE(float, wai.unk20, ParseFloat(child, wxT(RAWXML_WAI_UNKNOWNS), wxT("u20")));
         } else if (child.element()) {
-            throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in wai tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()), child));
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in wai tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()), child);
         }
 
         child.go_next();

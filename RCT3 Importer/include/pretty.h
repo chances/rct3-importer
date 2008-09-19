@@ -4,10 +4,11 @@
 #include <algorithm>
 #include <boost/foreach.hpp>
 
-namespace pretty {
-
 #define foreach BOOST_FOREACH
+#define reverse_foreach BOOST_REVERSE_FOREACH
 
+namespace pretty {
+/*
 template<class T>
 struct reverse_view {
     typedef typename T::reverse_iterator iterator;
@@ -21,7 +22,7 @@ struct reverse_view {
     iterator end() { return sequence.rend(); }
     const_iterator end() const { return sequence.rend(); }
 };
-
+*/
 template<class C, class T>
 inline typename C::iterator find_in ( C& container, const T& value ) {
     return std::find(container.begin(), container.end(), value);
@@ -40,6 +41,26 @@ inline bool contains ( C& container, const T& value ) {
 template<class C, class T>
 inline bool contains ( const C& container, const T& value ) {
     return std::find(container.begin(), container.end(), value) != container.end();
+}
+
+template<class C, class P>
+inline typename C::iterator find_in_if ( C& container, const P& predicate ) {
+    return std::find_if(container.begin(), container.end(), predicate);
+}
+
+template<class C, class P>
+inline typename C::const_iterator find_in_if ( const C& container, const P& predicate ) {
+    return std::find_if(container.begin(), container.end(), predicate);
+}
+
+template<class C, class P>
+inline bool contains_if ( C& container, const P& predicate ) {
+    return std::find_if(container.begin(), container.end(), predicate) != container.end();
+}
+
+template<class C, class P>
+inline bool contains_if ( const C& container, const P& predicate ) {
+    return std::find_if(container.begin(), container.end(), predicate) != container.end();
 }
 
 template<class C, class T>

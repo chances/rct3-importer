@@ -29,7 +29,6 @@
 #include <algorithm>
 
 #include "confhelp.h"
-#include "gximage.h"
 #include "lib3Dconfig.h"
 #include "RCT3Structs.h"
 #include "rct3log.h"
@@ -43,17 +42,21 @@ unsigned int checkRCT3Texture(const wxString& texture) {
     } catch (Magick::Exception& e) {
         throw RCT3TextureException(wxString(_("File open error: ")) + wxString::FromUTF8(e.what()));
     }
+    return checkRCT3Texture(img);
+}
+
+unsigned int checkRCT3Texture(const wxGXImage& texture) {
     if (READ_RCT3_TEXTURE() != RCT3_TEXTURE_ERROR_OUT)
-        return std::max(img.GetWidth(), img.GetHeight());
+        return std::max(texture.GetWidth(), texture.GetHeight());
     try {
-        if (img.GetWidth() != img.GetHeight())
+        if (texture.GetWidth() != texture.GetHeight())
             throw RCT3TextureException(_("The texture is not square."));
-        if (img.GetWidth() > 1024)
+        if (texture.GetWidth() > 1024)
             throw RCT3TextureException(_("The texture is too big. RCT3 can only use textures up to 1024x1024."));
-        if ((1 << local_log2(img.GetWidth())) != img.GetWidth())
+        if ((1 << local_log2(texture.GetWidth())) != texture.GetWidth())
             throw RCT3TextureException(_("The width/height of the texture is not a power of 2."));
     } catch (Magick::Exception& e) {
         throw RCT3TextureException(wxString(_("Image Error during check: %s")) + wxString::FromUTF8(e.what()));
     }
-    return img.GetWidth();
+    return texture.GetWidth();
 }

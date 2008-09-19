@@ -34,6 +34,8 @@
 //#include <wx/xrc/xmlres.h>
 //#include <wx/xrc/xh_all.h>
 
+#include "xmldefs.h"
+
 #include "bzipstream.h"
 #include "cXmlDoc.h"
 #include "cXmlNode.h"
@@ -62,6 +64,28 @@ bool ValidatorApp::OnInit() {
     m_title = wxString::Format(_("%s v%ld.%ld%s (Build %ld)"),
         wxT("Schema Validator"), AutoVersion::MAJOR, AutoVersion::MINOR,
         wxString(AutoVersion::STATUS_SHORT, wxConvLocal).c_str(), AutoVersion::BUILD);
+
+    m_abbreviations["xml"] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n|";
+    m_abbreviations["rawr"] = "<rawovl basedir=\"$(basedir:output\\)\" installdir=\"$(installdir)\" xmlns=\"http://rct3.sourceforge.net/rct3xml/raw\">\n\t|\n</rawovl>\n";
+    m_abbreviations["rawb"] = "<rawovl basedir=\"$(basedir)\">\n\t|\n</rawovl>\n";
+    m_abbreviations["raw"] = "<rawovl file=\"$(file:|)\">\n\t|\n</rawovl>\n";
+    m_abbreviations["banf"] = "<ban name=\"$(name:|)\" modelFile=\"$(Model file;Model Files|*.modxml;*.ms3d)\" />\n|";
+    m_abbreviations["splf"] = "<spl name=\"$(name:|)\" modelFile=\"$(Model file;Model Files|*.modxml)\" />\n|";
+    m_abbreviations["iimport"] = "<import file=\"$(Scenery file to import;Scenery Files|*.xml;*.modxml;*.ms3d;*.scn)\" name=\"$(name:|)\" id=\"mainimport\"/>\n|";
+    m_abbreviations["simport"] = "<import file=\"$(Scenery file to import;Scenery Files|*.xml;*.modxml;*.ms3d;*.scn)\" use=\"splines\" id=\"$(id:|)\"/>\n|";
+    m_abbreviations["import"] = "<import file=\"$(Scenery file to import;Scenery Files|*.xml;*.modxml;*.ms3d;*.scn)\" name=\"$(name:|)\"/>\n|";
+    m_abbreviations["ftx"] = "<ftx name=\"$(name:|)\">\n\t<ftxframe>\n\t\t<image usealpha=\"$(alpha:0)\">$(texture;Image files|*.png;*.bmp;*.jpg;*.jpeg|All files|*.*)</image>\n\t</ftxframe>\n\t<ftxanimation index=\"0\"/>\n</ftx>\n|";
+    m_abbreviations["sid"] = "<sid name=\"$(name:|)\" nametxt=\"$(name)\" icon=\"$(name)\" ovlpath=\"$(ovlpath:Style\\Custom\\)\" svd=\"$(name)\">\n\t<position xsize=\"4\" ysize=\"4\" zsize=\"4\" xsquares=\"1\" zsquares=\"1\"/>\n</sid>\n|";
+    m_abbreviations["tex"] = "<tex name=\"$(name:|)\" format=\"20\">\n\t<texture><data type=\"file\">$(texture;Image files|*.png;*.bmp;*.jpg;*.jpeg|All files|*.*)</data></texture>\n</tex>\n|";
+    m_abbreviations["gsi"] = "<gsi name=\"$(name:|)\" tex=\"$(tex)\" left=\"$(left:0)\" top=\"$(top:0)\" right=\"$(right:64)\" bottom=\"$(bottom:64)\"/>\n|";
+    m_abbreviations["txt"] = "<txt name=\"$(name:|)\" type=\"text\">|</txt>\n";
+    m_abbreviations["ref"] = "<reference>|</reference>\n";
+
+    m_mappings["ns:" XML_NAMESPACE_SCENERY] = "??Scenery";
+    m_mappings["ns:" XML_NAMESPACE_RAW] = "??Raw";
+    m_mappings["ns:" XML_NAMESPACE_COMPILER] = "??Compiler";
+    m_mappings["ns:" XML_NAMESPACE_MODEL] = "??Model";
+    m_mappings["root:ms3d"] = "??MS3D";
 
     frmMain* main = new frmMain(NULL);
     main->Show(true);

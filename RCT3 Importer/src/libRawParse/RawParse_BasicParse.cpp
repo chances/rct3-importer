@@ -35,20 +35,20 @@ cOvlType cRawParser::ParseType(const cXmlNode& node, const wxString& nodes, cons
     wxString t(node.getPropVal(attribute.mb_str(wxConvUTF8)).c_str(), wxConvUTF8);
     MakeVariable(t);
     if (t.IsEmpty())
-        throw RCT3Exception(FinishNodeError(nodes+_(" tag misses ") + attribute + _(" attribute."), node));
+        throw MakeNodeException<RCT3Exception>(nodes+_(" tag misses ") + attribute + _(" attribute."), node);
     if (t == wxT("common")) {
         return OVLT_COMMON;
     } else if (t == wxT("unique")) {
         return OVLT_UNIQUE;
     } else {
-        throw RCT3InvalidValueException(FinishNodeError(nodes+_(" tag, ") + attribute + _(" attribute: invalid value ")+t, node));
+        throw MakeNodeException<RCT3InvalidValueException>(nodes+_(" tag, ") + attribute + _(" attribute: invalid value ")+t, node);
     }
 }
 
 wxString cRawParser::ParseString(const cXmlNode& node, const wxString& nodes, const wxString& attribute, bool* variable, bool addprefix) {
     wxString t(HandleStringContent(node.wxgetPropVal(attribute), variable, addprefix));
     if (t.IsEmpty())
-        throw RCT3Exception(FinishNodeError(nodes+_(" tag misses ") + attribute + _(" attribute."), node));
+        throw MakeNodeException<RCT3Exception>(nodes+_(" tag misses ") + attribute + _(" attribute."), node);
     return t;
 }
 
@@ -100,23 +100,27 @@ unsigned long cRawParser::ParseUnsigned(const cXmlNode& node, const wxString& no
     MakeVariable(t);
     unsigned long i;
     if (t.IsEmpty())
-        throw RCT3Exception(FinishNodeError(nodes+_(" tag misses ") + attribute + _(" attribute."), node));
+        throw MakeNodeException<RCT3Exception>(nodes+_(" tag misses ") + attribute + _(" attribute."), node);
 
     if (t.StartsWith('b')) {
         try {
             bitset<32> bits(string(t.utf8_str()), 1);
             i = bits.to_ulong();
         } catch (exception& e) {
-            throw RCT3InvalidValueException(FinishNodeError(nodes+_(" tag, ") + attribute + _(" attribute: invalid binary value ")+t, node));
+            throw MakeNodeException<RCT3InvalidValueException>(nodes+_(" tag, ") + attribute + _(" attribute: invalid binary value ")+t, node);
         }
     } else if (t.StartsWith('h') || t.StartsWith("0x")) {
         wxString hex;
         if (!t.StartsWith('h', &hex))
             t.StartsWith("0x", &hex);
         if (!parseHexULong(hex, i))
-            throw RCT3InvalidValueException(FinishNodeError(nodes+_(" tag, ") + attribute + _(" attribute: invalid hexadecimal value ")+t, node));
+            throw MakeNodeException<RCT3InvalidValueException>(nodes+_(" tag, ") + attribute + _(" attribute: invalid hexadecimal value ")+t, node);
+    } else if (t == "true") {
+        i = 1;
+    } else if (t == "false") {
+        i = 0;
     } else if (!t.ToULong(&i))
-        throw RCT3InvalidValueException(FinishNodeError(nodes+_(" tag, ") + attribute + _(" attribute: invalid value ")+t, node));
+        throw MakeNodeException<RCT3InvalidValueException>(nodes+_(" tag, ") + attribute + _(" attribute: invalid value ")+t, node);
     return i;
 }
 
@@ -125,9 +129,9 @@ long cRawParser::ParseSigned(const cXmlNode& node, const wxString& nodes, const 
     MakeVariable(t);
     long i;
     if (t.IsEmpty())
-        throw RCT3Exception(FinishNodeError(nodes+_(" tag misses ") + attribute + _(" attribute."), node));
+        throw MakeNodeException<RCT3Exception>(nodes+_(" tag misses ") + attribute + _(" attribute."), node);
     if (!t.ToLong(&i))
-        throw RCT3InvalidValueException(FinishNodeError(nodes+_(" tag, ") + attribute + _(" attribute: invalid value ")+t, node));
+        throw MakeNodeException<RCT3InvalidValueException>(nodes+_(" tag, ") + attribute + _(" attribute: invalid value ")+t, node);
     return i;
 }
 
@@ -136,10 +140,10 @@ double cRawParser::ParseFloat(const cXmlNode& node, const wxString& nodes, const
     MakeVariable(t);
     double i;
     if (t.IsEmpty())
-        throw RCT3Exception(FinishNodeError(nodes+_(" tag misses ") + attribute + _(" attribute."), node));
+        throw MakeNodeException<RCT3Exception>(nodes+_(" tag misses ") + attribute + _(" attribute."), node);
     string ts = static_cast<const char*>(t.utf8_str());
     if (!parseFloat(ts, i))
-        throw RCT3InvalidValueException(FinishNodeError(nodes+_(" tag, ") + attribute + _(" attribute: invalid value ")+t, node));
+        throw MakeNodeException<RCT3InvalidValueException>(nodes+_(" tag, ") + attribute + _(" attribute: invalid value ")+t, node);
     return i;
 }
 
@@ -160,29 +164,29 @@ void cRawParser::ParseMatrix(const cXmlNode& node, MATRIX& m, const wxString& no
             missrow[0] = false;
             temp = child.content();
             if (!parseMatrixRow(temp, m._11, m._12, m._13, m._14))
-                throw RCT3InvalidValueException(FinishNodeError(nodes+_(" tag, row1: invalid content: ")+temp, child));
+                throw MakeNodeException<RCT3InvalidValueException>(nodes+_(" tag, row1: invalid content: ")+temp, child);
         } else if (child("row2")) {
             missrow[1] = false;
             temp = child.content();
             if (!parseMatrixRow(temp, m._21, m._22, m._23, m._24))
-                throw RCT3InvalidValueException(FinishNodeError(nodes+_(" tag, row2: invalid content: ")+temp, child));
+                throw MakeNodeException<RCT3InvalidValueException>(nodes+_(" tag, row2: invalid content: ")+temp, child);
         } else if (child("row3")) {
             missrow[2] = false;
             temp = child.content();
             if (!parseMatrixRow(temp, m._31, m._32, m._33, m._34))
-                throw RCT3InvalidValueException(FinishNodeError(nodes+_(" tag, row3: invalid content: ")+temp, child));
+                throw MakeNodeException<RCT3InvalidValueException>(nodes+_(" tag, row3: invalid content: ")+temp, child);
         } else if (child("row4")) {
             missrow[3] = false;
             temp = child.content();
             if (!parseMatrixRow(temp, m._41, m._42, m._43, m._44))
-                throw RCT3InvalidValueException(FinishNodeError(nodes+_(" tag, row4: invalid content: ")+temp, child));
+                throw MakeNodeException<RCT3InvalidValueException>(nodes+_(" tag, row4: invalid content: ")+temp, child);
         } else if (child.is(XML_ELEMENT_NODE)) {
-            throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in %s."), STRING_FOR_FORMAT(child.name()), nodes.c_str()), child));
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in %s."), STRING_FOR_FORMAT(child.name()), nodes.c_str()), child);
         }
         child.go_next();
     }
     if (missrow[0] || missrow[1] || missrow[2] || missrow[3])
-        throw RCT3Exception(FinishNodeError(wxString::Format(_("Missing matrix row in %s."), nodes.c_str()), node));
+        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Missing matrix row in %s."), nodes.c_str()), node);
 }
 
 c3DLoaderOrientation cRawParser::ParseOrientation(const cXmlNode& node, const wxString& nodes, c3DLoaderOrientation defori) {
@@ -191,12 +195,12 @@ c3DLoaderOrientation cRawParser::ParseOrientation(const cXmlNode& node, const wx
     wxString up = UTF8STRINGWRAP(node.getPropVal("up"));
     if (hand.IsEmpty()) {
         if (!up.IsEmpty()) {
-            throw RCT3Exception(FinishNodeError(wxString::Format(_("Hand attribute missing in %s."), up.c_str(), nodes.c_str()), node));
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Hand attribute missing in %s."), up.c_str(), nodes.c_str()), node);
         }
         // Fall through to default
     } else if (hand == wxT("left")) {
         if (up.IsEmpty()) {
-            throw RCT3Exception(FinishNodeError(wxString::Format(_("Up attribute missing in %s."), up.c_str(), nodes.c_str()), node));
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Up attribute missing in %s."), up.c_str(), nodes.c_str()), node);
         } else if (up == wxT("x")) {
             ori = ORIENTATION_LEFT_XUP;
         } else if (up == wxT("y")) {
@@ -204,11 +208,11 @@ c3DLoaderOrientation cRawParser::ParseOrientation(const cXmlNode& node, const wx
         } else if (up == wxT("z")) {
             ori = ORIENTATION_LEFT_ZUP;
         } else {
-            throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown value '%s' for up attribute in %s."), up.c_str(), nodes.c_str()), node));
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown value '%s' for up attribute in %s."), up.c_str(), nodes.c_str()), node);
         }
     } else if (hand == wxT("right")) {
         if (up.IsEmpty()) {
-            throw RCT3Exception(FinishNodeError(wxString::Format(_("Up attribute missing in %s."), up.c_str(), nodes.c_str()), node));
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Up attribute missing in %s."), up.c_str(), nodes.c_str()), node);
         } else if (up == wxT("x")) {
             ori = ORIENTATION_RIGHT_XUP;
         } else if (up == wxT("y")) {
@@ -216,10 +220,10 @@ c3DLoaderOrientation cRawParser::ParseOrientation(const cXmlNode& node, const wx
         } else if (up == wxT("z")) {
             ori = ORIENTATION_RIGHT_ZUP;
         } else {
-            throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown value '%s' for up attribute in %s."), up.c_str(), nodes.c_str()), node));
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown value '%s' for up attribute in %s."), up.c_str(), nodes.c_str()), node);
         }
     } else {
-        throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown value '%s' for handedness attribute in %s."), up.c_str(), nodes.c_str()), node));
+        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown value '%s' for handedness attribute in %s."), up.c_str(), nodes.c_str()), node);
     }
     return ori;
 }
@@ -292,7 +296,7 @@ void cRawParser::ParseVariables(cXmlNode& node, bool command, const wxString& pa
         } else if (child(RAWXML_VARIABLES)) {
             ParseVariables(child, command, path);
         } else if (child.is(XML_ELEMENT_NODE)) {
-            throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in variables tag."), STRING_FOR_FORMAT(child.name())), child));
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in variables tag."), STRING_FOR_FORMAT(child.name())), child);
         }
         child.go_next();
     }
@@ -326,7 +330,7 @@ void cRawParser::ParseAttraction(const cXmlNode& node, cAttraction& attraction) 
             OPTION_PARSE(unsigned long, attraction.unk12, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_EXTENSION), wxT("u12")));
             OPTION_PARSE(unsigned long, attraction.ui_deactivation, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_EXTENSION), wxT("uiDeactivationFlags")));
         } else if (child.element()) {
-            throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in attraction tag."), STRING_FOR_FORMAT(child.name())), child));
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in attraction tag."), STRING_FOR_FORMAT(child.name())), child);
         }
     }
 }
@@ -369,7 +373,7 @@ void cRawParser::ParseRide(const xmlcpp::cXmlNode& node, cRide& ride) {
             ParseRideStationLimit(child, limit);
             ride.stationlimits.push_back(limit);
         } else if (child.element()) {
-            throw RCT3Exception(FinishNodeError(wxString::Format(_("Unknown tag '%s' in ride tag."), STRING_FOR_FORMAT(child.name())), child));
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in ride tag."), STRING_FOR_FORMAT(child.name())), child);
         }
     }
 }

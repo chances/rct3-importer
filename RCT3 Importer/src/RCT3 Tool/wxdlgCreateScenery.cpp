@@ -409,8 +409,16 @@ bool dlgCreateScenery::TransferDataFromWindow() {
         flags |= r3::Constants::SVD::Flags::No_Shadow;
     if (m_checkRotation->IsChecked())
         flags |= r3::Constants::SVD::Flags::Rotation;
-    if (m_checkUnknown->IsChecked())
-        flags |= (r3::Constants::SVD::Flags::Unknown01 & r3::Constants::SVD::Flags::Unknown02 & r3::Constants::SVD::Flags::Unknown03);
+    if (m_checkTransformed->IsChecked())
+        flags |= r3::Constants::SVD::Flags::Animated_Preview;
+    if (m_checkUnknown01->IsChecked())
+        flags |= r3::Constants::SVD::Flags::Unknown01;
+    if (m_checkUnknown02->IsChecked())
+        flags |= r3::Constants::SVD::Flags::Unknown02;
+    if (m_checkUnknown03->IsChecked())
+        flags |= r3::Constants::SVD::Flags::Unknown03;
+    if (m_checkUnknownFerris->IsChecked())
+        flags |= r3::Constants::SVD::Flags::Unknown_Giant_Ferris;
     m_SCN.sivsettings.sivflags = flags;
 
     return wxDialog::TransferDataFromWindow();
@@ -427,7 +435,11 @@ bool dlgCreateScenery::TransferDataToWindow() {
     m_checkGreenery->SetValue(m_SCN.sivsettings.sivflags & r3::Constants::SVD::Flags::Greenery);
     m_checkShadow->SetValue(m_SCN.sivsettings.sivflags & r3::Constants::SVD::Flags::No_Shadow);
     m_checkRotation->SetValue(m_SCN.sivsettings.sivflags & r3::Constants::SVD::Flags::Rotation);
-    m_checkUnknown->SetValue(m_SCN.sivsettings.sivflags & (r3::Constants::SVD::Flags::Unknown01 & r3::Constants::SVD::Flags::Unknown02 & r3::Constants::SVD::Flags::Unknown03));
+    m_checkTransformed->SetValue(m_SCN.sivsettings.sivflags & r3::Constants::SVD::Flags::Animated_Preview);
+    m_checkUnknown01->SetValue(m_SCN.sivsettings.sivflags & r3::Constants::SVD::Flags::Unknown01);
+    m_checkUnknown02->SetValue(m_SCN.sivsettings.sivflags & r3::Constants::SVD::Flags::Unknown02);
+    m_checkUnknown03->SetValue(m_SCN.sivsettings.sivflags & r3::Constants::SVD::Flags::Unknown03);
+    m_checkUnknownFerris->SetValue(m_SCN.sivsettings.sivflags & r3::Constants::SVD::Flags::Unknown_Giant_Ferris);
 
     return wxDialog::TransferDataToWindow();
 }
@@ -1114,12 +1126,15 @@ void dlgCreateScenery::OnModelEdit(wxCommandEvent& WXUNUSED(event)) {
         return;
     dlgModel *dialog = new dlgModel(this);
     if (m_SCN.models[sel].error.size()) {
-        wxString errtext;// = m_SCN.models[sel].error[0];
-        /*
-        while (m_SCN.models[sel].error.erase(m_SCN.models[sel].error.begin()) != m_SCN.models[sel].error.end()) {
-            errtext += wxT("\n\n") + m_SCN.models[sel].error[0];
-        }
-        */
+        wxString errtext;
+        foreach(wxString& err, m_SCN.models[sel].error)
+            errtext += (errtext.IsEmpty()?wxT(""):wxT("\n\n")) + err;
+        ::wxMessageBox(errtext, wxString(m_SCN.models[sel].fatal_error?_("Error"):_("Warning")) + _(" during model file loading"), wxOK | (m_SCN.models[sel].fatal_error?wxICON_ERROR:wxICON_WARNING), this);
+        m_SCN.models[sel].error.clear();
+    }
+    m_SCN.models[sel].Sync();
+    if (m_SCN.models[sel].error.size()) {
+        wxString errtext;
         foreach(wxString& err, m_SCN.models[sel].error)
             errtext += (errtext.IsEmpty()?wxT(""):wxT("\n\n")) + err;
         ::wxMessageBox(errtext, wxString(m_SCN.models[sel].fatal_error?_("Error"):_("Warning")) + _(" during model file loading"), wxOK | (m_SCN.models[sel].fatal_error?wxICON_ERROR:wxICON_WARNING), this);
@@ -1281,18 +1296,16 @@ void dlgCreateScenery::OnAModelEdit(wxCommandEvent& WXUNUSED(event)) {
     dlgModel *dialog = new dlgModel(this, true);
     if (m_SCN.animatedmodels[sel].error.size()) {
         wxString errtext;
-        for(wxArrayString::iterator it = m_SCN.animatedmodels[sel].error.begin(); it != m_SCN.animatedmodels[sel].error.end(); ++it) {
-            if (it != m_SCN.animatedmodels[sel].error.begin())
-                errtext += wxT("\n\n");
-            errtext += *it;
-        }
+        foreach(wxString& err, m_SCN.animatedmodels[sel].error)
+            errtext += (errtext.IsEmpty()?wxT(""):wxT("\n\n")) + err;
+        ::wxMessageBox(errtext, wxString(m_SCN.animatedmodels[sel].fatal_error?_("Error"):_("Warning")) + _(" during model file loading"), wxOK | (m_SCN.animatedmodels[sel].fatal_error?wxICON_ERROR:wxICON_WARNING), this);
         m_SCN.animatedmodels[sel].error.clear();
-/*
-        wxString errtext = m_SCN.animatedmodels[sel].error[0];
-        while (m_SCN.animatedmodels[sel].error.erase(m_SCN.animatedmodels[sel].error.begin()) != m_SCN.animatedmodels[sel].error.end()) {
-            errtext += wxT("\n\n") + m_SCN.animatedmodels[sel].error[0];
-        }
-*/
+    }
+    m_SCN.animatedmodels[sel].Sync();
+    if (m_SCN.animatedmodels[sel].error.size()) {
+        wxString errtext;
+        foreach(wxString& err, m_SCN.animatedmodels[sel].error)
+            errtext += (errtext.IsEmpty()?wxT(""):wxT("\n\n")) + err;
         ::wxMessageBox(errtext, wxString(m_SCN.animatedmodels[sel].fatal_error?_("Error"):_("Warning")) + _(" during model file loading"), wxOK | (m_SCN.animatedmodels[sel].fatal_error?wxICON_ERROR:wxICON_WARNING), this);
         m_SCN.animatedmodels[sel].error.clear();
     }

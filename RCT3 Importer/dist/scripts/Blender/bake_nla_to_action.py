@@ -1,13 +1,13 @@
 #!BPY
 
 """
-Name: 'Bake NLA strips to Action'
+Name: '[Bake] NLA strips to Action'
 Blender: 245
 Group: 'Animation'
-Tooltip: 'Version 0.1'
+Tooltip: 'Version 0.2'
 """
 __author__ = "Belgabor"
-__version__ = "0.1"
+__version__ = "0.2"
 __bpydoc__ = """
 
 """
@@ -30,8 +30,18 @@ __bpydoc__ = """
 #
 # ***** END GPL LICENCE BLOCK *****
 
-import Blender, math, sys as osSys #os
-from Blender import sys, Draw, Scene, Armature, Window, Object, Mathutils
+# Properly baking bones with constraints was learned from vladius'
+# script available here: http://blenderartists.org/forum/showthread.php?t=109244
+
+# The simplification code is based on a script by aleksey grishchenko (http://eggnot.com/) 2006
+# to be found here: http://blenderartists.org/forum/showthread.php?t=84599
+
+import Blender, math, time, sys as osSys #os
+from Blender import sys, Draw, Scene, Armature, Window, Object, Mathutils, IpoCurve
+from action_script_tools import *
+
+timing_fix = 0.0
+timing_simple = 0.0
 
 def invertMatrix(mtx):
     mtxi= Mathutils.Matrix(mtx)
@@ -60,12 +70,43 @@ def bakeFrame(frame, arm_obj, pose, xforms):
         bone.insertKey(arm_obj, frame, xforms, True)
 
 def calculateIpos(act):
-    for ipo in act.getAllChannelIpos().values():
-        for icu in ipo:
-            icu.recalc()
+    global settings, timing_fix, timing_simple
+#    if settings['doFix']:
+#        print "  Fixing..."
+#        QuaternionFixer.fixActionBagged(act, settings)
+#    if settings['doSimplify']:
+#        print "  Simplifying..."
+#        Simplifier.simplifyActionBagged(act, settings, inPlace=True)
+#    else:
+    frames = sorted(act.getFrameNumbers())
+    length = len(frames)
+    minfr = frames[0]
+    maxfr = frames[length-1]
+    for chname, ipo in act.getAllChannelIpos().items():
+        print "  Bone %s" % chname
+        if settings['doFix']:
+            t = -time.clock()
+            print "    Fixing..."
+            QuaternionFixer.fixIpoBagged(chname, ipo, frames, length, settings)
+            t += time.clock()
+            print "    ... took %f s" % t
+            timing_fix += t
+        if settings['doSimplify']:
+            t = -time.clock()
+            print "    Simplifying..."
+            Simplifier2.simplifyIpoBagged(chname, ipo, settings)
+            t += time.clock()
+            print "    ... took %f s" % t
+            timing_simple += t
+        else:
+            for icu in ipo:
+                icu.recalc()
+
+
+settings = ConfigBag("bakenla")
 
 def main():
-    global rest_bones
+    global rest_bones, settings
 
     # Get current scene
 
@@ -83,59 +124,44 @@ def main():
     armature_data = armature_obj.getData();
     rest_bones = armature_data.bones
 
-    settings = {}
-    settings['autoMode'] = 0
-    settings['startFrame'] = rcontext.sFrame
-    settings['endFrame'] = rcontext.eFrame
-    settings['everyFrames'] = 1
-    settings['includeLast'] = 1
-    settings['actionPrefix'] = "baked_"
-    settings['doLoc'] = 1
-    settings['doRot'] = 1
-    settings['doSca'] = 0
+    bag = settings.addBag('Options...')
+    bag.addSetting("autoMode", 0, "t", "Auto-Split", "Split action on named keyframes.")
+    bag.addSetting("firstOnly", 0, "t", "First only", "Bake only the first action in split mode.")
+    bag.addSetting("startFrame", 0, "n", "Start Frame", "Frame to start baking from. 0 uses the current start frame (%d)." % rcontext.sFrame, 0, 30000)
+    bag.addSetting("endFrame", 0, "n", "End Frame", "Frame to end baking at. 0 uses the current end frame (%d)." % rcontext.eFrame, 0, 30000)
+    bag.addSetting("everyFrames", 1, "n", "Frame tick", "Bake one keyframe for every X number of frames", 1, 30000)
+    bag.addSetting("includeLast", 1, "t", "Include last", "Include the end frame or stop one before.")
+    bag.addSetting("actionPrefix", "baked_", "s", "Action prefix", "Prefix for generated action(s)", Max=30)
 
-    OPTION_AUTOMODE = Draw.Create(settings['autoMode'])
-    OPTION_STARTFRAME = Draw.Create(settings['startFrame'])
-    OPTION_ENDFRAME = Draw.Create(settings['endFrame'])
-    OPTION_EVERYFRAMES = Draw.Create(settings['everyFrames'])
-    OPTION_INCLUDELAST = Draw.Create(settings['includeLast'])
-    OPTION_ACTIONPREFIX = Draw.Create(settings['actionPrefix'])
-    OPTION_DOLOC = Draw.Create(settings['doLoc'])
-    OPTION_DOROT = Draw.Create(settings['doRot'])
-    OPTION_DOSCA = Draw.Create(settings['doSca'])
+    bag = settings.addBag('Generated keyframe ipos...', seps=1)
+    bag.addSetting("doLoc", 1, "t", "Location", "Store location.")
+    bag.addSetting("doRot", 1, "t", "Rotation", "Store rotation.")
+    bag.addSetting("doSca", 0, "t", "Scale", "Store scale.")
 
-    pupoptions = []
-    pupoptions.append(('Options...'))
-    pupoptions.append(('Auto-Split', OPTION_AUTOMODE, 'Split action on named keyframes.'))
-    pupoptions.append(('Start Frame', OPTION_STARTFRAME, 1, 30000, 'Frame to start baking from'))
-    pupoptions.append(('End Frame', OPTION_ENDFRAME, 1, 30000, 'Frame to end baking at'))
-    pupoptions.append(('Frame tick', OPTION_EVERYFRAMES, 1, 30000, 'Bake one keyframe for every X number of frames'))
-    pupoptions.append(('Include last', OPTION_INCLUDELAST, 'Include the end frame or stop one before.'))
-    pupoptions.append(('Action prefix', OPTION_ACTIONPREFIX, 0, 30, 'Prefix for generated action(s)'))
-    pupoptions.append(('Generated keyframe ipos...'))
-    pupoptions.append(('Location', OPTION_DOLOC, 'Store location.'))
-    pupoptions.append(('Rotation', OPTION_DOROT, 'Store rotation.'))
-    pupoptions.append(('Scale', OPTION_DOSCA, 'Store scale.'))
+    settings.addStoreBag(StoreObject = scene, seps=1)
 
-    if not Draw.PupBlock('Bake NLA to action...', pupoptions):
+    bag = QuaternionFixer.getBag()
+    settings.attachBag(bag, seps=2)
+
+    bag = Simplifier2.getBag()
+    settings.attachBag(bag)
+
+    if not settings.getFromUser("Bake NLA to action(s)..."):
         return
 
-    Window.WaitCursor(1)
-
-    settings['autoMode'] = OPTION_AUTOMODE.val
-    settings['startFrame'] = OPTION_STARTFRAME.val
-    settings['endFrame'] = OPTION_ENDFRAME.val
-    settings['everyFrames'] = OPTION_EVERYFRAMES.val
-    settings['includeLast'] = OPTION_INCLUDELAST.val
-    settings['actionPrefix'] = OPTION_ACTIONPREFIX.val
-    settings['doLoc'] = OPTION_DOLOC.val
-    settings['doRot'] = OPTION_DOROT.val
-    settings['doSca'] = OPTION_DOSCA.val
+    if not settings['startFrame']:
+        settings['startFrame'] = rcontext.sFrame
+    if not settings['endFrame']:
+        settings['endFrame'] = rcontext.eFrame
 
     # Store current
     storeFrame = rcontext.currentFrame()
     storeNLAOverride = armature_obj.enableNLAOverride
     storeAction = armature_obj.getAction()
+
+    start = time.clock()
+    print "--------------------------------------------"
+    print "Start Baking..."
 
     # Set up processing
     pose = armature_obj.getPose()
@@ -154,28 +180,43 @@ def main():
     lastFrameWritten = 0
     actionFrameOffset = 0
     frameTick = 1
+    autoMode = settings['autoMode']
+    Window.DrawProgressBar(0.0, "Starting")
+    length = float(settings['endFrame']-settings['startFrame']+1)
 
     # process
     for frame in range(settings['startFrame'], settings['endFrame']):
-        if settings['autoMode']:
+        progress = (frame-settings['startFrame']+1)/length
+        text = ""
+        if curr_action != None:
+            text = curr_action.name
+        else:
+            text = "Skipping..."
+        Window.DrawProgressBar(progress, "[%.1f] %s" % (progress*100.0, text))
+        if autoMode:
             frname = None
             try:
                 frname = timeline.getName(frame)
             except:
                 pass
             if frname:
-                print "%d: '%s'" % (frame, frname)
                 if curr_action:
+                    if settings['firstOnly']:
+                        break
                     frameToWrite = frame
                     if not settings['includeLast']:
                         frameToWrite = frame - 1
                     if frameToWrite != lastFrameWritten:
                         rcontext.currentFrame(frameToWrite)
                         bakeFrame(frameToWrite - actionFrameOffset, armature_obj, pose, xforms)
+                    Window.DrawProgressBar(progress, "[%.1f] %s" % (progress*100.0, text+" (PP)"))
                     calculateIpos(curr_action)
                 if frname[0] == '_':
+                    print "Skipping '%s' at %d" % (frname, frame)
                     curr_action = None
                 else:
+                    print "Action '%s' at %d" % (settings['actionPrefix']+frname, frame)
+                    print "  Baking..."
                     curr_action = Armature.NLA.NewAction(settings['actionPrefix']+frname)
                     curr_action.setActive(armature_obj)
                     actionFrameOffset = frame - 1
@@ -196,6 +237,7 @@ def main():
             if lastFrameWritten != (settings['endFrame'] - 1):
                 rcontext.currentFrame(settings['endFrame'] - 1)
                 bakeFrame(settings['endFrame'] - actionFrameOffset - 1, armature_obj, pose, xforms)
+        Window.DrawProgressBar(progress, "[Nearly Done] %s" % (curr_action.name+" (PP)"))
         calculateIpos(curr_action)
 
     # Clean up
@@ -203,6 +245,13 @@ def main():
     armature_obj.enableNLAOverride = storeNLAOverride
     if storeAction:
         storeAction.setActive(armature_obj)
+
+    end = time.clock()
+    print "Baked in %.2f %s" % (end-start, "seconds")
+    if timing_fix > 0:
+        print "  Fix Benchmark: %.2f %s" % (timing_fix, "seconds")
+    if timing_simple > 0:
+        print "  Simplification Benchmark: %.2f %s" % (timing_simple, "seconds")
 
     Window.WaitCursor(0)
 

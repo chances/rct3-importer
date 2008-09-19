@@ -409,6 +409,7 @@ void dlgKeyframes::DoCalculation(int axis) {
                     m_axes[axis].push_back(t);
                 }
                 m_gridVals->GetTable()->SetValue(i, axis, boost::str(boost::format("%.6f") % t));
+                m_gridVals->GetTable()->SetValue(i, axis+3, boost::str(boost::format("%.6f") % ((len)/(m_endTime-m_startTime))));
             }
             m_gridVals->ForceRefresh();
 
@@ -457,6 +458,7 @@ void dlgKeyframes::DoCalculation(int axis) {
                     m_axes[axis].push_back(s);
                 }
                 m_gridVals->GetTable()->SetValue(i, axis, boost::str(boost::format("%.6f") % s));
+                m_gridVals->GetTable()->SetValue(i, axis+3, boost::str(boost::format("%.6f") % (velmin + acc*t)));
             }
             m_gridVals->ForceRefresh();
 
@@ -509,6 +511,7 @@ void dlgKeyframes::DoCalculation(int axis) {
                     m_axes[axis].push_back(s);
                 }
                 m_gridVals->GetTable()->SetValue(i, axis, boost::str(boost::format("%.6f") % s));
+                m_gridVals->GetTable()->SetValue(i, axis+3, boost::str(boost::format("%.6f") % (velmin + a0*t + 0.5 * jerk * t * t)));
             }
             m_gridVals->ForceRefresh();
 
@@ -596,6 +599,7 @@ void dlgKeyframes::DoCalculation(int axis) {
                     m_axes[axis].push_back(s);
                 }
                 m_gridVals->GetTable()->SetValue(i, axis, boost::str(boost::format("%.6f") % s));
+                m_gridVals->GetTable()->SetValue(i, axis+3, boost::str(boost::format("%.6f") % ((t<t1)?(velmin + acc*t):(vm - acc*(t-t1)))));
             }
             m_gridVals->ForceRefresh();
 
@@ -647,6 +651,7 @@ void dlgKeyframes::DoCalculation(int axis) {
                     m_axes[axis].push_back(s);
                 }
                 m_gridVals->GetTable()->SetValue(i, axis, boost::str(boost::format("%.6f") % s));
+                m_gridVals->GetTable()->SetValue(i, axis+3, boost::str(boost::format("%.6f") % (val*b*cos(c+b*t))));
             }
             m_gridVals->ForceRefresh();
 
@@ -699,6 +704,7 @@ void dlgKeyframes::DoCalculation(int axis) {
                     m_axes[axis].push_back(s);
                 }
                 m_gridVals->GetTable()->SetValue(i, axis, boost::str(boost::format("%.6f") % s));
+                m_gridVals->GetTable()->SetValue(i, axis+3, "?");
             }
             m_gridVals->ForceRefresh();
 

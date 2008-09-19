@@ -82,6 +82,84 @@ txyz txyzEulerToAxis(const txyz& euler) {
     return txyzMake(euler.Time, qx*aa/sqrtf(1-qw*qw), qy*aa/sqrtf(1-qw*qw), qz*aa/sqrtf(1-qw*qw));
 }
 
+/** @brief vertex2boneFix
+  *
+  * @todo: document this function
+  */
+void vertex2boneFix(r3::VERTEX2& v) {
+    int used = 0;
+    int weight = 0;
+    for (int i = 0; i < 4; ++i) {
+        if (v.boneweight[i]) {
+            used++;
+            weight += v.boneweight[i];
+        }
+    }
+    if ((weight == 0xFF) || (!used))
+        return;
+
+    int rest = 0xFF - weight;
+    if (used == 4) {
+        if ((rest > 4) || (rest < -4)) {
+            for (int i = 0; i < 4; ++i) {
+                v.boneweight[i] = static_cast<float>(v.boneweight[i]) * 255.0 / static_cast<float>(weight);
+            }
+            vertex2boneFix(v);
+        } else {
+            if (rest > 0) {
+                int b = 0;
+                while (rest) {
+                    if (v.boneweight[b]<255) {
+                        v.boneweight[b]++;
+                        rest--;
+                    }
+                    b++;
+                    if (b == used)
+                        b = 0;
+                }
+            } else {
+                int b = 0;
+                while (rest) {
+                    if (v.boneweight[b]) {
+                        v.boneweight[b]--;
+                        rest++;
+                    }
+                    b++;
+                    if (b == used)
+                        b = 0;
+                }
+            }
+        }
+    } else {
+        if (rest > used) {
+            v.bone[used] = -1;
+            v.boneweight[used] = rest;
+        } else if (rest > 0) {
+            int b = 0;
+            while (rest) {
+                if (v.boneweight[b]<255) {
+                    v.boneweight[b]++;
+                    rest--;
+                }
+                b++;
+                if (b == used)
+                    b = 0;
+            }
+        } else {
+            int b = 0;
+            while (rest) {
+                if (v.boneweight[b]) {
+                    v.boneweight[b]--;
+                    rest++;
+                }
+                b++;
+                if (b == used)
+                    b = 0;
+            }
+        }
+    }
+}
+
 
 void matrixSetUnity(MATRIX& m) {
     memset(&m, 0, sizeof(m));

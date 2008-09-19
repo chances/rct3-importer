@@ -37,6 +37,12 @@
 #include "ManagerOVL.h"
 #include "ManagerCommon.h"
 
+struct cAnimatedRideShowItem {
+    unsigned long animation;
+    std::string name;
+    cAnimatedRideShowItem(): animation(0) {}
+};
+
 class cAnimatedRide {
 public:
     std::string name;
@@ -49,6 +55,7 @@ public:
 	unsigned long unk25;        ///< Seen 10
     unsigned long unk8;           ///< Seen 0
     unsigned long unk9;           ///< Seen 0
+    std::vector<cAnimatedRideShowItem> showitems;
 
     cAnimatedRide() {
         attraction.type = r3::Constants::Attraction::Type::Ride_Thrill;

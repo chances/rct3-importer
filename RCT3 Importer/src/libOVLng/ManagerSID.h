@@ -204,10 +204,41 @@ public:
     void Fill(r3::SceneryItem_V* i);
 };
 
+class cSidSoundScript {
+public:
+    float time;
+    long command;
+    float parameter[2];
+
+    cSidSoundScript():time(0.0), command(0) {
+        parameter[0] = 0.0;
+        parameter[1] = 0.0;
+    }
+    cSidSoundScript(float _time):time(_time), command(0) {
+        parameter[0] = 0.0;
+        parameter[1] = 0.0;
+    }
+    unsigned long GetCommonSize() const;
+};
+
+class cSidSound {
+public:
+    std::vector<std::string> sounds; // unique
+    std::vector< std::vector<cSidSoundScript> > animationscripts; // common
+    float extra_unkf[2];
+    unsigned long extra_unk;
+
+    cSidSound() {
+        extra_unkf[0] = -1.0;
+        extra_unkf[1] = -1.0;
+        extra_unk = 0;
+    }
+    void FillExtra(r3::SceneryExtraSound& ses) const;
+};
+
 class cSidExtra {
 public:
     unsigned short version;
-	r3::SceneryExtraSound* SoundsUnk;
 	unsigned long unk2;
 	unsigned long AddonPack;       // 0 = Vanilla, 1 = Soaked, 2 = Wild
 	unsigned long GenericAddon;
@@ -216,7 +247,6 @@ public:
 
     cSidExtra() {
         version = 0;
-        SoundsUnk = 0;
         unk2 = 0;
         AddonPack = 0;
         GenericAddon = 0;
@@ -252,6 +282,7 @@ public:
     cSidStallUnknowns stallunknowns;
     cSidUnknowns unknowns;
     cSidFlatride flatride;
+    std::vector<cSidSound> sounds;
     cSidExtra extra;
     std::vector<std::string> svds;
     std::vector<cSidParam> parameters;

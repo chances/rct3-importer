@@ -77,7 +77,7 @@ unsigned long ovlRelocationManager::DoRelocationForSaving(unsigned long *reloc, 
 	for (unsigned long i = 0;i < 9;i++) {
 	    for (vector<cOvlFile*>::iterator it = m_info->OpenFiles[OVLT_COMMON].types[i].files.begin(); it != m_info->OpenFiles[OVLT_COMMON].types[i].files.end(); ++it) {
 			if ((reloc >= reinterpret_cast<unsigned long*>((*it)->data))
-			    && (reloc <= reinterpret_cast<unsigned long*>((*it)->data + (*it)->size))) {
+			    && (reloc < reinterpret_cast<unsigned long*>((*it)->data + (*it)->size))) {
 				return (reinterpret_cast<unsigned long>(reloc)
                       - reinterpret_cast<unsigned long>((*it)->data)
                       + (*it)->reloffset
@@ -90,7 +90,7 @@ unsigned long ovlRelocationManager::DoRelocationForSaving(unsigned long *reloc, 
 	for (unsigned long i = 0;i < 9;i++) {
 	    for (vector<cOvlFile*>::iterator it = m_info->OpenFiles[OVLT_UNIQUE].types[i].files.begin(); it != m_info->OpenFiles[OVLT_UNIQUE].types[i].files.end(); ++it) {
 			if ((reloc >= reinterpret_cast<unsigned long*>((*it)->data))
-			    && (reloc <= reinterpret_cast<unsigned long*>((*it)->data + (*it)->size))) {
+			    && (reloc < reinterpret_cast<unsigned long*>((*it)->data + (*it)->size))) {
 				return (reinterpret_cast<unsigned long>(reloc)
                       - reinterpret_cast<unsigned long>((*it)->data)
                       + (*it)->reloffset
@@ -116,6 +116,7 @@ void ovlRelocationManager::Make() {
             *relocation = fixup;
             unsigned long fixup2 = DoRelocationForSaving(relocation, common);
             DUMP_LOG("Resolve relocated ptr %08lx @ %08lx, fixup %08lx, fixup2 %08lx stored in %s",DPTR(reloc),DPTR(relocation),fixup,fixup2,common?wxT("common"):wxT("unique"));
+//fprintf(stderr, "Resolve relocated ptr %08lx @ %08lx, fixup %08lx, fixup2 %08lx stored in %s\n",DPTR(reloc),DPTR(relocation),fixup,fixup2,common?"common":"unique");
             //m_fixups.push(fixup2);
             if (common)
                 m_info->OpenFiles[OVLT_COMMON].fixups.insert(fixup2);

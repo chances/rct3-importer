@@ -50,6 +50,7 @@
 
 class cBoneShape2;
 class cStaticShape2;
+class cSIVSettings;
 
 class c3DMesh {
 public:
@@ -138,8 +139,11 @@ public:
     unsigned long m_recol;
     unsigned long m_alphaType;
     bool m_referenced;
+    unsigned long m_fps;
+    std::vector< std::pair<wxString, wxString> >  m_frames;
+    std::vector<unsigned long> m_sequence;
 
-    c3DTexture(): m_recol(0), m_alphaType(0), m_referenced(false) {}
+    c3DTexture(): m_recol(0), m_alphaType(0), m_referenced(false), m_fps(0) {}
 };
 
 class c3DLoader;
@@ -175,13 +179,19 @@ public:
 
 class c3DLoader {
 friend class c3DLoaderCacheEntry;
+friend class cSIVSettings;
 protected:
     wxString m_filename;
     wxString m_name;
 
     // Suggestions for scenery
     wxString m_path;
-    bool m_noshadow;
+    wxString m_prefix;
+    unsigned long m_flags;
+    float m_sway;
+    float m_brightness;
+    float m_scale;
+    float m_unk;
 
     // Having no meshes signifies an invalid file
 /*
@@ -207,11 +217,11 @@ protected:
     void calculateBonePos1();
     void makeDefaultGroup(const wxString& name = "");
 public:
-    c3DLoader(const wxChar *filename): m_noshadow(false) {
+    c3DLoader(const wxChar *filename): m_flags(0), m_sway(0.0), m_brightness(1.0), m_scale(0.0), m_unk(1.0) {
         m_filename = filename;
         m_name = STRING3D_EMPTY;
     };
-    c3DLoader(c3DLoader* original): m_noshadow(false) {
+    c3DLoader(c3DLoader* original): m_flags(0), m_sway(0.0), m_brightness(1.0), m_scale(0.0), m_unk(1.0) {
         if (original) {
             m_filename = original->m_filename;
             m_name = original->m_name;
@@ -286,17 +296,18 @@ public:
     }
 
     inline const wxString& getSuggestedPath() const { return m_path; }
-    inline bool getSuggestedNoShadow() const { return m_noshadow; }
 
-    virtual bool FetchObject(unsigned int index, unsigned long *vertexcount, r3::VERTEX **vertices, unsigned long *index_count, unsigned long **indices, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
-    virtual bool FetchAsAnimObject(unsigned int index, char bone, unsigned long *vertexcount, r3::VERTEX2 **vertices, unsigned long *index_count, unsigned short **indices, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
+    //virtual bool FetchObject(unsigned int index, unsigned long *vertexcount, r3::VERTEX **vertices, unsigned long *index_count, unsigned long **indices, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
+    //virtual bool FetchAsAnimObject(unsigned int index, char bone, unsigned long *vertexcount, r3::VERTEX2 **vertices, unsigned long *index_count, unsigned short **indices, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
     virtual bool FetchObject(unsigned int index, cStaticShape2* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
     virtual bool FetchObject(unsigned int index, char bone, cBoneShape2* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
     virtual bool FetchObject(unsigned int index, cBoneShape2* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
+    virtual bool FetchObject(unsigned int index, std::vector<wxString>& bonenames, cBoneShape2* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
 
     virtual int GetType() {return C3DLOADER_GENERIC;};
-    inline const wxString& GetName() {return m_name;};
-    inline const wxString& GetFilename() {return m_filename;};
+    inline const wxString& getName() {return m_name;};
+    inline const wxString& getFilename() {return m_filename;};
+    inline const wxString& getPrefix() {return m_prefix;};
     virtual c3DLoaderOrientation GetOrientation() {return ORIENTATION_UNKNOWN;};
 
     static void FlattenNormals(const unsigned long vertexcount, r3::VERTEX *vertices, const r3::VECTOR& bbox_min, const r3::VECTOR& bbox_max);

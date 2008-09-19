@@ -111,6 +111,8 @@ inline r3::VERTEX vertex22vertex(const r3::VERTEX2& v) {
     return ret;
 }
 
+void vertex2boneFix(r3::VERTEX2& v);
+
 void matrixSetUnity(r3::MATRIX& m);
 inline r3::MATRIX matrixGetUnity() {
     r3::MATRIX m;

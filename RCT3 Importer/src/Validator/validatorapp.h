@@ -36,14 +36,20 @@ class ValidatorApp : public wxApp, public xmlcpp::cXmlInitHandler {
 private:
     wxFileName m_appdir;
     wxString m_title;
+    std::map<wxString, wxString> m_abbreviations;
+    std::map<wxString, wxString> m_mappings;
 
 public:
     virtual bool OnInit();
     virtual int OnRun();
     virtual int OnExit();
 
+    typedef std::map<wxString, wxString>::iterator mapfind;
+
     inline const wxFileName& getAppDir() const              { return m_appdir; }
     inline const wxString& getTitle() const                 { return m_title; }
+    inline std::map<wxString, wxString>& getAbbreviations() { return m_abbreviations; }
+    inline std::map<wxString, wxString>& getMappings()      { return m_mappings; }
 };
 
 DECLARE_APP(ValidatorApp)

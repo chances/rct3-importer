@@ -29,6 +29,8 @@
 
 #include "ManagerANR.h"
 
+#include "pretty.h"
+
 #include "ManagerGSI.h"
 #include "ManagerSID.h"
 #include "ManagerSPL.h"
@@ -76,8 +78,7 @@ void cAnimatedRide::Fill(r3::AnimatedRide_SW* anr) const {
     anr->sid_ref = NULL;
     anr->unk8 = unk8;
     anr->unk9 = unk9;
-    anr->showitem_count = 0;
-    anr->showitems = NULL;
+    anr->showitem_count = showitems.size();
 }
 
 
@@ -122,6 +123,12 @@ void ovlANRManager::AddRide(const cAnimatedRide& item) {
     m_commonsize += item.attraction.GetCommonSize();
     m_size += item.ride.GetUniqueSize(item.attraction);
     m_commonsize += item.ride.GetCommonSize(item.attraction);
+    if (item.attraction.isnew()) {
+        m_commonsize += item.showitems.size() * sizeof(AnimatedRideShowItem);
+        foreach(const cAnimatedRideShowItem& ani, item.showitems) {
+            STRINGLIST_ADD(ani.name, true);
+        }
+    }
 
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
     GetLSRManager()->AddLoader(OVLT_UNIQUE);
@@ -162,7 +169,7 @@ void ovlANRManager::Make(cOvlInfo* info) {
     unsigned char* c_commondata = m_blobs["1"].data;
 
     for (map<string, cAnimatedRide>::iterator it = m_items.begin(); it != m_items.end(); ++it) {
-        if (it->second.attraction.type & r3::Constants::Addon::Soaked_Hi) {
+        if (it->second.attraction.isnew()) {
             // Assign structs
             AnimatedRide_SW* c_item = reinterpret_cast<AnimatedRide_SW*>(c_data);
             c_data += sizeof(AnimatedRide_SW);
@@ -203,6 +210,11 @@ void ovlANRManager::Make(cOvlInfo* info) {
             c_item->ride_sub_s->v.options[it->second.ride.options.size()] = NULL;
 */
             it->second.Fill(c_item);
+            RELOC_ARRAY(it->second.showitems.size(), c_item->showitems, AnimatedRideShowItem, c_commondata);
+            for(int i = 0; i < it->second.showitems.size(); ++i) {
+                c_item->showitems[i].animation_index = it->second.showitems[i].animation;
+                STRINGLIST_ASSIGN(c_item->showitems[i].name, it->second.showitems[i].name, true, GetStringTable(), GetRelocationManager());
+            }
 
             SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), TAG), reinterpret_cast<unsigned long*>(c_item));
             GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_item), false, c_symbol);

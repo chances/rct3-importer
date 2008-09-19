@@ -26,6 +26,7 @@
 #endif
 
 using namespace r3;
+using namespace r3old;
 
 FILE *f;
 extern unsigned long CurrentFile;

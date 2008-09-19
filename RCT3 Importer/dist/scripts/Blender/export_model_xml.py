@@ -36,13 +36,35 @@ Based on goofos ase exporter v0.6.10
 
 import Blender, time, math, sets, sys as osSys #os
 from Blender import sys, Window, Draw, Scene, Mesh, Material, Texture, Image, Mathutils, Lamp, Curve, Group, Armature, Ipo
+from rct3_bags import *
 
 # from BezierExport
 def GlobaliseVector(vec, mat): return (Mathutils.Vector(vec) * mat)
 
+
 #============================================
 #           Write!
 #============================================
+
+gSilentMessages = False
+def printmsg(info, msg, silent):
+    global gSilentMessages
+    if silent:
+        gSilentMessages = True
+    # Log to console for later reference
+    print "%s: %s" % (info, msg)
+    # Make known to user
+    if not silent:
+        Draw.PupMenu("%s:%s|%s" % (info, "%t", msg))
+
+def errormsg(msg, silent = False):
+    printmsg("Error", msg, silent)
+
+def warningmsg(msg, silent = False):
+    printmsg("Warning", msg, silent)
+
+def infomsg(msg, silent = False):
+    printmsg("Info", msg, silent)
 
 def get_Name(ob):
     try:
@@ -95,7 +117,7 @@ def is_frameSame(fra, frb):
 
 def write(filename):
    start = time.clock()
-   print_boxed('---------Start of Export------------')
+   print_boxed('---------Start of modxml Export------------')
    print 'Export Path: ' + filename
 
    global exp_list, Tab, idnt, imgTable, worldTable, guiTable
@@ -589,8 +611,10 @@ def set_lists(file, exp_list, objects, matTable, worldTable):
 
    for current_obj in objects:
       if current_obj.name[0] == '_':
+         print "Skipped %s" % current_obj.name
          continue
       container = []
+      print "Checking %s..." % current_obj.name
       if current_obj.getType() == 'Mesh':
          mesh = current_obj.data
          #if not mesh.faceUV:
@@ -616,7 +640,16 @@ def set_lists(file, exp_list, objects, matTable, worldTable):
             continue
 
          if len(mesh.faces) == 0:
-            print 'Mesh Object '+current_obj.name+' not exported. No faces.'
+            infomsg('Mesh Object '+current_obj.name+' not exported. No faces.', True)
+            continue
+         # work around API change -.-
+         hasuv = False;
+         if 'faceUV' in dir(mesh):
+             hasuv = mesh.faceUV
+         else:
+             hasuv = mesh.hasFaceUV()
+         if not hasuv:
+            infomsg('Mesh Object '+current_obj.name+' not exported. No UV-mapping.', True)
             continue
 
          container.append(current_obj)
@@ -828,15 +861,19 @@ def set_lists(file, exp_list, objects, matTable, worldTable):
 #============================================
 
 def write_header(file, filename, scn, worldTable):
-   print "Write Header"
+    #print "Write Header"
 
-   file.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-   file.write("<model xmlns=\"http://rct3.sourceforge.net/rct3xml/model\">\n");
-   file.write("%s<system handedness=\"right\" up=\"z\"/>\n" % (Tab))
+    file.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+    file.write("<model xmlns=\"http://rct3.sourceforge.net/rct3xml/model\">\n");
+    glob = RCT3GeneralBag(scn)
+    m = glob.getMetadata(1)
+    if not (m is None):
+        file.write(m)
+    file.write("%s<system handedness=\"right\" up=\"z\"/>\n" % (Tab))
 
 
 def write_post(file, filename, scn, worldTable):
-   print "Write Post"
+   #print "Write Post"
 
    file.write("</model>\n");
 
@@ -1191,7 +1228,7 @@ def write_mesh(file, scn, exp_list, matTable, total):
       total['Verts'] += count['vert']
 
       if count['vert'] == 0:
-         print 'Error: ' + nameMe['meName'] + 'has 0 Verts'
+         errormsg('Error: ' + nameMe['meName'] + 'has 0 Verts, skipped', True)
          continue
 
       vGroups = me.getVertGroupNames()
@@ -1268,7 +1305,7 @@ def write_mesh(file, scn, exp_list, matTable, total):
          file.write("%s<mesh name=\"%s\" texture=\"%s\">\n" % (Tab, nameMe['objName'], me_options['texturename']))
       else:
          file.write("%s<mesh name=\"%s\">\n" % (Tab, nameMe['objName']))
-      print "Exporting Mesh %s\n" % nameMe['objName']
+      print "Exporting Mesh %s" % nameMe['objName']
 
       me.calcNormals()
       idnt = 2
@@ -1281,7 +1318,7 @@ def write_mesh(file, scn, exp_list, matTable, total):
              file.write("%s<textureStyle>%s</textureStyle>\n" % (Tab*3, me_options['texturestyle']))
 
           file.write("%s</metadata>\n" % (Tab*2))
-      mesh_writeMeshData(file, idnt, me, current_container[0])
+      mesh_writeMeshData(file, idnt, me, data, current_container[0])
       #mesh_vertexList(file, idnt, verts, count)
       #idnt = 2
       #mesh_faceList(file, idnt, me, materials, sGroups, faces, matTable, hasTable, count)
@@ -1300,7 +1337,7 @@ def write_mesh(file, scn, exp_list, matTable, total):
 
 
 
-def mesh_writeMeshData(file, idnt, me, obj):
+def mesh_writeMeshData(file, idnt, me, orig_me, obj):
    faces = me.faces
 
    # To export quads it is needed to calculate all face and vertex normals new!
@@ -1345,6 +1382,10 @@ def mesh_writeMeshData(file, idnt, me, obj):
    vertexMap = {}
    indexMap = {}
    p = find_boneParent(obj)
+   warned = False
+   supports_weights = (len(orig_me.verts) == len(me.verts))
+   if guiTable['BWEIGHT'] and (not supports_weights):
+       warningmsg("Mesh does not support bone weights (modifier(s) changed vertex count).", True)
 
    for current_face in faces:
 
@@ -1365,8 +1406,14 @@ def mesh_writeMeshData(file, idnt, me, obj):
             else:
                 name = p
             if isarm:
-                bmap = me.getVertexInfluences(face_verts[i].index)
-                #print "Armature parent! %d\n" % len(bmap)
+                if not guiTable['BWEIGHT']:   # Use modified mesh
+                    bmap = me.getVertexInfluences(face_verts[i].index)
+                else:
+                    if (len(orig_me.verts) == len(me.verts)):
+                        bmap = orig_me.getVertexInfluences(face_verts[i].index)
+                    else:
+                        bmap = me.getVertexInfluences(face_verts[i].index)
+
             else:
                 bmap.append([name, 1.0])
          vert = (face_verts[i].co[0], face_verts[i].co[1], face_verts[i].co[2], no[0], no[1], no[2], current_face.uv[i][0], current_face.uv[i][1])
@@ -1385,8 +1432,16 @@ def mesh_writeMeshData(file, idnt, me, obj):
       # poor man's bone...
 
       bones = vertexMap[current_vert]
+      bsum = 0.0
       for bn in bones:
-         file.write("%s<bone name=\"%s\" weight=\"%f\"/>\n" % ((Tab*idnt), bn[0], bn[1]*100.0/len(bones)))
+         bsum += bn[1]
+      if bsum > 1.0:
+          if not warned:
+            warningmsg("Bone weight sum > 1.0, you probably need to activate bone weights", True)
+            warned = True
+      if bsum > 0.0:
+        for bn in bones:
+            file.write("%s<bone name=\"%s\" weight=\"%f\"/>\n" % ((Tab*idnt), bn[0], bn[1]*100.0/bsum))
 
       idnt -= 1
       file.write("%s</vertex>\n" % ((Tab*idnt)))
@@ -1436,6 +1491,9 @@ def write_groups(file):
       if group.name[0] == '_':
          continue
 
+      distance = RCT3GroupBag(group).lodDistance
+      actions = ModxmlGroupBag(group).animations.split(",")
+
       objects = group.objects
 
       groupobjs = []
@@ -1469,6 +1527,11 @@ def write_groups(file):
 
       if groupobjs:
          file.write("%s<group name=\"%s\">\n" % (Tab, get_Name(group)))
+         if distance>0.0:
+            file.write("%s<metadata role=\"rct3\">\n" % (Tab*2))
+            file.write("%s<lodDistance>%f</lodDistance>\n" % (Tab*3, distance))
+            file.write("%s</metadata>\n" % (Tab*2))
+
          for grobj in groupobjs:
             if grobj.getType() == 'Mesh':
                file.write("%s<mesh>%s</mesh>\n" % ((Tab*2), get_Name(grobj)))
@@ -1485,6 +1548,10 @@ def write_groups(file):
                file.write("%s<bone>%s</bone>\n" % ((Tab*2), s))
             else:
                file.write("%s<bone>%s</bone>\n" % ((Tab*2), get_Name(grobj)))
+
+         for an in actions:
+               file.write("%s<animation>%s</animation>\n" % ((Tab*2), an))
+
          file.write("%s</group>\n" % (Tab))
 
 
@@ -1495,7 +1562,7 @@ def write_groups(file):
 
 def write_ui(filename):
 
-   global guiTable
+   global guiTable, gSilentMessages
    #, EXPORT_MOD, EXPORT_MTL, EXPORT_VC, EXPORT_SELO, EXPORT_UVI, EXPORT_MESHORI, EXPORT_SIMPROT, EXPORT_MAXTIME, EXPORT_FPS, EXPORT_KEYONLY, EXPORT_ROTFORM
    guiTable = {}
 
@@ -1503,12 +1570,13 @@ def write_ui(filename):
 
    # Defaults
    guiTable['MOD'] = 1
+   guiTable['BWEIGHT'] = 0
    guiTable['MTL'] = 1
    guiTable['VC'] = 1
    guiTable['SELO'] = 1
    guiTable['MESHORI'] = 0
    guiTable['SIMPROT'] = 1
-   guiTable['MAXTIME'] = 0.0
+   guiTable['MAXTIME'] = 0
    guiTable['FPS'] = 0
    guiTable['EXPFPS'] = 0
    guiTable['KEYONLY'] = 0
@@ -1530,6 +1598,8 @@ def write_ui(filename):
            eprop = mprop['export']
            if 'MOD' in eprop:
                 guiTable['MOD'] = eprop['MOD']
+           if 'BWEIGHT' in eprop:
+                guiTable['BWEIGHT'] = eprop['BWEIGHT']
            if 'MTL' in eprop:
                 guiTable['MTL'] = eprop['MTL']
            if 'VC' in eprop:
@@ -1562,6 +1632,7 @@ def write_ui(filename):
 
    if guiTable['SHOWOPT']:
        EXPORT_MOD = Draw.Create(guiTable['MOD'])
+       EXPORT_BWEIGHT = Draw.Create(guiTable['BWEIGHT'])
        EXPORT_MTL = Draw.Create(guiTable['MTL'])
        #EXPORT_UV = Draw.Create(guiTable['UV'])
        EXPORT_VC = Draw.Create(guiTable['VC'])
@@ -1584,6 +1655,7 @@ def write_ui(filename):
        pup_block = []
        pup_block.append(('Options...'))
        pup_block.append(('Apply Modifiers', EXPORT_MOD, 'Use modified mesh data from each object.'))
+       pup_block.append(('Bone Weights', EXPORT_BWEIGHT, 'Export bone weights instead of simple assignment (see readme).'))
        pup_block.append(('Materials', EXPORT_MTL, 'Export Materials.'))
        pup_block.append(('RCT3 Fixes', EXPORT_VC, 'Export effect points/bones appropriately for RCT3'))
        pup_block.append(('Simplify Rotations', EXPORT_SIMPROT, 'Simplify rotational keyframes'))
@@ -1599,7 +1671,7 @@ def write_ui(filename):
        pup_block.append(('Mesh Origins', EXPORT_MESHORI, 'Export mesh origins as bones'))
        pup_block.append(('Selection Only', EXPORT_SELO, 'Only export objects in visible selection, else export all mesh object.'))
        pup_block.append(('Export Script...'))
-       pup_block.append(('Store Options', EXPORT_STORE, 'Use modified mesh data from each object.'))
+       pup_block.append(('Store Options', EXPORT_STORE, 'Store these options with your blend file.'))
        pup_block.append(('Show Options', EXPORT_SHOWOPT, 'Show these options.'))
 
        if not Draw.PupBlock('Export...', pup_block):
@@ -1607,6 +1679,7 @@ def write_ui(filename):
 
 
        guiTable['MOD'] = EXPORT_MOD.val
+       guiTable['BWEIGHT'] = EXPORT_BWEIGHT.val
        guiTable['MTL'] = EXPORT_MTL.val
        #guiTable['UV'] = EXPORT_UV.val
        guiTable['VC'] = EXPORT_VC.val
@@ -1626,9 +1699,12 @@ def write_ui(filename):
        guiTable['WRITENONANIM'] = EXPORT_WRITENONANIM.val
 
        if (guiTable['ROTFORM'] != 'E') and (guiTable['ROTFORM'] != 'A') and (guiTable['ROTFORM'] != 'Q'):
-           Draw.PupMenu("Error!%t|Invalid rotation format given.")
+           #Draw.PupMenu("Error!%t|Invalid rotation format given.")
+           errormsg("Invalid rotation format given.")
            return
 
+       if (guiTable['MOD']) and (guiTable['BWEIGHT']):
+           warningmsg("Modifier application and bone weights enabled, this can lead to errors!")
 
        if guiTable['STORE']:
            if not ('modxml' in curscene.properties):
@@ -1636,6 +1712,7 @@ def write_ui(filename):
            if not ('export' in curscene.properties['modxml']):
                curscene.properties['modxml']['export'] = {}
            curscene.properties['modxml']['export']['MOD'] = guiTable['MOD']
+           curscene.properties['modxml']['export']['BWEIGHT'] = guiTable['BWEIGHT']
            curscene.properties['modxml']['export']['MTL'] = guiTable['MTL']
            curscene.properties['modxml']['export']['VC'] = guiTable['VC']
            curscene.properties['modxml']['export']['SELO'] = guiTable['SELO']
@@ -1664,6 +1741,9 @@ def write_ui(filename):
    write(filename)
 
    Window.WaitCursor(0)
+
+   if gSilentMessages:
+       infomsg("There were messages during export, please check the console")
 
 
 if __name__ == '__main__':

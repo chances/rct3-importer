@@ -78,8 +78,6 @@ protected:
     wxButton* m_btMirrorZ;
     wxChoice* m_choiceBone;
     wxButton* m_btFull;
-    wxChoice* m_choiceFix;
-    wxButton* m_btFix;
     wxButton* m_btDefault;
     wxButton* m_btLoad;
     wxButton* m_btOk;
@@ -112,7 +110,6 @@ protected:
 
     void OnSpecialBone(wxCommandEvent& event);
     void OnSpecialDefault(wxCommandEvent& event);
-    void OnSpecialFix(wxCommandEvent& event);
     void OnSpecialLoad(wxCommandEvent& event);
 
     void OnLoad(wxCommandEvent& event);
@@ -167,8 +164,6 @@ private:
         m_btMirrorZ = XRCCTRL(*this,"m_btMirrorZ",wxButton);
         m_choiceBone = XRCCTRL(*this,"m_choiceBone",wxChoice);
         m_btFull = XRCCTRL(*this,"m_btFull",wxButton);
-        m_choiceFix = XRCCTRL(*this,"m_choiceFix",wxChoice);
-        m_btFix = XRCCTRL(*this,"m_btFix",wxButton);
         m_btDefault = XRCCTRL(*this,"m_btDefault",wxButton);
         m_btLoad = XRCCTRL(*this,"m_btLoad",wxButton);
         m_btOk = XRCCTRL(*this,"m_btOk",wxButton);

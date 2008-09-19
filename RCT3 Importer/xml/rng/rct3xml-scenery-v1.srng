@@ -97,6 +97,18 @@
 			<srng:attribute name="name" type="string"/>
 			<srng:attribute name="file" type="string"/>
 			<srng:ref name="orientation"/>
+			<srng:attribute name="autoBones" occurs="?">
+				<srng:choice>
+					<srng:value>0</srng:value>
+					<srng:value>1</srng:value>
+				</srng:choice>
+			</srng:attribute>
+			<srng:attribute name="autoSort" occurs="?">
+				<srng:choice>
+					<srng:value>0</srng:value>
+					<srng:value>1</srng:value>
+				</srng:choice>
+			</srng:attribute>
 			
 			<srng:ref name="matrix" occurs="*"/>
 			<srng:ref name="mesh"/>
@@ -112,6 +124,18 @@
 			<srng:attribute name="name" type="string"/>
 			<srng:attribute name="file" type="string"/>
 			<srng:ref name="orientation"/>
+			<srng:attribute name="autoBones" occurs="?">
+				<srng:choice>
+					<srng:value>0</srng:value>
+					<srng:value>1</srng:value>
+				</srng:choice>
+			</srng:attribute>
+			<srng:attribute name="autoSort" occurs="?">
+				<srng:choice>
+					<srng:value>0</srng:value>
+					<srng:value>1</srng:value>
+				</srng:choice>
+			</srng:attribute>
 			
 			<srng:ref name="matrix" occurs="*"/>
 			<srng:ref name="mesh"/>
@@ -246,6 +270,12 @@
 			<srng:attribute name="sortx" occurs="?" type="string"/>
 			<srng:attribute name="sorty" occurs="?" type="string"/>
 			<srng:attribute name="sortz" occurs="?" type="string"/>
+			<srng:attribute name="multiBone" occurs="?">
+				<srng:choice>
+					<srng:value>0</srng:value>
+					<srng:value>1</srng:value>
+				</srng:choice>
+			</srng:attribute>
 		</srng:element>
 	</srng:define>
 	

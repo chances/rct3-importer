@@ -15,8 +15,9 @@
 #include "wx_pch.h"
 
 #include <exception>
+#include <boost/exception.hpp>
 
-class RCT3Exception: public std::exception {
+class RCT3Exception: public std::exception, public boost::exception {
 public:
     RCT3Exception(const wxString& message);
     virtual const char* what() const throw() {

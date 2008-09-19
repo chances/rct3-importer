@@ -285,3 +285,4 @@
 #define IDC_MATRIX_TRANS_ORIGIN         50086
 #define IDC_MATRIX_EDIT_S               50087
 #define IDC_MATRIX_CLEAR_ALL            50089
+#define IDM_DETECT_PROBLEMS             50090

@@ -33,6 +33,32 @@
         role="bold">not automatically reloaded</emphasis> from thier source
         files if you change them there!</para>
       </important>
+      <para>(v18b2) The importer can now be set up to automatically
+      synchronize (reload) bones in the model settings. You can also tell it
+      to sort bones automatically (strictly alphabetical at the moment).
+      Synchronization updates bones being present, leaves bones not present in
+      the model file alone (except for recalculating the pos 1 matrix if they
+      have a bone from the model as parent) and adds bones needed by the
+      model's meshes (Only if they are enabled and have all necessary data
+      assigned! This prevents automatically adding bones for new meshes you
+      plan to deactivate. If you activate new meshes, either manually sync the
+      bones or wait till it gets grabbed up in a later automatic
+      synchronization). Therefore you should not rename any bones gotten from
+      the model file if you use this feature, otherwise it may readd it with
+      it's original name! If you open a model file as a scenery file in the
+      importer, auto-sync and auto-sort will be enabled automatically.</para>
+      <para>(ovlmake 0.5) These settings are also honored by ovlmake.</para>
+    </listitem>
+    <listitem>
+      <para>Starting with v18, model files are chached in the background to
+      speed up processing.</para>
+      <para>(v18b2) In older versions, the contents of the model file where
+      only synchronised with the contents of the scenery file when you open
+      the latter one. Starting with v18b2, synchronization will also happen
+      when you open the model settings window, when you checking the settings
+      and when you create the ovls. Synchronizing the model file now includes
+      synchronizing and sorting the bones if you activate the respective
+      setting for the model.</para>
     </listitem>
     <listitem>
       <para>The format of the configuration file changed as well, so you need
@@ -70,7 +96,7 @@
       come from other sources:</para>
       <para><emphasis>Model files.</emphasis> Supported are MS3D and MODXML.
       The first might not work fully correctly. People are testing this for me
-      and I hope to get it working as good as possible. </para>
+      and I hope to get it working as good as possible.</para>
       <para><emphasis>ovlcompiler style xml files.</emphasis> Note that the
       syntax changed a bit. Refer to the readmes.</para>
       <para><emphasis>Other scenery xml files.</emphasis></para>
@@ -136,6 +162,32 @@
       If it has a parent, edit pos2 and calculate pos1 from it
       (<guibutton>Q</guibutton> button, Calculate). This requires correct
       setup of the pos2 matrix of the parent bone.</para>
+    </listitem>
+    <listitem>
+      <para>Starting with Importer v18b2 / ovlmake 0.5, the importing engine
+      merges all meshes that share the same settings when you create ovl
+      files. This alleviates the 31 mesh limit of RCT3.</para>
+    </listitem>
+    <listitem>
+      <para>Starting with Importer v18b2 / ovlmake 0.5, the importing engine
+      supports meshes with vertices assigned to more than one bone including
+      bone weights coming from modxml or ms3d files. Such meshes will show a
+      crossed bones icon next to their name in the mesh list. If this icon is
+      activated (not grey), the mesh is treated as a multi-bone mesh and any
+      manual assignment to a bone is ignored (if you assign such a mesh to a
+      bone, it's multi-bone status is disabled). To enable/disable multi-bone
+      status, click on the mesh name. <emphasis role="bold">Assignment will
+      only work correctly if you don't rename any bone in the importer the
+      mesh uses! The mesh will also not show up as assigend to any bone in the
+      list!</emphasis></para>
+      <note>
+        <para>Meshes will only be detected as mult-bone if they have vertices
+        assigned to more than one bone. If you have a mesh with vertices which
+        are assigned to only one bone with weights, the importer won't detect
+        that. If you want to use these bone weights, you need to enforce it's
+        treatment as multi-bone by pressing <keycode>Alt</keycode> while
+        clicking on its name.</para>
+      </note>
     </listitem>
   </itemizedlist>
 </section>

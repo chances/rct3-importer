@@ -36,6 +36,8 @@
 
 #include "pretty.h"
 
+//#define DUMP_FILES
+
 using namespace std;
 
 unsigned char* cOvlFileClass::GetBlock(int filetype, unsigned long size) {
@@ -48,12 +50,22 @@ unsigned long cOvlFileClass::MakeRelOffsets(unsigned long from) {
     unsigned long currel = from;
     for (int i = 0; i < 9; ++i) {
         types[i].reloffset = currel;
+#ifdef DUMP_FILES
+fprintf(stderr, "File %d\n", i);
+fprintf(stderr, "  Reloffset %08lx\n", currel);
+#endif
         types[i].size = 0;
         for (vector<cOvlFile*>::iterator it = types[i].files.begin(); it != types[i].files.end(); ++it) {
             (*it)->reloffset = currel;
+#ifdef DUMP_FILES
+fprintf(stderr, "    Block relofs %08lx, size %08lx, data %p\n", (*it)->reloffset, (*it)->size, (*it)->data);
+#endif
             currel += (*it)->size;
             types[i].size += (*it)->size;
         }
+#ifdef DUMP_FILES
+fprintf(stderr, "  Size %08lx\n", types[i].size);
+#endif
     }
     return currel;
 }

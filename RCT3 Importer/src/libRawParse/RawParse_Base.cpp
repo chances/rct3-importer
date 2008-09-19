@@ -33,13 +33,6 @@
 #include "rng/rct3xml-raw-v1.rnc.gz.h"
 #include "rng/rct3xml-raw-v1.sch.gz.h"
 
-wxString FinishNodeError(const wxString& message, const cXmlNode& node) {
-    if (node.line())
-        return message + wxString::Format(" (Line %hd).", node.line());
-    else
-        return message + ".";
-}
-
 void cRawParser::FillAllBakes(wxSortedArrayString& tofill) {
     tofill.push_back(wxT(RAWXML_VARIABLES));
     tofill.push_back(wxT(RAWXML_IMPORT));
@@ -330,7 +323,7 @@ void cRawParser::Load(cXmlNode& root) {
             wxLogMessage(_("...Success!"));
         }
     } else {
-        throw RCT3Exception(FinishNodeError(wxT("cRawParser::Load, wrong root"), root));
+        throw MakeNodeException<RCT3Exception>("cRawParser::Load, wrong root", root);
     }
 
 }

@@ -34,6 +34,7 @@
 #include "gximage.h"
 #include "lib3Dconfig.h"
 #include "matrix.h"
+#include "rct3constants.h"
 #include "xmldefs.h"
 #include "xmlhelper.h"
 
@@ -86,15 +87,18 @@ void cXML3DLoader::parseVertex(VERTEX2& v, cXmlNode n, c3DMesh& mesh) {
                 if (it != m_bones.end()) {
                     float weight = 100.0;
                     parseFloatC(vert.getPropVal("weight"), weight);
-                    weight = (weight * 255.0) / 100.0;
-                    v.bone[bone] = it->second.m_id;
-                    v.boneweight[bone] = weight;
-                    ++bone;
+                    weight = roundf(weight * 255.0) / 100.0;
+                    if (static_cast<uint8_t>(weight)>0) {
+                        v.bone[bone] = it->second.m_id;
+                        v.boneweight[bone] = weight;
+                        ++bone;
+                    }
                 }
             }
         }
         ++vert;
     }
+    vertex2boneFix(v);
 }
 
 void cXML3DLoader::parseAnimation(c3DAnimation& a, xmlcpp::cXmlNode n, float _max) {
@@ -179,8 +183,17 @@ void cXML3DLoader::parseAnimation(c3DAnimation& a, xmlcpp::cXmlNode n, float _ma
 cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(ORIENTATION_RIGHT_XUP) {
     wxString fn(filename);
     cXmlDoc doc(fn.utf8_str(), NULL, XML_PARSE_DTDLOAD);
-    if (!doc)
-        throw E3DLoaderNotMyBeer();
+    if (!doc) {
+        if (!doc.getStructuredErrors().size())
+            throw E3DLoaderNotMyBeer();
+        int err = doc.getStructuredErrors()[0].code;
+        if ((err == XML_ERR_DOCUMENT_EMPTY) || (err == XML_ERR_GT_REQUIRED))
+            throw E3DLoaderNotMyBeer(); // Not an xml file
+        // Broken xml file
+        wxString error(_("Invalid xml file:\n"));
+        error += doc.wxgetErrorList();
+        throw E3DLoader(error);
+    }
 
     if (doc.root().ns() != XML_NAMESPACE_MODEL)
         throw E3DLoaderNotMyBeer();
@@ -230,6 +243,53 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
 
 
     cXmlXPath path(doc, "mod", XML_NAMESPACE_MODEL);
+
+    cXmlXPathResult rmeta = path("/mod:model/mod:metadata[@role='rct3']");
+    if (rmeta.size()) {
+        foreach(const cXmlNode& n, rmeta[0].children()) {
+            if (n("version")) {
+                unsigned long v = 0;
+                parseULongC(n.content(), v);
+                if (v == 1) {
+                    m_flags |= r3::Constants::SVD::Flags::Soaked;
+                } else if (v==2) {
+                    m_flags |= r3::Constants::SVD::Flags::Wild;
+                }
+            } else if (n("flag")) {
+                if (n.content() == "greenery") {
+                    m_flags |= r3::Constants::SVD::Flags::Greenery;
+                } else if (n.content() == "noshadow") {
+                    m_flags |= r3::Constants::SVD::Flags::No_Shadow;
+                } else if (n.content() == "rotation") {
+                    m_flags |= r3::Constants::SVD::Flags::Rotation;
+                } else if (n.content() == "unk01") {
+                    m_flags |= r3::Constants::SVD::Flags::Unknown01;
+                } else if (n.content() == "unk02") {
+                    m_flags |= r3::Constants::SVD::Flags::Unknown02;
+                } else if (n.content() == "unk03") {
+                    m_flags |= r3::Constants::SVD::Flags::Unknown03;
+                } else if (n.content() == "transformedPreview") {
+                    m_flags |= r3::Constants::SVD::Flags::Animated_Preview;
+                } else if (n.content() == "unkFerris") {
+                    m_flags |= r3::Constants::SVD::Flags::Unknown_Giant_Ferris;
+                }
+            } else if (n("sway")) {
+                parseFloatC(n.content(), m_sway);
+            } else if (n("brightness")) {
+                parseFloatC(n.content(), m_brightness);
+            } else if (n("scale")) {
+                parseFloatC(n.content(), m_scale);
+            } else if (n("unk")) {
+                parseFloatC(n.content(), m_unk);
+            } else if (n("name")) {
+                m_name = n.wxcontent();
+            } else if (n("prefix")) {
+                m_prefix = n.wxcontent();
+            } else if (n("path")) {
+                m_path = n.wxcontent();
+            }
+        }
+    }
 
     // Fix
     cXmlNode fix = path("//mod:system")[0];
@@ -310,6 +370,7 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
         path.setNodeContext(xmesh);
 
         VERTEX2 tv;
+        vertex2init(tv);
 
         cXmlXPathResult meta = path("mod:metadata[@role='rct3']");
         if (meta.size()) {
@@ -318,12 +379,31 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
                     cmesh.m_meshOptions += "ds ";
                 } else if (n("textureStyle")) {
                     cmesh.m_meshOptions += n.wxcontent() + " ";
+                } else if (n("flags")) {
+                    cmesh.m_meshOptions += n.wxcontent() + " ";
+                } else if (n("fudgeNormals")) {
+                    cmesh.m_meshOptions += wxString("fudge:") + n.wxcontent() + " ";
                 }
             }
         }
 
         cXmlXPathResult vertices = path("mod:vertex");
         cXmlXPathResult triangles = path("mod:triangle");
+        vector<VERTEX2> vertices_read(vertices.size(), tv);
+        for (int i = 0; i < vertices.size(); ++i) {
+            if (vertices[i].hasProp("index")) {
+                unsigned long ind = 0;
+                if (!parseULongC(vertices[i].getPropVal("index"), ind))
+                    throw E3DLoader("Vertex with illegal index attribute");
+                if (ind >= vertices.size())
+                    throw E3DLoader("Vertex with out-of-range index attribute");
+                parseVertex(vertices_read[ind], vertices[i], cmesh);
+            } else {
+                parseVertex(vertices_read[i], vertices[i], cmesh);
+            }
+        }
+
+
         for (int i = 0; i < triangles.size(); ++i) {
             bool add;
             int j;
@@ -333,7 +413,10 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
             parseULongC(triangles[i].getPropVal("b"), b);
             parseULongC(triangles[i].getPropVal("c"), c);
 
-            parseVertex(tv, vertices[a], cmesh);
+            //parseVertex(tv, vertices[a], cmesh);
+            if (a >= vertices.size())
+                throw E3DLoader("Triangle references index out-of-range");
+            tv = vertices_read[a];
 
             // now see if we have already added this point
             add = true;
@@ -352,7 +435,10 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
             cmesh.m_indices.push_back(j);
 
             // now for the second one
-            parseVertex(tv, vertices[b], cmesh);
+            //parseVertex(tv, vertices[b], cmesh);
+            if (b >= vertices.size())
+                throw E3DLoader("Triangle references index out-of-range");
+            tv = vertices_read[b];
 
             // now see if we have already added this point
             add = true;
@@ -371,7 +457,10 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
             cmesh.m_indices.push_back(j);
 
             // now for the third one
-            parseVertex(tv, vertices[c], cmesh);
+            //parseVertex(tv, vertices[c], cmesh);
+            if (c >= vertices.size())
+                throw E3DLoader("Triangle references index out-of-range");
+            tv = vertices_read[c];
 
             // now see if we have already added this point
             add = true;
@@ -441,6 +530,9 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
     cXmlXPath maxpath(doc, "mod", XML_NAMESPACE_MODEL);
     for (int s = 0; s < animations.size(); ++s) {
         cXmlNode xanim = animations[s];
+        if ((xanim.getPropVal("abstract") == "1") || (xanim.getPropVal("abstract") == "true"))
+            continue;
+
         maxpath.setNodeContext(xanim);
         float f = 0.0;
         cXmlXPathResult times = maxpath("mod:bone/*/@time");
@@ -474,27 +566,73 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
         c3DTexture ctex;
         ctex.m_name = xtex.wxgetPropVal("name");
         ctex.m_file = xtex.wxgetPropVal("file");
+        parseULongC(xtex.getPropVal("fps"), ctex.m_fps);
         if (ctex.m_file != "") {
             wxFileName temp(ctex.m_file);
             temp.MakeAbsolute(wxFileName(filename).GetPathWithSep());
             ctex.m_file = temp.GetFullPath();
         }
+        ctex.m_alphafile = xtex.wxgetPropVal("alphaFile");
+        if (ctex.m_alphafile != "") {
+            wxFileName temp(ctex.m_alphafile);
+            temp.MakeAbsolute(wxFileName(filename).GetPathWithSep());
+            ctex.m_alphafile = temp.GetFullPath();
+        }
 
         ctex.m_alphaType = 0;
-        foreach(const cXmlNode& entries, xtex.children()) {
-            if (entries("metadata")) {
-                if (entries.getPropVal("role") == "rct3") {
-                    foreach(const cXmlNode& met, entries.children()) {
-                        if (met("recol")) {
-                            parseULongC(met.content(), ctex.m_recol);
-                        } else if (met("useAlpha")) {
-                            wxGXImage i(ctex.m_file);
-                            ctex.m_alphaType = i.HasAlpha()?1:0;
-                        }
+
+        path.setNodeContext(xtex);
+
+        cXmlXPathResult meta = path("mod:metadata[@role='rct3']");
+        if (meta.size()) {
+            foreach(const cXmlNode& met, meta[0].children()) {
+                if (met("recol")) {
+                    parseULongC(met.content(), ctex.m_recol);
+                } else if (met("useAlpha")) {
+                    if (ctex.m_alphafile.IsEmpty()) {
+                        wxGXImage i(ctex.m_file);
+                        ctex.m_alphaType = i.HasAlpha()?1:0;
+                    } else {
+                        ctex.m_alphaType = 2;
                     }
+                } else if (met("referenced")) {
+                    ctex.m_referenced = true;
+                    ctex.m_file = met.wxcontent();
+                    if (ctex.m_file.IsEmpty())
+                        ctex.m_file = "-";
                 }
             }
         }
+
+        cXmlXPathResult frames = path("mod:frame");
+        cXmlXPathResult sequence = path("mod:sequence");
+        if (frames.size()) {
+            ctex.m_frames.resize(frames.size());
+            for(int i = 0; i < frames.size(); ++i) {
+                pair<wxString, wxString> fr;
+                fr.first = frames[i].wxgetPropVal("file");
+                fr.second = frames[i].wxgetPropVal("alphaFile");
+                if (frames[i].hasProp("index")) {
+                    unsigned long ind = 0;
+                    if (!parseULongC(frames[i].getPropVal("index"), ind))
+                        throw E3DLoader("Texture frame with illegal index attribute");
+                    if (ind >= frames.size())
+                        throw E3DLoader("Texture frame with out-of-range index attribute");
+                    ctex.m_frames[ind] = fr;
+                } else {
+                    ctex.m_frames[i] = fr;
+                }
+            }
+            for(int i = 0; i < sequence.size(); ++i) {
+                unsigned long ind = 0;
+                if (!parseULongC(sequence[i].content(), ind))
+                    throw E3DLoader("Texture sequence with illegal content");
+                if (ind >= frames.size())
+                    throw E3DLoader("Texture sequence with out-of-range content");
+                ctex.m_sequence.push_back(ind);
+            }
+        }
+
         m_textures[ctex.m_name] = ctex;
     }
 

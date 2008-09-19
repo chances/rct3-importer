@@ -52,6 +52,8 @@ void wxBonesListBox::UpdateContents() {
         SetSelection(wxNOT_FOUND);
     }
     RefreshAll();
+    if (GetSelection() != wxNOT_FOUND)
+        ScrollToLine(GetSelection());
 };
 
 wxString wxBonesListBox::OnGetItem(size_t n) const {
@@ -88,6 +90,8 @@ void wxTranslationListBox::UpdateContents() {
         SetSelection(wxNOT_FOUND);
     }
     RefreshAll();
+    if (GetSelection() != wxNOT_FOUND)
+        ScrollToLine(GetSelection());
 };
 
 wxString wxTranslationListBox::OnGetItem(size_t n) const {
@@ -122,6 +126,8 @@ void wxRotationListBox::UpdateContents() {
         SetSelection(wxNOT_FOUND);
     }
     RefreshAll();
+    if (GetSelection() != wxNOT_FOUND)
+        ScrollToLine(GetSelection());
 };
 
 wxString wxRotationListBox::OnGetItem(size_t n) const {

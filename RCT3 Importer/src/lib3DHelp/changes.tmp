@@ -1,0 +1,7 @@
+Added	Partial workaround for the 31 mesh limit. Meshes with the same settings will be merged on import.
+Fixed	Sense of rotation matrices corrected for right handed coordinate system
+Fixed	Animation import from ms3d
+Added	Support for bone weights and meshes assigned to more than one bone
+Added	Option to automatically update from model fires and/or sort bones
+Fixed	Crash on broken modxml
+Fixed	Rare-occurring bug that lead to creation of broken ovls

@@ -123,7 +123,6 @@ EVT_BUTTON(XRCID("m_btMirrorZ"), dlgMatrix::OnMirror)
 
 EVT_BUTTON(XRCID("m_btFull"), dlgMatrix::OnSpecialBone)
 EVT_BUTTON(XRCID("m_btDefault"), dlgMatrix::OnSpecialDefault)
-EVT_BUTTON(XRCID("m_btFix"), dlgMatrix::OnSpecialFix)
 EVT_BUTTON(XRCID("m_btLoad"), dlgMatrix::OnSpecialLoad)
 
 EVT_BUTTON(XRCID("m_btMatrixLoadAll"), dlgMatrix::OnLoad)
@@ -491,10 +490,6 @@ void dlgMatrix::OnSpecialBone(wxCommandEvent& WXUNUSED(event)) {
 
 void dlgMatrix::OnSpecialDefault(wxCommandEvent& WXUNUSED(event)) {
     AddMatrix(_("Default Matrix"), READ_APP_MATRIX());
-}
-
-void dlgMatrix::OnSpecialFix(wxCommandEvent& WXUNUSED(event)) {
-    AddMatrix(_("Legacy Fix Orientation"), matrixGetFixOrientation());
 }
 
 void dlgMatrix::OnSpecialLoad(wxCommandEvent& WXUNUSED(event)) {

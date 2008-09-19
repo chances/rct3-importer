@@ -31,7 +31,9 @@
 
 #include "pretty.h"
 
+#include "ManagerCommon.h"
 #include "ManagerGSI.h"
+#include "ManagerSND.h"
 #include "ManagerSVD.h"
 #include "ManagerTXT.h"
 #include "OVLException.h"
@@ -139,6 +141,34 @@ void cSidUI::Fill(r3::SceneryItem_V* i) {
     i->removal_cost = removal_cost;
 }
 
+/** @brief GetCommonSize
+  *
+  * @todo: document this function
+  */
+unsigned long cSidSoundScript::GetCommonSize() const {
+    switch (command) {
+        case 0:
+        case 1:
+        case 2:
+            return 8;
+        case 3:
+        case 4:
+            return 16;
+        default:
+            throw EOvl("Unknown sound script command.");
+    }
+}
+
+/** @brief FillExtra
+  *
+  * @todo: document this function
+  */
+void cSidSound::FillExtra(r3::SceneryExtraSound& ses) const {
+    ses.unk1 = extra_unkf[0];
+    ses.unk2 = extra_unkf[1];
+    ses.unk3 = extra_unk;
+}
+
 void cSidExtra::Fill(r3::SceneryItem_V* i) {
     i->structure_version = version;
     if (version == 1)
@@ -148,7 +178,6 @@ void cSidExtra::Fill(r3::SceneryItem_V* i) {
 }
 
 void cSidExtra::Fill(r3::SceneryItem_S* e) {
-    e->s.sounds_extra = SoundsUnk;
     e->s.unk2 = unk2;
     e->s.addon_pack = AddonPack;
     e->s.generic_addon = GenericAddon;
@@ -183,11 +212,11 @@ void cSid::Fill(r3::SceneryItem_V* i) {
         }
     }
 
+    i->sound_count = sounds.size();
+
     // Unsupported stuff
     i->track_struct_count = 0;
     i->track_structs = NULL;
-    i->sound_count = 0;
-    i->sounds = NULL;
 }
 
 void ovlSIDManager::AddSID(const cSid& sid) {
@@ -239,6 +268,22 @@ void ovlSIDManager::AddSID(const cSid& sid) {
     m_commonsize += sid.parameters.size() * sizeof(SceneryParams);
     // flat rides
     m_commonsize += sid.flatride.individual_animations.size() * 4; // char pointers
+    // Sound
+    m_size += sid.sounds.size() * sizeof(ScenerySound);
+    if (sid.extra.version) {
+        m_commonsize += sid.sounds.size() * sizeof(SceneryExtraSound);
+    }
+    foreach(const cSidSound& sound, sid.sounds) {
+        m_size += sound.sounds.size() * 4;
+        foreach(const string& sname, sound.sounds) {
+            GetLSRManager()->AddSymRef(OVLT_UNIQUE);
+            GetStringTable()->AddSymbolString(sname, ovlSNDManager::TAG);
+        }
+        m_commonsize += sound.animationscripts.size() * 4;
+        foreach(const vector<cSidSoundScript>& scrvec, sound.animationscripts)
+            foreach(const cSidSoundScript& scr, scrvec)
+                m_commonsize += scr.GetCommonSize();
+    }
 
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
     GetLSRManager()->AddLoader(OVLT_UNIQUE);
@@ -376,6 +421,48 @@ void ovlSIDManager::Make(cOvlInfo* info) {
                                  reinterpret_cast<unsigned long*>(&c_sid->svds_ref[c]));
         }
 
+        // Sounds
+        if (it->second.sounds.size()) {
+            RELOC_ARRAY(it->second.sounds.size(), c_sid->sounds, ScenerySound, c_data);
+            if (it->second.extra.version) {
+                RELOC_ARRAY(it->second.sounds.size(), reinterpret_cast<SceneryItem_S*>(c_sid)->s.sounds_extra, SceneryExtraSound, c_commondata);
+            }
+            for(int s = 0; s < it->second.sounds.size(); ++s) {
+                c_sid->sounds[s].sound_count = it->second.sounds[s].sounds.size();
+                c_sid->sounds[s].sound_script_count = it->second.sounds[s].animationscripts.size();
+                if (it->second.extra.version) {
+                    it->second.sounds[s].FillExtra(reinterpret_cast<SceneryItem_S*>(c_sid)->s.sounds_extra[s]);
+                }
+                RELOC_ARRAY(it->second.sounds[s].sounds.size(), c_sid->sounds[s].sound_refs, Sound*, c_data);
+                RELOC_ARRAY(it->second.sounds[s].animationscripts.size(), c_sid->sounds[s].sound_scripts, SoundScript*, c_commondata);
+                for(int ss = 0; ss < it->second.sounds[s].sounds.size(); ++ss) {
+                    SYMREF_MAKE(OVLT_UNIQUE, it->second.sounds[s].sounds[ss], ovlSNDManager::TAG, &c_sid->sounds[s].sound_refs[ss], true);
+                }
+                for(int an = 0; an < it->second.sounds[s].animationscripts.size(); ++an) {
+                    if (it->second.sounds[s].animationscripts[an].size()) {
+                        c_sid->sounds[s].sound_scripts[an] = reinterpret_cast<SoundScript*>(c_commondata);
+                        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->sounds[s].sound_scripts[an]));
+                        int index = 0;
+                        uint32_t* ints = reinterpret_cast<uint32_t*>(c_commondata);
+                        float_t* floats = reinterpret_cast<float_t*>(c_commondata);
+                        foreach(const cSidSoundScript& scr, it->second.sounds[s].animationscripts[an]) {
+                            floats[index++] = scr.time;
+                            ints[index++] = scr.command;
+                            if (scr.command >= 3) {
+                                floats[index++] = scr.parameter[0];
+                                floats[index++] = scr.parameter[1];
+                            }
+                        }
+                        c_commondata += index * 4;
+                    }
+                }
+            }
+        } else {
+            c_sid->sounds = NULL;
+            if (it->second.extra.version) {
+                reinterpret_cast<SceneryItem_S*>(c_sid)->s.sounds_extra = NULL;
+            }
+        }
 
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
     }

@@ -710,6 +710,10 @@ dlgBone::dlgBone(wxWindow *parent):dlgEffectBase(parent, false) {
         m_choiceMesh->Append(*it);
     }
 */
+    Fit();
+    Layout();
+    GetSizer()->SetSizeHints(this);
+
     UpdateAll();
 }
 
@@ -800,6 +804,10 @@ void dlgBone::SetBone(const cModelBone& bn) {
     m_btQuick2->Enable(m_bn.usepos2);
     m_btClear2->Enable(m_bn.usepos2);
     UpdateAll();
+
+    Fit();
+    Layout();
+    GetSizer()->SetSizeHints(this);
 }
 
 ////////////////////////////////////////////////////////////////////////

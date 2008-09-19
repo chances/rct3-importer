@@ -16,7 +16,6 @@
 				<Option use_console_runner="0" />
 				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
-					<Add option="-Os" />
 					<Add option="-O2" />
 					<Add option="-DUNICODE" />
 					<Add directory="$(#wx3.lib)\wx\include\base-unicode-release-static-2.9" />
@@ -43,8 +42,8 @@
 				<Option use_console_runner="0" />
 				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
-					<Add option="-Os" />
-					<Add option="-O2" />
+					<Add option="-Weffc++" />
+					<Add option="-Wmain" />
 					<Add option="-Wall" />
 					<Add option="-g" />
 					<Add option="-DDEBUG" />

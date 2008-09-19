@@ -24,6 +24,10 @@ public:
         SetSelectionBackground(wxColour(0x00, 0x33, 0x66));
         //SetSelectionBackground(wxColour(0xEE, 0xCC, 0xAA));
     };
+    void SetSelection(int selection) {
+        wxVListBox::SetSelection(selection);
+        ScrollToLine(selection);
+    }
     virtual void UpdateContents() {};
 protected:
     virtual wxColour GetSelectedTextColour(const wxColour& colFg) const;

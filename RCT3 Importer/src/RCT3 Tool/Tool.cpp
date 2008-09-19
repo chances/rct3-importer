@@ -72,6 +72,9 @@
 #include "ilhelper.h"
 #include "rct3log.h"
 
+#include "OVLDump.h"
+#include "texcheck.h"
+
 #include "wxdlgStallMan.h"
 #include "wxdlgAttractMan.h"
 
@@ -79,6 +82,7 @@
 
 #include "version_wrap.h"
 
+using namespace pretty;
 using namespace r3;
 using namespace std;
 
@@ -134,6 +138,9 @@ std::vector <r3old::Scenery *> SceneryItems;
 std::vector<cText> cTextStrings;
 std::vector <r3old::StallStr *> Stalls;
 std::vector <r3old::AttractionStr *> Attractions;
+
+extern std::vector <r3old::AttractionStr *> Attractions;
+extern std::vector <r3old::StallStr *> Stalls;
 
 //std::vector < EffectPoint * >::iterator EffectPointsIterator;
 std::vector<cText>::iterator TextStringsIterator;
@@ -1864,6 +1871,226 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 delete[] tmp;
                 if (!wxcFlush())
                     MessageBox(hwnd, "Saving default prefix failed.", "Error", MB_OK);
+            }
+            break;
+        case IDM_DETECT_PROBLEMS: {
+                bool problem = false;
+                foreach(IconTexture* tex, IconTextures) {
+                    try {
+                        checkRCT3Texture(tex->filename);
+                    } catch (RCT3TextureException& e) {
+                        problem = true;
+                        wxLogError(wxString::Format(_("Icon texture '%s' error: %s"), tex->name, e.what()));
+                    }
+                }
+                foreach(Icon* ico, Icons) {
+                    bool found = false;
+                    foreach(IconTexture* tex, IconTextures) {
+                        if (!stricmp(tex->name, ico->texture)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        problem = true;
+                        wxLogError(wxString::Format(_("Icon '%s' error: Icon texture missing"), ico->name));
+                    }
+                }
+                foreach(r3old::Scenery* scen, SceneryItems) {
+                    wxString identifier = scen->name?scen->name:scen->ovl;
+                    if (!wxFileName::FileExists(scen->ovl)) {
+                        problem = true;
+                        wxLogError(wxString::Format(_("Scenery item error: ovl '%s' missing."), scen->ovl));
+                    } else {
+                        cOVLDump dovl;
+                        dovl.Load(scen->ovl);
+
+                        char name[MAX_PATH];
+                        _splitpath(scen->ovl, NULL, NULL, name, NULL);
+                        strrchr(name, '.')[0] = 0;
+
+
+                        std::map<std::string, std::map<std::string, OvlRelocation*> >::const_iterator it = dovl.GetStructures(OVLT_UNIQUE).find("svd");
+                        if (it != dovl.GetStructures(OVLT_UNIQUE).end()) {
+                            if (!has(it->second, string(name) + ":svd")) {
+                                problem = true;
+                                wxLogError(wxString::Format(_("Scenery item error: ovl '%s' internal name mismatch. Do not rename scenery ovls!"), scen->ovl));
+                            }
+                        } else {
+                            problem = true;
+                            wxLogError(wxString::Format(_("Scenery item error: ovl '%s' is not a scenery ovl."), scen->ovl));
+                        }
+                    }
+                    if (!scen->name) {
+                        problem = true;
+                        wxLogError(wxString::Format(_("Scenery item '%s' error: name not set."),identifier.c_str()));
+                    } else {
+                        bool found = false;
+                        foreach(const cText& tex, cTextStrings) {
+                            if (!stricmp(scen->name, tex.name.ToAscii())) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            problem = true;
+                            wxLogError(wxString::Format(_("Scenery item '%s' error: name text missing"), identifier.c_str()));
+                        }
+                    }
+                    if (scen->wallname) {
+                        bool found = false;
+                        foreach(const cText& tex, cTextStrings) {
+                            if (!stricmp(scen->wallname, tex.name.ToAscii())) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            problem = true;
+                            wxLogError(wxString::Format(_("Scenery item '%s' error: group name text missing"), identifier.c_str()));
+                        }
+                    }
+                    if (!scen->icon) {
+                        problem = true;
+                        wxLogError(wxString::Format(_("Scenery item '%s' error: icon not set."),identifier.c_str()));
+                    } else {
+                        bool found = false;
+                        foreach(Icon* ico, Icons) {
+                            if (!stricmp(scen->icon, ico->name)) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            problem = true;
+                            wxLogError(wxString::Format(_("Scenery item '%s' error: icon missing"), identifier.c_str()));
+                        }
+                    }
+                    if (scen->wallicon) {
+                        bool found = false;
+                        foreach(Icon* ico, Icons) {
+                            if (!stricmp(scen->wallicon, ico->name)) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            problem = true;
+                            wxLogError(wxString::Format(_("Scenery item '%s' error: group icon missing"), identifier.c_str()));
+                        }
+                    }
+                }
+                foreach(r3old::AttractionStr* attr, Attractions) {
+                    if (!attr->NameString) {
+                        problem = true;
+                        wxLogError(wxString::Format(_("Special attraction '%s' error: name text not set."), attr->Name));
+                    } else {
+                        bool found = false;
+                        foreach(const cText& tex, cTextStrings) {
+                            if (!stricmp(attr->NameString, tex.name.ToAscii())) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            problem = true;
+                            wxLogError(wxString::Format(_("Special attraction '%s' error: name text missing."), attr->Name));
+                        }
+                    }
+                    if (!attr->DescriptionString) {
+                        problem = true;
+                        wxLogError(wxString::Format(_("Special attraction '%s' error: description text not set."), attr->Name));
+                    } else {
+                        bool found = false;
+                        foreach(const cText& tex, cTextStrings) {
+                            if (!stricmp(attr->DescriptionString, tex.name.ToAscii())) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            problem = true;
+                            wxLogError(wxString::Format(_("Special attraction '%s' error: description text missing."), attr->Name));
+                        }
+                    }
+                    if (!attr->SID) {
+                        problem = true;
+                        wxLogError(wxString::Format(_("Special attraction '%s' error: scenery item not set."), attr->Name));
+                    } else {
+                        bool found = false;
+                        foreach(r3old::Scenery* scen, SceneryItems) {
+                            char name[MAX_PATH];
+                            _splitpath(scen->ovl, NULL, NULL, name, NULL);
+                            strchr(name, '.')[0] = 0;
+                            if (!stricmp(attr->SID, name)) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            problem = true;
+                            wxLogError(wxString::Format(_("Special attraction '%s' error: scenery item missing."), attr->Name));
+                        }
+                    }
+
+                }
+                foreach(r3old::StallStr* attr, Stalls) {
+                    if (!attr->NameString) {
+                        problem = true;
+                        wxLogError(wxString::Format(_("Stall '%s' error: name text not set."), attr->Name));
+                    } else {
+                        bool found = false;
+                        foreach(const cText& tex, cTextStrings) {
+                            if (!stricmp(attr->NameString, tex.name.ToAscii())) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            problem = true;
+                            wxLogError(wxString::Format(_("Stall '%s' error: name text missing."), attr->Name));
+                        }
+                    }
+                    if (!attr->DescriptionString) {
+                        problem = true;
+                        wxLogError(wxString::Format(_("Stall '%s' error: description text not set."), attr->Name));
+                    } else {
+                        bool found = false;
+                        foreach(const cText& tex, cTextStrings) {
+                            if (!stricmp(attr->DescriptionString, tex.name.ToAscii())) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            problem = true;
+                            wxLogError(wxString::Format(_("Stall '%s' error: description text missing."), attr->Name));
+                        }
+                    }
+                    if (!attr->SID) {
+                        problem = true;
+                        wxLogError(wxString::Format(_("Stall '%s' error: scenery item not set."), attr->Name));
+                    } else {
+                        bool found = false;
+                        foreach(r3old::Scenery* scen, SceneryItems) {
+                            char name[MAX_PATH];
+                            _splitpath(scen->ovl, NULL, NULL, name, NULL);
+                            strchr(name, '.')[0] = 0;
+                            if (!stricmp(attr->SID, name)) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            problem = true;
+                            wxLogError(wxString::Format(_("Stall '%s' error: scenery item missing."), attr->Name));
+                        }
+                    }
+
+                }
+                if (!problem)
+                    wxLogMessage(_("No problems found!"));
+                wxLog::FlushActive();
             }
             break;
         case ID_FILE_SAVETHEME: {

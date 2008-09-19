@@ -24,6 +24,9 @@
 
 #include "validatormain.h"
 
+#include "validatorapp.h"
+
+#include "validator_abbreviation.h"
 #include "validator_keyframes.h"
 
 #include <boost/tokenizer.hpp>
@@ -90,22 +93,13 @@ frmMain::frmMain(wxWindow* parent):rcfrmMain(parent) {
     m_internal = INT_UNDEFINED;
 
 	this->Connect( m_stcMain->GetId(), wxEVT_STC_CHARADDED, wxStyledTextEventHandler(frmMain::OnSTCCharAdded) );
+	this->Connect( m_stcMain->GetId(), wxEVT_STC_SAVEPOINTREACHED, wxStyledTextEventHandler(frmMain::OnSTCSavePoint) );
+	this->Connect( m_stcMain->GetId(), wxEVT_STC_SAVEPOINTLEFT, wxStyledTextEventHandler(frmMain::OnSTCSavePoint) );
 	//this->Connect( m_stcMain->GetId(), wxEVT_KEY_DOWN, wxKeyEventHandler(frmMain::OnSTCKeyDown) );
 	this->Connect( m_stcSchema->GetId(), wxEVT_STC_CHARADDED, wxStyledTextEventHandler(frmMain::OnSTCCharAdded) );
 	this->Connect( m_stcSchema->GetId(), wxEVT_STC_CHANGE, wxStyledTextEventHandler(frmMain::OnSTCChange) );
     this->Connect( m_fsSchema->GetId(), wxEVT_COMMAND_COMBOBOX_SELECTED, wxCommandEventHandler( frmMain::OnSchema ) );
 
-    m_abbreviations["xml"] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n|";
-    m_abbreviations["rawr"] = "<rawovl basedir=\"$(basedir:output\\)\" installdir=\"$(installdir)\" xmlns=\"http://rct3.sourceforge.net/rct3xml/raw\">\n\t|\n</rawovl>\n";
-    m_abbreviations["rawb"] = "<rawovl basedir=\"$(basedir)\">\n\t|\n</rawovl>\n";
-    m_abbreviations["raw"] = "<rawovl file=\"$(file:|)\">\n\t|\n</rawovl>\n";
-    m_abbreviations["iimport"] = "<import file=\"$(Scenery file to import;Scenery Files|*.xml;*.modxml;*.ms3d;*.scn)\" name=\"$(name:|)\" id=\"mainimport\"/>\n|";
-    m_abbreviations["simport"] = "<import file=\"$(Scenery file to import;Scenery Files|*.xml;*.modxml;*.ms3d;*.scn)\" use=\"splines\" id=\"$(id:|)\"/>\n|";
-    m_abbreviations["import"] = "<import file=\"$(Scenery file to import;Scenery Files|*.xml;*.modxml;*.ms3d;*.scn)\" name=\"$(name:|)\"/>\n|";
-    m_abbreviations["sid"] = "<sid name=\"$(name:|)\" nametxt=\"$(name)\" icon=\"$(name)\" ovlpath=\"$(ovlpath:Style\\Custom\\)\" svd=\"$(name)\">\n\t<position xsize=\"4\" ysize=\"4\" zsize=\"4\" xsquares=\"1\" zsquares=\"1\"/>\n</sid>\n|";
-    m_abbreviations["tex"] = "<tex name=\"$(name:|)\" format=\"20\">\n\t<texture><data type=\"file\">$(texture;Image files|*.png;*.bmp;*.jpg;*.jpeg|All files|*.*)</data></texture>\n</tex>\n|";
-    m_abbreviations["gsi"] = "<gsi name=\"$(name:|)\" tex=\"$(tex)\" left=\"$(left:0)\" top=\"$(top:0)\" right=\"$(right:63)\" bottom=\"$(bottom:63)\"/>\n|";
-    m_abbreviations["txt"] = "<txt name=\"$(name:|)\" type=\"text\">|</txt>\n";
 /*
     m_mgr.SetManagedWindow(this);
 
@@ -279,6 +273,16 @@ void frmMain::OnSTCKeyDown(wxKeyEvent &event) {
 }
 */
 
+/** @brief OnMenuNew
+  *
+  * @todo: document this function
+  */
+void frmMain::OnMenuNew(wxCommandEvent& event) {
+    m_xmlfile = "";
+    m_stcMain->SetText("");
+    UpdateUI();
+}
+
 void frmMain::OnMenuLoad( wxCommandEvent& event ) {
     if (m_fdlgFile->ShowModal() == wxID_OK) {
         m_xmlfile = m_fdlgFile->GetPath();
@@ -357,10 +361,21 @@ void frmMain::SaveFile() {
     }
     wxFile savefile(m_xmlfile, wxFile::write);
     savefile.Write(m_stcMain->GetTextRaw(), strlen(m_stcMain->GetTextRaw()));
+    m_stcMain->SetSavePoint();
 
 }
 
-
+void frmMain::UpdateUI() {
+    wxString title("");
+    if (m_stcMain->GetModify())
+        title += "*";
+    if (m_xmlfile.IsEmpty())
+        title += _("Unnamed");
+    else
+        title += m_xmlfile;
+    title += " - Schema Validator";
+    SetTitle(title);
+}
 
 void frmMain::OnReloadXml( wxCommandEvent& event ) {
     if (!m_xmlfile.IsEmpty()) {
@@ -370,9 +385,10 @@ void frmMain::OnReloadXml( wxCommandEvent& event ) {
         loadfile.Seek(0);
 
         boost::shared_array<char> buf(new char[size+1]);
-        buf[size+1] = '0';
+        buf[size] = 0;
         loadfile.Read(buf.get(), size);
         m_stcMain->SetTextRaw(buf.get());
+        m_stcMain->SetSavePoint();
 
         if (m_val)
             DoValidate();
@@ -380,6 +396,10 @@ void frmMain::OnReloadXml( wxCommandEvent& event ) {
 }
 
 void frmMain::OnReloadSchema( wxCommandEvent& event ) {
+    DoReloadSchema(true);
+}
+
+void frmMain::DoReloadSchema(bool validateit) {
     switch (m_internal) {
         case INT_EXTERNAL: {
             wxString val = m_fsSchema->GetValue();
@@ -417,7 +437,7 @@ void frmMain::OnReloadSchema( wxCommandEvent& event ) {
             break;
         }
     }
-    if (!m_xmlfile.IsEmpty())
+    if ((!m_xmlfile.IsEmpty()) && validateit)
         DoValidate();
 }
 
@@ -546,8 +566,8 @@ void frmMain::DoAbbreviation(bool quick) {
     int curlinpos = m_stcMain->GetCurrentPos() - inspos;
     wxString token = line.Left(curlinpos).AfterLast(' ').AfterLast('\t').AfterLast('\r').AfterLast('\n');
 
-    abbfind abb = m_abbreviations.find(token);
-    if (abb != m_abbreviations.end()) {
+    ValidatorApp::mapfind abb = wxGetApp().getAbbreviations().find(token);
+    if (abb != wxGetApp().getAbbreviations().end()) {
         m_stcMain->DelWordLeft();
         int newpos = m_stcMain->GetCurrentPos();
         wxString full = abb->second;
@@ -712,6 +732,56 @@ void frmMain::OnSTCChange (wxStyledTextEvent &event) {
     m_schemachanged = true;
 }
 
+/** @brief OnSTCSavePoint
+  *
+  * @todo: document this function
+  */
+void frmMain::OnSTCSavePoint(wxStyledTextEvent &event) {
+    UpdateUI();
+}
+
+/** @brief OnMenuViewUnfoldTags
+  *
+  * @todo: document this function
+  */
+void frmMain::OnMenuViewUnfoldTags(wxCommandEvent& event) {
+    for (int i = 0; i < m_stcMain->GetLineCount(); ++i) {
+        int fl = m_stcMain->GetFoldLevel(i);
+        if ((fl & wxSTC_FOLDLEVELHEADERFLAG) && m_stcMain->GetFoldExpanded(i)) {
+            m_stcMain->ToggleFold(i);
+        }
+    }
+}
+
+/** @brief OnMenuViewFoldTags
+  *
+  * @todo: document this function
+  */
+void frmMain::OnMenuViewFoldTags(wxCommandEvent& event) {
+    for (int i = 0; i < m_stcMain->GetLineCount(); ++i) {
+        int fl = m_stcMain->GetFoldLevel(i);
+        if ((fl & wxSTC_FOLDLEVELHEADERFLAG) && ((fl & wxSTC_FOLDLEVELNUMBERMASK)-wxSTC_FOLDLEVELBASE > 0)) {
+            int lineMaxSubord = m_stcMain->GetLastChild(i, -1);
+            m_stcMain->SetFoldExpanded(i, false);
+            if (lineMaxSubord > i)
+                m_stcMain->HideLines(i+1, lineMaxSubord);
+        }
+    }
+}
+
+/** @brief OnMenuViewToggleFold
+  *
+  * @todo: document this function
+  */
+void frmMain::OnMenuViewToggleFold(wxCommandEvent& event) {
+    int cur = m_stcMain->GetCurrentLine();
+    int fl = m_stcMain->GetFoldLevel(cur);
+    if (fl & wxSTC_FOLDLEVELHEADERFLAG)
+        m_stcMain->ToggleFold(cur);
+    else
+        m_stcMain->ToggleFold(m_stcMain->GetFoldParent(cur));
+}
+
 
 void frmMain::OnSchema( wxCommandEvent& event ) {
     m_stcSchema->ClearAll();
@@ -831,6 +901,62 @@ void frmMain::OnValidate( wxCommandEvent& event ) {
 
 bool frmMain::DoValidate() {
     wxBusyCursor bc;
+
+    m_statusBar->SetStatusText(_("Parsing xml..."), 0);
+    cXmlDoc doc;
+    string x = static_cast<const char *>(m_stcMain->GetText().utf8_str());
+    try {
+        doc.read(x, m_xmlfile.utf8_str(), "UTF-8", XML_PARSE_DTDLOAD);
+    } catch (exception& e) {
+        wxMessageBox(e.what());
+    }
+    if (!doc) {
+        m_statusBar->SetStatusText(_("Parsing xml failed"), 0);
+        for (vector<cXmlStructuredError>::const_iterator it = doc.getStructuredErrors().begin(); it != doc.getStructuredErrors().end(); ++it) {
+            m_lbResults->Append(wxString::Format(wxT("Line %d, Error %d: %s (Path: %s)"), it->line, it->code,
+                wxString::FromUTF8(it->message.c_str()).c_str(), wxString::FromUTF8(it->getPath().c_str()).c_str()));
+            MarkLine(m_stcMain, it->line, it->level);
+        }
+        for (std::vector<std::string>::const_iterator it = doc.getGenericErrors().begin(); it != doc.getGenericErrors().end(); ++it)
+            m_lbResults->Append(wxString::FromUTF8(it->c_str()));
+        return false;
+    }
+    m_lbResults->Append(doc.root().wxns());
+
+    if (m_stcSchema->GetText().IsEmpty()) {
+        ValidatorApp::mapfind sch = wxGetApp().getMappings().end();
+        wxString ns = doc.root().ns();
+        if (!ns.IsEmpty()) {
+            sch = wxGetApp().getMappings().find("ns:" + ns);
+        }
+        if (sch == wxGetApp().getMappings().end()) {
+            sch = wxGetApp().getMappings().find("root:" + doc.root().wxname());
+        }
+        if (sch == wxGetApp().getMappings().end()) {
+            m_statusBar->SetStatusText(_("No schema selected..."), 0);
+            return false;
+        }
+        if (sch->second.StartsWith("??")) {
+            if (sch->second == "??Scenery")
+                m_internal = INT_SCENERY;
+            else if (sch->second == "??Raw")
+                m_internal = INT_RAW;
+            else if (sch->second == "??Compiler")
+                m_internal = INT_COMPILER;
+            else if (sch->second == "??Model")
+                m_internal = INT_MODEL;
+            else if (sch->second == "??MS3D")
+                m_internal = INT_MS3D;
+            else {
+                m_statusBar->SetStatusText(_("Unknown internal mapping: ")+sch->second, 0);
+                return false;
+            }
+        } else {
+            m_internal = INT_EXTERNAL;
+            m_fsSchema->SetValue(sch->second);
+        }
+        DoReloadSchema(false);
+    }
     m_statusBar->SetStatusText(_("Parsing schema..."), 0);
     try {
     if (m_schemachanged)
@@ -889,29 +1015,10 @@ bool frmMain::DoValidate() {
 
 
     m_statusBar->SetStatusText(_("Validating..."), 0);
-    cXmlDoc doc;
-    string x = static_cast<const char *>(m_stcMain->GetText().utf8_str());
-    try {
-        doc.read(x, m_xmlfile.utf8_str(), "UTF-8", XML_PARSE_DTDLOAD);
-    } catch (exception& e) {
-        wxMessageBox(e.what());
-    }
-    if (!doc) {
-        m_statusBar->SetStatusText(_("Parsing xml failed"), 0);
-        for (vector<cXmlStructuredError>::const_iterator it = doc.getStructuredErrors().begin(); it != doc.getStructuredErrors().end(); ++it) {
-            m_lbResults->Append(wxString::Format(wxT("Line %d: %s (Path: %s)"), it->line,
-                wxString::FromUTF8(it->message.c_str()).c_str(), wxString::FromUTF8(it->getPath().c_str()).c_str()));
-            MarkLine(m_stcMain, it->line, it->level);
-        }
-        for (std::vector<std::string>::const_iterator it = doc.getGenericErrors().begin(); it != doc.getGenericErrors().end(); ++it)
-            m_lbResults->Append(wxString::FromUTF8(it->c_str()));
-        return false;
-    }
-    m_lbResults->Append(doc.root().wxns());
     if (doc.validate(m_val, cXmlValidator::OPT_DETERMINE_NODE_BY_XPATH, cXmlValidatorResult::VR_NONE)) {
         m_statusBar->SetStatusText(_("Validation failed"), 0);
         for (vector<cXmlStructuredError>::const_iterator it = m_val.getStructuredErrors().begin(); it != m_val.getStructuredErrors().end(); ++it) {
-            m_lbResults->Append(wxString::Format(wxT("Line %d: %s (Path: %s)"), it->line,
+            m_lbResults->Append(wxString::Format(wxT("Line %d, Error %d: %s (Path: %s)"), it->line, it->code,
                 wxString::FromUTF8(it->message.c_str()).c_str(), wxString::FromUTF8(it->getPath().c_str()).c_str()));
             MarkLine(m_stcMain, it->line, it->level);
         }
@@ -1250,6 +1357,17 @@ void frmMain::OnReloadBoth(wxCommandEvent& event) {
     }
     OnReloadSchema(event);
 }
+
+/** @brief OnExtraEditAbbreviations
+  *
+  * @todo: document this function
+  */
+void frmMain::OnExtraEditAbbreviations(wxCommandEvent& event) {
+    boost::shared_ptr<dlgAbbreviations> dlg(new dlgAbbreviations(this), wxWindowDestroyer);
+    dlg->ShowModal();
+}
+
+
 
 
 /*

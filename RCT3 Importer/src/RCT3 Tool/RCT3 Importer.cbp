@@ -34,6 +34,7 @@
 					<Add library="wx_msw-2.8" />
 					<Add library="libOVLng" />
 					<Add library="XmlCpp_slim" />
+					<Add library="libOVLDump" />
 					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
@@ -62,6 +63,7 @@
 					<Add library="libOVLngd" />
 					<Add library="wx_mswd-2.8" />
 					<Add library="XmlCpp_slimd" />
+					<Add library="libOVLDumpd" />
 					<Add directory="..\..\bin" />
 				</Linker>
 			</Target>
@@ -122,6 +124,7 @@
 			<Add directory="..\libOVLng" />
 			<Add directory="..\libXmlCpp" />
 			<Add directory="$(#mingw.include)\libxml2" />
+			<Add directory="..\libOVLDump" />
 		</Compiler>
 		<Linker>
 			<Add library="GraphicsMagick++" />
@@ -532,6 +535,11 @@
 			<Option target="Debug" />
 			<Option target="Debug (Public)" />
 		</Unit>
+		<Unit filename="xrc\icons.xrc">
+			<Option compile="1" />
+			<Option compiler="gcc" use="1" buildCommand="wxrc --extra-cpp-code --cpp-code --output=xrc_bitmap_icons.cpp --function=InitXmlBitmapIcons $file" />
+			<Option target="Precompile XRC" />
+		</Unit>
 		<Unit filename="xrc\lod.fbp">
 			<Option compile="1" />
 			<Option weight="0" />
@@ -650,6 +658,16 @@
 		</Unit>
 		<Unit filename="xrc_bitmap_crystal.h">
 			<Option virtualFolder="xrc\" />
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Debug (Public)" />
+		</Unit>
+		<Unit filename="xrc_bitmap_icons.cpp">
+			<Option target="Release" />
+			<Option target="Debug" />
+			<Option target="Debug (Public)" />
+		</Unit>
+		<Unit filename="xrc_bitmap_icons.h">
 			<Option target="Release" />
 			<Option target="Debug" />
 			<Option target="Debug (Public)" />

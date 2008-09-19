@@ -101,6 +101,10 @@
 			<Add library="bz2" />
 			<Add directory="..\..\lib" />
 		</Linker>
+		<Unit filename="resources\abbreviation.fbp">
+			<Option compile="1" />
+			<Option weight="0" />
+		</Unit>
 		<Unit filename="resources\keyframe.fbp">
 			<Option compile="1" />
 			<Option weight="0" />
@@ -109,6 +113,8 @@
 			<Option compile="1" />
 			<Option weight="0" />
 		</Unit>
+		<Unit filename="validator_abbreviation.cpp" />
+		<Unit filename="validator_abbreviation.h" />
 		<Unit filename="validator_keyframes.cpp" />
 		<Unit filename="validator_keyframes.h" />
 		<Unit filename="validatorapp.cpp" />

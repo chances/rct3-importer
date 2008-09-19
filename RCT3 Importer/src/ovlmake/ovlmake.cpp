@@ -39,6 +39,7 @@
 #include <stdlib.h>
 
 #include <boost/format.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include "version.h"
 
@@ -683,6 +684,9 @@ int DoCompile(const wxCmdLineParser& parser) {
 
     } catch (RCT3Exception& e) {
         wxLogMessage(_("Compiling error: ")+e.wxwhat());
+        boost::shared_ptr<int const> line = boost::get_error_info<node_line_info>(e);
+        if (line)
+            wxLogMessage(_("  Line: %d"), *line);
         ret = -1;
     } catch (EOvl& e) {
         wxLogMessage(_("Error in ovl creation: %s"), wxString(e.what(), wxConvLocal).c_str());

@@ -71,6 +71,7 @@
 #define RAWXML_SAT "sat"
 #define RAWXML_SHS "shs"
 #define RAWXML_SID "sid"
+#define RAWXML_SND "snd"
 #define RAWXML_SPL "spl"
 #define RAWXML_STA "sta"
 #define RAWXML_SVD "svd"
@@ -81,8 +82,6 @@
 #define RAWXML_WAI "wai"
 
 #define RAWXML_UNKNOWNS "unknowns"
-
-#define RAWXML_CED_MORE             "cedmore"
 
 #define RAWXML_CID_SHAPE            "cidshape"
 #define RAWXML_CID_MORE             "cidmore"
@@ -336,6 +335,18 @@ public:
     RCT3InvalidValueException(const wxString& message):RCT3Exception(message){};
 };
 
-wxString FinishNodeError(const wxString& message, const cXmlNode& node);
+template<class E>
+E MakeNodeException(const wxString& message, const cXmlNode& node) {
+    if (node.line())
+        return E(message) << node_line_info(node.line());
+    else
+        return E(message);
+}
+
+inline void IssueNodeWarning(const wxString& message, const cXmlNode& node) {
+    wxLogWarning(message);
+    if (node.line())
+        wxLogWarning(_("  Line: %d"), node.line());
+}
 
 

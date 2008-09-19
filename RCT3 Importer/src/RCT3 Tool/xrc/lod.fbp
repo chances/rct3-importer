@@ -653,7 +653,7 @@
                                             <event name="OnLeftDown"></event>
                                             <event name="OnLeftUp"></event>
                                             <event name="OnListBox">OnUpdateControlState</event>
-                                            <event name="OnListBoxDClick"></event>
+                                            <event name="OnListBoxDClick">OnAnimEdit</event>
                                             <event name="OnMiddleDClick"></event>
                                             <event name="OnMiddleDown"></event>
                                             <event name="OnMiddleUp"></event>

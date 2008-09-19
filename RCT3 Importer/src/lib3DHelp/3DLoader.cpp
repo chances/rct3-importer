@@ -38,6 +38,7 @@
 #include "lib3Dconfig.h"
 #include "pretty.h"
 
+using namespace pretty;
 using namespace r3;
 using namespace std;
 
@@ -181,7 +182,7 @@ const set<wxString>& c3DLoader::GetObjectBones(const wxString& mesh) const {
     return it->second.m_bones;
 }
 
-
+/*
 bool c3DLoader::FetchObject(unsigned int index, unsigned long *vertexcount, VERTEX **vertices, unsigned long *index_count, unsigned long **indices, VECTOR *bbox_min, VECTOR *bbox_max, const MATRIX *transform, VECTOR *fudge_normal) {
     int i;
     if (m_meshes.size() <= 0)
@@ -212,37 +213,39 @@ bool c3DLoader::FetchObject(unsigned int index, unsigned long *vertexcount, VERT
     }
     return true;
 }
-
+*/
 bool c3DLoader::FetchObject(unsigned int index, cStaticShape2* sh, VECTOR *bbox_min, VECTOR *bbox_max, const MATRIX *transform, VECTOR *fudge_normal) {
     int i;
     if (m_meshes.size() <= 0)
         return false;
 
     c3DMesh& m = m_meshes[m_meshId[index]];
-    sh->vertices.resize(m.m_vertices.size());
-    sh->indices.resize(m.m_indices.size());
+    int vertex_offset = sh->vertices.size();
+    int index_offest = sh->indices.size();
+    sh->vertices.resize(vertex_offset + m.m_vertices.size());
+    sh->indices.resize(index_offest + m.m_indices.size());
     MATRIX normaltransform;
     if (transform)
         normaltransform = matrixNormalTransform(*transform);
     for (i = 0; i < m.m_vertices.size(); i++) {
         if (transform)
-            sh->vertices[i] = vertex22vertex(matrixApply(m.m_vertices[i], *transform, normaltransform));
+            sh->vertices[vertex_offset + i] = vertex22vertex(matrixApply(m.m_vertices[i], *transform, normaltransform));
         else
-            sh->vertices[i] = vertex22vertex(m.m_vertices[i]);
+            sh->vertices[vertex_offset + i] = vertex22vertex(m.m_vertices[i]);
         if (fudge_normal) {
-            sh->vertices[i].normal = *fudge_normal;
+            sh->vertices[vertex_offset + i].normal = *fudge_normal;
         }
-        boundsContain(&(sh->vertices[i]).position, bbox_min, bbox_max);
+        boundsContain(&(sh->vertices[vertex_offset + i]).position, bbox_min, bbox_max);
     }
     bool do_mirror = (transform)?(matrixCalcDeterminant(transform)<0.0):false;
     for (i = 0; i < m.m_indices.size(); i+=3) {
-        sh->indices[i] = m.m_indices[i+((do_mirror)?1:0)];
-        sh->indices[i+1] = m.m_indices[i+((do_mirror)?0:1)];
-        sh->indices[i+2] = m.m_indices[i+2];
+        sh->indices[index_offest + i] = vertex_offset + m.m_indices[i+((do_mirror)?1:0)];
+        sh->indices[index_offest + i+1] = vertex_offset + m.m_indices[i+((do_mirror)?0:1)];
+        sh->indices[index_offest + i+2] = vertex_offset + m.m_indices[i+2];
     }
     return true;
 }
-
+/*
 bool c3DLoader::FetchAsAnimObject(unsigned int index, char bone, unsigned long *vertexcount, VERTEX2 **vertices, unsigned long *index_count, unsigned short **indices, VECTOR *bbox_min, VECTOR *bbox_max, const MATRIX *transform, VECTOR *fudge_normal) {
     int i;
     if (m_meshes.size() <= 0)
@@ -273,33 +276,35 @@ bool c3DLoader::FetchAsAnimObject(unsigned int index, char bone, unsigned long *
     }
     return true;
 }
-
+*/
 bool c3DLoader::FetchObject(unsigned int index, char bone, cBoneShape2* sh, VECTOR *bbox_min, VECTOR *bbox_max, const MATRIX *transform, VECTOR *fudge_normal) {
     int i;
     if (m_meshes.size() <= 0)
         return false;
 
     c3DMesh& m = m_meshes[m_meshId[index]];
-    sh->vertices.resize(m.m_vertices.size());
-    sh->indices.resize(m.m_indices.size());
+    int vertex_offset = sh->vertices.size();
+    int index_offest = sh->indices.size();
+    sh->vertices.resize(vertex_offset + m.m_vertices.size());
+    sh->indices.resize(index_offest + m.m_indices.size());
     MATRIX normaltransform;
     if (transform)
         normaltransform = matrixNormalTransform(*transform);
     for (i = 0; i < m.m_vertices.size(); i++) {
         if (transform)
-            sh->vertices[i] = vertex2castrate(matrixApply(m.m_vertices[i], *transform, normaltransform), bone);
+            sh->vertices[vertex_offset + i] = vertex2castrate(matrixApply(m.m_vertices[i], *transform, normaltransform), bone);
         else
-            sh->vertices[i] = vertex2castrate(m.m_vertices[i], bone);
+            sh->vertices[vertex_offset + i] = vertex2castrate(m.m_vertices[i], bone);
         if (fudge_normal) {
-            sh->vertices[i].normal = *fudge_normal;
+            sh->vertices[vertex_offset + i].normal = *fudge_normal;
         }
-        boundsContain(&(sh->vertices[i]).position, bbox_min, bbox_max);
+        boundsContain(&(sh->vertices[vertex_offset + i]).position, bbox_min, bbox_max);
     }
     bool do_mirror = (transform)?(matrixCalcDeterminant(transform)<0.0):false;
     for (i = 0; i < m.m_indices.size(); i+=3) {
-        sh->indices[i] = m.m_indices[i+((do_mirror)?1:0)];
-        sh->indices[i+1] = m.m_indices[i+((do_mirror)?0:1)];
-        sh->indices[i+2] = m.m_indices[i+2];
+        sh->indices[index_offest + i] = vertex_offset + m.m_indices[i+((do_mirror)?1:0)];
+        sh->indices[index_offest + i+1] = vertex_offset + m.m_indices[i+((do_mirror)?0:1)];
+        sh->indices[index_offest + i+2] = vertex_offset + m.m_indices[i+2];
     }
     return true;
 }
@@ -310,29 +315,84 @@ bool c3DLoader::FetchObject(unsigned int index, cBoneShape2* sh, VECTOR *bbox_mi
         return false;
 
     c3DMesh& m = m_meshes[m_meshId[index]];
-    sh->vertices.resize(m.m_vertices.size());
-    sh->indices.resize(m.m_indices.size());
+    int vertex_offset = sh->vertices.size();
+    int index_offest = sh->indices.size();
+    sh->vertices.resize(vertex_offset + m.m_vertices.size());
+    sh->indices.resize(index_offest + m.m_indices.size());
     MATRIX normaltransform;
     if (transform)
         normaltransform = matrixNormalTransform(*transform);
     for (i = 0; i < m.m_vertices.size(); i++) {
         if (transform)
-            sh->vertices[i] = matrixApply(m.m_vertices[i], *transform, normaltransform);
+            sh->vertices[vertex_offset + i] = matrixApply(m.m_vertices[i], *transform, normaltransform);
         else
-            sh->vertices[i] = m.m_vertices[i];
+            sh->vertices[vertex_offset + i] = m.m_vertices[i];
         if (fudge_normal) {
-            sh->vertices[i].normal = *fudge_normal;
+            sh->vertices[vertex_offset + i].normal = *fudge_normal;
         }
-        boundsContain(&(sh->vertices[i]).position, bbox_min, bbox_max);
+        boundsContain(&(sh->vertices[vertex_offset + i]).position, bbox_min, bbox_max);
     }
     bool do_mirror = (transform)?(matrixCalcDeterminant(transform)<0.0):false;
     for (i = 0; i < m.m_indices.size(); i+=3) {
-        sh->indices[i] = m.m_indices[i+((do_mirror)?1:0)];
-        sh->indices[i+1] = m.m_indices[i+((do_mirror)?0:1)];
-        sh->indices[i+2] = m.m_indices[i+2];
+        sh->indices[index_offest + i] = vertex_offset + m.m_indices[i+((do_mirror)?1:0)];
+        sh->indices[index_offest + i+1] = vertex_offset + m.m_indices[i+((do_mirror)?0:1)];
+        sh->indices[index_offest + i+2] = vertex_offset + m.m_indices[i+2];
     }
     return true;
 }
+
+/** @brief FetchObject
+  *
+  * @todo: document this function
+  */
+bool c3DLoader::FetchObject(unsigned int index, vector<wxString>& bonenames, cBoneShape2* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal) {
+    int i;
+    if (m_meshes.size() <= 0)
+        return false;
+
+    c3DMesh& m = m_meshes[m_meshId[index]];
+    int vertex_offset = sh->vertices.size();
+    int index_offest = sh->indices.size();
+    sh->vertices.resize(vertex_offset + m.m_vertices.size());
+    sh->indices.resize(index_offest + m.m_indices.size());
+    MATRIX normaltransform;
+    if (transform)
+        normaltransform = matrixNormalTransform(*transform);
+    for (i = 0; i < m.m_vertices.size(); i++) {
+        if (transform)
+            sh->vertices[vertex_offset + i] = matrixApply(m.m_vertices[i], *transform, normaltransform);
+        else
+            sh->vertices[vertex_offset + i] = m.m_vertices[i];
+        if (fudge_normal) {
+            sh->vertices[vertex_offset + i].normal = *fudge_normal;
+        }
+        for (int b = 0; b < 4; ++b) {
+            if (sh->vertices[vertex_offset + i].boneweight[b] > 0) {
+                int8_t id = sh->vertices[vertex_offset + i].bone[b];
+                if (id == -1) {
+                    sh->vertices[vertex_offset + i].bone[b] = 0;
+                    continue;
+                }
+                wxString bn = m_boneId[id];
+                vector<wxString>::iterator it = find_in(bonenames, bn);
+                if (it != bonenames.end()) {
+                    sh->vertices[vertex_offset + i].bone[b] = it - bonenames.begin();
+                } else {
+                    sh->vertices[vertex_offset + i].bone[b] = 0;
+                }
+            }
+        }
+        boundsContain(&(sh->vertices[vertex_offset + i]).position, bbox_min, bbox_max);
+    }
+    bool do_mirror = (transform)?(matrixCalcDeterminant(transform)<0.0):false;
+    for (i = 0; i < m.m_indices.size(); i+=3) {
+        sh->indices[index_offest + i] = vertex_offset + m.m_indices[i+((do_mirror)?1:0)];
+        sh->indices[index_offest + i+1] = vertex_offset + m.m_indices[i+((do_mirror)?0:1)];
+        sh->indices[index_offest + i+2] = vertex_offset + m.m_indices[i+2];
+    }
+    return true;
+}
+
 
 boost::shared_ptr<c3DLoader> c3DLoader::LoadFile(const wxChar *filename) {
 #ifdef STD_ONLY

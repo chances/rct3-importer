@@ -9,6 +9,9 @@
 */
 
 #include "CommonOVL.h"
+
+using namespace r3old;
+
 unsigned long CurrentFile;
 OvlFile OpenFiles[2];
 

@@ -981,4 +981,18 @@ long cOVLDump::RelocationFromVarPtr(void* ptr) const {
     return -1;
 }
 
+/** @brief IsVarPointerRelocated
+  *
+  * @todo: document this function
+  */
+bool cOVLDump::IsVarPointerRelocated(void* ptr) const {
+    long rel = RelocationFromVarPtr(ptr);
+    if (rel >= 0) {
+        if (has(m_relmap, rel)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 

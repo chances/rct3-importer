@@ -146,7 +146,7 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
 //                                animationname = animations[0];
                             }
                         } else if (n("noshadow")) {
-                            m_noshadow = true;
+                            m_flags |= r3::Constants::SVD::Flags::No_Shadow;
                         } else if (n("lod")) {
                             c3DGroup gr;
                             unsigned long forceanim = 0;

@@ -169,6 +169,9 @@ public:
     wxString magick() {return wxString(m_image.magick().c_str(), wxConvLocal);}
     void flip() {m_image.flip();}
     void flop() {m_image.flop();}
+    void crop(unsigned int x, unsigned int y, unsigned int width, unsigned int height) { crop(wxString::Format("%ux%u+%u+%u", width, height, x, y)); }
+    void crop(const char* geometry) {m_image.crop(geometry);}
+    void crop(const wxString& geometry) {crop(static_cast<const char*>(geometry.c_str()));}
     Magick::ImageType type() {return m_image.type();}
     void read(const Magick::Blob& blob) {
 #ifdef CACHE_GXIMAGE

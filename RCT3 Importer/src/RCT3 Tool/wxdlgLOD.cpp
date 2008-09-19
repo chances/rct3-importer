@@ -266,6 +266,25 @@ void dlgLOD::OnUpdateControlState(wxCommandEvent& event) {
     UpdateControlState();
 }
 
+/** @brief OnAnimEdit
+  *
+  * @todo: document this function
+  */
+void dlgLOD::OnAnimEdit(wxCommandEvent& event) {
+    int sel = m_htlbAnimations->GetSelection();
+    if (sel<0)
+        return;
+
+    wxString newname = ::wxGetTextFromUser(_("Enter new name for the animation"), _("Change animation name"), m_lod.animations[sel], this);
+    if (!newname.IsEmpty()) {
+        m_lod.animations[sel] = newname;
+
+        m_htlbAnimations->UpdateContents();
+        m_htlbAnimations->SetSelection(sel);
+        UpdateControlState();
+    }
+}
+
 /** @brief OnAnimationClear
   *
   * @todo: document this function

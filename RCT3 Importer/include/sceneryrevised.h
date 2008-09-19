@@ -20,13 +20,13 @@
 #define _WAVEFORMATEX_
 
 struct WAVEFORMATEX {
-	short wFormatTag;
-	short nChannels;
-	long  nSamplesPerSec;
-	long  nAvgBytesPerSec;
-	short nBlockAlign;
-	short wBitsPerSample;
-	short cbSize;
+	uint16_t wFormatTag;
+	uint16_t nChannels;
+	int32_t  nSamplesPerSec;
+	int32_t  nAvgBytesPerSec;
+	uint16_t nBlockAlign;
+	uint16_t wBitsPerSample;
+	uint16_t cbSize;
 };
 
 #endif
@@ -46,11 +46,11 @@ struct Sound {
 	float_t         unk13; 		// always 0.050000001
 	float_t         unk14; 		// always 2.0
 	float_t         unk15; 		// always 30.0
-	float_t         unk16; 		// always 0.0
+	int32_t         loop; 		// Usually 0, also seen 1. If 1, the sound is a loop and continues playing till stopped
 	int16_t*        channel1; 	// shorts
-	int             channel1_size; 	// size of the above data
+	int32_t         channel1_size; 	// size of the above data
 	int16_t*        channel2; 	// shorts, NULL in no channel2
-	int             channel2_size; 	// 0 if not channel2
+	int32_t         channel2_size; 	// 0 if not channel2
 };
 
 struct SceneryExtraSound {
@@ -59,31 +59,24 @@ struct SceneryExtraSound {
     uint32_t        unk3;  // Usually 0
 };
 
-struct SoundScript1 {
-    float_t         unk1;         // != 0.0
-    uint32_t        unk2; // 0 terminates list, otherwise always 1
-};
-
-struct SoundScript2 { // Some kind of script
-    uint32_t        unk1; // == 0
+struct SoundScript { // Some kind of script
+    float_t         time;
     // repeated till instruction == 0
-    uint32_t        instruction;   // 1, 2, 3 or 4
-    float_t         parameter[];   // x = 1 for i = 1 or 2
-                                   // x = 3 for i = 3 or 4.
-                                   // the last value of a triple and the only value of 1/2 always increase in the list
-                                   // the maximum of this increase seems to be the length of the animation in the case
-                                   // of a ride event.
-                                   // I found no kind of index into the SoundArray, so either they are played in parallel,
-                                   // as a whole or in turn.
-                                   // I suspect intsruction 1 is like a SoundScript1 entry. It probably means "Play sounds at
-                                   // this timepoint".
+    uint32_t        instruction;   // 0, 1, 2, 3 or 4
+    float_t         parameter[];   // x = 0 for i = 1 or 2
+                                   // x = 2 for i = 3 or 4.
+                                   // command 1 turns the sound on, command 2 turns sound off (necessary for looping sounds)
+                                   // command 3 defines volume fades from current now to p1 (0.0 = off, 1.0 = full)
+                                   //   at time p2.
+                                   // command 4 defines pitch fades. 1.0 is normal speed
 };
 
 struct ScenerySound {
     uint32_t        sound_count;
-    Sound**         sourd_refs;
-    uint32_t        sound_script_count; // Rides seem to have 4, Ride Events 1
-    SoundScript1**  sound_scripts; // Each entry is either a SoundScript1 or SoundScript2 "structure"
+    Sound**         sound_refs;
+    uint32_t        sound_script_count; // Rides seem to have 4, Ride Events 1.
+                                        // Very likely (from time codes) these correspond to animations
+    SoundScript**   sound_scripts; // Each entry is either a SoundScript1 or SoundScript2 "structure"
 };
 
 struct SceneryParams {

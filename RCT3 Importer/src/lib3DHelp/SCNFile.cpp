@@ -1177,14 +1177,13 @@ bool cSCNFile::FromModelFile(boost::shared_ptr<c3DLoader>& model) {
     c3DLoaderOrientation ori = model->GetOrientation();
     imported = true;
     {
-        wxFileName t(model->GetFilename());
+        wxFileName t(model->getFilename());
         ovlpath = model->getSuggestedPath().IsEmpty()?wxFileName::DirName(t.GetPathWithSep()):model->getSuggestedPath();
-        name = model->GetName().IsEmpty()?t.GetName():model->GetName();
+        name = model->getName().IsEmpty()?t.GetName():model->getName();
     }
+    prefix = model->getPrefix();
 
-    if (model->getSuggestedNoShadow()) {
-        sivsettings.sivflags = r3::Constants::SVD::Flags::No_Shadow;
-    }
+    sivsettings = cSIVSettings(model.get());
 
     // Textures
     foreach(const c3DTexture::pair& tex, model->GetTextures()) {
@@ -1196,16 +1195,43 @@ bool cSCNFile::FromModelFile(boost::shared_ptr<c3DLoader>& model) {
                 continue;
             }
         }
-        cFlexiTextureFrame fr;
-        fr.texture(tex.second.m_file);
-        fr.alpha(tex.second.m_alphafile);
-        fr.recolorable(tex.second.m_recol);
-        fr.alphasource(tex.second.m_alphaType);
 
         cFlexiTexture te;
         te.Name = tex.second.m_name;
         te.Recolorable = tex.second.m_recol;
-        te.Frames.push_back(fr);
+
+        if (tex.second.m_frames.size()) {
+            typedef pair<wxString, wxString> strpair;
+            foreach(const strpair& p, tex.second.m_frames) {
+                cFlexiTextureFrame fr;
+                fr.texture(p.first);
+                fr.alpha(p.second);
+                fr.recolorable(tex.second.m_recol);
+                fr.alphasource(tex.second.m_alphaType);
+
+                te.Frames.push_back(fr);
+            }
+            if (tex.second.m_sequence.size()) {
+                unsigned long old = tex.second.m_sequence[0] + 1;
+                foreach(unsigned long i, tex.second.m_sequence) {
+                    if (i != old) {
+                        te.Animation.push_back(cFlexiTextureAnim(i));
+                        old = i;
+                    } else {
+                        te.Animation[te.Animation.size()-1].count(te.Animation[te.Animation.size()-1].count() + 1);
+                    }
+                }
+            }
+        } else {
+            cFlexiTextureFrame fr;
+            fr.texture(tex.second.m_file);
+            fr.alpha(tex.second.m_alphafile);
+            fr.recolorable(tex.second.m_recol);
+            fr.alphasource(tex.second.m_alphaType);
+
+            te.Frames.push_back(fr);
+        }
+
         flexitextures.push_back(te);
     }
 
@@ -1267,7 +1293,7 @@ bool cSCNFile::FromModelFile(boost::shared_ptr<c3DLoader>& model) {
         cModel& accmod = animated?amod:mod;
 
         accmod.name = gr.first;
-        if (!accmod.Load(model->GetFilename(), false)) {
+        if (!accmod.Load(model->getFilename(), false)) {
             if (accmod.fatal_error) {
                 foreach(const wxString& err, accmod.error)
                     wxLogError(err);
@@ -1289,6 +1315,10 @@ bool cSCNFile::FromModelFile(boost::shared_ptr<c3DLoader>& model) {
             if (!m.m_meshOptions.IsEmpty())
                 ms.autoMeshStyle(m.m_meshOptions);
         }
+
+        accmod.auto_bones = true;
+        accmod.auto_sort = true;
+        accmod.sortBones();
 
         if (animated) {
             animatedmodels.push_back(amod);
@@ -1483,6 +1513,9 @@ bool cSCNFile::Check() {
                 } else {
                     throw RCT3Exception(_("You didn't set any levels of detail!"));
                 }
+            } else if ((m_work->lods.size()==1) && (!READ_RCT3_EXPERTMODE())) {
+                warning = true;
+                wxLogWarning(_("You only set one LOD, this can lead to weird effects in RCT3. Please set up at least 3 LODs."));
             }
 
             // Check the models
@@ -1854,39 +1887,12 @@ void cSCNFile::MakeToOvlMain(cOvl& c_ovl) {
                 boundsInit(&c_mod.bbox1, &c_mod.bbox2);
 
                 // Find active mesh count
-//                    int mesh_count = 0;
-//                    for (cMeshStruct::iterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
-//                        if (!i_mesh->disabled)
-//                            mesh_count++;
-//                    }
                 c_mod.name = getPrefixed(i_mod->name).ToAscii();
 
                 // Determine transformation matrices
                 MATRIX transformMatrix;
                 MATRIX undoDamage;
                 bool do_transform = i_mod->GetTransformationMatrices(transformMatrix, undoDamage);
-
-//                MATRIX transformMatrix = matrixMultiply(matrixMultiply(i_mod->transforms), matrixGetFixOrientation(i_mod->usedorientation));
-//                bool do_transform = !matrixIsEqual(transformMatrix, matrixGetUnity());
-//                MATRIX undoDamage;
-//                int m = 0;
-//                for(m = i_mod->transformnames.size()-1; m>=0; m--) {
-//                    if (i_mod->transformnames[m] == wxT("-"))
-//                        break;
-//                }
-//                if (m>0) {
-//                    // Note: if m=0, the first is the separator, so this can fall through to no separator
-//                    std::vector<MATRIX> undostack;
-//                    for (int n = m; n < i_mod->transforms.size(); n++)
-//                        undostack.push_back(i_mod->transforms[n]);
-//                    undostack.push_back(matrixGetFixOrientation(i_mod->usedorientation));
-//                    undoDamage = matrixInverse(matrixMultiply(undostack));
-//                } else {
-//                    undoDamage = matrixInverse(transformMatrix);
-//                }
-//                // We need to reevaluate do_transform
-//                if (!do_transform)
-//                    do_transform = !matrixIsEqual(undoDamage, matrixGetUnity());
 
                 // Do effect points
                 if (i_mod->effectpoints.size() != 0) {
@@ -1895,22 +1901,6 @@ void cSCNFile::MakeToOvlMain(cOvl& c_ovl) {
                         wxLogVerbose(_("  Adding effect point: ") + i_mod->effectpoints[e].name);
                         c_es.name = i_mod->effectpoints[e].name.ToAscii();
                         c_es.pos = matrixThereAndBackAgain(i_mod->effectpoints[e].transforms, transformMatrix, undoDamage);
-/*
-                        if (do_transform) {
-                            std::vector<D3DMATRIX> tempstack = i_mod->effectpoints[e].transforms;
-                            // to correctely apply the model transformation matrix to effect points we have to
-                            // transform in-game objects into modeler-space first by applying the inverse
-                            // of the model transformation matrix
-                            // (now replaced by the undoDamage matrix to allow separation of the coordinate
-                            // system fix from other model transformations)
-                            tempstack.insert(tempstack.begin(), undoDamage);
-                            // At the end of the stack, transform back
-                            tempstack.push_back(transformMatrix);
-                            c_es.pos = matrixMultiply(tempstack);
-                        } else {
-                            c_es.pos = matrixMultiply(i_mod->effectpoints[e].transforms);
-                        }
-*/
                         c_mod.effects.push_back(c_es);
                     }
                 }
@@ -1921,8 +1911,87 @@ void cSCNFile::MakeToOvlMain(cOvl& c_ovl) {
                     throw RCT3Exception(wxString::Format(_("Something happened to the file of model '%s'."), i_mod->name.c_str()));
                 }
 
-                unsigned long CurrentObj = 0;
+                //unsigned long CurrentObj = 0;
                 VECTOR temp_min, temp_max;
+
+                foreach(vector<int>& meshvec, i_mod->mesh_compaction) {
+                    cStaticShape2 c_ss2;
+                    cMeshStruct* i_mesh = &i_mod->meshstructs[meshvec[0]];
+
+                    wxLogVerbose(_("  Adding group: ") + i_mesh->Name);
+                    c_ss2.fts = getPrefixed(i_mesh->FTX).ToAscii();
+                    c_ss2.texturestyle = i_mesh->TXS.ToAscii();
+                    c_ss2.placetexturing = i_mesh->place;
+                    c_ss2.textureflags = i_mesh->flags;
+                    c_ss2.sides = i_mesh->unknown;
+                    if (i_mesh->algo_x.IsEmpty())
+                        c_ss2.algo_x = sortalgo_x;
+                    else
+                        c_ss2.algo_x = cTriangleSortAlgorithm::GetAlgo(i_mesh->algo_x.mb_str(wxConvLocal));
+                    if (i_mesh->algo_y.IsEmpty())
+                        c_ss2.algo_y = sortalgo_y;
+                    else
+                        c_ss2.algo_y = cTriangleSortAlgorithm::GetAlgo(i_mesh->algo_y.mb_str(wxConvLocal));
+                    if (i_mesh->algo_z.IsEmpty())
+                        c_ss2.algo_z = sortalgo_z;
+                    else
+                        c_ss2.algo_z = cTriangleSortAlgorithm::GetAlgo(i_mesh->algo_z.mb_str(wxConvLocal));
+                    if (i_mesh->place) {
+                        wxLogVerbose(_("    Using sorting algorithms (x/y/z): ") +
+                            wxString(cTriangleSortAlgorithm::GetAlgorithmName(c_ss2.algo_x), wxConvLocal) + wxT(" / ") +
+                            wxString(cTriangleSortAlgorithm::GetAlgorithmName(c_ss2.algo_y), wxConvLocal) + wxT(" / ") +
+                            wxString(cTriangleSortAlgorithm::GetAlgorithmName(c_ss2.algo_z), wxConvLocal)
+                        );
+                    }
+
+                    VECTOR c_fudge_normal;
+                    VECTOR* c_pfudge_normal = NULL;
+                    boundsInit(&temp_min, &temp_max);
+                    switch (i_mesh->fudgenormals) {
+                        case CMS_FUDGE_X:
+                            c_fudge_normal = vectorMake(1.0, 0.0, 0.0);
+                            c_pfudge_normal = &c_fudge_normal;
+                            break;
+                        case CMS_FUDGE_Y:
+                            c_fudge_normal = vectorMake(0.0, 1.0, 0.0);
+                            c_pfudge_normal = &c_fudge_normal;
+                            break;
+                        case CMS_FUDGE_Z:
+                            c_fudge_normal = vectorMake(0.0, 0.0, 1.0);
+                            c_pfudge_normal = &c_fudge_normal;
+                            break;
+                        case CMS_FUDGE_XM:
+                            c_fudge_normal = vectorMake(-1.0, 0.0, 0.0);
+                            c_pfudge_normal = &c_fudge_normal;
+                            break;
+                        case CMS_FUDGE_YM:
+                            c_fudge_normal = vectorMake(0.0, -1.0, 0.0);
+                            c_pfudge_normal = &c_fudge_normal;
+                            break;
+                        case CMS_FUDGE_ZM:
+                            c_fudge_normal = vectorMake(0.0, 0.0, -1.0);
+                            c_pfudge_normal = &c_fudge_normal;
+                            break;
+                    }
+                    if (c_pfudge_normal)
+                        matrixApplyIP(c_pfudge_normal, matrixGetFixOrientation(i_mod->usedorientation));
+
+                    boundsInit(&temp_min, &temp_max);
+
+                    foreach(int mesh, meshvec) {
+                        wxLogVerbose(_("    Appending group: ") + i_mod->meshstructs[mesh].Name);
+                        object->FetchObject(mesh, &c_ss2, &temp_min, &temp_max,
+                                            const_cast<MATRIX *> ((do_transform)?(&transformMatrix):NULL),
+                                            c_pfudge_normal);
+                        boundsContain(&temp_min, &temp_max, &c_mod.bbox1, &c_mod.bbox2);
+                    }
+                    if (i_mesh->fudgenormals == CMS_FUDGE_RIM) {
+                        c3DLoader::FlattenNormals(&c_ss2, temp_min, temp_max);
+                    }
+                    c_mod.meshes.push_back(c_ss2);
+
+                }
+/*
                 for (cMeshStruct::iterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
                     if (i_mesh->disabled == false) {
                         //progress.Update(++progress_count);
@@ -1953,12 +2022,6 @@ void cSCNFile::MakeToOvlMain(cOvl& c_ovl) {
                             );
                         }
 
-                        /*
-                        unsigned long c_vertexcount;
-                        VERTEX* c_vertices;
-                        unsigned long c_indexcount;
-                        unsigned long* c_indices;
-                        */
                         VECTOR c_fudge_normal;
                         VECTOR* c_pfudge_normal = NULL;
                         boundsInit(&temp_min, &temp_max);
@@ -1999,20 +2062,11 @@ void cSCNFile::MakeToOvlMain(cOvl& c_ovl) {
                         if (i_mesh->fudgenormals == CMS_FUDGE_RIM) {
                             c3DLoader::FlattenNormals(&c_ss2, temp_min, temp_max);
                         }
-                        //c_shs->AddMesh(i_mesh->FTX.c_str(), i_mesh->TXS.c_str(), i_mesh->place, i_mesh->flags,
-                        //               i_mesh->unknown, c_vertexcount, c_vertices, c_indexcount, c_indices);
-                        //delete[] c_vertices;
-                        //delete[] c_indices;
                         c_mod.meshes.push_back(c_ss2);
                     }
                     CurrentObj++;
                 }
-//                    c_mod.bbox1.x -= 0.5;
-//                    c_mod.bbox1.y -= 0.5;
-//                    c_mod.bbox1.z -= 0.5;
-//                    c_mod.bbox2.x += 0.5;
-//                    c_mod.bbox2.y += 0.5;
-//                    c_mod.bbox2.z += 0.5;
+*/
                 c_shs->AddModel(c_mod);
             }
         }
@@ -2031,75 +2085,26 @@ void cSCNFile::MakeToOvlMain(cOvl& c_ovl) {
                 boundsInit(&c_bs1.bbox1, &c_bs1.bbox2);
 
                 // Find active mesh count
-//                    int mesh_count = 0;
-//                    for (cMeshStruct::iterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
-//                        if (!i_mesh->disabled)
-//                            mesh_count++;
-//                    }
+                vector<wxString> bonenames;
                 c_bs1.name = getPrefixed(i_mod->name).ToAscii();
                 c_bs1.bones.push_back(cBoneStruct(true));
+                bonenames.push_back("Scene Root");
 
                 // Determine transformation matrices
                 MATRIX transformMatrix;
                 MATRIX undoDamage;
                 bool do_transform = i_mod->GetTransformationMatrices(transformMatrix, undoDamage);
 
-/*
-                D3DMATRIX transformMatrix = matrixMultiply(matrixMultiply(i_mod->transforms), matrixGetFixOrientation(i_mod->usedorientation));
-                bool do_transform = !matrixIsEqual(transformMatrix, matrixGetUnity());
-                D3DMATRIX undoDamage;
-                int m = 0;
-                for(m = i_mod->transformnames.size()-1; m>=0; m--) {
-                    if (i_mod->transformnames[m] == wxT("-"))
-                        break;
-                }
-                if (m>0) {
-                    // Note: if m=0, the first is the separator, so this can fall through to no separator
-                    std::vector<D3DMATRIX> undostack;
-                    for (int n = m; n < i_mod->transforms.size(); n++)
-                        undostack.push_back(i_mod->transforms[n]);
-                    undostack.push_back(matrixGetFixOrientation(i_mod->usedorientation));
-                    undoDamage = matrixInverse(matrixMultiply(undostack));
-                } else {
-                    undoDamage = matrixInverse(transformMatrix);
-                }
-                // We need to reevaluate do_transform
-                if (!do_transform)
-                    do_transform = !matrixIsEqual(undoDamage, matrixGetUnity());
-*/
-
-                // Do effect points
+                // Do effect bones
                 if (i_mod->modelbones.size() != 0) {
                     for (unsigned int e = 0; e < i_mod->modelbones.size(); e++) {
                         cBoneStruct c_bone;
                         wxLogVerbose(_("  Adding bone: ") + i_mod->modelbones[e].name);
                         c_bone.name = i_mod->modelbones[e].name.ToAscii();
+                        bonenames.push_back(i_mod->modelbones[e].name);
                         c_bone.parentbonenumber = i_mod->modelbones[e].nparent;
                         c_bone.pos1 = matrixThereAndBackAgain(i_mod->modelbones[e].positions1, transformMatrix, undoDamage);
                         c_bone.pos2 = matrixThereAndBackAgain(i_mod->modelbones[e].positions2, transformMatrix, undoDamage);
-/*
-                        if (do_transform) {
-                            std::vector<D3DMATRIX> tempstack = i_mod->modelbones[e].positions1;
-                            // to correctely apply the model transformation matrix to effect points we have to
-                            // transform in-game objects into modeler-space first by applying the inverse
-                            // of the model transformation matrix
-                            // (now replaced by the undoDamage matrix to allow separation of the coordinate
-                            // system fix from other model transformations)
-                            tempstack.insert(tempstack.begin(), undoDamage);
-                            // At the end of the stack, transform back
-                            tempstack.push_back(transformMatrix);
-                            c_bone.pos1 = matrixMultiply(tempstack);
-
-                            // Same for pos2
-                            tempstack = i_mod->modelbones[e].positions2;
-                            tempstack.insert(tempstack.begin(), undoDamage);
-                            tempstack.push_back(transformMatrix);
-                            c_bone.pos2 = matrixMultiply(tempstack);
-                        } else {
-                            c_bone.pos1 = matrixMultiply(i_mod->modelbones[e].positions1);
-                            c_bone.pos2 = matrixMultiply(i_mod->modelbones[e].positions2);
-                        }
-*/
                         c_bs1.bones.push_back(c_bone);
                     }
                 }
@@ -2110,8 +2115,90 @@ void cSCNFile::MakeToOvlMain(cOvl& c_ovl) {
                     throw RCT3Exception(wxString::Format(_("Something happened to the file of model '%s'."), i_mod->name.c_str()));
                 }
 
-                unsigned long CurrentObj = 0;
+                //unsigned long CurrentObj = 0;
                 VECTOR temp_min, temp_max;
+                foreach(vector<int>& meshvec, i_mod->mesh_compaction) {
+                    cBoneShape2 c_bs2;
+                    cMeshStruct* i_mesh = &i_mod->meshstructs[meshvec[0]];
+
+                    wxLogVerbose(_("  Adding group: ") + i_mesh->Name);
+                    c_bs2.fts = getPrefixed(i_mesh->FTX).ToAscii();
+                    c_bs2.texturestyle = i_mesh->TXS.ToAscii();
+                    c_bs2.placetexturing = i_mesh->place;
+                    c_bs2.textureflags = i_mesh->flags;
+                    c_bs2.sides = i_mesh->unknown;
+                    if (i_mesh->algo_x.IsEmpty())
+                        c_bs2.algo_x = sortalgo_x;
+                    else
+                        c_bs2.algo_x = cTriangleSortAlgorithm::GetAlgo(i_mesh->algo_x.mb_str(wxConvLocal));
+                    if (i_mesh->algo_y.IsEmpty())
+                        c_bs2.algo_y = sortalgo_y;
+                    else
+                        c_bs2.algo_y = cTriangleSortAlgorithm::GetAlgo(i_mesh->algo_y.mb_str(wxConvLocal));
+                    if (i_mesh->algo_z.IsEmpty())
+                        c_bs2.algo_z = sortalgo_z;
+                    else
+                        c_bs2.algo_z = cTriangleSortAlgorithm::GetAlgo(i_mesh->algo_z.mb_str(wxConvLocal));
+                    if (i_mesh->place) {
+                        wxLogVerbose(_("    Using sorting algorithms (x/y/z): ") +
+                            wxString(cTriangleSortAlgorithm::GetAlgorithmName(c_bs2.algo_x), wxConvLocal) + wxT(" / ") +
+                            wxString(cTriangleSortAlgorithm::GetAlgorithmName(c_bs2.algo_y), wxConvLocal) + wxT(" / ") +
+                            wxString(cTriangleSortAlgorithm::GetAlgorithmName(c_bs2.algo_z), wxConvLocal)
+                        );
+                    }
+
+                    VECTOR c_fudge_normal;
+                    VECTOR* c_pfudge_normal = NULL;
+                    switch (i_mesh->fudgenormals) {
+                        case CMS_FUDGE_X:
+                            c_fudge_normal = vectorMake(1.0, 0.0, 0.0);
+                            c_pfudge_normal = &c_fudge_normal;
+                            break;
+                        case CMS_FUDGE_Y:
+                            c_fudge_normal = vectorMake(0.0, 1.0, 0.0);
+                            c_pfudge_normal = &c_fudge_normal;
+                            break;
+                        case CMS_FUDGE_Z:
+                            c_fudge_normal = vectorMake(0.0, 0.0, 1.0);
+                            c_pfudge_normal = &c_fudge_normal;
+                            break;
+                        case CMS_FUDGE_XM:
+                            c_fudge_normal = vectorMake(-1.0, 0.0, 0.0);
+                            c_pfudge_normal = &c_fudge_normal;
+                            break;
+                        case CMS_FUDGE_YM:
+                            c_fudge_normal = vectorMake(0.0, -1.0, 0.0);
+                            c_pfudge_normal = &c_fudge_normal;
+                            break;
+                        case CMS_FUDGE_ZM:
+                            c_fudge_normal = vectorMake(0.0, 0.0, -1.0);
+                            c_pfudge_normal = &c_fudge_normal;
+                            break;
+                    }
+                    if (c_pfudge_normal)
+                        matrixApplyIP(c_pfudge_normal, matrixGetFixOrientation(i_mod->usedorientation));
+
+                    boundsInit(&temp_min, &temp_max);
+                    foreach(int mesh, meshvec) {
+                        wxLogVerbose(_("    Appending group: ") + i_mod->meshstructs[mesh].Name);
+                        if (i_mod->meshstructs[mesh].multibone) {
+                            object->FetchObject(mesh, bonenames, &c_bs2, &temp_min, &temp_max,
+                                                      const_cast<MATRIX *> ((do_transform)?(&transformMatrix):NULL),
+                                                      c_pfudge_normal);
+                        } else {
+                            object->FetchObject(mesh, i_mod->meshstructs[mesh].bone, &c_bs2, &temp_min, &temp_max,
+                                                      const_cast<MATRIX *> ((do_transform)?(&transformMatrix):NULL),
+                                                      c_pfudge_normal);
+                        }
+                        boundsContain(&temp_min, &temp_max, &c_bs1.bbox1, &c_bs1.bbox2);
+                    }
+                    if (i_mesh->fudgenormals == CMS_FUDGE_RIM) {
+                        c3DLoader::FlattenNormals(&c_bs2, temp_min, temp_max);
+                    }
+                    c_bs1.meshes.push_back(c_bs2);
+
+                }
+/*
                 for (cMeshStruct::iterator i_mesh = i_mod->meshstructs.begin(); i_mesh != i_mod->meshstructs.end(); i_mesh++) {
                     if (i_mesh->disabled == false) {
                         //progress.Update(++progress_count);
@@ -2177,29 +2264,21 @@ void cSCNFile::MakeToOvlMain(cOvl& c_ovl) {
                         object->FetchObject(CurrentObj, i_mesh->bone, &c_bs2, &temp_min, &temp_max,
                                                   const_cast<MATRIX *> ((do_transform)?(&transformMatrix):NULL),
                                                   c_pfudge_normal);
-//                            object->FetchAsAnimObject(CurrentObj, i_mesh->bone, 0xff, &c_vertexcount, &c_vertices,
-//                                                      &c_indexcount, &c_indices, &temp_min, &temp_max,
-//                                                      const_cast<D3DMATRIX *> ((do_transform)?(&transformMatrix):NULL),
-//                                                      c_pfudge_normal);
                         boundsContain(&temp_min, &temp_max, &c_bs1.bbox1, &c_bs1.bbox2);
                         if (i_mesh->fudgenormals == CMS_FUDGE_RIM) {
                             c3DLoader::FlattenNormals(&c_bs2, temp_min, temp_max);
                         }
                         c_bs1.meshes.push_back(c_bs2);
-//                            c_bsh->AddMesh(i_mesh->FTX.c_str(), i_mesh->TXS.c_str(), i_mesh->place, i_mesh->flags,
-//                                           i_mesh->unknown, c_vertexcount, c_vertices, c_indexcount, c_indices);
-//                            delete[] c_vertices;
-//                            delete[] c_indices;
                     }
                     CurrentObj++;
                 }
-                //c_bsh->SetBoundingBox(box_min, box_max);
-//                    c_bs1.bbox1.x -= 0.5;
-//                    c_bs1.bbox1.y -= 0.5;
-//                    c_bs1.bbox1.z -= 0.5;
-//                    c_bs1.bbox2.x += 0.5;
-//                    c_bs1.bbox2.y += 0.5;
-//                    c_bs1.bbox2.z += 0.5;
+*/
+                c_bs1.bbox1.x -= 1.0;
+                c_bs1.bbox1.y -= 1.0;
+                c_bs1.bbox1.z -= 1.0;
+                c_bs1.bbox2.x += 1.0;
+                c_bs1.bbox2.y += 1.0;
+                c_bs1.bbox2.z += 1.0;
                 c_bsh->AddModel(c_bs1);
             }
         }
@@ -2316,13 +2395,17 @@ void cSCNFile::MakeToOvlMain(cOvl& c_ovl) {
   * @todo: document this function
   */
 void cSCNFile::MakeToOvlAnimations(cOvl& c_ovl) {
-    if (!m_work)
-        Check();
+    if (!m_work) {
+        // called from ovlmake
+        foreach(cAnimation& a, animations)
+            a.CheckTimes();
+    }
+    cSCNFile& use = m_work?(*m_work.get()):(*this);
 
-    if (m_work->animations.size()) {
+    if (use.animations.size()) {
         wxLogDebug(wxT("TRACE cSCNFile::MakeToOvl BAN"));
         ovlBANManager* c_ban = c_ovl.GetManager<ovlBANManager>();
-        for (cAnimation::iterator i_anim = m_work->animations.begin(); i_anim != m_work->animations.end(); ++i_anim) {
+        for (cAnimation::iterator i_anim = use.animations.begin(); i_anim != use.animations.end(); ++i_anim) {
             cBoneAnim c_item;
             c_item.name = getPrefixed(i_anim->name).ToAscii();
             wxLogVerbose(_("Adding animation: ") + i_anim->name);

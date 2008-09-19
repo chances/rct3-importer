@@ -29,6 +29,7 @@
 #include "wx_pch.h"
 
 #include "RCT3Exception.h"
+#include "gximage.h"
 
 class RCT3TextureException: public RCT3Exception {
 public:
@@ -38,5 +39,6 @@ public:
 
 // Check presence, validity and size. No exception = everything ok =)
 unsigned int checkRCT3Texture(const wxString& texture);
+unsigned int checkRCT3Texture(const wxGXImage& texture);
 
 #endif

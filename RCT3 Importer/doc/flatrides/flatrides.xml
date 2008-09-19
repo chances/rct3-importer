@@ -27,7 +27,7 @@
       </revision>
       <revision>
         <revnumber>1.1</revnumber>
-        <date>23.7.2008</date>
+        <date>4.9.2008</date>
         <author>
           <surname>Belgabor</surname>
         </author>
@@ -49,6 +49,12 @@
             <listitem>
               <para>gsi coordinates fixed</para>
             </listitem>
+            <listitem>
+              <para>Advanced flatride types</para>
+            </listitem>
+            <listitem>
+              <para>Sound</para>
+            </listitem>
           </itemizedlist>
         </revdescription>
       </revision>
@@ -64,6 +70,19 @@
       yourself, I'll only answer questions about tools I created, not about
       other apps.</para>
     </warning>
+    <para>To follow everything in this tutorial, you'll need at least the
+    following versions of the RCT3 tools:</para>
+    <itemizedlist>
+      <listitem>
+        <para>RCT3 Importer v18pre2</para>
+      </listitem>
+      <listitem>
+        <para>ovlmake v0.5</para>
+      </listitem>
+      <listitem>
+        <para>Blender script pack v2</para>
+      </listitem>
+    </itemizedlist>
     <para>What you'll need:</para>
     <itemizedlist>
       <listitem>
@@ -1335,46 +1354,49 @@
     </section>
     <section id="s_adv_raw">
       <title>Advanced topics</title>
-      <para>This section will explain how you can do some nifty things
-      regarding collision detection and entries and exits. <xref
-      linkend="a_ori" /> visualizes an example 3x3 ride and helps you to find
-      out the correct settings for the result you want to achieve.</para>
-      <figure float="1" id="a_ori">
-        <title>Picture visualizing the orientation of a 3x3 ride in game when
-        not rotated by the player. Four squares have been marked to illustrate
-        the index for <emphasis>squareUnknown</emphasis> elements and
-        <emphasis>xPos</emphasis>/<emphasis>zPos</emphasis> for
-        <emphasis>rideStationLimit</emphasis> elements.</title>
-        <mediaobject>
-          <imageobject>
-            <imagedata fileref="orientation.png" scale="40" />
-          </imageobject>
-        </mediaobject>
-      </figure>
-      <para>The first thing we'll need to discuss are flags. As you've learned
-      above, Flags 33-64 from the importer are actually per square. The
-      others, 1-32, are as presented in the importer per object. To set them,
-      add a <emphasis>importerUnknowns</emphasis> element and set its
-      <emphasis>flags</emphasis> attribute.</para>
-      <programlisting language="XML">        &lt;importerUnknowns flags="0x00200000"/&gt;</programlisting>
-      <para>It needs to be at the same level as the
-      <emphasis>squareUnknowns</emphasis> elements, so I suggest adding it
-      just above the first one. Here I used the hexadecimal notation for the
-      value which is an alternative to the one presented above (integer
-      number). It sets Flag 22 (the integer representation would be
-      <quote>2097152</quote>, which looks a lot less orderly, doesn't it?)
-      which activates exact ride bases (we'll come to that next, basically
-      everything I'll say about <emphasis>squareUnknowns</emphasis> elements
-      depends on this setting), if it's not activated, the ride base will
-      always encompass all squares. Another flag interesting for flat rides is
-      Flag 17, which removes the base completely and makes it placeable on
-      water only, like the whale and dolphin shows (to set, use
-      <quote>0x00010000</quote>).</para>
-      <para>To make use of exact ride bases, we need to give one
-      <emphasis>squareUnknowns</emphasis> element per square. To keep things
-      manageable, I'll switch to a 3x3 example as seen in the picture
-      above.</para>
-      <programlisting language="XML">        &lt;squareUnknowns flags="0" minHeight="0" maxHeight="0" supports="0"/&gt; &lt;!-- Index 0 --&gt;
+      <section>
+        <title>Supports &amp; station restriction</title>
+        <para>This section will explain how you can do some nifty things
+        regarding collision detection and entries and exits. <xref
+        linkend="a_ori" /> visualizes an example 3x3 ride and helps you to
+        find out the correct settings for the result you want to
+        achieve.</para>
+        <figure float="1" id="a_ori">
+          <title>Picture visualizing the orientation of a 3x3 ride in game
+          when not rotated by the player. Four squares have been marked to
+          illustrate the index for <emphasis>squareUnknown</emphasis> elements
+          and <emphasis>xPos</emphasis>/<emphasis>zPos</emphasis> for
+          <emphasis>rideStationLimit</emphasis> elements.</title>
+          <mediaobject>
+            <imageobject>
+              <imagedata fileref="orientation.png" scale="40" />
+            </imageobject>
+          </mediaobject>
+        </figure>
+        <para>The first thing we'll need to discuss are flags. As you've
+        learned above, Flags 33-64 from the importer are actually per square.
+        The others, 1-32, are as presented in the importer per object. To set
+        them, add a <emphasis>importerUnknowns</emphasis> element and set its
+        <emphasis>flags</emphasis> attribute.</para>
+        <programlisting language="XML">        &lt;importerUnknowns flags="0x00200000"/&gt;</programlisting>
+        <para>It needs to be at the same level as the
+        <emphasis>squareUnknowns</emphasis> elements, so I suggest adding it
+        just above the first one. Here I used the hexadecimal notation for the
+        value which is an alternative to the one presented above (integer
+        number). It sets Flag 22 (the integer representation would be
+        <quote>2097152</quote>, which looks a lot less orderly, doesn't it?)
+        which activates exact ride bases (we'll come to that next, basically
+        everything I'll say about <emphasis>squareUnknowns</emphasis> elements
+        depends on this setting), if it's not activated, the ride base will
+        always encompass all squares. Another flag interesting for flat rides
+        is Flag 17, which removes the base completely and makes it placeable
+        on water only, like the whale and dolphin shows (to set, use
+        <quote>0x00010000</quote>).</para>
+        <para>To make use of exact ride bases, we need to give one
+        <emphasis>squareUnknowns</emphasis> element per square. To keep things
+        manageable, I'll switch to a 3x3 example as seen in the picture
+        above.</para>
+        <programlisting language="XML">        &lt;squareUnknowns flags="0" minHeight="0" maxHeight="0" supports="0"/&gt; &lt;!-- Index 0 --&gt;
         &lt;squareUnknowns flags="1" minHeight="0" maxHeight="7" supports="0"/&gt;
         &lt;squareUnknowns flags="1" minHeight="0" maxHeight="0" supports="0"/&gt; &lt;!-- Index 2 --&gt;
 
@@ -1385,75 +1407,76 @@
         &lt;squareUnknowns flags="1" minHeight="1" maxHeight="7" supports="0"/&gt;
         &lt;squareUnknowns flags="1" minHeight="0" maxHeight="7" supports="0"/&gt;
         &lt;squareUnknowns flags="1" minHeight="1" maxHeight="1" supports="0"/&gt; &lt;!-- Index 8 --&gt;</programlisting>
-      <para>As you can see the index mentioned in the picture is a zero-based
-      list index, so the first element you give corresponds to the top square
-      in the picture and the last one to the bottom one. Mostly I've set up
-      the ride to be 7 units high with collision detection, but the corner
-      squares have special settings.</para>
-      <para>The top corner (index 0) has collision detection switched off. It
-      will not have a base and not highlight while placing.</para>
-      <para>The left corner (index 2) has collision detection, but both
-      <emphasis>minHeight</emphasis> and <emphasis>maxHeight</emphasis> are 0,
-      therefore it does not have a <quote>blocked volume</quote>. The part
-      will have a base and highlight while placing. It will block paths on the
-      ground, but not scenery.</para>
-      <para>The right corner (index 6, not indicated) also has collision
-      detection and has a <quote>blocked volume</quote>, but it starts above
-      ground. It will not have a base, but highlight during placing. It blocks
-      both paths and (collision-detection enabled) scenery overlapping it's
-      volume.</para>
-      <para>The bottom corner (index 8) has collision detection, starts above
-      ground and does not have a <quote>blocked volume</quote>. As the
-      previous one, it will not have a base, but highlight during placing. It
-      does not block scenery, but blocks paths if it <quote>cuts</quote> their
-      volume (usually 4h above the path).</para>
-      <para>To summarize, if a square</para>
-      <itemizedlist>
-        <listitem>
-          <para>has collision detection enabled, it will highlight during
-          placing.</para>
-        </listitem>
-        <listitem>
-          <para>has height 0 inside its min/max range, it will show a
-          base.</para>
-        </listitem>
-        <listitem>
-          <para>has an actual volume blocked, it will block
-          collision-detection enabled scenery.</para>
-        </listitem>
-        <listitem>
-          <para>will block paths, if the path's volume (4h above it) overlaps
-          <emphasis>minHeight</emphasis> and/or
-          <emphasis>maxHeight</emphasis>.</para>
-        </listitem>
-        <listitem>
-          <para>rides act like scenery.</para>
-        </listitem>
-      </itemizedlist>
-      <para>The second topic is limiting where the player can place the ride
-      entrance and exit. You can see this in action for example on the sky
-      swing, the dolphin show and the whale show. This feature was introduced
-      in Soaked!, so first we need to tell <application>ovlmake</application>
-      to write Soaked! stuctures. To do that, add a
-      <emphasis>version</emphasis> attribute to the
-      <emphasis>attraction</emphasis> element and set it to 2 (note that if
-      you want to keep the <emphasis>version</emphasis> attribute and go back
-      to vanilla structures, you need to set it to 0).</para>
-      <programlisting language="XML">        &lt;attraction type="4" <emphasis
-          role="bold">version="2"</emphasis> loopSpline="jumpSplineLoop" impref="mainimport"&gt;</programlisting>
-      <para>Now to add station limits to your ride, you need to add
-      <emphasis>rideStationLimit</emphasis> elements to your
-      <emphasis>ride</emphasis> element, on the same level as the
-      <emphasis>rideOption</emphasis> elements. I suggest adding them after
-      those.</para>
-      <important>
-        <para>As soon as you add one or more
-        <emphasis>rideStationLimit</emphasis> elements, RCT3 deactivates all
-        default placement possibilities (<abbrev>i.e.</abbrev> everywhere
-        around the square base of the ride).</para>
-      </important>
-      <para>So if you wanted to restore the default, you'd need to add:</para>
-      <programlisting language="XML">          &lt;rideStationLimit xPos="0" zPos="0" flags="0x00000039"/&gt;
+        <para>As you can see the index mentioned in the picture is a
+        zero-based list index, so the first element you give corresponds to
+        the top square in the picture and the last one to the bottom one.
+        Mostly I've set up the ride to be 7 units high with collision
+        detection, but the corner squares have special settings.</para>
+        <para>The top corner (index 0) has collision detection switched off.
+        It will not have a base and not highlight while placing.</para>
+        <para>The left corner (index 2) has collision detection, but both
+        <emphasis>minHeight</emphasis> and <emphasis>maxHeight</emphasis> are
+        0, therefore it does not have a <quote>blocked volume</quote>. The
+        part will have a base and highlight while placing. It will block paths
+        on the ground, but not scenery.</para>
+        <para>The right corner (index 6, not indicated) also has collision
+        detection and has a <quote>blocked volume</quote>, but it starts above
+        ground. It will not have a base, but highlight during placing. It
+        blocks both paths and (collision-detection enabled) scenery
+        overlapping it's volume.</para>
+        <para>The bottom corner (index 8) has collision detection, starts
+        above ground and does not have a <quote>blocked volume</quote>. As the
+        previous one, it will not have a base, but highlight during placing.
+        It does not block scenery, but blocks paths if it <quote>cuts</quote>
+        their volume (usually 4h above the path).</para>
+        <para>To summarize, if a square</para>
+        <itemizedlist>
+          <listitem>
+            <para>has collision detection enabled, it will highlight during
+            placing.</para>
+          </listitem>
+          <listitem>
+            <para>has height 0 inside its min/max range, it will show a
+            base.</para>
+          </listitem>
+          <listitem>
+            <para>has an actual volume blocked, it will block
+            collision-detection enabled scenery.</para>
+          </listitem>
+          <listitem>
+            <para>will block paths, if the path's volume (4h above it)
+            overlaps <emphasis>minHeight</emphasis> and/or
+            <emphasis>maxHeight</emphasis>.</para>
+          </listitem>
+          <listitem>
+            <para>rides act like scenery.</para>
+          </listitem>
+        </itemizedlist>
+        <para>The second topic is limiting where the player can place the ride
+        entrance and exit. You can see this in action for example on the sky
+        swing, the dolphin show and the whale show. This feature was
+        introduced in Soaked!, so first we need to tell
+        <application>ovlmake</application> to write Soaked! stuctures. To do
+        that, add a <emphasis>version</emphasis> attribute to the
+        <emphasis>attraction</emphasis> element and set it to 2 (note that if
+        you want to keep the <emphasis>version</emphasis> attribute and go
+        back to vanilla structures, you need to set it to 0).</para>
+        <programlisting language="XML">        &lt;attraction type="4" <emphasis
+            role="bold">version="2"</emphasis> loopSpline="jumpSplineLoop" impref="mainimport"&gt;</programlisting>
+        <para>Now to add station limits to your ride, you need to add
+        <emphasis>rideStationLimit</emphasis> elements to your
+        <emphasis>ride</emphasis> element, on the same level as the
+        <emphasis>rideOption</emphasis> elements. I suggest adding them after
+        those.</para>
+        <important>
+          <para>As soon as you add one or more
+          <emphasis>rideStationLimit</emphasis> elements, RCT3 deactivates all
+          default placement possibilities (<abbrev>i.e.</abbrev> everywhere
+          around the square base of the ride).</para>
+        </important>
+        <para>So if you wanted to restore the default, you'd need to
+        add:</para>
+        <programlisting language="XML">          &lt;rideStationLimit xPos="0" zPos="0" flags="0x00000039"/&gt;
           &lt;rideStationLimit xPos="1" zPos="0" flags="0x00000038"/&gt;
           &lt;rideStationLimit xPos="2" zPos="0" flags="0x0000003C"/&gt;
 
@@ -1463,18 +1486,426 @@
           &lt;rideStationLimit xPos="0" zPos="2" flags="0x00000033"/&gt;
           &lt;rideStationLimit xPos="1" zPos="2" flags="0x00000032"/&gt;
           &lt;rideStationLimit xPos="2" zPos="2" flags="0x00000036"/&gt;</programlisting>
-      <para>The <emphasis>xPos</emphasis> and <emphasis>zPos</emphasis>
-      attributes select the square as illustrated in the picture above. The
-      <emphasis>flags</emphasis> attribute selects what (entrance and/or exit)
-      can be placed on which edge of the square. You need to add up the values
-      for the edges (see <xref linkend="a_ori" />) and for the entrance (16 or
-      0x10 hex) and/or exit (32 or 0x20 hex) you want enabled.</para>
-      <para>The nifty thing is that you can also enable placement within the
-      ride square if your collision detection settings allow it. If you allow
-      an entrance/exit to be placed on the same square from different ride
-      squares, there seems to be a bug that in some orientations RCT3 shows
-      the red <quote>cannot place</quote> shadow. Nevertheless if you actually
-      try to do it, it works.</para>
+        <para>The <emphasis>xPos</emphasis> and <emphasis>zPos</emphasis>
+        attributes select the square as illustrated in the picture above. The
+        <emphasis>flags</emphasis> attribute selects what (entrance and/or
+        exit) can be placed on which edge of the square. You need to add up
+        the values for the edges (see <xref linkend="a_ori" />) and for the
+        entrance (16 or 0x10 hex) and/or exit (32 or 0x20 hex) you want
+        enabled.</para>
+        <para>The nifty thing is that you can also enable placement within the
+        ride square if your collision detection settings allow it. If you
+        allow an entrance/exit to be placed on the same square from different
+        ride squares, there seems to be a bug that in some orientations RCT3
+        shows the red <quote>cannot place</quote> shadow. Nevertheless if you
+        actually try to do it, it works.</para>
+      </section>
+      <section>
+        <title>Advanced flatride types</title>
+        <para>If you look closely at RCT3, you'll notice that there are four
+        types of flatrides. The first is the basic one, which we have
+        discussed so far. Peeps board in one sweep, an animation runs and all
+        leane again. The second one I call <quote>incrementally animated
+        flatride</quote>. If you look closely at the dodgems (or ufos), you'll
+        see that cars only animate if peeps sit in them, still it's a flat
+        ride and not a tracked ride. The third type are what I call
+        <quote>complex flatrides</quote>. They have several options I'll
+        discuss below, but what you notice most prominently in RCT3 is that
+        these can be continuously entered and left and only parts with peeps
+        go through animation. To my knowledge there are three flatrides that
+        fall into this type, the two trampolins and the parachute drop. The
+        last type are <quote>programmed flatrides</quote>, implemented by the
+        animal shows.</para>
+        <para>Type two and three are managed by an element called
+        <emphasis>flatRide</emphasis> that goes into the
+        <emphasis>sid</emphasis> element (no error!). Theoretically you could
+        mix both, but the results are unknown.</para>
+        <section>
+          <title>Incrementally animated flatrides</title>
+          <para>You need one idle, start and stop animation and several
+          run/loop animations. To explain this, I will talk about
+          <quote>cars</quote>. This don't have to be actual cars, but
+          represent an animated entity bearing peeps that will not move if
+          said peeps are missing.</para>
+          <para>The reason why I called this incrementally animated flat ride
+          is the way the run animations have to be set up: The first animation
+          only animates the first car, the second animation animates car one
+          and car two and so on, the last animation animates everything. As
+          peep effect bones are mounted in order, the first car contains
+          peep01 to peepXX, the second car peepXX+1 to peepXX+y and so
+          on.</para>
+          <section>
+            <title>Animation assignment</title>
+            <para>Assign the idle, start, first run and stop animation as you
+            would normally to your LODs. Append all other animations in
+            order.</para>
+            <para>Lets take the dodgems as an example. The idle, start and
+            stop animation are called DodgemCarStatic, DodgemStart and
+            DodgemStop respectively. The incremental run animations are called
+            DodgemCar01 to DodgemCar12 (despite the name, the last one
+            animates all cars). The assigned order in the LODs is as
+            follows:</para>
+            <itemizedlist>
+              <listitem>
+                <para>DodgemCarStatic</para>
+              </listitem>
+              <listitem>
+                <para>DodgemStart</para>
+              </listitem>
+              <listitem>
+                <para>DodgemCar01</para>
+              </listitem>
+              <listitem>
+                <para>DodgemStop</para>
+              </listitem>
+              <listitem>
+                <para>DodgemCar02</para>
+              </listitem>
+              <listitem>
+                <para>DodgemCar03</para>
+              </listitem>
+              <listitem>
+                <para>...</para>
+              </listitem>
+              <listitem>
+                <para>DodgemCar12</para>
+              </listitem>
+            </itemizedlist>
+          </section>
+          <section>
+            <title>XML setup</title>
+            <para>Very easy, add a <emphasis>flatRide</emphasis> element to
+            the ride's <emphasis>sid</emphasis> element. Into that, put
+            <emphasis>animation</emphasis> elements naming every <emphasis
+            role="bold">additional</emphasis> animation. Here's what would
+            need to be done for the example above:</para>
+            <programlisting language="XML">&lt;flatRide&gt;
+  &lt;animation&gt;DodgemCar02&lt;/animation&gt;
+  &lt;animation&gt;DodgemCar03&lt;/animation&gt;
+  &lt;animation&gt;DodgemCar04&lt;/animation&gt;
+  &lt;animation&gt;DodgemCar05&lt;/animation&gt;
+&lt;/flatRide&gt;</programlisting>
+            <para>To keep it brief, I stopped at 5, but of course you need to
+            give all up to the last (except the first one!).</para>
+          </section>
+        </section>
+        <section>
+          <title>Complex flatrides</title>
+          <para>These allow for some nifty customization, but can also be a
+          lot of work. Here is a <emphasis>flatRide</emphasis> element with
+          all possible attributes concerning this type, I'll explain them in
+          turn:</para>
+          <programlisting language="XML">&lt;flatRide ageAlternatives="3" chunkCount="4" runAnimations="2" cyclesPerCircuit="4" /&gt;</programlisting>
+          <note>
+            <para>I haven't tested yet if <emphasis>runAnimations</emphasis>
+            and <emphasis>cyclesPerCircuit</emphasis> work without
+            <emphasis>chunkCount</emphasis> set to at least one. What I know
+            is that <emphasis>runAnimations</emphasis> needs to be set to at
+            least one if you define a <emphasis>chunkCount</emphasis> or RCT3
+            crashes (<application>ovlmake</application> does that for you, but
+            don't override that by setting <emphasis>runAnimations</emphasis>
+            to 0).</para>
+          </note>
+          <section>
+            <title>cyclesPerCircuit</title>
+            <para>This one is the easiest to explain. It determines how often
+            a run animation runs per circuit the user selects. Mostly useful
+            in combination with <emphasis>runAnimations</emphasis>.</para>
+          </section>
+          <section>
+            <title>runAnimations</title>
+            <para>Gives the number of alternate run/loop animations. RCT3
+            chooses at random. This allows you to create variant run
+            animations and have RCT3 use them (as said, at random). In
+            contrast to the incrementally animated flatrides, for this option
+            the run animations are assigned together, i.e. the assignment
+            order is Idle, Start, run animations, Stop. There is also no need
+            to list the animations inside the <emphasis>flatRide</emphasis>
+            tag, giving the number and assigning them to your LODs is
+            enough.</para>
+            <para>You can see these two options in action on the trampolins.
+            One run animation equals the standing bounce, the other one is the
+            bum bounce. The cyclesPerCircuit option ensures that one ride on
+            the trampolin doesn't only last for one bounce.</para>
+          </section>
+          <section>
+            <title>chunkCount</title>
+            <para>This is the main option for this type and may be necessary
+            for the others. It allows you to use more than one animations
+            <quote>chunk</quote>, i.e. Idle/Start/Run/Stop combo. Basically
+            the number you give here defines a number of
+            <quote>subrides</quote> that animate independently. For each
+            chunk, you need to assign an Idle, a Start, runAnimations Run and
+            a Stop animation. The animations of one chunk should only animate
+            bones that lead to the animation of one <quote>car</quote>
+            (stressing again the definiton from the previous type) and the
+            respective peep effect bone(s).</para>
+            <para>The chunks need to be assigned as such. Example:</para>
+            <itemizedlist>
+              <listitem>
+                <para>Idle01</para>
+              </listitem>
+              <listitem>
+                <para>Start01</para>
+              </listitem>
+              <listitem>
+                <para>Run01A</para>
+              </listitem>
+              <listitem>
+                <para>Run01B</para>
+              </listitem>
+              <listitem>
+                <para>Stop01</para>
+              </listitem>
+              <listitem>
+                <para>Idle02</para>
+              </listitem>
+              <listitem>
+                <para>Start02</para>
+              </listitem>
+              <listitem>
+                <para>Run02A</para>
+              </listitem>
+              <listitem>
+                <para>Run02B</para>
+              </listitem>
+              <listitem>
+                <para>Stop02</para>
+              </listitem>
+            </itemizedlist>
+          </section>
+          <section>
+            <title>ageAlternatives</title>
+            <para>This option allows you to use different ainamtions for kids,
+            teens and adults. Original rides use either 0 (no alternatives) or
+            3 (alternatives for kids, teens and adults). It is unknown wether
+            (and if yes, how) other numbers work. In combination with the
+            other complex flatride options, age alternatives are at top level.
+            That means you first need to assign all chunks for the kids, then
+            all chunks for teens and finally all chunks for adults.</para>
+          </section>
+        </section>
+        <section>
+          <title>Programmed flatrides</title>
+          <para>Unfortunately this type of flatride requires deeper intrusion
+          into RCT3 than CS or other flatrides, so it is not feasible to
+          publish them at the current time. Additionally they have a serious
+          caveat making them less usful than they might be. Frontier seems to
+          hane done some <quote>optimisation</quote> on them meaning that
+          effect bones are not updated fluently durnig animation. This does
+          not matter for the animal shows as no effect bones are animated, but
+          is a show-stopper for a custom flatride that does.</para>
+          <para>For this two reasons I will currently not explain how to do
+          these.</para>
+        </section>
+      </section>
+      <section>
+        <title>Sound</title>
+        <para>Sound in RCT3 is usually tied (scripted) to animation, so the
+        only objects (with the exceptions of tracked rides and their sections
+        which seem to have special handling) that can be
+        <quote>sounded</quote> are animated CS, ride events and flat rides.
+        For animated CS there is an important caveat. While the animation
+        repeats, the sound script does not, so you should only use sound loops
+        (see below), but as no original animated CS has sound, you probably
+        shouldn't add sound to animateh CS at all.</para>
+        <para>Sounds in RCT3 can be sound loops. RCT3 plays normal sounds only
+        once, in contrast sound loops are repeated until stopped.</para>
+        <para>As with two of the advanced flatride types, sounds are tied in
+        via the <emphasis>sid</emphasis> elements. Therefore all sound related
+        data goes into your Style ovl file. Before you do that though, you
+        need to decide whether you want to use sounds that come with the game
+        or you own sounds. Of course you can also do both.</para>
+        <section>
+          <title>Using sounds that come with the game</title>
+          <para>The game has a whole bunch of sounds useful for flat rides,
+          probably enough so you don't even need to think about using your own
+          for most use cases. For copyright reasons I cannot provide you with
+          these sounds, but in the <quote>lists</quote> folder you can find
+          two files that help you a bit. The first lists every sound in the
+          game by the ovl that contains it, how long it is and whether it's a
+          sound loop or not. The second one lists all objects with sounds and
+          which sounds it plays.</para>
+          <para>To use sounds from an ovl, you need to reference it. Add a
+          <emphasis>reference</emphasis> element after the last
+          <emphasis>sid</emphasis> element, just before closing the
+          <emphasis>rawovl</emphasis> element of your Style ovl:</para>
+          <programlisting language="xml">&lt;reference&gt;../../../../Sounds/Sounds&lt;/reference&gt;</programlisting>
+          <para>The content of the element is the relative path to the sound
+          ovl (as always for references, without the .common/.unique.ovl). The
+          example should be correct if you followed the tutorial and want to
+          use sounds from the main sound ovl.</para>
+          <note>
+            <para>You do not need to (and in fact should not) reference the
+            Main ovl in RCT3's installation folder. You should be able to use
+            the sounds in there without.</para>
+          </note>
+        </section>
+        <section>
+          <title>Using your own sound</title>
+          <para>You can also use your own sound. In contrast to images,
+          ovlmake only supports one sound format and that's uncompressed mono
+          16bit PCM WAV, the only thing that doesn't matter is the sample rate
+          (no guarantiees though. RCT3 uses four different ones which should
+          work for your files as well: 22,050 Hz, 16,000 Hz, 15,000 Hz and
+          11,025 Hz).</para>
+          <para>To use your own sound, add a <emphasis>snd</emphasis> element
+          to your Style ovl, at the same nesting level as the
+          <emphasis>sid</emphasis> and <emphasis>anr</emphasis>
+          elements:</para>
+          <programlisting>      &lt;snd name="YourSound" loop="1"&gt;
+        &lt;sound&gt;&lt;data type="file"&gt;mysound.wav&lt;/data&gt;&lt;/sound&gt;
+      &lt;/snd&gt;</programlisting>
+          <para>The <emphasis>name</emphasis> attribute as in all cases above
+          gives the internal name for your sound. If your sound is a loop, set
+          <emphasis>loop</emphasis> to 1, if not, set it to 0 or do not give a
+          <emphasis>loop</emphasis> attribute. Everything else should be
+          obvious (similar to the <emphasis>tex</emphasis> tag above).</para>
+        </section>
+        <section>
+          <title>Attaching sounds to your object: scripting</title>
+          <para>Now you need to tie your sound to your object and script when
+          and how it should be played. You can attach multiple <quote>sound
+          ties</quote> to your object, it is not known whether there is a
+          limit or not (original objects use a maximum of 16 though). Each
+          <quote>sound tie</quote> can use one or more actual sounds. The
+          effect of multiple ones is currently not known for sure, but I
+          suspect RCT3 then chooses at random which one to play. Each sound
+          tie needs one (ride event) or four (flat ride) sound scripts that
+          conform to the assigned animations of your object (idle, start, main
+          loop and stop for flat rides).</para>
+          <para>As already mentioned above, sounds are tied in via the
+          <emphasis>sid</emphasis> element, so you have to add the following
+          into it, same nesting level as the <emphasis>type</emphasis> and
+          <emphasis>position</emphasis> element:</para>
+          <programlisting>        &lt;sound&gt;
+          &lt;soundRef useprefix="0"&gt;MechLoop01&lt;/soundRef&gt;
+          &lt;animation/&gt;
+          &lt;animation/&gt;
+          &lt;animation&gt;
+            &lt;command time="0" type="4" value="0" endTime="0.1"/&gt;
+            &lt;command time="0.1" type="1"/&gt;
+            &lt;command time="0.1" type="4" value="1.0" end="10"/&gt;
+            &lt;command time="10" type="4" value="1.0" end="31"/&gt;
+            &lt;command time="31" type="4" value="0.5" end="41"/&gt;
+            &lt;command time="41" type="4" value="1.0" end="46"/&gt;
+            &lt;command time="46" type="4" value="0.5" end="61"/&gt;
+            &lt;command time="61" type="4" value="0.5" end="76"/&gt;
+            &lt;command time="76" type="4" value="1.0" end="81"/&gt;
+            &lt;command time="81" type="4" value="1.0" end="108"/&gt;
+            &lt;command time="108" type="4" value="0" end="120"/&gt;
+            &lt;command time="120" type="2"/&gt;
+          &lt;/animation&gt;
+          &lt;animation/&gt;
+        &lt;/sound&gt;</programlisting>
+          <para>Within the <emphasis>sound</emphasis> element, first list the
+          sounds within <emphasis>soundRef</emphasis> elements. If you use
+          original sounds, you need to use the <emphasis>useprefix</emphasis>
+          attribute and set it to <quote>0</quote> as shown in the example.
+          Omit it if you use your own sound. You can also use an original
+          sound called <quote>blank</quote>. The purpose is unknown, but it
+          goes with my suspicion about multiple sounds so randomly no sound is
+          played.</para>
+          <para>After the <emphasis>soundRef</emphasis> elements, put
+          <emphasis>animation</emphasis> elements for each animation (see
+          above). If you don't want to run the sound in the respective
+          animation, put an empty <emphasis>animation</emphasis> element as
+          shown for the idle, start and stop animation in the example.</para>
+          <para>Inside the <emphasis>animation</emphasis> element you need to
+          add <emphasis>command</emphasis> elements that control the sound.
+          There are four types of commands (five in fact, but one is only used
+          to terminate the script and is added by ovlmake automatically). The
+          command types are, idetntified by the <emphasis>type</emphasis>
+          attribute:</para>
+          <orderedlist>
+            <listitem>
+              <para>Start the sound.</para>
+            </listitem>
+            <listitem>
+              <para>Stop the sound (only necessary for sound loops).</para>
+            </listitem>
+            <listitem>
+              <para>Volume fade.</para>
+            </listitem>
+            <listitem>
+              <para>Pitch (speed) fade.</para>
+            </listitem>
+          </orderedlist>
+          <para>All commands need a time when they are played at. This can
+          either be done directly via the <emphasis>time</emphasis> attribute
+          as in the example giving the time in seconds. It can also be done on
+          a frame basis to allow easy determination from your modeller which
+          usually works on frame basis. For this to work, give a
+          <emphasis>frame</emphasis> attribute instead of the time attribute
+          and set it to the frame number. This frame number is one based (ie
+          the first frame is 1) and assumes 30 fps. If you work at a different
+          fps rate, add an <emphasis>fps</emphasis> attribute to the
+          <emphasis>animation</emphasis> element that contains the commands
+          and set it to your fps.</para>
+          <para>The fade commands 3 and 4 need two additional parameters. Both
+          fade the current volume/pitch (at
+          <emphasis>time</emphasis>/<emphasis>frame</emphasis>) to the one
+          given with <emphasis>value</emphasis> at time/frame
+          <emphasis>end</emphasis> (interpretation of the latter depends on
+          whether you gave <emphasis>time</emphasis> or
+          <emphasis>frame</emphasis>). A <emphasis>value</emphasis> of
+          <quote>1.0</quote> represents normal/original volume or pitch, both
+          start out at <quote>1.0</quote>.</para>
+          <para>Sound scripts cross animation barriers, so you can e.g. start
+          a sound loop in the start animation and stop it in the stop
+          animation and it will play through the main loop animation.</para>
+        </section>
+      </section>
     </section>
+  </section>
+  <section>
+    <title>Credits</title>
+    <itemizedlist>
+      <listitem>
+        <para><ulink
+        url="http://creativecommons.org/licenses/by-nc-nd/3.0/"><inlinemediaobject>
+            <imageobject>
+              <imagedata fileref="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"
+                         scale="100" scalefit="0" />
+            </imageobject>
+          </inlinemediaobject></ulink>This work is licensed under a <ulink
+        url="http://creativecommons.org/licenses/by-nc-nd/3.0/">Creative
+        Commons Attribution-NonCommercial-NoDerivs 3.0 License</ulink>.</para>
+      </listitem>
+      <listitem>
+        <para>Atari® and Roller Coaster Tycoon 3® are trademarks of Atari Inc.
+        All Rights Reserved.</para>
+      </listitem>
+      <listitem>
+        <para>The docbook css used for the html version of this document is
+        based upon the one created by <ulink
+        url="http://www.karakas-online.de">Chris Karakas</ulink>.</para>
+      </listitem>
+      <listitem>
+        <para>This CSS stylesheet uses <ulink
+        url="http://www.matterform.com/qbullets/index.php">QBullets</ulink> in
+        links. Thanks to Matterform Media for providing QBullets for free. If
+        you plan to use them on your website, please observe the <ulink
+        url="http://www.matterform.com/qbullets/usage.html">QBullets usage
+        terms</ulink>.</para>
+      </listitem>
+    </itemizedlist>
+    <para role="matterform"><ulink
+    url="http://www.matterform.com/"><inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="/images/qb_credit.gif" scale="100" scalefit="0" />
+        </imageobject>
+      </inlinemediaobject></ulink></para>
+    <para><ulink url="http://sourceforge.net/"><inlinemediaobject>
+        <imageobject role="html">
+          <imagedata fileref="http://sourceforge.net/sflogo.php?group_id=181524&amp;type=4" />
+        </imageobject>
+        <imageobject role="pdf">
+          <imagedata fileref="/images/sflogo.png" />
+        </imageobject>
+        <imageobject role="chm">
+          <imagedata fileref="/images/sflogo.png" />
+        </imageobject>
+      </inlinemediaobject></ulink></para>
   </section>
 </article>

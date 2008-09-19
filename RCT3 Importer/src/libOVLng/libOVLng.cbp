@@ -215,6 +215,12 @@
 		<Unit filename="ManagerSID.h">
 			<Option virtualFolder="Structure Managers\" />
 		</Unit>
+		<Unit filename="ManagerSND.cpp">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
+		<Unit filename="ManagerSND.h">
+			<Option virtualFolder="Structure Managers\" />
+		</Unit>
 		<Unit filename="ManagerSPL.cpp">
 			<Option virtualFolder="Structure Managers\" />
 		</Unit>

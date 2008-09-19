@@ -59,8 +59,8 @@ struct AnimatedRide_V {
 
 
 struct AnimatedRideShowItem {
-    uint32_t            index;
-    char*               animname;
+    uint32_t            animation_index;
+    char*               name;
 };
 
 /// New animated ride structure

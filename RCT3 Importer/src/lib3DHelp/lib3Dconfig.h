@@ -41,8 +41,8 @@
 #define READ_RCT3_WARNPREFIX()        wxcRead<bool>(wxT("RCT3/WarnPrefix"), true)
 #define WRITE_RCT3_WARNPREFIX(v)     wxcWrite<bool>(wxT("RCT3/WarnPrefix"), v)
 
-#define READ_RCT3_SPLITBONES()       wxcRead<bool>(wxT("RCT3/SplitBones"), true)
-#define WRITE_RCT3_SPLITBONES(v)    wxcWrite<bool>(wxT("RCT3/SplitBones"), v)
+#define READ_RCT3_COMPACTMESHES()     wxcRead<bool>(wxT("RCT3/CompactMeshes"), true)
+#define WRITE_RCT3_COMPACTMESHES(v)  wxcWrite<bool>(wxT("RCT3/CompactMeshes"), v)
 
 #define READ_RCT3_WARNOVERWRITE()       wxcRead<bool>(wxT("RCT3/WarnOverwrite"), true)
 #define WRITE_RCT3_WARNOVERWRITE(v)    wxcWrite<bool>(wxT("RCT3/WarnOverwrite"), v)
@@ -65,5 +65,58 @@
 #define READ_RCT3_TRIANGLESORT_Z()     wxcRead<wxString>(wxT("RCT3/TriangleSortZ"), wxString(cTriangleSortAlgorithm::GetDefaultName(), wxConvLocal))
 #define WRITE_RCT3_TRIANGLESORT_Z(v)  wxcWrite<wxString>(wxT("RCT3/TriangleSortZ"), v)
 
+#define READ_RCT3_PRIORITY_WHEEL_FL()        wxcRead<long>(wxT("RCT3/Priority/Wheel/fl"),      40004)
+#define WRITE_RCT3_PRIORITY_WHEEL_FL(v)     wxcWrite<long>(wxT("RCT3/Priority/Wheel/fl"), v)
+
+#define READ_RCT3_PRIORITY_WHEEL_FR()        wxcRead<long>(wxT("RCT3/Priority/Wheel/fr"),      40003)
+#define WRITE_RCT3_PRIORITY_WHEEL_FR(v)     wxcWrite<long>(wxT("RCT3/Priority/Wheel/fr"), v)
+
+#define READ_RCT3_PRIORITY_WHEEL_RL()        wxcRead<long>(wxT("RCT3/Priority/Wheel/rl"),      40002)
+#define WRITE_RCT3_PRIORITY_WHEEL_RL(v)     wxcWrite<long>(wxT("RCT3/Priority/Wheel/rl"), v)
+
+#define READ_RCT3_PRIORITY_WHEEL_RR()        wxcRead<long>(wxT("RCT3/Priority/Wheel/rr"),      40001)
+#define WRITE_RCT3_PRIORITY_WHEEL_RR(v)     wxcWrite<long>(wxT("RCT3/Priority/Wheel/rr"), v)
+
+#define READ_RCT3_PRIORITY_FOUNTAIN_BL()      wxcRead<long>(wxT("RCT3/Priority/Fountain/bl"),  50004)
+#define WRITE_RCT3_PRIORITY_FOUNTAIN_BL(v)   wxcWrite<long>(wxT("RCT3/Priority/Fountain/bl"), v)
+
+#define READ_RCT3_PRIORITY_FOUNTAIN_BR()      wxcRead<long>(wxT("RCT3/Priority/Fountain/br"),  50003)
+#define WRITE_RCT3_PRIORITY_FOUNTAIN_BR(v)   wxcWrite<long>(wxT("RCT3/Priority/Fountain/br"), v)
+
+#define READ_RCT3_PRIORITY_FOUNTAIN_TL()      wxcRead<long>(wxT("RCT3/Priority/Fountain/tl"),  50002)
+#define WRITE_RCT3_PRIORITY_FOUNTAIN_TL(v)   wxcWrite<long>(wxT("RCT3/Priority/Fountain/tl"), v)
+
+#define READ_RCT3_PRIORITY_FOUNTAIN_TR()      wxcRead<long>(wxT("RCT3/Priority/Fountain/tr"),  50001)
+#define WRITE_RCT3_PRIORITY_FOUNTAIN_TR(v)   wxcWrite<long>(wxT("RCT3/Priority/Fountain/tr"), v)
+
+#define READ_RCT3_PRIORITY_LAUNCHER()        wxcRead<long>(wxT("RCT3/Priority/Launcher"),      60000)
+#define WRITE_RCT3_PRIORITY_LAUNCHER(v)     wxcWrite<long>(wxT("RCT3/Priority/Launcher"), v)
+
+#define READ_RCT3_PRIORITY_PARTICLE()        wxcRead<long>(wxT("RCT3/Priority/Particle"),      70000)
+#define WRITE_RCT3_PRIORITY_PARTICLE(v)     wxcWrite<long>(wxT("RCT3/Priority/Particle"), v)
+
+#define READ_RCT3_PRIORITY_LIGHT()           wxcRead<long>(wxT("RCT3/Priority/Light"),         80000)
+#define WRITE_RCT3_PRIORITY_LIGHT(v)        wxcWrite<long>(wxT("RCT3/Priority/Light"), v)
+
+#define READ_RCT3_PRIORITY_VENDOR()          wxcRead<long>(wxT("RCT3/Priority/Vendor"),        90000)
+#define WRITE_RCT3_PRIORITY_VENDOR(v)       wxcWrite<long>(wxT("RCT3/Priority/Vendor"), v)
+
+#define READ_RCT3_PRIORITY_PEEP()            wxcRead<long>(wxT("RCT3/Priority/Peep"),         100000)
+#define WRITE_RCT3_PRIORITY_PEEP(v)         wxcWrite<long>(wxT("RCT3/Priority/Peep"), v)
+
+#define READ_RCT3_PRIORITY_IK()              wxcRead<long>(wxT("RCT3/Priority/IK"),           200000)
+#define WRITE_RCT3_PRIORITY_IK(v)           wxcWrite<long>(wxT("RCT3/Priority/IK"), v)
+
+#define READ_RCT3_PRIORITY_OTHER()           wxcRead<long>(wxT("RCT3/Priority/Other"),        300000)
+#define WRITE_RCT3_PRIORITY_OTHER(v)        wxcWrite<long>(wxT("RCT3/Priority/Other"), v)
+
+#define READ_RCT3_PRIORITY_START()           wxcRead<long>(wxT("RCT3/Priority/Start"),      3000)
+#define WRITE_RCT3_PRIORITY_START(v)        wxcWrite<long>(wxT("RCT3/Priority/Start"), v)
+
+#define READ_RCT3_PRIORITY_COLOUR()          wxcRead<long>(wxT("RCT3/Priority/Colour"),     2000)
+#define WRITE_RCT3_PRIORITY_COLOUR(v)       wxcWrite<long>(wxT("RCT3/Priority/Colour"), v)
+
+#define READ_RCT3_PRIORITY_END()              wxcRead<long>(wxT("RCT3/Priority/End"),       1000)
+#define WRITE_RCT3_PRIORITY_END(v)           wxcWrite<long>(wxT("RCT3/Priority/End"), v)
 
 #endif

@@ -308,6 +308,8 @@ BEGIN
         MENUITEM "Open Additional Theme File...",ID_FILE_OPENTHEME2
         MENUITEM "&Save Theme File...",ID_FILE_SAVETHEME
         MENUITEM SEPARATOR
+        MENUITEM "&Detect Problems",IDM_DETECT_PROBLEMS
+        MENUITEM SEPARATOR
         MENUITEM "Save Default Prefix",IDM_SAVE_DEFAULT_PREFIX
         MENUITEM SEPARATOR
         MENUITEM "&Exit",ID_FILE_EXIT

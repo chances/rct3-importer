@@ -146,6 +146,7 @@ public:
     std::string IdentifyVarPtr(void* ptr) const;
 
     long RelocationFromVarPtr(void* ptr) const;
+    bool IsVarPointerRelocated(void* ptr) const;
 };
 
 #endif

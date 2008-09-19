@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<resource version="2.3.0.1">
+
+<object class="wxBitmap" name="multibone_on_16x16">multibone_on.png</object>
+<object class="wxBitmap" name="multibone_off_16x16">multibone_off.png</object>
+</resource>

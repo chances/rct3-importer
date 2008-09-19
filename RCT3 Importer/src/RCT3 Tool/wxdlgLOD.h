@@ -83,6 +83,7 @@ protected:
 
     virtual void OnUpdateControlState( wxCommandEvent& event );
 
+    virtual void OnAnimEdit( wxCommandEvent& event );
     virtual void OnAnimationDown( wxSpinEvent& event );
     virtual void OnAnimationUp( wxSpinEvent& event );
     virtual void OnAnimationAdd( wxCommandEvent& event );

@@ -131,6 +131,7 @@ public:
                                 // 1 X
                                 // 2 Y (Up)
                                 // 3 Z
+    bool multibone;
 
     // Helper variables for the UI
     bool valid;
@@ -157,6 +158,14 @@ public:
     }
     void CopySettingsFrom(const cMeshStruct& from);
     void autoMeshStyle(const wxString& style);
+    bool hasIdenticalSettingsAs(const cMeshStruct& to) {
+        return (TXS == to.TXS) &&
+               (FTX == to.FTX) &&
+               (place == to.place) &&
+               (flags == to.flags) &&
+               (unknown == to.unknown) &&
+               (fudgenormals == to.fudgenormals);
+    }
 
     bool FromCompilerXml(xmlcpp::cXmlNode& node, const wxString& path);
 
@@ -330,17 +339,20 @@ public:
     cEffectPoint::vec effectpoints;
     c3DLoaderOrientation usedorientation;
     wxString deducedname;
+    bool auto_bones;
+    bool auto_sort;
 
     c3DLoaderOrientation fileorientation; // This is the orientation reported by the 3DLoader
 	wxArrayString error;
 	bool fatal_error;
 	bool used;          // Used during ovl generation to see if the model is actually used.
 	std::map<wxString, c3DBone> model_bones;
+	std::vector<std::vector<int> > mesh_compaction;
 
-	cModel(): name(wxT("")), file(wxT("")), usedorientation(ORIENTATION_UNKNOWN), fileorientation(ORIENTATION_UNKNOWN), fatal_error(false) {};
+	cModel(): name(wxT("")), file(wxT("")), usedorientation(ORIENTATION_UNKNOWN), auto_bones(false), auto_sort(false), fileorientation(ORIENTATION_UNKNOWN), fatal_error(false) {};
 	cModel(const cAnimatedModel& model);
 	cModel(r3::MATRIX def, c3DLoaderOrientation ori);
-	cModel(wxString filen): name(wxT("")), file(filen), usedorientation(ORIENTATION_UNKNOWN), fileorientation(ORIENTATION_UNKNOWN), fatal_error(false) {
+	cModel(wxString filen): name(wxT("")), file(filen), usedorientation(ORIENTATION_UNKNOWN), auto_bones(false), auto_sort(false), fileorientation(ORIENTATION_UNKNOWN), fatal_error(false) {
         Load(false);
     };
 	virtual bool Load(bool asoverlay);
@@ -357,7 +369,10 @@ public:
 
 	virtual bool Check(cModelMap& modnames);
 	virtual bool GetTransformationMatrices(r3::MATRIX& transform, r3::MATRIX& undodamage) const;
+	virtual void addBone(const c3DBone& bone);
 	virtual void autoBones(const std::set<wxString>* onlyaddfrom = NULL);
+	virtual void syncBones();
+	virtual void sortBones();
 
     virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
     virtual void AddNodeContent(xmlcpp::cXmlNode& node, const wxString& path, bool do_local);
@@ -431,7 +446,10 @@ public:
     };
 
 	bool Check(cAnimatedModelMap& amodnames);
+	virtual void addBone(const c3DBone& bone);
 	virtual void autoBones(const std::set<wxString>* onlyaddfrom = NULL);
+	virtual void syncBones();
+	virtual void sortBones();
 
     bool FromCompilerXml(xmlcpp::cXmlNode& node, const wxString& path);
 
@@ -483,6 +501,7 @@ public:
 
     bool FromCompilerXml(xmlcpp::cXmlNode& node, const wxString& path);
     bool Check(const wxSortedArrayString& presentbones);
+    void CheckTimes();
 
     virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
     virtual xmlcpp::cXmlNode GetNode(const wxString& path);
@@ -566,6 +585,19 @@ public:
         unk10 = 0;
         unk11 = 0;
     };
+    cSIVSettings(const c3DLoader* obj) {
+        sivflags = obj->m_flags;
+        sway = obj->m_sway;
+        brightness = obj->m_brightness;
+        scale = obj->m_scale;
+        unknown = obj->m_unk;
+        unk6 = 0;
+        unk7 = 0;
+        unk8 = 0;
+        unk9 = 0;
+        unk10 = 0;
+        unk11 = 0;
+    }
     virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
     virtual xmlcpp::cXmlNode GetNode(const wxString& path);
     virtual const std::string GetTagName() const {return RCT3XML_CSIVSETTINGS;};
@@ -609,6 +641,12 @@ inline const wxString& NameExtractorC(const cFlexiTexture& t) { return t.Name; }
 template<>
 inline wxString& NameExtractor(cFlexiTexture& t) { return t.Name; }
 
+template<>
+inline const wxString& NameExtractorC(const c3DBone& t) { return t.m_name; }
+
+template<>
+inline wxString& NameExtractor(c3DBone& t) { return t.m_name; }
+
 template<class T>
 struct NamePredicate {
     const wxString& c;
@@ -620,5 +658,32 @@ struct NamePredicate {
     }
 };
 
+template<class T, class C>
+bool NameCompare (const T& a, const C& b) {
+    return (NameExtractorC<T>(a) < NameExtractorC<C>(b));
+}
+/*
+template<class T>
+struct EffectCompare {
+    static long getPriority(const wxString& n) {
+        long prio = 0;
+        if (n.IsSameAs("vendor")) {
+            prio = READ_RCT3_PRIORITY_VENDOR();
+        } else if (n.IsSameAs("nozbl") {
+            prio = READ_RCT3_PRIORITY_FOUNTAIN_BL();
+        } else if (n.IsSameAs("nozbr") {
+            prio = READ_RCT3_PRIORITY_FOUNTAIN_BR();
+        } else if (n.IsSameAs("noztl") {
+            prio = READ_RCT3_PRIORITY_FOUNTAIN_TL();
+        } else if (n.IsSameAs("noztr") {
+            prio = READ_RCT3_PRIORITY_FOUNTAIN_TR();
+        }
+        return prio;
+    }
+    bool operator() (const T& a, const T& b) {
+        return getPriority(NameExtractorC(a)) > getPriority(NameExtractorC(b));
+    }
+}
+*/
 
 #endif // RCT3STRUCTS_H_INCLUDED

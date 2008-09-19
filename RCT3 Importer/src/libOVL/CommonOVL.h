@@ -15,6 +15,8 @@
 
 #define LIBOVL_VERSION 2
 
+namespace r3old {
+
 struct OvlHeader {
 	unsigned long magic;
 	unsigned long reserved;
@@ -83,9 +85,10 @@ struct OvlFile
 	char *InternalName; //Added to store the unique id
 };
 
+}
 
 extern unsigned long CurrentFile;
-extern OvlFile OpenFiles[2];
+extern r3old::OvlFile OpenFiles[2];
 extern std::queue<unsigned long *> relocations;
 extern std::queue<unsigned long> fixups;
 const int OVL_COMMON =0;

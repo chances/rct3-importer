@@ -20,9 +20,18 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="Blender\action_script_tools.py" />
+		<Unit filename="Blender\bake_active_action.py" />
+		<Unit filename="Blender\bake_active_action_kf.py" />
 		<Unit filename="Blender\bake_nla_to_action.py" />
 		<Unit filename="Blender\export_model_xml.py" />
+		<Unit filename="Blender\export_model_xml_tng.py" />
+		<Unit filename="Blender\model_xml_set_export_name.py" />
+		<Unit filename="Blender\rct3_bags.py" />
+		<Unit filename="Blender\rct3_setup_file.py" />
+		<Unit filename="Blender\rct3_setup_groups.py" />
 		<Unit filename="Blender\readme.txt" />
+		<Unit filename="Blender\simplify_action.py" />
 		<Extensions>
 			<code_completion />
 			<AutoVersioning>

@@ -43,6 +43,7 @@
 
 #include "bmy.pal.h"
 
+using namespace pretty;
 using namespace r3;
 using namespace std;
 using namespace xmlcpp;
@@ -239,6 +240,7 @@ void cMeshStruct::Init() {
     faces = 0;
     //effectpoint = 0;
     bone = 0;
+    multibone = false;
 }
 
 void cMeshStruct::CopySettingsFrom(const cMeshStruct& from) {
@@ -249,6 +251,7 @@ void cMeshStruct::CopySettingsFrom(const cMeshStruct& from) {
     place = from.place;
     unknown = from.unknown;
     fudgenormals = from.fudgenormals;
+    multibone = from.multibone;
 
     bone = from.bone;
     bonename = from.bonename;
@@ -292,6 +295,25 @@ void cMeshStruct::autoMeshStyle(const wxString& style) {
             flags = 32768;
             FTX = wxT("UseAdTexture");
             TXS = wxT("SIOpaque");
+        } else if (t.StartsWith("fudge:")) {
+            wxString ff = t.AfterFirst(':');
+            if (ff.IsSameAs("+X")) {
+                fudgenormals = CMS_FUDGE_X;
+            } else if (ff.IsSameAs("+Y")) {
+                fudgenormals = CMS_FUDGE_Y;
+            } else if (ff.IsSameAs("+Z")) {
+                fudgenormals = CMS_FUDGE_Z;
+            } else if (ff.IsSameAs("-X")) {
+                fudgenormals = CMS_FUDGE_XM;
+            } else if (ff.IsSameAs("-Y")) {
+                fudgenormals = CMS_FUDGE_YM;
+            } else if (ff.IsSameAs("-Z")) {
+                fudgenormals = CMS_FUDGE_ZM;
+            } else if (ff.IsSameAs("rim")) {
+                fudgenormals = CMS_FUDGE_RIM;
+            } else {
+                wxLogWarning(_("Unknown fudge token '%s'"), ff.c_str());
+            }
         } else {
             if (cTextureStyle::isValid(t))
                 TXS = t;
@@ -299,7 +321,7 @@ void cMeshStruct::autoMeshStyle(const wxString& style) {
                 wxString st = t.AfterFirst('_');
                 if (!st.IsEmpty()) {
                     TXS = "SIOpaqueChrome";
-                    FTX = "[" + st = "]";
+                    FTX = "[" + st + "]";
                 } else
                     wxLogWarning(_("Unknown mesh option token '%s'"), t.c_str());
             } else
@@ -321,6 +343,7 @@ bool cMeshStruct::FromCompilerXml(cXmlNode& node, const wxString& path) {
     bone = 0;
     disabled = false;
     flags = 0;
+    multibone = false;
 
     Name = wxString::FromUTF8(node.getPropVal("name").c_str());
     if (Name.IsEmpty())
@@ -432,6 +455,7 @@ bool cMeshStruct::FromNode(cXmlNode& node, const wxString& path, unsigned long v
         return false;
 
     disabled = node.getPropVal("disabled", "0") == "1";
+    multibone = node.getPropVal("multiBone", "0") == "1";
     TXS = wxString::FromUTF8(node.getPropVal("txs", "SIOpaque").c_str());
     FTX = wxString::FromUTF8(node.getPropVal("ftx").c_str());
 
@@ -526,6 +550,8 @@ cXmlNode cMeshStruct::GetNode(const wxString& path) {
     cXmlNode node(RCT3XML_CMESHSTRUCT);
     if (disabled)
         node.prop("disabled", "1");
+    if (multibone)
+        node.prop("multiBone", "1");
     if (!TXS.IsEmpty())
         node.prop("txs", TXS);
     if (!FTX.IsEmpty())
@@ -1169,7 +1195,7 @@ bool cModel::Load(bool asoverlay) {
         return false;
     }
 
-    wxString newname = obj->GetName();
+    wxString newname = obj->getName();
 
     if (newname == wxT("")) {
         wxFileName t = file;
@@ -1227,7 +1253,14 @@ bool cModel::Sync() {
         return Load(false);
 
     // Load & check the object file
-    boost::shared_ptr<c3DLoader> obj = c3DLoader::LoadFile(file.GetFullPath().c_str());
+    boost::shared_ptr<c3DLoader> obj;
+    try {
+        obj = c3DLoader::LoadFile(file.GetFullPath().c_str());
+    } catch (E3DLoader& e) {
+        fatal_error = true;
+        error.push_back(e.wxwhat());
+        return false;
+    }
     if (!obj.get()) {
         fatal_error = true;
         error.push_back(wxString::Format(_("Model file '%s' not found or of an unknown format."), file.GetFullPath().c_str()));
@@ -1238,7 +1271,7 @@ bool cModel::Sync() {
     model_bones = obj->GetBones();
 
     if (deducedname.IsEmpty()) {
-        deducedname = obj->GetName();
+        deducedname = obj->getName();
 
         if (deducedname.IsEmpty()) {
             wxFileName t = file;
@@ -1401,6 +1434,10 @@ fixupsinglevertexmeshes:
         error.insert(error.end(), obj->GetWarnings().begin(), obj->GetWarnings().end());
     }
 
+    if (auto_bones)
+        syncBones();
+    else if (auto_sort)
+        sortBones();
     return true;
 }
 
@@ -1426,6 +1463,20 @@ bool cModel::GetTransformationMatrices(MATRIX& transform, MATRIX& undodamage) co
            (!matrixIsEqual(undodamage, matrixGetUnity()));
 }
 
+/** @brief addBone
+  *
+  * @todo: document this function
+  */
+void cModel::addBone(const c3DBone& bone) {
+    cEffectPoint t;
+
+    t.name = bone.m_name;
+    t.transforms.push_back(bone.m_pos[1]);
+    wxString nam = _("Auto-generated from bone '")+bone.m_name+wxT("'");
+    t.transformnames.push_back(nam);
+    effectpoints.push_back(t);
+}
+
 /** @brief autoBones
   *
   * @todo: document this function
@@ -1437,15 +1488,39 @@ void cModel::autoBones(const set<wxString>* onlyaddfrom) {
             if (onlyaddfrom->find(bn.first) == onlyaddfrom->end())
                 continue;
         }
-
-        cEffectPoint t;
-
-        t.name = bn.first;
-        t.transforms.push_back(bn.second.m_pos[1]);
-        wxString nam = _("Auto-generated form bone '")+bn.first+wxT("'");
-        t.transformnames.push_back(nam);
-        effectpoints.push_back(t);
+        addBone(bn.second);
     }
+}
+
+/** @brief sortBones
+  *
+  * @todo: document this function
+  */
+void cModel::sortBones() {
+    sort(effectpoints.begin(), effectpoints.end(), NameCompare<cEffectPoint, cEffectPoint>);
+}
+
+/** @brief syncBones
+  *
+  * @todo: document this function
+  */
+void cModel::syncBones() {
+    set<wxString> usenames;
+    vector<cEffectPoint> backup;
+
+    foreach(cEffectPoint eff, effectpoints) {
+        usenames.insert(eff.name);
+        backup.push_back(eff);
+    }
+
+    autoBones(&usenames);
+
+    foreach(cEffectPoint eff, backup) {
+        if (!contains_if(effectpoints, NamePredicate<cEffectPoint>(eff.name)))
+            effectpoints.push_back(eff);
+    }
+    if (auto_sort)
+        sortBones();
 }
 
 bool cModel::CheckMeshes(bool animated) {
@@ -1475,8 +1550,10 @@ bool cModel::CheckMeshes(bool animated) {
     }
 
     int valid_meshes = 0;
-    int c_mesh = 0;
+    int c_mesh = -1;
+    mesh_compaction.clear();
     for (cMeshStruct::iterator i_mesh = meshstructs.begin(); i_mesh != meshstructs.end(); ++i_mesh) {
+        c_mesh++;
         if (i_mesh->disabled)
             continue;
 
@@ -1495,43 +1572,75 @@ bool cModel::CheckMeshes(bool animated) {
 
         i_mesh->Check(name);
 
-        if (!i_mesh->disabled)
+        if (animated) {
+            if (object->GetObjectVertexCount(c_mesh)>SHRT_MAX){
+                throw RCT3Exception(wxString::Format(_("Animated model '%s': Group '%s' has too many vertices for an animated mesh. This is an internal limitation, but as the limit is at %d, your object has too many faces anyways."), name.c_str(), i_mesh->Name.c_str(), SHRT_MAX));
+            }
+        }
+
+        if (!i_mesh->disabled) {
             valid_meshes++;
+
+            bool compacted = false;
+
+            if (READ_RCT3_COMPACTMESHES()) {
+                foreach(vector<int>& compvec, mesh_compaction) {
+                    if (i_mesh->hasIdenticalSettingsAs(meshstructs[compvec[0]])) {
+                        if (animated) {
+                            int verts = 0;
+                            foreach(int i, compvec) {
+                                verts += object->GetObjectVertexCount(i);
+                            }
+                            if (verts + object->GetObjectVertexCount(c_mesh) > SHRT_MAX)
+                                continue;
+                        }
+                        compvec.push_back(c_mesh);
+                        compacted = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!compacted) {
+                vector<int> newvec;
+                newvec.push_back(c_mesh);
+                mesh_compaction.push_back(newvec);
+            }
+
+
+            if (!i_mesh->algo_x.IsEmpty()) {
+                cTriangleSortAlgorithm::Algorithm sortalgo = cTriangleSortAlgorithm::GetAlgo(i_mesh->algo_x.mb_str(wxConvLocal));
+                if (sortalgo == cTriangleSortAlgorithm::EnumSize) {
+                    throw RCT3Exception(wxString::Format(_("Model '%s': Group '%s' has unknown triangle sort algorithm: %s"), name.c_str(), i_mesh->Name.c_str(), i_mesh->algo_x.c_str()));
+                }
+            }
+            if (!i_mesh->algo_y.IsEmpty()) {
+                cTriangleSortAlgorithm::Algorithm sortalgo = cTriangleSortAlgorithm::GetAlgo(i_mesh->algo_y.mb_str(wxConvLocal));
+                if (sortalgo == cTriangleSortAlgorithm::EnumSize) {
+                    throw RCT3Exception(wxString::Format(_("Model '%s': Group '%s' has unknown triangle sort algorithm: %s"), name.c_str(), i_mesh->Name.c_str(), i_mesh->algo_y.c_str()));
+                }
+            }
+            if (!i_mesh->algo_z.IsEmpty()) {
+                cTriangleSortAlgorithm::Algorithm sortalgo = cTriangleSortAlgorithm::GetAlgo(i_mesh->algo_z.mb_str(wxConvLocal));
+                if (sortalgo == cTriangleSortAlgorithm::EnumSize) {
+                    throw RCT3Exception(wxString::Format(_("Model '%s': Group '%s' has unknown triangle sort algorithm: %s"), name.c_str(), i_mesh->Name.c_str(), i_mesh->algo_z.c_str()));
+                }
+            }
+
+        }
+
         // Initialize
         i_mesh->bone = 0;
-
-        if (!i_mesh->algo_x.IsEmpty()) {
-            cTriangleSortAlgorithm::Algorithm sortalgo = cTriangleSortAlgorithm::GetAlgo(i_mesh->algo_x.mb_str(wxConvLocal));
-            if (sortalgo == cTriangleSortAlgorithm::EnumSize) {
-                throw RCT3Exception(wxString::Format(_("Model '%s': Group '%s' has unknown triangle sort algorithm: %s"), name.c_str(), i_mesh->Name.c_str(), i_mesh->algo_x.c_str()));
-            }
-        }
-        if (!i_mesh->algo_y.IsEmpty()) {
-            cTriangleSortAlgorithm::Algorithm sortalgo = cTriangleSortAlgorithm::GetAlgo(i_mesh->algo_y.mb_str(wxConvLocal));
-            if (sortalgo == cTriangleSortAlgorithm::EnumSize) {
-                throw RCT3Exception(wxString::Format(_("Model '%s': Group '%s' has unknown triangle sort algorithm: %s"), name.c_str(), i_mesh->Name.c_str(), i_mesh->algo_y.c_str()));
-            }
-        }
-        if (!i_mesh->algo_z.IsEmpty()) {
-            cTriangleSortAlgorithm::Algorithm sortalgo = cTriangleSortAlgorithm::GetAlgo(i_mesh->algo_z.mb_str(wxConvLocal));
-            if (sortalgo == cTriangleSortAlgorithm::EnumSize) {
-                throw RCT3Exception(wxString::Format(_("Model '%s': Group '%s' has unknown triangle sort algorithm: %s"), name.c_str(), i_mesh->Name.c_str(), i_mesh->algo_z.c_str()));
-            }
-        }
-
-        if (animated) {
-            if (object->GetObjectVertexCount(c_mesh)>USHRT_MAX){
-                throw RCT3Exception(wxString::Format(_("Animated model '%s': Group '%s' has too many vertices for an animated mesh. This is an internal limitation, but as the limit is at %d, your object has too many faces anyways."), name.c_str(), i_mesh->Name.c_str(), USHRT_MAX));
-            }
-            c_mesh++;
-        }
     }
+
+    //wxLogMessage("Compaction: %d", mesh_compaction.size());
+
     if (!valid_meshes) {
         fatal_error = true;
         wxLogWarning(_("Model '%s': No usable groups left. Model invalid."), name.c_str());
         return false;
     }
-    if (valid_meshes>31) {
+    if (mesh_compaction.size()>31) {
         fatal_error = true;
         wxLogWarning(_("Model '%s': More than 31 activated groups. Model invalid."), name.c_str());
         return false;
@@ -1541,6 +1650,7 @@ bool cModel::CheckMeshes(bool animated) {
 
 bool cModel::Check(cModelMap& modnames) {
     wxLogDebug(wxT("Trace, cModel::Check '%s'"), name.c_str());
+    Sync();
     if (fatal_error)
         return false;
 
@@ -1584,6 +1694,31 @@ bool cModel::FromNode(cXmlNode& node, const wxString& path, unsigned long versio
     } else {
         usedorientation = ORIENTATION_UNKNOWN;
     }
+    if (node.getPropVal("autoBones", &temp)) {
+        unsigned long l = 0;
+        if (!parseULong(temp, l)) {
+            auto_bones = false;
+            wxLogError(_("Model, autoBones failed parsing."));
+            ret = false;
+        } else {
+            auto_bones = l;
+        }
+    } else {
+        auto_bones = false;
+    }
+    if (node.getPropVal("autoSort", &temp)) {
+        unsigned long l = 0;
+        if (!parseULong(temp, l)) {
+            auto_sort = false;
+            wxLogError(_("Model, autoSort failed parsing."));
+            ret = false;
+        } else {
+            auto_sort = l;
+        }
+    } else {
+        auto_sort = false;
+    }
+
 
     cXmlNode child(node.children());
     while(child) {
@@ -1619,6 +1754,10 @@ void cModel::AddNodeContent(cXmlNode& node, const wxString& path, bool do_local)
     node.prop("file", temp.GetFullPath());
     unsigned long l = usedorientation;
     node.prop("orientation", boost::str(boost::format("%lu") % l).c_str());
+    if (auto_bones)
+        node.prop("autoBones", "1");
+    if (auto_sort)
+        node.prop("autoSort", "1");
 
     for (unsigned int i = 0; i < transforms.size(); i++) {
         cXmlNode newchild = XmlMakeMatrixNode(transforms[i], transformnames[i]);
@@ -1793,6 +1932,53 @@ cAnimatedModel::cAnimatedModel(const cModel& model) {
     }
 }
 
+/** @brief addBone
+  *
+  * Adds a bone (and it's parents if necessary)
+  */
+void cAnimatedModel::addBone(const c3DBone& bone) {
+    if (contains_if(modelbones, NamePredicate<cModelBone>(bone.m_name)))
+        return;
+
+    cModelBone t;
+
+    t.name = bone.m_name;
+    t.parent = bone.m_parent;
+    t.usepos2 = !t.parent.IsEmpty();
+    if (t.usepos2) {
+        t.positions1.push_back(bone.m_pos[0]);
+        wxString nam = _("Auto-generated from bone '")+bone.m_name+wxT("'");
+        t.position1names.push_back(nam);
+        t.positions2.push_back(bone.m_pos[1]);
+        t.position2names.push_back(nam);
+    } else {
+        t.positions1.push_back(bone.m_pos[1]);
+        wxString nam = _("Auto-generated from bone '")+bone.m_name+wxT("'");
+        t.position1names.push_back(nam);
+    }
+    foreach(cMeshStruct& ms, meshstructs) {
+        if (ms.disabled || (!ms.valid))
+            continue;
+        if (ms.boneassignment.size() == 1) {
+            if (ms.boneassignment.find(t.name) != ms.boneassignment.end()) {
+                t.meshes.push_back(ms.Name);
+            }
+            ms.multibone = false;
+        } else if (ms.boneassignment.size() > 1) {
+            ms.multibone = true;
+            /*
+            if (!READ_RCT3_EXPERTMODE())
+                wxLogWarning(wxString::Format(_("Bone auto-assignment: Mesh '%s' has vertices assigend to more than one bone. This is not supported and the mesh was not assigned to any bone."), ms.Name.c_str()));
+            */
+        }
+    }
+    modelbones.push_back(t);
+
+    if (!t.parent.IsEmpty())
+        addBone(model_bones[t.parent]);
+}
+
+
 /** @brief autoBones
   *
   * @todo: document this function
@@ -1805,38 +1991,78 @@ void cAnimatedModel::autoBones(const set<wxString>* onlyaddfrom) {
                 continue;
         }
 
-        cModelBone t;
-
-        t.name = bn.first;
-        t.parent = bn.second.m_parent;
-        t.usepos2 = !t.parent.IsEmpty();
-        if (t.usepos2) {
-            t.positions1.push_back(bn.second.m_pos[0]);
-            wxString nam = _("Auto-generated form bone '")+bn.first+wxT("'");
-            t.position1names.push_back(nam);
-            t.positions2.push_back(bn.second.m_pos[1]);
-            t.position2names.push_back(nam);
-        } else {
-            t.positions1.push_back(bn.second.m_pos[1]);
-            wxString nam = _("Auto-generated form bone '")+bn.first+wxT("'");
-            t.position1names.push_back(nam);
-        }
-        foreach(const cMeshStruct& ms, meshstructs) {
-            if (ms.boneassignment.size() == 1) {
-                if (ms.boneassignment.find(t.name) != ms.boneassignment.end()) {
-                    t.meshes.push_back(ms.Name);
-                }
-            } else if (ms.boneassignment.size() > 1) {
-                if (!READ_RCT3_EXPERTMODE())
-                    wxLogWarning(wxString::Format(_("Bone auto-assignment: Mesh '%s' has vertices assigend to more than one bone. This is not supported and the mesh was not assigned to any bone."), ms.Name.c_str()));
-            }
-        }
-        modelbones.push_back(t);
+        addBone(bn.second);
     }
 }
 
+/** @brief sortBones
+  *
+  * @todo: document this function
+  */
+void cAnimatedModel::sortBones() {
+    sort(modelbones.begin(), modelbones.end(), NameCompare<cModelBone, cModelBone>);
+}
+
+/** @brief syncBones
+  *
+  * @todo: document this function
+  */
+void cAnimatedModel::syncBones() {
+    set<wxString> usenames;
+    vector<cModelBone> backup;
+
+    foreach(const cModelBone& bn, modelbones) {
+        usenames.insert(bn.name);
+        backup.push_back(bn);
+    }
+
+    foreach(const cMeshStruct& ms, meshstructs) {
+        if (ms.valid && (!ms.disabled) && (!ms.FTX.IsEmpty()) && (!ms.TXS.IsEmpty()))
+            usenames.insert(ms.boneassignment.begin(), ms.boneassignment.end());
+    }
+
+
+    autoBones(&usenames);
+
+    foreach(cModelBone& bn, backup) {
+        if (!contains_if(modelbones, NamePredicate<cModelBone>(bn.name))) {
+            modelbones.push_back(bn);
+        }
+    }
+
+    foreach(cModelBone& bn, modelbones) {
+        if (!bn.parent.IsEmpty()) {
+            cModelBone::iterator par = find_in_if(modelbones, NamePredicate<cModelBone>(bn.parent));
+            if (par != modelbones.end()) {
+                MATRIX bonem = matrixMultiply(bn.positions2);
+                MATRIX parentm;
+                if (par->usepos2)
+                    parentm = matrixMultiply(par->positions2);
+                else
+                    parentm = matrixMultiply(par->positions1);
+                bn.positions1.clear();
+                bn.position1names.clear();
+                bn.positions1.push_back(matrixMultiply(bonem, matrixInverse(parentm)));
+                bn.position1names.push_back(wxString::Format(_("Auto-generated from pos2 and parent %s"), par->name.c_str()));
+            } else {
+                bn.parent = "";
+                bn.position1names = bn.position2names;
+                bn.positions1 = bn.positions2;
+                bn.position2names.clear();
+                bn.positions2.clear();
+                bn.usepos2 = false;
+                wxLogWarning(wxString::Format(_("Bone synchronization: parent '%s' of bone '%s' disappeared, bone was set to having no parent."), bn.parent.c_str(), bn.name.c_str()));
+            }
+        }
+    }
+    if (auto_sort)
+        sortBones();
+}
+
+
 bool cAnimatedModel::Check(cAnimatedModelMap& amodnames) {
     wxLogDebug(wxT("Trace, cAnimatedModel::Check '%s'"), name.c_str());
+    Sync();
     if (fatal_error)
         return false;
 
@@ -1849,6 +2075,12 @@ bool cAnimatedModel::Check(cAnimatedModelMap& amodnames) {
     for (cMeshStruct::iterator i_ms = meshstructs.begin(); i_ms != meshstructs.end(); ++i_ms) {
         if (!i_ms->disabled)
             meshmap[i_ms->Name] = &(*i_ms);
+        if (i_ms->multibone) {
+            foreach(const wxString& bname, i_ms->boneassignment) {
+                if (!contains_if(modelbones, NamePredicate<cModelBone>(bname)))
+                    wxLogWarning(_("Animated Model '%s', Mesh '%s': Bone '%s' in multi-bone mesh is missing."), name.c_str(), i_ms->Name.c_str(), bname.c_str());
+            }
+        }
     }
 
     if (modelbones.size() == 0) {
@@ -2033,6 +2265,30 @@ bool cAnimatedModel::FromNode(cXmlNode& node, const wxString& path, unsigned lon
         }
     } else {
         usedorientation = ORIENTATION_UNKNOWN;
+    }
+    if (node.getPropVal("autoBones", &temp)) {
+        unsigned long l = 0;
+        if (!parseULong(temp, l)) {
+            auto_bones = false;
+            wxLogError(_("AnimatedModel, autoBones failed parsing."));
+            ret = false;
+        } else {
+            auto_bones = l;
+        }
+    } else {
+        auto_bones = false;
+    }
+    if (node.getPropVal("autoSort", &temp)) {
+        unsigned long l = 0;
+        if (!parseULong(temp, l)) {
+            auto_sort = false;
+            wxLogError(_("AnimatedModel, autoSort failed parsing."));
+            ret = false;
+        } else {
+            auto_sort = l;
+        }
+    } else {
+        auto_sort = false;
     }
 
     cXmlNode child = node.children();
@@ -2270,7 +2526,11 @@ bool cAnimation::Check(const wxSortedArrayString& presentbones) {
             }
         }
     }
+    CheckTimes();
+    return ret;
+}
 
+void cAnimation::CheckTimes() {
     // Find total time and check order
     totaltime = 0.0;
     float lasttime;
@@ -2296,7 +2556,6 @@ bool cAnimation::Check(const wxSortedArrayString& presentbones) {
             lasttime = i_txyz->v.Time;
         }
     }
-    return ret;
 }
 
 bool cAnimation::FromCompilerXml(cXmlNode& node, const wxString& path) {

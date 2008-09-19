@@ -135,6 +135,10 @@
 			<a:documentation>Reference to a sid structure</a:documentation>
 			<data type="string"/>
 		</define>
+		<define name="SNDReference">
+			<a:documentation>Reference to a snd structure</a:documentation>
+			<data type="string"/>
+		</define>
 		<define name="SVDReference">
 			<a:documentation>Reference to a svd structure</a:documentation>
 			<data type="string"/>
@@ -344,6 +348,7 @@
 			<ref name="sat"/>
 			<ref name="shs"/>
 			<ref name="sid"/>
+			<ref name="snd"/>
 			<ref name="spl"/>
 			<ref name="sta"/>
 			<ref name="svd"/>
@@ -788,6 +793,10 @@
 							<attribute name="u8" occurs="?" type="unsignedInt"/>
 							<attribute name="u9" occurs="?" type="unsignedInt"/>	
 						</element>
+						<element name="showItem" occurs="*">
+							<attribute name="animationIndex" type="unsignedInt"/>
+							<data type="string"/>
+						</element>
 					</interleave>
 				</element>
 			</define>
@@ -801,16 +810,24 @@
 					<attribute name="name">
 						<data type="string"/>
 					</attribute>
-					<optional>
-						<attribute name="totaltime">
-							<data type="float">
-								<param name="minExclusive">0</param>
-							</data>
-						</attribute>
-					</optional>
-					<oneOrMore>
-						<ref name="banbone"/>
-					</oneOrMore>
+					<choice>
+						<group>
+							<attribute name="modelFile" type="string"/>
+							<attribute name="modelAnimation" occurs="?" type="string"/>
+						</group>
+						<group>
+							<optional>
+								<attribute name="totaltime">
+									<data type="float">
+										<param name="minExclusive">0</param>
+									</data>
+								</attribute>
+							</optional>
+							<oneOrMore>
+								<ref name="banbone"/>
+							</oneOrMore>
+						</group>
+					</choice>
 				</element>
 			</define>
 			<define name="banbone">
@@ -1804,7 +1821,53 @@
 							<attribute name="runAnimations" occurs="?" type="unsignedInt"/>
 							<attribute name="cyclesPerCircuit" occurs="?" type="unsignedInt"/>
 							<attribute name="chunkCount" occurs="?" type="unsignedInt"/>
-							<element name="animation" occurs="*" type="string"/>
+							<element name="animation" occurs="*">
+								<ref name="baseattrs"/>
+								<data type="string"/>
+							</element>
+						</element>
+						<element name="sound" occurs="*">
+							<ref name="baseattrs"/>
+							<attribute name="extraU1" occurs="?" type="float"/>
+							<attribute name="extraU2" occurs="?" type="float"/>
+							<attribute name="extraU3" occurs="?" type="unsignedInt"/>
+							<element name="soundRef" occurs="+">
+								<ref name="baseattrs"/>
+								<ref name="SNDReference"/>
+							</element>
+							<element name="animation" occurs="+">
+								<ref name="baseattrs"/>
+								<attribute name="fps" occurs="?" type="float"/>
+								<choice>
+									<empty/>
+									<element name="command" occurs="+">
+										<ref name="baseattrs"/>
+										<choice>
+											<attribute name="time" type="float"/>
+											<attribute name="frame" type="float"/>
+										</choice>
+										<choice>
+											<attribute name="type">
+												<choice>
+													<value>0</value>
+													<value>1</value>
+													<value>2</value>
+												</choice>
+											</attribute>
+											<group>
+												<attribute name="type">
+													<choice>
+														<value>3</value>
+														<value>4</value>
+													</choice>
+												</attribute>
+												<attribute name="value" type="float"/>
+												<attribute name="end" type="float"/>
+											</group>
+										</choice>
+									</element>
+								</choice>
+							</element>
 						</element>
 						<ref name="sidvisual" occurs="*"/>
 						<ref name="sidparameter" occurs="*"/>
@@ -1912,6 +1975,31 @@
 				</element>
 			</define>
 		</div>
+		<define name="snd">
+			<element name="snd">
+				<ref name="baseattrs"/>
+				<attribute name="name" type="string"/>
+				<attribute name="loop" occurs="?" type="unsignedInt"/>
+				<interleave>
+					<element name="sound">
+						<ref name="baseattrs"/>
+						<ref name="data"/>
+					</element>
+					<element name="staticUnknowns" occurs="?">
+						<attribute name="u6" occurs="?" type="unsignedInt"/>
+						<attribute name="u7" occurs="?" type="float"/>
+						<attribute name="u8" occurs="?" type="float"/>
+						<attribute name="u9" occurs="?" type="float"/>
+						<attribute name="u10" occurs="?" type="float"/>
+						<attribute name="u11" occurs="?" type="float"/>
+						<attribute name="u12" occurs="?" type="float"/>
+						<attribute name="u13" occurs="?" type="float"/>
+						<attribute name="u14" occurs="?" type="float"/>
+						<attribute name="u15" occurs="?" type="float"/>
+					</element>
+				</interleave>
+			</element>
+		</define>
 		<div>
 			<define name="spl">
 				<element name="spl">
@@ -1921,7 +2009,7 @@
 					<choice>
 						<group>
 							<attribute name="modelFile" type="string"/>
-							<attribute name="splineObject" type="string"/>
+							<attribute name="modelSpline" occurs="?" type="string"/>
 						</group>
 						<group>
 							<attribute name="max_y" occurs="?" type="float"/>
@@ -2314,7 +2402,7 @@
 						<sch:report test="/raw:sectionGroupDefinitionBatch" role="warning">sectionGroupDefinitionBatch not supported yet.</sch:report>
 					</sch:rule>
 					<sch:rule context="//raw:trr/raw:trackSection[@validate='1']">
-						<sch:assert test="//raw:tks[@name = current()]" role="warning">Tracksection &quot;<sch:value-of select="."/>&quot; not found.</sch:assert>
+						<sch:assert test="//raw:tks[@name = current()]" role="warning">Tracksection '<sch:value-of select="."/>' not found.</sch:assert>
 					</sch:rule>
 				</sch:pattern>
 				<element name="trr">

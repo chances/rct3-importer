@@ -1,3 +1,7 @@
 Updated	Blender modxml: By default export quaternion keyframes
 Fixed	Issues with duplicate keyframes
-Updated	mation template deactivated by default
+Updated	Animation template deactivated by default
+Added	Option to choose whether bones not animated in an action are added to the animation or not
+Added	Enhanced keyframe only mode to grab Blender easing with less frames
+Added	Support for bone weights
+Added	Constraint baking scripts

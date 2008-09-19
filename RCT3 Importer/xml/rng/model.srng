@@ -29,6 +29,39 @@
 					<sch:assert test="count(/*/mod:group[@name = current()]) = 1">The name of groups have to be unique, '<sch:value-of select="."/>' is not.</sch:assert>
 				</sch:rule>
 			</sch:pattern>
+			<element name="metadata" occurs="?">
+				<group>
+					<attribute name="role">
+						<value>rct3</value>
+					</attribute>
+					<element name="name" occurs="?" type="string"/>
+					<element name="prefix" occurs="?" type="string"/>
+					<element name="path" occurs="?" type="string"/>
+					<element name="version" occurs="?">
+						<choice>
+							<value>0</value>
+							<value>1</value>
+							<value>2</value>
+						</choice>
+					</element>
+					<element name="flag" occurs="*">
+						<choice>
+							<value>greenery</value>
+							<value>noshadow</value>
+							<value>rotation</value>
+							<value>unk01</value>
+							<value>unk02</value>
+							<value>unk03</value>
+							<value>transformedPreview</value>
+							<value>unkFerris</value>
+						</choice>
+					</element>
+					<element name="sway" type="float" occurs="?"/>
+					<element name="brightness" type="float" occurs="?"/>
+					<element name="scale" type="float" occurs="?"/>
+					<element name="unk" type="float" occurs="?"/>
+				</group>
+			</element>
 			<a:documentation>The 'system' element describes the coordinate system used for the model</a:documentation>
 			<element name="system" occurs="?">
 				<attribute name="handedness">
@@ -65,28 +98,46 @@
 								<empty/>
 							</element>
 							<element name="textureStyle" type="string" occurs="?"/>
+							<element name="flags" occurs="?">
+								<choice>
+									<value>terrain</value>
+									<value>cliff</value>
+									<value>water</value>
+									<value>watermask</value>
+									<value>billboard</value>
+									<value>animatedbillboard</value>
+								</choice>
+							</element>
+							<element name="fudgeNormals" occurs="?">
+								<choice>
+									<value>+X</value>
+									<value>+Y</value>
+									<value>+Z</value>
+									<value>-X</value>
+									<value>-Y</value>
+									<value>-Z</value>
+									<value>rim</value>
+								</choice>
+							</element>
 						</group>
 					</element>
-					<element name="vertex" occurs="+">
-						<sch:pattern>
-							<sch:title>Check Bones</sch:title>
-							<sch:rule context="mod:vertex/mod:bone[last()]">
-								<sch:assert test="sum(../mod:bone/@weight) = 100">Bone weights of vertex #<sch:value-of select="count(ancestor::mod:vertex/preceding-sibling::mod:vertex)+1"/> in mesh '<sch:value-of select="ancestor::mod:mesh/@name"/>' do not add up to 100.</sch:assert>
-							</sch:rule>
-							<sch:rule context="mod:vertex/mod:bone/@name">
-								<sch:assert test="/*/mod:bone[@name = current()]" role="warning">Bone '<sch:value-of select="."/>' of vertex #<sch:value-of select="count(ancestor::mod:vertex/preceding-sibling::mod:vertex)+1"/> in mesh '<sch:value-of select="ancestor::mod:mesh/@name"/>' is not defined.</sch:assert>
-								<sch:assert test="count(ancestor::mod:vertex/mod:bone[@name = current()]) = 1">Bone '<sch:value-of select="."/>' of vertex #<sch:value-of select="count(ancestor::mod:vertex/preceding-sibling::mod:vertex)+1"/> in mesh '<sch:value-of select="ancestor::mod:mesh/@name"/>' repeated.</sch:assert>
-							</sch:rule>
-						</sch:pattern>
-						<element name="position" ref="vector"/>
-						<element name="normal" ref="vector"/>
-						<element name="uv">
-							<attribute name="u" type="decimal"/>
-							<attribute name="v" type="decimal"/>
+					<sch:pattern>
+						<sch:title>Check Bones</sch:title>
+						<sch:rule context="mod:vertex/mod:bone[last()]">
+							<sch:assert test="sum(../mod:bone/@weight) = 100">Bone weights of vertex #<sch:value-of select="count(ancestor::mod:vertex/preceding-sibling::mod:vertex)+1"/> in mesh '<sch:value-of select="ancestor::mod:mesh/@name"/>' do not add up to 100.</sch:assert>
+						</sch:rule>
+						<sch:rule context="mod:vertex/mod:bone/@name">
+							<sch:assert test="/*/mod:bone[@name = current()]" role="warning">Bone '<sch:value-of select="."/>' of vertex #<sch:value-of select="count(ancestor::mod:vertex/preceding-sibling::mod:vertex)+1"/> in mesh '<sch:value-of select="ancestor::mod:mesh/@name"/>' is not defined.</sch:assert>
+							<sch:assert test="count(ancestor::mod:vertex/mod:bone[@name = current()]) = 1">Bone '<sch:value-of select="."/>' of vertex #<sch:value-of select="count(ancestor::mod:vertex/preceding-sibling::mod:vertex)+1"/> in mesh '<sch:value-of select="ancestor::mod:mesh/@name"/>' repeated.</sch:assert>
+						</sch:rule>
+					</sch:pattern>
+					<choice>
+						<element name="vertex" occurs="+" ref="vertexcontent"/>
+						<element name="vertex" occurs="+">
+							<attribute name="index" type="unsignedInt"/>
+							<ref name="vertexcontent" />
 						</element>
-						<a:documentation>Up to four bones can infulence a vertex. The weight has to add up to 100 (%)</a:documentation>
-						<ref name="bone" minOccurs="0" maxOccurs="4"/>
-					</element>
+					</choice>
 					<element name="triangle" occurs="+">
 						<sch:pattern>
 							<sch:title>Triangle indices</sch:title>
@@ -146,7 +197,6 @@
 						</sch:rule>
 					</sch:pattern>
 					<attribute name="name" type="string"/>
-					<attribute name="file" type="string"/>
 					<element name="metadata" occurs="?">
 						<group>
 							<attribute name="role">
@@ -156,8 +206,35 @@
 								<empty/>
 							</element>
 							<element name="recol" type="int" occurs="?"/>
+							<element name="referenced" occurs="?">
+								<choice>
+									<empty/>
+									<data type="string"/>
+								</choice>
+							</element>
 						</group>
 					</element>
+					<choice>
+						<group>
+							<attribute name="file" type="string"/>
+							<attribute name="alphaFile" occurs="?" type="string"/>
+						</group>
+						<group>
+							<attribute name="fps" type="unsignedInt"/>
+							<choice>
+								<element name="frame" occurs="+">
+									<attribute name="file" type="string"/>
+									<attribute name="alphaFile" occurs="?" type="string"/>
+								</element>
+								<element name="frame" occurs="+">
+									<attribute name="index" type="unsignedInt"/>
+									<attribute name="file" type="string"/>
+									<attribute name="alphaFile" occurs="?" type="string"/>
+								</element>
+							</choice>
+							<element name="sequence" occurs="+" type="unsignedInt"/>
+						</group>
+					</choice>
 				</element>
 				<a:documentation>'animation' elements define simple keyframe based animations. They are relative to a bone's parent. The rotation
 				order is currently not defined, but will in all likelyhood be xyz.</a:documentation>
@@ -169,7 +246,7 @@
 							<sch:let name="transall" value="count(mod:bone/mod:translate[last()])" />
 							<sch:let name="rot" value="count(mod:bone/mod:rotate[last() and @time='max'])" />
 							<sch:let name="rotall" value="count(mod:bone/mod:rotate[last()])" />
-							<sch:assert test="($transall &gt; $trans) or ($rotall &gt; $rot)">Animation '<sch:value-of select="@name"/>' must not have all last keyframes set to 'max'.</sch:assert>
+							<sch:assert test="((@abstract='true') or (@abstract='1')) or ($transall &gt; $trans) or ($rotall &gt; $rot)">Non-abstract animation '<sch:value-of select="@name"/>' must not have all last keyframes set to 'max'.</sch:assert>
 						</sch:rule>
 						<sch:rule context="mod:animation/@inherit">
 							<sch:assert test="/*/mod:animation[@name = current()]">Animation '<sch:value-of select="ancestor::mod:animation/@name"/>' tries to inherit from undefined animation '<sch:value-of select="."/>'.</sch:assert>
@@ -181,7 +258,7 @@
 							<sch:assert test="not(mod:translate) or not(mod:rotate) or (*[@time = 'max']) or (math:max(mod:translate/@time) = math:max(mod:rotate/@time))" role="warning">The end times of translation and rotation frames in bone '<sch:value-of select="./@name"/>' of animation '<sch:value-of select="ancestor::mod:animation/@name"/>' do not match.</sch:assert>
 						</sch:rule>
 						<sch:rule context="mod:animation/mod:bone/@name">
-							<sch:assert test="/*/mod:bone[@name = current()]" role="warning">Bone '<sch:value-of select="."/>' of animation '<sch:value-of select="ancestor::mod:animation/@name"/>' is undefined.</sch:assert>
+							<sch:assert test="ancestor::mod:animation[@inherit] or ancestor::mod:animation[@abstract='true'] or ancestor::mod:animation[@abstract='1'] or (/*/mod:bone[@name = current()])" role="warning">Bone '<sch:value-of select="."/>' of animation '<sch:value-of select="ancestor::mod:animation/@name"/>' is undefined.</sch:assert>
 							<sch:assert test="count(ancestor::mod:animation/mod:bone[@name = current()]) = 1">Bones may only be animated once within the same animation. Bone '<sch:value-of select="."/>' is animated multiple times in animation '<sch:value-of select="ancestor::mod:animation/@name"/>'.</sch:assert>
 						</sch:rule>
 						<!--
@@ -215,6 +292,7 @@
 					this animation (= the maximum time of the defined oanimation is also applied to frames with time='max' inherited form the
 					parent).</a:documentation>
 					<attribute name="inherit" occurs="?" type="string"/>
+					<attribute name="abstract" occurs="?" type="boolean"/>
 					<element name="bone" occurs="+">
 						<attribute name="name" type="string"/>
 						<element name="translate" occurs="*" ref="timevector"/>
@@ -281,6 +359,16 @@
 			</choice>
 		</element>
 	</start>
+	<define name="vertexcontent">
+		<element name="position" ref="vector"/>
+		<element name="normal" ref="vector"/>
+		<element name="uv">
+			<attribute name="u" type="decimal"/>
+			<attribute name="v" type="decimal"/>
+		</element>
+		<a:documentation>Up to four bones can infulence a vertex. The weight has to add up to 100 (%)</a:documentation>
+		<ref name="bone" minOccurs="0" maxOccurs="4"/>
+	</define>
 	<define name="vector">
 		<attribute name="x" type="decimal"/>
 		<attribute name="y" type="decimal"/>

@@ -38,12 +38,14 @@ public:
     frmMain(wxWindow* parent);
     virtual ~frmMain();
 
+    virtual void OnMenuNew( wxCommandEvent& event );
     virtual void OnMenuLoad( wxCommandEvent& event );
     virtual void OnMenuSave( wxCommandEvent& event );
     virtual void OnMenuSaveAs( wxCommandEvent& event );
     virtual void OnSchema( wxCommandEvent& event );
     virtual void OnSTCMarginClick (wxStyledTextEvent &event);
     virtual void OnSTCChange (wxStyledTextEvent &event);
+    virtual void OnSTCSavePoint (wxStyledTextEvent &event);
     //virtual void OnSTCKeyDown (wxKeyEvent &event);
     virtual void OnSTCCharAdded (wxStyledTextEvent &event);
     virtual void OnValidate( wxCommandEvent& event );
@@ -55,6 +57,10 @@ public:
     virtual void OnAbbreviation( wxCommandEvent& event );
     virtual void OnAbbreviationFull( wxCommandEvent& event );
     virtual void OnApplyXIncludes( wxCommandEvent& event );
+
+    virtual void OnMenuViewToggleFold( wxCommandEvent& event );
+    virtual void OnMenuViewFoldTags( wxCommandEvent& event );
+    virtual void OnMenuViewUnfoldTags( wxCommandEvent& event );
 
     virtual void OnSchemaCompiler( wxCommandEvent& event );
     virtual void OnSchemaRaw( wxCommandEvent& event );
@@ -71,6 +77,7 @@ public:
 
     virtual void OnReloadBoth( wxCommandEvent& event );
     virtual void OnKeyframe( wxCommandEvent& event );
+    virtual void OnExtraEditAbbreviations( wxCommandEvent& event );
 
 private:
     enum {
@@ -90,16 +97,17 @@ private:
     int m_internal;
     wxString m_xmlfile;
     boost::shared_ptr<dlgKeyframes> m_kf;
-    typedef std::map<wxString, wxString>::iterator abbfind;
-    std::map<wxString, wxString> m_abbreviations;
 
     void MarkLine(wxStyledTextCtrl* ctl, int line, int level);
 
     void InitXMLSTC(wxStyledTextCtrl* ctl);
     void InitCommonSTC(wxStyledTextCtrl* ctl);
     bool DoValidate();
+    void DoReloadSchema(bool validateit);
     void DoProfileValidation(int times);
     void DoAbbreviation(bool quick);
+
+    void UpdateUI();
 
     void SaveFile();
 
