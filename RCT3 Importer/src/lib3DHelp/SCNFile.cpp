@@ -1712,6 +1712,9 @@ bool cSCNFile::Check() {
                 wxLogWarning(wxString::Format(_("Ovl file '%s' already exists"), ovlfile.GetFullPath().c_str()));
             }
         }
+
+        foreach(cImpSpline& a, splines)
+            a.Check();
     }
     return !warning;
 }
@@ -1741,8 +1744,9 @@ void cSCNFile::Make() {
   *
   * @todo: document this function
   */
-wxString cSCNFile::getPrefixed(const wxString& pref) {
-    if ((pref[0] == '[') && (pref[pref.size()-1] == ']'))
+wxString cSCNFile::getPrefixed(const wxString& pref, bool isTexture) {
+ // TODO (belgabor#1#): isTexture
+   if ((pref[0] == '[') && (pref[pref.size()-1] == ']'))
         return pref.AfterFirst('[').BeforeLast(']');
     else
         return prefix + pref;
@@ -2431,6 +2435,11 @@ void cSCNFile::MakeToOvlAnimations(cOvl& c_ovl) {
   * @todo: document this function
   */
 void cSCNFile::MakeToOvlSplines(cOvl& c_ovl) {
+    if (!m_work) {
+        // called from ovlmake
+        foreach(cImpSpline& a, splines)
+            a.Check();
+    }
     // Splines
     if (splines.size()) {
         wxLogDebug(wxT("TRACE cSCNFile::MakeToOvl SPL"));

@@ -80,8 +80,8 @@ class dlgModel : public wxDialog {
 protected:
     wxStarComboCtrl* m_textModelName;
     wxChoice* m_choiceCoordinateSystem;
+    wxButton* m_btCoordinateSystem;
     wxButton* m_btMatrixEdit;
-    wxButton* m_btMatrixSave;
     wxButton* m_btMatrixClear;
     wxStaticText* m_Matrix[4][4];
     wxSpinButton* m_spinEffect;
@@ -120,10 +120,11 @@ protected:
     void OnNameAuto(wxCommandEvent& event);
     void OnModelOpen(wxCommandEvent& event);
     void OnSystemAuto(wxCommandEvent& event);
+    void OnSystemAutoRDbl(wxMouseEvent& event);
+
     void OnControlUpdate(wxCommandEvent& event);
 
     void OnMatrixEdit(wxCommandEvent& event);
-    void OnMatrixSave(wxCommandEvent& event);
     void OnMatrixClear(wxCommandEvent& event);
 
     //void OnMeshEdit(wxCommandEvent& event);
@@ -213,9 +214,9 @@ private:
     void InitModelFromXRC(wxWindow *parent) {
         wxXmlResource::Get()->LoadObject(parent,this,_T("panModelModel"), _T("wxPanel"));
         //m_textModelName = XRCCTRL(*parent,"m_textModelName",wxTextCtrl);
-        m_choiceCoordinateSystem = XRCCTRL(*this,"m_choiceCoordinateSystem",wxChoice);
+        m_choiceCoordinateSystem = XRCCTRL(*parent,"m_choiceCoordinateSystem",wxChoice);
+        m_btCoordinateSystem = XRCCTRL(*parent,"m_btCoordinateSystem",wxButton);
         m_btMatrixEdit = XRCCTRL(*parent,"m_btMatrixEdit",wxButton);
-        m_btMatrixSave = XRCCTRL(*parent,"m_btMatrixSave",wxButton);
         m_btMatrixClear = XRCCTRL(*parent,"m_btMatrixClear",wxButton);
         m_Matrix[0][0] = XRCCTRL(*parent,"m_11",wxStaticText);
         m_Matrix[0][1] = XRCCTRL(*parent,"m_12",wxStaticText);

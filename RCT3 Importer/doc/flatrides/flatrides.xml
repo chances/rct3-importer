@@ -570,6 +570,14 @@
   </section>
   <section>
     <title>The Importer</title>
+    <note>
+      <para>Starting with release 1.1 of the script pack for
+      <application>Blender</application> you can create modxml files that do
+      not need any editing in the importer to be converted to ovl files. If
+      you have created such a file, you can skip this section. Nevertheless I
+      recommend loading them at least once in the importer to check whether
+      everything is correct.</para>
+    </note>
     <xi:include href="../new_in_v18/general.xml"
                 xmlns:xi="http://www.w3.org/2001/XInclude"
                 xpointer="element(/1)" />
@@ -815,6 +823,15 @@
       the filename of the file to fetch data from. It needs to be relative to
       the location of XML file we are writing. You need to give the file name
       you saved your scenery data in the importer to here.</para>
+      <note>
+        <para>If you used Blender scripts to make a modxml file that can be
+        directly converted to a ovl file, you can give it's name instead of
+        the scenery xmr file here. In theory this also works with ms3d files,
+        but this breaks validation. Therefore you'll have to disable
+        validation with the <quote>--novalid</quote> command line switch. As
+        this disables all validation, I do not recommend to do this as long as
+        you are not 100% sure everything is correct.</para>
+      </note>
       <para>The execution environment of ovlmake supersedes the name, path and
       prefix inside the scenery file, that's why we didn't need to give them
       in the last chapter.</para>
@@ -1778,7 +1795,7 @@
           <emphasis>sid</emphasis> element, so you have to add the following
           into it, same nesting level as the <emphasis>type</emphasis> and
           <emphasis>position</emphasis> element:</para>
-          <programlisting>        &lt;sound&gt;
+          <programlisting language="XML">        &lt;sound&gt;
           &lt;soundRef useprefix="0"&gt;MechLoop01&lt;/soundRef&gt;
           &lt;animation/&gt;
           &lt;animation/&gt;
@@ -1855,6 +1872,34 @@
           a sound loop in the start animation and stop it in the stop
           animation and it will play through the main loop animation.</para>
         </section>
+      </section>
+      <section>
+        <title>Keeping animations and splines up to date</title>
+        <para>Once you've set everything up, you might want to do a few fixes
+        and want to keep the splines and animations synchronized to your
+        modxml file. You can do that provided you didn't rename your animatons
+        and/or splines in the importer.</para>
+        <para>First, remove the animations and splines in the importer and
+        save the scenery xml file (no <emphasis role="bold">not</emphasis>
+        remove the animation assignment to the LODs!).</para>
+        <para>Second, you need to add more import statements to your modxml
+        file. Here is an example:</para>
+        <programlisting language="XML">&lt;rawovl file="JumpJack"&gt;
+  &lt;import file="jump.xml" name="JumpJack"/&gt;
+  &lt;import file="jump3.modxml" use="splines" id="mainimport"/&gt;
+  &lt;import file="jump3.modxml" use="animations"/&gt;
+&lt;/rawovl&gt;</programlisting>
+        <para>The <emphasis>use</emphasis> attribute determines, what to
+        import from the file. As explained above, the <emphasis>id</emphasis>
+        attribute helps to validate the splines, so you have to give it for
+        the <emphasis>import</emphasis> element that imports those. As you can
+        see in the example, it is not possible to import only splines and
+        animations from a file in one statement, so you have to give two
+        <emphasis>import</emphasis> elements, one for each.</para>
+        <para>Of course if you directly use a modxml file that is
+        self-sufficient for ovl creation, you do not need to do this, just
+        import only the complete modxml file without a
+        <emphasis>use</emphasis> attribute.</para>
       </section>
     </section>
   </section>

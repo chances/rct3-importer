@@ -816,6 +816,10 @@ BOOL CALLBACK SIDEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 sizezlen = GetWindowTextLength(GetDlgItem(hwnd, IDC_ZSIZE));
                 sizex = GetDlgItemInt(hwnd, IDC_XSQUARES, &sizexfail, FALSE);
                 sizey = GetDlgItemInt(hwnd, IDC_YSQUARES, &sizeyfail, FALSE);
+                if ((sizex != 1) || (sizey != 1)) {
+                    ::wxMessageBox(_("Size in squares x and y has to be 1."), _("Error"), wxOK|wxICON_ERROR);
+                    break;
+                }
                 refund = GetDlgItemInt(hwnd, IDC_REFUND, &refundfail, TRUE);
                 cost = GetDlgItemInt(hwnd, IDC_COST, &costfail, TRUE);
                 unk31 = GetDlgItemInt(hwnd, IDC_UNK31, &unk31fail, FALSE);
@@ -3096,6 +3100,13 @@ bool ToolApp::OnInit()
     g_appdir += "\\";
     delete[] dir;
     wxConfig::Set(new wxFileConfig(wxT("RCT3 Importer"), wxT("Freeware"), g_appdir+wxT("RCT3 Importer.conf"), wxT(""), wxCONFIG_USE_LOCAL_FILE));
+    {
+        wxConfigBase* conf = wxConfigBase::Get(false);
+        if (conf) {
+            conf->DeleteGroup("App/Matrix");
+        }
+    }
+
 
     try {
         wxGXImage::CheckGraphicsMagick(g_appdir);

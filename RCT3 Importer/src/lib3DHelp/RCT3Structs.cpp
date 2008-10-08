@@ -328,12 +328,7 @@ void cMeshStruct::autoMeshStyle(const wxString& style) {
                 wxLogWarning(_("Unknown mesh option token '%s'"), t.c_str());
         }
     }
-    unsigned long right_value = 0;
-    if (TXS.StartsWith(wxT("SIAlphaMask")))
-        right_value = 1;
-    else if (TXS.StartsWith(wxT("SIAlpha")) || TXS.IsSameAs(wxT("SIGlass")) || TXS.IsSameAs(wxT("SIWater")))
-        right_value = 2;
-    place = right_value;
+    place = cMeshStruct::getRightTransparencyValue(TXS);
 }
 
 bool cMeshStruct::FromCompilerXml(cXmlNode& node, const wxString& path) {
@@ -413,12 +408,7 @@ bool cMeshStruct::FromCompilerXml(cXmlNode& node, const wxString& path) {
             throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Unknown transparency value '%s'."), Name.c_str(), placing.c_str()));
         }
     } else {
-        unsigned long right_value = 0;
-        if (TXS.StartsWith(wxT("SIAlphaMask")))
-            right_value = 1;
-        else if (TXS.StartsWith(wxT("SIAlpha")) || TXS.IsSameAs(wxT("SIGlass")) || TXS.IsSameAs(wxT("SIGlass")))
-            right_value = 2;
-        place = right_value;
+        place = cMeshStruct::getRightTransparencyValue(TXS);
     }
 
     if (node.getPropVal("sortx", &temp)) {
@@ -435,11 +425,7 @@ bool cMeshStruct::FromCompilerXml(cXmlNode& node, const wxString& path) {
 }
 
 void cMeshStruct::Check(const wxString& modelname) {
-    unsigned long right_value = 0;
-    if (TXS.StartsWith(wxT("SIAlphaMask")))
-        right_value = 1;
-    else if (TXS.StartsWith(wxT("SIAlpha")) || TXS.IsSameAs(wxT("SIGlass")) || TXS.IsSameAs(wxT("SIGlass")))
-        right_value = 2;
+    unsigned long right_value = cMeshStruct::getRightTransparencyValue(TXS);
     if ((place != right_value) && (!READ_RCT3_EXPERTMODE()))
         wxLogWarning(wxString::Format(_("Model '%s', Group '%s': Texture style %s and transparency setting do not match."), modelname.c_str(), Name.c_str(), TXS.c_str()));
     if (!cTextureStyle::isValid(TXS))
@@ -573,6 +559,14 @@ cXmlNode cMeshStruct::GetNode(const wxString& path) {
     return node;
 }
 
+unsigned long cMeshStruct::getRightTransparencyValue(const wxString& txs) {
+    unsigned long right_value = 0;
+    if (txs.StartsWith(wxT("SIAlphaMask")))
+        right_value = 1;
+    else if (txs.StartsWith(wxT("SIAlpha")) || txs.IsSameAs(wxT("SIGlass")) || txs.IsSameAs(wxT("SIWater")))
+        right_value = 2;
+    return right_value;
+}
 
 ///////////////////////////////////////////////////////////////
 //
@@ -831,6 +825,11 @@ cXmlNode cFlexiTextureFrame::GetNode(const wxString& path) {
 
 bool cFlexiTexture::Check() {
     bool ret = true;
+
+    // Lazyness check
+    if (Name.IsSameAs("Tex", false) || Name.Upper().StartsWith("TEX.")) {
+        throw RCT3Exception(wxString::Format(_("Texture '%s': A texture may not have a Blender default name ('Tex' or start with 'Tex.')."), Name.c_str()));
+    }
 
     if (!Frames.size()) {
         // No texture frames added.
@@ -2513,6 +2512,11 @@ cXmlNode cBoneAnimation::GetNode(const wxString& path) {
 bool cAnimation::Check(const wxSortedArrayString& presentbones) {
     bool ret = true;
 
+    // Lazyness check
+    if (name.IsSameAs("Action", false) || name.IsSameAs("AnimationTemplate", false) || name.Upper().StartsWith("ACTION.")) {
+        throw RCT3Exception(wxString::Format(_("Animation '%s': An animation may not have a Blender default name ('Action', 'AnimationTemplate' or start with 'Action.')."), name.c_str()));
+    }
+
     // Remove bad bones
     for (int i = boneanimations.size() - 1; i >= 0; --i) {
         if (presentbones.Index(boneanimations[i].name) == wxNOT_FOUND) {
@@ -2718,6 +2722,16 @@ cXmlNode cLOD::GetNode(const wxString& path) {
 //
 ///////////////////////////////////////////////////////////////
 
+bool cImpSpline::Check() {
+    bool ret = true;
+
+    // Lazyness check
+    if (spline.m_name.IsSameAs("Curve", false) || spline.m_name.IsSameAs("CurveCircle", false) || spline.m_name.Upper().StartsWith("CURVE.") || spline.m_name.Upper().StartsWith("CURVECIRCLE.")) {
+        throw RCT3Exception(wxString::Format(_("Spline '%s': A spline may not have a Blender default name ('Curve', 'CurveCircle' or start with one of these followed by a '.')."), spline.m_name.c_str()));
+    }
+
+    return ret;
+}
 
 /** @brief GetNode
   *

@@ -26,7 +26,7 @@ __bpydoc__ = """\
 #
 # ***** END GPL LICENCE BLOCK *****
 
-# The simplification code is based on a script by aleksey grishchenko (http://eggnot.com/) 2006
+# The simplification code (Simplifier) is based on a script by aleksey grishchenko (http://eggnot.com/) 2006
 # to be found here: http://blenderartists.org/forum/showthread.php?t=84599
 
 from Blender import Types, Draw, Ipo, IpoCurve, Armature, Scene

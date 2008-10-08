@@ -1109,7 +1109,7 @@ void dlgCreateScenery::OnModelDown(wxSpinEvent& WXUNUSED(event)) {
 
 void dlgCreateScenery::OnModelAdd(wxCommandEvent& WXUNUSED(event)) {
     dlgModel *dialog = new dlgModel(this);
-    dialog->SetModel(cModel(READ_APP_MATRIX(), READ_RCT3_ORIENTATION()));
+    dialog->SetModel(cModel(matrixGetUnity(), READ_RCT3_ORIENTATION()));
     if (dialog->ShowModal() == wxID_OK) {
         m_SCN.models.push_back(dialog->GetModel());
         MakeDirty();
@@ -1278,7 +1278,7 @@ void dlgCreateScenery::OnAModelDown(wxSpinEvent& WXUNUSED(event)) {
 
 void dlgCreateScenery::OnAModelAdd(wxCommandEvent& WXUNUSED(event)) {
     dlgModel *dialog = new dlgModel(this, true);
-    dialog->SetAnimatedModel(cAnimatedModel(READ_APP_MATRIX(), READ_RCT3_ORIENTATION()));
+    dialog->SetAnimatedModel(cAnimatedModel(matrixGetUnity(), READ_RCT3_ORIENTATION()));
     if (dialog->ShowModal() == wxID_OK) {
         m_SCN.animatedmodels.push_back(dialog->GetAnimatedModel());
         MakeDirty();

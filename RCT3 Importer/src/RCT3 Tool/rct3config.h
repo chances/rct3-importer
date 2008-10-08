@@ -38,8 +38,8 @@
 #define READ_APP_WORKDIR()     wxcRead<wxString>(wxT("App/WorkDirectory"), g_appdir)
 #define WRITE_APP_WORKDIR(v)   wxcWrite<wxString>(wxT("App/WorkDirectory"), v)
 
-#define READ_APP_MATRIX()     wxcRead<r3::MATRIX>(wxT("App/Matrix"), matrixGetUnity())
-#define WRITE_APP_MATRIX(v)   wxcWrite<r3::MATRIX>(wxT("App/Matrix"), v)
+//#define READ_APP_MATRIX()     wxcRead<r3::MATRIX>(wxT("App/Matrix"), matrixGetUnity())
+//#define WRITE_APP_MATRIX(v)   wxcWrite<r3::MATRIX>(wxT("App/Matrix"), v)
 
 #define READ_APP_PREFIX()     wxcRead<wxString>(wxT("App/Prefix"), wxT(""))
 #define WRITE_APP_PREFIX(v)   wxcWrite<wxString>(wxT("App/Prefix"), v)

@@ -33,9 +33,6 @@ __bpydoc__ = """
 # Properly baking bones with constraints was learned from vladius'
 # script available here: http://blenderartists.org/forum/showthread.php?t=109244
 
-# The simplification code is based on a script by aleksey grishchenko (http://eggnot.com/) 2006
-# to be found here: http://blenderartists.org/forum/showthread.php?t=84599
-
 import Blender, math, time, sys as osSys #os
 from Blender import sys, Draw, Scene, Armature, Window, Object, Mathutils, IpoCurve
 from action_script_tools import *

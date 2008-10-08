@@ -1157,6 +1157,7 @@ def write_mesh(file, scn, exp_list, matTable, total):
       #mat_ref = current_container[1]
       data = obj.getData(0,1)
       nameMe['objName'] = get_Name(obj)
+      print "  Exporting %s..." % nameMe['objName']
       nameMe['meName'] = data.name
 
       mats_me = [mat for mat in data.materials if mat] #fix for 2.44, get rid of NoneType Objects in me.materials
@@ -1273,31 +1274,35 @@ def write_mesh(file, scn, exp_list, matTable, total):
           me_options['doublesided'] = 1
       if materials:
          for mat in materials:
-             for tex in mat.getTextures():
+             for tex in mat.textures:
                 if not tex:
                     continue
                 if not tex.tex:
                     continue
-                if tex.tex.name.startswith('SI'):
+                if get_Name(tex.tex).startswith('SI'):
                     me_options['texturestyle'] = get_Name(tex.tex)
+                if get_Name(tex.tex).startswith('fudge:'):
+                    me_options['fudge'] = get_Name(tex.tex)
+                if get_Name(tex.tex) in ('terrain', 'cliff', 'water', 'watermask', 'billboard', 'animatedbillboard'):
+                    if tex.tex.getType() == 'None':
+                        me_options['flags'] = get_Name(tex.tex)
                 elif tex.tex.getType() == 'Image':
                     if tex.tex.image:
-                        me_options['texturename'] = tex.tex.name
-                        tex_list[tex.tex.name] = {}
-                        me_options['texture'] = {}
-                        tex_list[tex.tex.name]['name'] = tex.tex.name
-                        tex_list[tex.tex.name]['file'] = tex.tex.image.filename
-                        tex_list[tex.tex.name]['alpha'] = tex.tex.useAlpha
+                        texname = get_Name(tex.tex)
+                        me_options['texturename'] = texname
+                        tex_list[texname] = {}
+                        #me_options['texture'] = {}
+                        tex_list[texname]['name'] = texname
+                        tex_list[texname]['file'] = tex.tex.image.filename
+                        tex_list[texname]['alpha'] = tex.tex.useAlpha
                         recol = 0
-                        if tex.tex.mipmap:
-                            recol = 7
-                        #if tex.tex.mipmap:
-                        #    recol = recol + 1
-                        #if tex.tex.gauss:
-                        #    recol = recol + 2
-                        #if tex.tex.interpol:
-                        #    recol = recol + 4
-                        tex_list[tex.tex.name]['recol'] = recol
+                        if tex.tex.rgbCol[0]>1.0:
+                            recol = recol + 1
+                        if tex.tex.rgbCol[1]>1.0:
+                            recol = recol + 2
+                        if tex.tex.rgbCol[2]>1.0:
+                            recol = recol + 4
+                        tex_list[texname]['recol'] = recol
 
 
       #Open Geomobject
@@ -1316,6 +1321,10 @@ def write_mesh(file, scn, exp_list, matTable, total):
              file.write("%s<doubleSided/>\n" % (Tab*3))
           if 'texturestyle' in me_options:
              file.write("%s<textureStyle>%s</textureStyle>\n" % (Tab*3, me_options['texturestyle']))
+          if 'flags' in me_options:
+             file.write("%s<flags>%s</flags>\n" % (Tab*3, me_options['flags']))
+          if 'fudge' in me_options:
+             file.write("%s<fudgeNormals>%s</fudgeNormals>\n" % (Tab*3, me_options['fudge'][6:]))
 
           file.write("%s</metadata>\n" % (Tab*2))
       mesh_writeMeshData(file, idnt, me, data, current_container[0])

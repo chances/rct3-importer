@@ -174,6 +174,8 @@ public:
     virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
     virtual xmlcpp::cXmlNode GetNode(const wxString& path);
     virtual const std::string GetTagName() const {return RCT3XML_CMESHSTRUCT;};
+
+    static unsigned long getRightTransparencyValue(const wxString& txs);
 private:
     void Init();
 };
@@ -541,6 +543,8 @@ public:
 
     cImpSpline() : usedorientation(ORIENTATION_UNKNOWN) {};
     cImpSpline(const c3DSpline& sp, c3DLoaderOrientation ori) : spline(sp), usedorientation(ori) {};
+
+    bool Check();
 
     virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
     virtual xmlcpp::cXmlNode GetNode(const wxString& path);

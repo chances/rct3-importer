@@ -485,11 +485,13 @@ void dlgMatrix::OnMirror(wxCommandEvent& event) {
 ////////////////////////////////////////////////////////////////////////
 
 void dlgMatrix::OnSpecialBone(wxCommandEvent& WXUNUSED(event)) {
-    AddMatrix(wxT("-"), matrixGetUnity());
+    //AddMatrix(wxT("-"), matrixGetUnity());
+// TODO (belgabor#1#): Implement
+    ::wxMessageBox("Not yet implemented");
 }
 
 void dlgMatrix::OnSpecialDefault(wxCommandEvent& WXUNUSED(event)) {
-    AddMatrix(_("Default Matrix"), READ_APP_MATRIX());
+    AddMatrix(_("Unity Matrix"), matrixGetUnity());
 }
 
 void dlgMatrix::OnSpecialLoad(wxCommandEvent& WXUNUSED(event)) {
@@ -498,7 +500,7 @@ void dlgMatrix::OnSpecialLoad(wxCommandEvent& WXUNUSED(event)) {
                                _T("Open Scenery File (Load matrix)"),
                                wxEmptyString,
                                wxEmptyString,
-                               _T("Scenery Files (*.scn)|*.scn"),
+                               _T("Scenery Files (*.scn, *.xml)|*.scn;*.xml"),
                                wxFD_FILE_MUST_EXIST|wxFD_CHANGE_DIR,
                                wxDefaultPosition,
                                wxSize(600,400)

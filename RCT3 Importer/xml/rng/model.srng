@@ -89,37 +89,44 @@
 					</sch:pattern>
 					<attribute name="name" type="string"/>
 					<attribute name="texture" type="string" occurs="?"/>
-					<element name="metadata" occurs="?">
-						<group>
-							<attribute name="role">
-								<value>rct3</value>
-							</attribute>
-							<element name="doubleSided" occurs="?">
-								<empty/>
-							</element>
-							<element name="textureStyle" type="string" occurs="?"/>
-							<element name="flags" occurs="?">
-								<choice>
-									<value>terrain</value>
-									<value>cliff</value>
-									<value>water</value>
-									<value>watermask</value>
-									<value>billboard</value>
-									<value>animatedbillboard</value>
-								</choice>
-							</element>
-							<element name="fudgeNormals" occurs="?">
-								<choice>
-									<value>+X</value>
-									<value>+Y</value>
-									<value>+Z</value>
-									<value>-X</value>
-									<value>-Y</value>
-									<value>-Z</value>
-									<value>rim</value>
-								</choice>
-							</element>
-						</group>
+					<element name="metadata" occurs="*">
+						<choice>
+							<group>
+								<attribute name="role">
+									<value>rct3</value>
+								</attribute>
+								<element name="doubleSided" occurs="?">
+									<empty/>
+								</element>
+								<element name="textureStyle" type="string" occurs="?"/>
+								<element name="flags" occurs="?">
+									<choice>
+										<value>terrain</value>
+										<value>cliff</value>
+										<value>water</value>
+										<value>watermask</value>
+										<value>billboard</value>
+										<value>animatedbillboard</value>
+									</choice>
+								</element>
+								<element name="fudgeNormals" occurs="?">
+									<choice>
+										<value>+X</value>
+										<value>+Y</value>
+										<value>+Z</value>
+										<value>-X</value>
+										<value>-Y</value>
+										<value>-Z</value>
+										<value>rim</value>
+									</choice>
+								</element>
+							</group>
+							<group>
+								<attribute name="role"/>
+								<anyAttribute/>
+								<anyElement/>
+							</group>
+						</choice>
 					</element>
 					<sch:pattern>
 						<sch:title>Check Bones</sch:title>

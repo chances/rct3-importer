@@ -91,9 +91,9 @@ BEGIN
     LTEXT           "Def.Color 1 (Uk3)",IDC_STATIC,226,73,44,9
     LTEXT           "Def.Color 2 (Uk4)",IDC_STATIC,226,89,43,9
     LTEXT           "Def.Color 3 (Uk5)",IDC_STATIC,226,105,43,9
-    LTEXT           "Unknown 6",IDC_STATIC,226,120,43,9
-    LTEXT           "Unknown 7",IDC_STATIC,226,136,43,9
-    LTEXT           "Unknown 9",IDC_STATIC,226,185,43,9
+    LTEXT           "Min. Height",IDC_STATIC,226,120,43,9
+    LTEXT           "Max. Height",IDC_STATIC,226,136,43,9
+    LTEXT           "Supports",IDC_STATIC,226,185,43,9
     RTEXT           "1",IDC_STATIC,232,210,8,9
     RTEXT           "9",IDC_STATIC,232,219,8,9
     RTEXT           "17",IDC_STATIC,232,229,8,9

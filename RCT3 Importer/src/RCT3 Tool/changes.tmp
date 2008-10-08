@@ -8,6 +8,7 @@ Fixed	Up/down spin controls no longer activated if nothing is selected
 New	Toggle for the animation display on LODs
 Fixed	Bugs when trying to load broken modxml files.
 Fixed	OK and Cancel buttons hidden in bone settings window if the assigend meshes list was too long.
-Removed	The fix orientation matrix is now gone for good as it created a lot of confusion.
+Removed	The fix orientation matrix is now gone for good as it created a lot of confusion. That removes the use of a default matrix, so that's gone as well.
 New	Detect Problems menu command to find some issues that can lead to a 60% crash or a no sid for svd.
 Added	More visual flags
+Fixed	Prevent errors due to size in squares being set to more than 1.

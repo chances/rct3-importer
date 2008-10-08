@@ -128,7 +128,7 @@ public:
 	void MakeToOvlMain(cOvl& c_ovl);
 	void MakeToOvlAnimations(cOvl& c_ovl);
 	void MakeToOvlSplines(cOvl& c_ovl);
-	wxString getPrefixed(const wxString& pref);
+	wxString getPrefixed(const wxString& pref, bool isTexture = false);
 	void CleanWork();
 
 	/// Determines if the ovl is a texture ovl.

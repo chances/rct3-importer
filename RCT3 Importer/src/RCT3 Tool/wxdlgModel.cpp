@@ -254,7 +254,16 @@ bool wxMeshListModel::SetValue( wxVariant &variant, unsigned int col, unsigned i
                             m_content->meshstructs[row].TXS = wxT("SIOpaque");
                             break;
                         default:
-                            m_content->meshstructs[row].flags = 0;
+                            {
+                                m_content->meshstructs[row].flags = 0;
+                                if ((m_content->meshstructs[row].FTX == "useterraintexture") ||
+                                    (m_content->meshstructs[row].FTX == "useclifftexture") ||
+                                    (m_content->meshstructs[row].FTX == "siwater") ||
+                                    (m_content->meshstructs[row].FTX == "watermask") ||
+                                    (m_content->meshstructs[row].FTX == "UseAdTexture")) {
+                                        m_content->meshstructs[row].FTX = "";
+                                    }
+                            }
                     }
 /*                    for(int i = 0; i < 7; i++)
                         ValueChanged(i, row);
@@ -869,11 +878,7 @@ public:
                 if (m_value->disabled) {
                     dc->SetTextForeground(GetStateColour(wxColor(wxT("#808080")), state));
                 } else {
-                    unsigned long right_value = 0;
-                    if (m_value->TXS.StartsWith(wxT("SIAlphaMask")))
-                        right_value = 1;
-                    else if (m_value->TXS.StartsWith(wxT("SIAlpha")) || m_value->TXS.IsSameAs(wxT("SIGlass")) || m_value->TXS.IsSameAs(wxT("SIGlass")))
-                        right_value = 2;
+                    unsigned long right_value = cMeshStruct::getRightTransparencyValue(m_value->TXS);
                     if (m_value->place != right_value)
                         dc->SetTextForeground(GetStateColour(wxColor(wxT("#CC0000")), state));
                     else
@@ -1235,9 +1240,9 @@ EVT_COMMAND(wxID_ANY, wxEVT_DOUPDATE, dlgModel::OnDoUpdate)
 EVT_COMBOBOX(XRCID("m_textModelName"), dlgModel::OnNameAuto)
 EVT_COMBOBOX(XRCID("m_textModelFile"), dlgModel::OnModelOpen)
 EVT_BUTTON(XRCID("m_btCoordinateSystem"), dlgModel::OnSystemAuto)
+//EVT_RIGHT_DCLICK(XRCID("m_btCoordinateSystem"), dlgModel::OnSystemAutoRDbl)
 
 EVT_BUTTON(XRCID("m_btMatrixEdit"), dlgModel::OnMatrixEdit)
-EVT_BUTTON(XRCID("m_btMatrixSave"), dlgModel::OnMatrixSave)
 EVT_BUTTON(XRCID("m_btMatrixClear"), dlgModel::OnMatrixClear)
 
 //EVT_LISTBOX(ID_htlbMesh, dlgModel::OnControlUpdate)
@@ -1366,6 +1371,7 @@ dlgModel::dlgModel(wxWindow *parent, bool animated):m_model(NULL), m_animated(an
     }
     Connect(XRCID("m_cbSyncBones"), wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(dlgModel::OnSyncBones));
     Connect(XRCID("m_cbSortBones"), wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(dlgModel::OnSortBones));
+    m_btCoordinateSystem->Connect(wxEVT_RIGHT_DCLICK, wxMouseEventHandler( dlgModel::OnSystemAutoRDbl ));
     wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbEffect"), m_htlbEffect, m_panEffect);
 /*
     m_panEffect->Fit();
@@ -1842,10 +1848,12 @@ void dlgModel::OnMatrixEdit(wxCommandEvent& WXUNUSED(event)) {
     dialog->Destroy();
 }
 
-void dlgModel::OnMatrixSave(wxCommandEvent& WXUNUSED(event)) {
-    WRITE_APP_MATRIX(matrixMultiply(m_model->transforms));
-    WRITE_RCT3_ORIENTATION(m_model->usedorientation);
-    wxcFlush();
+void dlgModel::OnSystemAutoRDbl(wxMouseEvent& WXUNUSED(event)) {
+    //WRITE_APP_MATRIX(matrixMultiply(m_model->transforms));
+    if (::wxMessageBox(_("Do you want to save the current model orientation as defalt?"), _("Save default"), wxYES_NO|wxICON_QUESTION, this) == wxYES) {
+        WRITE_RCT3_ORIENTATION(m_model->usedorientation);
+        wxcFlush();
+    }
 }
 
 void dlgModel::OnMatrixClear(wxCommandEvent& WXUNUSED(event)) {

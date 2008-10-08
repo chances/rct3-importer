@@ -74,6 +74,10 @@
       the matrix, so press the button as in the old version (but don't edit
       the matrix). The correct choice is usually Right-Handed, Z-Up (or Y-Up
       for MilkShape).</para>
+      <para>(v18v2) As people were confused, the fix orientation matrix is now
+      completely gone for good. Therefore a default matrix is no longer
+      necessary and has been removed. To save the default coordinate system,
+      do a right double-click on the <guibutton>F</guibutton> button.</para>
     </listitem>
     <listitem>
       <para>The ovl-name was split up into a choice box for the directory, an
