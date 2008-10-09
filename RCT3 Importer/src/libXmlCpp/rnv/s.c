@@ -6,8 +6,8 @@
 #include "m.h"
 #include "s.h"
 
-int s_cmpn(char *s1,char *s2,int n2) {
-  char *end=s2+n2;
+int s_cmpn(const char *s1,const char *s2,int n2) {
+  const char *end=s2+n2;
   for(;;++s1,++s2) {
     if(s2==end) return *s1;
     if(*s1=='\0') return -*s2;
@@ -15,8 +15,8 @@ int s_cmpn(char *s1,char *s2,int n2) {
   }
 }
 
-int s_tokcmpn(char *s1,char *s2,int n2) {
-  char *end2=s2+n2;
+int s_tokcmpn(const char *s1,const char *s2,int n2) {
+  const char *end2=s2+n2;
  /* all white space characters are one byte long */
   while(xmlc_white_space(*s1)) ++s1;
   while(s2!=end2&&xmlc_white_space(*s2)) ++s2;
@@ -39,19 +39,19 @@ int s_tokcmpn(char *s1,char *s2,int n2) {
   }
 }
 
-int s_hval(char *s) {
+int s_hval(const char *s) {
   int h=0;
   while(*s) h=h*31+*(s++);
   return h;
 }
 
-char *s_clone(char *s) {
+char *s_clone(const char *s) {
   return strcpy((char*)m_alloc(strlen(s)+1,sizeof(char)),s);
 }
 
-char *s_abspath(char *r,char *b) {
+char *s_abspath(char *r,const char *b) {
   if(*r!='/') {
-    char *c=b,*sep=(char*)0;
+    const char *c=b,*sep=(char*)0;
     for(;;) {if(!(*c)) break; if(*c++=='/') sep=c;}
     if(sep) {
       char *p=r,*q;
@@ -63,8 +63,8 @@ char *s_abspath(char *r,char *b) {
   return r;
 }
 
-int s_tab(char *s,char *tab[],int size) {return s_ntab(s,strlen(s),tab,size);}
-int s_ntab(char *s,int len,char *tab[],int size) {
+int s_tab(const char *s,const char *tab[],int size) {return s_ntab(s,strlen(s),tab,size);}
+int s_ntab(const char *s,int len,const char *tab[],int size) {
   int n=0,m=size-1,i,cmp;
   for(;;) {
     if(n>m) return size;

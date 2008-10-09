@@ -395,7 +395,7 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
                 unsigned long ind = 0;
                 if (!parseULongC(vertices[i].getPropVal("index"), ind))
                     throw E3DLoader("Vertex with illegal index attribute");
-                if (ind >= vertices.size())
+                if (ind >= static_cast<unsigned long>(vertices.size()))
                     throw E3DLoader("Vertex with out-of-range index attribute");
                 parseVertex(vertices_read[ind], vertices[i], cmesh);
             } else {
@@ -414,13 +414,13 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
             parseULongC(triangles[i].getPropVal("c"), c);
 
             //parseVertex(tv, vertices[a], cmesh);
-            if (a >= vertices.size())
+            if (a >= static_cast<unsigned long>(vertices.size()))
                 throw E3DLoader("Triangle references index out-of-range");
             tv = vertices_read[a];
 
             // now see if we have already added this point
             add = true;
-            for (j = 0; j < cmesh.m_vertices.size(); ++j) {
+            for (j = 0; j < static_cast<int>(cmesh.m_vertices.size()); ++j) {
                 VERTEX2 *pv = &cmesh.m_vertices[j];
                 if (memcmp(pv, &tv, sizeof(VERTEX2)) == 0) {
                     // we have a match so exit
@@ -436,13 +436,13 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
 
             // now for the second one
             //parseVertex(tv, vertices[b], cmesh);
-            if (b >= vertices.size())
+            if (b >= static_cast<unsigned long>(vertices.size()))
                 throw E3DLoader("Triangle references index out-of-range");
             tv = vertices_read[b];
 
             // now see if we have already added this point
             add = true;
-            for (j = 0; j < (unsigned long) cmesh.m_vertices.size(); ++j) {
+            for (j = 0; j < static_cast<int>(cmesh.m_vertices.size()); ++j) {
                 VERTEX2 *pv = &cmesh.m_vertices[j];
                 if (memcmp(pv, &tv, sizeof(VERTEX2)) == 0) {
                     // we have a match so exit
@@ -458,13 +458,13 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
 
             // now for the third one
             //parseVertex(tv, vertices[c], cmesh);
-            if (c >= vertices.size())
+            if (c >= static_cast<unsigned long>(vertices.size()))
                 throw E3DLoader("Triangle references index out-of-range");
             tv = vertices_read[c];
 
             // now see if we have already added this point
             add = true;
-            for (j = 0; j < (unsigned long) cmesh.m_vertices.size(); ++j) {
+            for (j = 0; j < static_cast<int>(cmesh.m_vertices.size()); ++j) {
                 VERTEX2 *pv = &cmesh.m_vertices[j];
                 if (memcmp(pv, &tv, sizeof(VERTEX2)) == 0) {
                     // we have a match so exit
@@ -616,7 +616,7 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
                     unsigned long ind = 0;
                     if (!parseULongC(frames[i].getPropVal("index"), ind))
                         throw E3DLoader("Texture frame with illegal index attribute");
-                    if (ind >= frames.size())
+                    if (ind >= static_cast<unsigned long>(frames.size()))
                         throw E3DLoader("Texture frame with out-of-range index attribute");
                     ctex.m_frames[ind] = fr;
                 } else {
@@ -627,7 +627,7 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
                 unsigned long ind = 0;
                 if (!parseULongC(sequence[i].content(), ind))
                     throw E3DLoader("Texture sequence with illegal content");
-                if (ind >= frames.size())
+                if (ind >= static_cast<unsigned long>(frames.size()))
                     throw E3DLoader("Texture sequence with out-of-range content");
                 ctex.m_sequence.push_back(ind);
             }

@@ -9,7 +9,7 @@
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
-#include "wx_pch.h"
+#ifndef WXHELP_BASE
 
 #include "colhtmllbox.h"
 
@@ -29,3 +29,5 @@ wxColour wxColourHtmlListBox::GetSelectedTextColour(const wxColour& colFg) const
 //wxColour wxColourHtmlListBox::GetSelectedTextBgColour(const wxColour& colFg) const {
 //    return GetSelectionBackground();
 //}
+
+#endif

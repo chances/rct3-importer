@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Project Name="libWXHelp">
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="src">
+    <File Name="basicsize.h"/>
+    <File Name="bzipstream.cpp"/>
+    <File Name="bzipstream.h"/>
+    <File Name="confhelp.cpp"/>
+    <File Name="confhelp.h"/>
+    <File Name="exdataview.cpp"/>
+    <File Name="exdataview.h"/>
+    <File Name="fileselectorcombo.cpp"/>
+    <File Name="fileselectorcombo.h"/>
+    <File Name="fileselectorcombowrap.h"/>
+    <File Name="fsfilename.cpp"/>
+    <File Name="fsfilename.h"/>
+    <File Name="gximage.cpp"/>
+    <File Name="gximage.h"/>
+    <File Name="gxpict.cpp"/>
+    <File Name="gxpict.h"/>
+    <File Name="htmlentities.h"/>
+    <File Name="logext.cpp"/>
+    <File Name="logext.h"/>
+    <File Name="popupmessagewin.cpp"/>
+    <File Name="popupmessagewin.h"/>
+    <File Name="wxgmagick.cpp"/>
+    <File Name="wxgmagick.h"/>
+    <File Name="wxInputBox.cpp"/>
+    <File Name="wxInputBox.h"/>
+    <File Name="wxutilityfunctions.cpp"/>
+    <File Name="wxutilityfunctions.h"/>
+    <File Name="wx_pch.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="filedlg">
+    <File Name="auifiledlg.h"/>
+    <File Name="auipicfiledlg.h"/>
+    <File Name="auifiledlg.cpp"/>
+    <File Name="auipicfiledlg.cpp"/>
+    <File Name="filedlgg.cpp"/>
+    <File Name="filedlgg.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="validators">
+    <File Name="valext.h"/>
+    <File Name="valchb.h"/>
+    <File Name="valext.cpp"/>
+    <File Name="valsimplelist.cpp"/>
+    <File Name="valsimplelist.h"/>
+    <File Name="silence.h"/>
+    <File Name="silence.cpp"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="wrapper">
+    <File Name="comboboxwrapper.cpp"/>
+    <File Name="choicewrapper.cpp"/>
+    <File Name="choicewrapper.h"/>
+    <File Name="colhtmllbox.cpp"/>
+    <File Name="colhtmllbox.h"/>
+    <File Name="comboboxwrapper.h"/>
+    <File Name="comboctrlwrapper.cpp"/>
+    <File Name="comboctrlwrapper.h"/>
+    <File Name="wrappereditevent.h"/>
+    <File Name="wrappereditevent.cpp"/>
+  </VirtualDirectory>
+  <Dependencies Name="DebugBaseUnicode"/>
+  <Dependencies Name="DebugUnicode"/>
+  <Dependencies Name="ReleaseBaseUnicode"/>
+  <Dependencies Name="ReleaseUnicode"/>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
+  <Settings Type="Static Library">
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../lib/$(ProjectName)d.a" IntermediateDirectory="../../lib/obj/libWXHelp/Debug" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-g;$(WX2_CXX_PD);-Wall;-fstrict-aliasing;-Wstrict-aliasing=2;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
+        <Preprocessor Value="USE_SQUISH"/>
+        <Preprocessor Value="CACHE_GXIMAGE"/>
+      </Compiler>
+      <Linker Required="yes" Options=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""></Debugger>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild>
+
+</CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="DebugBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../lib/$(ProjectName)bud.a" IntermediateDirectory="../../lib/obj/libWXHelp/DebugBaseUnicode" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="$(WX3_CXX_BD);-g;-Wall;-fstrict-aliasing;-Wstrict-aliasing=2;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
+        <Preprocessor Value="USE_SQUISH"/>
+        <Preprocessor Value="CACHE_GXIMAGE"/>
+        <Preprocessor Value="WXHELP_BASE"/>
+      </Compiler>
+      <Linker Required="yes" Options=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""></Debugger>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild>
+
+</CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="DebugUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../lib/$(ProjectName)ud.a" IntermediateDirectory="../../lib/obj/libWXHelp/DebugUnicode" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="$(WX3_CXX_PD);-g;-Wall;-fstrict-aliasing;-Wstrict-aliasing=2;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
+        <Preprocessor Value="USE_SQUISH"/>
+        <Preprocessor Value="CACHE_GXIMAGE"/>
+      </Compiler>
+      <Linker Required="yes" Options=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""></Debugger>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild>
+
+</CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../lib/$(ProjectName).a" IntermediateDirectory="../../lib/obj/libWXHelp/Release" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="$(WX2_CXX_PR);-O2;-fstrict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
+        <Preprocessor Value="USE_SQUISH"/>
+        <Preprocessor Value="CACHE_GXIMAGE"/>
+      </Compiler>
+      <Linker Required="yes" Options="-O2"/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""></Debugger>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild>
+
+</CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="ReleaseBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../lib/$(ProjectName)bu.a" IntermediateDirectory="../../lib/obj/libWXHelp/ReleaseBaseUnicode" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="$(WX3_CXX_BR); -O2;-fstrict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
+        <Preprocessor Value="USE_SQUISH"/>
+        <Preprocessor Value="CACHE_GXIMAGE"/>
+        <Preprocessor Value="WXHELP_BASE"/>
+      </Compiler>
+      <Linker Required="yes" Options="-O2"/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""></Debugger>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild>
+
+</CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="ReleaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../lib/$(ProjectName)u.a" IntermediateDirectory="../../lib/obj/libWXHelp/ReleaseUnicode" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="$(WX3_CXX_PR); -O2;-fstrict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
+        <Preprocessor Value="USE_SQUISH"/>
+        <Preprocessor Value="CACHE_GXIMAGE"/>
+      </Compiler>
+      <Linker Required="yes" Options="-O2"/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""></Debugger>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild>
+
+</CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+  </Settings>
+</CodeLite_Project>

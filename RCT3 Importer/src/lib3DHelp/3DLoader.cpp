@@ -227,7 +227,7 @@ bool c3DLoader::FetchObject(unsigned int index, cStaticShape2* sh, VECTOR *bbox_
     MATRIX normaltransform;
     if (transform)
         normaltransform = matrixNormalTransform(*transform);
-    for (i = 0; i < m.m_vertices.size(); i++) {
+    for (i = 0; i < static_cast<int>(m.m_vertices.size()); i++) {
         if (transform)
             sh->vertices[vertex_offset + i] = vertex22vertex(matrixApply(m.m_vertices[i], *transform, normaltransform));
         else
@@ -238,7 +238,7 @@ bool c3DLoader::FetchObject(unsigned int index, cStaticShape2* sh, VECTOR *bbox_
         boundsContain(&(sh->vertices[vertex_offset + i]).position, bbox_min, bbox_max);
     }
     bool do_mirror = (transform)?(matrixCalcDeterminant(transform)<0.0):false;
-    for (i = 0; i < m.m_indices.size(); i+=3) {
+    for (i = 0; i < static_cast<int>(m.m_indices.size()); i+=3) {
         sh->indices[index_offest + i] = vertex_offset + m.m_indices[i+((do_mirror)?1:0)];
         sh->indices[index_offest + i+1] = vertex_offset + m.m_indices[i+((do_mirror)?0:1)];
         sh->indices[index_offest + i+2] = vertex_offset + m.m_indices[i+2];
@@ -290,7 +290,7 @@ bool c3DLoader::FetchObject(unsigned int index, char bone, cBoneShape2* sh, VECT
     MATRIX normaltransform;
     if (transform)
         normaltransform = matrixNormalTransform(*transform);
-    for (i = 0; i < m.m_vertices.size(); i++) {
+    for (i = 0; i < static_cast<int>(m.m_vertices.size()); i++) {
         if (transform)
             sh->vertices[vertex_offset + i] = vertex2castrate(matrixApply(m.m_vertices[i], *transform, normaltransform), bone);
         else
@@ -301,7 +301,7 @@ bool c3DLoader::FetchObject(unsigned int index, char bone, cBoneShape2* sh, VECT
         boundsContain(&(sh->vertices[vertex_offset + i]).position, bbox_min, bbox_max);
     }
     bool do_mirror = (transform)?(matrixCalcDeterminant(transform)<0.0):false;
-    for (i = 0; i < m.m_indices.size(); i+=3) {
+    for (i = 0; i < static_cast<int>(m.m_indices.size()); i+=3) {
         sh->indices[index_offest + i] = vertex_offset + m.m_indices[i+((do_mirror)?1:0)];
         sh->indices[index_offest + i+1] = vertex_offset + m.m_indices[i+((do_mirror)?0:1)];
         sh->indices[index_offest + i+2] = vertex_offset + m.m_indices[i+2];
@@ -322,7 +322,7 @@ bool c3DLoader::FetchObject(unsigned int index, cBoneShape2* sh, VECTOR *bbox_mi
     MATRIX normaltransform;
     if (transform)
         normaltransform = matrixNormalTransform(*transform);
-    for (i = 0; i < m.m_vertices.size(); i++) {
+    for (i = 0; i < static_cast<int>(m.m_vertices.size()); i++) {
         if (transform)
             sh->vertices[vertex_offset + i] = matrixApply(m.m_vertices[i], *transform, normaltransform);
         else
@@ -333,7 +333,7 @@ bool c3DLoader::FetchObject(unsigned int index, cBoneShape2* sh, VECTOR *bbox_mi
         boundsContain(&(sh->vertices[vertex_offset + i]).position, bbox_min, bbox_max);
     }
     bool do_mirror = (transform)?(matrixCalcDeterminant(transform)<0.0):false;
-    for (i = 0; i < m.m_indices.size(); i+=3) {
+    for (i = 0; i < static_cast<int>(m.m_indices.size()); i+=3) {
         sh->indices[index_offest + i] = vertex_offset + m.m_indices[i+((do_mirror)?1:0)];
         sh->indices[index_offest + i+1] = vertex_offset + m.m_indices[i+((do_mirror)?0:1)];
         sh->indices[index_offest + i+2] = vertex_offset + m.m_indices[i+2];
@@ -358,7 +358,7 @@ bool c3DLoader::FetchObject(unsigned int index, vector<wxString>& bonenames, cBo
     MATRIX normaltransform;
     if (transform)
         normaltransform = matrixNormalTransform(*transform);
-    for (i = 0; i < m.m_vertices.size(); i++) {
+    for (i = 0; i < static_cast<int>(m.m_vertices.size()); i++) {
         if (transform)
             sh->vertices[vertex_offset + i] = matrixApply(m.m_vertices[i], *transform, normaltransform);
         else
@@ -385,7 +385,7 @@ bool c3DLoader::FetchObject(unsigned int index, vector<wxString>& bonenames, cBo
         boundsContain(&(sh->vertices[vertex_offset + i]).position, bbox_min, bbox_max);
     }
     bool do_mirror = (transform)?(matrixCalcDeterminant(transform)<0.0):false;
-    for (i = 0; i < m.m_indices.size(); i+=3) {
+    for (i = 0; i < static_cast<int>(m.m_indices.size()); i+=3) {
         sh->indices[index_offest + i] = vertex_offset + m.m_indices[i+((do_mirror)?1:0)];
         sh->indices[index_offest + i+1] = vertex_offset + m.m_indices[i+((do_mirror)?0:1)];
         sh->indices[index_offest + i+2] = vertex_offset + m.m_indices[i+2];
@@ -450,7 +450,7 @@ void c3DLoader::FlattenNormals(const unsigned long vertexcount, VERTEX *vertices
     MAKE_OFFSET(min, +)
     MAKE_OFFSET(max, -)
 
-    for (int i = 0; i < vertexcount; ++i) {
+    for (unsigned long i = 0; i < vertexcount; ++i) {
         if ((vertices[i].position.x < min_rim.x) || (vertices[i].position.x > max_rim.x) || (vertices[i].position.y < min_rim.y) || (vertices[i].position.y > max_rim.y) || (vertices[i].position.z < min_rim.z) || (vertices[i].position.z > max_rim.z)) {
             flattenNormal(vertices[i]);
         }
@@ -462,7 +462,7 @@ void c3DLoader::FlattenNormals(const unsigned long vertexcount, VERTEX2 *vertice
     MAKE_OFFSET(min, +)
     MAKE_OFFSET(max, -)
 
-    for (int i = 0; i < vertexcount; ++i) {
+    for (unsigned long i = 0; i < vertexcount; ++i) {
         if ((vertices[i].position.x < min_rim.x) || (vertices[i].position.x > max_rim.x) || (vertices[i].position.y < min_rim.y) || (vertices[i].position.y > max_rim.y) || (vertices[i].position.z < min_rim.z) || (vertices[i].position.z > max_rim.z)) {
             flattenNormal(vertices[i]);
         }
@@ -474,7 +474,7 @@ void c3DLoader::FlattenNormals(cStaticShape2* sh, const VECTOR& bbox_min, const 
     MAKE_OFFSET(min, +)
     MAKE_OFFSET(max, -)
 
-    for (int i = 0; i < sh->vertices.size(); ++i) {
+    for (unsigned long i = 0; i < sh->vertices.size(); ++i) {
         if ((sh->vertices[i].position.x < min_rim.x) || (sh->vertices[i].position.x > max_rim.x) || (sh->vertices[i].position.y < min_rim.y) || (sh->vertices[i].position.y > max_rim.y) || (sh->vertices[i].position.z < min_rim.z) || (sh->vertices[i].position.z > max_rim.z)) {
             flattenNormal(sh->vertices[i]);
         }
@@ -486,7 +486,7 @@ void c3DLoader::FlattenNormals(cBoneShape2* sh, const VECTOR& bbox_min, const VE
     MAKE_OFFSET(min, +)
     MAKE_OFFSET(max, -)
 
-    for (int i = 0; i < sh->vertices.size(); ++i) {
+    for (unsigned long i = 0; i < sh->vertices.size(); ++i) {
         if ((sh->vertices[i].position.x < min_rim.x) || (sh->vertices[i].position.x > max_rim.x) || (sh->vertices[i].position.y < min_rim.y) || (sh->vertices[i].position.y > max_rim.y) || (sh->vertices[i].position.z < min_rim.z) || (sh->vertices[i].position.z > max_rim.z)) {
             flattenNormal(sh->vertices[i]);
         }

@@ -53,6 +53,7 @@
 								<border>5</border>
 								<object class="wxChoice" name="m_NameString">
 									<size>200,-1</size>
+									<selection>0</selection>
 									<content />
 								</object>
 							</object>
@@ -70,6 +71,7 @@
 								<border>5</border>
 								<object class="wxChoice" name="m_Description">
 									<size>200,-1</size>
+									<selection>0</selection>
 									<content />
 								</object>
 							</object>
@@ -87,6 +89,7 @@
 								<border>5</border>
 								<object class="wxChoice" name="m_Type">
 									<size>200,-1</size>
+									<selection>0</selection>
 									<content>
 										<item>Toilet</item>
 										<item>ATM</item>
@@ -107,6 +110,7 @@
 								<flag>wxBOTTOM|wxEXPAND|wxLEFT|wxRIGHT</flag>
 								<border>5</border>
 								<object class="wxChoice" name="m_SceneryItem">
+									<selection>0</selection>
 									<content />
 								</object>
 							</object>

@@ -130,7 +130,7 @@
 #define CLS_U_Zp  127
 #define CLS_U_Zs  128
 #define NUM_CLS_U 129
-static char *clstab[NUM_CLS_U]={"",
+static const char *clstab[NUM_CLS_U]={"",
   "C",
   "Cc",
   "Cf",

@@ -115,7 +115,7 @@ extern int rn_groupable(int p1,int p2);
 extern void rn_del_p(int i);
 extern void rn_add_p(int i);
 
-extern int rn_newString(char *s);
+extern int rn_newString(const char *s);
 
 extern int rn_newNotAllowed(void);
 extern int rn_newEmpty(void);

@@ -9,6 +9,8 @@
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
+#ifndef WXHELP_BASE
+
 // For compilers that support precompilation, includes "wx.h".
 #include "wx/wxprec.h"
 
@@ -1762,3 +1764,5 @@ IMPLEMENT_DYNAMIC_CLASS(wxFileDialog, wxGenericFileDialog)
 #endif // wxUSE_GENERIC_FILEDIALOG
 
 #endif // wxUSE_FILEDLG
+
+#endif

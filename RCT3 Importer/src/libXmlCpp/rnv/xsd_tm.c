@@ -45,8 +45,8 @@ static void addsecs(struct xsd_tm *tmp,int secs) {
   }
 }
 
-void xsd_mktmn(struct xsd_tm *tmp,char *fmt,char *s,int n) {
-  char *end=s+n;
+void xsd_mktmn(struct xsd_tm *tmp,const char *fmt,const char *s,int n) {
+  const char *end=s+n;
   int yr=2000,mo=1,dy=1,hr=0,mi=0,zh=15,zm=0;
   double se=0.0;
   for(;;) {
@@ -54,20 +54,20 @@ void xsd_mktmn(struct xsd_tm *tmp,char *fmt,char *s,int n) {
     switch(*s) {
     case '-':
       switch(*fmt) {
-      case 'y': ++fmt; yr=strtol(s,&s,10); continue;
-      case 'z': ++fmt; ++s; zh=strtol(s,&s,10); ++s; zm=strtol(s,&s,10); continue;
+      case 'y': ++fmt; yr=strtol(s,(char**)&s,10); continue;
+      case 'z': ++fmt; ++s; zh=strtol(s,(char**)&s,10); ++s; zm=strtol(s,(char**)&s,10); continue;
       }
       break;
     case '+': assert(*fmt=='z'); ++fmt;
-	  zh=-strtol(s,&s,10); ++s; zm=-strtol(s,&s,10); continue;
+	  zh=-strtol(s,(char**)&s,10); ++s; zm=-strtol(s,(char**)&s,10); continue;
     case 'Z': assert(*fmt=='z'); ++fmt; zh=0; zm=0; ++s; continue;
     case '0': case '1': case '2': case '3': case '4':
     case '5': case '6': case '7': case '8': case '9':
       switch(*(fmt++)) {
-      case 'y': yr=strtol(s,&s,10); continue;
-      case 'm': mo=strtol(s,&s,10); continue;
-      case 'd': dy=strtol(s,&s,10); continue;
-      case 't': hr=strtol(s,&s,10); ++s; mi=strtol(s,&s,10); ++s; se=strtod(s,&s); continue;
+      case 'y': yr=strtol(s,(char**)&s,10); continue;
+      case 'm': mo=strtol(s,(char**)&s,10); continue;
+      case 'd': dy=strtol(s,(char**)&s,10); continue;
+      case 't': hr=strtol(s,(char**)&s,10); ++s; mi=strtol(s,(char**)&s,10); ++s; se=strtod(s,(char**)&s); continue;
       }
       break;
     }
@@ -78,7 +78,7 @@ void xsd_mktmn(struct xsd_tm *tmp,char *fmt,char *s,int n) {
   tmp->days=ymd2ds(yr,mo,dy);
   if((tmp->tz=(zh!=15))) addsecs(tmp,60*(zm+60*zh));
 }
-void xsd_mktm(struct xsd_tm *tmp,char *fmt,char *val) {xsd_mktmn(tmp,fmt,val,strlen(val));}
+void xsd_mktm(struct xsd_tm *tmp,const char *fmt,const char *val) {xsd_mktmn(tmp,fmt,val,strlen(val));}
 
 static int tmcmp(struct xsd_tm *tmp1, struct xsd_tm *tmp2) {
   int dd=tmp1->days-tmp2->days, ds=tmp1->secs-tmp2->secs, dm=tmp1->mics-tmp2->mics;

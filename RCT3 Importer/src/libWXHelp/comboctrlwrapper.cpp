@@ -9,6 +9,8 @@
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
+#ifndef WXHELP_BASE
+
 #include "comboctrlwrapper.h"
 
 BEGIN_EVENT_TABLE(wxComboCtrlWrapper, wxEvtHandler)
@@ -168,3 +170,4 @@ void wxComboCtrlWrapper::Finish()
     }
 }
 
+#endif

@@ -8,7 +8,7 @@
 // (Based upon the wxLogGui code by Vadim Zeitlin)
 /////////////////////////////////////////////////////////////////////////////
 
-#include "wx_pch.h"
+#ifndef WXHELP_BASE
 
 #include "logext.h"
 
@@ -589,3 +589,5 @@ wxExtLogDialog::~wxExtLogDialog()
         delete m_listctrl->GetImageList(wxIMAGE_LIST_SMALL);
     }
 }
+
+#endif

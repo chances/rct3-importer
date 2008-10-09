@@ -9,6 +9,8 @@
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
+#ifndef WXHELP_BASE
+
 #include "valext.h"
 
 #include <wx/file.h>
@@ -456,3 +458,4 @@ bool wxExtendedValidator::TransferFromWindow(void) {
     return true;
 }
 
+#endif

@@ -232,7 +232,7 @@ public:
 
     virtual ~c3DLoader() {};
 
-    virtual int GetObjectCount() {
+    virtual size_t GetObjectCount() {
         return m_meshes.size();
     };
     inline const c3DMesh& GetObject(const wxString& mesh) const {

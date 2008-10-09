@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Project Name="libOVLng">
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="src">
+    <File Name="libOVLng.cpp"/>
+    <File Name="LodSymRefManager.cpp"/>
+    <File Name="LodSymRefManager.h"/>
+    <File Name="OVLClasses.cpp"/>
+    <File Name="OVLClasses.h"/>
+    <File Name="OVLDebug.cpp"/>
+    <File Name="OVLDebug.h"/>
+    <File Name="OVLException.cpp"/>
+    <File Name="OVLException.h"/>
+    <File Name="OVLManagers.h"/>
+    <File Name="OVLng.h"/>
+    <File Name="RelocationManager.cpp"/>
+    <File Name="RelocationManager.h"/>
+    <File Name="StringTable.cpp"/>
+    <File Name="StringTable.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="base64">
+    <File Name="base64.h"/>
+    <File Name="base64_decode.c"/>
+    <File Name="base64_encode.c"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="managers">
+    <File Name="ManagerWAI.h"/>
+    <File Name="ManagerWAI.cpp"/>
+    <File Name="ManagerTXT.h"/>
+    <File Name="ManagerTXT.cpp"/>
+    <File Name="ManagerTRR.h"/>
+    <File Name="ManagerTRR.cpp"/>
+    <File Name="ManagerTKS.h"/>
+    <File Name="ManagerTKS.cpp"/>
+    <File Name="ManagerTEX.h"/>
+    <File Name="ManagerTEX.cpp"/>
+    <File Name="ManagerSVD.h"/>
+    <File Name="ManagerSVD.cpp"/>
+    <File Name="ManagerSTA.h"/>
+    <File Name="ManagerSTA.cpp"/>
+    <File Name="ManagerSPL.h"/>
+    <File Name="ManagerSPL.cpp"/>
+    <File Name="ManagerSND.h"/>
+    <File Name="ManagerSND.cpp"/>
+    <File Name="ManagerSID.h"/>
+    <File Name="ManagerSID.cpp"/>
+    <File Name="ManagerSHS.h"/>
+    <File Name="ManagerSHS.cpp"/>
+    <File Name="ManagerSAT.h"/>
+    <File Name="ManagerSAT.cpp"/>
+    <File Name="ManagerQTD.h"/>
+    <File Name="ManagerQTD.cpp"/>
+    <File Name="ManagerPTD.h"/>
+    <File Name="ManagerPTD.cpp"/>
+    <File Name="ManagerOVL.h"/>
+    <File Name="ManagerOVL.cpp"/>
+    <File Name="ManagerGSI.h"/>
+    <File Name="ManagerGSI.cpp"/>
+    <File Name="ManagerFTX.h"/>
+    <File Name="ManagerFTX.cpp"/>
+    <File Name="ManagerFLIC.h"/>
+    <File Name="ManagerFLIC.cpp"/>
+    <File Name="ManagerCommon.h"/>
+    <File Name="ManagerCommon.cpp"/>
+    <File Name="ManagerCID.h"/>
+    <File Name="ManagerCID.cpp"/>
+    <File Name="ManagerCHG.h"/>
+    <File Name="ManagerCHG.cpp"/>
+    <File Name="ManagerCED.h"/>
+    <File Name="ManagerCED.cpp"/>
+    <File Name="ManagerBTBL.h"/>
+    <File Name="ManagerBTBL.cpp"/>
+    <File Name="ManagerBSH.h"/>
+    <File Name="ManagerBSH.cpp"/>
+    <File Name="ManagerBAN.h"/>
+    <File Name="ManagerBAN.cpp"/>
+    <File Name="ManagerANR.h"/>
+    <File Name="ManagerANR.cpp"/>
+  </VirtualDirectory>
+  <Dependencies Name="DebugUnicode"/>
+  <Dependencies Name="DebugBaseUnicode"/>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
+  <Settings Type="Static Library">
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../lib/$(ProjectName)d.a" IntermediateDirectory="../../lib/obj/libOVLng/Debug" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-g;-fno-strict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="../lib3DHelp"/>
+      </Compiler>
+      <Linker Required="yes" Options=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="DebugBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../lib/$(ProjectName)ud.a" IntermediateDirectory="../../lib/obj/libOVLng/DebugUnicode" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-g;-Wall;$(WX3_CXX_BD);-fno-strict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="../lib3DHelp"/>
+      </Compiler>
+      <Linker Required="yes" Options=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../lib/$(ProjectName).a" IntermediateDirectory="../../lib/obj/libOVLng/Release" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-O2;-fno-strict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="../lib3DHelp"/>
+      </Compiler>
+      <Linker Required="yes" Options=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+    </Configuration>
+  </Settings>
+  <VirtualDirectory Name="rct3 includes">
+    <File Name="..\..\include\xmldefs.h"/>
+    <File Name="..\..\include\animatedride.h"/>
+    <File Name="..\..\include\attraction.h"/>
+    <File Name="..\..\include\boneanim.h"/>
+    <File Name="..\..\include\boneshape.h"/>
+    <File Name="..\..\include\car.h"/>
+    <File Name="..\..\include\carrieditems.h"/>
+    <File Name="..\..\include\counted_array_ptr.h"/>
+    <File Name="..\..\include\counted_ptr.h"/>
+    <File Name="..\..\include\flexitexture.h"/>
+    <File Name="..\..\include\guiicon.h"/>
+    <File Name="..\..\include\icontexture.h"/>
+    <File Name="..\..\include\manifoldmesh.h"/>
+    <File Name="..\..\include\morphmesh.h"/>
+    <File Name="..\..\include\ovlstructs.h"/>
+    <File Name="..\..\include\path.h"/>
+    <File Name="..\..\include\pretty.h"/>
+    <File Name="..\..\include\rct3basetypes.h"/>
+    <File Name="..\..\include\rct3constants.h"/>
+    <File Name="..\..\include\scenery.h"/>
+    <File Name="..\..\include\sceneryold.h"/>
+    <File Name="..\..\include\sceneryrevised.h"/>
+    <File Name="..\..\include\sceneryvisual.h"/>
+    <File Name="..\..\include\sharedride.h"/>
+    <File Name="..\..\include\spline.h"/>
+    <File Name="..\..\include\stall.h"/>
+    <File Name="..\..\include\staticshape.h"/>
+    <File Name="..\..\include\terraintype.h"/>
+    <File Name="..\..\include\trackedride.h"/>
+    <File Name="..\..\include\tracksection.h"/>
+    <File Name="..\..\include\vertex.h"/>
+    <File Name="..\..\include\wildanimalitem.h"/>
+  </VirtualDirectory>
+</CodeLite_Project>

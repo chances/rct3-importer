@@ -50,7 +50,7 @@ int rn_groupable(int p1,int p2) {
   return ((ct1&ct2&RN_P_FLG_CTC)||((ct1|ct2)&RN_P_FLG_CTE));
 }
 
-static int add_s(char *s) {
+static int add_s(const char *s) {
   int len=strlen(s)+1;
   if(i_s+len>len_s) rn_string=(char*)m_stretch(rn_string,
     len_s=2*(i_s+len),i_s,sizeof(char));
@@ -90,7 +90,7 @@ static int accept_nc(void) {
   return j;
 }
 
-int rn_newString(char *s) {
+int rn_newString(const char *s) {
   int d_s,j;
   assert(!adding_ps);
   d_s=add_s(s);

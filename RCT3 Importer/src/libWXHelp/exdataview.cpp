@@ -9,6 +9,8 @@
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
+#ifndef WXHELP_BASE
+
 #include "exdataview.h"
 
 #include <wx/dcbuffer.h>
@@ -1508,3 +1510,4 @@ int wxExDataViewCtrl::GetSelections(wxArrayInt& WXUNUSED(aSelections) ) const
     return 0;
 }
 
+#endif

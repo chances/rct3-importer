@@ -2328,7 +2328,7 @@ void cSCNFile::MakeToOvlMain(cOvl& c_ovl) {
             }
 
             // Get the size from the first frame
-            unsigned long dimension = checkRCT3Texture(i_ftx->Frames[0].texture().GetFullPath());
+            long dimension = checkRCT3Texture(i_ftx->Frames[0].texture().GetFullPath());
             long texhandling = READ_RCT3_TEXTURE();
             if (dimension > 1024)
                 dimension = 1024;
@@ -2356,7 +2356,7 @@ void cSCNFile::MakeToOvlMain(cOvl& c_ovl) {
                 c_fts.palette = counted_array_ptr<unsigned char>(new unsigned char[256 * sizeof(COLOURQUAD)]);
                 memset(c_fts.palette.get(), 0, 256 * sizeof(COLOURQUAD));
 
-                if ((tex.GetWidth() != dimension) || (tex.GetHeight() != dimension))
+                if ((tex.GetWidth() != static_cast<unsigned long>(dimension)) || (tex.GetHeight() != static_cast<unsigned long>(dimension)))
                     tex.Rescale(dimension, dimension);
                 c_fts.texture = counted_array_ptr<unsigned char>(new unsigned char[dimension * dimension]);
                 if (i_ftxfr->alphasource() != CFTF_ALPHA_NONE)
@@ -2376,7 +2376,7 @@ void cSCNFile::MakeToOvlMain(cOvl& c_ovl) {
                     tex.GetAlpha(c_fts.alpha.get());
                 } else if (i_ftxfr->alphasource() == CFTF_ALPHA_EXTERNAL) {
                     wxGXImage alp(i_ftxfr->alpha().GetFullPath());
-                    if ((alp.GetWidth() != dimension) || (alp.GetHeight() != dimension))
+                    if ((alp.GetWidth() != static_cast<unsigned long>(dimension)) || (alp.GetHeight() != static_cast<unsigned long>(dimension)))
                         alp.Rescale(dimension, dimension);
                     alp.flip();
                     alp.GetGrayscale(c_fts.alpha.get());

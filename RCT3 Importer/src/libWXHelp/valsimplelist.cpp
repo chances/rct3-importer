@@ -9,6 +9,8 @@
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
+#ifndef WXHELP_BASE
+
 #include "valsimplelist.h"
 
 IMPLEMENT_CLASS(wxSimpleListValidator, wxValidator)
@@ -190,3 +192,4 @@ bool wxSimpleListValidator::TransferFromWindow(void) {
     return true;
 }
 
+#endif

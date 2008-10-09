@@ -100,7 +100,7 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s)"), filename);
     animations[0] = _("Default");
     //wxString animationname = animations[0];
 
-wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename, ms3df->GetNumGroups(), ms3df->GetNumVertices());
+wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename, static_cast<unsigned int>(ms3df->GetNumGroups()), static_cast<unsigned int>(ms3df->GetNumVertices()));
 
     // Handle model comment
     foreach(const ms3d_comment_t& c, ms3df->GetModelComments()) {
@@ -180,13 +180,13 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
 
     // Handle joint comments
     map<wxString, wxString> jointrenames;
-    for (int m = 0; m < ms3df->GetNumJoints(); m++) {
+    for (unsigned int m = 0; m < ms3df->GetNumJoints(); m++) {
         ms3d_joint_t * joint;
         ms3df->GetJointAt(m, &joint);
         jointrenames[joint->name] = joint->name;
     }
     foreach(const ms3d_comment_t& c, ms3df->GetJointComments()) {
-        if (c.index < ms3df->GetNumJoints()) {
+        if (c.index < static_cast<int>(ms3df->GetNumJoints())) {
             ms3d_joint_t* joint;
             ms3df->GetJointAt(c.index, &joint);
             wxString temp = c.comment;
@@ -196,7 +196,7 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
     }
 
 
-    for (int m = 0; m < ms3df->GetNumGroups(); m++) {
+    for (unsigned int m = 0; m < ms3df->GetNumGroups(); m++) {
         c3DMesh cmesh;
 
         ms3d_group_t *group;
@@ -212,7 +212,7 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
         if (group->numtriangles == 0) {
             cmesh.m_flag = C3DMESH_INVALID;
         } else
-            for (i = 0; i < group->numtriangles * 3; i += 3) {
+            for (i = 0; i < static_cast<unsigned long>(group->numtriangles) * 3; i += 3) {
                 ms3d_vertex_t *vertex;
                 ms3d_vertex_ex_t *vertexex = NULL;
                 ms3d_triangle_t *face;
@@ -283,7 +283,7 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
 
                 // now see if we have already added this point
                 add = TRUE;
-                for (j = 0; j < (long) cmesh.m_vertices.size(); ++j) {
+                for (j = 0; j < static_cast<unsigned long>(cmesh.m_vertices.size()); ++j) {
                     VERTEX2 *pv = &cmesh.m_vertices[j];
                     if (memcmp(pv, &tv, sizeof(VERTEX2)) == 0) {
                         // we have a match so exit
@@ -354,7 +354,7 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
 
                 // now see if we have already added this point
                 add = TRUE;
-                for (j = 0; j < (long) cmesh.m_vertices.size(); ++j) {
+                for (j = 0; j < static_cast<unsigned long>(cmesh.m_vertices.size()); ++j) {
                     VERTEX2 *pv = &cmesh.m_vertices[j];
                     if (memcmp(pv, &tv, sizeof(VERTEX2)) == 0) {
                         // we have a match so exit
@@ -425,7 +425,7 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
 
                 // now see if we have already added this point
                 add = TRUE;
-                for (j = 0; j < (long) cmesh.m_vertices.size(); ++j) {
+                for (j = 0; j < static_cast<unsigned long>(cmesh.m_vertices.size()); ++j) {
                     VERTEX2 *pv = &cmesh.m_vertices[j];
                     if (memcmp(pv, &tv, sizeof(VERTEX2)) == 0) {
                         // we have a match so exit
@@ -455,7 +455,7 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
         m_animations[an.second].m_name = an.second;
     }
 
-    for (int m = 0; m < ms3df->GetNumJoints(); m++) {
+    for (unsigned int m = 0; m < ms3df->GetNumJoints(); m++) {
         ms3d_joint_t * joint;
         ms3df->GetJointAt(m, &joint);
         c3DBone bone;
@@ -471,7 +471,7 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
 
     float fps = ms3df->GetAnimationFPS();
 
-    for (int m = 0; m < ms3df->GetNumJoints(); m++) {
+    for (unsigned int m = 0; m < ms3df->GetNumJoints(); m++) {
         ms3d_joint_t * joint;
         ms3df->GetJointAt(m, &joint);
 #ifdef DUMP_ANIDATA
@@ -676,7 +676,7 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
 */
     }
 
-    for (int m = 0; m < ms3df->GetNumVertices(); ++m) {
+    for (unsigned int m = 0; m < ms3df->GetNumVertices(); ++m) {
         ms3d_vertex_t *vertex;
         ms3df->GetVertexAt(m, &vertex);
         if (vertex->referenceCount == 0) {
@@ -721,17 +721,17 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
     boost::char_separator<char> sep(" \r\n");
     typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
     foreach(const ms3d_comment_t& c, ms3df->GetGroupComments()) {
-        if (c.index < m_meshes.size()) {
+        if (c.index < static_cast<int>(m_meshes.size())) {
             m_meshes[m_meshId[c.index]].m_meshOptions = c.comment;
         }
     }
     // Handle textures
     if (ms3df->GetNumMaterials()) {
         wxFileName temp;
-        for (int t = 0; t < ms3df->GetNumMaterials(); ++t) {
+        for (unsigned int t = 0; t < ms3df->GetNumMaterials(); ++t) {
             string comment;
             foreach(const ms3d_comment_t& c, ms3df->GetMaterialComments()) {
-                if (c.index == t) {
+                if (c.index == static_cast<int>(t)) {
                     comment = c.comment;
                     break;
                 }

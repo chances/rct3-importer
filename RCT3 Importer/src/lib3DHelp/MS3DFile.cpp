@@ -1,5 +1,5 @@
 //------------
-//Copyright © 2003 Mete Ciragan, chUmbaLum sOft
+//Copyright Â© 2003 Mete Ciragan, chUmbaLum sOft
 //
 //This software is provided 'as-is', without any expressed or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
 //
@@ -166,7 +166,7 @@ wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile joints %d"), nNumJoints);
         fread(&nNumGroupComments, 1, sizeof(int), fp);
 wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile group comments %d"), nNumGroupComments);
         m_arrGroupComments.resize(nNumGroupComments);
-        for (i = 0; i < nNumGroupComments; i++)
+        for (i = 0; i < static_cast<DWORD>(nNumGroupComments); i++)
         {
             fread(&m_arrGroupComments[i].index, 1, sizeof(int), fp);
             fread(&m_arrGroupComments[i].commentLength, 1, sizeof(int), fp);
@@ -181,7 +181,7 @@ wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile group comments %d"), nNumGroupCom
         fread(&nNumMaterialComments, 1, sizeof(int), fp);
 wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile material comments %d"), nNumMaterialComments);
         m_arrMaterialComments.resize(nNumMaterialComments);
-        for (i = 0; i < nNumMaterialComments; i++)
+        for (i = 0; i < static_cast<DWORD>(nNumMaterialComments); i++)
         {
             fread(&m_arrMaterialComments[i].index, 1, sizeof(int), fp);
             fread(&m_arrMaterialComments[i].commentLength, 1, sizeof(int), fp);
@@ -196,7 +196,7 @@ wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile material comments %d"), nNumMater
         fread(&nNumJointComments, 1, sizeof(int), fp);
 wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile joint comments %d"), nNumJointComments);
         m_arrJointComments.resize(nNumJointComments);
-        for (i = 0; i < nNumJointComments; i++)
+        for (i = 0; i < static_cast<DWORD>(nNumJointComments); i++)
         {
             fread(&m_arrJointComments[i].index, 1, sizeof(int), fp);
             fread(&m_arrJointComments[i].commentLength, 1, sizeof(int), fp);
@@ -211,7 +211,7 @@ wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile joint comments %d"), nNumJointCom
         fread(&nNumModelComments, 1, sizeof(int), fp);
 wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile model comments %d"), nNumModelComments);
         m_arrModelComments.resize(nNumModelComments);
-        for (i = 0; i < nNumModelComments; i++)
+        for (i = 0; i < static_cast<DWORD>(nNumModelComments); i++)
         {
             //fread(&m_arrModelComments[i].index, 1, sizeof(int), fp);
             fread(&m_arrModelComments[i].commentLength, 1, sizeof(int), fp);

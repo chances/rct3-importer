@@ -10,7 +10,7 @@ A light c++ wrapper around libxml2, libxslt and libexslt.
 This library uses code from several other projects. The specific license for them can be found in the respective directory or in the files themselves.
 
 RNV and rng-inelim by David Tolpin in rnv and xsl/rng-incelim-1.2 repectively.
-RNV (version 1.7.10) was modified to load rnc schemas via the libxml2 callback system. Also the clean() functions were improved.
+RNV (version 1.7.10) was modified to load rnc schemas via the libxml2 callback system. Also the clean() functions were improved. Finally a lot of char pointer function parameters were consted to satisfy gcc4
 
 RngToRnc by Pantor Engineering AB in xls/RngToRnc-1_4
 

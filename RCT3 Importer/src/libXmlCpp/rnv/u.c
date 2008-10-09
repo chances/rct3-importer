@@ -28,8 +28,8 @@
 #define BOM "\xEF\xBB\xBF"
 #define BOMLEN 3
 
-int u_bom(char *s,int n) {
-  char *bom=(char*)(BOM+BOMLEN);
+int u_bom(const char *s,int n) {
+  const char *bom=(const char*)(BOM+BOMLEN);
   if(n>=BOMLEN) {
     n=BOMLEN; s+=n;
     while(n--!=0) if(*(--s)!=*(--bom)) return 0;
@@ -38,8 +38,8 @@ int u_bom(char *s,int n) {
   return 0;
 }
 
-int u_get(int *up,char *s) {
-  unsigned char *t=(unsigned char*)s;
+int u_get(int *up,const char *s) {
+  const unsigned char *t=(const unsigned char*)s;
   if(*t<0x80) {*up=u1(t); return 1;}
   if(*t<0xC0) return 0;
   if(*t<0xE0) {*up=u2(t); return (*up&B1)?2:0;}
@@ -61,10 +61,10 @@ int u_put(char *s,int u) {
   return 0;
 }
 
-int u_strlen(char *s) {int n=0; while(*(s+n)) ++n; return u_strnlen(s,n);}
-int u_strnlen(char *s,int n) {
+int u_strlen(const char *s) {int n=0; while(*(s+n)) ++n; return u_strnlen(s,n);}
+int u_strnlen(const char *s,int n) {
   int i,len=0,u;
-  char *end=s+n;
+  const char *end=s+n;
   for(;;) {
     if(s==end) break;
     i=u_get(&u,s);

@@ -9,6 +9,8 @@
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
+#ifndef WXHELP_BASE
+
 #include "popupmessagewin.h"
 
 BEGIN_EVENT_TABLE(wxPopupTransientMessageWindow, wxPopupTransientWindow)
@@ -56,3 +58,5 @@ void wxPopupTransientMessageWindow::Dismiss() {
     wxPopupTransientWindow::Dismiss();
     Close(true);
 }
+
+#endif

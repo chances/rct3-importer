@@ -9,7 +9,7 @@
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
-#include "wx_pch.h"
+#ifndef WXHELP_BASE
 
 #include "auipicfiledlg.h"
 
@@ -130,3 +130,4 @@ void wxAUIPicFileDialog::CreateAUIPanes() {
     m_mgr.AddPane(m_Preview, wxAuiPaneInfo().Name(wxT("pic")).Right().MinSize(wxSize(100,150)).Caption(_("Preview")).Floatable(false));
 }
 
+#endif

@@ -9,6 +9,8 @@
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
+#ifndef WXHELP_BASE
+
 #include "silence.h"
 
 //IMPLEMENT_CLASS(wxSilent,wxObject)
@@ -36,3 +38,5 @@ wxSilencer::~wxSilencer() {
     if (m_subject)
         m_subject->Silence(false);
 }
+
+#endif

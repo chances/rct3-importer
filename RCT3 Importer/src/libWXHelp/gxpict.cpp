@@ -10,10 +10,7 @@
 // Based upon wxStaticPicture
 /////////////////////////////////////////////////////////////////////////////
 
-#include "wx_pch.h"
-
-#include "wx/wxprec.h"
-#include "wx/defs.h"
+#ifndef WXHELP_BASE
 
 #include <wx/filesys.h>
 #include <wx/mstream.h>
@@ -276,3 +273,5 @@ void wxILPicture::LoadFromFileSystem(const wxString& filename, const ILenum type
     }
 }
 */
+
+#endif

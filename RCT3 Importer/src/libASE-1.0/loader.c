@@ -795,7 +795,7 @@ ASE_Scene* ASE_load()
     }
 
 
-    while(nextToken = ASE_lex()) {
+    while((nextToken = ASE_lex())) {
         if(nextToken != NODE) {
             ASE_error("Expected a node\n");
         }

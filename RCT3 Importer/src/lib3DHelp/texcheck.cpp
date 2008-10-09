@@ -53,7 +53,7 @@ unsigned int checkRCT3Texture(const wxGXImage& texture) {
             throw RCT3TextureException(_("The texture is not square."));
         if (texture.GetWidth() > 1024)
             throw RCT3TextureException(_("The texture is too big. RCT3 can only use textures up to 1024x1024."));
-        if ((1 << local_log2(texture.GetWidth())) != texture.GetWidth())
+        if ((1 << local_log2(texture.GetWidth())) != static_cast<int>(texture.GetWidth()))
             throw RCT3TextureException(_("The width/height of the texture is not a power of 2."));
     } catch (Magick::Exception& e) {
         throw RCT3TextureException(wxString(_("Image Error during check: %s")) + wxString::FromUTF8(e.what()));

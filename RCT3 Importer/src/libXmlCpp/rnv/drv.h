@@ -20,7 +20,7 @@ extern void drv_init(void);
 extern void drv_clear(void);
 
 /* Expat passes character data unterminated.  Hence functions that can deal with cdata expect the length of the data */
-extern void drv_add_dtl(char *suri,int (*equal)(char *typ,char *val,char *s,int n),int (*allows)(char *typ,char *ps,char *s,int n));
+extern void drv_add_dtl(const char *suri,int (*equal)(const char *typ,const char *val,const char *s,int n),int (*allows)(const char *typ,const char *ps,const char *s,int n));
 
 extern int drv_start_tag_open(int p,char *suri,char *sname);
 extern int drv_start_tag_open_recover(int p,char *suri,char *sname);

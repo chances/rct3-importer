@@ -1130,9 +1130,9 @@ LIBOVL_API void clearStyleOVLData()
 	DeleteStyleOVLInfo_TextStrings();
     DeleteStyleOVLInfo_Stalls();
     DeleteStyleOVLInfo_Attractions();
-	DeleteInfo_Resources();
-	DeleteInfo_FileReferences(OVL_COMMON);
-	DeleteInfo_FileReferences(OVL_UNIQUE);
+//	DeleteInfo_Resources();
+//	DeleteInfo_FileReferences(OVL_COMMON);
+//	DeleteInfo_FileReferences(OVL_UNIQUE);
 }
 
 

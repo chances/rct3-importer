@@ -9,6 +9,8 @@
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
+#ifndef WXHELP_BASE
+
 #include "comboboxwrapper.h"
 
 #include "wrappereditevent.h"
@@ -175,3 +177,4 @@ void wxComboBoxWrapper::Finish()
     }
 }
 
+#endif

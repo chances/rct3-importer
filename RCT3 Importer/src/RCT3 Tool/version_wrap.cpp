@@ -1,6 +1,8 @@
 
 #include "version.h"
 
+#include <wx/string.h>
+
 wxString GetAppVersion() {
     wxString ver(wxString::Format(wxT("RCT3 Importer v%ld%s%ld (Build %ld"),
                 AutoVersion::MAJOR, AutoVersion::STATUS_SHORT, AutoVersion::MINOR, AutoVersion::BUILD));

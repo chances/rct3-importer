@@ -168,7 +168,7 @@ static int hash_p(int p) {
 static int equal_2(int x1,int x2) {return r2p[x1][0]==r2p[x2][0];}
 static int hash_2(int x) {return r2p[x][0]*PRIME_2;}
 
-static int add_r(char *rx) {
+static int add_r(const char *rx) {
   int len=strlen(rx)+1;
   if(i_r+len>len_r) regex=(char*)m_stretch(regex,len_r=2*(i_r+len),i_r,sizeof(char));
   strcpy(regex+i_r,rx);
@@ -280,7 +280,7 @@ static void error(int erno) {
   ++errors;
 }
 
-#include "rx_cls_u.c"
+#include "rx_cls_u.inc"
 
 static int chclass(void) {
   int u,cl,rj;
@@ -492,7 +492,7 @@ static void bind(int r) {
   getsym();
 }
 
-static int compile(char *rx) {
+static int compile(const char *rx) {
   int r=0,p=0,d_r;
   d_r=add_r(rx);
   if((r=ht_get(&ht_r,i_r))==-1) {
@@ -678,10 +678,10 @@ static int drv(int p,int c) {
 
 int rx_check(char *rx) {(void)compile(rx); return !errors;}
 
-int rx_match(char *rx,char *s,int n) {
+int rx_match(const char *rx,const char *s,int n) {
   int p=compile(rx);
   if(!errors) {
-    char *end=s+n;
+    const char *end=s+n;
     int u;
     for(;;) {
       if(p==notAllowed) return 0;
@@ -692,10 +692,10 @@ int rx_match(char *rx,char *s,int n) {
   } else return 0;
 }
 
-int rx_rmatch(char *rx,char *s,int n) {
+int rx_rmatch(const char *rx,const char *s,int n) {
   int p=compile(rx);
   if(!errors) {
-    char *end=s+n;
+    const char *end=s+n;
     int u;
     for(;;) {
       if(p==notAllowed) return 0;
@@ -707,10 +707,10 @@ int rx_rmatch(char *rx,char *s,int n) {
   } else return 0;
 }
 
-int rx_cmatch(char *rx,char *s,int n) {
+int rx_cmatch(const char *rx,const char *s,int n) {
   int p=compile(rx);
   if(!errors) {
-    char *end=s+n;
+    const char *end=s+n;
     int u;
     SKIP_SPACE: for(;;) {
       if(s==end) return nullable(p);

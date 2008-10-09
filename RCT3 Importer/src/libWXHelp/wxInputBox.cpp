@@ -7,6 +7,8 @@
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
+#ifndef WXHELP_BASE
+
 #include "wxInputBox.h"
 
 #include <wx/combo.h>
@@ -283,3 +285,5 @@ wxValidator* wxInputBox::GetValidator() const
 	}
 	return NULL;
 }
+
+#endif

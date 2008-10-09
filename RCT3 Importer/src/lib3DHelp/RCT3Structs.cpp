@@ -909,7 +909,7 @@ bool cFlexiTexture::Check() {
                 Frames.erase(Frames.begin() + i);
                 // Fix animation
                 for (cFlexiTextureAnim::iterator i_anim = Animation.begin(); i_anim != Animation.end(); ++i_anim) {
-                    if (i_anim->frame() > i)
+                    if (static_cast<long>(i_anim->frame()) > i)
                         i_anim->frame(i_anim->frame() - 1);
                 }
                 ret = false;
@@ -1034,7 +1034,7 @@ bool cFlexiTexture::g_rgbPaletteCreated = false;
 COLOURQUAD cFlexiTexture::g_bmyPalette[256];
 bool cFlexiTexture::g_bmyPaletteCreated = false;
 
-COLOURQUAD* cFlexiTexture::GetRGBPalette() {
+const COLOURQUAD* cFlexiTexture::GetRGBPalette() {
     if (!g_rgbPaletteCreated) {
         memset(&g_rgbPalette, 0, sizeof(g_rgbPalette));
         for (int i = 1; i <= 85; i++) {
@@ -1044,10 +1044,10 @@ COLOURQUAD* cFlexiTexture::GetRGBPalette() {
         }
         g_rgbPaletteCreated = true;
     }
-    return reinterpret_cast<COLOURQUAD*>(&g_rgbPalette);
+    return &g_rgbPalette[0];
 }
 
-COLOURQUAD* cFlexiTexture::GetBMYPalette() {
+const COLOURQUAD* cFlexiTexture::GetBMYPalette() {
     if (!g_bmyPaletteCreated) {
         memset(&g_bmyPalette, 0, sizeof(g_rgbPalette));
         for (int i = 0; i < 256; i++) {
@@ -1057,7 +1057,7 @@ COLOURQUAD* cFlexiTexture::GetBMYPalette() {
         }
         g_bmyPaletteCreated = true;
     }
-    return reinterpret_cast<COLOURQUAD*>(&g_bmyPalette);
+    return &g_bmyPalette[0];
 }
 
 ///////////////////////////////////////////////////////////////
@@ -1213,7 +1213,7 @@ bool cModel::Load(bool asoverlay) {
 
         meshstructs.clear();
         // Load the object into mesh structs
-        for (long j = 0; j < obj->GetObjectCount(); j++) {
+        for (unsigned long j = 0; j < obj->GetObjectCount(); j++) {
             meshstructs.push_back(MakeMesh(obj, j));
         }
     } else {
@@ -1282,8 +1282,8 @@ bool cModel::Sync() {
     wxString notify;
     std::vector<cMeshStruct> fixup;
     std::vector<unsigned int> unfound;
-    int msinfile = 0;
-    int nrfound = 0;
+    unsigned int msinfile = 0;
+    unsigned int nrfound = 0;
 
     // See if it's an old scn file where the mesh names were not stored
     bool oldfile = (meshstructs[0].Name == wxT(""));
@@ -1451,7 +1451,7 @@ bool cModel::GetTransformationMatrices(MATRIX& transform, MATRIX& undodamage) co
     if (m>0) {
         // Note: if m=0, the first is the separator, so this can fall through to no separator
         std::vector<MATRIX> undostack;
-        for (int n = m; n < transforms.size(); n++)
+        for (unsigned int n = m; n < transforms.size(); n++)
             undostack.push_back(transforms[n]);
         undostack.push_back(matrixGetFixOrientation(usedorientation));
         undodamage = matrixInverse(matrixMultiply(undostack));
@@ -2341,7 +2341,7 @@ void cAnimatedModel::AddNodeContent(cXmlNode& node, const wxString& path, bool d
 int cBoneAnimation::decimateRotations(float threshold, float bailout) {
     int oldframe = 0;
     vector<int> delframes;
-    for(int i = 1; i < rotations.size()-1; ++i) {
+    for(unsigned int i = 1; i < rotations.size()-1; ++i) {
         float timediff = rotations[i+1].v.Time - rotations[oldframe].v.Time;
         float timeoff = rotations[i].v.Time - rotations[oldframe].v.Time;
         float x = rotations[oldframe].v.X + ((rotations[i+1].v.X - rotations[oldframe].v.X)*timeoff/timediff);
@@ -2367,7 +2367,7 @@ int cBoneAnimation::decimateRotations(float threshold, float bailout) {
 int cBoneAnimation::decimateTranslations(float threshold) {
     int oldframe = 0;
     vector<int> delframes;
-    for(int i = 1; i < translations.size()-1; ++i) {
+    for(unsigned int i = 1; i < translations.size()-1; ++i) {
         float timediff = translations[i+1].v.Time - translations[oldframe].v.Time;
         float timeoff = translations[i].v.Time - translations[oldframe].v.Time;
         float x = translations[oldframe].v.X + ((translations[i+1].v.X - translations[oldframe].v.X)*timeoff/timediff);

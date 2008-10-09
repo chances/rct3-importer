@@ -101,15 +101,16 @@ typedef struct
 } libOVL_Resource; //Used in Type0Files
 
 //Has all the names of the items in the OVL file
-extern std::vector <libOVL_Resource *> ResourceItems;
+//extern std::vector <libOVL_Resource *> ResourceItems;
 
 //D3DFORMAT RCT3DFormatToD3DFormat(unsigned long format);
 unsigned long DoRelocationForSaving(unsigned long *reloc);
+/*
 LIBOVL_API void AddInfo_Resource(unsigned long length, unsigned long* data);
 LIBOVL_API void DeleteInfo_Resources();
 LIBOVL_API void AddInfo_FileReference(char* reference, unsigned long CurrentFile);
 LIBOVL_API void DeleteInfo_FileReferences(unsigned long CurrentFile);
-
+*/
 LIBOVL_API unsigned int LibOVLCheckVersion(unsigned int version = 0);
 
 #endif

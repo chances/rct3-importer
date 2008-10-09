@@ -70,7 +70,7 @@ static void windup(void) {
 #define FCT_TOTAL_DIGITS 10
 #define FCT_WHITE_SPACE 11
 #define NFCT 12
-static char *fcttab[NFCT]={
+static const char *fcttab[NFCT]={
   "enumeration", "fractionDigits", "length", "maxExclusive", "maxInclusive", "maxLength",
   "minExclusive", "minInclusive", "minLength", "pattern", "totalDigits", "whiteSpace"};
 
@@ -82,7 +82,7 @@ static char *fcttab[NFCT]={
 #define WS_REPLACE 1
 #define WS_COLLAPSE 2
 
-static int (*match[])(char *r,char *s,int n)={&rx_match,&rx_rmatch,&rx_cmatch};
+static int (*match[])(const char *r,const char *s,int n)={&rx_match,&rx_rmatch,&rx_cmatch};
 
 #define TYP_ENTITIES 0
 #define TYP_ENTITY 1
@@ -129,7 +129,7 @@ static int (*match[])(char *r,char *s,int n)={&rx_match,&rx_rmatch,&rx_cmatch};
 #define TYP_UNSIGNED_LONG 42
 #define TYP_UNSIGNED_SHORT 43
 #define NTYP 44
-static char *typtab[NTYP]={
+static const char *typtab[NTYP]={
 "ENTITIES", "ENTITY", "ID", "IDREF", "IDREFS", "NCName", "NMTOKEN", "NMTOKENS",
 "NOTATION", "Name", "QName", "anyURI", "base64Binary", "boolean", "byte", "date",
 "dateTime", "decimal", "double", "duration", "float", "gDay", "gMonth",
@@ -145,8 +145,8 @@ static char *typtab[NTYP]={
 struct dura {int yr,mo,dy,hr,mi;double se;};
 static void durainit(struct dura *d) {d->yr=d->mo=d->dy=d->hr=d->mi=0; d->se=0.0;}
 
-static void s2dura(struct dura *dp,char *s,int n) {
-  char *end=s+n,*np="0";
+static void s2dura(struct dura *dp,const char *s,int n) {
+  const char *end=s+n,*np="0";
   int sign=1,time=0;
   durainit(dp);
   while(s!=end) {
@@ -165,7 +165,7 @@ static void s2dura(struct dura *dp,char *s,int n) {
   }
 }
 
-static int duracmp(char *s1,char *s2,int n) {
+static int duracmp(const char *s1,const char *s2,int n) {
   struct dura d1,d2;
   s2dura(&d1,s1,strlen(s1)); s2dura(&d2,s2,n);
   if(d1.yr!=d2.yr) return d1.yr-d2.yr;
@@ -177,14 +177,14 @@ static int duracmp(char *s1,char *s2,int n) {
   return 0;
 }
 
-static int dtcmpn(char *s1,char *s2,int n,char *fmt) {
+static int dtcmpn(const char *s1,const char *s2,int n,const char *fmt) {
   struct xsd_tm tm1,tm2;
   xsd_mktm(&tm1,fmt,s1); xsd_mktmn(&tm2,fmt,s2,n);
   return xsd_tmcmp(&tm1,&tm2);
 }
 
-static int toklenn(char *s,int n) {
-  char *end=s+n;
+static int toklenn(const char *s,int n) {
+  const char *end=s+n;
   int u,len=0;
   SKIP_SPACE:
   for(;;) { if(s==end) return len?len-1:0;
@@ -199,8 +199,8 @@ static int toklenn(char *s,int n) {
   }
 }
 
-static int tokcntn(char *s,int n) {
-  char *end=s+n;
+static int tokcntn(const char *s,int n) {
+  const char *end=s+n;
   int u,cnt=0;
   SKIP_SPACE:
   for(;;) { if(s==end) return cnt;
@@ -214,8 +214,8 @@ static int tokcntn(char *s,int n) {
   }
 }
 
-static int b64lenn(char *s,int n) {
-  char *end=s+n;
+static int b64lenn(const char *s,int n) {
+  const char *end=s+n;
   int l=0,len;
   for(;;) { if(end==s) break;
     --end;
@@ -232,8 +232,8 @@ static int b64lenn(char *s,int n) {
   return len;
 }
 
-static int fdiglenn(char *s,int n) {
-  char *end=s+n; int len=0;
+static int fdiglenn(const char *s,int n) {
+  const char *end=s+n; int len=0;
   for(;;) { if(end==s) break;
     --end;
     if(*end!='0'&&!xmlc_white_space(*end)) {++end; break;}
@@ -247,8 +247,8 @@ static int fdiglenn(char *s,int n) {
   return len;
 }
 
-static int diglenn(char *s,int n) {
-  char *end=s+n; int len=0;
+static int diglenn(const char *s,int n) {
+  const char *end=s+n; int len=0;
   for(;;) { if(s==end) break;
     if(!(xmlc_white_space(*s)||*s=='+'||*s=='-'||*s=='0')) break;
     ++s;
@@ -265,9 +265,9 @@ static int diglenn(char *s,int n) {
 
 struct facets {
   int set;
-  char *pattern[NPAT+1]; int npat;
+  const char *pattern[NPAT+1]; int npat;
   int length, minLength, maxLength, totalDigits, fractionDigits;
-  char *maxExclusive, *maxInclusive, *minExclusive, *minInclusive;
+  const char *maxExclusive, *maxInclusive, *minExclusive, *minInclusive;
   int whiteSpace;
 };
 
@@ -338,8 +338,8 @@ struct facets {
 #define PAT_TIME PAT_TIME0 PAT_ZONE"?"
 #define PAT_DATE_TIME "-?"PAT_DATE0"T"PAT_TIME0 PAT_ZONE"?"
 
-static void anchdec(int *plus,int *zero,char **beg,char **dp,char **end,char *s,int n) {
-  char *end0=s+n;
+static void anchdec(int *plus,int *zero,const char **beg,const char **dp,const char **end,const char *s,int n) {
+  const char *end0=s+n;
   *beg=s; *zero=1; *plus=1;
   for(;;) { if(end0==*beg) break;
     --end0;
@@ -370,9 +370,9 @@ static void anchdec(int *plus,int *zero,char **beg,char **dp,char **end,char *s,
   }
 }
 
-static int deccmp(char *s1,int n1,char *s2,int n2) {
+static int deccmp(const char *s1,int n1,const char *s2,int n2) {
   int p1,p2,z1,z2,cmp;
-  char *d1,*e1,*d2,*e2,*c1,*c2;
+  const char *d1,*e1,*d2,*e2,*c1,*c2;
   anchdec(&p1,&z1,&s1,&d1,&e1,s1,n1); anchdec(&p2,&z2,&s2,&d2,&e2,s2,n2);
   if(z1&&z2) return 0;
   if(p1!=p2) return p1-p2;
@@ -396,7 +396,7 @@ static int deccmp(char *s1,int n1,char *s2,int n2) {
   return p1?cmp:-cmp;
 }
 
-static int chkdec(struct facets *fp,char *s,int n) {
+static int chkdec(struct facets *fp,const char *s,int n) {
   int ok=1;
   if(fp->set&(1<<FCT_MIN_EXCLUSIVE)) ok=ok&&deccmp(s,n,fp->minExclusive,strlen(fp->minExclusive))>0;
   if(fp->set&(1<<FCT_MIN_INCLUSIVE)) ok=ok&&deccmp(s,n,fp->minInclusive,strlen(fp->minInclusive))>=0;
@@ -405,14 +405,14 @@ static int chkdec(struct facets *fp,char *s,int n) {
   return ok;
 }
 
-static double atodn(char *s,int n) {
+static double atodn(const char *s,int n) {
   return s_tokcmpn("-INF",s,n)==0?-HUGE_VAL
     : s_tokcmpn("INF",s,n)==0?HUGE_VAL
     : atof(s);
 }
-static double atod(char *s) {return atodn(s,strlen(s));}
+static double atod(const char *s) {return atodn(s,strlen(s));}
 
-static int chkdbl(struct facets *fp,char *s,int n) {
+static int chkdbl(struct facets *fp,const char *s,int n) {
   int ok=1,nan=s_tokcmpn("NaN",s,n)==0;
   double d=atodn(s,n);
   if(fp->set&(1<<FCT_MIN_EXCLUSIVE)) ok=ok&&!nan&&d>atod(fp->minExclusive);
@@ -422,7 +422,7 @@ static int chkdbl(struct facets *fp,char *s,int n) {
   return ok;
 }
 
-static int chktmlim(char *typ,char *fmt,char *val,int cmpmin,int cmpmax,struct xsd_tm *tmp) {
+static int chktmlim(const char *typ,const char *fmt,const char *val,int cmpmin,int cmpmax,struct xsd_tm *tmp) {
   struct xsd_tm tmf; int cmp;
   if(!xsd_allows(typ,"",val,strlen(val))) {(*error_handler)(XSD_ER_PARVAL); return 0;}
   xsd_mktm(&tmf,fmt,val);
@@ -430,7 +430,7 @@ static int chktmlim(char *typ,char *fmt,char *val,int cmpmin,int cmpmax,struct x
   return cmpmin<=cmp&&cmp<=cmpmax;
 }
 
-static int chktm(char *typ,char *fmt,struct facets *fp,char *s,int n) {
+static int chktm(const char *typ,const char *fmt,struct facets *fp,const char *s,int n) {
   int ok=1;
   struct xsd_tm tms;
   if(!xsd_allows(typ,"",s,n)) return 0;
@@ -442,7 +442,7 @@ static int chktm(char *typ,char *fmt,struct facets *fp,char *s,int n) {
   return ok;
 }
 
-int xsd_allows(char *typ,char *ps,char *s,int n) {
+int xsd_allows(const char *typ,const char *ps,const char *s,int n) {
   int ok=1,length;
   int dt=s_tab(typ,typtab,NTYP);
   struct facets fct; fct.set=0; fct.npat=0;
@@ -515,13 +515,14 @@ int xsd_allows(char *typ,char *ps,char *s,int n) {
 
   { int n;
     while((n=strlen(ps))) {
-      char *key=ps,*val=key+n+1,*end,i;
+      const char *key=ps,*val=key+n+1,*end;
+	  char i;
       switch(i=s_tab(key,fcttab,NFCT)) {
-      case FCT_LENGTH: fct.length=(int)strtol(val,&end,10); if(!*val||*end) (*error_handler)(XSD_ER_PARVAL,key,val); break;
-      case FCT_MAX_LENGTH: fct.maxLength=(int)strtol(val,&end,10); if(!*val||*end) (*error_handler)(XSD_ER_PARVAL,key,val); break;
-      case FCT_MIN_LENGTH: fct.minLength=(int)strtol(val,&end,10); if(!*val||*end) (*error_handler)(XSD_ER_PARVAL,key,val); break;
-      case FCT_FRACTION_DIGITS: fct.fractionDigits=(int)strtol(val,&end,10); if(!*val||*end) (*error_handler)(XSD_ER_PARVAL,key,val); break;
-      case FCT_TOTAL_DIGITS: fct.totalDigits=(int)strtol(val,&end,10); if(!*val||*end) (*error_handler)(XSD_ER_PARVAL,key,val); break;
+      case FCT_LENGTH: fct.length=(int)strtol(val,(char**)&end,10); if(!*val||*end) (*error_handler)(XSD_ER_PARVAL,key,val); break;
+      case FCT_MAX_LENGTH: fct.maxLength=(int)strtol(val,(char**)&end,10); if(!*val||*end) (*error_handler)(XSD_ER_PARVAL,key,val); break;
+      case FCT_MIN_LENGTH: fct.minLength=(int)strtol(val,(char**)&end,10); if(!*val||*end) (*error_handler)(XSD_ER_PARVAL,key,val); break;
+      case FCT_FRACTION_DIGITS: fct.fractionDigits=(int)strtol(val,(char**)&end,10); if(!*val||*end) (*error_handler)(XSD_ER_PARVAL,key,val); break;
+      case FCT_TOTAL_DIGITS: fct.totalDigits=(int)strtol(val,(char**)&end,10); if(!*val||*end) (*error_handler)(XSD_ER_PARVAL,key,val); break;
       case FCT_PATTERN:
 	if(fct.npat==NPAT) (*error_handler)(XSD_ER_NPAT); else {
 	  fct.pattern[fct.npat++]=val;
@@ -671,15 +672,15 @@ int xsd_allows(char *typ,char *ps,char *s,int n) {
   return ok;
 }
 
-static int dblcmpn(char *val,char *s,char n) {
+static int dblcmpn(const char *val,const char *s,char n) {
   double d1,d2;
   return s_tokcmpn(val,s,n)==0?0
     : s_tokcmpn(val,"NaN",3)==0||s_tokcmpn("NaN",s,n)==0?1
     : (d1=atod(val),d2=atodn(s,n),d1<d2?-1:d1>d2?1:0);
 }
 
-static int hexcmpn(char *s1,char *s2,int n) {
-  char *end=s2+n;
+static int hexcmpn(const char *s1,const char *s2,int n) {
+  const char *end=s2+n;
   for(;;++s1,++s2) {
     while(*s1&&xmlc_white_space(*s1)) ++s1;
     while(s2!=end&&xmlc_white_space(*s2)) ++s2;
@@ -697,8 +698,8 @@ static int hexcmpn(char *s1,char *s2,int n) {
   }
 }
 
-static int b64cmpn(char *s1,char *s2,int n) {
-  char *end=s2+n;
+static int b64cmpn(const char *s1,const char *s2,int n) {
+  const char *end=s2+n;
   for(;;++s1,++s2) {
     while(*s1&&xmlc_white_space(*s1)) ++s1;
     while(s2!=end&&xmlc_white_space(*s2)) ++s2;
@@ -708,8 +709,8 @@ static int b64cmpn(char *s1,char *s2,int n) {
   }
 }
 
-static int nrmcmpn(char *s1,char *s2,int n) {
-  char *end=s2+n;
+static int nrmcmpn(const char *s1,const char *s2,int n) {
+  const char *end=s2+n;
   for(;;++s1,++s2) {
     if(s2==end) return *s1;
     if(!*s1) return -*s2;
@@ -718,8 +719,8 @@ static int nrmcmpn(char *s1,char *s2,int n) {
   }
 }
 
-static int qncmpn(char *s1,char *s2,int n2) { /* context is not passed over; compare local parts */
-  char *ln1=s1,*ln2=s2;
+static int qncmpn(const char *s1,const char *s2,int n2) { /* context is not passed over; compare local parts */
+  const char *ln1=s1,*ln2=s2;
   int n=n2;
   while(*ln1&&*ln1!=':') ++ln1;
   while(n!=0&&*ln2!=':') {++ln2; --n;}
@@ -730,7 +731,7 @@ static int qncmpn(char *s1,char *s2,int n2) { /* context is not passed over; com
   }
 }
 
-int xsd_equal(char *typ,char *val,char *s,int n) {
+int xsd_equal(const char *typ,const char *val,const char *s,int n) {
   if(!xsd_allows(typ,"",val,strlen(val))) {
     (*error_handler)(XSD_ER_VAL,val);
     return 0;

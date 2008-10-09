@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Project Name="libXmlCpp">
+  <VirtualDirectory Name="rnv">
+    <File Name="rnv\ary.h"/>
+    <File Name="rnv\drv.h"/>
+    <File Name="rnv\er.h"/>
+    <File Name="rnv\erbit.h"/>
+    <File Name="rnv\ht.h"/>
+    <File Name="rnv\ll.h"/>
+    <File Name="rnv\m.h"/>
+    <File Name="rnv\rn.h"/>
+    <File Name="rnv\rnc.h"/>
+    <File Name="rnv\rnd.h"/>
+    <File Name="rnv\rnl.h"/>
+    <File Name="rnv\rnv.h"/>
+    <File Name="rnv\rnx.h"/>
+    <File Name="rnv\rx.h"/>
+    <File Name="rnv\s.h"/>
+    <File Name="rnv\sc.h"/>
+    <File Name="rnv\u.h"/>
+    <File Name="rnv\xmlc.h"/>
+    <File Name="rnv\xsd.h"/>
+    <File Name="rnv\xsd_tm.h"/>
+    <File Name="rnv\ary.c"/>
+    <File Name="rnv\drv.c"/>
+    <File Name="rnv\er.c"/>
+    <File Name="rnv\ht.c"/>
+    <File Name="rnv\m.c"/>
+    <File Name="rnv\rn.c"/>
+    <File Name="rnv\rnc.c"/>
+    <File Name="rnv\rnd.c"/>
+    <File Name="rnv\rnl.c"/>
+    <File Name="rnv\rnv.c"/>
+    <File Name="rnv\rnx.c"/>
+    <File Name="rnv\rx.c"/>
+    <File Name="rnv\s.c"/>
+    <File Name="rnv\sc.c"/>
+    <File Name="rnv\u.c"/>
+    <File Name="rnv\xmlc.c"/>
+    <File Name="rnv\xsd.c"/>
+    <File Name="rnv\xsd_tm.c"/>
+    <VirtualDirectory Name="doc">
+      <File Name="rnv\ChangeLog"/>
+      <File Name="rnv\COPYING"/>
+    </VirtualDirectory>
+    <File Name="rnv\rx_cls_u.inc"/>
+  </VirtualDirectory>
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="src">
+    <File Name="cXmlDoc.cpp"/>
+    <File Name="cXmlErrorHandler.cpp"/>
+    <File Name="cXmlInitHandler.cpp"/>
+    <File Name="cXmlInlinedSchematronValidator.h"/>
+    <File Name="cXmlInputCallback.cpp"/>
+    <File Name="cXmlInputOutputCallbackString.cpp"/>
+    <File Name="cXmlNode.cpp"/>
+    <File Name="cXmlOutputCallback.cpp"/>
+    <File Name="cXmlValidatorIsoSchematron.cpp"/>
+    <File Name="wxXmlInputCallbackFileSystem.cpp"/>
+    <File Name="cXsltStylesheet.cpp"/>
+    <File Name="cXmlXPathResult.cpp"/>
+    <File Name="cXmlXPath.cpp"/>
+    <File Name="cXmlValidatorSchematron.cpp"/>
+    <File Name="cXmlValidatorRNVRelaxNG.cpp"/>
+    <File Name="cXmlValidatorRelaxNG.cpp"/>
+    <File Name="cXmlValidatorMulti.cpp"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="include">
+    <File Name="cXmlClasses.h"/>
+    <File Name="cxmlconfig.h"/>
+    <File Name="cXmlDoc.h"/>
+    <File Name="cXmlErrorHandler.h"/>
+    <File Name="cXmlException.h"/>
+    <File Name="cXmlInitHandler.h"/>
+    <File Name="cXmlInputCallback.h"/>
+    <File Name="cXmlInputOutputCallbackString.h"/>
+    <File Name="cxmlnamespaceconstants.h"/>
+    <File Name="cXmlNode.h"/>
+    <File Name="cXmlOutputCallback.h"/>
+    <File Name="cXmlValidator.h"/>
+    <File Name="cXmlValidatorIsoSchematron.h"/>
+    <File Name="cXmlValidatorMulti.h"/>
+    <File Name="cXmlValidatorRelaxNG.h"/>
+    <File Name="cXmlValidatorResult.h"/>
+    <File Name="cXmlValidatorRNVRelaxNG.h"/>
+    <File Name="cXmlValidatorSchematron.h"/>
+    <File Name="cXmlXPath.h"/>
+    <File Name="cXmlXPathResult.h"/>
+    <File Name="cXsltStylesheet.h"/>
+    <File Name="wxXmlInputCallbackFileSystem.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="xsl">
+    <File Name="xsl\iso_schematron_skeleton.xsl.h"/>
+    <File Name="xsl\iso_simple.xsl.h"/>
+    <File Name="xsl\iso_simple.xsl"/>
+    <File Name="xsl\iso_schematron_skeleton.xsl"/>
+    <File Name="xsl\Makefile.mak"/>
+  </VirtualDirectory>
+  <Dependencies Name="DebugUnicode">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+  </Dependencies>
+  <Dependencies Name="ReleaseUnicode">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+  </Dependencies>
+  <Dependencies Name="DebugBaseUnicode"/>
+  <Dependencies Name="ReleaseBaseUnicode"/>
+  <Dependencies Name="Release">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+  </Dependencies>
+  <Settings Type="Static Library">
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../lib/$(ProjectName)d.a" IntermediateDirectory="../../lib/obj/libXmlCpp/Debug" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-g;$(WX2_CXX_PD);-Wall;-fstrict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="../../xml"/>
+        <IncludePath Value="$(SYSINCLUDE)/libxml2"/>
+        <Preprocessor Value="LIBXML_STATIC"/>
+        <Preprocessor Value="XMLCPP_USE_XSLT"/>
+        <Preprocessor Value="XMLCPP_USE_EXSLT"/>
+        <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
+        <Preprocessor Value="STDC_HEADERS=1"/>
+        <Preprocessor Value="HAVE_SYS_TYPES_H=1"/>
+        <Preprocessor Value="HAVE_SYS_STAT_H=1"/>
+        <Preprocessor Value="HAVE_STDLIB_H=1"/>
+        <Preprocessor Value="HAVE_STRING_H=1"/>
+        <Preprocessor Value="HAVE_MEMORY_H=1"/>
+        <Preprocessor Value="HAVE_STRINGS_H=1"/>
+        <Preprocessor Value="HAVE_INTTYPES_H=1"/>
+        <Preprocessor Value="HAVE_STDINT_H=1"/>
+        <Preprocessor Value="HAVE_UNISTD_H=1"/>
+        <Preprocessor Value="HAVE_FCNTL_H=1"/>
+        <Preprocessor Value="HAVE_LIMITS_H=1"/>
+        <Preprocessor Value="vfork=fork"/>
+        <Preprocessor Value="HAVE_MALLOC=1"/>
+        <Preprocessor Value="HAVE_VPRINTF=1"/>
+        <Preprocessor Value="HAVE_DUP2=1"/>
+        <Preprocessor Value="HAVE_STRCHR=1"/>
+        <Preprocessor Value="HAVE_STRERROR=1"/>
+        <Preprocessor Value="HAVE_STRRCHR=1"/>
+        <Preprocessor Value="HAVE_STRTOL=1"/>
+        <Preprocessor Value="HAVE_LIBEXPAT=1"/>
+        <Preprocessor Value="UNISTD_H=&quot;&lt;unistd.h&gt;&quot;"/>
+        <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
+      </Compiler>
+      <Linker Required="yes" Options=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild>xsl/iso_schematron_skeleton.xsl.h xsl/iso_simple.xsl.h
+xsl/iso_schematron_skeleton.xsl.h:  xsl/iso_schematron_skeleton.xsl ../../xml/xsl/strip.xsl
+	xsltproc ../../xml/xsl/strip.xsl $&lt; | xmllint --noblanks - | ../../../Utilities/bin2c/bin2c -c -z - $@
+
+xsl/iso_simple.xsl.h:  xsl/iso_simple.xsl ../../xml/xsl/strip.xsl
+	xsltproc ../../xml/xsl/strip.xsl $&lt; | xmllint --noblanks - | ../../../Utilities/bin2c/bin2c -c -z - $@
+</CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="DebugBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../lib/$(ProjectName)ud.a" IntermediateDirectory="../../lib/obj/libXmlCpp/DebugUnicode" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-g;-Wall;$(WX3_CXX_BD);-Wall;-fstrict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="../../xml"/>
+        <IncludePath Value="$(SYSINCLUDE)/libxml2"/>
+        <Preprocessor Value="LIBXML_STATIC"/>
+        <Preprocessor Value="XMLCPP_USE_XSLT"/>
+        <Preprocessor Value="XMLCPP_USE_EXSLT"/>
+        <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
+        <Preprocessor Value="STDC_HEADERS=1"/>
+        <Preprocessor Value="HAVE_SYS_TYPES_H=1"/>
+        <Preprocessor Value="HAVE_SYS_STAT_H=1"/>
+        <Preprocessor Value="HAVE_STDLIB_H=1"/>
+        <Preprocessor Value="HAVE_STRING_H=1"/>
+        <Preprocessor Value="HAVE_MEMORY_H=1"/>
+        <Preprocessor Value="HAVE_STRINGS_H=1"/>
+        <Preprocessor Value="HAVE_INTTYPES_H=1"/>
+        <Preprocessor Value="HAVE_STDINT_H=1"/>
+        <Preprocessor Value="HAVE_UNISTD_H=1"/>
+        <Preprocessor Value="HAVE_FCNTL_H=1"/>
+        <Preprocessor Value="HAVE_LIMITS_H=1"/>
+        <Preprocessor Value="vfork=fork"/>
+        <Preprocessor Value="HAVE_MALLOC=1"/>
+        <Preprocessor Value="HAVE_VPRINTF=1"/>
+        <Preprocessor Value="HAVE_DUP2=1"/>
+        <Preprocessor Value="HAVE_STRCHR=1"/>
+        <Preprocessor Value="HAVE_STRERROR=1"/>
+        <Preprocessor Value="HAVE_STRRCHR=1"/>
+        <Preprocessor Value="HAVE_STRTOL=1"/>
+        <Preprocessor Value="HAVE_LIBEXPAT=1"/>
+        <Preprocessor Value="UNISTD_H=&quot;&lt;unistd.h&gt;&quot;"/>
+        <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
+      </Compiler>
+      <Linker Required="yes" Options=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild>xsl/iso_schematron_skeleton.xsl.h xsl/iso_simple.xsl.h
+xsl/iso_schematron_skeleton.xsl.h:  xsl/iso_schematron_skeleton.xsl ../../xml/xsl/strip.xsl
+	xsltproc ../../xml/xsl/strip.xsl $&lt; | xmllint --noblanks - | ../../../Utilities/bin2c/bin2c -c -z - $@
+
+xsl/iso_simple.xsl.h:  xsl/iso_simple.xsl ../../xml/xsl/strip.xsl
+	xsltproc ../../xml/xsl/strip.xsl $&lt; | xmllint --noblanks - | ../../../Utilities/bin2c/bin2c -c -z - $@
+</CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../lib/$(ProjectName).a" IntermediateDirectory="../../lib/obj/libXmlCpp/Release" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="$(WX2_CXX_PR); -O2;-fstrict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="../../xml"/>
+        <IncludePath Value="$(SYSINCLUDE)/libxml2"/>
+        <Preprocessor Value="LIBXML_STATIC"/>
+        <Preprocessor Value="XMLCPP_USE_XSLT"/>
+        <Preprocessor Value="XMLCPP_USE_EXSLT"/>
+        <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
+        <Preprocessor Value="STDC_HEADERS=1"/>
+        <Preprocessor Value="HAVE_SYS_TYPES_H=1"/>
+        <Preprocessor Value="HAVE_SYS_STAT_H=1"/>
+        <Preprocessor Value="HAVE_STDLIB_H=1"/>
+        <Preprocessor Value="HAVE_STRING_H=1"/>
+        <Preprocessor Value="HAVE_MEMORY_H=1"/>
+        <Preprocessor Value="HAVE_STRINGS_H=1"/>
+        <Preprocessor Value="HAVE_INTTYPES_H=1"/>
+        <Preprocessor Value="HAVE_STDINT_H=1"/>
+        <Preprocessor Value="HAVE_UNISTD_H=1"/>
+        <Preprocessor Value="HAVE_FCNTL_H=1"/>
+        <Preprocessor Value="HAVE_LIMITS_H=1"/>
+        <Preprocessor Value="vfork=fork"/>
+        <Preprocessor Value="HAVE_MALLOC=1"/>
+        <Preprocessor Value="HAVE_VPRINTF=1"/>
+        <Preprocessor Value="HAVE_DUP2=1"/>
+        <Preprocessor Value="HAVE_STRCHR=1"/>
+        <Preprocessor Value="HAVE_STRERROR=1"/>
+        <Preprocessor Value="HAVE_STRRCHR=1"/>
+        <Preprocessor Value="HAVE_STRTOL=1"/>
+        <Preprocessor Value="HAVE_LIBEXPAT=1"/>
+        <Preprocessor Value="UNISTD_H=&quot;&lt;unistd.h&gt;&quot;"/>
+        <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
+      </Compiler>
+      <Linker Required="yes" Options="-O2"/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild>xsl/iso_schematron_skeleton.xsl.h xsl/iso_simple.xsl.h
+xsl/iso_schematron_skeleton.xsl.h:  xsl/iso_schematron_skeleton.xsl ../../xml/xsl/strip.xsl
+	xsltproc ../../xml/xsl/strip.xsl $&lt; | xmllint --noblanks - | ../../../Utilities/bin2c/bin2c -c -z - $@
+
+xsl/iso_simple.xsl.h:  xsl/iso_simple.xsl ../../xml/xsl/strip.xsl
+	xsltproc ../../xml/xsl/strip.xsl $&lt; | xmllint --noblanks - | ../../../Utilities/bin2c/bin2c -c -z - $@
+</CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="ReleaseBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../lib/$(ProjectName)u.a" IntermediateDirectory="../../lib/obj/libXmlCpp/ReleaseUnicode" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="$(WX3_CXX_BR); -O2;-fstrict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="../../xml"/>
+        <IncludePath Value="$(SYSINCLUDE)/libxml2"/>
+        <Preprocessor Value="LIBXML_STATIC"/>
+        <Preprocessor Value="XMLCPP_USE_XSLT"/>
+        <Preprocessor Value="XMLCPP_USE_EXSLT"/>
+        <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
+        <Preprocessor Value="STDC_HEADERS=1"/>
+        <Preprocessor Value="HAVE_SYS_TYPES_H=1"/>
+        <Preprocessor Value="HAVE_SYS_STAT_H=1"/>
+        <Preprocessor Value="HAVE_STDLIB_H=1"/>
+        <Preprocessor Value="HAVE_STRING_H=1"/>
+        <Preprocessor Value="HAVE_MEMORY_H=1"/>
+        <Preprocessor Value="HAVE_STRINGS_H=1"/>
+        <Preprocessor Value="HAVE_INTTYPES_H=1"/>
+        <Preprocessor Value="HAVE_STDINT_H=1"/>
+        <Preprocessor Value="HAVE_UNISTD_H=1"/>
+        <Preprocessor Value="HAVE_FCNTL_H=1"/>
+        <Preprocessor Value="HAVE_LIMITS_H=1"/>
+        <Preprocessor Value="vfork=fork"/>
+        <Preprocessor Value="HAVE_MALLOC=1"/>
+        <Preprocessor Value="HAVE_VPRINTF=1"/>
+        <Preprocessor Value="HAVE_DUP2=1"/>
+        <Preprocessor Value="HAVE_STRCHR=1"/>
+        <Preprocessor Value="HAVE_STRERROR=1"/>
+        <Preprocessor Value="HAVE_STRRCHR=1"/>
+        <Preprocessor Value="HAVE_STRTOL=1"/>
+        <Preprocessor Value="HAVE_LIBEXPAT=1"/>
+        <Preprocessor Value="UNISTD_H=&quot;&lt;unistd.h&gt;&quot;"/>
+        <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
+      </Compiler>
+      <Linker Required="yes" Options="-O2"/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild>xsl/iso_schematron_skeleton.xsl.h xsl/iso_simple.xsl.h
+xsl/iso_schematron_skeleton.xsl.h:  xsl/iso_schematron_skeleton.xsl ../../xml/xsl/strip.xsl
+	xsltproc ../../xml/xsl/strip.xsl $&lt; | xmllint --noblanks - | ../../../Utilities/bin2c/bin2c -c -z - $@
+
+xsl/iso_simple.xsl.h:  xsl/iso_simple.xsl ../../xml/xsl/strip.xsl
+	xsltproc ../../xml/xsl/strip.xsl $&lt; | xmllint --noblanks - | ../../../Utilities/bin2c/bin2c -c -z - $@
+</CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+  </Settings>
+  <Dependencies Name="Debug">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+  </Dependencies>
+  <VirtualDirectory Name="doc">
+    <File Name="readme.txt"/>
+    <File Name="license.txt"/>
+  </VirtualDirectory>
+</CodeLite_Project>

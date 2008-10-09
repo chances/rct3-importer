@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Project Name="lib3DHelp">
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="loaders">
+    <File Name="ASE3DLoader.cpp"/>
+    <File Name="ASE3DLoader.h"/>
+    <File Name="MS3DFile.cpp"/>
+    <File Name="MS3DFile.h"/>
+    <File Name="MS3DLoader.cpp"/>
+    <File Name="MS3DLoader.h"/>
+    <File Name="XML3DLoader.cpp"/>
+    <File Name="XML3DLoader.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="wave">
+    <File Name="wave\RIFFFile.cpp"/>
+    <File Name="wave\RIFFFile.h"/>
+    <File Name="wave\WAVE.cpp"/>
+    <File Name="wave\WAVE.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="src">
+    <File Name="3DLoader.cpp"/>
+    <File Name="3DLoader.h"/>
+    <File Name="3DLoaderTypes.h"/>
+    <File Name="3Dstring.h"/>
+    <File Name="bmy.pal.h"/>
+    <File Name="lib3Dconfig.h"/>
+    <File Name="matrix.cpp"/>
+    <File Name="matrix.h"/>
+    <File Name="RCT3Exception.cpp"/>
+    <File Name="RCT3Exception.h"/>
+    <File Name="rct3log.h"/>
+    <File Name="RCT3Macros.h"/>
+    <File Name="RCT3Structs.cpp"/>
+    <File Name="RCT3Structs.h"/>
+    <File Name="SCNFile.cpp"/>
+    <File Name="SCNFile.h"/>
+    <File Name="texcheck.cpp"/>
+    <File Name="texcheck.h"/>
+    <File Name="valtexture.cpp"/>
+    <File Name="valtexture.h"/>
+    <File Name="wxLocalLog.h"/>
+    <File Name="xmlhelper.cpp"/>
+    <File Name="xmlhelper.h"/>
+  </VirtualDirectory>
+  <Dependencies Name="DebugBaseUnicode">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libASE"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libXmlCpp"/>
+    <Project Name="libWXHelp"/>
+  </Dependencies>
+  <Dependencies Name="DebugUnicode">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libASE"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libXmlCpp"/>
+    <Project Name="libWXHelp"/>
+  </Dependencies>
+  <Dependencies Name="ReleaseBaseUnicode">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libASE"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libXmlCpp"/>
+    <Project Name="libWXHelp"/>
+  </Dependencies>
+  <Dependencies Name="ReleaseUnicode">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libASE"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libXmlCpp"/>
+    <Project Name="libWXHelp"/>
+  </Dependencies>
+  <Dependencies Name="Release">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libASE"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libXmlCpp"/>
+    <Project Name="libWXHelp"/>
+  </Dependencies>
+  <Settings Type="Static Library">
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../lib/$(ProjectName)d.a" IntermediateDirectory="../../lib/obj/lib3DHelp/Debug" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-g;$(WX2_CXX_PD);-Wall;-fstrict-aliasing;-Wstrict-aliasing=2;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
+        <IncludePath Value="$(SYSINCLUDE)/libxml2"/>
+        <IncludePath Value="../libWXHelp"/>
+        <IncludePath Value="../libASE-1.0"/>
+        <IncludePath Value="../libXmlCpp"/>
+        <IncludePath Value="../../xml"/>
+        <IncludePath Value="../libOVLng"/>
+        <Preprocessor Value="USE_SQUISH"/>
+        <Preprocessor Value="CACHE_GXIMAGE"/>
+        <Preprocessor Value="XMLCPP_USE_XSLT"/>
+        <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
+        <Preprocessor Value="XMLCPP_USE_EXSLT"/>
+      </Compiler>
+      <Linker Required="yes" Options=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="DebugBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../lib/$(ProjectName)bud.a" IntermediateDirectory="../../lib/obj/lib3DHelp/DebugBaseUnicode" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-g;$(WX3_CXX_BD);-Wall;-fno-strict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
+        <IncludePath Value="$(SYSINCLUDE)/libxml2"/>
+        <IncludePath Value="../libWXHelp"/>
+        <IncludePath Value="../libASE-1.0"/>
+        <IncludePath Value="../libXmlCpp"/>
+        <IncludePath Value="../../xml"/>
+        <IncludePath Value="../libOVLng"/>
+        <Preprocessor Value="USE_SQUISH"/>
+        <Preprocessor Value="CACHE_GXIMAGE"/>
+        <Preprocessor Value="XMLCPP_USE_XSLT"/>
+        <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
+        <Preprocessor Value="XMLCPP_USE_EXSLT"/>
+        <Preprocessor Value="THREEDHELP_BASE"/>
+      </Compiler>
+      <Linker Required="yes" Options=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="DebugUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../lib/$(ProjectName)ud.a" IntermediateDirectory="../../lib/obj/lib3DHelp/DebugUnicode" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-g;$(WX3_CXX_PD);-Wall;-fno-strict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
+        <IncludePath Value="$(SYSINCLUDE)/libxml2"/>
+        <IncludePath Value="../libWXHelp"/>
+        <IncludePath Value="../libASE-1.0"/>
+        <IncludePath Value="../libXmlCpp"/>
+        <IncludePath Value="../../xml"/>
+        <IncludePath Value="../libOVLng"/>
+        <Preprocessor Value="USE_SQUISH"/>
+        <Preprocessor Value="CACHE_GXIMAGE"/>
+        <Preprocessor Value="XMLCPP_USE_XSLT"/>
+        <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
+        <Preprocessor Value="XMLCPP_USE_EXSLT"/>
+      </Compiler>
+      <Linker Required="yes" Options=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../lib/$(ProjectName).a" IntermediateDirectory="../../lib/obj/lib3DHelp/Release" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-O2;$(WX2_CXX_PR);-fno-strict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
+        <IncludePath Value="$(SYSINCLUDE)/libxml2"/>
+        <IncludePath Value="../libWXHelp"/>
+        <IncludePath Value="../libASE-1.0"/>
+        <IncludePath Value="../libXmlCpp"/>
+        <IncludePath Value="../../xml"/>
+        <IncludePath Value="../libOVLng"/>
+        <Preprocessor Value="USE_SQUISH"/>
+        <Preprocessor Value="CACHE_GXIMAGE"/>
+        <Preprocessor Value="XMLCPP_USE_XSLT"/>
+        <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
+        <Preprocessor Value="XMLCPP_USE_EXSLT"/>
+      </Compiler>
+      <Linker Required="yes" Options="-O2"/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="ReleaseBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../lib/$(ProjectName)bu.a" IntermediateDirectory="../../lib/obj/lib3DHelp/ReleaseBaseUnicode" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-O2;$(WX3_CXX_BR);-fno-strict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
+        <IncludePath Value="$(SYSINCLUDE)/libxml2"/>
+        <IncludePath Value="../libWXHelp"/>
+        <IncludePath Value="../libASE-1.0"/>
+        <IncludePath Value="../libXmlCpp"/>
+        <IncludePath Value="../../xml"/>
+        <IncludePath Value="../libOVLng"/>
+        <Preprocessor Value="USE_SQUISH"/>
+        <Preprocessor Value="CACHE_GXIMAGE"/>
+        <Preprocessor Value="XMLCPP_USE_XSLT"/>
+        <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
+        <Preprocessor Value="XMLCPP_USE_EXSLT"/>
+        <Preprocessor Value="THREEDHELP_BASE"/>
+      </Compiler>
+      <Linker Required="yes" Options="-O2"/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="ReleaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../lib/$(ProjectName)u.a" IntermediateDirectory="../../lib/obj/lib3DHelp/ReleaseUnicode" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-O2;$(WX3_CXX_PR);-fno-strict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
+        <IncludePath Value="$(SYSINCLUDE)/libxml2"/>
+        <IncludePath Value="../libWXHelp"/>
+        <IncludePath Value="../libASE-1.0"/>
+        <IncludePath Value="../libXmlCpp"/>
+        <IncludePath Value="../../xml"/>
+        <IncludePath Value="../libOVLng"/>
+        <Preprocessor Value="USE_SQUISH"/>
+        <Preprocessor Value="CACHE_GXIMAGE"/>
+        <Preprocessor Value="XMLCPP_USE_XSLT"/>
+        <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
+        <Preprocessor Value="XMLCPP_USE_EXSLT"/>
+      </Compiler>
+      <Linker Required="yes" Options="-O2"/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+    </Configuration>
+  </Settings>
+  <Dependencies Name="Debug">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libASE"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libXmlCpp"/>
+    <Project Name="libWXHelp"/>
+  </Dependencies>
+  <VirtualDirectory Name="doc">
+    <File Name="changes.tmp"/>
+  </VirtualDirectory>
+</CodeLite_Project>

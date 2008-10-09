@@ -14,8 +14,8 @@
 struct dtl
 {
     int uri;
-    int (*equal)(char *typ,char *val,char *s,int n);
-    int (*allows)(char *typ,char *ps,char *s,int n);
+    int (*equal)(const char *typ,const char *val,const char *s,int n);
+    int (*allows)(const char *typ,const char *ps,const char *s,int n);
 };
 
 #define LEN_DTL DRV_LEN_DTL
@@ -152,16 +152,16 @@ static void accept_m(void)
     if (i_m==len_m) memo=(int(*)[M_SIZE])m_stretch(memo,len_m=2*i_m,i_m,sizeof(int[M_SIZE]));
 }
 
-static int fallback_equal(char *typ,char *val,char *s,int n)
+static int fallback_equal(const char *typ,const char *val,const char *s,int n)
 {
     return 1;
 }
-static int fallback_allows(char *typ,char *ps,char *s,int n)
+static int fallback_allows(const char *typ,const char *ps,const char *s,int n)
 {
     return 1;
 }
 
-static int builtin_equal(char *typ,char *val,char *s,int n)
+static int builtin_equal(const char *typ,const char *val,const char *s,int n)
 {
     int dt=rn_newDatatype(0,typ-rn_string);
     if (dt==rn_dt_string) return s_cmpn(val,s,n)==0;
@@ -170,7 +170,7 @@ static int builtin_equal(char *typ,char *val,char *s,int n)
     return 0;
 }
 
-static int builtin_allows(char *typ,char *ps,char *s,int n)
+static int builtin_allows(const char *typ,const char *ps,const char *s,int n)
 {
     return 1;
 }
@@ -208,7 +208,7 @@ void drv_clear(void)
     windup();
 }
 
-void drv_add_dtl(char *suri,int (*equal)(char *typ,char *val,char *s,int n),int (*allows)(char *typ,char *ps,char *s,int n))
+void drv_add_dtl(const char *suri,int (*equal)(const char *typ,const char *val,const char *s,int n),int (*allows)(const char *typ,const char *ps,const char *s,int n))
 {
     if (n_dtl==len_dtl) dtl=(struct dtl *)m_stretch(dtl,len_dtl=n_dtl*2,n_dtl,sizeof(struct dtl));
     dtl[n_dtl].uri=rn_newString(suri);

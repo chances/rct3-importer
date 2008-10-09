@@ -23,6 +23,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#ifndef THREEDHELP_BASE
+
 #include "wx_pch.h"
 /*
 #include <IL/il.h>
@@ -111,7 +113,7 @@ bool wxTextureValidator::Validate(wxWindow *parent) {
             ok = false;
             errormsg = _("Texture '%s' is not square, ");
             errormsg += wxString::Format(_("it has %dx%d pixels."), img.GetWidth(), img.GetHeight());
-        } else if ((1 << local_log2(img.GetWidth())) != img.GetHeight()) {
+        } else if ((1 << local_log2(img.GetWidth())) != static_cast<int>(img.GetHeight())) {
             ok = false;
             errormsg = _("The width/height of texture '%s' is not a power of 2.");
         } else {
@@ -151,3 +153,5 @@ bool wxTextureValidator::Validate(wxWindow *parent) {
 
     return ok;
 }
+
+#endif

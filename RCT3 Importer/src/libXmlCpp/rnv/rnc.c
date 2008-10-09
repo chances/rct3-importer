@@ -17,7 +17,7 @@
 #include "rnc.h"
 
 #define NKWD 19
-static char *kwdtab[NKWD]=
+static const char *kwdtab[NKWD]=
 {
     "attribute", "datatypes", "default", "div", "element", "empty", "external",
     "grammar", "include", "inherit", "list", "mixed", "namespace", "notAllowed",
@@ -574,7 +574,7 @@ static void realloc_s(struct rnc_cym *symp,int newslen)
     symp->slen=newslen;
 }
 
-static char *sym2str(int sym)
+static const char *sym2str(int sym)
 {
     switch (sym)
     {

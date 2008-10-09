@@ -20,8 +20,8 @@ extern void xsd_default_verror_handler(int erno,va_list ap);
 extern void xsd_init(void);
 extern void xsd_clear(void);
 
-extern int xsd_allows(char *typ,char *ps,char *s,int n);
-extern int xsd_equal(char *typ,char *val,char *s,int n);
+extern int xsd_allows(const char *typ,const char *ps,const char *s,int n);
+extern int xsd_equal(const char *typ,const char *val,const char *s,int n);
 
 extern void xsd_test(void);
 

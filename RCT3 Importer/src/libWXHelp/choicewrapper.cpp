@@ -9,6 +9,8 @@
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
+#ifndef WXHELP_BASE
+
 #include "choicewrapper.h"
 
 #include "wrappereditevent.h"
@@ -207,3 +209,4 @@ void wxChoiceWrapper::Finish()
     }
 }
 
+#endif

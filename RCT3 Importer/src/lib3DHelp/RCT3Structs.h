@@ -303,8 +303,8 @@ public:
     static wxString getSingular() { return wxT("texture"); }
     static wxString getPlural() { return wxT("textures"); }
 
-    static r3::COLOURQUAD* GetRGBPalette();
-    static r3::COLOURQUAD* GetBMYPalette();
+    static const r3::COLOURQUAD* GetRGBPalette();
+    static const r3::COLOURQUAD* GetBMYPalette();
 };
 
 class cModelBone;

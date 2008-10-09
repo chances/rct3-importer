@@ -35,8 +35,8 @@ extern int rx_check(char *rx);
  rmatch replaces white space in s with 0x20,
  cmatch collapses white space.
  */
-extern int rx_match(char *rx,char *s,int n);
-extern int rx_rmatch(char *rx,char *s,int n);
-extern int rx_cmatch(char *rx,char *s,int n);
+extern int rx_match(const char *rx,const char *s,int n);
+extern int rx_rmatch(const char *rx,const char *s,int n);
+extern int rx_cmatch(const char *rx,const char *s,int n);
 
 #endif

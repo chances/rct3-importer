@@ -9,6 +9,10 @@
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
+#ifndef WXHELP_BASE
+
 #include "wrappereditevent.h"
 
 DEFINE_EVENT_TYPE(wxEVT_WRAPPER)
+
+#endif

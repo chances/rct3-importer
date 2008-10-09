@@ -5,4 +5,5 @@ Added	Support for bone weights and meshes assigned to more than one bone
 Added	Option to automatically update from model fires and/or sort bones
 Fixed	Crash on broken modxml
 Fixed	Rare-occurring bug that lead to creation of broken ovls
-Added	Reject Blender default animation and spline names
+Added	Reject Blender default animation, texture and spline names
+Cleaned	Fixed a lot of compiler warnings

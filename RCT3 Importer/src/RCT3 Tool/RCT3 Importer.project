@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Project Name="RCT3 Importer">
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="src">
+    <File Name="wxapp.h"/>
+    <File Name="win_predefine.h"/>
+    <File Name="version_wrap.h"/>
+    <File Name="version_wrap.cpp"/>
+    <File Name="wx_pch.h"/>
+    <File Name="version.h"/>
+    <File Name="Tool.cpp"/>
+    <File Name="starcomboctrl.h"/>
+    <File Name="rct3config.h"/>
+    <File Name="resource.h"/>
+    <File Name="ilhelper.h"/>
+    <File Name="ilhelper.cpp"/>
+    <File Name="global.h"/>
+    <File Name="global.cpp"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="xrc"/>
+  <VirtualDirectory Name="RCT3 Tool"/>
+  <VirtualDirectory Name="resources">
+    <VirtualDirectory Name="xrc">
+      <VirtualDirectory Name="headers">
+        <File Name="xrc_texturesimple.h"/>
+        <File Name="xrc_texture.h"/>
+        <File Name="xrc_stallman.h"/>
+        <File Name="xrc_stall.h"/>
+        <File Name="xrc_scenerysettings.h"/>
+        <File Name="xrc_model.h"/>
+        <File Name="xrc_misc.h"/>
+        <File Name="xrc_mesh.h"/>
+        <File Name="xrc_matrix.h"/>
+        <File Name="xrc_main.h"/>
+        <File Name="xrc_info.h"/>
+        <File Name="xrc_createscenery.h"/>
+        <File Name="xrc_attractman.h"/>
+        <File Name="xrc_attract.h"/>
+        <File Name="xrc_lod.h"/>
+        <File Name="xrc_effectmenu.h"/>
+        <File Name="xrc_effect.h"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="cpp">
+        <File Name="xrc_texturesimple.cpp"/>
+        <File Name="xrc_texture.cpp"/>
+        <File Name="xrc_stallman.cpp"/>
+        <File Name="xrc_stall.cpp"/>
+        <File Name="xrc_scenerysettings.cpp"/>
+        <File Name="xrc_model.cpp"/>
+        <File Name="xrc_misc.cpp"/>
+        <File Name="xrc_mesh.cpp"/>
+        <File Name="xrc_matrix.cpp"/>
+        <File Name="xrc_main.cpp"/>
+        <File Name="xrc_lod.cpp"/>
+        <File Name="xrc_info.cpp"/>
+        <File Name="xrc_effectmenu.cpp"/>
+        <File Name="xrc_effect.cpp"/>
+        <File Name="xrc_createscenery.cpp"/>
+        <File Name="xrc_attractman.cpp"/>
+        <File Name="xrc_attract.cpp"/>
+      </VirtualDirectory>
+      <File Name="xrc\xrc_attract.xrc"/>
+      <File Name="xrc\xrc_attractman.xrc"/>
+      <File Name="xrc\xrc_effect.xrc"/>
+      <File Name="xrc\xrc_effectmenu.xrc"/>
+      <File Name="xrc\xrc_info.xrc"/>
+      <File Name="xrc\xrc_matrix.xrc"/>
+      <File Name="xrc\xrc_model.xrc"/>
+      <File Name="xrc\xrc_scenerysettings.xrc"/>
+      <File Name="xrc\xrc_stall.xrc"/>
+      <File Name="xrc\xrc_stallman.xrc"/>
+      <File Name="xrc\xrc_texture.xrc"/>
+      <File Name="xrc\xrc_texturesimple.xrc"/>
+      <File Name="xrc\xrcres.h"/>
+      <VirtualDirectory Name="bitmaps">
+        <File Name="xrc_bitmap_crystal.cpp"/>
+        <File Name="xrc_bitmap_icons.cpp"/>
+        <File Name="xrc_bitmap_crystal.h"/>
+        <File Name="xrc_bitmap_icons.h"/>
+        <File Name="xrc\icons.xrc"/>
+        <File Name="crystal\crystal.xrc"/>
+      </VirtualDirectory>
+      <VirtualDirectory Name="formbuilder">
+        <File Name="xrc\xrc_texturesimple.fbp"/>
+        <File Name="xrc\xrc_attract.fbp"/>
+        <File Name="xrc\xrc_attractman.fbp"/>
+        <File Name="xrc\xrc_effect.fbp"/>
+        <File Name="xrc\xrc_info.fbp"/>
+        <File Name="xrc\xrc_main.fbp"/>
+        <File Name="xrc\xrc_matrix.fbp"/>
+        <File Name="xrc\xrc_model.fbp"/>
+        <File Name="xrc\xrc_scenerysettings.fbp"/>
+        <File Name="xrc\xrc_stall.fbp"/>
+        <File Name="xrc\xrc_stallman.fbp"/>
+        <File Name="xrc\xrc_texture.fbp"/>
+      </VirtualDirectory>
+    </VirtualDirectory>
+    <File Name="resources.h"/>
+    <File Name="resources.cpp"/>
+    <VirtualDirectory Name="formbuilder">
+      <File Name="xrc\res_animation.h"/>
+      <File Name="xrc\res_createscenery.h"/>
+      <File Name="xrc\res_lod.h"/>
+      <File Name="xrc\res_misc.h"/>
+      <File Name="xrc\res_spline.h"/>
+      <File Name="xrc\res_animation.cpp"/>
+      <File Name="xrc\spline.fbp"/>
+      <File Name="xrc\animation.fbp"/>
+      <File Name="xrc\createscenery.fbp"/>
+      <File Name="xrc\lod.fbp"/>
+      <File Name="xrc\misc.fbp"/>
+      <File Name="xrc\res_spline.cpp"/>
+      <File Name="xrc\res_createscenery.cpp"/>
+      <File Name="xrc\res_lod.cpp"/>
+      <File Name="xrc\res_misc.cpp"/>
+    </VirtualDirectory>
+    <File Name="app.rc"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="dialogs">
+    <File Name="wxdlgAnimation.cpp"/>
+    <File Name="wxdlgAnimation.h"/>
+    <File Name="wxdlgAnimation_HTLB.cpp"/>
+    <File Name="wxdlgAnimation_HTLB.h"/>
+    <File Name="wxdlgAttract.cpp"/>
+    <File Name="wxdlgAttract.h"/>
+    <File Name="wxdlgAttractMan.cpp"/>
+    <File Name="wxdlgAttractMan.h"/>
+    <File Name="wxdlgCreateScenery.cpp"/>
+    <File Name="wxdlgCreateScenery.h"/>
+    <File Name="wxdlgCreateScenery_HTLB.cpp"/>
+    <File Name="wxdlgCreateScenery_HTLB.h"/>
+    <File Name="wxdlgDecimate.cpp"/>
+    <File Name="wxdlgDecimate.h"/>
+    <File Name="wxdlgEffect.cpp"/>
+    <File Name="wxdlgEffect.h"/>
+    <File Name="wxdlgEffectLight.cpp"/>
+    <File Name="wxdlgEffectLight.h"/>
+    <File Name="wxdlgInfo.cpp"/>
+    <File Name="wxdlgInfo.h"/>
+    <File Name="wxdlgLoadFromFile.cpp"/>
+    <File Name="wxdlgLoadFromFile.h"/>
+    <File Name="wxdlgLOD.cpp"/>
+    <File Name="wxdlgLOD.h"/>
+    <File Name="wxdlgLOD_HTLB.cpp"/>
+    <File Name="wxdlgLOD_HTLB.h"/>
+    <File Name="wxdlgMatrix.cpp"/>
+    <File Name="wxdlgMatrix.h"/>
+    <File Name="wxdlgMatrixLoad.cpp"/>
+    <File Name="wxdlgMatrixLoad.h"/>
+    <File Name="wxdlgModel.cpp"/>
+    <File Name="wxdlgModel.h"/>
+    <File Name="wxdlgSave.cpp"/>
+    <File Name="wxdlgSave.h"/>
+    <File Name="wxdlgSpline.cpp"/>
+    <File Name="wxdlgSpline.h"/>
+    <File Name="wxdlgStall.cpp"/>
+    <File Name="wxdlgStall.h"/>
+    <File Name="wxdlgStallMan.cpp"/>
+    <File Name="wxdlgStallMan.h"/>
+    <File Name="wxdlgTexture.cpp"/>
+    <File Name="wxdlgTexture.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="doc">
+    <File Name="COPYING"/>
+    <File Name="rct3imp.txt"/>
+    <File Name="changelog.txt"/>
+    <File Name="changes.tmp"/>
+    <File Name="credits.txt"/>
+  </VirtualDirectory>
+  <Dependencies Name="Release">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libASE"/>
+    <Project Name="libOVL"/>
+    <Project Name="libOVLDump"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libXmlCpp"/>
+    <Project Name="libWXHelp"/>
+    <Project Name="lib3DHelp"/>
+  </Dependencies>
+  <Dependencies Name="Debug">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libASE"/>
+    <Project Name="libOVL"/>
+    <Project Name="libOVLDump"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libXmlCpp"/>
+    <Project Name="libWXHelp"/>
+    <Project Name="lib3DHelp"/>
+  </Dependencies>
+  <Settings Type="Executable">
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
+      <General OutputFile="&quot;../../bin/$(ProjectName)d.exe&quot;" IntermediateDirectory="../../lib/obj/RCT3Importer/Debug" Command="&quot;./$(ProjectName)d.exe&quot;" CommandArguments="" WorkingDirectory="../../bin" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-g;$(WX2_CXX_PD);-Wall;-fno-strict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="../libOVL"/>
+        <IncludePath Value="../libOVLng"/>
+        <IncludePath Value="../libOVLDump"/>
+        <IncludePath Value="../libWXHelp"/>
+        <IncludePath Value="../lib3DHelp"/>
+        <IncludePath Value="../libASE-1.0"/>
+        <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
+        <IncludePath Value="$(SYSINCLUDE)/libxml2"/>
+        <IncludePath Value="../libXmlCpp"/>
+        <IncludePath Value="../../xml"/>
+        <Preprocessor Value="USE_SQUISH"/>
+        <Preprocessor Value="CACHE_GXIMAGE"/>
+        <Preprocessor Value="XMLCPP_USE_XSLT"/>
+        <Preprocessor Value="XMLCPP_USE_EXSLT"/>
+        <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
+      </Compiler>
+      <Linker Required="yes" Options="$(WX2_LIB_PD);-lexpat">
+        <LibraryPath Value="../../lib"/>
+        <LibraryPath Value="../../bin"/>
+        <Library Value="libOVLd"/>
+        <Library Value="3DHelpd"/>
+        <Library Value="WXHelpd"/>
+        <Library Value="libASEd"/>
+        <Library Value="libOVLngd"/>
+        <Library Value="libOVLDumpd"/>
+        <Library Value="XmlCppd"/>
+        <Library Value="GraphicsMagick++"/>
+        <Library Value="GraphicsMagick"/>
+        <Library Value="freetype"/>
+        <Library Value="xml2"/>
+        <Library Value="xslt"/>
+        <Library Value="exslt"/>
+        <Library Value="squish"/>
+      </Linker>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""></Debugger>
+      <ResourceCompiler Required="yes" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild>xrc_bitmap_crystal.cpp xrc_bitmap_icons.cpp res_animation.cpp res_createscenery.cpp res_lod.cpp res_misc.cpp res_spline.cpp xrc_attract.cpp
+%.xrc: %.fbp
+	$(FORMBUILDER) -g $&lt;	
+
+xrc_bitmap_crystal.cpp: crystal/crystal.xrc
+	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmlBitmapCrystal $&lt;
+
+xrc_bitmap_icons.cpp: xrc/icons.xrc
+	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmlBitmapIcons $&lt;
+
+xrc_attract.cpp: xrc/xrc_attract.xrc
+	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmlAttract $&lt;
+
+res_animation.cpp: xrc/animation.fbp
+	$(FORMBUILDER) -g $&lt;
+
+res_createscenery.cpp: xrc/createscenery.fbp
+	$(FORMBUILDER) -g $&lt;
+
+res_lod.cpp: xrc/lod.fbp
+	$(FORMBUILDER) -g $&lt;
+
+res_misc.cpp: xrc/misc.fbp
+	$(FORMBUILDER) -g $&lt;
+
+res_spline.cpp: xrc/spline.fbp
+	$(FORMBUILDER) -g $&lt;
+</CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
+      <General OutputFile="&quot;../../bin/$(ProjectName).exe&quot;" IntermediateDirectory="../../lib/obj/RCT3Importer/Release" Command="&quot;./RCT3 Importer.exe&quot;" CommandArguments="" WorkingDirectory="../../bin" PauseExecWhenProcTerminates="no"/>
+      <Compiler Required="yes" Options="-O2;$(WX2_CXX_PR);-fno-strict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="../libOVL"/>
+        <IncludePath Value="../libOVLng"/>
+        <IncludePath Value="../libOVLDump"/>
+        <IncludePath Value="../libWXHelp"/>
+        <IncludePath Value="../lib3DHelp"/>
+        <IncludePath Value="../libASE-1.0"/>
+        <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
+        <IncludePath Value="$(SYSINCLUDE)/libxml2"/>
+        <IncludePath Value="../libXmlCpp"/>
+        <IncludePath Value="../../xml"/>
+        <Preprocessor Value="USE_SQUISH"/>
+        <Preprocessor Value="CACHE_GXIMAGE"/>
+        <Preprocessor Value="XMLCPP_USE_XSLT"/>
+        <Preprocessor Value="XMLCPP_USE_EXSLT"/>
+        <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
+      </Compiler>
+      <Linker Required="yes" Options="-O2;-s;$(WX2_LIB_PR);-lexpat">
+        <LibraryPath Value="../../lib"/>
+        <LibraryPath Value="../../bin"/>
+        <Library Value="libOVL"/>
+        <Library Value="3DHelp"/>
+        <Library Value="WXHelp"/>
+        <Library Value="libASE"/>
+        <Library Value="libOVLng"/>
+        <Library Value="libOVLDump"/>
+        <Library Value="XmlCpp"/>
+        <Library Value="GraphicsMagick++"/>
+        <Library Value="GraphicsMagick"/>
+        <Library Value="freetype"/>
+        <Library Value="xml2"/>
+        <Library Value="xslt"/>
+        <Library Value="exslt"/>
+        <Library Value="squish"/>
+      </Linker>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""></Debugger>
+      <ResourceCompiler Required="yes" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild>xrc_bitmap_crystal.cpp xrc_bitmap_icons.cpp res_animation.cpp res_createscenery.cpp res_lod.cpp res_misc.cpp res_spline.cpp xrc_attract.cpp
+%.xrc: %.fbp
+	$(FORMBUILDER) -g $&lt;	
+
+xrc_bitmap_crystal.cpp: crystal/crystal.xrc
+	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmlBitmapCrystal $&lt;
+
+xrc_bitmap_icons.cpp: xrc/icons.xrc
+	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmlBitmapIcons $&lt;
+
+xrc_attract.cpp: xrc/xrc_attract.xrc
+	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmlAttract $&lt;
+
+res_animation.cpp: xrc/animation.fbp
+	$(FORMBUILDER) -g $&lt;
+
+res_createscenery.cpp: xrc/createscenery.fbp
+	$(FORMBUILDER) -g $&lt;
+
+res_lod.cpp: xrc/lod.fbp
+	$(FORMBUILDER) -g $&lt;
+
+res_misc.cpp: xrc/misc.fbp
+	$(FORMBUILDER) -g $&lt;
+
+res_spline.cpp: xrc/spline.fbp
+	$(FORMBUILDER) -g $&lt;
+</CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+  </Settings>
+</CodeLite_Project>

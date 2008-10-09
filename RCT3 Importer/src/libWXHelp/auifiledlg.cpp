@@ -9,7 +9,7 @@
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
-#include "wx_pch.h"
+#ifndef WXHELP_BASE
 
 #include <wx/config.h>
 #include <wx/artprov.h>
@@ -59,3 +59,4 @@ wxAUIFileDialog::~wxAUIFileDialog() {
     m_mgr.UnInit();
 }
 
+#endif

@@ -69,10 +69,14 @@ inline r3::VERTEX2 vertex2vertex2(const r3::VERTEX& v, unsigned char bone) {
     r3::VERTEX2 ret;
     ret.position = v.position;
     ret.normal = v.normal;
-    *reinterpret_cast<unsigned long*>(&ret.bone) = 0;
-    *reinterpret_cast<unsigned long*>(&ret.boneweight) = 0;
     ret.bone[0] = bone;
+    ret.bone[1] = 0;
+    ret.bone[2] = 0;
+    ret.bone[3] = 0;
     ret.boneweight[0] = 0xff;
+    ret.boneweight[1] = 0;
+    ret.boneweight[2] = 0;
+    ret.boneweight[3] = 0;
     ret.color = v.color;
     ret.tu = v.tu;
     ret.tv = v.tv;
@@ -83,10 +87,14 @@ inline r3::VERTEX2 vertex2castrate(const r3::VERTEX2& v, unsigned char bone) {
     r3::VERTEX2 ret;
     ret.position = v.position;
     ret.normal = v.normal;
-    *reinterpret_cast<unsigned long*>(&ret.bone) = 0;
-    *reinterpret_cast<unsigned long*>(&ret.boneweight) = 0;
     ret.bone[0] = bone;
+    ret.bone[1] = 0;
+    ret.bone[2] = 0;
+    ret.bone[3] = 0;
     ret.boneweight[0] = 0xff;
+    ret.boneweight[1] = 0;
+    ret.boneweight[2] = 0;
+    ret.boneweight[3] = 0;
     ret.color = v.color;
     ret.tu = v.tu;
     ret.tv = v.tv;
@@ -94,10 +102,14 @@ inline r3::VERTEX2 vertex2castrate(const r3::VERTEX2& v, unsigned char bone) {
 }
 
 inline void vertex2init(r3::VERTEX2& v) {
-    *reinterpret_cast<unsigned long*>(&v.bone) = 0;
-    *reinterpret_cast<unsigned long*>(&v.boneweight) = 0;
     v.bone[0] = -1;
+    v.bone[1] = 0;
+    v.bone[2] = 0;
+    v.bone[3] = 0;
     v.boneweight[0] = 0xff;
+    v.boneweight[1] = 0;
+    v.boneweight[2] = 0;
+    v.boneweight[3] = 0;
     v.color = 0xffffffff;
 }
 

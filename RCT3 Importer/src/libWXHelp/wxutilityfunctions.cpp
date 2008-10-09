@@ -9,9 +9,13 @@
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
+#ifndef WXHELP_BASE
+
 #include "wxutilityfunctions.h"
 
 void wxWindowDestroyer(wxWindow* window) {
     if (window)
         window->Destroy();
 }
+
+#endif

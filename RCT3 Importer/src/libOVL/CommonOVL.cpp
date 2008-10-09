@@ -22,6 +22,7 @@ LIBOVL_API unsigned int LibOVLCheckVersion(unsigned int version) {
         return LIBOVL_VERSION;
 }
 
+/*
 ////////////////////////////////////////////////////////////////////////////////
 //
 //  AddInfo_FileReference
@@ -97,7 +98,7 @@ LIBOVL_API void DeleteInfo_Resources()
 
 	ResourceItems.clear();
 }
-
+*/
 
 ////////////////////////////////////////////////////////////////////////////////
 //

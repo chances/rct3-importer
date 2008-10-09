@@ -8,6 +8,8 @@
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
+#ifndef WXHELP_BASE
+
 #include "fileselectorcombo.h"
 
 #include <wx/filename.h>
@@ -35,3 +37,5 @@ void wxFileSelectorCombo<wxDirDialog>::OnButtonClick() {
         wxMessageBox(_("No file dialog set"), _("Internal Error"), wxOK|wxICON_ERROR, this);
     }
 }
+
+#endif

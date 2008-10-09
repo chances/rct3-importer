@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Project Name="libOVL">
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="include">
+    <File Name="attract.h"/>
+    <File Name="Common.h"/>
+    <File Name="CommonOVL.h"/>
+    <File Name="DisplayText.h"/>
+    <File Name="guiskin.h"/>
+    <File Name="icon.h"/>
+    <File Name="stalls.h"/>
+    <File Name="StyleOVL.h"/>
+    <File Name="textstring.h"/>
+    <File Name="ovl.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="src">
+    <File Name="attract.cpp"/>
+    <File Name="Common.cpp"/>
+    <File Name="CommonOVL.cpp"/>
+    <File Name="guiskin.cpp"/>
+    <File Name="icon.cpp"/>
+    <File Name="stalls.cpp"/>
+    <File Name="StyleOVL.cpp"/>
+    <File Name="textstring.cpp"/>
+    <File Name="ovl.cpp"/>
+  </VirtualDirectory>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
+  <Settings Type="Dynamic Library">
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Dynamic Library">
+      <General OutputFile="../../bin/libOVLd.dll" IntermediateDirectory="../../lib/obj/libOVL/Debug" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-g;-Wall;-fno-strict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <Preprocessor Value="BUILDING_DLL=1"/>
+        <Preprocessor Value="LIBOVL_EXPORTS=1"/>
+      </Compiler>
+      <Linker Required="yes" Options="-W1,--dll;--no-export-all-symbols;--add-stdcall-alias;-Wl,--out-implib=..\..\bin\libOVLd.a"/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""></Debugger>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild>
+
+</CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Dynamic Library">
+      <General OutputFile="../../bin/libOVL.dll" IntermediateDirectory="../../lib/obj/libOVL/Release" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-O2;-fno-strict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <Preprocessor Value="BUILDING_DLL=1"/>
+        <Preprocessor Value="LIBOVL_EXPORTS=1"/>
+      </Compiler>
+      <Linker Required="yes" Options="-O2;-W1,--dll;-s;--no-export-all-symbols;--add-stdcall-alias;-Wl,--out-implib=..\..\bin\libOVL.a"/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""></Debugger>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild></CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+  </Settings>
+</CodeLite_Project>
