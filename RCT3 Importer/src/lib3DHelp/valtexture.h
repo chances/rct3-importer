@@ -26,8 +26,6 @@
 #ifndef WXTEXTUREVALIDATOR_H_INCLUDED
 #define WXTEXTUREVALIDATOR_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include <wx/filename.h>
 
 #include "valext.h"

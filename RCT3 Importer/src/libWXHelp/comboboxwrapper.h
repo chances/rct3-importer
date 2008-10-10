@@ -12,8 +12,7 @@
 #ifndef COMBOBOXWRAPPER_H_INCLUDED
 #define COMBOBOXWRAPPER_H_INCLUDED
 
-#include "wx_pch.h"
-
+#include <wx/combobox.h>
 #include <wx/dataview.h>
 
 class wxComboBoxWrapper : public wxEvtHandler

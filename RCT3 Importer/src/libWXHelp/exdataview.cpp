@@ -13,8 +13,14 @@
 
 #include "exdataview.h"
 
+#ifdef _WIN32
+#include "win_predefine.h"
+#endif
+
 #include <wx/dcbuffer.h>
 #include <wx/renderer.h>
+#include <wx/sizer.h>
+#include <wx/timer.h>
 
 //-----------------------------------------------------------------------------
 // classes

@@ -26,8 +26,6 @@
 #ifndef SCNFILE_H_INCLUDED
 #define SCNFILE_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include <boost/shared_ptr.hpp>
 
 #include "RCT3Structs.h"

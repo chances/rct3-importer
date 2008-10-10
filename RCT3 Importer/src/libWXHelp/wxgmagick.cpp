@@ -9,9 +9,9 @@
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
-#include "wx_pch.h"
-
 #include <wx/gdicmn.h>
+#include <wx/log.h>
+#include <wx/thread.h>
 
 #include <Magick++.h>
 

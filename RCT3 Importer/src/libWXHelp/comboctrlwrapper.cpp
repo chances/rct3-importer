@@ -13,6 +13,8 @@
 
 #include "comboctrlwrapper.h"
 
+#include <wx/msgdlg.h>
+
 BEGIN_EVENT_TABLE(wxComboCtrlWrapper, wxEvtHandler)
     EVT_COMBOBOX       (wxID_ANY, wxComboCtrlWrapper::OnCombo)
     EVT_CHAR           (wxComboCtrlWrapper::OnChar)

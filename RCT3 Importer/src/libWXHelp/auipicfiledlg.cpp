@@ -13,6 +13,8 @@
 
 #include "auipicfiledlg.h"
 
+#include <wx/stattext.h>
+
 #include "wxgmagick.h"
 /*
 BEGIN_EVENT_TABLE(wxPicPanel, wxPanel)

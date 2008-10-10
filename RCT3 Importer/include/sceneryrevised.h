@@ -15,6 +15,11 @@
 #include "sceneryvisual.h"
 #include "vertex.h"
 
+#ifdef _WIN32
+#include "win_predefine.h"
+#include <mmsystem.h>
+#endif
+
 #ifndef _WAVEFORMATEX_
 #ifndef WAVEFORMATEX
 #define _WAVEFORMATEX_

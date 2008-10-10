@@ -31,8 +31,6 @@
 #ifndef WXDLGTEXTURE_H_INCLUDED
 #define WXDLGTEXTURE_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include <wx/xrc/xmlres.h>
 #include <wx/spinbutt.h>
 #include <wx/tglbtn.h>

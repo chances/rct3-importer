@@ -28,6 +28,9 @@
 #ifndef WXDLGINFO_H_INCLUDED
 #define WXDLGINFO_H_INCLUDED
 
+#include <wx/button.h>
+#include <wx/dialog.h>
+#include <wx/textctrl.h>
 #include <wx/xrc/xmlres.h>
 
 class dlgInfo : public wxDialog {

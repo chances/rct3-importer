@@ -12,10 +12,11 @@
 #ifndef VALEXT_H_INCLUDED
 #define VALEXT_H_INCLUDED
 
-#include "wx_pch.h"
-
+#include <wx/choice.h>
 #include <wx/combo.h>
+#include <wx/combobox.h>
 #include <wx/filename.h>
+#include <wx/textctrl.h>
 #include <wx/validate.h>
 
 #include "silence.h"

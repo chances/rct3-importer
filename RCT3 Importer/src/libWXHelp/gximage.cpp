@@ -9,10 +9,9 @@
 // Licence:     wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
-#include "wx_pch.h"
-
 #include "wx/wxprec.h"
 #include "wx/defs.h"
+#include <wx/log.h>
 
 #include <boost/shared_array.hpp>
 #include <memory>

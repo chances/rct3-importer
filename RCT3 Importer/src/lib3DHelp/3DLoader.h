@@ -26,13 +26,9 @@
 #ifndef _3DLOADER_H_INCLUDED
 #define _3DLOADER_H_INCLUDED
 
-#include "wx_pch.h"
-
-#include "3Dstring.h"
-
 #include <boost/shared_ptr.hpp>
 #include <wx/filename.h>
-#include <wx/hashmap.h>
+//#include <wx/hashmap.h>
 
 #include <map>
 #include <set>
@@ -160,7 +156,8 @@ public:
     }
 };
 
-WX_DECLARE_STRING_HASH_MAP(boost::shared_ptr<c3DLoaderCacheEntry>, c3DLoaderCache);
+//WX_DECLARE_STRING_HASH_MAP(boost::shared_ptr<c3DLoaderCacheEntry>, c3DLoaderCache);
+typedef std::map<wxString, boost::shared_ptr<c3DLoaderCacheEntry> > c3DLoaderCache;
 
 class E3DLoader: public std::exception {
 protected:
@@ -219,7 +216,7 @@ protected:
 public:
     c3DLoader(const wxChar *filename): m_flags(0), m_sway(0.0), m_brightness(1.0), m_scale(0.0), m_unk(1.0) {
         m_filename = filename;
-        m_name = STRING3D_EMPTY;
+        m_name = "";
     };
     c3DLoader(c3DLoader* original): m_flags(0), m_sway(0.0), m_brightness(1.0), m_scale(0.0), m_unk(1.0) {
         if (original) {
@@ -232,10 +229,10 @@ public:
 
     virtual ~c3DLoader() {};
 
-    virtual size_t GetObjectCount() {
+    virtual size_t getObjectCount() {
         return m_meshes.size();
     };
-    inline const c3DMesh& GetObject(const wxString& mesh) const {
+    inline const c3DMesh& getObject(const wxString& mesh) const {
         std::map<wxString, c3DMesh>::const_iterator m = m_meshes.find(mesh);
         if (m != m_meshes.end())
             return m->second;
@@ -247,51 +244,51 @@ public:
         return ((m_meshes.size()==0) && (m_warnings.size()==0));
     };
 */
-    virtual const wxArrayString& GetWarnings() const {return m_warnings;};
-    virtual const wxString& GetObjectName(unsigned int index) {
+    virtual const wxArrayString& getWarnings() const {return m_warnings;};
+    virtual const wxString& getObjectName(unsigned int index) {
         if (index>=m_meshes.size())
             throw E3DLoader(wxT("c3DLoader::GetObjectName called with illegal index"));
         return m_meshes[m_meshId[index]].m_name;
     };
-    virtual int GetObjectVertexCount(unsigned int index) {
+    virtual int getObjectVertexCount(unsigned int index) {
         return (index>=m_meshes.size())?0:m_meshes[m_meshId[index]].m_vertices.size();
     };
-    virtual int GetObjectIndexCount(unsigned int index) {
+    virtual int getObjectIndexCount(unsigned int index) {
         return (index>=m_meshes.size())?0:m_meshes[m_meshId[index]].m_indices.size();
     };
-    virtual bool IsObjectValid(unsigned int index) {
+    virtual bool isObjectValid(unsigned int index) {
         return (index>=m_meshes.size())?false:m_meshes[m_meshId[index]].m_flag;
     };
-    virtual r3::VERTEX GetObjectVertex(unsigned int mesh, unsigned int vertex);
-    virtual r3::VERTEX2 GetObjectVertex2(unsigned int mesh, unsigned int vertex);
-    virtual inline const std::set<wxString>& GetObjectBones(unsigned int mesh) const { return GetObjectBones(m_meshId[mesh]); }
-    virtual const std::set<wxString>& GetObjectBones(const wxString& mesh) const;
-    virtual int GetBoneCount() const {
+    virtual r3::VERTEX getObjectVertex(unsigned int mesh, unsigned int vertex);
+    virtual r3::VERTEX2 getObjectVertex2(unsigned int mesh, unsigned int vertex);
+    virtual inline const std::set<wxString>& getObjectBones(unsigned int mesh) const { return getObjectBones(m_meshId[mesh]); }
+    virtual const std::set<wxString>& getObjectBones(const wxString& mesh) const;
+    virtual int getBoneCount() const {
         return m_bones.size();
     };
-    virtual inline c3DBone& GetBone(unsigned int bone) {
+    virtual inline c3DBone& getBone(unsigned int bone) {
         if (bone >= m_boneId.size())
             throw E3DLoader(_("Bone index out of bounds"));
         return m_bones[m_boneId[bone]];
     }
-    virtual inline c3DBone& GetBone(const wxString& bone) {
+    virtual inline c3DBone& getBone(const wxString& bone) {
         if (!pretty::has(m_bones, bone))
             throw E3DLoader(wxString::Format(_("Unknown bone '%s'."), bone.c_str()));
         return m_bones[bone];
     }
-    virtual inline const std::map<wxString, c3DBone>& GetBones() const {
+    virtual inline const std::map<wxString, c3DBone>& getBones() const {
         return m_bones;
     }
-    virtual inline const std::map<wxString, c3DSpline>& GetSplines() const {
+    virtual inline const std::map<wxString, c3DSpline>& getSplines() const {
         return m_splines;
     }
-    virtual inline const std::map<wxString, c3DAnimation>& GetAnimations() const {
+    virtual inline const std::map<wxString, c3DAnimation>& getAnimations() const {
         return m_animations;
     }
-    virtual inline const std::map<wxString, c3DGroup>& GetGroups() const {
+    virtual inline const std::map<wxString, c3DGroup>& getGroups() const {
         return m_groups;
     }
-    virtual inline const std::map<wxString, c3DTexture>& GetTextures() const {
+    virtual inline const std::map<wxString, c3DTexture>& getTextures() const {
         return m_textures;
     }
 
@@ -299,16 +296,16 @@ public:
 
     //virtual bool FetchObject(unsigned int index, unsigned long *vertexcount, r3::VERTEX **vertices, unsigned long *index_count, unsigned long **indices, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
     //virtual bool FetchAsAnimObject(unsigned int index, char bone, unsigned long *vertexcount, r3::VERTEX2 **vertices, unsigned long *index_count, unsigned short **indices, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
-    virtual bool FetchObject(unsigned int index, cStaticShape2* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
-    virtual bool FetchObject(unsigned int index, char bone, cBoneShape2* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
-    virtual bool FetchObject(unsigned int index, cBoneShape2* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
-    virtual bool FetchObject(unsigned int index, std::vector<wxString>& bonenames, cBoneShape2* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
+    virtual bool fetchObject(unsigned int index, cStaticShape2* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
+    virtual bool fetchObject(unsigned int index, char bone, cBoneShape2* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
+    virtual bool fetchObject(unsigned int index, cBoneShape2* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
+    virtual bool fetchObject(unsigned int index, std::vector<wxString>& bonenames, cBoneShape2* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
 
-    virtual int GetType() {return C3DLOADER_GENERIC;};
+    virtual int getType() {return C3DLOADER_GENERIC;};
     inline const wxString& getName() {return m_name;};
     inline const wxString& getFilename() {return m_filename;};
     inline const wxString& getPrefix() {return m_prefix;};
-    virtual c3DLoaderOrientation GetOrientation() {return ORIENTATION_UNKNOWN;};
+    virtual c3DLoaderOrientation getOrientation() {return ORIENTATION_UNKNOWN;};
 
     static void FlattenNormals(const unsigned long vertexcount, r3::VERTEX *vertices, const r3::VECTOR& bbox_min, const r3::VECTOR& bbox_max);
     static void FlattenNormals(const unsigned long vertexcount, r3::VERTEX2 *vertices, const r3::VECTOR& bbox_min, const r3::VECTOR& bbox_max);

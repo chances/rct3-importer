@@ -12,13 +12,20 @@
 
 #include "logext.h"
 
+#include <wx/app.h>
+#include <wx/artprov.h>
+#include <wx/button.h>
+#include <wx/dialog.h>
 #include <wx/listctrl.h>
 #include <wx/imaglist.h>
 #include <wx/image.h>
 #include <wx/file.h>
-#include <wx/textfile.h>
+#include <wx/filedlg.h>
+#include <wx/msgdlg.h>
+#include <wx/sizer.h>
+#include <wx/statbmp.h>
 #include <wx/statline.h>
-#include <wx/artprov.h>
+#include <wx/textfile.h>
 
 // the suffix we add to the button to show that the dialog can be expanded
 #define EXPAND_SUFFIX _T(" >>")

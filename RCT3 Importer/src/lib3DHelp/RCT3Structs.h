@@ -26,8 +26,6 @@
 #ifndef RCT3STRUCTS_H_INCLUDED
 #define RCT3STRUCTS_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include <wx/filename.h>
 #include <string>
 #include <vector>
@@ -46,7 +44,8 @@ enum {
     RCT3_TEXTURE_SCALE_UP = 2
 };
 
-WX_DECLARE_STRING_HASH_MAP(int, cIntMap);
+//WX_DECLARE_STRING_HASH_MAP(int, cIntMap);
+typedef std::map<wxString, int> cIntMap;
 
 
 #define RCT3XML_MATRIX "matrix"
@@ -179,7 +178,8 @@ public:
 private:
     void Init();
 };
-WX_DECLARE_STRING_HASH_MAP(cMeshStruct *, cMeshStructMap);
+//WX_DECLARE_STRING_HASH_MAP(cMeshStruct *, cMeshStructMap);
+typedef std::map<wxString, cMeshStruct*> cMeshStructMap;
 
 class cTextureStyle {
 private:
@@ -328,7 +328,8 @@ public:
 
 class cAnimatedModel;
 class cModel;
-WX_DECLARE_STRING_HASH_MAP(cModel *, cModelMap);
+//WX_DECLARE_STRING_HASH_MAP(cModel *, cModelMap);
+typedef std::map<wxString, cModel*> cModelMap;
 #define RCT3XML_CMODEL "model"
 class cModel: public cRCT3Xml {
 DEF_RCT3_VECIT(cModel)
@@ -432,7 +433,8 @@ public:
 // typedef std::vector<cModelBone>::iterator cModelBoneIterator; // Advance above
 
 class cAnimatedModel;
-WX_DECLARE_STRING_HASH_MAP(cAnimatedModel *, cAnimatedModelMap);
+//WX_DECLARE_STRING_HASH_MAP(cAnimatedModel *, cAnimatedModelMap);
+typedef std::map<wxString, cAnimatedModel*> cAnimatedModelMap;
 #define RCT3XML_CANIMATEDMODEL "animatedmodel"
 class cAnimatedModel: public cModel {
 DEF_RCT3_VECIT(cAnimatedModel)

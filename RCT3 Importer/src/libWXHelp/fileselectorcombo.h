@@ -11,9 +11,9 @@
 #ifndef FILESELECTORCOMBO_H_INCLUDED
 #define FILESELECTORCOMBO_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include <wx/combo.h>
+#include <wx/dcmemory.h>
+#include <wx/dirdlg.h>
 #include <wx/filename.h>
 
 template <class T>

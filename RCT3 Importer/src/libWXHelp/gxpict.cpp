@@ -12,7 +12,9 @@
 
 #ifndef WXHELP_BASE
 
+#include <wx/dcclient.h>
 #include <wx/filesys.h>
+#include <wx/log.h>
 #include <wx/mstream.h>
 
 #include "gxpict.h"

@@ -14,7 +14,8 @@
 #include "vertex.h"
 
 #define WIN32_MEAN_AND_LEAN
-#include <windows.h>
+#include "win_predefine.h"
+//#include <windows.h> //predefine already includes that
 //#include <d3d9types.h>
 #include <stdio.h>
 #pragma warning (disable:4702 4701)

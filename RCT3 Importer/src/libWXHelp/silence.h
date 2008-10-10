@@ -12,8 +12,6 @@
 #ifndef SILENCE_H_INCLUDED
 #define SILENCE_H_INCLUDED
 
-#include "wx_pch.h"
-
 class wxSilent/*: public wxObject*/ {
 //DECLARE_CLASS(wxSilent)
 public:

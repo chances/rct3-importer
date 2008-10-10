@@ -20,8 +20,6 @@
  #include <sys/stat.h>
  #include <zlib.h>
 
- #include <ddk/ntddscsi.h>
-
  #if (__WINDOWS__ || __WIN32__ || __GNUWIN32__)
  #include <sys/utime.h>
  #else
@@ -165,9 +163,6 @@
  int main(int argc, char **argv)
  {
     const char* set_usename = NULL;
-
-    fprintf(stderr, "%08x\n", IOCTL_SCSI_PASS_THROUGH);
-    fprintf(stderr, "%08x\n", IOCTL_SCSI_PASS_THROUGH_DIRECT);
 
  	while (argc > 3) {
  		if (!strcmp(argv[1], "-c")) {

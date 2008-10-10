@@ -12,8 +12,6 @@
 #ifndef FSFILENAME_H_INCLUDED
 #define FSFILENAME_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include <wx/filename.h>
 #include <vector>
 

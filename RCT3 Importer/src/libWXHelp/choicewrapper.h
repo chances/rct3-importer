@@ -12,8 +12,7 @@
 #ifndef CHOICEWRAPPER_H_INCLUDED
 #define CHOICEWRAPPER_H_INCLUDED
 
-#include "wx_pch.h"
-
+#include <wx/choice.h>
 #include <wx/dataview.h>
 
 class wxChoiceWrapper : public wxEvtHandler

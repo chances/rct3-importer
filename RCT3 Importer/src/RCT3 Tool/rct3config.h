@@ -29,7 +29,6 @@
 #define CONFIG_H_INCLUDED
 
 #include "win_predefine.h"
-#include "wx_pch.h"
 
 #include "3DLoaderTypes.h"
 

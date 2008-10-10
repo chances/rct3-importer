@@ -34,9 +34,9 @@
 #define GLOBAL_H_INCLUDED
 
 #include "win_predefine.h"
-#include "wx_pch.h"
 
 #include <list>
+#include <wx/string.h>
 
 #include "rct3config.h"
 

@@ -31,8 +31,6 @@
 #ifndef WXDLGATTRACTMAN_H_INCLUDED
 #define WXDLGATTRACTMAN_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include <wx/xrc/xmlres.h>
 
 #include "RCT3Structs.h"

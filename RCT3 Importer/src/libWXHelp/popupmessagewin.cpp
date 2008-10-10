@@ -12,6 +12,9 @@
 #ifndef WXHELP_BASE
 
 #include "popupmessagewin.h"
+#include <wx/button.h>
+#include <wx/sizer.h>
+#include <wx/stattext.h>
 
 BEGIN_EVENT_TABLE(wxPopupTransientMessageWindow, wxPopupTransientWindow)
     EVT_BUTTON(wxID_OK, wxPopupTransientMessageWindow::OnOk)

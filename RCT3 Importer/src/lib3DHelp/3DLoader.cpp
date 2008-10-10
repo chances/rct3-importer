@@ -24,6 +24,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "3DLoader.h"
+
+#include <wx/log.h>
+
 #include "matrix.h"
 
 #include "ManagerBSH.h"
@@ -150,7 +153,7 @@ const wxString& E3DLoader::wxwhat() const throw() {
 
 c3DLoaderCache c3DLoader::g_cache;
 
-VERTEX c3DLoader::GetObjectVertex(unsigned int mesh, unsigned int vertex) {
+VERTEX c3DLoader::getObjectVertex(unsigned int mesh, unsigned int vertex) {
     VERTEX res;
     memset(&res, 0, sizeof(res));
     if (mesh<m_meshes.size()) {
@@ -162,7 +165,7 @@ VERTEX c3DLoader::GetObjectVertex(unsigned int mesh, unsigned int vertex) {
     return res;
 };
 
-VERTEX2 c3DLoader::GetObjectVertex2(unsigned int mesh, unsigned int vertex) {
+VERTEX2 c3DLoader::getObjectVertex2(unsigned int mesh, unsigned int vertex) {
     VERTEX2 res;
     memset(&res, 0, sizeof(res));
     vertex2init(res);
@@ -175,7 +178,7 @@ VERTEX2 c3DLoader::GetObjectVertex2(unsigned int mesh, unsigned int vertex) {
     return res;
 };
 
-const set<wxString>& c3DLoader::GetObjectBones(const wxString& mesh) const {
+const set<wxString>& c3DLoader::getObjectBones(const wxString& mesh) const {
     map<wxString, c3DMesh>::const_iterator it = m_meshes.find(mesh);
     if (it == m_meshes.end())
         throw E3DLoader(wxString::Format(_("Unknown mesh '%s' used (c3DLoader::GetObjectBones)."), mesh.c_str()));
@@ -214,7 +217,7 @@ bool c3DLoader::FetchObject(unsigned int index, unsigned long *vertexcount, VERT
     return true;
 }
 */
-bool c3DLoader::FetchObject(unsigned int index, cStaticShape2* sh, VECTOR *bbox_min, VECTOR *bbox_max, const MATRIX *transform, VECTOR *fudge_normal) {
+bool c3DLoader::fetchObject(unsigned int index, cStaticShape2* sh, VECTOR *bbox_min, VECTOR *bbox_max, const MATRIX *transform, VECTOR *fudge_normal) {
     int i;
     if (m_meshes.size() <= 0)
         return false;
@@ -277,7 +280,7 @@ bool c3DLoader::FetchAsAnimObject(unsigned int index, char bone, unsigned long *
     return true;
 }
 */
-bool c3DLoader::FetchObject(unsigned int index, char bone, cBoneShape2* sh, VECTOR *bbox_min, VECTOR *bbox_max, const MATRIX *transform, VECTOR *fudge_normal) {
+bool c3DLoader::fetchObject(unsigned int index, char bone, cBoneShape2* sh, VECTOR *bbox_min, VECTOR *bbox_max, const MATRIX *transform, VECTOR *fudge_normal) {
     int i;
     if (m_meshes.size() <= 0)
         return false;
@@ -309,7 +312,7 @@ bool c3DLoader::FetchObject(unsigned int index, char bone, cBoneShape2* sh, VECT
     return true;
 }
 
-bool c3DLoader::FetchObject(unsigned int index, cBoneShape2* sh, VECTOR *bbox_min, VECTOR *bbox_max, const MATRIX *transform, VECTOR *fudge_normal) {
+bool c3DLoader::fetchObject(unsigned int index, cBoneShape2* sh, VECTOR *bbox_min, VECTOR *bbox_max, const MATRIX *transform, VECTOR *fudge_normal) {
     int i;
     if (m_meshes.size() <= 0)
         return false;
@@ -345,7 +348,7 @@ bool c3DLoader::FetchObject(unsigned int index, cBoneShape2* sh, VECTOR *bbox_mi
   *
   * @todo: document this function
   */
-bool c3DLoader::FetchObject(unsigned int index, vector<wxString>& bonenames, cBoneShape2* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal) {
+bool c3DLoader::fetchObject(unsigned int index, vector<wxString>& bonenames, cBoneShape2* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal) {
     int i;
     if (m_meshes.size() <= 0)
         return false;

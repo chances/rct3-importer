@@ -31,7 +31,6 @@
 */
 
 #include "win_predefine.h"
-#include "wx_pch.h"
 
 #pragma warning (disable: 4100)
 #include "StyleOVL.h"

@@ -31,8 +31,6 @@
 #ifndef WXDLGEFFECTLIGHT_H_INCLUDED
 #define WXDLGEFFECTLIGHT_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include <wx/xrc/xmlres.h>
 
 #include <wx/clrpicker.h>

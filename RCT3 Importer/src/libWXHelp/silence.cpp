@@ -12,6 +12,7 @@
 #ifndef WXHELP_BASE
 
 #include "silence.h"
+#include <wx/defs.h>
 
 //IMPLEMENT_CLASS(wxSilent,wxObject)
 

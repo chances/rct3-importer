@@ -29,9 +29,6 @@
 #ifndef MANAGERSND_H_INCLUDED
 #define MANAGERSND_H_INCLUDED
 
-//#define WIN32_MEAN_AND_LEAN
-//#include <windows.h>
-
 #include <string>
 #include <vector>
 #include <boost/shared_array.hpp>

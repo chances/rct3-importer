@@ -29,7 +29,6 @@
 #define ILHELPER_H_INCLUDED
 
 #include "win_predefine.h"
-#include "wx_pch.h"
 
 void showBitmapInfo(wxWindow *parent, const char *filename);
 

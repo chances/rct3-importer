@@ -26,8 +26,6 @@
 #ifndef TEXCHECK_H_INCLUDED
 #define TEXCHECK_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include "RCT3Exception.h"
 #include "gximage.h"
 

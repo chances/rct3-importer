@@ -13,8 +13,6 @@
 #ifndef GXPICT_H_INCLUDED
 #define GXPICT_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include "wx/control.h"
 
 #include "wx/icon.h"

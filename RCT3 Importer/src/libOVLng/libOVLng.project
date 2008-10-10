@@ -192,5 +192,6 @@
     <File Name="..\..\include\tracksection.h"/>
     <File Name="..\..\include\vertex.h"/>
     <File Name="..\..\include\wildanimalitem.h"/>
+    <File Name="..\..\include\win_predefine.h"/>
   </VirtualDirectory>
 </CodeLite_Project>

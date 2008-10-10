@@ -12,8 +12,6 @@
 #ifndef _AUIFILEDLG_H_
 #define _AUIFILEDLG_H_
 
-#include "wx_pch.h"
-
 #include "filedlgg.h"
 #include <wx/aui/aui.h>
 

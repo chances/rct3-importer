@@ -11,8 +11,6 @@
 #ifndef LOGEXT_H_INCLUDED
 #define LOGEXT_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include <wx/log.h>
 
 class wxLogGuiExt : public wxLogGui

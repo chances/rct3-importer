@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Workspace Name="RCT3 Importer" Database=".\RCT3 Importer.tags">
+  <Project Name="bin2c" Path="Utilities\bin2c\bin2c.project" Active="No"/>
+  <Project Name="Precompile RNG" Path="RCT3 Importer\xml\rng\Precompile RNG.project" Active="No"/>
+  <Project Name="Precompile XSL" Path="RCT3 Importer\xml\xsl\Precompile XSL.project" Active="No"/>
+  <Project Name="libXmlCpp" Path="RCT3 Importer\src\libXmlCpp\libXmlCpp.project" Active="No"/>
+  <Project Name="libOVLng" Path="RCT3 Importer\src\libOVLng\libOVLng.project" Active="No"/>
+  <Project Name="libASE" Path="RCT3 Importer\src\libASE-1.0\libASE.project" Active="No"/>
+  <Project Name="libWXHelp" Path="RCT3 Importer\src\libWXHelp\libWXHelp.project" Active="No"/>
+  <Project Name="lib3DHelp" Path="RCT3 Importer\src\lib3DHelp\lib3DHelp.project" Active="No"/>
+  <Project Name="libOVL" Path="RCT3 Importer\src\libOVL\libOVL.project" Active="No"/>
+  <Project Name="RCT3 Importer" Path="RCT3 Importer\src\RCT3 Tool\RCT3 Importer.project" Active="Yes"/>
+  <Project Name="libOVLDump" Path="RCT3 Importer\src\libOVLDump\libOVLDump.project" Active="No"/>
+  <BuildMatrix>
+    <WorkspaceConfiguration Name="Debug" Selected="no">
+      <Project Name="bin2c" ConfigName="Debug"/>
+      <Project Name="Precompile XSL" ConfigName="Precompile"/>
+      <Project Name="Precompile RNG" ConfigName="Precompile"/>
+      <Project Name="libXmlCpp" ConfigName="Debug"/>
+      <Project Name="libOVLng" ConfigName="Debug"/>
+      <Project Name="libASE" ConfigName="Debug"/>
+      <Project Name="libWXHelp" ConfigName="Debug"/>
+      <Project Name="lib3DHelp" ConfigName="Debug"/>
+      <Project Name="libOVL" ConfigName="Debug"/>
+      <Project Name="RCT3 Importer" ConfigName="Debug"/>
+      <Project Name="libOVLDump" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="Release" Selected="yes">
+      <Project Name="libXmlCpp" ConfigName="Release"/>
+      <Project Name="libWXHelp" ConfigName="Release"/>
+      <Project Name="libOVLng" ConfigName="Release"/>
+      <Project Name="libOVLDump" ConfigName="Release"/>
+      <Project Name="libOVL" ConfigName="Release"/>
+      <Project Name="libASE" ConfigName="Release"/>
+      <Project Name="lib3DHelp" ConfigName="Release"/>
+      <Project Name="bin2c" ConfigName="Release"/>
+      <Project Name="RCT3 Importer" ConfigName="Release"/>
+      <Project Name="Precompile XSL" ConfigName="Precompile"/>
+      <Project Name="Precompile RNG" ConfigName="Precompile"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="DebugUnicode" Selected="no">
+      <Project Name="libXmlCpp" ConfigName="DebugBaseUnicode"/>
+      <Project Name="libWXHelp" ConfigName="DebugUnicode"/>
+      <Project Name="libOVLng" ConfigName="DebugBaseUnicode"/>
+      <Project Name="libASE" ConfigName="Debug"/>
+      <Project Name="bin2c" ConfigName="Debug"/>
+      <Project Name="Precompile XSL" ConfigName="Precompile"/>
+      <Project Name="Precompile RNG" ConfigName="Precompile"/>
+      <Project Name="lib3DHelp" ConfigName="DebugUnicode"/>
+      <Project Name="libOVL" ConfigName="Debug"/>
+      <Project Name="RCT3 Importer" ConfigName="Debug"/>
+      <Project Name="libOVLDump" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="ReleaseUnicode" Selected="yes">
+      <Project Name="libXmlCpp" ConfigName="ReleaseBaseUnicode"/>
+      <Project Name="libWXHelp" ConfigName="ReleaseUnicode"/>
+      <Project Name="libOVLng" ConfigName="Release"/>
+      <Project Name="libASE" ConfigName="Release"/>
+      <Project Name="lib3DHelp" ConfigName="ReleaseUnicode"/>
+      <Project Name="bin2c" ConfigName="Release"/>
+      <Project Name="Precompile XSL" ConfigName="Precompile"/>
+      <Project Name="Precompile RNG" ConfigName="Precompile"/>
+      <Project Name="libOVL" ConfigName="Debug"/>
+      <Project Name="RCT3 Importer" ConfigName="Debug"/>
+      <Project Name="libOVLDump" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="DebugBaseUnicode" Selected="yes">
+      <Project Name="libXmlCpp" ConfigName="DebugBaseUnicode"/>
+      <Project Name="libWXHelp" ConfigName="DebugBaseUnicode"/>
+      <Project Name="libOVLng" ConfigName="DebugBaseUnicode"/>
+      <Project Name="libASE" ConfigName="Debug"/>
+      <Project Name="lib3DHelp" ConfigName="DebugBaseUnicode"/>
+      <Project Name="bin2c" ConfigName="Debug"/>
+      <Project Name="Precompile XSL" ConfigName="Precompile"/>
+      <Project Name="Precompile RNG" ConfigName="Precompile"/>
+      <Project Name="libOVL" ConfigName="Debug"/>
+      <Project Name="RCT3 Importer" ConfigName="Debug"/>
+      <Project Name="libOVLDump" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+    <WorkspaceConfiguration Name="ReleaseBaseUnicode" Selected="yes">
+      <Project Name="libXmlCpp" ConfigName="ReleaseBaseUnicode"/>
+      <Project Name="libWXHelp" ConfigName="ReleaseBaseUnicode"/>
+      <Project Name="libOVLng" ConfigName="Release"/>
+      <Project Name="libASE" ConfigName="Release"/>
+      <Project Name="lib3DHelp" ConfigName="ReleaseBaseUnicode"/>
+      <Project Name="bin2c" ConfigName="Release"/>
+      <Project Name="Precompile XSL" ConfigName="Precompile"/>
+      <Project Name="Precompile RNG" ConfigName="Precompile"/>
+      <Project Name="libOVL" ConfigName="Debug"/>
+      <Project Name="RCT3 Importer" ConfigName="Debug"/>
+      <Project Name="libOVLDump" ConfigName="Debug"/>
+    </WorkspaceConfiguration>
+  </BuildMatrix>
+</CodeLite_Workspace>

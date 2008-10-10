@@ -28,6 +28,8 @@
 
 #include "XML3DLoader.h"
 
+#include <wx/log.h>
+
 #include <map>
 
 #include "confhelp.h"

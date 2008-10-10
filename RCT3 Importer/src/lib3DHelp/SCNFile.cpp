@@ -32,6 +32,8 @@
 #include <sstream>
 #include <stdio.h>
 
+#include <wx/log.h>
+
 #include "confhelp.h"
 #include "gximage.h"
 #include "lib3Dconfig.h"
@@ -1162,7 +1164,7 @@ bool cSCNFile::FromCompilerXml(cXmlNode& node, const wxString& path) {
 }
 
 void insertBoneParent(boost::shared_ptr<c3DLoader>& model, const wxString& bone, set<wxString>& usedbones) {
-    c3DBone& b = model->GetBone(bone);
+    c3DBone& b = model->getBone(bone);
     if (!b.m_parent.IsEmpty()) {
         usedbones.insert(b.m_parent);
         insertBoneParent(model, b.m_parent, usedbones);
@@ -1174,7 +1176,7 @@ void insertBoneParent(boost::shared_ptr<c3DLoader>& model, const wxString& bone,
   * @todo: document this function
   */
 bool cSCNFile::FromModelFile(boost::shared_ptr<c3DLoader>& model) {
-    c3DLoaderOrientation ori = model->GetOrientation();
+    c3DLoaderOrientation ori = model->getOrientation();
     imported = true;
     {
         wxFileName t(model->getFilename());
@@ -1186,7 +1188,7 @@ bool cSCNFile::FromModelFile(boost::shared_ptr<c3DLoader>& model) {
     sivsettings = cSIVSettings(model.get());
 
     // Textures
-    foreach(const c3DTexture::pair& tex, model->GetTextures()) {
+    foreach(const c3DTexture::pair& tex, model->getTextures()) {
         if (tex.second.m_referenced) {
             if (tex.second.m_file == "-")
                 continue;
@@ -1236,11 +1238,11 @@ bool cSCNFile::FromModelFile(boost::shared_ptr<c3DLoader>& model) {
     }
 
     // Splines
-    foreach(const c3DSpline::pair& spl, model->GetSplines())
+    foreach(const c3DSpline::pair& spl, model->getSplines())
         splines.push_back(cImpSpline(spl.second, ori));
 
     // Animations
-    foreach(const c3DAnimation::pair& ani, model->GetAnimations()) {
+    foreach(const c3DAnimation::pair& ani, model->getAnimations()) {
         cAnimation cani;
         cani.name = ani.first;
         cani.usedorientation = ori;
@@ -1258,12 +1260,12 @@ bool cSCNFile::FromModelFile(boost::shared_ptr<c3DLoader>& model) {
     }
 
     // Groups
-    foreach(const c3DGroup::pair& gr, model->GetGroups()) {
+    foreach(const c3DGroup::pair& gr, model->getGroups()) {
         // Find out wheter it is animated or not
         bool animated = gr.second.m_forceanim;
         if (!animated) {
             foreach(const wxString& bn, gr.second.m_bones) {
-                if ((model->GetBone(bn).m_type == "Bone") || (!model->GetBone(bn).m_parent.IsEmpty())) {
+                if ((model->getBone(bn).m_type == "Bone") || (!model->getBone(bn).m_parent.IsEmpty())) {
                     animated = true;
                     break;
                 }
@@ -1275,7 +1277,7 @@ bool cSCNFile::FromModelFile(boost::shared_ptr<c3DLoader>& model) {
 
         // Mesh bones
         foreach(const wxString& me, gr.second.m_meshes) {
-            foreach(const wxString& bn, model->GetObjectBones(me)) {
+            foreach(const wxString& bn, model->getObjectBones(me)) {
                 usedbones.insert(bn);
             }
         }
@@ -1309,7 +1311,7 @@ bool cSCNFile::FromModelFile(boost::shared_ptr<c3DLoader>& model) {
         // Activate and deactivate appropriate meshes, textures and options
         foreach(cMeshStruct& ms, accmod.meshstructs) {
             ms.disabled = (!ms.valid) || (gr.second.m_meshes.find(ms.Name) == gr.second.m_meshes.end());
-            const c3DMesh& m = model->GetObject(ms.Name);
+            const c3DMesh& m = model->getObject(ms.Name);
             if (!m.m_texture.IsEmpty())
                 ms.FTX = m.m_texture;
             if (!m.m_meshOptions.IsEmpty())
@@ -1984,7 +1986,7 @@ void cSCNFile::MakeToOvlMain(cOvl& c_ovl) {
 
                     foreach(int mesh, meshvec) {
                         wxLogVerbose(_("    Appending group: ") + i_mod->meshstructs[mesh].Name);
-                        object->FetchObject(mesh, &c_ss2, &temp_min, &temp_max,
+                        object->fetchObject(mesh, &c_ss2, &temp_min, &temp_max,
                                             const_cast<MATRIX *> ((do_transform)?(&transformMatrix):NULL),
                                             c_pfudge_normal);
                         boundsContain(&temp_min, &temp_max, &c_mod.bbox1, &c_mod.bbox2);
@@ -2186,11 +2188,11 @@ void cSCNFile::MakeToOvlMain(cOvl& c_ovl) {
                     foreach(int mesh, meshvec) {
                         wxLogVerbose(_("    Appending group: ") + i_mod->meshstructs[mesh].Name);
                         if (i_mod->meshstructs[mesh].multibone) {
-                            object->FetchObject(mesh, bonenames, &c_bs2, &temp_min, &temp_max,
+                            object->fetchObject(mesh, bonenames, &c_bs2, &temp_min, &temp_max,
                                                       const_cast<MATRIX *> ((do_transform)?(&transformMatrix):NULL),
                                                       c_pfudge_normal);
                         } else {
-                            object->FetchObject(mesh, i_mod->meshstructs[mesh].bone, &c_bs2, &temp_min, &temp_max,
+                            object->fetchObject(mesh, i_mod->meshstructs[mesh].bone, &c_bs2, &temp_min, &temp_max,
                                                       const_cast<MATRIX *> ((do_transform)?(&transformMatrix):NULL),
                                                       c_pfudge_normal);
                         }

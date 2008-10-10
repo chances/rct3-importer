@@ -28,8 +28,6 @@
 #ifndef WXAPP_H_INCLUDED
 #define WXAPP_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include <wx/app.h>
 #include <wx/filename.h>
 

@@ -12,8 +12,6 @@
 #ifndef POPUPMESSAGEWIN_H_INCLUDED
 #define POPUPMESSAGEWIN_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include <wx/popupwin.h>
 
 class wxPopupTransientMessageWindow : public wxPopupTransientWindow {

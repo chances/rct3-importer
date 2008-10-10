@@ -12,8 +12,6 @@
 #ifndef COMBOCTRLWRAPPER_H_INCLUDED
 #define COMBOCTRLWRAPPER_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include <wx/combo.h>
 #include <wx/dataview.h>
 

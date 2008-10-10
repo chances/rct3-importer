@@ -12,8 +12,6 @@
 #ifndef AUIPICFILEDLGG_H_INCLUDED
 #define AUIPICFILEDLGG_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include "auifiledlg.h"
 #include "gxpict.h"
 /*

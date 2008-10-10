@@ -37,8 +37,8 @@ private:
     void parseAnimation(c3DAnimation& a, xmlcpp::cXmlNode n, float _max);
 public:
     cXML3DLoader(const wxChar *filename);
-    virtual int GetType() {return C3DLOADER_XML;};
-    virtual c3DLoaderOrientation GetOrientation() {return m_ori;};
+    virtual int getType() {return C3DLOADER_XML;};
+    virtual c3DLoaderOrientation getOrientation() {return m_ori;};
 };
 
 #endif // ASE3DLOADER_H_INCLUDED

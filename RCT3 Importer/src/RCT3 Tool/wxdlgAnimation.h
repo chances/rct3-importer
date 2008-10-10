@@ -31,12 +31,7 @@
 #ifndef WXDLGANIMATION_H_INCLUDED
 #define WXDLGANIMATION_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include "xrc\res_animation.h"
-
-//#include <wx/xrc/xmlres.h>
-//#include <wx/spinbutt.h>
 
 #include "RCT3Structs.h"
 

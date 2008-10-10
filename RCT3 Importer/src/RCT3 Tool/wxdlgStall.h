@@ -31,8 +31,6 @@
 #ifndef WXDLGSTALL_H_INCLUDED
 #define WXDLGSTALL_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include <wx/xrc/xmlres.h>
 
 #include "RCT3Structs.h"

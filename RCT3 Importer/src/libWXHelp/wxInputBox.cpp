@@ -11,7 +11,12 @@
 
 #include "wxInputBox.h"
 
+#include <wx/choice.h>
 #include <wx/combo.h>
+#include <wx/image.h>
+#include <wx/listbox.h>
+#include <wx/sizer.h>
+#include <wx/textctrl.h>
 
 #include "silence.h"
 

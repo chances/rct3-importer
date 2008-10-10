@@ -29,9 +29,6 @@
 #ifndef MANAGERFTX_H_INCLUDED
 #define MANAGERFTX_H_INCLUDED
 
-//#define WIN32_MEAN_AND_LEAN
-//#include <windows.h>
-
 #include <string>
 #include <vector>
 

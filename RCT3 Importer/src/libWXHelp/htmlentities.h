@@ -12,8 +12,6 @@
 #ifndef HTMLENTITIES_H_INCLUDED
 #define HTMLENTITIES_H_INCLUDED
 
-#include "wx_pch.h"
-
 inline wxString wxEncodeHtmlEntities(const wxString src) {
     wxString res = src;
     res.Replace(_T("&"), _T("&amp;"), true);

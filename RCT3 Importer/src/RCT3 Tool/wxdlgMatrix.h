@@ -31,8 +31,6 @@
 #ifndef WXDLGMATRIX_H_INCLUDED
 #define WXDLGMATRIX_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include <wx/xrc/xmlres.h>
 #include <wx/spinbutt.h>
 

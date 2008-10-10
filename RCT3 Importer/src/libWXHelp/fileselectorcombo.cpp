@@ -13,6 +13,7 @@
 #include "fileselectorcombo.h"
 
 #include <wx/filename.h>
+#include <wx/msgdlg.h>
 
 //IMPLEMENT_DYNAMIC_CLASS(wxFileSelectorCombo, wxComboCtrl)
 
@@ -34,7 +35,7 @@ void wxFileSelectorCombo<wxDirDialog>::OnButtonClick() {
             GetEventHandler()->AddPendingEvent(event);
         }
     } else {
-        wxMessageBox(_("No file dialog set"), _("Internal Error"), wxOK|wxICON_ERROR, this);
+        ::wxMessageBox(_("No file dialog set"), _("Internal Error"), wxOK|wxICON_ERROR, this);
     }
 }
 

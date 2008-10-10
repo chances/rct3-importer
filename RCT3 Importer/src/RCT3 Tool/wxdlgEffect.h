@@ -31,8 +31,6 @@
 #ifndef WXDLGEFFECT_H_INCLUDED
 #define WXDLGEFFECT_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include <map>
 #include <wx/xrc/xmlres.h>
 

@@ -4,7 +4,6 @@
   <Dependencies/>
   <VirtualDirectory Name="src">
     <File Name="wxapp.h"/>
-    <File Name="win_predefine.h"/>
     <File Name="version_wrap.h"/>
     <File Name="version_wrap.cpp"/>
     <File Name="wx_pch.h"/>
@@ -18,8 +17,6 @@
     <File Name="global.h"/>
     <File Name="global.cpp"/>
   </VirtualDirectory>
-  <VirtualDirectory Name="xrc"/>
-  <VirtualDirectory Name="RCT3 Tool"/>
   <VirtualDirectory Name="resources">
     <VirtualDirectory Name="xrc">
       <VirtualDirectory Name="headers">
@@ -168,7 +165,7 @@
     <File Name="changes.tmp"/>
     <File Name="credits.txt"/>
   </VirtualDirectory>
-  <Dependencies Name="Release">
+  <Dependencies Name="Debug">
     <Project Name="Precompile RNG"/>
     <Project Name="Precompile XSL"/>
     <Project Name="libASE"/>
@@ -179,7 +176,7 @@
     <Project Name="libWXHelp"/>
     <Project Name="lib3DHelp"/>
   </Dependencies>
-  <Dependencies Name="Debug">
+  <Dependencies Name="Release">
     <Project Name="Precompile RNG"/>
     <Project Name="Precompile XSL"/>
     <Project Name="libASE"/>
@@ -327,7 +324,7 @@ res_spline.cpp: xrc/spline.fbp
       </CustomBuild>
       <AdditionalRules>
         <CustomPostBuild></CustomPostBuild>
-        <CustomPreBuild>xrc_bitmap_crystal.cpp xrc_bitmap_icons.cpp res_animation.cpp res_createscenery.cpp res_lod.cpp res_misc.cpp res_spline.cpp xrc_attract.cpp
+        <CustomPreBuild>xrc_bitmap_crystal.cpp xrc_bitmap_icons.cpp res_animation.cpp res_createscenery.cpp res_lod.cpp res_misc.cpp res_spline.cpp xrc_attract.cpp xrc_attractman.cpp xrc_effect.cpp xrc_effectmenu.cpp xrc_info.cpp xrc_matrix.cpp xrc_model.cpp xrc_stall.cpp xrc_stallman.cpp xrc_texture.cpp xrc_texturesimple.cpp
 %.xrc: %.fbp
 	$(FORMBUILDER) -g $&lt;	
 
@@ -339,6 +336,36 @@ xrc_bitmap_icons.cpp: xrc/icons.xrc
 
 xrc_attract.cpp: xrc/xrc_attract.xrc
 	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmlAttract $&lt;
+
+xrc_attractman.cpp: xrc/xrc_attractman.xrc
+	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmlAttractMan $&lt;
+
+xrc_effect.cpp: xrc/xrc_effect.xrc
+	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmlEffect $&lt;
+
+xrc_effectmenu.cpp: xrc/xrc_effectmenu.xrc
+	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmlEffectMenu $&lt;
+
+xrc_info.cpp: xrc/xrc_info.xrc
+	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmlInfo $&lt;
+
+xrc_matrix.cpp: xrc/xrc_matrix.xrc
+	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmlMatrix $&lt;
+
+xrc_model.cpp: xrc/xrc_model.xrc
+	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmlModel $&lt;
+
+xrc_stall.cpp: xrc/xrc_stall.xrc
+	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmlStall $&lt;
+
+xrc_stallman.cpp: xrc/xrc_stallman.xrc
+	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmlStallMan $&lt;
+
+xrc_texture.cpp: xrc/xrc_texture.xrc
+	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmTexture $&lt;
+
+xrc_texturesimple.cpp: xrc/xrc_texturesimple.xrc
+	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmTextureSimple $&lt;
 
 res_animation.cpp: xrc/animation.fbp
 	$(FORMBUILDER) -g $&lt;

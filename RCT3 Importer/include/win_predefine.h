@@ -28,6 +28,7 @@
 #ifndef WIN_PREDEFINE_H_INCLUDED
 #define WIN_PREDEFINE_H_INCLUDED
 
+#define WINVER 0x0500
 #define _WIN32_WINNT 0x0500
 #include <windows.h>
 //#include <d3d9types.h>

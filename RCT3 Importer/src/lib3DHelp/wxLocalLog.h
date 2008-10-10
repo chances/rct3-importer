@@ -30,7 +30,6 @@
 #define _WXLOCALLOG_H_
 
 #ifdef __WXDEBUG__
-#include "wx_pch.h"
 #define wxLocalLog(...) \
     wxLogDebug( __VA_ARGS__ ); \
     wxLog::FlushActive(); \

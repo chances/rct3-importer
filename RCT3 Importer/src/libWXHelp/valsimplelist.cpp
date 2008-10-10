@@ -13,6 +13,8 @@
 
 #include "valsimplelist.h"
 
+#include <wx/msgdlg.h>
+
 IMPLEMENT_CLASS(wxSimpleListValidator, wxValidator)
 
 wxSimpleListValidator::wxSimpleListValidator(char* val):wxSilent() {

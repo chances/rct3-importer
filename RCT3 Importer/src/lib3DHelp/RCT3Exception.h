@@ -12,10 +12,10 @@
 #ifndef RCT3EXCEPTION_H_INCLUDED
 #define RCT3EXCEPTION_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include <exception>
 #include <boost/exception.hpp>
+#include <wx/strconv.h>
+#include <wx/string.h>
 
 class RCT3Exception: public std::exception, public boost::exception {
 public:

@@ -36,7 +36,6 @@
 
 #else
 
-#include "wx_pch.h"
 #define STRING3D wxString
 #define STRING3D_EMPTY wxT("")
 #define STRINGLIST3D wxArrayString

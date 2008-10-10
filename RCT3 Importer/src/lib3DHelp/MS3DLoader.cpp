@@ -30,6 +30,8 @@
 
 #include <boost/tokenizer.hpp>
 
+#include <wx/log.h>
+
 #include "MS3DLoader.h"
 #include "MS3DFile.h"
 #include "wxLocalLog.h"

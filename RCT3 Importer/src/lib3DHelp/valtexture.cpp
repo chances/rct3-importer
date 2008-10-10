@@ -25,13 +25,10 @@
 
 #ifndef THREEDHELP_BASE
 
-#include "wx_pch.h"
-/*
-#include <IL/il.h>
-#include <IL/ilu.h>
-*/
 #include "valtexture.h"
-//#include "wxgmagick.h"
+
+#include <wx/msgdlg.h>
+
 #include "gximage.h"
 #include "rct3log.h"
 

@@ -12,8 +12,6 @@
 #ifndef GXIMAGE_H_INCLUDED
 #define GXIMAGE_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include <Magick++.h>
 
 #include <wx/control.h>

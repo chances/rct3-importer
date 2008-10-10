@@ -14,6 +14,7 @@
 #include "valext.h"
 
 #include <wx/file.h>
+#include <wx/msgdlg.h>
 
 IMPLEMENT_CLASS(wxExtendedValidator, wxValidator)
 

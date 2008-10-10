@@ -12,8 +12,6 @@
 #ifndef VALCHB_H_INCLUDED
 #define VALCHB_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include <wx/validate.h>
 
 #include "silence.h"

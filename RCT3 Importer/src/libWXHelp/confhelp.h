@@ -12,9 +12,8 @@
 #ifndef CONFHELP_H_INCLUDED
 #define CONFHELP_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include <wx/confbase.h>
+#include <wx/gdicmn.h>
 //#ifndef DWORD
 //#include <windows.h>
 //#endif

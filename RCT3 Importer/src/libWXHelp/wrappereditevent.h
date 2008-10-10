@@ -12,7 +12,7 @@
 #ifndef WRAPPEREDITEVENT_H_INCLUDED
 #define WRAPPEREDITEVENT_H_INCLUDED
 
-#include "wx_pch.h"
+#include <wx/event.h>
 
 #define wxWRAPPER_START_EDITING 1
 #define wxWRAPPER_STOP_EDITING 2

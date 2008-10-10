@@ -31,8 +31,6 @@
 #ifndef WXDLGLOD_H_INCLUDED
 #define WXDLGLOD_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include "xrc\res_lod.h"
 
 #include <wx/xrc/xmlres.h>

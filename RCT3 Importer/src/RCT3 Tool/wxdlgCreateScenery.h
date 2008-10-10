@@ -31,8 +31,6 @@
 #ifndef WXDLGCREATESCENERY_H_INCLUDED
 #define WXDLGCREATESCENERY_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include <wx/xrc/xmlres.h>
 #include <wx/htmllbox.h>
 #include <wx/notebook.h>

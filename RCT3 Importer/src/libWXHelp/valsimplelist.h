@@ -12,8 +12,6 @@
 #ifndef VALSIMPLELIST_H_INCLUDED
 #define VALSIMPLELIST_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include <wx/ctrlsub.h>
 #include <wx/validate.h>
 #include <wx/vlbox.h>

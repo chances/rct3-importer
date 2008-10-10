@@ -10,8 +10,9 @@
 #ifndef _WX_INPUT_BOX_H
 #define _WX_INPUT_BOX_H
 
-#include "wx_pch.h"
-
+#include <wx/bitmap.h>
+#include <wx/control.h>
+#include <wx/statbmp.h>
 #include <wx/validate.h>
 
 #define wxInputBoxName wxT("wxInputBox")

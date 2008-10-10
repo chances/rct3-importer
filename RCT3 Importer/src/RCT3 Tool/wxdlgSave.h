@@ -33,9 +33,6 @@
 #ifndef WXDLGSAVE_H_INCLUDED
 #define WXDLGSAVE_H_INCLUDED
 
-#include "wx_pch.h"
-
-//#include <wx/xrc/xmlres.h>
 
 #include "xrc\res_misc.h"
 

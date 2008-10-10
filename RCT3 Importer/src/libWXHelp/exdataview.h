@@ -12,8 +12,11 @@
 #ifndef __EXDATAVIEWCTRLH__
 #define __EXDATAVIEWCTRLH__
 
-#include "wx_pch.h"
+#ifdef _WIN32
+#include "win_predefine.h"
+#endif
 
+#include <wx/defs.h>
 #include <wx/dataview.h>
 
 

@@ -28,8 +28,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "wx_pch.h"
-
 #include "wxdlgEffectLight.h"
 
 BEGIN_EVENT_TABLE(dlgEffectLight,wxDialog)

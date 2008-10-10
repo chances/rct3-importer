@@ -12,8 +12,6 @@
 #ifndef WXGMAGICK_H_INCLUDED
 #define WXGMAGICK_H_INCLUDED
 
-#include "wx_pch.h"
-
 #include "basicsize.h"
 
 //#include <IL/il.h>
