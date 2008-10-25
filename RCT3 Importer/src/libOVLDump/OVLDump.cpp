@@ -704,8 +704,8 @@ void cOVLDump::MakeFlics(cOvlType type) {
     unsigned long c_flic = 0;
     long bmptbl_index = -1;
     unsigned long flic_index = 0;
-    map<string, map<string, OvlRelocation*> >::iterator i_tagC = m_structmap[OVLT_COMMON].find("tex");
-    map<string, map<string, OvlRelocation*> >::iterator i_tagU = m_structmap[OVLT_UNIQUE].find("tex");
+    structmap_t::iterator i_tagC = m_structmap[OVLT_COMMON].find("tex");
+    structmap_t::iterator i_tagU = m_structmap[OVLT_UNIQUE].find("tex");
     vector<unsigned char *> datas;
     for (std::vector<OvlLoader>::iterator it = m_loaders[type].begin(); it != m_loaders[type].end(); ++it) {
         if (it->loadertype == type_btbl) {
@@ -727,7 +727,7 @@ void cOVLDump::MakeFlics(cOvlType type) {
 
             // Find texture
             if (i_tagC != m_structmap[OVLT_COMMON].end()) {
-                for (map<string, OvlRelocation*>::iterator i_tex = i_tagC->second.begin(); i_tex != i_tagC->second.end(); ++i_tex) {
+                for (symbolmap_t::iterator i_tex = i_tagC->second.begin(); i_tex != i_tagC->second.end(); ++i_tex) {
                     TextureStruct* ts = reinterpret_cast<TextureStruct*>(i_tex->second->target);
                     if (ts->unk9) {
                         TextureStruct2* ts2 = reinterpret_cast<TextureStruct2*>(m_targets[reinterpret_cast<unsigned long>(ts->ts2)]);
@@ -738,7 +738,7 @@ void cOVLDump::MakeFlics(cOvlType type) {
                 }
             }
             if (i_tagU != m_structmap[OVLT_UNIQUE].end()) {
-                for (map<string, OvlRelocation*>::iterator i_tex = i_tagU->second.begin(); i_tex != i_tagU->second.end(); ++i_tex) {
+                for (symbolmap_t::iterator i_tex = i_tagU->second.begin(); i_tex != i_tagU->second.end(); ++i_tex) {
                     TextureStruct* ts = reinterpret_cast<TextureStruct*>(i_tex->second->target);
                     if (ts->unk9) {
                         TextureStruct2* ts2 = reinterpret_cast<TextureStruct2*>(m_targets[reinterpret_cast<unsigned long>(ts->ts2)]);
@@ -892,6 +892,8 @@ const OvlStringTableEntry& cOVLDump::GetString(unsigned long id) {
         }
         i++;
     }
+	assert("We should not get here!");
+	return *reinterpret_cast<OvlStringTableEntry*>(NULL);
 }
 
 void cOVLDump::SetString(unsigned long id, const char* newstr) {

@@ -86,7 +86,9 @@ bone:       Describes the bones in the object. A child of bsh. There can be many
             name:           The name of the bone. This is matched against bone names in the ban element.
             parent:         The bone that is the parent of this bone.
 pos1:       The position and orientation of the bone. The 16 floats represent a 4x4 matrix, expressed row by row. A child of bone.
-pos2:       Typically identical to the pos1.
+            pos1 gives the bone matrix relative to it's parent bone. If there is no parent bone, it's identical to pos2.
+pos2:       Gives the bone position in object space.
+            To calculate pos1 from pos2 and it's parent pos2, multiply the bone's pos2 with the inverse of it's parent's pos2.
 ban:        ban describe the bone animations, a child of ovl.
             name:           The name of the animation. Should match both the name in the bsh node and the name used for the outputfile.
 bone:       Describes the animation for the bone. A child of ban.

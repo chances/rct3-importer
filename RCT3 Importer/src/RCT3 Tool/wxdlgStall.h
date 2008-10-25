@@ -31,6 +31,10 @@
 #ifndef WXDLGSTALL_H_INCLUDED
 #define WXDLGSTALL_H_INCLUDED
 
+#include <wx/button.h>
+#include <wx/choice.h>
+#include <wx/dialog.h>
+#include <wx/textctrl.h>
 #include <wx/xrc/xmlres.h>
 
 #include "RCT3Structs.h"

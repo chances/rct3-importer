@@ -28,6 +28,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include <wx/sizer.h>
 #include <wx/valtext.h>
 #include <wx/valgen.h>
 
@@ -63,7 +64,7 @@ dlgAttract::dlgAttract(wxWindow *parent) {
     for (unsigned int i = 0;i < SceneryItems.size();i++)
     {
         char name[MAX_PATH];
-        _splitpath(SceneryItems[i]->ovl, NULL, NULL, name, NULL);
+        _splitpath(SceneryItems[i]->ovl.c_str(), NULL, NULL, name, NULL);
         strchr(name, '.')[0] = 0;
         m_SceneryItem->Append(*(new wxString(name)));
     }

@@ -44,46 +44,6 @@
     <File Name="xmlhelper.h"/>
     <File Name="bmy.pal"/>
   </VirtualDirectory>
-  <Dependencies Name="DebugBaseUnicode">
-    <Project Name="Precompile RNG"/>
-    <Project Name="Precompile XSL"/>
-    <Project Name="libASE"/>
-    <Project Name="libOVLng"/>
-    <Project Name="libXmlCpp"/>
-    <Project Name="libWXHelp"/>
-  </Dependencies>
-  <Dependencies Name="DebugUnicode">
-    <Project Name="Precompile RNG"/>
-    <Project Name="Precompile XSL"/>
-    <Project Name="libASE"/>
-    <Project Name="libOVLng"/>
-    <Project Name="libXmlCpp"/>
-    <Project Name="libWXHelp"/>
-  </Dependencies>
-  <Dependencies Name="ReleaseBaseUnicode">
-    <Project Name="Precompile RNG"/>
-    <Project Name="Precompile XSL"/>
-    <Project Name="libASE"/>
-    <Project Name="libOVLng"/>
-    <Project Name="libXmlCpp"/>
-    <Project Name="libWXHelp"/>
-  </Dependencies>
-  <Dependencies Name="ReleaseUnicode">
-    <Project Name="Precompile RNG"/>
-    <Project Name="Precompile XSL"/>
-    <Project Name="libASE"/>
-    <Project Name="libOVLng"/>
-    <Project Name="libXmlCpp"/>
-    <Project Name="libWXHelp"/>
-  </Dependencies>
-  <Dependencies Name="Debug">
-    <Project Name="Precompile RNG"/>
-    <Project Name="Precompile XSL"/>
-    <Project Name="libASE"/>
-    <Project Name="libOVLng"/>
-    <Project Name="libXmlCpp"/>
-    <Project Name="libWXHelp"/>
-  </Dependencies>
   <VirtualDirectory Name="doc">
     <File Name="changes.tmp"/>
   </VirtualDirectory>
@@ -107,20 +67,20 @@
         <Preprocessor Value="XMLCPP_USE_EXSLT"/>
       </Compiler>
       <Linker Required="yes" Options=""/>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""></Debugger>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
       <ResourceCompiler Required="no" Options=""/>
       <PreBuild/>
       <PostBuild/>
       <CustomBuild Enabled="no">
-        <CleanCommand></CleanCommand>
-        <BuildCommand></BuildCommand>
-        <SingleFileCommand></SingleFileCommand>
-        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory></WorkingDirectory>
+        <WorkingDirectory/>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild></CustomPostBuild>
+        <CustomPostBuild/>
         <CustomPreBuild>bmy.pal.h
 bmy.pal.h: bmy.pal
 	bin2c -c -z $&lt; $@
@@ -129,7 +89,7 @@ bmy.pal.h: bmy.pal
     </Configuration>
     <Configuration Name="DebugBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
       <General OutputFile="../../lib/$(ProjectName)bud.a" IntermediateDirectory="../../lib/obj/lib3DHelp/DebugBaseUnicode" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
-      <Compiler Required="yes" Options="-g;$(WX3_CXX_BD);-Wall;-fno-strict-aliasing;-mthreads;-fexceptions">
+      <Compiler Required="yes" Options="-g;$(WX3_CXX_BD);-Wall;-fstrict-aliasing;-Wstrict-aliasing=2;-mthreads;-fexceptions">
         <IncludePath Value="."/>
         <IncludePath Value="../../include"/>
         <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
@@ -147,20 +107,20 @@ bmy.pal.h: bmy.pal
         <Preprocessor Value="THREEDHELP_BASE"/>
       </Compiler>
       <Linker Required="yes" Options=""/>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""></Debugger>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
       <ResourceCompiler Required="no" Options=""/>
       <PreBuild/>
       <PostBuild/>
       <CustomBuild Enabled="no">
-        <CleanCommand></CleanCommand>
-        <BuildCommand></BuildCommand>
-        <SingleFileCommand></SingleFileCommand>
-        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory></WorkingDirectory>
+        <WorkingDirectory/>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild></CustomPostBuild>
+        <CustomPostBuild/>
         <CustomPreBuild>bmy.pal.h
 bmy.pal.h: bmy.pal
 	bin2c -c -z $&lt; $@
@@ -169,7 +129,7 @@ bmy.pal.h: bmy.pal
     </Configuration>
     <Configuration Name="DebugUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
       <General OutputFile="../../lib/$(ProjectName)ud.a" IntermediateDirectory="../../lib/obj/lib3DHelp/DebugUnicode" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
-      <Compiler Required="yes" Options="-g;$(WX3_CXX_PD);-Wall;-fno-strict-aliasing;-mthreads;-fexceptions">
+      <Compiler Required="yes" Options="-g;$(WX3_CXX_PD);-Wall;-fstrict-aliasing;-Wstrict-aliasing=2;-mthreads;-fexceptions">
         <IncludePath Value="."/>
         <IncludePath Value="../../include"/>
         <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
@@ -186,20 +146,20 @@ bmy.pal.h: bmy.pal
         <Preprocessor Value="XMLCPP_USE_EXSLT"/>
       </Compiler>
       <Linker Required="yes" Options=""/>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""></Debugger>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
       <ResourceCompiler Required="no" Options=""/>
       <PreBuild/>
       <PostBuild/>
       <CustomBuild Enabled="no">
-        <CleanCommand></CleanCommand>
-        <BuildCommand></BuildCommand>
-        <SingleFileCommand></SingleFileCommand>
-        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory></WorkingDirectory>
+        <WorkingDirectory/>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild></CustomPostBuild>
+        <CustomPostBuild/>
         <CustomPreBuild>bmy.pal.h
 bmy.pal.h: bmy.pal
 	bin2c -c -z $&lt; $@
@@ -208,7 +168,7 @@ bmy.pal.h: bmy.pal
     </Configuration>
     <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
       <General OutputFile="../../lib/$(ProjectName).a" IntermediateDirectory="../../lib/obj/lib3DHelp/Release" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
-      <Compiler Required="yes" Options="-O2;$(WX2_CXX_PR);-fno-strict-aliasing;-mthreads;-fexceptions">
+      <Compiler Required="yes" Options="-O2;$(WX2_CXX_PR);-fstrict-aliasing;-mthreads;-fexceptions">
         <IncludePath Value="."/>
         <IncludePath Value="../../include"/>
         <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
@@ -225,20 +185,20 @@ bmy.pal.h: bmy.pal
         <Preprocessor Value="XMLCPP_USE_EXSLT"/>
       </Compiler>
       <Linker Required="yes" Options="-O2"/>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""></Debugger>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
       <ResourceCompiler Required="no" Options=""/>
       <PreBuild/>
       <PostBuild/>
       <CustomBuild Enabled="no">
-        <CleanCommand></CleanCommand>
-        <BuildCommand></BuildCommand>
-        <SingleFileCommand></SingleFileCommand>
-        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory></WorkingDirectory>
+        <WorkingDirectory/>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild></CustomPostBuild>
+        <CustomPostBuild/>
         <CustomPreBuild>bmy.pal.h
 bmy.pal.h: bmy.pal
 	bin2c -c -z $&lt; $@
@@ -247,7 +207,7 @@ bmy.pal.h: bmy.pal
     </Configuration>
     <Configuration Name="ReleaseBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
       <General OutputFile="../../lib/$(ProjectName)bu.a" IntermediateDirectory="../../lib/obj/lib3DHelp/ReleaseBaseUnicode" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
-      <Compiler Required="yes" Options="-O2;$(WX3_CXX_BR);-fno-strict-aliasing;-mthreads;-fexceptions">
+      <Compiler Required="yes" Options="-O2;$(WX3_CXX_BR);-fstrict-aliasing;-mthreads;-fexceptions">
         <IncludePath Value="."/>
         <IncludePath Value="../../include"/>
         <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
@@ -265,20 +225,20 @@ bmy.pal.h: bmy.pal
         <Preprocessor Value="THREEDHELP_BASE"/>
       </Compiler>
       <Linker Required="yes" Options="-O2"/>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""></Debugger>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
       <ResourceCompiler Required="no" Options=""/>
       <PreBuild/>
       <PostBuild/>
       <CustomBuild Enabled="no">
-        <CleanCommand></CleanCommand>
-        <BuildCommand></BuildCommand>
-        <SingleFileCommand></SingleFileCommand>
-        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory></WorkingDirectory>
+        <WorkingDirectory/>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild></CustomPostBuild>
+        <CustomPostBuild/>
         <CustomPreBuild>bmy.pal.h
 bmy.pal.h: bmy.pal
 	bin2c -c -z $&lt; $@
@@ -287,7 +247,7 @@ bmy.pal.h: bmy.pal
     </Configuration>
     <Configuration Name="ReleaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
       <General OutputFile="../../lib/$(ProjectName)u.a" IntermediateDirectory="../../lib/obj/lib3DHelp/ReleaseUnicode" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
-      <Compiler Required="yes" Options="-O2;$(WX3_CXX_PR);-fno-strict-aliasing;-mthreads;-fexceptions">
+      <Compiler Required="yes" Options="-O2;$(WX3_CXX_PR);-fstrict-aliasing;-mthreads;-fexceptions">
         <IncludePath Value="."/>
         <IncludePath Value="../../include"/>
         <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
@@ -304,20 +264,20 @@ bmy.pal.h: bmy.pal
         <Preprocessor Value="XMLCPP_USE_EXSLT"/>
       </Compiler>
       <Linker Required="yes" Options="-O2"/>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""></Debugger>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
       <ResourceCompiler Required="no" Options=""/>
       <PreBuild/>
       <PostBuild/>
       <CustomBuild Enabled="no">
-        <CleanCommand></CleanCommand>
-        <BuildCommand></BuildCommand>
-        <SingleFileCommand></SingleFileCommand>
-        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory></WorkingDirectory>
+        <WorkingDirectory/>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild></CustomPostBuild>
+        <CustomPostBuild/>
         <CustomPreBuild>bmy.pal.h
 bmy.pal.h: bmy.pal
 	bin2c -c -z $&lt; $@
@@ -325,7 +285,47 @@ bmy.pal.h: bmy.pal
       </AdditionalRules>
     </Configuration>
   </Settings>
+  <Dependencies Name="Debug">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libASE"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libXmlCpp"/>
+    <Project Name="libWXHelp"/>
+  </Dependencies>
+  <Dependencies Name="DebugBaseUnicode">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libASE"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libXmlCpp"/>
+    <Project Name="libWXHelp"/>
+  </Dependencies>
+  <Dependencies Name="DebugUnicode">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libASE"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libXmlCpp"/>
+    <Project Name="libWXHelp"/>
+  </Dependencies>
   <Dependencies Name="Release">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libASE"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libXmlCpp"/>
+    <Project Name="libWXHelp"/>
+  </Dependencies>
+  <Dependencies Name="ReleaseBaseUnicode">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libASE"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libXmlCpp"/>
+    <Project Name="libWXHelp"/>
+  </Dependencies>
+  <Dependencies Name="ReleaseUnicode">
     <Project Name="Precompile RNG"/>
     <Project Name="Precompile XSL"/>
     <Project Name="libASE"/>

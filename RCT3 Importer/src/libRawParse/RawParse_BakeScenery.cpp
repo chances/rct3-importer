@@ -29,6 +29,9 @@
 
 #include <boost/format.hpp>
 
+#include "SCNFile.h"
+#include "matrix.h"
+
 inline void makeTXYZ(cXmlNode& parent, const wxString& name, const txyz& t) {
     cXmlNode ret = parent.newChild(name.utf8_str());
     ret.prop("time", boost::str(boost::format("%8f") % t.Time));

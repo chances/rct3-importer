@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Project Name="libRawParse">
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="include">
+    <File Name="RawParse.h"/>
+    <File Name="RawParse_cpp.h"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="src">
+    <File Name="RawParse_BakeScenery.cpp"/>
+    <File Name="RawParse_Base.cpp"/>
+    <File Name="RawParse_BasicParse.cpp"/>
+    <File Name="RawParse_Data.cpp"/>
+    <File Name="RawParse_Extra.cpp"/>
+    <File Name="RawParse_MainParse.cpp"/>
+    <File Name="RawParse_StructParse_CED.cpp"/>
+    <File Name="RawParse_StructParse_ANR.cpp"/>
+    <File Name="RawParse_StructParse_BAN.cpp"/>
+    <File Name="RawParse_StructParse_BSH.cpp"/>
+    <File Name="RawParse_StructParse_FTX.cpp"/>
+    <File Name="RawParse_StructParse_CHG.cpp"/>
+    <File Name="RawParse_StructParse_CID.cpp"/>
+    <File Name="RawParse_StructParse_SHS.cpp"/>
+    <File Name="RawParse_StructParse_PTD.cpp"/>
+    <File Name="RawParse_StructParse_QTD.cpp"/>
+    <File Name="RawParse_StructParse_SAT.cpp"/>
+    <File Name="RawParse_StructParse_STA.cpp"/>
+    <File Name="RawParse_StructParse_SID.cpp"/>
+    <File Name="RawParse_StructParse_SPL.cpp"/>
+    <File Name="RawParse_StructParse_SND.cpp"/>
+    <File Name="RawParse_StructParse_WAI.cpp"/>
+    <File Name="RawParse_StructParse_SVD.cpp"/>
+    <File Name="RawParse_StructParse_TEX.cpp"/>
+    <File Name="RawParse_StructParse_TKS.cpp"/>
+    <File Name="RawParse_StructParse_TRR.cpp"/>
+    <File Name="RawParse_ImportParse.cpp"/>
+  </VirtualDirectory>
+  <Settings Type="Static Library">
+    <Configuration Name="DebugBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../lib/$(ProjectName)ud.a" IntermediateDirectory="../../lib/obj/libRawParse/DebugUnicode" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="$(WX3_CXX_BD);-g;-Wall;-fstrict-aliasing;-Wstrict-aliasing=2;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="../libOVLng"/>
+        <IncludePath Value="../libOVLDump"/>
+        <IncludePath Value="../libWXHelp"/>
+        <IncludePath Value="../lib3DHelp"/>
+        <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
+        <IncludePath Value="$(SYSINCLUDE)/libxml2"/>
+        <IncludePath Value="../libXmlCpp"/>
+        <IncludePath Value="../../xml"/>
+        <Preprocessor Value="USE_SQUISH"/>
+        <Preprocessor Value="CACHE_GXIMAGE"/>
+        <Preprocessor Value="XMLCPP_USE_XSLT"/>
+        <Preprocessor Value="XMLCPP_USE_EXSLT"/>
+        <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
+      </Compiler>
+      <Linker Required="yes" Options=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="ReleaseBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
+      <General OutputFile="../../lib/$(ProjectName)u.a" IntermediateDirectory="../../lib/obj/libRawParse/ReleaseUnicode" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="$(WX3_CXX_BR); -O2;-fstrict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="../libOVLng"/>
+        <IncludePath Value="../libOVLDump"/>
+        <IncludePath Value="../libWXHelp"/>
+        <IncludePath Value="../lib3DHelp"/>
+        <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
+        <IncludePath Value="$(SYSINCLUDE)/libxml2"/>
+        <IncludePath Value="../libXmlCpp"/>
+        <IncludePath Value="../../xml"/>
+        <Preprocessor Value="USE_SQUISH"/>
+        <Preprocessor Value="CACHE_GXIMAGE"/>
+        <Preprocessor Value="XMLCPP_USE_XSLT"/>
+        <Preprocessor Value="XMLCPP_USE_EXSLT"/>
+        <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
+      </Compiler>
+      <Linker Required="yes" Options=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory/>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
+      </AdditionalRules>
+    </Configuration>
+  </Settings>
+  <Dependencies Name="DebugBaseUnicode">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libOVLDump"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libWXHelp"/>
+    <Project Name="libXmlCpp"/>
+  </Dependencies>
+  <Dependencies Name="ReleaseBaseUnicode">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libOVLDump"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libWXHelp"/>
+    <Project Name="libXmlCpp"/>
+  </Dependencies>
+</CodeLite_Project>

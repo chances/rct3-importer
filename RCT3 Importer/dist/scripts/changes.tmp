@@ -5,3 +5,4 @@ Added	Option to choose whether bones not animated in an action are added to the 
 Added	Enhanced keyframe only mode to grab Blender easing with less frames
 Added	Support for bone weights
 Added	Constraint baking scripts
+Fixed	Reject names with characters that need to be escaped in xml ("<>)

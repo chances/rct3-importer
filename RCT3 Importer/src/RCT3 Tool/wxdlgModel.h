@@ -32,8 +32,14 @@
 #define WXDLGMODEL_H_INCLUDED
 
 #include <wx/aui/aui.h>
-#include <wx/xrc/xmlres.h>
+#include <wx/button.h>
+#include <wx/checkbox.h>
+#include <wx/choice.h>
+#include <wx/dialog.h>
+#include <wx/filedlg.h>
 #include <wx/spinbutt.h>
+#include <wx/stattext.h>
+#include <wx/xrc/xmlres.h>
 
 #include "colhtmllbox.h"
 #include "exdataview.h"
@@ -42,6 +48,7 @@
 #include "starcomboctrl.h"
 
 class wxMeshListModel;
+class cSCNFile;
 /*
 class wxMeshListBox : public wxColourHtmlListBox {
 public:
@@ -175,6 +182,8 @@ private:
     wxAuiManager m_mgr;
     wxEvtHandler* m_hookhandler;
     bool m_loadoverlay;
+	cSCNFile& m_scn;
+	bool m_boneshutup;
 
     void InitWidgetsFromXRC(wxWindow *parent) {
         wxXmlResource::Get()->LoadObject(this,parent,_T("dlgModel"), _T("wxDialog"));
@@ -258,7 +267,7 @@ private:
 public:
     bool m_Editing;
 
-    dlgModel(wxWindow *parent=NULL, bool animated = false);
+    dlgModel(wxWindow *parent, cSCNFile& scn, bool animated = false);
     virtual ~dlgModel();
 
     void CheckModel();

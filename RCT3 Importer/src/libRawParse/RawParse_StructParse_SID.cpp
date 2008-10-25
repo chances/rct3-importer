@@ -27,14 +27,12 @@
 
 #include "RawParse_cpp.h"
 
-#include "ManagerSPL.h"
 #include "ManagerSID.h"
-#include "ManagerSND.h"
-#include "ManagerSTA.h"
 
-#include "wave\WAVE.h"
-#include <boost/iostreams/device/array.hpp>
-#include <boost/iostreams/stream.hpp>
+#include "pretty.h"
+
+//#include <boost/iostreams/device/array.hpp>
+//#include <boost/iostreams/stream.hpp>
 
 #define RAWXML_SID_GROUP            "group"
 #define RAWXML_SID_TYPE             "type"
@@ -52,8 +50,6 @@
 #define RAWXML_SID_SQUAREUNKNOWNS   "squareUnknowns"
 #define RAWXML_SID_STALLUNKNOWNS    "stallUnknowns"
 #define RAWXML_SID_PARAMETER        "parameter"
-
-#define RAWXML_SND_SOUND            "sound"
 
 void cRawParser::ParseSID(cXmlNode& node) {
     USE_PREFIX(node);
@@ -166,7 +162,7 @@ void cRawParser::ParseSID(cXmlNode& node) {
                     if (!c.IsEmpty())
                         sid.flatride.individual_animations.push_back(static_cast<const char*>(c.ToAscii()));
                 } else if (subchild.element()) {
-                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in sid/flatRide tag."), STRING_FOR_FORMAT(subchild.name())), subchild);
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in sid/flatRide tag."), subchild.wxname().c_str()), subchild);
                 }
             }
         } else if (child(RAWXML_SID_SOUND)) {
@@ -211,14 +207,14 @@ void cRawParser::ParseSID(cXmlNode& node) {
                                 scr.parameter[1] = (scr.parameter[1]-1.0)/fps;
                             commands.push_back(scr);
                         } else if (grandchild.element()) {
-                            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in sid/sound/animation tag."), STRING_FOR_FORMAT(subchild.name())), subchild);
+                            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in sid/sound/animation tag."), subchild.wxname().c_str()), subchild);
                         }
                     }
                     if (last_command)
                         commands.push_back(cSidSoundScript(last_time));
                     sound.animationscripts.push_back(commands);
                 } else if (subchild.element()) {
-                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in sid/sound tag."), STRING_FOR_FORMAT(subchild.name())), subchild);
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in sid/sound tag."), subchild.wxname().c_str()), subchild);
                 }
             }
 
@@ -239,7 +235,7 @@ void cRawParser::ParseSID(cXmlNode& node) {
             }
             sid.parameters.push_back(param);
         } else if (child.element()) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in sid tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()), child);
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in sid tag '%s'."), child.wxname().c_str(), name.c_str()), child);
         }
 
         child.go_next();
@@ -247,202 +243,4 @@ void cRawParser::ParseSID(cXmlNode& node) {
 
     ovlSIDManager* c_sid = m_ovl.GetManager<ovlSIDManager>();
     c_sid->AddSID(sid);
-}
-
-void cRawParser::ParseSND(cXmlNode& node) {
-    USE_PREFIX(node);
-    wxString name = ParseString(node, wxT(RAWXML_SND), wxT("name"), NULL, useprefix);
-//    wxFileName texture = ParseString(node, RAWXML_TEX, wxT("texture"));
-//    if (!texture.IsAbsolute())
-//        texture.MakeAbsolute(m_input.GetPathWithSep());
-    wxLogVerbose(wxString::Format(_("Adding snd %s to %s."), name.c_str(), m_output.GetFullPath().c_str()));
-
-    cSound sound;
-    sound.name = name.ToAscii();
-    OPTION_PARSE(unsigned long, sound.loop, ParseUnsigned(node, wxT(RAWXML_SND), wxT("loop")));
-
-    cXmlNode child(node.children());
-    while (child) {
-        DO_CONDITION_COMMENT(child);
-
-        if (child(RAWXML_SND_SOUND)) {
-
-            cXmlNode datanode(child.children());
-            while (datanode && (!datanode(RAWXML_DATA)))
-                datanode.go_next();
-
-            if (!datanode)
-                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Tag snd(%s)/sound misses data."), name.c_str()), child);
-
-            cRawDatablock data = GetDataBlock(wxString::Format(_("tag snd(%s)/sound"), name.c_str()), datanode);
-            if (data.datatype().IsEmpty()) {
-                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Could not determine data type in tag snd(%s)/sound."), name.c_str()), child);
-            } else if (data.datatype().IsSameAs(wxT("processed"))) {
-                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Processed data not supported in tag snd(%s)/sound."), name.c_str()), child);
-            } else {
-                WaveFile wave;
-                boost::iostreams::array_source wavedata(reinterpret_cast<char*>(data.data().get()), data.datasize());
-                boost::iostreams::stream_buffer<boost::iostreams::array_source> wavebuf(wavedata);
-                if (!wave.OpenRead(&wavebuf)) {
-                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Failed to open sound data in tag snd(%s)/sound."), name.c_str()), child);
-                }
-                if ((wave.GetBitsPerChannel() != 16) || (wave.GetNumChannels() != 1) || (wave.GetFormatType() != 1))
-                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Sound data in tag snd(%s)/sound is not 16 bit / mono / uncompressed."), name.c_str()), child);
-                sound.format.nSamplesPerSec = wave.GetSampleRate();
-                sound.format.nAvgBytesPerSec = wave.GetBytesPerSecond();
-                sound.channel1_size = wave.GetDataLength();
-                sound.channel1.reset(new int16_t[wave.GetNumSamples()]);
-                if (!wave.ReadSamples(sound.channel1.get(), wave.GetNumSamples()))
-                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Failed to read sound data in tag snd(%s)/sound."), name.c_str()), child);
-            }
-        } else if (child.element()) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in snd(%s) tag."), STRING_FOR_FORMAT(child.name()), name.c_str()), child);
-        }
-        child.go_next();
-    }
-
-    if (m_mode != MODE_BAKE) {
-        ovlSNDManager* c_snd = m_ovl.GetManager<ovlSNDManager>();
-        c_snd->AddItem(sound);
-    }
-}
-
-void cRawParser::ParseSPL(cXmlNode& node) {
-    USE_PREFIX(node);
-    cSpline spl;
-    wxString name = ParseString(node, RAWXML_SPL, "name", NULL, useprefix);
-    spl.name = name.ToAscii();
-    if (node.hasProp("modelFile")) {
-        wxString splinename = ParseString(node, RAWXML_SPL, "name", NULL);
-        ParseStringOption(splinename, node, "modelSpline", NULL);
-        wxFSFileName modelfile = ParseString(node, RAWXML_SPL, "modelFile", NULL);
-        if (!modelfile.IsAbsolute())
-            modelfile.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
-
-        // TODO: baking
-
-        boost::shared_ptr<c3DLoader> model(c3DLoader::LoadFile(modelfile.GetFullPath().c_str()));
-        if (!model.get())
-            throw MakeNodeException<RCT3Exception>(_("spline tag: Model file not readable or has unknown format: ") + modelfile.GetFullPath(), node);
-
-        if (!model->GetSplines().size()) {
-            throw MakeNodeException<RCT3Exception>(_("spline tag: Model file does not contain splines: ") + modelfile.GetFullPath(), node);
-        }
-
-        std::map<wxString, c3DSpline>::const_iterator sp = model->GetSplines().find(splinename);
-        if (sp == model->GetSplines().end()) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("spline tag: Model file '%s' does not contain spline '%s'."), modelfile.GetFullPath().c_str(), splinename.c_str()), node);
-        }
-        if (!sp->second.m_nodes.size()) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("spline tag: Model file '%s', spline '%s' has no nodes."), modelfile.GetFullPath().c_str(), splinename.c_str()), node);
-        }
-
-        c3DLoaderOrientation ori = ParseOrientation(node, wxString::Format(wxT("spl(%s) tag"), name.c_str()), model->GetOrientation());
-
-        spl.nodes = sp->second.GetFixed(ori);
-        spl.cyclic = sp->second.m_cyclic;
-    } else {
-        if (node.hasProp("totalLength")) {
-            spl.calc_length = false;
-            spl.totallength = ParseFloat(node, wxT(RAWXML_SPL), wxT("totalLength"));
-            spl.inv_totallength = ParseFloat(node, wxT(RAWXML_SPL), wxT("inv_totalLength"));
-        }
-        OPTION_PARSE(float, spl.max_y, ParseFloat(node, wxT(RAWXML_SPL), wxT("max_y")));
-        OPTION_PARSE(unsigned long, spl.cyclic, ParseUnsigned(node, wxT(RAWXML_SPL), wxT("cyclic")));
-        OPTION_PARSE(unsigned long, spl.lengthcalcres, ParseUnsigned(node, wxT(RAWXML_SPL), wxT("autoLengthRes")));
-        c3DLoaderOrientation ori = ParseOrientation(node, wxString::Format(wxT("spl(%s) tag"), name.c_str()));
-        wxLogVerbose(wxString::Format(_("Adding spl %s to %s."), wxString(spl.name.c_str(), wxConvLocal).c_str(), m_output.GetFullPath().c_str()));
-
-        cXmlNode child(node.children());
-        while (child) {
-            DO_CONDITION_COMMENT(child);
-
-            if (child(RAWXML_SPL_NODE)) {
-                SplineNode sp;
-                sp.pos.x = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("x"));
-                sp.pos.y = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("y"));
-                sp.pos.z = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("z"));
-                sp.cp1.x = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("cp1x"));
-                sp.cp1.y = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("cp1y"));
-                sp.cp1.z = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("cp1z"));
-                sp.cp2.x = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("cp2x"));
-                sp.cp2.y = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("cp2y"));
-                sp.cp2.z = ParseFloat(child, wxT(RAWXML_SPL_NODE), wxT("cp2z"));
-                if (ori != ORIENTATION_LEFT_YUP) {
-                    doFixOrientation(sp.pos, ori);
-                    doFixOrientation(sp.cp1, ori);
-                    doFixOrientation(sp.cp2, ori);
-                }
-                spl.nodes.push_back(sp);
-            } else if (child(RAWXML_SPL_LENGTH)) {
-                float l = ParseFloat(child, wxT(RAWXML_SPL_LENGTH), wxT("length"));
-                spl.lengths.push_back(l);
-            } else if (child(RAWXML_SPL_DATA)) {
-                cSplineData dt;
-                wxString datastr = ParseString(child, wxT(RAWXML_SPL_DATA), wxT("data"), NULL);
-                if (datastr.Length() != 28)
-                    throw MakeNodeException<RCT3InvalidValueException>(wxString::Format(_("The data attribute of a spl(%s)/spldata tag is of invalid length"), name.c_str()), child);
-                const char* d = datastr.ToAscii();
-                for (int i = 0; i < 28; i+=2) {
-                    unsigned char dta = 0;
-                    unsigned char t = ParseDigit(d[i]);
-                    if (t >= 16)
-                        throw MakeNodeException<RCT3InvalidValueException>(wxString::Format(_("The data attribute of a spl(%s)/spldata tag has an invalid character"), name.c_str()), child);
-                    dta += t * 16;
-                    t = ParseDigit(d[i+1]);
-                    if (t >= 16)
-                        throw MakeNodeException<RCT3InvalidValueException>(wxString::Format(_("The data attribute of a spl(%s)/spldata tag has an invalid character"), name.c_str()), child);
-                    dta += t;
-                    dt.data[i/2] = dta;
-                }
-                spl.datas.push_back(dt);
-            } else if (child.element()) {
-                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in spl(%s) tag."), STRING_FOR_FORMAT(child.name()), name.c_str()), child);
-            }
-            child.go_next();
-        }
-    }
-
-    ovlSPLManager* c_spl = m_ovl.GetManager<ovlSPLManager>();
-    c_spl->AddSpline(spl);
-}
-
-void cRawParser::ParseSTA(cXmlNode& node) {
-    USE_PREFIX(node);
-    cStall stall;
-    wxString name = ParseString(node, wxT(RAWXML_STA), wxT("name"), NULL, useprefix);
-    stall.name = name.ToAscii();
-    stall.attraction.name = ParseString(node, wxT(RAWXML_STA), wxT("nametxt"), NULL, useprefix).ToAscii();
-    stall.attraction.description = ParseString(node, wxT(RAWXML_STA), wxT("description"), NULL, useprefix).ToAscii();
-    stall.sid = ParseString(node, wxT(RAWXML_STA), wxT("sid"), NULL, useprefix).ToAscii();
-    wxLogVerbose(wxString::Format(_("Adding sta %s to %s."), wxString(stall.name.c_str(), wxConvLocal).c_str(), m_output.GetFullPath().c_str()));
-
-    cXmlNode child(node.children());
-    while (child) {
-        DO_CONDITION_COMMENT(child);
-
-        if (child(RAWXML_ATTRACTION)) {
-            ParseAttraction(child, stall.attraction);
-        } else if (child(RAWXML_STA_ITEM)) {
-            USE_PREFIX(child);
-            cStallItem item;
-            item.item = ParseString(child, wxT(RAWXML_STA_ITEM), wxT("cid"), NULL, useprefix).ToAscii();
-            item.cost = ParseUnsigned(child, wxT(RAWXML_STA_ITEM), wxT("cost"));
-            stall.items.push_back(item);
-        } else if (child(RAWXML_STA_STALLUNKNOWNS)) {
-            OPTION_PARSE(unsigned long, stall.unknowns.unk1, ParseUnsigned(child, wxT(RAWXML_STA_STALLUNKNOWNS), wxT("u1")));
-            OPTION_PARSE(unsigned long, stall.unknowns.unk2, ParseUnsigned(child, wxT(RAWXML_STA_STALLUNKNOWNS), wxT("u2")));
-            OPTION_PARSE(unsigned long, stall.unknowns.unk3, ParseUnsigned(child, wxT(RAWXML_STA_STALLUNKNOWNS), wxT("u3")));
-            OPTION_PARSE(unsigned long, stall.unknowns.unk4, ParseUnsigned(child, wxT(RAWXML_STA_STALLUNKNOWNS), wxT("u4")));
-            OPTION_PARSE(unsigned long, stall.unknowns.unk5, ParseUnsigned(child, wxT(RAWXML_STA_STALLUNKNOWNS), wxT("u5")));
-            OPTION_PARSE(unsigned long, stall.unknowns.unk6, ParseUnsigned(child, wxT(RAWXML_STA_STALLUNKNOWNS), wxT("u6")));
-        } else if (child.element()) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in sta tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()));
-        }
-
-        child.go_next();
-    }
-
-    ovlSTAManager* c_sta = m_ovl.GetManager<ovlSTAManager>();
-    c_sta->AddStall(stall);
 }

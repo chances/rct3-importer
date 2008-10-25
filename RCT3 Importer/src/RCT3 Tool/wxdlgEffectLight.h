@@ -31,9 +31,14 @@
 #ifndef WXDLGEFFECTLIGHT_H_INCLUDED
 #define WXDLGEFFECTLIGHT_H_INCLUDED
 
+#include <wx/button.h>
+#include <wx/checkbox.h>
+#include <wx/choice.h>
+#include <wx/clrpicker.h>
+#include <wx/dialog.h>
+#include <wx/textctrl.h>
 #include <wx/xrc/xmlres.h>
 
-#include <wx/clrpicker.h>
 
 class dlgEffectLight : public wxDialog {
 protected:

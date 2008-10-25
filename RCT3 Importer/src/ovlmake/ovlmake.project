@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Project Name="ovlmake">
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="src">
+    <File Name="ovlmake.cpp"/>
+    <File Name="version_ovlmake.h"/>
+    <File Name="version_wrap.h"/>
+    <File Name="version_wrap.cpp"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="doc">
+    <File Name="todo.txt"/>
+    <File Name="changelog.txt"/>
+    <File Name="changes.tmp"/>
+    <File Name="License.txt"/>
+    <File Name="OvlCompiler ReadMe.txt"/>
+    <File Name="ReadMe 1st.txt"/>
+  </VirtualDirectory>
+  <Dependencies Name="DebugBaseUnicode">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libXmlCpp"/>
+    <Project Name="libASE"/>
+    <Project Name="libOVLDump"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libWXHelp"/>
+    <Project Name="lib3DHelp"/>
+    <Project Name="libRawParse"/>
+  </Dependencies>
+  <Settings Type="Executable">
+    <Configuration Name="DebugBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
+      <General OutputFile="../../bin/$(ProjectName)d" IntermediateDirectory="../../lib/obj/ovlmake/Debug" Command="./$(ProjectName)d" CommandArguments="" WorkingDirectory="../../bin" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-g;$(WX3_CXX_BD);-Wall;-fstrict-aliasing;-Wstrict-aliasing=2;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="../libOVLng"/>
+        <IncludePath Value="../libOVLDump"/>
+        <IncludePath Value="../libRawParse"/>
+        <IncludePath Value="../libWXHelp"/>
+        <IncludePath Value="../lib3DHelp"/>
+        <IncludePath Value="../libASE-1.0"/>
+        <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
+        <IncludePath Value="$(SYSINCLUDE)/libxml2"/>
+        <IncludePath Value="../libXmlCpp"/>
+        <IncludePath Value="../../xml"/>
+        <Preprocessor Value="USE_SQUISH"/>
+        <Preprocessor Value="CACHE_GXIMAGE"/>
+        <Preprocessor Value="XMLCPP_USE_XSLT"/>
+        <Preprocessor Value="XMLCPP_USE_EXSLT"/>
+        <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
+      </Compiler>
+      <Linker Required="yes" Options="$(WX3_LIB_BD);-lexpat">
+        <LibraryPath Value="../../lib"/>
+        <Library Value="libRawParseud"/>
+        <Library Value="3DHelpbud"/>
+        <Library Value="WXHelpbud"/>
+        <Library Value="libASEd"/>
+        <Library Value="libOVLngud"/>
+        <Library Value="libOVLDumpd"/>
+        <Library Value="XmlCppud"/>
+        <Library Value="GraphicsMagick++"/>
+        <Library Value="GraphicsMagick"/>
+        <Library Value="freetype"/>
+        <Library Value="xml2"/>
+        <Library Value="xslt"/>
+        <Library Value="exslt"/>
+        <Library Value="squish"/>
+        <Library Value="bz2"/>
+        <Library Value="jpeg"/>
+        <Library Value="png"/>
+        <Library Value="tiff"/>
+        <Library Value="cryptopp"/>
+      </Linker>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""></Debugger>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild>
+        <Command Enabled="yes">../../../Utilities/autover/autover.exe -dte1 -u version_ovlmake.h</Command>
+      </PreBuild>
+      <PostBuild>
+        <Command Enabled="yes">../../../Utilities/autover/autover.exe -2 -u version_ovlmake.h</Command>
+      </PostBuild>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild>
+
+</CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="ReleaseBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
+      <General OutputFile="../../bin/$(ProjectName)" IntermediateDirectory="../../lib/obj/ovlmake/Release" Command="./$(ProjectName)" CommandArguments="" WorkingDirectory="../../bin" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-O2;$(WX3_CXX_BR);-fstrict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="../libOVLng"/>
+        <IncludePath Value="../libOVLDump"/>
+        <IncludePath Value="../libRawParse"/>
+        <IncludePath Value="../libWXHelp"/>
+        <IncludePath Value="../lib3DHelp"/>
+        <IncludePath Value="../libASE-1.0"/>
+        <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
+        <IncludePath Value="$(SYSINCLUDE)/libxml2"/>
+        <IncludePath Value="../libXmlCpp"/>
+        <IncludePath Value="../../xml"/>
+        <Preprocessor Value="USE_SQUISH"/>
+        <Preprocessor Value="CACHE_GXIMAGE"/>
+        <Preprocessor Value="XMLCPP_USE_XSLT"/>
+        <Preprocessor Value="XMLCPP_USE_EXSLT"/>
+        <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
+      </Compiler>
+      <Linker Required="yes" Options="-O2;-s;$(WX3_LIB_BR);-lexpat">
+        <LibraryPath Value="../../lib"/>
+        <Library Value="libRawParseu"/>
+        <Library Value="3DHelpbu"/>
+        <Library Value="WXHelpbu"/>
+        <Library Value="libASE"/>
+        <Library Value="libOVLng"/>
+        <Library Value="libOVLDump"/>
+        <Library Value="XmlCppu"/>
+        <Library Value="GraphicsMagick++"/>
+        <Library Value="GraphicsMagick"/>
+        <Library Value="freetype"/>
+        <Library Value="xml2"/>
+        <Library Value="xslt"/>
+        <Library Value="exslt"/>
+        <Library Value="squish"/>
+        <Library Value="bz2"/>
+        <Library Value="jpeg"/>
+        <Library Value="png"/>
+        <Library Value="tiff"/>
+        <Library Value="cryptopp"/>
+      </Linker>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""></Debugger>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild>
+        <Command Enabled="yes">../../../Utilities/autover/autover.exe -dte1 -u version_ovlmake.h</Command>
+      </PreBuild>
+      <PostBuild>
+        <Command Enabled="yes">../../../Utilities/autover/autover.exe -2 -u version_ovlmake.h</Command>
+      </PostBuild>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild>
+
+</CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+  </Settings>
+  <Dependencies Name="ReleaseBaseUnicode">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libXmlCpp"/>
+    <Project Name="libASE"/>
+    <Project Name="libOVLDump"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libWXHelp"/>
+    <Project Name="lib3DHelp"/>
+    <Project Name="libRawParse"/>
+  </Dependencies>
+</CodeLite_Project>

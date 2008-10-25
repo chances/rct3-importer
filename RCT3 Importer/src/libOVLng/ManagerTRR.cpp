@@ -192,7 +192,7 @@ void cTrackedRide::Launched::Fill(r3::TrackedRide_Common& trr) const {
   * @todo: document this function
   */
 void cTrackedRide::Station::Fill(r3::TrackedRide_Common& trr, ovlStringTable* tab, ovlRelocationManager* rel) const {
-    STRINGLIST_ASSIGN(trr.station_name, name, true, tab, rel);
+    STRINGLIST_ASSIGN(trr.station_name, name, false, tab, rel);
     DO_ASSIGN(trr, platform_height_over_track);
     DO_ASSIGN(trr, start_preset);
     DO_ASSIGN(trr, start_possibilities);
@@ -467,6 +467,7 @@ void ovlTRRManager::AddRide(const cTrackedRide& item) {
         GetStringTable()->AddString(item.specials.cable_lift);
     if (item.specials.lift_car != "")
         GetStringTable()->AddString(item.specials.lift_car);
+		
     if (item.station.name != "")
         GetStringTable()->AddString(item.station.name);
 

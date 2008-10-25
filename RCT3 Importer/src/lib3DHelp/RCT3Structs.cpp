@@ -27,6 +27,7 @@
 
 #include <boost/format.hpp>
 #include <boost/tokenizer.hpp>
+#include <wx/log.h>
 
 #include "spline.h"
 
@@ -830,6 +831,11 @@ bool cFlexiTexture::Check() {
     if (Name.IsSameAs("Tex", false) || Name.Upper().StartsWith("TEX.")) {
         throw RCT3Exception(wxString::Format(_("Texture '%s': A texture may not have a Blender default name ('Tex' or start with 'Tex.')."), Name.c_str()));
     }
+	
+	// Reserved check
+	if (isReserved(Name)) {
+        throw RCT3Exception(wxString::Format(_("Texture '%s': A texture may not have a reserved texture name."), Name.c_str()));
+	}
 
     if (!Frames.size()) {
         // No texture frames added.
@@ -1033,6 +1039,7 @@ COLOURQUAD cFlexiTexture::g_rgbPalette[256];
 bool cFlexiTexture::g_rgbPaletteCreated = false;
 COLOURQUAD cFlexiTexture::g_bmyPalette[256];
 bool cFlexiTexture::g_bmyPaletteCreated = false;
+boost::caseless_set cFlexiTexture::m_reserved;
 
 const COLOURQUAD* cFlexiTexture::GetRGBPalette() {
     if (!g_rgbPaletteCreated) {
@@ -1058,6 +1065,34 @@ const COLOURQUAD* cFlexiTexture::GetBMYPalette() {
         g_bmyPaletteCreated = true;
     }
     return &g_bmyPalette[0];
+}
+
+void cFlexiTexture::makeReserved() {
+	// Special flags
+	m_reserved.insert("useterraintexture");
+	m_reserved.insert("useclifftexture");
+	m_reserved.insert("siwater");
+	m_reserved.insert("water");
+	m_reserved.insert("watermask");
+	m_reserved.insert("UseAdTexture");
+	
+	// Chrome
+	m_reserved.insert("chrome");
+	m_reserved.insert("chromeds");
+	m_reserved.insert("fakeglass");
+	m_reserved.insert("fakeglass2sided");
+	m_reserved.insert("handlebars");
+	m_reserved.insert("mirrorchrome");
+	m_reserved.insert("shiny");
+	m_reserved.insert("two");
+	m_reserved.insert("ultralowmirrors");
+	
+	// Other
+	m_reserved.insert("nullbmp");
+}
+
+bool cFlexiTexture::isReserved(const wxString& t_ftx) {
+	return pretty::has(getReserved(), static_cast<const char*>(t_ftx.ToAscii()));
 }
 
 ///////////////////////////////////////////////////////////////
@@ -1141,17 +1176,17 @@ cModel::cModel(MATRIX def, c3DLoaderOrientation ori): name(wxT("")), file(wxT(""
 }
 
 void cModel::SetupFileProperties(cMeshStruct* ms, const boost::shared_ptr<c3DLoader>& obj, unsigned int n) {
-    if ((obj->GetObjectName(n).CmpNoCase(wxT("root")) == 0)
-            || (obj->GetObjectVertexCount(n) < 3)
-            || (!obj->IsObjectValid(n))) {
+    if ((obj->getObjectName(n).CmpNoCase(wxT("root")) == 0)
+            || (obj->getObjectVertexCount(n) < 3)
+            || (!obj->isObjectValid(n))) {
         ms->valid = false;
         if (!ms->disabled)
-            error.push_back(wxString::Format(_("Mesh '%s' has been automatically disabled as it is invalid (broken or missing uv-mapping)."), obj->GetObjectName(n).c_str()));
+            error.push_back(wxString::Format(_("Mesh '%s' has been automatically disabled as it is invalid (broken or missing uv-mapping)."), obj->getObjectName(n).c_str()));
         ms->disabled = true;
     } else {
         ms->valid = true;
     }
-    ms->boneassignment = obj->GetObjectBones(n);
+    ms->boneassignment = obj->getObjectBones(n);
 /*
     if (obj->GetObjectVertexCount(n) == 1) {
         ms->effectpoint = true;
@@ -1160,21 +1195,21 @@ void cModel::SetupFileProperties(cMeshStruct* ms, const boost::shared_ptr<c3DLoa
         ms->effectpoint = false;
     }
 */
-    ms->faces = obj->GetObjectIndexCount(n) / 3;
+    ms->faces = obj->getObjectIndexCount(n) / 3;
 }
 
 cMeshStruct cModel::MakeMesh(const boost::shared_ptr<c3DLoader>& obj, unsigned int n) {
     cMeshStruct ms;
-    if ((obj->GetObjectName(n).CmpNoCase(wxT("root")) == 0)
-            || (obj->GetObjectVertexCount(n) < 3)
-            || (!obj->IsObjectValid(n))) {
+    if ((obj->getObjectName(n).CmpNoCase(wxT("root")) == 0)
+            || (obj->getObjectVertexCount(n) < 3)
+            || (!obj->isObjectValid(n))) {
         ms.disabled = true;
     } else {
         ms.disabled = false;
     }
     SetupFileProperties(&ms, obj, n);
-    ms.Name = obj->GetObjectName(n);
-    ms.boneassignment = obj->GetObjectBones(n);
+    ms.Name = obj->getObjectName(n);
+    ms.boneassignment = obj->getObjectBones(n);
 /*
     ms.flags = 0;
     ms.place = 0;
@@ -1208,12 +1243,12 @@ bool cModel::Load(bool asoverlay) {
         if (name.IsEmpty())
             name = newname;
 
-        fileorientation = obj->GetOrientation();
-        model_bones = obj->GetBones();
+        fileorientation = obj->getOrientation();
+        model_bones = obj->getBones();
 
         meshstructs.clear();
         // Load the object into mesh structs
-        for (unsigned long j = 0; j < obj->GetObjectCount(); j++) {
+        for (unsigned long j = 0; j < obj->getObjectCount(); j++) {
             meshstructs.push_back(MakeMesh(obj, j));
         }
     } else {
@@ -1231,9 +1266,9 @@ bool cModel::Load(bool asoverlay) {
         Sync();
     }
 
-    if (obj->GetWarnings().size() > 0) {
+    if (obj->getWarnings().size() > 0) {
         error.Add(_("The 3D model loader reported the following problems:"));
-        error.insert(error.end(), obj->GetWarnings().begin(), obj->GetWarnings().end());
+        error.insert(error.end(), obj->getWarnings().begin(), obj->getWarnings().end());
     }
 
     return true;
@@ -1266,8 +1301,8 @@ bool cModel::Sync() {
         return false;
     }
 
-    fileorientation = obj->GetOrientation();
-    model_bones = obj->GetBones();
+    fileorientation = obj->getOrientation();
+    model_bones = obj->getBones();
 
     if (deducedname.IsEmpty()) {
         deducedname = obj->getName();
@@ -1289,43 +1324,43 @@ bool cModel::Sync() {
     bool oldfile = (meshstructs[0].Name == wxT(""));
 
     if (oldfile) {
-        if (obj->GetObjectCount() == meshstructs.size()) {
+        if (obj->getObjectCount() == meshstructs.size()) {
             // Number of meshes unchanged. We simply assume the order hasn't changed
             for(unsigned int i = 0; i < meshstructs.size(); i++)
-                meshstructs[i].Name = obj->GetObjectName(i);
-        } else if (obj->GetObjectCount() > meshstructs.size()) {
+                meshstructs[i].Name = obj->getObjectName(i);
+        } else if (obj->getObjectCount() > meshstructs.size()) {
             // New meshes in the model file
             // Warn about it
             error.push_back(wxString::Format(_("%d new mesh(es) in the model file.\nAs the scn file is too old to map the meshes, the ones known were assigned in order and the new ones appended.\nYou should probably check if everything is alright."),
-                        obj->GetObjectCount()-meshstructs.size()));
+                        obj->getObjectCount()-meshstructs.size()));
             // Assign the ones present
             for(unsigned int i = 0; i < meshstructs.size(); i++)
-                meshstructs[i].Name = obj->GetObjectName(i);
+                meshstructs[i].Name = obj->getObjectName(i);
             // Initialize the new ones
-            for(unsigned int i = meshstructs.size(); i < obj->GetObjectCount(); i++)
+            for(unsigned int i = meshstructs.size(); i < obj->getObjectCount(); i++)
                 meshstructs.push_back(MakeMesh(obj, i));
-        } else if (obj->GetObjectCount() < meshstructs.size()) {
+        } else if (obj->getObjectCount() < meshstructs.size()) {
             // Meshes were removed from the model file
             // Warn about it
             error.push_back(wxString::Format(_("%d mesh(es) were removed from the model file.\nAs the scn file is too old to map the meshes, the ones known were assigned in order and the rest was deleted.\nYou should probably check if everything is alright."),
-                        meshstructs.size()-obj->GetObjectCount()));
+                        meshstructs.size()-obj->getObjectCount()));
             // Assign the ones present
-            for(unsigned int i = 0; i < obj->GetObjectCount(); i++)
-                meshstructs[i].Name = obj->GetObjectName(i);
+            for(unsigned int i = 0; i < obj->getObjectCount(); i++)
+                meshstructs[i].Name = obj->getObjectName(i);
             // Delete the unused entries
-            meshstructs.erase(meshstructs.begin() + obj->GetObjectCount(), meshstructs.end());
+            meshstructs.erase(meshstructs.begin() + obj->getObjectCount(), meshstructs.end());
         }
         goto fixupsinglevertexmeshes;
     }
 
     // We have a newer scn file with stored mesh names
     // before getting serious we do a simple check to see if everything is allright
-    if (obj->GetObjectCount() == meshstructs.size()) {
+    if (obj->getObjectCount() == meshstructs.size()) {
         bool allright = true;
         for(unsigned int i = 0; i < meshstructs.size(); i++) {
-            if (meshstructs[i].Name.CmpNoCase(obj->GetObjectName(i)) == 0) {
+            if (meshstructs[i].Name.CmpNoCase(obj->getObjectName(i)) == 0) {
                 // It matches, we update the name in case the case changed
-                meshstructs[i].Name = obj->GetObjectName(i);
+                meshstructs[i].Name = obj->getObjectName(i);
             } else {
                 // It does not match
                 allright = false;
@@ -1341,13 +1376,13 @@ bool cModel::Sync() {
 
     // First round of fixups
     nrfound = 0;
-    for (unsigned int i = 0; i < obj->GetObjectCount(); i++) {
+    for (unsigned int i = 0; i < obj->getObjectCount(); i++) {
         bool found = false;
         for (cMeshStruct::iterator ms = meshstructs.begin(); ms != meshstructs.end(); ms++) {
-            if (ms->Name.CmpNoCase(obj->GetObjectName(i)) == 0) {
+            if (ms->Name.CmpNoCase(obj->getObjectName(i)) == 0) {
                 // Found!
                 // We update the name in case the case changed
-                ms->Name = obj->GetObjectName(i);
+                ms->Name = obj->getObjectName(i);
                 fixup.push_back(*ms);
                 found = true;
                 nrfound++;
@@ -1364,9 +1399,9 @@ bool cModel::Sync() {
     // If the fixups were successful, meshstructs is empty
     if (meshstructs.size() == 0) {
         notify = _("The model file contents changed, everything could be matched up.");
-        if (msinfile != obj->GetObjectCount()) {
+        if (msinfile != obj->getObjectCount()) {
             // More meshes in the model file
-            notify += wxString::Format(_("\nThere were %d new meshes in the model file."), obj->GetObjectCount() - nrfound);
+            notify += wxString::Format(_("\nThere were %d new meshes in the model file."), obj->getObjectCount() - nrfound);
         }
         error.push_back(notify);
         meshstructs = fixup;
@@ -1375,16 +1410,16 @@ bool cModel::Sync() {
 
     // Didn't work. Yay! -.-
     // Special case: Nothing worked, but we have the same number of meshes/objects
-    if ((obj->GetObjectCount() == meshstructs.size()) && (obj->GetObjectCount() == msinfile)) {
+    if ((obj->getObjectCount() == meshstructs.size()) && (obj->getObjectCount() == msinfile)) {
         error.push_back(_("The model file contents changed completely.\nAs the number of meshes stayed constant, the settings were transferred in order.\nYou should probably check if everything is alright."));
-        for (unsigned int i = 0; i < obj->GetObjectCount(); i++) {
-            meshstructs[i].Name = obj->GetObjectName(i);
+        for (unsigned int i = 0; i < obj->getObjectCount(); i++) {
+            meshstructs[i].Name = obj->getObjectName(i);
         }
         goto fixupsinglevertexmeshes;
     }
 
     // Special case: Meshes/Objects disappeared
-    if (nrfound == obj->GetObjectCount()) {
+    if (nrfound == obj->getObjectCount()) {
         error.push_back(_("The model file contents changed, it seems like you deleted at least one mesh.\nAll meshes in the object file could be matched, so probably everything is ok.\nYou should still check if everything is alright."));
         meshstructs.clear();
         meshstructs = fixup;
@@ -1425,12 +1460,12 @@ bool cModel::Sync() {
     meshstructs = fixup;
 
 fixupsinglevertexmeshes:
-    for (unsigned int i = 0; i < obj->GetObjectCount(); i++)
+    for (unsigned int i = 0; i < obj->getObjectCount(); i++)
         SetupFileProperties(&meshstructs[i], obj, i);
 
-    if (obj->GetWarnings().size() > 0) {
+    if (obj->getWarnings().size() > 0) {
         error.Add(_("The 3D model loader reported the following problems:"));
-        error.insert(error.end(), obj->GetWarnings().begin(), obj->GetWarnings().end());
+        error.insert(error.end(), obj->getWarnings().begin(), obj->getWarnings().end());
     }
 
     if (auto_bones)
@@ -1572,7 +1607,7 @@ bool cModel::CheckMeshes(bool animated) {
         i_mesh->Check(name);
 
         if (animated) {
-            if (object->GetObjectVertexCount(c_mesh)>SHRT_MAX){
+            if (object->getObjectVertexCount(c_mesh)>SHRT_MAX){
                 throw RCT3Exception(wxString::Format(_("Animated model '%s': Group '%s' has too many vertices for an animated mesh. This is an internal limitation, but as the limit is at %d, your object has too many faces anyways."), name.c_str(), i_mesh->Name.c_str(), SHRT_MAX));
             }
         }
@@ -1588,9 +1623,9 @@ bool cModel::CheckMeshes(bool animated) {
                         if (animated) {
                             int verts = 0;
                             foreach(int i, compvec) {
-                                verts += object->GetObjectVertexCount(i);
+                                verts += object->getObjectVertexCount(i);
                             }
-                            if (verts + object->GetObjectVertexCount(c_mesh) > SHRT_MAX)
+                            if (verts + object->getObjectVertexCount(c_mesh) > SHRT_MAX)
                                 continue;
                         }
                         compvec.push_back(c_mesh);
@@ -2089,6 +2124,12 @@ bool cAnimatedModel::Check(cAnimatedModelMap& amodnames) {
         // check for duplicates and assign parents
         for (unsigned int i = 0; i < modelbones.size(); ++i) {
             wxLogDebug(wxT("Trace, cAnimatedModel::Check bone %s, %d"), modelbones[i].name.c_str(), modelbones[i].meshes.size());
+			
+			// Lazyness check
+			if (modelbones[i].name.IsSameAs("Bone", false) || modelbones[i].name.Upper().StartsWith("BONE.")) {
+				throw RCT3Exception(wxString::Format(_("Animated Model '%s': A bone may not have a Blender default name ('Bone' or start with 'Bone.')."), name.c_str()));
+			}
+			
             if (modelbones[i].name == modelbones[i].parent) {
                 throw RCT3Exception(wxString::Format(_("Animated Model '%s': Bone '%s' is it's own parent."), name.c_str(), modelbones[i].name.c_str()));
             }
@@ -2519,7 +2560,12 @@ bool cAnimation::Check(const wxSortedArrayString& presentbones) {
 
     // Remove bad bones
     for (int i = boneanimations.size() - 1; i >= 0; --i) {
-        if (presentbones.Index(boneanimations[i].name) == wxNOT_FOUND) {
+		// Lazyness check
+		if (boneanimations[i].name.IsSameAs("Bone", false) || boneanimations[i].name.Upper().StartsWith("BONE.")) {
+			throw RCT3Exception(wxString::Format(_("Animation '%s': A bone may not have a Blender default name ('Bone' or start with 'Bone.')."), name.c_str()));
+		}
+
+		if (presentbones.Index(boneanimations[i].name) == wxNOT_FOUND) {
             ret = false;
             if (READ_RCT3_EXPERTMODE()) {
                 if (!READ_RCT3_MOREEXPERTMODE())
@@ -2962,5 +3008,3 @@ bool cReference::FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned
         return false;
     return true;
 }
-
-

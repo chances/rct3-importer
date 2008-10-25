@@ -31,6 +31,7 @@
 #include <string>
 #include <vector>
 
+#include "cXmlException.h"
 #include "cXmlInputCallback.h"
 #include "cXmlOutputCallback.h"
 
@@ -58,6 +59,11 @@ public:
         add(INTERNAL + filename, data, datasize, unzippedsize);
     }
     static inline std::string getInternalName(const std::string& filename) {
+#ifdef DEBUG
+		if (!hasFileInternal(filename)) {
+			throw eXml(std::string("getInternalName, Internal file missing: ")+filename);
+		}
+#endif
         return std::string(cXmlInputOutputCallbackString::PROTOCOL)+std::string(cXmlInputOutputCallbackString::INTERNAL)+filename;
     }
     static const std::string& get(const std::string& filename);

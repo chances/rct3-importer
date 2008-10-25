@@ -29,38 +29,41 @@
 					<sch:assert test="count(/*/mod:group[@name = current()]) = 1">The name of groups have to be unique, '<sch:value-of select="."/>' is not.</sch:assert>
 				</sch:rule>
 			</sch:pattern>
-			<element name="metadata" occurs="?">
-				<group>
-					<attribute name="role">
-						<value>rct3</value>
-					</attribute>
-					<element name="name" occurs="?" type="string"/>
-					<element name="prefix" occurs="?" type="string"/>
-					<element name="path" occurs="?" type="string"/>
-					<element name="version" occurs="?">
-						<choice>
-							<value>0</value>
-							<value>1</value>
-							<value>2</value>
-						</choice>
-					</element>
-					<element name="flag" occurs="*">
-						<choice>
-							<value>greenery</value>
-							<value>noshadow</value>
-							<value>rotation</value>
-							<value>unk01</value>
-							<value>unk02</value>
-							<value>unk03</value>
-							<value>transformedPreview</value>
-							<value>unkFerris</value>
-						</choice>
-					</element>
-					<element name="sway" type="float" occurs="?"/>
-					<element name="brightness" type="float" occurs="?"/>
-					<element name="scale" type="float" occurs="?"/>
-					<element name="unk" type="float" occurs="?"/>
-				</group>
+			<element name="metadata" occurs="*">
+				<choice>
+					<group>
+						<attribute name="role">
+							<value>rct3</value>
+						</attribute>
+						<element name="name" occurs="?" type="string"/>
+						<element name="prefix" occurs="?" type="string"/>
+						<element name="path" occurs="?" type="string"/>
+						<element name="version" occurs="?">
+							<choice>
+								<value>0</value>
+								<value>1</value>
+								<value>2</value>
+							</choice>
+						</element>
+						<element name="flag" occurs="*">
+							<choice>
+								<value>greenery</value>
+								<value>noshadow</value>
+								<value>rotation</value>
+								<value>unk01</value>
+								<value>unk02</value>
+								<value>unk03</value>
+								<value>transformedPreview</value>
+								<value>unkFerris</value>
+							</choice>
+						</element>
+						<element name="sway" type="float" occurs="?"/>
+						<element name="brightness" type="float" occurs="?"/>
+						<element name="scale" type="float" occurs="?"/>
+						<element name="unk" type="float" occurs="?"/>
+					</group>
+					<ref name="undefinedmeta"/>
+				</choice>
 			</element>
 			<a:documentation>The 'system' element describes the coordinate system used for the model</a:documentation>
 			<element name="system" occurs="?">
@@ -121,11 +124,7 @@
 									</choice>
 								</element>
 							</group>
-							<group>
-								<attribute name="role"/>
-								<anyAttribute/>
-								<anyElement/>
-							</group>
+							<ref name="undefinedmeta"/>
 						</choice>
 					</element>
 					<sch:pattern>
@@ -174,6 +173,11 @@
 					If this attribute is missing or set to 'bone', it is usually assumed that a real mesh-transforming bone is described (In contrast
 					to e.g. effect points).</a:documentation>
 					<attribute name="role" type="string" occurs="?"/>
+					<element name="metadata" occurs="*">
+						<choice>
+							<ref name="undefinedmeta"/>
+						</choice>
+					</element>
 					<element name="matrix">
 						<ref name="matrixrow" minOccurs="4" maxOccurs="4"/>
 					</element>
@@ -188,6 +192,11 @@
 							<value type="int">1</value>
 						</choice>
 					</attribute>
+					<element name="metadata" occurs="*">
+						<choice>
+							<ref name="undefinedmeta"/>
+						</choice>
+					</element>
 					<element name="node" occurs="+">
 						<element name="position" ref="vector"/>
 						<element name="controlPrev" ref="vector"/>
@@ -205,21 +214,24 @@
 					</sch:pattern>
 					<attribute name="name" type="string"/>
 					<element name="metadata" occurs="?">
-						<group>
-							<attribute name="role">
-								<value>rct3</value>
-							</attribute>
-							<element name="useAlpha" occurs="?">
-								<empty/>
-							</element>
-							<element name="recol" type="int" occurs="?"/>
-							<element name="referenced" occurs="?">
-								<choice>
+						<choice>
+							<group>
+								<attribute name="role">
+									<value>rct3</value>
+								</attribute>
+								<element name="useAlpha" occurs="?">
 									<empty/>
-									<data type="string"/>
-								</choice>
-							</element>
-						</group>
+								</element>
+								<element name="recol" type="int" occurs="?"/>
+								<element name="referenced" occurs="?">
+									<choice>
+										<empty/>
+										<data type="string"/>
+									</choice>
+								</element>
+							</group>
+							<ref name="undefinedmeta"/>
+						</choice>
 					</element>
 					<choice>
 						<group>
@@ -300,6 +312,11 @@
 					parent).</a:documentation>
 					<attribute name="inherit" occurs="?" type="string"/>
 					<attribute name="abstract" occurs="?" type="boolean"/>
+					<element name="metadata" occurs="*">
+						<choice>
+							<ref name="undefinedmeta"/>
+						</choice>
+					</element>
 					<element name="bone" occurs="+">
 						<attribute name="name" type="string"/>
 						<element name="translate" occurs="*" ref="timevector"/>
@@ -346,16 +363,19 @@
 					<a:documentation>'metadata' elements represent information specific for a reading application. As the need arises,
 					'metadata' elments will be added to other elemens beside 'group'.</a:documentation>
 					<element name="metadata" occurs="?">
-						<group>
-							<attribute name="role">
-								<value>rct3</value>
-							</attribute>
-							<element name="lodDistance" occurs="?">
-								<data type="decimal">
-									<param name="minInclusive">0</param>
-								</data>
-							</element>
-						</group>
+						<choice>
+							<group>
+								<attribute name="role">
+									<value>rct3</value>
+								</attribute>
+								<element name="lodDistance" occurs="?">
+									<data type="decimal">
+										<param name="minInclusive">0</param>
+									</data>
+								</element>
+							</group>
+							<ref name="undefinedmeta"/>
+						</choice>
 					</element>
 					<choice occurs="+">
 						<element name="bone" type="string"/>
@@ -407,6 +427,33 @@
 				<data type="decimal"/>
 				<data type="decimal"/>
 			</list>
+		</element>
+	</define>
+	<define name="undefinedmeta">
+		<group>
+			<attribute name="role">
+				<data type="string">
+					<param name="minLength">1</param>
+				</data>
+			</attribute>
+			<attribute occurs="*">
+				<anyName/>
+			</attribute>
+			<ref name="any" occurs="*"/>
+		</group>
+	</define>
+	<define name="any">
+		<element>
+			<anyName/>
+			<zeroOrMore>
+				<choice>
+					<attribute>
+						<anyName/>
+					</attribute>
+					<text/>
+					<ref name="any"/>
+				</choice>
+			</zeroOrMore>
 		</element>
 	</define>
 </grammar>

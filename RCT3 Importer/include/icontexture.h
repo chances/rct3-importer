@@ -11,6 +11,8 @@
 #ifndef __ICONTEXTURE_H__
 #define __ICONTEXTURE_H__
 
+#include <string>
+
 struct BmpTbl
 {
 	unsigned long unk; ///< always 0 on disk files.
@@ -50,11 +52,12 @@ struct FlicMipHeader
 
 struct IconTexture
 {
-	char *name;
-	char *filename;
+	std::string name;
+	std::string filename;
 	FlicHeader fh;
 	FlicMipHeader fmh;
 	unsigned char *data;
+	IconTexture(): data(NULL) {}
 };
 
 struct TextureStruct2;

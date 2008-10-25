@@ -32,15 +32,16 @@
 
 #include <boost/shared_ptr.hpp>
 #include <wx/artprov.h>
+#include <wx/busyinfo.h>
 #include <wx/progdlg.h>
 #include <wx/valgen.h>
+#include <wx/toolbar.h>
 #include <wx/tooltip.h>
 
 #include <algorithm>
 #include <exception>
 
-//#include <IL/il.h>
-//#include <IL/ilu.h>
+#include "wxapp.h"
 
 #include "auipicfiledlg.h"
 #include "confhelp.h"
@@ -59,7 +60,6 @@
 
 #include "OVL.H"
 
-#include "wxapp.h"
 #include "wxdlgAnimation.h"
 #include "wxdlgLOD.h"
 #include "wxdlgModel.h"
@@ -483,6 +483,9 @@ bool dlgCreateScenery::Save(bool as) {
                 }
             }
             try {
+				wxBusyCursor bc;
+				wxBusyInfo bi("saving...");
+				wxWindowDisabler wd;
                 if (!m_SCN.Save())
                     throw RCT3Exception(_("Saving scenery file failed. You will be asked for a new file name now."));
                 MakeDirty(false);
@@ -515,6 +518,9 @@ bool dlgCreateScenery::Save(bool as) {
         ::wxGetApp().g_workdir.AssignDir(wxFileName(dialog->GetPath()).GetPath());
         m_SCN.filename = dialog->GetPath();
         try {
+			wxBusyCursor bc;
+			wxBusyInfo bi("saving...");
+			wxWindowDisabler wd;
             if (!m_SCN.Save())
                 throw RCT3Exception(_("Error saving SCN file."));
             MakeDirty(false);
@@ -574,6 +580,9 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
             wxLogGui *logex = new wxLogGui();
             wxLog *old = wxLog::SetActiveTarget(logex);
             try {
+				wxBusyCursor bc;
+				wxBusyInfo bi("loading...");
+				wxWindowDisabler wd;
                 /*
                 if (!m_SCN.Load()) {
                     if (m_SCN.error != CSCNFILE_NO_ERROR) {
@@ -1106,7 +1115,7 @@ void dlgCreateScenery::OnModelDown(wxSpinEvent& WXUNUSED(event)) {
 }
 
 void dlgCreateScenery::OnModelAdd(wxCommandEvent& WXUNUSED(event)) {
-    dlgModel *dialog = new dlgModel(this);
+    dlgModel *dialog = new dlgModel(this, m_SCN);
     dialog->SetModel(cModel(matrixGetUnity(), READ_RCT3_ORIENTATION()));
     if (dialog->ShowModal() == wxID_OK) {
         m_SCN.models.push_back(dialog->GetModel());
@@ -1122,7 +1131,7 @@ void dlgCreateScenery::OnModelEdit(wxCommandEvent& WXUNUSED(event)) {
     int sel = m_htlbModel->GetSelection();
     if (sel < 0)
         return;
-    dlgModel *dialog = new dlgModel(this);
+    dlgModel *dialog = new dlgModel(this, m_SCN);
     if (m_SCN.models[sel].error.size()) {
         wxString errtext;
         foreach(wxString& err, m_SCN.models[sel].error)
@@ -1275,7 +1284,7 @@ void dlgCreateScenery::OnAModelDown(wxSpinEvent& WXUNUSED(event)) {
 }
 
 void dlgCreateScenery::OnAModelAdd(wxCommandEvent& WXUNUSED(event)) {
-    dlgModel *dialog = new dlgModel(this, true);
+    dlgModel *dialog = new dlgModel(this, m_SCN, true);
     dialog->SetAnimatedModel(cAnimatedModel(matrixGetUnity(), READ_RCT3_ORIENTATION()));
     if (dialog->ShowModal() == wxID_OK) {
         m_SCN.animatedmodels.push_back(dialog->GetAnimatedModel());
@@ -1291,7 +1300,7 @@ void dlgCreateScenery::OnAModelEdit(wxCommandEvent& WXUNUSED(event)) {
     int sel = m_htlbAModel->GetSelection();
     if (sel < 0)
         return;
-    dlgModel *dialog = new dlgModel(this, true);
+    dlgModel *dialog = new dlgModel(this, m_SCN, true);
     if (m_SCN.animatedmodels[sel].error.size()) {
         wxString errtext;
         foreach(wxString& err, m_SCN.animatedmodels[sel].error)

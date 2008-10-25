@@ -105,12 +105,10 @@
     <Project Name="Precompile RNG"/>
     <Project Name="Precompile XSL"/>
   </Dependencies>
-  <Dependencies Name="DebugBaseUnicode"/>
-  <Dependencies Name="ReleaseBaseUnicode"/>
-  <Dependencies Name="Release">
-    <Project Name="Precompile RNG"/>
-    <Project Name="Precompile XSL"/>
-  </Dependencies>
+  <VirtualDirectory Name="doc">
+    <File Name="readme.txt"/>
+    <File Name="license.txt"/>
+  </VirtualDirectory>
   <Settings Type="Static Library">
     <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
       <General OutputFile="../../lib/$(ProjectName)d.a" IntermediateDirectory="../../lib/obj/libXmlCpp/Debug" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
@@ -119,6 +117,7 @@
         <IncludePath Value="../../include"/>
         <IncludePath Value="../../xml"/>
         <IncludePath Value="$(SYSINCLUDE)/libxml2"/>
+        <Preprocessor Value="DEBUG"/>
         <Preprocessor Value="LIBXML_STATIC"/>
         <Preprocessor Value="XMLCPP_USE_XSLT"/>
         <Preprocessor Value="XMLCPP_USE_EXSLT"/>
@@ -178,6 +177,7 @@ xsl/iso_simple.xsl.h:  xsl/iso_simple.xsl ../../xml/xsl/strip.xsl
         <IncludePath Value="../../include"/>
         <IncludePath Value="../../xml"/>
         <IncludePath Value="$(SYSINCLUDE)/libxml2"/>
+        <Preprocessor Value="DEBUG"/>
         <Preprocessor Value="LIBXML_STATIC"/>
         <Preprocessor Value="XMLCPP_USE_XSLT"/>
         <Preprocessor Value="XMLCPP_USE_EXSLT"/>
@@ -353,8 +353,10 @@ xsl/iso_simple.xsl.h:  xsl/iso_simple.xsl ../../xml/xsl/strip.xsl
     <Project Name="Precompile RNG"/>
     <Project Name="Precompile XSL"/>
   </Dependencies>
-  <VirtualDirectory Name="doc">
-    <File Name="readme.txt"/>
-    <File Name="license.txt"/>
-  </VirtualDirectory>
+  <Dependencies Name="DebugBaseUnicode"/>
+  <Dependencies Name="Release">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+  </Dependencies>
+  <Dependencies Name="ReleaseBaseUnicode"/>
 </CodeLite_Project>

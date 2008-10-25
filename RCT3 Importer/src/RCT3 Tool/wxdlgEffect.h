@@ -32,6 +32,13 @@
 #define WXDLGEFFECT_H_INCLUDED
 
 #include <map>
+#include <wx/button.h>
+#include <wx/checkbox.h>
+#include <wx/choice.h>
+#include <wx/dialog.h>
+#include <wx/listbox.h>
+#include <wx/menu.h>
+#include <wx/stattext.h>
 #include <wx/xrc/xmlres.h>
 
 #include "RCT3Structs.h"

@@ -1,14 +1,18 @@
 Fixed	Show selected item in list boxes after update
 Fixed	Load error for empty matrix stacks
-New	Right double-click on A to re-auto model bones without confirmation
+Added	Right double-click on A to re-auto model bones without confirmation
 Fixed	Prefix missing on returned filename if creating from scenery settings dialog
 Fixed	Clear prefix when loading old scn file
 Fixed	Make auto coordinate system from file button work. Also gives somewhat helpful suggestion when no coordinate system information is available.
 Fixed	Up/down spin controls no longer activated if nothing is selected
-New	Toggle for the animation display on LODs
+Added	Toggle for the animation display on LODs
 Fixed	Bugs when trying to load broken modxml files.
 Fixed	OK and Cancel buttons hidden in bone settings window if the assigend meshes list was too long.
 Removed	The fix orientation matrix is now gone for good as it created a lot of confusion. That removes the use of a default matrix, so that's gone as well.
-New	Detect Problems menu command to find some issues that can lead to a 60% crash or a no sid for svd.
+Added	Detect Problems menu command to find some issues that can lead to a 60% crash or a no sid for svd.
 Added	More visual flags
 Fixed	Prevent errors due to size in squares being set to more than 1.
+Added	Some support for moving theme files around. The importer is able to fix the paths of all files if the directory structure did not change.
+Added	Busy notice while loading or saving scenery files.
+Fixed	Update parents of bones when changing the parent's name.
+Added	When changing a bone name in a model window, ask the user if he wants to change the name in other animated models or animations.

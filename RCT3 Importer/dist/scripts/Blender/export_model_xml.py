@@ -67,10 +67,16 @@ def infomsg(msg, silent = False):
     printmsg("Info", msg, silent)
 
 def get_Name(ob):
+	name = ob.name
     try:
-        return ob.properties['modxml']['general']['name']
+        name = ob.properties['modxml']['general']['name']
     except:
-        return ob.name
+        pass
+	for c in name:
+		if c in '"<>':
+			errormsg("Name of object '%s' contains illegal character (\"<>)" % name)
+			raise "Fatal error"
+	return name
 
 def getMatrix_Empty(obj):
     m = obj.matrix.copy()

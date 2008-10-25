@@ -2,7 +2,12 @@
 <CodeLite_Project Name="Precompile XSL">
   <Description/>
   <Dependencies/>
-  <VirtualDirectory Name="include"/>
+  <VirtualDirectory Name="schematron">
+    <File Name="schematron\iso_schematron_skeleton.xsl.gz.h"/>
+    <File Name="schematron\iso_schematron_skeleton.xsl"/>
+    <File Name="schematron\iso_simple.xsl"/>
+    <File Name="schematron\iso_simple.xsl.gz.h"/>
+  </VirtualDirectory>
   <VirtualDirectory Name="rng-incelim-1.2">
     <File Name="rng-incelim-1.2\clean.xsl"/>
     <File Name="rng-incelim-1.2\clean.xsl.gz.h"/>
@@ -44,23 +49,21 @@
         <IncludePath Value="."/>
       </Compiler>
       <Linker Required="no" Options="-O2"/>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""></Debugger>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
       <ResourceCompiler Required="no" Options=""/>
       <PreBuild/>
       <PostBuild/>
       <CustomBuild Enabled="yes">
         <CleanCommand>make clean</CleanCommand>
         <BuildCommand>make</BuildCommand>
-        <SingleFileCommand></SingleFileCommand>
-        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory></WorkingDirectory>
+        <WorkingDirectory/>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild></CustomPostBuild>
-        <CustomPreBuild>
-
-</CustomPreBuild>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
       </AdditionalRules>
     </Configuration>
   </Settings>

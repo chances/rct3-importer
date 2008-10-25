@@ -31,8 +31,13 @@
 #ifndef WXDLGMATRIX_H_INCLUDED
 #define WXDLGMATRIX_H_INCLUDED
 
-#include <wx/xrc/xmlres.h>
+#include <wx/button.h>
+#include <wx/choice.h>
+#include <wx/dialog.h>
 #include <wx/spinbutt.h>
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
+#include <wx/xrc/xmlres.h>
 
 #include "colhtmllbox.h"
 #include "RCT3Structs.h"

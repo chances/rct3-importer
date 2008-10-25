@@ -27,7 +27,7 @@
 #ifndef _RAWOVLMAKE_H_
 #define _RAWOVLMAKE_H_
 
-#include "wx_pch.h"
+#include <map>
 
 #include <wx/filename.h>
 //#include <wx/xml/xml.h>
@@ -53,7 +53,8 @@
 
 typedef boost::error_info<struct tag_node_line, int> node_line_info;
 
-WX_DECLARE_STRING_HASH_MAP(wxString, cRawParserVars);
+//WX_DECLARE_STRING_HASH_MAP(wxString, cRawParserVars);
+typedef std::map<wxString, wxString> cRawParserVars;
 
 enum eRawOvlMode {
     MODE_COMPILE = 0,
@@ -146,7 +147,9 @@ private:
 
     void CopyBaseAttributes(const xmlcpp::cXmlNode& from, xmlcpp::cXmlNode& to);
 
-    void ParseANR(xmlcpp::cXmlNode& node);
+    void ParseImport(xmlcpp::cXmlNode& node);
+
+	void ParseANR(xmlcpp::cXmlNode& node);
     void ParseBAN(xmlcpp::cXmlNode& node);
     void ParseBSH(xmlcpp::cXmlNode& node);
     void ParseCED(xmlcpp::cXmlNode& node);

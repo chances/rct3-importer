@@ -33,8 +33,12 @@
 #ifndef WXDLGMATRIXLOAD_H_INCLUDED
 #define WXDLGMATRIXLOAD_H_INCLUDED
 
-#include <wx/xrc/xmlres.h>
+#include <wx/button.h>
+#include <wx/choice.h>
+#include <wx/dialog.h>
+#include <wx/stattext.h>
 #include <wx/treectrl.h>
+#include <wx/xrc/xmlres.h>
 
 #include "SCNFile.h"
 

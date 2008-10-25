@@ -28,6 +28,8 @@
 #ifndef WXAPP_H_INCLUDED
 #define WXAPP_H_INCLUDED
 
+#include "win_predefine.h"
+#include <wx/wx.h>
 #include <wx/app.h>
 #include <wx/filename.h>
 
@@ -43,7 +45,7 @@ class ToolApp : public wxApp
         std::list<wxString> g_texturecache;
         wxFileName g_workdir;
 //        RGBQUAD g_recolpalette_bmy[256];
-        RGBQUAD g_recolpalette_rgb[256];
+//        RGBQUAD g_recolpalette_rgb[256];
 
 		virtual bool OnInit();
 		virtual int OnRun();

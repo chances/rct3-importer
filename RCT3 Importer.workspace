@@ -11,23 +11,37 @@
   <Project Name="libOVL" Path="RCT3 Importer\src\libOVL\libOVL.project" Active="No"/>
   <Project Name="RCT3 Importer" Path="RCT3 Importer\src\RCT3 Tool\RCT3 Importer.project" Active="Yes"/>
   <Project Name="libOVLDump" Path="RCT3 Importer\src\libOVLDump\libOVLDump.project" Active="No"/>
+  <Project Name="RCT3 Dumper NG" Path="..\RCT3 Dumper\RCT3 Dumper NG\RCT3 Dumper NG.project" Active="No"/>
+  <Project Name="libRawParse" Path="RCT3 Importer\src\libRawParse\libRawParse.project" Active="No"/>
+  <Project Name="ovlmake" Path="RCT3 Importer\src\ovlmake\ovlmake.project" Active="No"/>
+  <Project Name="Scripts" Path="RCT3 Importer\dist\scripts\Scripts.project"/>
+  <Project Name="autover" Path="Utilities\autover\autover.project" Active="No"/>
+  <Project Name="RCT3 Importer TNG" Path="RCT3 Importer\src\ImporterTNG\RCT3 Importer TNG.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="no">
+      <Project Name="ovlmake" ConfigName="ReleaseBaseUnicode"/>
+      <Project Name="libXmlCpp" ConfigName="Debug"/>
+      <Project Name="libWXHelp" ConfigName="Debug"/>
+      <Project Name="libRawParse" ConfigName="ReleaseBaseUnicode"/>
+      <Project Name="libOVLng" ConfigName="Debug"/>
+      <Project Name="libOVLDump" ConfigName="Debug"/>
+      <Project Name="libOVL" ConfigName="Debug"/>
+      <Project Name="libASE" ConfigName="Debug"/>
+      <Project Name="lib3DHelp" ConfigName="Debug"/>
       <Project Name="bin2c" ConfigName="Debug"/>
+      <Project Name="RCT3 Importer" ConfigName="Debug"/>
+      <Project Name="RCT3 Dumper NG" ConfigName="Debug"/>
       <Project Name="Precompile XSL" ConfigName="Precompile"/>
       <Project Name="Precompile RNG" ConfigName="Precompile"/>
-      <Project Name="libXmlCpp" ConfigName="Debug"/>
-      <Project Name="libOVLng" ConfigName="Debug"/>
-      <Project Name="libASE" ConfigName="Debug"/>
-      <Project Name="libWXHelp" ConfigName="Debug"/>
-      <Project Name="lib3DHelp" ConfigName="Debug"/>
-      <Project Name="libOVL" ConfigName="Debug"/>
-      <Project Name="RCT3 Importer" ConfigName="Debug"/>
-      <Project Name="libOVLDump" ConfigName="Debug"/>
+      <Project Name="Scripts" ConfigName="Debug"/>
+      <Project Name="autover" ConfigName="Debug"/>
+      <Project Name="RCT3 Importer TNG" ConfigName="Debug"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="Release" Selected="yes">
+      <Project Name="ovlmake" ConfigName="DebugBaseUnicode"/>
       <Project Name="libXmlCpp" ConfigName="Release"/>
       <Project Name="libWXHelp" ConfigName="Release"/>
+      <Project Name="libRawParse" ConfigName="DebugBaseUnicode"/>
       <Project Name="libOVLng" ConfigName="Release"/>
       <Project Name="libOVLDump" ConfigName="Release"/>
       <Project Name="libOVL" ConfigName="Release"/>
@@ -35,60 +49,88 @@
       <Project Name="lib3DHelp" ConfigName="Release"/>
       <Project Name="bin2c" ConfigName="Release"/>
       <Project Name="RCT3 Importer" ConfigName="Release"/>
+      <Project Name="RCT3 Dumper NG" ConfigName="Release"/>
       <Project Name="Precompile XSL" ConfigName="Precompile"/>
       <Project Name="Precompile RNG" ConfigName="Precompile"/>
+      <Project Name="Scripts" ConfigName="Release"/>
+      <Project Name="autover" ConfigName="Release"/>
+      <Project Name="RCT3 Importer TNG" ConfigName="Release"/>
     </WorkspaceConfiguration>
     <WorkspaceConfiguration Name="DebugUnicode" Selected="no">
+      <Project Name="ovlmake" ConfigName="ReleaseBaseUnicode"/>
       <Project Name="libXmlCpp" ConfigName="DebugBaseUnicode"/>
       <Project Name="libWXHelp" ConfigName="DebugUnicode"/>
+      <Project Name="libRawParse" ConfigName="DebugBaseUnicode"/>
       <Project Name="libOVLng" ConfigName="DebugBaseUnicode"/>
+      <Project Name="libOVLDump" ConfigName="Debug"/>
+      <Project Name="libOVL" ConfigName="Release"/>
       <Project Name="libASE" ConfigName="Debug"/>
+      <Project Name="lib3DHelp" ConfigName="DebugUnicode"/>
       <Project Name="bin2c" ConfigName="Debug"/>
+      <Project Name="RCT3 Importer" ConfigName="Release"/>
+      <Project Name="RCT3 Dumper NG" ConfigName="Release"/>
       <Project Name="Precompile XSL" ConfigName="Precompile"/>
       <Project Name="Precompile RNG" ConfigName="Precompile"/>
-      <Project Name="lib3DHelp" ConfigName="DebugUnicode"/>
-      <Project Name="libOVL" ConfigName="Debug"/>
-      <Project Name="RCT3 Importer" ConfigName="Debug"/>
-      <Project Name="libOVLDump" ConfigName="Debug"/>
+      <Project Name="Scripts" ConfigName="Debug"/>
+      <Project Name="autover" ConfigName="Debug"/>
+      <Project Name="RCT3 Importer TNG" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="ReleaseUnicode" Selected="yes">
+    <WorkspaceConfiguration Name="ReleaseUnicode" Selected="no">
+      <Project Name="ovlmake" ConfigName="DebugBaseUnicode"/>
       <Project Name="libXmlCpp" ConfigName="ReleaseBaseUnicode"/>
       <Project Name="libWXHelp" ConfigName="ReleaseUnicode"/>
+      <Project Name="libRawParse" ConfigName="ReleaseBaseUnicode"/>
       <Project Name="libOVLng" ConfigName="Release"/>
+      <Project Name="libOVLDump" ConfigName="Release"/>
+      <Project Name="libOVL" ConfigName="Debug"/>
       <Project Name="libASE" ConfigName="Release"/>
       <Project Name="lib3DHelp" ConfigName="ReleaseUnicode"/>
       <Project Name="bin2c" ConfigName="Release"/>
+      <Project Name="autover" ConfigName="Release"/>
+      <Project Name="Scripts" ConfigName="Debug"/>
+      <Project Name="RCT3 Importer" ConfigName="Debug"/>
+      <Project Name="RCT3 Dumper NG" ConfigName="Debug"/>
       <Project Name="Precompile XSL" ConfigName="Precompile"/>
       <Project Name="Precompile RNG" ConfigName="Precompile"/>
-      <Project Name="libOVL" ConfigName="Debug"/>
-      <Project Name="RCT3 Importer" ConfigName="Debug"/>
-      <Project Name="libOVLDump" ConfigName="Debug"/>
+      <Project Name="RCT3 Importer TNG" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="DebugBaseUnicode" Selected="yes">
+    <WorkspaceConfiguration Name="DebugBaseUnicode" Selected="no">
+      <Project Name="ovlmake" ConfigName="DebugBaseUnicode"/>
       <Project Name="libXmlCpp" ConfigName="DebugBaseUnicode"/>
       <Project Name="libWXHelp" ConfigName="DebugBaseUnicode"/>
+      <Project Name="libRawParse" ConfigName="DebugBaseUnicode"/>
       <Project Name="libOVLng" ConfigName="DebugBaseUnicode"/>
+      <Project Name="libOVLDump" ConfigName="Debug"/>
+      <Project Name="libOVL" ConfigName="Release"/>
       <Project Name="libASE" ConfigName="Debug"/>
       <Project Name="lib3DHelp" ConfigName="DebugBaseUnicode"/>
       <Project Name="bin2c" ConfigName="Debug"/>
+      <Project Name="RCT3 Importer" ConfigName="Release"/>
+      <Project Name="RCT3 Dumper NG" ConfigName="Release"/>
       <Project Name="Precompile XSL" ConfigName="Precompile"/>
       <Project Name="Precompile RNG" ConfigName="Precompile"/>
-      <Project Name="libOVL" ConfigName="Debug"/>
-      <Project Name="RCT3 Importer" ConfigName="Debug"/>
-      <Project Name="libOVLDump" ConfigName="Debug"/>
+      <Project Name="Scripts" ConfigName="Debug"/>
+      <Project Name="autover" ConfigName="Debug"/>
+      <Project Name="RCT3 Importer TNG" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="ReleaseBaseUnicode" Selected="yes">
+    <WorkspaceConfiguration Name="ReleaseBaseUnicode" Selected="no">
+      <Project Name="ovlmake" ConfigName="ReleaseBaseUnicode"/>
       <Project Name="libXmlCpp" ConfigName="ReleaseBaseUnicode"/>
       <Project Name="libWXHelp" ConfigName="ReleaseBaseUnicode"/>
+      <Project Name="libRawParse" ConfigName="ReleaseBaseUnicode"/>
       <Project Name="libOVLng" ConfigName="Release"/>
+      <Project Name="libOVLDump" ConfigName="Release"/>
+      <Project Name="libOVL" ConfigName="Debug"/>
       <Project Name="libASE" ConfigName="Release"/>
       <Project Name="lib3DHelp" ConfigName="ReleaseBaseUnicode"/>
       <Project Name="bin2c" ConfigName="Release"/>
+      <Project Name="autover" ConfigName="Release"/>
+      <Project Name="Scripts" ConfigName="Debug"/>
+      <Project Name="RCT3 Importer" ConfigName="Debug"/>
+      <Project Name="RCT3 Dumper NG" ConfigName="Debug"/>
       <Project Name="Precompile XSL" ConfigName="Precompile"/>
       <Project Name="Precompile RNG" ConfigName="Precompile"/>
-      <Project Name="libOVL" ConfigName="Debug"/>
-      <Project Name="RCT3 Importer" ConfigName="Debug"/>
-      <Project Name="libOVLDump" ConfigName="Debug"/>
+      <Project Name="RCT3 Importer TNG" ConfigName="Debug"/>
     </WorkspaceConfiguration>
   </BuildMatrix>
 </CodeLite_Workspace>

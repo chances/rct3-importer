@@ -64,6 +64,8 @@
 #include <list>
 #include <string>
 
+#include <boost/algorithm/string/replace.hpp>
+
 #include "global.h"
 #include "resource.h"
 //#include "scenerydialog.h"
@@ -251,7 +253,7 @@ BOOL CALLBACK GSIEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
         for (IconTexturesIterator = IconTextures.begin();
                 IconTexturesIterator != IconTextures.end(); IconTexturesIterator++) {
             SendDlgItemMessage(hwnd, IDC_LIST, LB_ADDSTRING, 0,
-                               (LPARAM) (*IconTexturesIterator)->name);
+                               (LPARAM) (*IconTexturesIterator)->name.c_str());
         }
         if (CurrentIcon != -1) {
             SetDlgItemText(hwnd, IDC_NAME, Icons[CurrentIcon]->name);
@@ -314,8 +316,8 @@ BOOL CALLBACK GSIEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 Icons[CurrentIcon]->left = left;
                 Icons[CurrentIcon]->bottom = bottom;
                 Icons[CurrentIcon]->right = right;
-                Icons[CurrentIcon]->texture = new char[strlen(IconTextures[texture]->name) + 1];
-                strcpy(Icons[CurrentIcon]->texture, IconTextures[texture]->name);
+                Icons[CurrentIcon]->texture = new char[IconTextures[texture]->name.size() + 1];
+                strcpy(Icons[CurrentIcon]->texture, IconTextures[texture]->name.c_str());
             }
             EndDialog(hwnd, 1);
             break;
@@ -347,8 +349,8 @@ BOOL CALLBACK TextureEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM)
     switch (Message) {
     case WM_INITDIALOG:
         if (CurrentIconTexture != -1) {
-            SetDlgItemText(hwnd, IDC_NAME, IconTextures[CurrentIconTexture]->name);
-            SetDlgItemText(hwnd, IDC_FILENAME, IconTextures[CurrentIconTexture]->filename);
+            SetDlgItemText(hwnd, IDC_NAME, IconTextures[CurrentIconTexture]->name.c_str());
+            SetDlgItemText(hwnd, IDC_FILENAME, IconTextures[CurrentIconTexture]->filename.c_str());
         }
         break;
     case WM_CLOSE:
@@ -395,38 +397,36 @@ BOOL CALLBACK TextureEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM)
                 len = GetWindowTextLength(GetDlgItem(hwnd, IDC_NAME));
                 len2 = GetWindowTextLength(GetDlgItem(hwnd, IDC_FILENAME));
                 if ((len != 0) && (len2 != 0)) {
-                    char *temp = new char[len2 + 1];
-                    GetDlgItemText(hwnd, IDC_FILENAME, temp, len2 + 1);
+                    boost::shared_array<char> temp(new char[len2 + 1]);
+                    GetDlgItemText(hwnd, IDC_FILENAME, temp.get(), len2 + 1);
                     {
-                        wxSize s = getBitmapSize(temp);
+                        wxSize s = getBitmapSize(temp.get());
                         if (s == wxDefaultSize) {
                             ::wxMessageBox(_("There was an error opening the icon texture bitmap."), _("Error"), wxOK|wxICON_ERROR);
-                            delete[] temp;
                             break;
                         }
                         if (s.GetWidth() != s.GetHeight()) {
                             ::wxMessageBox(_("The icon texture bitmap is not square."), _("Error"), wxOK|wxICON_ERROR);
-                            delete[] temp;
                             break;
                         }
                         if ((1 << local_log2(s.GetWidth())) != s.GetWidth()) {
                             ::wxMessageBox(_("Icon texture's width/height is not a power of 2"), _("Error"), wxOK|wxICON_ERROR);
-                            delete[] temp;
                             break;
                         }
                     }
                     save = true;
                     if (CurrentIconTexture != -1) {
-                        delete IconTextures[CurrentIconTexture]->name;
-                        delete IconTextures[CurrentIconTexture]->filename;
+                        IconTextures[CurrentIconTexture]->name = "";
+                        IconTextures[CurrentIconTexture]->filename = "";
                     } else {
                         IconTexture *t = new IconTexture;
                         IconTextures.push_back(t);
                         CurrentIconTexture = IconTextures.size() - 1;
                     }
-                    IconTextures[CurrentIconTexture]->name = new char[len + 1];
-                    GetDlgItemText(hwnd, IDC_NAME, IconTextures[CurrentIconTexture]->name, len + 1);
-                    IconTextures[CurrentIconTexture]->filename = temp;
+                    IconTextures[CurrentIconTexture]->filename = temp.get();
+					temp.reset(new char[len + 1]);
+                    GetDlgItemText(hwnd, IDC_NAME, temp.get(), len + 1);
+                    IconTextures[CurrentIconTexture]->name = temp.get();
 
                     ReadIconTexture(hwnd, IconTextures[CurrentIconTexture]);
 
@@ -617,15 +617,15 @@ BOOL CALLBACK SIDEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
             for (SceneryItemsIterator = SceneryItems.begin();
                     SceneryItemsIterator != SceneryItems.end(); SceneryItemsIterator++) {
                 if (SendDlgItemMessage(hwnd, IDC_LOCATION, CB_FINDSTRING, 0,
-                                       (LPARAM) (*SceneryItemsIterator)->location) == CB_ERR)
+                                       (LPARAM) (*SceneryItemsIterator)->location.c_str()) == CB_ERR)
                     SendDlgItemMessage(hwnd, IDC_LOCATION, CB_ADDSTRING, 0,
-                                       (LPARAM) (*SceneryItemsIterator)->location);
+                                       (LPARAM) (*SceneryItemsIterator)->location.c_str());
             }
         }
 
         if (CurrentScenery != -1) {
-            SetDlgItemText(hwnd, IDC_OVL, SceneryItems[CurrentScenery]->ovl);
-            SetDlgItemText(hwnd, IDC_LOCATION, SceneryItems[CurrentScenery]->location);
+            SetDlgItemText(hwnd, IDC_OVL, SceneryItems[CurrentScenery]->ovl.c_str());
+            SetDlgItemText(hwnd, IDC_LOCATION, SceneryItems[CurrentScenery]->location.c_str());
             SetDlgItemInt(hwnd, IDC_COST, SceneryItems[CurrentScenery]->cost, TRUE);
             SetDlgItemInt(hwnd, IDC_REFUND, SceneryItems[CurrentScenery]->refund, TRUE);
             SetDlgItemInt(hwnd, IDC_XSQUARES, SceneryItems[CurrentScenery]->sizex, FALSE);
@@ -803,7 +803,7 @@ BOOL CALLBACK SIDEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 unsigned long unk31, unk32, unk33, dunk3, dunk5;
                 long dunk2, dunk4;
                 BOOL unk31fail, unk32fail, unk33fail, dunk2fail, dunk3fail, dunk4fail, dunk5fail;
-                char *temp;
+                boost::shared_array<char> temp;
                 BOOL costfail, refundfail, sizexfail, sizeyfail;
                 ovllen = GetWindowTextLength(GetDlgItem(hwnd, IDC_OVL));
                 loclen = GetWindowTextLength(GetDlgItem(hwnd, IDC_LOCATION));
@@ -860,13 +860,12 @@ BOOL CALLBACK SIDEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                     if ((enabled == false)
                             || ((enabled == true) && (wallicon != -1)
                                 && (wallname != -1))) {
-                        temp = new char[loclen + 1];
-                        GetDlgItemText(hwnd, IDC_LOCATION, temp, loclen + 1);
+                        temp.reset(new char[loclen + 1]);
+                        GetDlgItemText(hwnd, IDC_LOCATION, temp.get(), loclen + 1);
                         {
-                            wxString test = temp;
+                            wxString test = temp.get();
                             if (!test.IsAscii()) {
                                 ::wxMessageBox(_("The location may only contain AscII characters.\nOther characters (eg. German umlauts, accented characters, ...) can cause problems and are therefore not allowed."), _("Error"), wxOK|wxICON_ERROR);
-                                delete[] temp;
                                 break;
                             }
                         }
@@ -874,8 +873,8 @@ BOOL CALLBACK SIDEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                         save = true;
                         if (CurrentScenery != -1) {
                             delete SceneryItems[CurrentScenery]->name;
-                            delete SceneryItems[CurrentScenery]->ovl;
-                            delete SceneryItems[CurrentScenery]->location;
+                            SceneryItems[CurrentScenery]->ovl = "";
+                            SceneryItems[CurrentScenery]->location = "";
                             delete SceneryItems[CurrentScenery]->icon;
                             if (SceneryItems[CurrentScenery]->wallicon != 0) {
                                 delete SceneryItems[CurrentScenery]->wallicon;
@@ -888,34 +887,29 @@ BOOL CALLBACK SIDEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                         }
                         r3old::Scenery *s = SceneryItems[CurrentScenery];
 
-                        s->location = temp;
+                        s->location = temp.get();
 
-                        s->ovl = new char[ovllen + 1];
-                        GetDlgItemText(hwnd, IDC_OVL, s->ovl, ovllen + 1);
-                        temp = new char[posxlen + 1];
-                        GetDlgItemText(hwnd, IDC_XPOS, temp, posxlen + 1);
-                        s->position.x = (float) atof(temp);
-                        delete temp;
-                        temp = new char[posylen + 1];
-                        GetDlgItemText(hwnd, IDC_YPOS, temp, posylen + 1);
-                        s->position.y = (float) atof(temp);
-                        delete temp;
-                        temp = new char[poszlen + 1];
-                        GetDlgItemText(hwnd, IDC_ZPOS, temp, poszlen + 1);
-                        s->position.z = (float) atof(temp);
-                        delete temp;
-                        temp = new char[sizexlen + 1];
-                        GetDlgItemText(hwnd, IDC_XSIZE, temp, sizexlen + 1);
-                        s->size.x = (float) atof(temp);
-                        delete temp;
-                        temp = new char[sizeylen + 1];
-                        GetDlgItemText(hwnd, IDC_YSIZE, temp, sizeylen + 1);
-                        s->size.y = (float) atof(temp);
-                        delete temp;
-                        temp = new char[sizezlen + 1];
-                        GetDlgItemText(hwnd, IDC_ZSIZE, temp, sizezlen + 1);
-                        s->size.z = (float) atof(temp);
-                        delete temp;
+                        temp.reset(new char[ovllen + 1]);
+                        GetDlgItemText(hwnd, IDC_OVL, temp.get(), ovllen + 1);
+						s->ovl = temp.get();
+                        temp.reset(new char[posxlen + 1]);
+                        GetDlgItemText(hwnd, IDC_XPOS, temp.get(), posxlen + 1);
+                        s->position.x = (float) atof(temp.get());
+                        temp.reset(new char[posylen + 1]);
+                        GetDlgItemText(hwnd, IDC_YPOS, temp.get(), posylen + 1);
+                        s->position.y = (float) atof(temp.get());
+                        temp.reset(new char[poszlen + 1]);
+                        GetDlgItemText(hwnd, IDC_ZPOS, temp.get(), poszlen + 1);
+                        s->position.z = (float) atof(temp.get());
+                        temp.reset(new char[sizexlen + 1]);
+                        GetDlgItemText(hwnd, IDC_XSIZE, temp.get(), sizexlen + 1);
+                        s->size.x = (float) atof(temp.get());
+                        temp.reset(new char[sizeylen + 1]);
+                        GetDlgItemText(hwnd, IDC_YSIZE, temp.get(), sizeylen + 1);
+                        s->size.y = (float) atof(temp.get());
+                        temp.reset(new char[sizezlen + 1]);
+                        GetDlgItemText(hwnd, IDC_ZSIZE, temp.get(), sizezlen + 1);
+                        s->size.z = (float) atof(temp.get());
                         s->cost = cost;
                         s->refund = refund;
                         s->sizex = sizex;
@@ -1379,7 +1373,7 @@ BOOL CALLBACK SIDManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
         for (SceneryItemsIterator = SceneryItems.begin();
                 SceneryItemsIterator != SceneryItems.end(); SceneryItemsIterator++) {
             char name[MAX_PATH];
-            _splitpath((*SceneryItemsIterator)->ovl, NULL, NULL, name, NULL);
+            _splitpath((*SceneryItemsIterator)->ovl.c_str(), NULL, NULL, name, NULL);
             strchr(name, '.')[0] = 0;
             SendDlgItemMessage(hwnd, IDC_LIST, LB_ADDSTRING, 0,
                                (LPARAM) name);
@@ -1427,8 +1421,6 @@ BOOL CALLBACK SIDManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                          MB_YESNO | MB_ICONQUESTION) == IDYES) {
                     save = true;
                     delete SceneryItems[CurrentScenery]->name;
-                    delete SceneryItems[CurrentScenery]->ovl;
-                    delete SceneryItems[CurrentScenery]->location;
                     delete SceneryItems[CurrentScenery]->icon;
                     if (SceneryItems[CurrentScenery]->wallicon != 0) {
                         delete SceneryItems[CurrentScenery]->wallicon;
@@ -1464,7 +1456,7 @@ BOOL CALLBACK TextureManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) 
         for (IconTexturesIterator = IconTextures.begin();
                 IconTexturesIterator != IconTextures.end(); IconTexturesIterator++) {
             SendDlgItemMessage(hwnd, IDC_LIST, LB_ADDSTRING, 0,
-                               (LPARAM) (*IconTexturesIterator)->name);
+                               (LPARAM) (*IconTexturesIterator)->name.c_str());
         }
         break;
     case WM_CLOSE:
@@ -1479,7 +1471,7 @@ BOOL CALLBACK TextureManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) 
                 for (IconTexturesIterator = IconTextures.begin();
                         IconTexturesIterator != IconTextures.end(); IconTexturesIterator++) {
                     SendDlgItemMessage(hwnd, IDC_LIST, LB_ADDSTRING, 0,
-                                       (LPARAM) (*IconTexturesIterator)->name);
+                                       (LPARAM) (*IconTexturesIterator)->name.c_str());
                 }
                 SendDlgItemMessage(hwnd, IDC_LIST, LB_SETCURSEL, IconTextures.size()-1, 0);
             }
@@ -1495,7 +1487,7 @@ BOOL CALLBACK TextureManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) 
                 for (IconTexturesIterator = IconTextures.begin();
                         IconTexturesIterator != IconTextures.end(); IconTexturesIterator++) {
                     SendDlgItemMessage(hwnd, IDC_LIST, LB_ADDSTRING, 0,
-                                       (LPARAM) (*IconTexturesIterator)->name);
+                                       (LPARAM) (*IconTexturesIterator)->name.c_str());
                 }
                 SendDlgItemMessage(hwnd, IDC_LIST, LB_SETCURSEL, CurrentIconTexture, 0);
             }
@@ -1508,15 +1500,13 @@ BOOL CALLBACK TextureManDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) 
                         (hwnd, "Are you sure you want to delete?", "Are You Sure",
                          MB_YESNO | MB_ICONQUESTION) == IDYES) {
                     save = true;
-                    delete IconTextures[CurrentIconTexture]->filename;
-                    delete IconTextures[CurrentIconTexture]->name;
                     delete IconTextures[CurrentIconTexture];
                     IconTextures.erase(IconTextures.begin() + CurrentIconTexture);
                     SendDlgItemMessage(hwnd, IDC_LIST, LB_RESETCONTENT, 0, 0);
                     for (IconTexturesIterator = IconTextures.begin();
                             IconTexturesIterator != IconTextures.end(); IconTexturesIterator++) {
                         SendDlgItemMessage(hwnd, IDC_LIST, LB_ADDSTRING, 0,
-                                           (LPARAM) (*IconTexturesIterator)->name);
+                                           (LPARAM) (*IconTexturesIterator)->name.c_str());
                     }
                     SendDlgItemMessage(hwnd, IDC_LIST, LB_SETCURSEL, CurrentIconTexture-1, 0);
                 }
@@ -1539,7 +1529,7 @@ BOOL CALLBACK GSIAutoDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
         SendDlgItemMessage(hwnd, IDC_GSIAUTOLIST, LB_RESETCONTENT, 0, 0);
         for (IconTexturesIterator = IconTextures.begin();
                 IconTexturesIterator != IconTextures.end(); IconTexturesIterator++) {
-            SendDlgItemMessage(hwnd, IDC_GSIAUTOLIST, LB_ADDSTRING, 0, (LPARAM) (*IconTexturesIterator)->name);
+            SendDlgItemMessage(hwnd, IDC_GSIAUTOLIST, LB_ADDSTRING, 0, (LPARAM) (*IconTexturesIterator)->name.c_str());
         }
         SendDlgItemMessage(hwnd, IDC_GSIAUTOLIST, LB_SETSEL, 1, -1);
         break;
@@ -1558,7 +1548,7 @@ BOOL CALLBACK GSIAutoDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                     for (int y = 0; y < n; y++)
                         for (int x = 0; x < n; x++) {
                             snprintf(temp, 511, "%s Nr%03d x%02d/y%02d",
-                                     (*IconTexturesIterator)->name, (x + (y * n)) + 1, x + 1,
+                                     (*IconTexturesIterator)->name.c_str(), (x + (y * n)) + 1, x + 1,
                                      y + 1);
 
                             Icon *t = new Icon;
@@ -1571,8 +1561,8 @@ BOOL CALLBACK GSIAutoDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                             Icons[CurrentIcon]->bottom = ((y + 1) * 64) - 1;
                             Icons[CurrentIcon]->right = ((x + 1) * 64) - 1;
                             Icons[CurrentIcon]->texture =
-                                new char[strlen((*IconTexturesIterator)->name) + 1];
-                            strcpy(Icons[CurrentIcon]->texture, (*IconTexturesIterator)->name);
+                                new char[(*IconTexturesIterator)->name.size() + 1];
+                            strcpy(Icons[CurrentIcon]->texture, (*IconTexturesIterator)->name.c_str());
                         }
                 }
                 i++;
@@ -1816,8 +1806,6 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
             save = false;
             for (i = 0; i < SceneryItems.size(); i++) {
                 delete SceneryItems[i]->name;
-                delete SceneryItems[i]->ovl;
-                delete SceneryItems[i]->location;
                 delete SceneryItems[i]->icon;
                 if (SceneryItems[i]->wallicon != 0) {
                     delete SceneryItems[i]->wallicon;
@@ -1826,8 +1814,6 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 delete SceneryItems[i];
             }
             for (i = 0; i < IconTextures.size(); i++) {
-                delete IconTextures[i]->filename;
-                delete IconTextures[i]->name;
                 delete IconTextures[i];
             }
             for (i = 0; i < Icons.size(); i++) {
@@ -1883,13 +1869,13 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                         checkRCT3Texture(tex->filename);
                     } catch (RCT3TextureException& e) {
                         problem = true;
-                        wxLogError(wxString::Format(_("Icon texture '%s' error: %s"), tex->name, e.what()));
+                        wxLogError(wxString::Format(_("Icon texture '%s' error: %s"), tex->name.c_str(), e.what()));
                     }
                 }
                 foreach(Icon* ico, Icons) {
                     bool found = false;
                     foreach(IconTexture* tex, IconTextures) {
-                        if (!stricmp(tex->name, ico->texture)) {
+                        if (!stricmp(tex->name.c_str(), ico->texture)) {
                             found = true;
                             break;
                         }
@@ -1903,25 +1889,25 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                     wxString identifier = scen->name?scen->name:scen->ovl;
                     if (!wxFileName::FileExists(scen->ovl)) {
                         problem = true;
-                        wxLogError(wxString::Format(_("Scenery item error: ovl '%s' missing."), scen->ovl));
+                        wxLogError(wxString::Format(_("Scenery item error: ovl '%s' missing."), scen->ovl.c_str()));
                     } else {
                         cOVLDump dovl;
-                        dovl.Load(scen->ovl);
+                        dovl.Load(scen->ovl.c_str());
 
                         char name[MAX_PATH];
-                        _splitpath(scen->ovl, NULL, NULL, name, NULL);
+                        _splitpath(scen->ovl.c_str(), NULL, NULL, name, NULL);
                         strrchr(name, '.')[0] = 0;
 
 
-                        std::map<std::string, std::map<std::string, OvlRelocation*> >::const_iterator it = dovl.GetStructures(OVLT_UNIQUE).find("svd");
+                        cOVLDump::structmap_t::const_iterator it = dovl.GetStructures(OVLT_UNIQUE).find("svd");
                         if (it != dovl.GetStructures(OVLT_UNIQUE).end()) {
                             if (!has(it->second, string(name) + ":svd")) {
                                 problem = true;
-                                wxLogError(wxString::Format(_("Scenery item error: ovl '%s' internal name mismatch. Do not rename scenery ovls!"), scen->ovl));
+                                wxLogError(wxString::Format(_("Scenery item error: ovl '%s' internal name mismatch. Do not rename scenery ovls!"), scen->ovl.c_str()));
                             }
                         } else {
                             problem = true;
-                            wxLogError(wxString::Format(_("Scenery item error: ovl '%s' is not a scenery ovl."), scen->ovl));
+                            wxLogError(wxString::Format(_("Scenery item error: ovl '%s' is not a scenery ovl."), scen->ovl.c_str()));
                         }
                     }
                     if (!scen->name) {
@@ -2023,7 +2009,7 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                         bool found = false;
                         foreach(r3old::Scenery* scen, SceneryItems) {
                             char name[MAX_PATH];
-                            _splitpath(scen->ovl, NULL, NULL, name, NULL);
+                            _splitpath(scen->ovl.c_str(), NULL, NULL, name, NULL);
                             strchr(name, '.')[0] = 0;
                             if (!stricmp(attr->SID, name)) {
                                 found = true;
@@ -2077,7 +2063,7 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                         bool found = false;
                         foreach(r3old::Scenery* scen, SceneryItems) {
                             char name[MAX_PATH];
-                            _splitpath(scen->ovl, NULL, NULL, name, NULL);
+                            _splitpath(scen->ovl.c_str(), NULL, NULL, name, NULL);
                             strchr(name, '.')[0] = 0;
                             if (!stricmp(attr->SID, name)) {
                                 found = true;
@@ -2155,14 +2141,14 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 len = IconTextures.size();
                 fwrite(&len, 4, 1, f);
                 for (i = 0; i < IconTextures.size(); i++) {
-                    len = strlen(IconTextures[i]->name);
+                    len = IconTextures[i]->name.size();
                     len++;
                     fwrite(&len, 4, 1, f);
-                    fwrite(IconTextures[i]->name, len, 1, f);
-                    len = strlen(IconTextures[i]->filename);
+                    fwrite(IconTextures[i]->name.c_str(), len, 1, f);
+                    len = IconTextures[i]->filename.size();
                     len++;
                     fwrite(&len, 4, 1, f);
-                    fwrite(IconTextures[i]->filename, len, 1, f);
+                    fwrite(IconTextures[i]->filename.c_str(), len, 1, f);
                 }
                 len = Icons.size();
                 fwrite(&len, 4, 1, f);
@@ -2184,10 +2170,10 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 fwrite(&len, 4, 1, f);
                 for (unsigned long i = 0; i < SceneryItems.size(); i++) {
                     r3old::Scenery *s = SceneryItems[i];
-                    len = strlen(s->ovl);
+                    len = s->ovl.size();
                     len++;
                     fwrite(&len, 4, 1, f);
-                    fwrite(s->ovl, len, 1, f);
+                    fwrite(s->ovl.c_str(), len, 1, f);
                     if (s->wallicon != 0) {
                         len = strlen(s->wallicon);
                         len++;
@@ -2214,10 +2200,10 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                         len = 0;
                         fwrite(&len, 4, 1, f);
                     }
-                    len = strlen(s->location);
+                    len = s->location.size();
                     len++;
                     fwrite(&len, 4, 1, f);
-                    fwrite(s->location, len, 1, f);
+                    fwrite(s->location.c_str(), len, 1, f);
                     fwrite(&s->cost, 4, 1, f);
                     fwrite(&s->refund, 4, 1, f);
                     fwrite(&s->type, 4, 1, f);
@@ -2408,12 +2394,10 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 ::wxGetApp().g_workdir.AssignDir(wxFileName(sfile).GetPath());
                 strcpy(themefile, sfile);
                 save = false;
+				int filenames_ok = 0;
+				int filenames_total = 0;
                 for (i = 0; i < SceneryItems.size(); i++) {
                     delete SceneryItems[i]->name;
-                    if (SceneryItems[i]->ovl != 0) {
-                        delete SceneryItems[i]->ovl;
-                    }
-                    delete SceneryItems[i]->location;
                     delete SceneryItems[i]->icon;
                     if (SceneryItems[i]->wallicon != 0) {
                         delete SceneryItems[i]->wallicon;
@@ -2422,8 +2406,6 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                     delete SceneryItems[i];
                 }
                 for (i = 0; i < IconTextures.size(); i++) {
-                    delete IconTextures[i]->filename;
-                    delete IconTextures[i]->name;
                     delete IconTextures[i];
                 }
                 for (i = 0; i < Icons.size(); i++) {
@@ -2458,14 +2440,13 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 FILE *f = fopen(sfile, "rb");
                 unsigned long style;
                 unsigned long len;
-                char *temp;
+                boost::shared_array<char> temp;
                 fread(&style, 4, 1, f);
                 fread(&len, 4, 1, f);
-                temp = new char[len];
-                fread(temp, len, 1, f);
+                temp.reset(new char[len]);
+                fread(temp.get(), len, 1, f);
                 SendDlgItemMessage(hwnd, IDC_THEME, LB_SETCURSEL, style, 0);
-                SetDlgItemText(hwnd, IDC_THEMENAME, temp);
-                delete temp;
+                SetDlgItemText(hwnd, IDC_THEMENAME, temp.get());
                 unsigned long len2;
                 fread(&len, 4, 1, f);
                 for (i = 0; i < len; i++) {
@@ -2486,14 +2467,16 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 for (i = 0; i < len; i++) {
                     IconTexture *t = new IconTexture;
                     fread(&len2, 4, 1, f);
-                    t->name = new char[len2];
-                    fread(t->name, len2, 1, f);
+					temp.reset(new char[len2]);
+                    fread(temp.get(), len2, 1, f);
+                    t->name = temp.get();
                     fread(&len2, 4, 1, f);
-                    t->filename = new char[len2];
-                    fread(t->filename, len2, 1, f);
-
-                    ReadIconTexture(hwnd, t);
-
+					temp.reset(new char[len2]);
+                    fread(temp.get(), len2, 1, f);
+                    t->filename = temp.get();
+					++filenames_total;
+                    if (ReadIconTexture(hwnd, t))
+						++filenames_ok;
                     IconTextures.push_back(t);
                 }
                 fread(&len, 4, 1, f);
@@ -2515,8 +2498,13 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 for (i = 0; i < len; i++) {
                     r3old::Scenery *t = new r3old::Scenery;
                     fread(&len2, 4, 1, f);
-                    t->ovl = new char[len2];
-                    fread(t->ovl, len2, 1, f);
+					temp.reset(new char[len2]);
+                    fread(temp.get(), len2, 1, f);
+                    t->ovl = temp.get();
+					++filenames_total;
+					if (wxFileName::FileExists(t->ovl))
+						++filenames_ok;
+					
                     fread(&len2, 4, 1, f);
                     if (len2 != 0) {
                         t->wallicon = new char[len2];
@@ -2538,8 +2526,9 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                         t->wallname = 0;
                     }
                     fread(&len2, 4, 1, f);
-                    t->location = new char[len2];
-                    fread(t->location, len2, 1, f);
+					temp.reset(new char[len2]);
+                    fread(temp.get(), len2, 1, f);
+                    t->location = temp.get();
                     fread(&t->cost, 4, 1, f);
                     fread(&t->refund, 4, 1, f);
                     fread(&t->type, 4, 1, f);
@@ -2634,10 +2623,9 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                     if (!fread(&len, 4, 1, f))
                         len = 0;
                     if (len > 0) {
-                        temp = new char[len];
-                        fread(temp, len, 1, f);
-                        SetDlgItemText(hwnd, IDC_THEMEPREFIX, temp);
-                        delete temp;
+                        temp.reset(new char[len]);
+                        fread(temp.get(), len, 1, f);
+                        SetDlgItemText(hwnd, IDC_THEMEPREFIX, temp.get());
                     }
                 }
                 if (!feof(f)) {
@@ -2712,6 +2700,91 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 }
                 ::wxGetApp().g_texturecache.clear();
                 fclose(f);
+				
+				if (filenames_ok < filenames_total) {
+					// Something's broken.
+					if (filenames_ok) {
+						::wxMessageBox(
+							"It appears as if you moved some files around that are used by this scenery file. You need "
+							"to fix the respective paths.\n"
+							"You can use the \"Detect Problems\" menu command to see which file names could not be found.",
+							"Warning", wxICON_WARNING);
+					} else {
+						if (
+							::wxMessageBox(
+								"It appears as if you moved some or all files around that are used by this scenery file. The "
+								"respective paths need to be fixed.\n"
+								"The importer can try to fix that for you, but this will only work if you kept the original "
+								"directory structure.\n"
+								"If you say 'Yes', you will be asked to give the new location of one of the files, all the others "
+								"will be adjusted accordingly automatically.\n"
+								"If you say 'No', you will need to fix the file paths manually. "
+								"You can use the \"Detect Problems\" menu command to help you identify remaining promlems.\n\n"
+								"Shall the importer try to fix all paths for you?",
+								"Question", wxICON_QUESTION|wxYES_NO) == wxYES)
+						{
+							wxFileName f_old;
+							wxFileName f_new;
+							wxString f_name;
+							if (IconTextures.size()) {
+								f_old = IconTextures[0]->filename;
+								f_name = IconTextures[0]->name;
+								::wxMessageBox(
+									"Please select the new location of icon texture '" + f_name + "', old location:\n" + f_old.GetFullPath(),
+									"Information", wxICON_INFORMATION);
+							} else {
+								f_old = SceneryItems[0]->ovl;
+								f_name = f_old.GetFullName();
+								::wxMessageBox(
+									"Please select the new location of the scenery file with the old location:\n" + f_old.GetFullPath(),
+									"Information", wxICON_INFORMATION);
+							}
+							ZeroMemory(&ofn, sizeof(ofn));
+							{
+								wxFileName thm(sfile);
+								thm.SetFullName(f_old.GetFullName());
+								strncpy(sfile, thm.GetFullPath().c_str(), MAX_PATH);
+							}
+								
+							ofn.lStructSize = sizeof(ofn);
+							ofn.hwndOwner = hwnd;
+							ofn.lpstrFilter = "All files (*.*)\0*.*\0";
+							ofn.lpstrFile = sfile;
+							ofn.lpstrTitle = f_name.c_str();
+							ofn.lpstrDefExt = "";
+							ofn.nMaxFile = MAX_PATH;
+							ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
+							if (GetOpenFileName(&ofn)) {
+								f_new = sfile;
+								bool success = true;
+								foreach(IconTexture* t, IconTextures) {
+									wxFileName w(t->filename);
+									w.MakeRelativeTo(f_old.GetPathWithSep());
+									w.MakeAbsolute(f_new.GetPathWithSep());
+									t->filename = w.GetFullPath();
+									if (!ReadIconTexture(hwnd, t))
+										success = false;
+								}
+								foreach(r3old::Scenery* s, SceneryItems) {
+									wxFileName w(s->ovl);
+									w.MakeRelativeTo(f_old.GetPathWithSep());
+									w.MakeAbsolute(f_new.GetPathWithSep());
+									s->ovl = w.GetFullPath();
+									if (!w.FileExists())
+										success = false;
+								}
+								if (!success) {
+									::wxMessageBox(
+										"Not everything could be fixed correctly. Please fix remaining issues manually.\n"
+										"You can use the \"Detect Problems\" menu command to see which errors remain.",
+										"Warning", wxICON_WARNING);
+								}
+							}
+							
+						}
+						
+					}
+				}
             }
         }
             break;
@@ -2736,14 +2809,13 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 FILE *f = fopen(sfile, "rb");
                 unsigned long style;
                 unsigned long len;
-                char *temp;
+                boost::shared_array<char> temp;
                 fread(&style, 4, 1, f);
                 fread(&len, 4, 1, f);
-                temp = new char[len];
-                fread(temp, len, 1, f);
+                temp.reset(new char[len]);
+                fread(temp.get(), len, 1, f);
                 SendDlgItemMessage(hwnd, IDC_THEME, LB_SETCURSEL, style, 0);
-                SetDlgItemText(hwnd, IDC_THEMENAME, temp);
-                delete temp;
+                SetDlgItemText(hwnd, IDC_THEMENAME, temp.get());
                 unsigned long len2;
                 fread(&len, 4, 1, f);
                 for (i = 0; i < len; i++) {
@@ -2764,11 +2836,13 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 for (i = 0; i < len; i++) {
                     IconTexture *t = new IconTexture;
                     fread(&len2, 4, 1, f);
-                    t->name = new char[len2];
-                    fread(t->name, len2, 1, f);
+					temp.reset(new char[len2]);
+                    fread(temp.get(), len2, 1, f);
+                    t->name = temp.get();
                     fread(&len2, 4, 1, f);
-                    t->filename = new char[len2];
-                    fread(t->filename, len2, 1, f);
+					temp.reset(new char[len2]);
+                    fread(temp.get(), len2, 1, f);
+                    t->filename = temp.get();
 
                     ReadIconTexture(hwnd, t);
 
@@ -2793,8 +2867,9 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 for (i = 0; i < len; i++) {
                     r3old::Scenery *t = new r3old::Scenery;
                     fread(&len2, 4, 1, f);
-                    t->ovl = new char[len2];
-                    fread(t->ovl, len2, 1, f);
+					temp.reset(new char[len2]);
+                    fread(temp.get(), len2, 1, f);
+                    t->ovl = temp.get();
                     fread(&len2, 4, 1, f);
                     if (len2 != 0) {
                         t->wallicon = new char[len2];
@@ -2816,8 +2891,9 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                         t->wallname = 0;
                     }
                     fread(&len2, 4, 1, f);
-                    t->location = new char[len2];
-                    fread(t->location, len2, 1, f);
+					temp.reset(new char[len2]);
+                    fread(temp.get(), len2, 1, f);
+                    t->location = temp.get();
                     fread(&t->cost, 4, 1, f);
                     fread(&t->refund, 4, 1, f);
                     fread(&t->type, 4, 1, f);
@@ -2912,10 +2988,9 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                     if (!fread(&len, 4, 1, f))
                         len = 0;
                     if (len > 0) {
-                        temp = new char[len];
-                        fread(temp, len, 1, f);
-                        SetDlgItemText(hwnd, IDC_THEMEPREFIX, temp);
-                        delete temp;
+                        temp.reset(new char[len]);
+                        fread(temp.get(), len, 1, f);
+                        SetDlgItemText(hwnd, IDC_THEMEPREFIX, temp.get());
                     }
                 }
                 if (!feof(f)) {
@@ -3114,7 +3189,7 @@ bool ToolApp::OnInit()
         err += wxString(e.what(), wxConvLocal);
         err += wxString::Format(_("\nAll .mgk files expected in '%s'."), g_appdir.c_str());
         wxMessageBox(err, _("Error"), wxOK);
-        return -1;
+        return false;
     }
 /*
     // *&^$% GraphicsMagick
@@ -3157,13 +3232,13 @@ bool ToolApp::OnInit()
 */
 
     // Red/Green/Blue Palette
-    ZeroMemory(&g_recolpalette_rgb, sizeof(g_recolpalette_rgb));
-    int i;
+//    ZeroMemory(&g_recolpalette_rgb, sizeof(g_recolpalette_rgb));
+//    int i;
 //    g_recolpalette_bmy[0].rgbReserved = 0;
-    for (i = 1; i <= 85; i++) {
-        g_recolpalette_rgb[i].rgbRed = ((86 - i) * 255) / 85;
-        g_recolpalette_rgb[i + 85].rgbGreen = ((86 - i) * 255) / 85;
-        g_recolpalette_rgb[i + 170].rgbBlue = ((86 - i) * 255) / 85;
+//    for (i = 1; i <= 85; i++) {
+//        g_recolpalette_rgb[i].rgbRed = ((86 - i) * 255) / 85;
+//        g_recolpalette_rgb[i + 85].rgbGreen = ((86 - i) * 255) / 85;
+//        g_recolpalette_rgb[i + 170].rgbBlue = ((86 - i) * 255) / 85;
 //        g_recolpalette_bmy[i].rgbReserved = 0;
 //        g_recolpalette_bmy[i+85].rgbReserved = 0;
 //        g_recolpalette_bmy[i+170].rgbReserved = 0;
@@ -3178,7 +3253,7 @@ bool ToolApp::OnInit()
         g_recolpalette_bmy[i + 170].rgbGreen = g_recolpalette_bmy[43 + 170].rgbGreen;
         g_recolpalette_bmy[i + 170].rgbBlue = g_recolpalette_bmy[43 + 170].rgbBlue;
 */
-    }
+//    }
     /*
        char tmptxt[256];
        snprintf(tmptxt, 256, "Palette Colours: %d %d %d\n", (int)recolpalette_rgb[20].rgbRed, (int)recolpalette_rgb[50].rgbRed, (int)recolpalette_rgb[70].rgbRed);
@@ -3352,11 +3427,7 @@ bool InstallTheme(HWND hwnd) {
     sFileName = temp;
     sFileName += wxT("style.common.ovl");
 
-#ifndef LIBOVL_STATIC
     CreateStyleOvl(const_cast<char *> (sFileName.fn_str()), styleval);
-#else
-    styleovl::CreateStyleOvl(sFileName.fn_str(), styleval);
-#endif
     for (i = 0; i < cTextStrings.size(); i++) {
 // FIXME (belgabor#1#): Make textstring give-over sane
         Text *txt = new Text;
@@ -3364,43 +3435,31 @@ bool InstallTheme(HWND hwnd) {
         strcpy(txt->name, cTextStrings[i].name.c_str());
         txt->text = new char[cTextStrings[i].text.length()+1];
         strcpy(txt->text, cTextStrings[i].text.c_str());
-#ifndef LIBOVL_STATIC
         AddStyleOVLInfo_TextString(txt);
-#else
-        styleovl::AddStyleOVLInfo_TextString(txt);
-#endif
         delete[] txt->name;
         delete[] txt->text;
         delete txt;
     }
     for (i = 0; i < IconTextures.size(); i++) {
         IconTexture *icot = IconTextures[i];
-#ifndef LIBOVL_STATIC
         AddStyleOVLInfo_IconTexture(icot);
-#else
-        styleovl::AddStyleOVLInfo_IconTexture(icot);
-#endif
     }
     for (i = 0; i < Icons.size(); i++) {
         Icon *ico = Icons[i];
-#ifndef LIBOVL_STATIC
         AddStyleOVLInfo_Icon(ico);
-#else
-        styleovl::AddStyleOVLInfo_Icon(ico);
-#endif
     }
     for (unsigned long i = 0; i < SceneryItems.size(); i++) {
 //        char fname[_MAX_FNAME];
         r3old::Scenery *sc = SceneryItems[i];
-        char *ovlfile = sc->ovl;
-        _splitpath(sc->ovl, NULL, NULL, temp, NULL);
+        //const char *ovlfile = sc->ovl.c_str();
+        _splitpath(sc->ovl.c_str(), NULL, NULL, temp, NULL);
         strchr(temp, '.')[0] = 0;
         std::string sfname = temp;
         stringtablesize = 0;
         stringtablesize += strlen(temp) + 5;
         stringtablesize += strlen(temp) + 5;
         stringtablesize +=
-            strlen(stdstyle) + strlen(sTheme.fn_str()) + 1 + strlen(SceneryItems[i]->location) + 1 +
+            strlen(stdstyle) + strlen(sTheme.fn_str()) + 1 + SceneryItems[i]->location.size() + 1 +
             strlen(sfname.c_str()) + 1;
 
 
@@ -3418,8 +3477,8 @@ bool InstallTheme(HWND hwnd) {
         strings += strlen(sTheme.fn_str());
         strcpy(strings, "\\");
         strings++;
-        strcpy(strings, sc->location);
-        strings += strlen(sc->location);
+        strcpy(strings, sc->location.c_str());
+        strings += sc->location.size();
         sprintf(temp, "%s\\%s", sInstallLocation.c_str(), fullstrings);
         sLocation = sInstallLocation + "\\" + fullstrings;
         sprintf(sc->ovlWithoutExt, "%s\\%s", fullstrings, sfname.c_str());
@@ -3432,21 +3491,19 @@ bool InstallTheme(HWND hwnd) {
         sLocation += sfname.c_str();
 
         stemp = sLocation + ".common.ovl";
-        CopyFile(ovlfile, stemp.c_str(), FALSE);
+        CopyFile(sc->ovl.c_str(), stemp.c_str(), FALSE);
         sc->ovl3 = new char[strlen(stemp.c_str()) + 1];
         strcpy(sc->ovl3, stemp.c_str());
 
         stemp = sLocation + ".unique.ovl";
-        strcpy(strstr(ovlfile, ".common.ovl"), ".unique.ovl");
-        CopyFile(ovlfile, stemp.c_str(), FALSE);
+		{
+			std::string ovltemp = sc->ovl;
+			boost::replace_last(ovltemp, ".common.ovl", ".unique.ovl");
+			CopyFile(ovltemp.c_str(), stemp.c_str(), FALSE);
+		}
 
-        strcpy(strstr(ovlfile, ".unique.ovl"), ".common.ovl");
 
-#ifndef LIBOVL_STATIC
-        AddStyleOVLInfo_SceneryItem(sc);
-#else
-        styleovl::AddStyleOVLInfo_SceneryItem(sc);
-#endif
+		AddStyleOVLInfo_SceneryItem(sc);
     }
 
     for (unsigned long i = 0; i < Stalls.size(); i++) {
@@ -3499,7 +3556,13 @@ bool InstallTheme(HWND hwnd) {
 bool ReadIconTexture(HWND hwnd, IconTexture * t) {
 #if 1
     try {
-        wxGXImage img(t->filename, false);
+		if (!wxFileName::FileExists(t->filename.c_str())) {
+			t->data = NULL;
+			t->fh.Format = 0;
+			return false;
+		}
+		
+        wxGXImage img(t->filename.c_str(), false);
 
         int width = img.GetWidth();
         int height = img.GetHeight();

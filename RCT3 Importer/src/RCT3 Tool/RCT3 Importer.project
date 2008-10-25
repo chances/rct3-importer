@@ -7,7 +7,6 @@
     <File Name="version_wrap.h"/>
     <File Name="version_wrap.cpp"/>
     <File Name="wx_pch.h"/>
-    <File Name="version.h"/>
     <File Name="Tool.cpp"/>
     <File Name="starcomboctrl.h"/>
     <File Name="rct3config.h"/>
@@ -16,6 +15,7 @@
     <File Name="ilhelper.cpp"/>
     <File Name="global.h"/>
     <File Name="global.cpp"/>
+    <File Name="version_importer.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="resources">
     <VirtualDirectory Name="xrc">
@@ -24,17 +24,11 @@
         <File Name="xrc_texture.h"/>
         <File Name="xrc_stallman.h"/>
         <File Name="xrc_stall.h"/>
-        <File Name="xrc_scenerysettings.h"/>
         <File Name="xrc_model.h"/>
-        <File Name="xrc_misc.h"/>
-        <File Name="xrc_mesh.h"/>
         <File Name="xrc_matrix.h"/>
-        <File Name="xrc_main.h"/>
         <File Name="xrc_info.h"/>
-        <File Name="xrc_createscenery.h"/>
         <File Name="xrc_attractman.h"/>
         <File Name="xrc_attract.h"/>
-        <File Name="xrc_lod.h"/>
         <File Name="xrc_effectmenu.h"/>
         <File Name="xrc_effect.h"/>
       </VirtualDirectory>
@@ -43,17 +37,11 @@
         <File Name="xrc_texture.cpp"/>
         <File Name="xrc_stallman.cpp"/>
         <File Name="xrc_stall.cpp"/>
-        <File Name="xrc_scenerysettings.cpp"/>
         <File Name="xrc_model.cpp"/>
-        <File Name="xrc_misc.cpp"/>
-        <File Name="xrc_mesh.cpp"/>
         <File Name="xrc_matrix.cpp"/>
-        <File Name="xrc_main.cpp"/>
-        <File Name="xrc_lod.cpp"/>
         <File Name="xrc_info.cpp"/>
         <File Name="xrc_effectmenu.cpp"/>
         <File Name="xrc_effect.cpp"/>
-        <File Name="xrc_createscenery.cpp"/>
         <File Name="xrc_attractman.cpp"/>
         <File Name="xrc_attract.cpp"/>
       </VirtualDirectory>
@@ -189,7 +177,7 @@
   </Dependencies>
   <Settings Type="Executable">
     <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
-      <General OutputFile="&quot;../../bin/$(ProjectName)d.exe&quot;" IntermediateDirectory="../../lib/obj/RCT3Importer/Debug" Command="&quot;./$(ProjectName)d.exe&quot;" CommandArguments="" WorkingDirectory="../../bin" PauseExecWhenProcTerminates="yes"/>
+      <General OutputFile="../../bin/$(ProjectName)d.exe" IntermediateDirectory="../../lib/obj/RCT3Importer/Debug" Command="./$(ProjectName)d.exe" CommandArguments="" WorkingDirectory="../../bin" PauseExecWhenProcTerminates="yes"/>
       <Compiler Required="yes" Options="-g;$(WX2_CXX_PD);-Wall;-fno-strict-aliasing;-mthreads;-fexceptions">
         <IncludePath Value="."/>
         <IncludePath Value="../../include"/>
@@ -208,6 +196,7 @@
         <Preprocessor Value="XMLCPP_USE_XSLT"/>
         <Preprocessor Value="XMLCPP_USE_EXSLT"/>
         <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
+        <Preprocessor Value="DEBUG"/>
       </Compiler>
       <Linker Required="yes" Options="$(WX2_LIB_PD);-lexpat">
         <LibraryPath Value="../../lib"/>
@@ -226,11 +215,16 @@
         <Library Value="xslt"/>
         <Library Value="exslt"/>
         <Library Value="squish"/>
+        <Library Value="cryptopp"/>
       </Linker>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""></Debugger>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""></Debugger>
       <ResourceCompiler Required="yes" Options=""/>
-      <PreBuild/>
-      <PostBuild/>
+      <PreBuild>
+        <Command Enabled="yes">../../../Utilities/autover/autover.exe -dte1 -u version_importer.h</Command>
+      </PreBuild>
+      <PostBuild>
+        <Command Enabled="yes">../../../Utilities/autover/autover.exe -2 -u version_importer.h</Command>
+      </PostBuild>
       <CustomBuild Enabled="no">
         <CleanCommand></CleanCommand>
         <BuildCommand></BuildCommand>
@@ -309,11 +303,16 @@ res_spline.cpp: xrc/spline.fbp
         <Library Value="xslt"/>
         <Library Value="exslt"/>
         <Library Value="squish"/>
+        <Library Value="cryptopp"/>
       </Linker>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""></Debugger>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""></Debugger>
       <ResourceCompiler Required="yes" Options=""/>
-      <PreBuild/>
-      <PostBuild/>
+      <PreBuild>
+        <Command Enabled="yes">../../../Utilities/autover/autover.exe -dte1 -u version_importer.h</Command>
+      </PreBuild>
+      <PostBuild>
+        <Command Enabled="yes">../../../Utilities/autover/autover.exe -2 -u version_importer.h</Command>
+      </PostBuild>
       <CustomBuild Enabled="no">
         <CleanCommand></CleanCommand>
         <BuildCommand></BuildCommand>
@@ -327,6 +326,7 @@ res_spline.cpp: xrc/spline.fbp
         <CustomPreBuild>xrc_bitmap_crystal.cpp xrc_bitmap_icons.cpp res_animation.cpp res_createscenery.cpp res_lod.cpp res_misc.cpp res_spline.cpp xrc_attract.cpp xrc_attractman.cpp xrc_effect.cpp xrc_effectmenu.cpp xrc_info.cpp xrc_matrix.cpp xrc_model.cpp xrc_stall.cpp xrc_stallman.cpp xrc_texture.cpp xrc_texturesimple.cpp
 %.xrc: %.fbp
 	$(FORMBUILDER) -g $&lt;	
+	touch -r $&lt; $@
 
 xrc_bitmap_crystal.cpp: crystal/crystal.xrc
 	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmlBitmapCrystal $&lt;
@@ -362,25 +362,30 @@ xrc_stallman.cpp: xrc/xrc_stallman.xrc
 	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmlStallMan $&lt;
 
 xrc_texture.cpp: xrc/xrc_texture.xrc
-	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmTexture $&lt;
+	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmlTexture $&lt;
 
 xrc_texturesimple.cpp: xrc/xrc_texturesimple.xrc
-	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmTextureSimple $&lt;
+	wxrc --extra-cpp-code --cpp-code --output=$@ --function=InitXmlTextureSimple $&lt;
 
 res_animation.cpp: xrc/animation.fbp
 	$(FORMBUILDER) -g $&lt;
+	touch -r $&lt; $@
 
 res_createscenery.cpp: xrc/createscenery.fbp
 	$(FORMBUILDER) -g $&lt;
+	touch -r $&lt; $@
 
 res_lod.cpp: xrc/lod.fbp
 	$(FORMBUILDER) -g $&lt;
+	touch -r $&lt; $@
 
 res_misc.cpp: xrc/misc.fbp
 	$(FORMBUILDER) -g $&lt;
+	touch -r $&lt; $@
 
 res_spline.cpp: xrc/spline.fbp
 	$(FORMBUILDER) -g $&lt;
+	touch -r $&lt; $@
 </CustomPreBuild>
       </AdditionalRules>
     </Configuration>

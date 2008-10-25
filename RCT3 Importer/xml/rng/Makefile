@@ -20,23 +20,23 @@ rct3xml-raw-v1.rng: rct3xml-shared-v1.rng rct3xml-installer-shared-v1.rng
 
 %.rnc: %.rng ../xsl/rng-incelim-1.2/incelim.xsl ../xsl/strip.xsl ../xsl/filterrng.xsl ../xsl/RngToRnc-1_4/RngToRncClassic.xsl
 	xsltproc --novalid ../xsl/rng-incelim-1.2/incelim.xsl $< | xsltproc --novalid ../xsl/filterrng.xsl - | xsltproc --novalid ../xsl/strip.xsl - | xsltproc --novalid ../xsl/RngToRnc-1_4/RngToRncClassic.xsl - > $@
-	touch -r $< $@
+	#touch -r $< $@
 
 %.rngi: %.rng ../xsl/rng-incelim-1.2/incelim.xsl ../xsl/strip.xsl
 	xsltproc --novalid ../xsl/rng-incelim-1.2/incelim.xsl $< | xsltproc --novalid ../xsl/strip.xsl - > $@
-	touch -r $< $@
+	#touch -r $< $@
 
 %.rng: %.srng ../xsl/ShortRNG/ShortRNG.xsl
 	xsltproc --novalid ../xsl/ShortRNG/ShortRNG.xsl $< > $@
-	touch -r $< $@
+	#touch -r $< $@
 
 %.sch: %.srng ../xsl/RNG2Schtrn.xsl
 	xsltproc --novalid ../xsl/RNG2Schtrn.xsl $< > $@
-	touch -r $< $@
+	#touch -r $< $@
 
 %.gz.h: %
 	bin2c -c -z -g 9 $< $@
-	touch -r $< $@
+	#touch -r $< $@
 
 #%.sch.gz.h: %.sch
 #	bin2c -c -z -g 9 $< $@
@@ -51,5 +51,9 @@ rct3xml-raw-v1.rng: rct3xml-shared-v1.rng rct3xml-installer-shared-v1.rng
 #	xsltproc --novalid ../xsl/rng-incelim-1.2/incelim.xsl $< | xsltproc --novalid ../xsl/strip.xsl - | xsltproc --novalid ../xsl/RngToRnc-1_4/RngToRncClassic.xsl - | bzip2 > $@
 
 clean:
-	rm -f *.gz.h *.gz *.rnc *.rng *.sch
+	rm -f *.gz.h
+	rm -f *.gz
+	rm -f *.rnc 
+	rm -f *.rng
+	rm -f *.sch
 

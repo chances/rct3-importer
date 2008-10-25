@@ -15,6 +15,7 @@
 #include <wx/dcmemory.h>
 #include <wx/dirdlg.h>
 #include <wx/filename.h>
+#include <wx/msgdlg.h>
 
 template <class T>
 class wxFileSelectorCombo : public wxComboCtrl

@@ -1747,11 +1747,14 @@ void cSCNFile::Make() {
   * @todo: document this function
   */
 wxString cSCNFile::getPrefixed(const wxString& pref, bool isTexture) {
- // TODO (belgabor#1#): isTexture
    if ((pref[0] == '[') && (pref[pref.size()-1] == ']'))
         return pref.AfterFirst('[').BeforeLast(']');
-    else
-        return prefix + pref;
+    else {
+		if (isTexture && cFlexiTexture::isReserved(pref))
+			return pref;
+		else
+			return prefix + pref;
+	}
 }
 
 
@@ -1925,7 +1928,7 @@ void cSCNFile::MakeToOvlMain(cOvl& c_ovl) {
                     cMeshStruct* i_mesh = &i_mod->meshstructs[meshvec[0]];
 
                     wxLogVerbose(_("  Adding group: ") + i_mesh->Name);
-                    c_ss2.fts = getPrefixed(i_mesh->FTX).ToAscii();
+                    c_ss2.fts = getPrefixed(i_mesh->FTX, true).ToAscii();
                     c_ss2.texturestyle = i_mesh->TXS.ToAscii();
                     c_ss2.placetexturing = i_mesh->place;
                     c_ss2.textureflags = i_mesh->flags;
@@ -2128,7 +2131,7 @@ void cSCNFile::MakeToOvlMain(cOvl& c_ovl) {
                     cMeshStruct* i_mesh = &i_mod->meshstructs[meshvec[0]];
 
                     wxLogVerbose(_("  Adding group: ") + i_mesh->Name);
-                    c_bs2.fts = getPrefixed(i_mesh->FTX).ToAscii();
+                    c_bs2.fts = getPrefixed(i_mesh->FTX, true).ToAscii();
                     c_bs2.texturestyle = i_mesh->TXS.ToAscii();
                     c_bs2.placetexturing = i_mesh->place;
                     c_bs2.textureflags = i_mesh->flags;

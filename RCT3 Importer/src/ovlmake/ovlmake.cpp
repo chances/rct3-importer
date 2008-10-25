@@ -35,13 +35,16 @@
 #include <wx/mstream.h>
 //#include <wx/fs_zip.h>
 #include <wx/stdpaths.h>
+
+#ifdef _WIN32
+#include <wx/msw/registry.h>
+#endif
+
 #include <exception>
 #include <stdlib.h>
 
 #include <boost/format.hpp>
 #include <boost/shared_ptr.hpp>
-
-#include "version.h"
 
 //#define LIBXMLTEST
 
@@ -67,6 +70,8 @@
 #include "bzipstream.h"
 #include "xmldefs.h"
 
+#include "version_wrap.h"
+
 #ifdef UNICODE
 #define UNIPTR(s) s.mb_str(wxConvLocal).data()
 #else
@@ -77,45 +82,8 @@ using namespace r3;
 using namespace std;
 using namespace xmlcpp;
 
-inline void maximize(int& domax, const int withmax) {
-    if (withmax>domax)
-        domax = withmax;
-}
-
 void printVersion() {
-    wxString strdate = _("Built on ") + wxString(AutoVersion::DATE, wxConvLocal) + wxT(".")
-                          + wxString(AutoVersion::MONTH, wxConvLocal) + wxT(".")
-                          + wxString(AutoVersion::YEAR, wxConvLocal);
-    wxString strversion = wxString::Format(wxT("ovlmake v%ld.%ld, Build %ld, svn %s, "), AutoVersion::MAJOR, AutoVersion::MINOR, AutoVersion::BUILD, AutoVersion::SVN_REVISION)+ wxString(AutoVersion::STATUS, wxConvLocal);
-    wxString compversion("Compiler: ");
-#ifdef __GNUC__
-    compversion += "GCC ";
-#else
-    compversion += "Non-GCC ";
-#endif
-    compversion += wxString(__VERSION__);
-#ifdef UNICODE
-    strdate += wxT(", Unicode");
-#else
-    strdate += wxT(", ANSI");
-#endif
-#ifdef PUBLICDEBUG
-    strdate += wxT(" Debug");
-#endif
-    strdate += _(" version");
-    int linelen = strdate.size();
-    maximize(linelen, strversion.size());
-    maximize(linelen, compversion.size());
-    wxString line(wxT('-'), linelen);
-    fprintf(stderr, "\n%s\n", UNIPTR(line));
-    fprintf(stderr, "%s\n", UNIPTR(strversion));
-    fprintf(stderr, "%s\n", UNIPTR(strdate));
-    fprintf(stderr, "%s", UNIPTR(compversion));
-    fprintf(stderr, "\nCopyright (C) 2008 Belgabor");
-    fprintf(stderr, "\n%s\n\n", UNIPTR(line));
-    fprintf(stderr, "This program comes with ABSOLUTELY NO WARRANTY.\n");
-    fprintf(stderr, "This is free software, and you are welcome to redistribute it\n");
-    fprintf(stderr, "under certain conditions; see License.txt for details.\n\n");
+    fprintf(stderr, "%s", UNIPTR(GetAppVersion()));
 }
 
 void logXmlErrors(cXmlErrorHandler* err, bool verbose) {
@@ -187,6 +155,9 @@ int DoCompile(const wxCmdLineParser& parser) {
         wxString installdir = wxT("");
         if (!parser.Found(wxT("installdir"), &installdir)) {
             if (install) {
+				try {
+#ifdef _WIN32
+#if 0
                 HKEY key;
                 wxChar *temp = new wxChar[MAX_PATH+1];
                 LONG res = RegOpenKeyEx(HKEY_LOCAL_MACHINE,
@@ -198,9 +169,23 @@ int DoCompile(const wxCmdLineParser& parser) {
                 delete[] temp;
                 RegCloseKey(key);
                 if (res != ERROR_SUCCESS) {
-                    throw RCT3Exception(_("Cannot determine installatinon directory. Use --installdir to set manually."));
+                    throw RCT3Exception(_("Cannot determine installation directory. Use --installdir to set manually."));
                 }
+#endif
+					wxRegKey key("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{907B4640-266B-4A21-92FB-CD1A86CD0F63}");
+					if (!key.Exists())
+						throw 1;
+					key.QueryValue("InstallLocation", installdir);
+					if (installdir.IsEmpty())
+						throw 1;
+#else
+					throw 1;
+#endif
+				} catch(...) {
+                    throw RCT3Exception(_("Cannot determine installation directory. Use --installdir to set manually."));					
+				}
             }
+
         } else {
             install = true;
         }
@@ -536,28 +521,28 @@ int DoCompile(const wxCmdLineParser& parser) {
             bsh.prop("name", inputfile.GetName().utf8_str());
             bsh.prop("model", inputfile.GetFullName().utf8_str());
 
-            for (int i = 0; i < object->GetObjectCount(); ++i) {
-                if (object->IsObjectValid(i)) {
+            for (unsigned int i = 0; i < object->getObjectCount(); ++i) {
+                if (object->isObjectValid(i)) {
                     cXmlNode geom("geomobj");
-                    geom.prop("name", object->GetObjectName(i).utf8_str());
+                    geom.prop("name", object->getObjectName(i).utf8_str());
                     geom.prop("ftx", "???");
                     geom.prop("txs", "SIOpaque");
-                    if (object->GetObjectVertex2(i, 0).bone[0] >= 0) {
-                        geom.prop("bone", object->GetBone(object->GetObjectVertex2(i, 0).bone[0]).m_name.utf8_str());
+                    if (object->getObjectVertex2(i, 0).bone[0] >= 0) {
+                        geom.prop("bone", object->getBone(object->getObjectVertex2(i, 0).bone[0]).m_name.utf8_str());
                     }
                     bsh.appendChildren(geom);
                 }
             }
-            for (int i = 0; i < object->GetBoneCount(); ++i) {
+            for (int i = 0; i < object->getBoneCount(); ++i) {
                 cXmlNode bone("bone");
-                bone.prop("name", object->GetBone(i).m_name.utf8_str());
-                if (!object->GetBone(i).m_parent.IsEmpty()) {
-                    bone.prop("parent", object->GetBone(i).m_parent.utf8_str());
+                bone.prop("name", object->getBone(i).m_name.utf8_str());
+                if (!object->getBone(i).m_parent.IsEmpty()) {
+                    bone.prop("parent", object->getBone(i).m_parent.utf8_str());
                 }
-                MATRIX p = object->GetBone(i).m_pos[0];
+                MATRIX p = object->getBone(i).m_pos[0];
                 bone.newChild("pos1", boost::str(boost::format("%f %f %f %f   %f %f %f %f   %f %f %f %f   %f %f %f %f") % p._11 % p._12 % p._13 % p._14 %
                     p._21 % p._22 % p._23 % p._24 % p._31 % p._32 % p._33 % p._34 % p._41 % p._42 % p._43 % p._44).c_str());
-                p = object->GetBone(i).m_pos[1];
+                p = object->getBone(i).m_pos[1];
                 bone.newChild("pos2", boost::str(boost::format("%f %f %f %f   %f %f %f %f   %f %f %f %f   %f %f %f %f") % p._11 % p._12 % p._13 % p._14 %
                     p._21 % p._22 % p._23 % p._24 % p._31 % p._32 % p._33 % p._34 % p._41 % p._42 % p._43 % p._44).c_str());
                 bsh.appendChildren(bone);
@@ -566,19 +551,19 @@ int DoCompile(const wxCmdLineParser& parser) {
 
             cXmlNode ban("ban");
             ban.prop("name", inputfile.GetName().utf8_str());
-            const c3DAnimation& an = object->GetAnimations().begin()->second;
+            const c3DAnimation& an = object->getAnimations().begin()->second;
 
             typedef pair<wxString, c3DAnimBone> bonepair;
             foreach(const bonepair& bp, an.m_bones) {
                 cXmlNode bone("bone");
                 bone.prop("name", bp.second.m_name.utf8_str());
-                for (int f = 0; f < bp.second.m_translations.size(); ++f) {
+                for (size_t f = 0; f < bp.second.m_translations.size(); ++f) {
                     txyz t = bp.second.m_translations[f];
                     cXmlNode trans("translate", boost::str(boost::format("%f %f %f") % t.X % t.Y % t.Z).c_str());
                     trans.prop("time", boost::str(boost::format("%f") % t.Time).c_str());
                     bone.appendChildren(trans);
                 }
-                for (int f = 0; f < bp.second.m_rotations.size(); ++f) {
+                for (size_t f = 0; f < bp.second.m_rotations.size(); ++f) {
                     txyz t = bp.second.m_rotations[f];
                     cXmlNode rot("rotate", boost::str(boost::format("%f %f %f") % t.X % t.Y % t.Z).c_str());
                     rot.prop("time", boost::str(boost::format("%f") % t.Time).c_str());

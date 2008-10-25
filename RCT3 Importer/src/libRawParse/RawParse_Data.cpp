@@ -26,6 +26,8 @@
 
 #include "RawParse_cpp.h"
 
+#include "base64.h"
+
 cXmlNode* cRawParser::FindDataReference(const wxString& guid, wxFSFileName& input) {
     std::map<wxString, cXmlNode>::iterator it = m_datareferences.find(guid);
     if (it != m_datareferences.end()) {
@@ -50,7 +52,7 @@ cRawDatablock cRawParser::MakeDataBlock(const wxString& ref, const wxFSFileName&
     block.datatype(datatype);
 
     if (type.IsSameAs(wxT("file"))) {
-        wxString filename = UTF8STRINGWRAP(node.content());
+        wxString filename = node.wxcontent();
         MakeVariable(filename);
         wxFSFileName fname = filename;
         if (!fname.IsAbsolute())
@@ -71,7 +73,7 @@ cRawDatablock cRawParser::MakeDataBlock(const wxString& ref, const wxFSFileName&
             throw RCT3Exception(wxString::Format(_("File '%s' in data tag not found."), fname.GetFullPath().c_str()));
         }
     } else if (type.IsSameAs(wxT("binary"))) {
-        wxString tex = UTF8STRINGWRAP(node.content());
+        wxString tex = node.wxcontent();
         MakeVariable(tex);
 
         unsigned long outlen = tex.Length();
@@ -90,7 +92,7 @@ cRawDatablock cRawParser::MakeDataBlock(const wxString& ref, const wxFSFileName&
         block.datasize(outlen);
         memcpy(block.data().get(), data.get(), outlen);
     } else if (type.IsSameAs(wxT("data"))) {
-        wxString tex = UTF8STRINGWRAP(node.content());
+        wxString tex = node.wxcontent();
         MakeVariable(tex);
 
         const wxCharBuffer buf = tex.mb_str(wxConvUTF8);
@@ -106,9 +108,9 @@ cRawDatablock cRawParser::MakeDataBlock(const wxString& ref, const wxFSFileName&
 }
 
 cRawDatablock cRawParser::GetDataBlock(const wxString& ref, const cXmlNode& node) {
-    wxString type = ParseString(node, wxT(RAWXML_DATA), wxT("type"), NULL);
-    if (type.IsSameAs(wxT("reference"))) {
-        wxString guid = UTF8STRINGWRAP(node.content());
+    wxString type = ParseString(node, RAWXML_DATA, "type", NULL);
+    if (type.IsSameAs("reference")) {
+        wxString guid = node.wxcontent();
         MakeVariable(guid);
         guid.MakeUpper();
         wxFSFileName input;

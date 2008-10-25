@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Project Name="RCT3 Importer TNG">
+  <Description></Description>
+  <Dependencies/>
+  <Settings Type="Executable">
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="">
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="./$(ProjectName)" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-g">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Required="yes" Options=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""></Debugger>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild></CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="">
+      <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Release" Command="./$(ProjectName)" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Required="yes" Options="-O2"/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""></Debugger>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild></CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+  </Settings>
+  <VirtualDirectory Name="src"/>
+  <VirtualDirectory Name="resources">
+    <File Name="resources\about.fbp"/>
+    <File Name="resources\main.fbp"/>
+    <File Name="resources\misc.fbp"/>
+    <File Name="resources\viewproject.fbp"/>
+    <File Name="resources\viewreferences.fbp"/>
+    <File Name="resources\viewresources.fbp"/>
+    <File Name="resources\viewscenery.fbp"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="ImporterTNG">
+    <File Name="cLogListCtrl.cpp"/>
+    <File Name="cLogListCtrl.h"/>
+    <File Name="impCommand.h"/>
+    <File Name="impControl.cpp"/>
+    <File Name="impControl.h"/>
+    <File Name="impControlHtlb.cpp"/>
+    <File Name="impControlHtlb.h"/>
+    <File Name="impControlHtlbReferences.cpp"/>
+    <File Name="impControlHtlbReferences.h"/>
+    <File Name="impControlText.cpp"/>
+    <File Name="impControlText.h"/>
+    <File Name="impElement.cpp"/>
+    <File Name="impElement.h"/>
+    <File Name="importerabout.cpp"/>
+    <File Name="importerabout.h"/>
+    <File Name="importerapp.cpp"/>
+    <File Name="importerapp.h"/>
+    <File Name="importerconfig.h"/>
+    <File Name="importermain.cpp"/>
+    <File Name="importermain.h"/>
+    <File Name="importerresourcefiles.h"/>
+    <File Name="importerresources.cpp"/>
+    <File Name="importerresources.h"/>
+    <File Name="importersave.cpp"/>
+    <File Name="importersave.h"/>
+    <File Name="importerxpaths.h"/>
+    <File Name="impRawovlFileManager.cpp"/>
+    <File Name="impRawovlFileManager.h"/>
+    <File Name="impRawovlFileManagerBaseConnecter.h"/>
+    <File Name="impTypes.h"/>
+    <File Name="impValidator.cpp"/>
+    <File Name="impValidator.h"/>
+    <File Name="impView.cpp"/>
+    <File Name="impView.h"/>
+    <File Name="impViewProject.cpp"/>
+    <File Name="impViewProject.h"/>
+    <File Name="impViewReferences.cpp"/>
+    <File Name="impViewReferences.h"/>
+    <File Name="impViewTree.cpp"/>
+    <File Name="impViewTree.h"/>
+    <File Name="infotag.cpp"/>
+    <File Name="sigchelper.h"/>
+    <File Name="version.h"/>
+  </VirtualDirectory>
+</CodeLite_Project>

@@ -31,6 +31,9 @@
 #include "ManagerGSI.h"
 #include "ManagerTXT.h"
 
+#include "base64.h"
+#include "OVLDump.h"
+
 #define RAWXML_METADATA "metadata"
 
 void cRawParser::Parse(cXmlNode& node) {
@@ -42,7 +45,7 @@ void cRawParser::Parse(cXmlNode& node) {
         DO_CONDITION_COMMENT(child);
 
         if (child(RAWXML_SECTION)) {
-            wxString incfile = UTF8STRINGWRAP(child.getPropVal("include"));
+            wxString incfile = child.wxgetPropVal("include");
             if (incfile.IsEmpty()) {
                 Parse(child);
             } else {
@@ -85,7 +88,7 @@ void cRawParser::Parse(cXmlNode& node) {
                 cXmlDoc doc(filename.GetFullPath().mb_str(wxConvUTF8), NULL, XML_PARSE_DTDLOAD);
                 cXmlNode root(doc.root());
                 if (!root(RAWXML_SECTION))
-                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Included section raw xml file has wrong root '%s'."), STRING_FOR_FORMAT(root.name())), child);
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Included section raw xml file has wrong root '%s'."), root.wxname().c_str()), child);
 
                 wxFSFileName bakebackup = m_bakeroot;
                 wxFSFileName inputbackup = m_input;
@@ -105,7 +108,7 @@ void cRawParser::Parse(cXmlNode& node) {
         } else if (child(RAWXML_SUBROOT)) {
             // see above or
             // <subovl include="raw xml file" />
-            wxString incfile = UTF8STRINGWRAP(child.getPropVal("include"));
+            wxString incfile = child.wxgetPropVal("include");
 
             cRawParser c_raw;
             c_raw.SetParent(this);
@@ -328,7 +331,7 @@ void cRawParser::Parse(cXmlNode& node) {
             }
             wxLogVerbose(wxString::Format(_("Writing file %s."), targetname.GetFullPath().c_str()));
             if (type == wxT("file")) {
-                wxString temp = UTF8STRINGWRAP(child.content());
+                wxString temp = child.wxcontent();
                 bool filevar = MakeVariable(temp);
                 wxFSFileName wfile = temp;
 
@@ -390,7 +393,7 @@ void cRawParser::Parse(cXmlNode& node) {
                     child.go_next();
                     continue;
                 }
-                wxString data = UTF8STRINGWRAP(child.content());
+                wxString data = child.wxcontent();
                 MakeVariable(data);
 
                 unsigned long datasize = data.Length();
@@ -422,65 +425,7 @@ void cRawParser::Parse(cXmlNode& node) {
         } else if (m_dryrun) {
             // The rest creates the file
         } else if (child(RAWXML_IMPORT)) {
-            USE_PREFIX(child);
-            // <import file="scenery file" (name="internal svd name") />
-            bool filenamevar;
-            wxFSFileName filename = ParseString(child, wxT(RAWXML_IMPORT), wxT("file"), &filenamevar);
-            wxString name;
-            ParseStringOption(name, child, wxT("name"), NULL);
-            wxString use;
-            ParseStringOption(use, child, wxT("use"), NULL);
-            if (!filename.IsAbsolute()) {
-                filename.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
-            }
-
-            if (m_mode == MODE_BAKE) {
-                if (m_bake.Index(wxT(RAWXML_IMPORT)) == wxNOT_FOUND) {
-                    if (!filenamevar) {
-                        if (m_bake.Index(wxT(RAWBAKE_ABSOLUTE)) == wxNOT_FOUND) {
-                            filename.MakeRelativeTo(m_bakeroot.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
-                        }
-                        child.prop("file", filename.GetFullPath());
-                    }
-                    child.go_next();
-                    continue;
-                }
-            }
-
-            wxLogVerbose(wxString::Format(_("Importing from %s..."), filename.GetFullPath().c_str()));
-            cSCNFile c_scn(filename.GetFullPath());
-            if (!name.IsEmpty()) {
-                c_scn.name = name;
-            }
-            c_scn.prefix = "";
-            if (useprefix && (m_prefix != "")) {
-                c_scn.prefix = wxString(m_prefix.c_str(), wxConvLocal);
-            }
-
-            if (m_mode == MODE_BAKE) {
-                c_scn.Check();
-                child.name(RAWXML_SECTION);
-                child.delProp("name");
-                child.delProp("file");
-                if (child.children())
-                    child.children().detach();
-// TODO (belgabor#1#): bake use attribute
-                BakeScenery(child, *c_scn.m_work);
-                Parse(child); // Bake contained stuff
-            } else {
-                wxLogVerbose(wxString::Format(_("Importing %s (%s) to %s."), filename.GetFullPath().c_str(), c_scn.name.c_str(), m_output.GetFullPath().c_str()));
-                if (use.IsEmpty()) {
-                    c_scn.MakeToOvl(m_ovl);
-                } else if (use == "main") {
-                    c_scn.MakeToOvlMain(m_ovl);
-                } else if (use == "animations") {
-                    c_scn.MakeToOvlAnimations(m_ovl);
-                } else if (use == "splines") {
-                    c_scn.MakeToOvlSplines(m_ovl);
-                } else  {
-                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown value '%s' for use attribute in import tag"), use.c_str()), child);
-                }
-            }
+			ParseImport(child);
         } else if (child(RAWXML_ANR)) {
             BAKE_SKIP(child);
             ParseANR(child);
@@ -593,7 +538,7 @@ void cRawParser::Parse(cXmlNode& node) {
                     child.go_next();
                     continue;
                 }
-                wxString text = UTF8STRINGWRAP(child.content());
+                wxString text = child.wxcontent();
                 MakeVariable(text);
 
                 if (m_mode == MODE_BAKE) {
@@ -630,7 +575,7 @@ void cRawParser::Parse(cXmlNode& node) {
                     child.go_next();
                     continue;
                 }
-                wxString text = UTF8STRINGWRAP(child.content());
+                wxString text = child.wxcontent();
                 MakeVariable(text);
 
                 unsigned long datasize = text.Length();
@@ -667,9 +612,9 @@ void cRawParser::Parse(cXmlNode& node) {
             BAKE_SKIP(child);
             wxString ref = wxT("");
             if (child.hasProp("path")) {
-                ref = UTF8STRINGWRAP(child.getPropVal("path"));
+                ref = child.wxgetPropVal("path");
             } else {
-                ref = UTF8STRINGWRAP(child.content());
+                ref = child.wxcontent();
                 MakeVariable(ref);
             }
             if (ref.IsEmpty())
@@ -690,13 +635,18 @@ void cRawParser::Parse(cXmlNode& node) {
             } else if (type == wxT("float")) {
                 name += wxT(":flt");
                 float f = ParseFloat(child, wxT(RAWXML_SYMBOL), wxT("data"));
-                data = *reinterpret_cast<unsigned long*>(&f);
+				union {
+					unsigned long l;
+					float f;
+				} convert;
+				convert.f = f;
+                data = convert.l;
             } else {
                 throw MakeNodeException<RCT3Exception>(wxString::Format(_("symbol tag has unimplemented type value '%s'."), type.c_str()), child);
             }
             m_ovl.AddDataSymbol(target, name.ToAscii(), data);
         } else if (child.is(XML_ELEMENT_NODE)) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in rawovl tag."), STRING_FOR_FORMAT(child.name())), child);
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in rawovl tag."), child.wxname().c_str()), child);
         }
 
         child.go_next();

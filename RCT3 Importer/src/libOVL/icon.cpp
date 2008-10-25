@@ -21,7 +21,7 @@ unsigned long Texture::ComputeSize()
  	unsigned long icontexturesize = 0;
    	for (unsigned int i = 0;i < IconTextures.size();i++)
 	{
-		AddStringSize(IconTextures[i]->name);
+		AddStringSize(IconTextures[i]->name.c_str());
 		icontexturesize += sizeof(TextureStruct2);
 		icontexturesize += sizeof(TextureStruct);
 		loadercount++;
@@ -41,12 +41,11 @@ unsigned long Texture::ComputeSizeFlic()
 	}
 	return flicsize;
 }
-Texture::Texture(char *Name,char *Texture,FlicHeader Fh,FlicMipHeader Fmh,unsigned char *Data)
+
+Texture::Texture(const std::string& _Name,const std::string& _Texture,FlicHeader Fh,FlicMipHeader Fmh,unsigned char *Data):
+	name(_Name),
+	texture(_Texture)
 {
-    name = new char[strlen(Name)+1];
-    strcpy(name,Name);
-    texture = new char[strlen(Texture)+1];
-    strcpy(texture,Texture);
     fh = Fh;
     fmh = Fmh;
     data = new unsigned char[fmh.Pitch * fmh.Blocks];
@@ -55,8 +54,7 @@ Texture::Texture(char *Name,char *Texture,FlicHeader Fh,FlicMipHeader Fmh,unsign
 
 Texture::~Texture()
 {
-    delete name;
-    delete texture;
+	delete[] data;
 }
 
 void Texture::AddData(unsigned long *data,unsigned long *data2)
@@ -66,7 +64,7 @@ void Texture::AddData(unsigned long *data,unsigned long *data2)
 	for (unsigned int i = 0;i < IconTextures.size();i++)
 	{
 	    AddLoader2((unsigned long *)&data2f[i].fl2,LoaderNumber2,0,true);
-	    AddLoader((unsigned long *)&datax[i],LoaderNumber,1,IconTextures[i]->name,":tex",false);
+	    AddLoader((unsigned long *)&datax[i],LoaderNumber,1,IconTextures[i]->name.c_str(),":tex",false);
    		AddRef((unsigned long *)&datax[i].t1.TextureData,GUIIcon);
 		relocations.push((unsigned long *)&data2f[i].fl);
 		data2f[i].fl = &data2f[i].fl2;

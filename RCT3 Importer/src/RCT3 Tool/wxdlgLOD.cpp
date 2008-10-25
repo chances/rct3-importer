@@ -32,6 +32,8 @@
 #include "wxdlgLOD_HTLB.h"
 
 #include <wx/choicdlg.h>
+#include <wx/msgdlg.h>
+#include <wx/textdlg.h>
 #include <wx/valgen.h>
 
 #include "colhtmllbox.h"

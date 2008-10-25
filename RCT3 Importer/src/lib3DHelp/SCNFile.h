@@ -32,7 +32,7 @@
 //#include "3DLoader.h"
 #include "cXmlDoc.h"
 
-#define VERSION_CSCNFILE 5
+#define VERSION_CSCNFILE 6
 #define VERSION_CSCNFILE_FIRSTXML 5
 
 #define CSCNFILE_NO_ERROR               0x00000000

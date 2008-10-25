@@ -8,16 +8,17 @@
 	version. See the file COPYING for more details.
 */
 
+#include <string>
 #include <vector>
 
 class Texture {
 public:
-    char *name;
-    char *texture;
+    std::string name;
+    std::string texture;
 	FlicHeader fh;
 	FlicMipHeader fmh;
 	unsigned char *data;
-    Texture(char *Name,char *Texture,FlicHeader Fh,FlicMipHeader Fmh,unsigned char *Data);
+    Texture(const std::string& Name, const std::string& Texture,FlicHeader Fh,FlicMipHeader Fmh,unsigned char *Data);
     ~Texture();
     static std::vector<Texture *> IconTextures;
     static int LoaderNumber;

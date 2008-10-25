@@ -28,8 +28,6 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "wx_pch.h"
-
 #include "wxdlgMatrix.h"
 
 #include "wxapp.h"
@@ -134,7 +132,7 @@ dlgMatrix::dlgMatrix(wxWindow *parent): m_bones(NULL) {
     m_htlbMatrix = new wxMatrixListBox(this, &m_matrixnames);
     m_htlbMatrix->SetToolTip(_("Matrix stack.\nSelect the first entry to see a preview of the combined matrix below."));
     wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbMatrix"), m_htlbMatrix, this);
-    m_staticDegree->SetLabel(wxT("°"));
+    m_staticDegree->SetLabel(wxT("Â°"));
     m_choiceTranslationPoint->Append(_("(Custom)"));
     m_choiceTranslationPoint->SetSelection(0);
 

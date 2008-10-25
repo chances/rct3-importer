@@ -30,6 +30,9 @@
 #include <string>
 #include <vector>
 
+#include "boost_unordered_extension.h"
+
+#include "cryptoguid.h"
 #include "rct3constants.h"
 #include "sceneryvisual.h"
 
@@ -65,6 +68,8 @@ struct cText {
 
 class cRCT3Xml {
 public:
+	cryptoGUID guid;
+
     virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version) = 0;
     virtual xmlcpp::cXmlNode GetNode(const wxString& path) = 0;
     virtual const std::string GetTagName() const = 0;
@@ -72,6 +77,7 @@ public:
     static wxString getSingular() { return wxT("UNIMPLEMENTED"); }
     static wxString getPlural() { return wxT("UNIMPLEMENTEDs"); }
 
+	cRCT3Xml(): guid(true) {}
     virtual ~cRCT3Xml() {}
 };
 
@@ -282,6 +288,8 @@ private:
     static bool g_rgbPaletteCreated;
     static r3::COLOURQUAD g_bmyPalette[256];
     static bool g_bmyPaletteCreated;
+    static boost::caseless_set m_reserved;
+    static void makeReserved();	
 public:
     wxString Name;
     unsigned long FPS;
@@ -305,6 +313,12 @@ public:
 
     static const r3::COLOURQUAD* GetRGBPalette();
     static const r3::COLOURQUAD* GetBMYPalette();
+    static inline const boost::caseless_set& getReserved() {
+        if (!m_reserved.size())
+            makeReserved();
+        return m_reserved;
+    }
+    static bool isReserved(const wxString& t_ftx);
 };
 
 class cModelBone;

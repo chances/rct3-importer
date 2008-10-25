@@ -31,9 +31,16 @@
 #ifndef WXDLGTEXTURE_H_INCLUDED
 #define WXDLGTEXTURE_H_INCLUDED
 
-#include <wx/xrc/xmlres.h>
+#include <wx/bmpbuttn.h>
+#include <wx/button.h>
+#include <wx/checkbox.h>
+#include <wx/choice.h>
+#include <wx/dialog.h>
+#include <wx/filedlg.h>
 #include <wx/spinbutt.h>
+#include <wx/textctrl.h>
 #include <wx/tglbtn.h>
+#include <wx/xrc/xmlres.h>
 
 #include "colhtmllbox.h"
 #include "fileselectorcombo.h"

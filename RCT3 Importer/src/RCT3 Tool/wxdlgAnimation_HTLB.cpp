@@ -32,6 +32,7 @@
 
 #include "wxdlgAnimation_HTLB.h"
 
+#include <wx/log.h>
 #include "htmlentities.h"
 #include "RCT3Structs.h"
 
@@ -100,7 +101,7 @@ wxString wxTranslationListBox::OnGetItem(size_t n) const {
 
     if (*m_contents) {
         if (n < (*m_contents)->translations.size()) {
-            return wxT("<font size='2'>")+wxString::Format(wxT("%.2f s"), (*m_contents)->translations[n].v.Time)
+            return wxT("<font size='2'>")+wxString::Format(wxT("%.6f s"), (*m_contents)->translations[n].v.Time)
                 +HTML_INSET_START+wxT("&lt;")+wxString::Format(wxT("%.6f,%.6f,%.6f"), (*m_contents)->translations[n].v.X, (*m_contents)->translations[n].v.Y, (*m_contents)->translations[n].v.Z)+wxT("&gt;")
                 +HTML_INSET_END+wxT("</font>");
         } else {
@@ -136,7 +137,7 @@ wxString wxRotationListBox::OnGetItem(size_t n) const {
 
     if (*m_contents) {
         if (n < (*m_contents)->rotations.size()) {
-            return wxT("<font size='2'>")+wxString::Format(wxT("%.2f s"), (*m_contents)->rotations[n].v.Time)
+            return wxT("<font size='2'>")+wxString::Format(wxT("%.6f s"), (*m_contents)->rotations[n].v.Time)
                 +HTML_INSET_START+wxT("&lt;")+wxString::Format(wxT("%.6f,%.6f,%.6f"), (*m_contents)->rotations[n].v.X, (*m_contents)->rotations[n].v.Y, (*m_contents)->rotations[n].v.Z)+wxT("&gt;")
                 +HTML_INSET_END+wxT("</font>");
         } else {

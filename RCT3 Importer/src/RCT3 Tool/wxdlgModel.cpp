@@ -1263,7 +1263,9 @@ EVT_BUTTON(XRCID("m_btEffectClear"), dlgModel::OnEffectClear)
 EVT_BUTTON(XRCID("m_btLoad"), dlgModel::OnLoad)
 END_EVENT_TABLE()
 
-dlgModel::dlgModel(wxWindow *parent, bool animated):m_model(NULL), m_animated(animated), m_loadoverlay(false) {
+dlgModel::dlgModel(wxWindow *parent, cSCNFile& scn, bool animated):
+	m_model(NULL), m_animated(animated), m_loadoverlay(false), m_scn(scn), m_boneshutup(false)
+{
     m_hookhandler = NULL;
 
     if (m_animated)
@@ -2095,9 +2097,10 @@ void dlgModel::OnBoneEdit(wxCommandEvent& WXUNUSED(event)) {
     dlgBone *dialog = new dlgBone(this);
     dialog->SetBone(amodel->modelbones[sel]);
     if (dialog->ShowModal() == wxID_OK) {
+		wxString oldname = amodel->modelbones[sel].name;
         amodel->modelbones[sel] = dialog->GetBone();
 
-        foreach(cMeshStruct& ms, m_model->meshstructs) {
+		foreach(cMeshStruct& ms, m_model->meshstructs) {
             if (ms.multibone) {
                 foreach(const wxString& mname, amodel->modelbones[sel].meshes) {
                     if (mname == ms.Name) {
@@ -2107,6 +2110,73 @@ void dlgModel::OnBoneEdit(wxCommandEvent& WXUNUSED(event)) {
                 }
             }
         }
+
+		if (amodel->modelbones[sel].name != oldname) {
+			wxString& newname = amodel->modelbones[sel].name;
+			foreach(cModelBone& b, amodel->modelbones) {
+				if (b.parent == oldname)
+					b.parent = newname;
+			}
+			
+			if (!m_boneshutup) {
+				bool affects_others = false;
+				foreach(cAnimatedModel& m, m_scn.animatedmodels) {
+					if (m.guid == amodel->guid)
+						continue;
+					foreach (cModelBone& b, m.modelbones) {
+						if (b.name == oldname) {
+							affects_others = true;
+							break;
+						}
+					}
+					if (affects_others)
+						break;
+				}
+				if (!affects_others) {
+					foreach(cAnimation& a, m_scn.animations) {
+						foreach(cBoneAnimation& b, a.boneanimations) {
+							if (b.name == oldname) {
+								affects_others = true;
+								break;
+							}
+						}
+						if (affects_others)
+							break;
+					}
+				}
+				if (affects_others) {
+					if (::wxMessageBox("The bone you just renamed is also present in other animated models and/or animations. "
+									   "Do you want to automatically rename all of these instances?\n\n"
+									   "WARNING: Pressing cancel on this model window will NOT undo these automatic changes, but it "
+									   "WILL undo the change of the name of the bone you just did for this model. In short, "
+									   "if you say yes, do not press cancel.\n\n"
+									   "If you say no, the Importer will not bother you anymore about this until you close "
+									   "and reopen the model window.", "Question", wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION, this) == wxYES) {
+						foreach(cAnimatedModel& m, m_scn.animatedmodels) {
+							if (m.guid == amodel->guid)
+								continue;
+							foreach (cModelBone& b, m.modelbones) {
+								if (b.name == oldname) {
+									b.name = newname;
+								}
+								if (b.parent == oldname) {
+									b.parent = newname;
+								}
+							}
+						}
+						foreach(cAnimation& a, m_scn.animations) {
+							foreach(cBoneAnimation& b, a.boneanimations) {
+								if (b.name == oldname) {
+									b.name = newname;
+								}
+							}
+						}
+					} else {
+						m_boneshutup = true;
+					}
+				}
+			}
+		}
 
         m_htlbEffect->UpdateContents();
         UpdateAll();

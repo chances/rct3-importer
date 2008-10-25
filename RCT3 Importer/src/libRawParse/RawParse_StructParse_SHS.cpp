@@ -27,173 +27,12 @@
 
 #include "RawParse_cpp.h"
 
-#include "ManagerPTD.h"
-#include "ManagerQTD.h"
-#include "ManagerSAT.h"
 #include "ManagerSHS.h"
 
-#define DO_PTD(a,b) \
-        } else if (cname.IsSameAs(wxT(RAWXML_PTD_ ## a))) { \
-            wxString c = UTF8STRINGWRAP(child.content()); \
-            MakeVariable(c); \
-            ptd.b[0] = c.ToAscii();
+#include "3DLoader.h"
+#include "matrix.h"
+#include "RCT3Structs.h"
 
-#define DO_PTD_TURN(a, b) DO_PTD(TURN_ ## a, turn_ ## b)
-#define DO_PTD_CORNER(a, b) DO_PTD(CORNER_ ## a, corner_ ## b)
-#define DO_PTD_COMPLEX(a, c) \
-    DO_PTD(a, c.b) \
-    DO_PTD(a ## _FC, c.fc) \
-    DO_PTD(a ## _BC, c.bc) \
-    DO_PTD(a ## _TC, c.tc)
-
-void cRawParser::ParsePTD(cXmlNode& node) {
-    USE_PREFIX(node);
-
-    cPath ptd;
-    wxString name = ParseString(node, wxT(RAWXML_PTD), wxT("name"), NULL, useprefix);
-    ptd.name = name.ToAscii();
-    ParseStringOption(ptd.internalname, node, wxT("internalname"), NULL, useprefix);
-    ptd.nametxt = ParseString(node, wxT(RAWXML_PTD), wxT("nametxt"), NULL, useprefix).ToAscii();
-    ptd.icon = ParseString(node, wxT(RAWXML_PTD), wxT("icon"), NULL, useprefix).ToAscii();
-    unsigned long underwater = 0;
-    unsigned long extended = 0;
-    OPTION_PARSE(unsigned long, underwater, ParseUnsigned(node, wxT(RAWXML_PTD), wxT("underwater")));
-    OPTION_PARSE(unsigned long, extended, ParseUnsigned(node, wxT(RAWXML_PTD), wxT("extended")));
-    if (underwater)
-        ptd.unk1 |= cPath::FLAG_UNDERWATER;
-    if (extended)
-        ptd.unk1 |= cPath::FLAG_EXTENDED;
-    wxLogVerbose(wxString::Format(_("Adding ptd %s to %s."), name.c_str(), m_output.GetFullPath().c_str()));
-
-    cXmlNode child(node.children());
-    while (child) {
-        wxString cname = UTF8STRINGWRAP(child.name());
-
-        if (cname == wxT(RAWXML_PTD_TEXTURE_A)) {
-            wxString c = UTF8STRINGWRAP(child.content());
-            MakeVariable(c);
-            ptd.texture_a = c.ToAscii();
-        } else if (cname == wxT(RAWXML_PTD_TEXTURE_B)) {
-            wxString c = UTF8STRINGWRAP(child.content());
-            MakeVariable(c);
-            ptd.texture_b = c.ToAscii();
-        DO_PTD(FLAT, flat)
-        DO_PTD(STRAIGHT_A, straight_a)
-        DO_PTD(STRAIGHT_B, straight_b)
-        DO_PTD_TURN(U, u)
-        DO_PTD_TURN(LA, la)
-        DO_PTD_TURN(LB, lb)
-        DO_PTD_TURN(TA, ta)
-        DO_PTD_TURN(TB, tb)
-        DO_PTD_TURN(TC, tc)
-        DO_PTD_TURN(X, x)
-        DO_PTD_CORNER(A, a)
-        DO_PTD_CORNER(B, b)
-        DO_PTD_CORNER(C, c)
-        DO_PTD_CORNER(D, d)
-        DO_PTD_COMPLEX(SLOPE, slope)
-        DO_PTD_COMPLEX(SLOPESTRAIGHT, slopestraight)
-        DO_PTD_COMPLEX(SLOPESTRAIGHTLEFT, slopestraightleft)
-        DO_PTD_COMPLEX(SLOPESTRAIGHTRIGHT, slopestraightright)
-        DO_PTD_COMPLEX(SLOPEMID, slopemid)
-        DO_PTD(FLAT_FC, flat_fc)
-        } else if (cname == wxT(RAWXML_PTD_PAVING)) {
-            wxString c = UTF8STRINGWRAP(child.content());
-            MakeVariable(c);
-            ptd.paving = c.ToAscii();
-        } else if (child.element()) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ptd tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()));
-        }
-
-        child.go_next();
-    }
-
-    ovlPTDManager* c_ptd = m_ovl.GetManager<ovlPTDManager>();
-    c_ptd->AddPath(ptd);
-
-}
-
-void cRawParser::ParseQTD(cXmlNode& node) {
-    USE_PREFIX(node);
-
-    cQueue qtd;
-    wxString name = ParseString(node, wxT(RAWXML_QTD), wxT("name"), NULL, useprefix);
-    qtd.name = name.ToAscii();
-    ParseStringOption(qtd.internalname, node, wxT("internalname"), NULL, useprefix);
-    qtd.nametxt = ParseString(node, wxT(RAWXML_QTD), wxT("nametxt"), NULL, useprefix).ToAscii();
-    qtd.icon = ParseString(node, wxT(RAWXML_QTD), wxT("icon"), NULL, useprefix).ToAscii();
-    qtd.texture = ParseString(node, wxT(RAWXML_QTD), wxT("texture"), NULL, useprefix).ToAscii();
-    wxLogVerbose(wxString::Format(_("Adding qtd %s to %s."), name.c_str(), m_output.GetFullPath().c_str()));
-
-    cXmlNode child(node.children());
-    while (child) {
-        wxString cname = child.wxname();
-
-        if (cname == wxT(RAWXML_QTD_STRAIGHT)) {
-            wxString c = child.wxcontent();
-            MakeVariable(c);
-            qtd.straight = c.ToAscii();
-        } else if (cname == wxT(RAWXML_QTD_TURN_L)) {
-            wxString c = child.wxcontent();
-            MakeVariable(c);
-            qtd.turn_l = c.ToAscii();
-        } else if (cname == wxT(RAWXML_QTD_TURN_R)) {
-            wxString c = child.wxcontent();
-            MakeVariable(c);
-            qtd.turn_r = c.ToAscii();
-        } else if (cname == wxT(RAWXML_QTD_SLOPEUP)) {
-            wxString c = child.wxcontent();
-            MakeVariable(c);
-            qtd.slopeup = c.ToAscii();
-        } else if (cname == wxT(RAWXML_QTD_SLOPEDOWN)) {
-            wxString c = child.wxcontent();
-            MakeVariable(c);
-            qtd.slopedown = c.ToAscii();
-        } else if (cname == wxT(RAWXML_QTD_SLOPESTRAIGHT)) {
-            wxString c = child.wxcontent();
-            MakeVariable(c);
-            if (qtd.slopestraight[0] == "")
-                qtd.slopestraight[0] = c.ToAscii();
-            else
-                qtd.slopestraight[1] = c.ToAscii();
-        } else if (child.element()) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in qtd tag '%s'."), cname.c_str(), name.c_str()));
-        }
-
-        child.go_next();
-    }
-
-    ovlQTDManager* c_qtd = m_ovl.GetManager<ovlQTDManager>();
-    c_qtd->AddQueue(qtd);
-
-}
-
-void cRawParser::ParseSAT(cXmlNode& node) {
-    USE_PREFIX(node);
-    cSpecialAttraction spa;
-    wxString name = ParseString(node, wxT(RAWXML_SAT), wxT("name"), NULL, useprefix);
-    spa.name = name.ToAscii();
-    spa.attraction.name = ParseString(node, wxT(RAWXML_SAT), wxT("nametxt"), NULL, useprefix).ToAscii();
-    spa.attraction.description = ParseString(node, wxT(RAWXML_SAT), wxT("description"), NULL, useprefix).ToAscii();
-    spa.sid = ParseString(node, wxT(RAWXML_SAT), wxT("sid"), NULL, useprefix).ToAscii();
-    wxLogVerbose(wxString::Format(_("Adding sat %s to %s."), name.c_str(), m_output.GetFullPath().c_str()));
-
-    cXmlNode child(node.children());
-    while (child) {
-        DO_CONDITION_COMMENT(child);
-
-        if (child(RAWXML_ATTRACTION)) {
-            ParseAttraction(child, spa.attraction);
-        } else if (child.element()) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in sat tag '%s'."), UTF8STRINGWRAP(child.name()), name.c_str()));
-        }
-
-        child.go_next();
-    }
-
-    ovlSATManager* c_sat = m_ovl.GetManager<ovlSATManager>();
-    c_sat->AddAttraction(spa);
-}
 
 void cRawParser::ParseSHS(cXmlNode& node) {
     USE_PREFIX(node);
@@ -229,8 +68,8 @@ void cRawParser::ParseSHS(cXmlNode& node) {
                 wxString meshname = ParseString(child, wxT(RAWXML_SHS_MESH), wxT("meshname"), NULL);
                 bool modelfilevar = false;
                 wxFSFileName modelfile = ParseString(child, wxT(RAWXML_SHS_MESH), wxT("modelfile"), &modelfilevar);
-                wxString hand = UTF8STRINGWRAP(child.getPropVal("handedness", "left"));
-                wxString up = UTF8STRINGWRAP(child.getPropVal("up", "y"));
+                wxString hand = child.wxgetPropVal("handedness", "left");
+                wxString up = child.wxgetPropVal("up", "y");
                 c3DLoaderOrientation ori = ORIENTATION_LEFT_YUP;
                 if (hand == wxT("left")) {
                     if (up == wxT("x")) {
@@ -240,7 +79,7 @@ void cRawParser::ParseSHS(cXmlNode& node) {
                     } else if (up == wxT("z")) {
                         ori = ORIENTATION_LEFT_ZUP;
                     } else {
-                        throw RCT3Exception(wxString::Format(_("Unknown value '%s' for up attribute in shs(%s)/shsmesh tag."), up.c_str(), name.c_str()));
+                        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown value '%s' for up attribute in shs(%s)/shsmesh tag."), up.c_str(), name.c_str()), child);
                     }
                 } else if (hand == wxT("right")) {
                     if (up == wxT("x")) {
@@ -250,10 +89,10 @@ void cRawParser::ParseSHS(cXmlNode& node) {
                     } else if (up == wxT("z")) {
                         ori = ORIENTATION_RIGHT_ZUP;
                     } else {
-                        throw RCT3Exception(wxString::Format(_("Unknown value '%s' for up attribute in shs(%s)/shsmesh tag."), up.c_str(), name.c_str()));
+                        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown value '%s' for up attribute in shs(%s)/shsmesh tag."), up.c_str(), name.c_str()), child);
                     }
                 } else {
-                    throw RCT3Exception(wxString::Format(_("Unknown value '%s' for handedness attribute in shs(%s)/shsmesh tag."), up.c_str(), name.c_str()));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown value '%s' for handedness attribute in shs(%s)/shsmesh tag."), up.c_str(), name.c_str()), child);
                 }
 
                 if (!modelfile.IsAbsolute())
@@ -277,17 +116,17 @@ void cRawParser::ParseSHS(cXmlNode& node) {
 
                 boost::shared_ptr<c3DLoader> model(c3DLoader::LoadFile(modelfile.GetFullPath().c_str()));
                 if (!model.get())
-                    throw RCT3Exception(_("shs tag: Model file not readable or has unknown format: ") + modelfile.GetFullPath());
+                    throw MakeNodeException<RCT3Exception>(_("shs tag: Model file not readable or has unknown format: ") + modelfile.GetFullPath(), child);
 
                 int meshnr = -1;
-                for (int i = 0; i < model->GetObjectCount(); ++i) {
-                    if (meshname == model->GetObjectName(i)) {
+                for (unsigned int i = 0; i < model->getObjectCount(); ++i) {
+                    if (meshname == model->getObjectName(i)) {
                         meshnr = i;
                         break;
                     }
                 }
                 if (meshnr == -1)
-                    throw RCT3Exception(wxString::Format(_("shs tag: Model file '%s' does not contain a mesh called '%s'."), modelfile.GetFullPath().c_str(), meshname.c_str()));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("shs tag: Model file '%s' does not contain a mesh called '%s'."), modelfile.GetFullPath().c_str(), meshname.c_str()), child);
 
                 unsigned long fudgenormals = CMS_FUDGE_NONE;
                 OPTION_PARSE(unsigned long, fudgenormals, ParseUnsigned(child, wxT(RAWXML_SHS_MESH), wxT("fudge")));
@@ -336,13 +175,13 @@ void cRawParser::ParseSHS(cXmlNode& node) {
                         ParseMatrix(subchild, m, wxT(RAWXML_SHS_MESH_TRANSFORM));
                         do_matrix = true;
                     } else if (subchild.element()) {
-                        throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in shs(%s)/shsmesh."), STRING_FOR_FORMAT(subchild.name()), name.c_str()));
+                        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in shs(%s)/shsmesh."), subchild.wxname().c_str(), name.c_str()), subchild);
                     }
                     subchild.go_next();
                 }
 
                 boundsInit(&temp_min, &temp_max);
-                model->FetchObject(meshnr, &sh2, &temp_min, &temp_max,
+                model->fetchObject(meshnr, &sh2, &temp_min, &temp_max,
                                           do_matrix?&m:NULL,
                                           c_pfudge_normal);
                 if (!(bb1 || bb2))
@@ -373,7 +212,7 @@ void cRawParser::ParseSHS(cXmlNode& node) {
                         normal.addProp("y", wxString::Format(wxT("%8f"), it->normal.y).mb_str(wxConvUTF8));
                         normal.addProp("z", wxString::Format(wxT("%8f"), it->normal.z).mb_str(wxConvUTF8));
                     }
-                    for(int l = 0; l < sh2.indices.size(); l+=3) {
+                    for(size_t l = 0; l < sh2.indices.size(); l+=3) {
                         cXmlNode tri(child.newChild(RAWXML_SHS_MESH_TRIANGLE));
                         tri.addProp("a", wxString::Format(wxT("%lu"), sh2.indices[l]).mb_str(wxConvUTF8));
                         tri.addProp("b", wxString::Format(wxT("%lu"), sh2.indices[l+1]).mb_str(wxConvUTF8));
@@ -390,7 +229,7 @@ void cRawParser::ParseSHS(cXmlNode& node) {
                         v.tu = ParseFloat(subchild, wxT(RAWXML_SHS_MESH_VERTEX), wxT("u"));
                         v.tv = ParseFloat(subchild, wxT(RAWXML_SHS_MESH_VERTEX), wxT("v"));
                         if (subchild.hasProp("colour")) {
-                            wxString scol = UTF8STRINGWRAP(subchild.getPropVal("colour"));
+                            wxString scol = subchild.wxgetPropVal("colour");
                             unsigned long lcol = 0;
                             if (sscanf(scol.ToAscii(), "%lx", &lcol))
                                 v.color = lcol;
@@ -408,13 +247,13 @@ void cRawParser::ParseSHS(cXmlNode& node) {
                                 nonorm = false;
                                 ParseVector(thirdchild, v.normal, wxT(RAWXML_SHS_MESH_VERTEX_N));
                             } else if (thirdchild.element()) {
-                                throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in shs(%s)/shsmesh/vertex."), STRING_FOR_FORMAT(thirdchild.name()), name.c_str()));
+                                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in shs(%s)/shsmesh/vertex."), thirdchild.wxname().c_str(), name.c_str()), thirdchild);
                             }
                             thirdchild.go_next();
                         }
 
                         if (nopos || nonorm)
-                            throw RCT3Exception(wxString::Format(_("Position or normal missing in shs(%s)/shsmesh/vertex."), name.c_str()));
+                            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Position or normal missing in shs(%s)/shsmesh/vertex."), name.c_str()), subchild);
 
                         if (!(bb1 || bb2))
                             boundsContain(&v.position, &sh1.bbox1, &sh1.bbox2);
@@ -428,7 +267,7 @@ void cRawParser::ParseSHS(cXmlNode& node) {
                         index = ParseUnsigned(subchild, wxT(RAWXML_SHS_MESH_TRIANGLE), wxT("c"));
                         sh2.indices.push_back(index);
                     } else if (subchild.element()) {
-                        throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in shs(%s)/shsmesh."), STRING_FOR_FORMAT(subchild.name()), name.c_str()));
+                        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in shs(%s)/shsmesh."), subchild.wxname().c_str(), name.c_str()), subchild);
                     }
                     subchild.go_next();
                 }
@@ -448,16 +287,16 @@ void cRawParser::ParseSHS(cXmlNode& node) {
                     missp = false;
                     ParseMatrix(subchild, effect.pos, wxT(RAWXML_SHS_EFFECT_POS));
                 } else if (subchild.element()) {
-                    throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in shs(%s)/shseffect(%s)."), STRING_FOR_FORMAT(subchild.name()), name.c_str(), effectname.c_str()));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in shs(%s)/shseffect(%s)."), subchild.wxname().c_str(), name.c_str(), effectname.c_str()), subchild);
                 }
                 subchild.go_next();
             }
             if (missp)
-                throw RCT3Exception(wxString::Format(_("Missing position in shs(%s)/shseffect(%s)."), name.c_str(), effectname.c_str()));
+                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Missing position in shs(%s)/shseffect(%s)."), name.c_str(), effectname.c_str()), child);
 
             sh1.effects.push_back(effect);
         } else if (child.element()) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in shs tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()));
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in shs tag '%s'."), child.wxname().c_str(), name.c_str()), child);
         }
         child.go_next();
     }

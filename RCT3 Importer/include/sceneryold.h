@@ -11,6 +11,8 @@
 #ifndef __SCENERYOLD_H__
 #define __SCENERYOLD_H__
 
+#include <string>
+
 #include "guiicon.h"
 #include "sceneryvisual.h"
 #include "vertex.h"
@@ -43,14 +45,14 @@ typedef uint32_t BOOL;
 
 struct Scenery
 {
-	char *ovl;
+	std::string ovl;
 	char *ovl2;
 	char *ovl3;
 	char *wallicon;
 	char *ovlWithoutExt;
 	char *InternalOVLName;
 	char *icon;
-	char *location;
+	std::string location;
 	long cost;
 	long refund;
 	char *wallname;

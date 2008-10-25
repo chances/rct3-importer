@@ -31,6 +31,9 @@
 #ifndef WXDLGSTALLMAN_H_INCLUDED
 #define WXDLGSTALLMAN_H_INCLUDED
 
+#include <wx/button.h>
+#include <wx/listbox.h>
+#include <wx/dialog.h>
 #include <wx/xrc/xmlres.h>
 
 #include "RCT3Structs.h"

@@ -30,17 +30,26 @@
 
 #include <map>
 #include <string>
+#include <string.h>
 #include <vector>
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/shared_array.hpp>
+#include <boost/unordered_map.hpp>
 
 #include "ovlstructs.h"
 #include "ovldumperstructs.h"
+#include "boost_unordered_extension.h"
 
 #define RelocationFromVar(m, s) \
     ((reinterpret_cast<unsigned long>(&m) + s.reloffset) - reinterpret_cast<unsigned long>(s.data))
-
+	
 class cOVLDump {
+public:
+	typedef boost::unordered_map<std::string, OvlRelocation*, boost::algorithm::ihash, boost::algorithm::iequal_to> symbolmap_t;
+	typedef std::pair<std::string, OvlRelocation*> symbolmap_pair_t;
+	typedef boost::unordered_map<std::string, symbolmap_t, boost::algorithm::ihash, boost::algorithm::iequal_to> structmap_t;
+	typedef std::pair<std::string, symbolmap_t> structmap_pair_t;
 protected:
     std::string m_file[2];
     boost::shared_array<char> m_data[2];
@@ -69,7 +78,7 @@ protected:
     std::map<unsigned long, OvlRelocation*> m_relmap;
     std::map<unsigned long, void*> m_targets;
     std::map<void*, std::string> m_symbolreferences;
-    std::map<std::string, std::map<std::string, OvlRelocation*> > m_structmap[2];
+    structmap_t m_structmap[2];
     std::map<unsigned long, OvlFlicData> m_flics;
 
 
@@ -131,7 +140,7 @@ public:
     const OvlStringTableEntry& GetString(unsigned long id);
     void SetString(unsigned long id, const char* newstr);
 
-    const std::map<std::string, std::map<std::string, OvlRelocation*> >& GetStructures(cOvlType type) const {
+    const structmap_t& GetStructures(cOvlType type) const {
         return m_structmap[type];
     }
     std::map<unsigned long, void*>& GetTargets() {

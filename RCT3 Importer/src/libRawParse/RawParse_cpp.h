@@ -29,10 +29,12 @@
 
 #include <wx/file.h>
 #include <wx/filesys.h>
+#include <wx/log.h>
 #include <wx/mstream.h>
 #include <wx/strconv.h>
 #include <wx/tokenzr.h>
 
+/*
 #include "base64.h"
 #include "counted_array_ptr.h"
 #include "RCT3Exception.h"
@@ -47,8 +49,15 @@
 
 
 #include "OVLDump.h"
+*/
+
+#include "RCT3Exception.h"
+
 
 #include "cXmlDoc.h"
+#include "cXmlNode.h"
+
+class cSCNFile;
 
 #define RAWXML_SECTION "section"
 #define RAWXML_CHECK   "check"
@@ -242,7 +251,7 @@ enum {
         if (m_mode != MODE_BAKE) { \
             if (child.hasProp("if")) { \
                 bool haveit = true; \
-                wxString t = UTF8STRINGWRAP(child.getPropVal("if")); \
+                wxString t = child.wxgetPropVal("if"); \
                 MakeVariable(t); \
                 cRawParserVars::iterator it = m_commandvariables.find(t); \
                 if (it == m_commandvariables.end()) \
@@ -259,7 +268,7 @@ enum {
             } \
             if (child.hasProp("ifnot")) { \
                 bool haveit = true; \
-                wxString t = UTF8STRINGWRAP(child.getPropVal("ifnot")); \
+                wxString t = child.wxgetPropVal("ifnot"); \
                 MakeVariable(t); \
                 cRawParserVars::iterator it = m_commandvariables.find(t); \
                 if (it == m_commandvariables.end()) \
@@ -276,7 +285,7 @@ enum {
             } \
         } \
         if (child.hasProp("comment")) { \
-            wxString t = UTF8STRINGWRAP(child.getPropVal("comment")); \
+            wxString t = child.wxgetPropVal("comment"); \
             MakeVariable(t); \
             wxLogMessage(t); \
         }
@@ -285,7 +294,7 @@ enum {
         if (m_mode != MODE_BAKE) { \
             if (child.hasProp("if")) { \
                 bool haveit = true; \
-                wxString t = UTF8STRINGWRAP(child.getPropVal("if")); \
+                wxString t = child.wxgetPropVal("if"); \
                 MakeVariable(t); \
                 cRawParserVars::iterator it = m_commandvariables.find(t); \
                 if (it == m_commandvariables.end()) \
@@ -301,7 +310,7 @@ enum {
             } \
             if (child.hasProp("ifnot")) { \
                 bool haveit = true; \
-                wxString t = UTF8STRINGWRAP(child.getPropVal("ifnot")); \
+                wxString t = child.wxgetPropVal("ifnot"); \
                 MakeVariable(t); \
                 cRawParserVars::iterator it = m_commandvariables.find(t); \
                 if (it == m_commandvariables.end()) \
@@ -317,7 +326,7 @@ enum {
             } \
         } \
         if (child.hasProp("comment")) { \
-            wxString t = UTF8STRINGWRAP(child.getPropVal("comment")); \
+            wxString t = child.wxgetPropVal("comment"); \
             MakeVariable(t); \
             wxLogMessage(t); \
         }

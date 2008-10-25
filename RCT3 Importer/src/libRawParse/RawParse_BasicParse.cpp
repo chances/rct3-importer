@@ -29,16 +29,20 @@
 
 #include <bitset>
 
+#include "matrix.h"
+#include "pretty.h"
+#include "xmlhelper.h"
+
 #include "ManagerCommon.h"
 
 cOvlType cRawParser::ParseType(const cXmlNode& node, const wxString& nodes, const wxString& attribute) {
-    wxString t(node.getPropVal(attribute.mb_str(wxConvUTF8)).c_str(), wxConvUTF8);
+    wxString t(node.wxgetPropVal(attribute));
     MakeVariable(t);
     if (t.IsEmpty())
         throw MakeNodeException<RCT3Exception>(nodes+_(" tag misses ") + attribute + _(" attribute."), node);
-    if (t == wxT("common")) {
+    if (t == "common") {
         return OVLT_COMMON;
-    } else if (t == wxT("unique")) {
+    } else if (t == "unique") {
         return OVLT_UNIQUE;
     } else {
         throw MakeNodeException<RCT3InvalidValueException>(nodes+_(" tag, ") + attribute + _(" attribute: invalid value ")+t, node);
@@ -66,7 +70,7 @@ wxString cRawParser::HandleStringContent(const wxString& content, bool* variable
 }
 
 void cRawParser::ParseStringOption(std::string& str, const cXmlNode& node, const wxString& attribute, bool* variable, bool addprefix) {
-    wxString t(node.getPropVal(attribute.mb_str(wxConvUTF8)).c_str(), wxConvUTF8);
+    wxString t(node.wxgetPropVal(attribute));
     if (variable)
         *variable = MakeVariable(t);
     else
@@ -77,11 +81,14 @@ void cRawParser::ParseStringOption(std::string& str, const cXmlNode& node, const
         } else {
             str = t.mb_str(wxConvLocal);
         }
-    }
+    } else {
+		if (node.hasProp(attribute.utf8_str()))
+			str = "";
+	}
 }
 
 void cRawParser::ParseStringOption(wxString& str, const cXmlNode& node, const wxString& attribute, bool* variable, bool addprefix) {
-    wxString t(node.getPropVal(attribute.mb_str(wxConvUTF8)).c_str(), wxConvUTF8);
+    wxString t(node.wxgetPropVal(attribute));
     if (variable)
         *variable = MakeVariable(t);
     else
@@ -92,7 +99,10 @@ void cRawParser::ParseStringOption(wxString& str, const cXmlNode& node, const wx
         } else {
             str = t;
         }
-    }
+    } else {
+		if (node.hasProp(attribute.utf8_str()))
+			str = "";
+	}
 }
 
 unsigned long cRawParser::ParseUnsigned(const cXmlNode& node, const wxString& nodes, const wxString& attribute) {
@@ -181,7 +191,7 @@ void cRawParser::ParseMatrix(const cXmlNode& node, MATRIX& m, const wxString& no
             if (!parseMatrixRow(temp, m._41, m._42, m._43, m._44))
                 throw MakeNodeException<RCT3InvalidValueException>(nodes+_(" tag, row4: invalid content: ")+temp, child);
         } else if (child.is(XML_ELEMENT_NODE)) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in %s."), STRING_FOR_FORMAT(child.name()), nodes.c_str()), child);
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in %s."), child.wxname().c_str(), nodes.c_str()), child);
         }
         child.go_next();
     }
@@ -191,8 +201,8 @@ void cRawParser::ParseMatrix(const cXmlNode& node, MATRIX& m, const wxString& no
 
 c3DLoaderOrientation cRawParser::ParseOrientation(const cXmlNode& node, const wxString& nodes, c3DLoaderOrientation defori) {
     c3DLoaderOrientation ori = defori;
-    wxString hand = UTF8STRINGWRAP(node.getPropVal("handedness"));
-    wxString up = UTF8STRINGWRAP(node.getPropVal("up"));
+    wxString hand = node.wxgetPropVal("handedness");
+    wxString up = node.wxgetPropVal("up");
     if (hand.IsEmpty()) {
         if (!up.IsEmpty()) {
             throw MakeNodeException<RCT3Exception>(wxString::Format(_("Hand attribute missing in %s."), up.c_str(), nodes.c_str()), node);
@@ -278,7 +288,7 @@ void cRawParser::ParseVariables(cXmlNode& node, bool command, const wxString& pa
                 }
                 newfile = filename.GetFullPath();
                 node.delProp("include");
-                node.addProp("include", newfile.mb_str(wxConvUTF8));
+                node.addProp("include", newfile.utf8_str());
             } else {
                 node.delProp("include");
             }
@@ -296,7 +306,7 @@ void cRawParser::ParseVariables(cXmlNode& node, bool command, const wxString& pa
         } else if (child(RAWXML_VARIABLES)) {
             ParseVariables(child, command, path);
         } else if (child.is(XML_ELEMENT_NODE)) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in variables tag."), STRING_FOR_FORMAT(child.name())), child);
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in variables tag."), child.wxname().c_str()), child);
         }
         child.go_next();
     }
@@ -330,7 +340,7 @@ void cRawParser::ParseAttraction(const cXmlNode& node, cAttraction& attraction) 
             OPTION_PARSE(unsigned long, attraction.unk12, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_EXTENSION), wxT("u12")));
             OPTION_PARSE(unsigned long, attraction.ui_deactivation, ParseUnsigned(child, wxT(RAWXML_ATTRACTION_EXTENSION), wxT("uiDeactivationFlags")));
         } else if (child.element()) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in attraction tag."), STRING_FOR_FORMAT(child.name())), child);
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in attraction tag."), child.wxname().c_str()), child);
         }
     }
 }
@@ -373,7 +383,7 @@ void cRawParser::ParseRide(const xmlcpp::cXmlNode& node, cRide& ride) {
             ParseRideStationLimit(child, limit);
             ride.stationlimits.push_back(limit);
         } else if (child.element()) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in ride tag."), STRING_FOR_FORMAT(child.name())), child);
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in ride tag."), child.wxname().c_str()), child);
         }
     }
 }

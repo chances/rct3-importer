@@ -1164,8 +1164,7 @@ LIBOVL_API void AddStyleOVLInfo_SceneryItem(Scenery *scn)
 	strcpy(s->ovlWithoutExt,scn->ovlWithoutExt);
 	s->InternalOVLName = new char[strlen(scn->InternalOVLName)+1];
 	strcpy(s->InternalOVLName,scn->InternalOVLName);
-	s->location = new char[strlen(scn->location)+1];
-	strcpy(s->location,scn->location);
+	s->location = scn->location;
 	s->icon = new char[strlen(scn->icon)+1];
 	strcpy(s->icon,scn->icon);
 
@@ -1193,7 +1192,6 @@ LIBOVL_API void DeleteStyleOVLInfo_SceneryItems()
 		delete SceneryItems[i]->name;
 		delete SceneryItems[i]->ovl2;
 		delete SceneryItems[i]->ovl3;
-		delete SceneryItems[i]->location;
 		delete SceneryItems[i]->icon;
 		if (SceneryItems[i]->wallicon != 0)
 		{

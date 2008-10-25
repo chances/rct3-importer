@@ -46,12 +46,15 @@ void cRawParser::FillAllBakes(wxSortedArrayString& tofill) {
 }
 
 boost::shared_ptr<cXmlValidator> cRawParser::Validator() {
+	wxLogDebug("cRawParser::Validator()");
     cXmlInputOutputCallbackString::Init();
     XMLCPP_RES_ADD_ONCE(rct3xml_raw_v1, rnc);
     XMLCPP_RES_ADD_ONCE(rct3xml_raw_v1, sch);
 
     boost::shared_ptr<cXmlValidatorMulti> val(new cXmlValidatorMulti());
+	wxLogDebug("cRawParser::Validator(), primary");
     val->primary(boost::shared_ptr<cXmlValidator>(new cXmlValidatorRNVRelaxNG(XMLCPP_RES_USE(rct3xml_raw_v1, rnc).c_str())));
+	wxLogDebug("cRawParser::Validator(), secondary");
     val->secondary(boost::shared_ptr<cXmlValidator>(new cXmlValidatorIsoSchematron(XMLCPP_RES_USE(rct3xml_raw_v1, sch).c_str())));
     if (!val->primary()->ok()) {
         wxString error(_("Internal Error: could not load raw RelaxNG schema:\n"));

@@ -27,153 +27,14 @@
 
 #include "RawParse_cpp.h"
 
-#include <boost/algorithm/string.hpp>
+//#include <boost/algorithm/string.hpp>
 
-#include "ManagerANR.h"
-#include "ManagerBAN.h"
 #include "ManagerBSH.h"
-#include "ManagerCED.h"
 
-#define RAWXML_ANR_SHOWITEM         "showItem"
-#define RAWXML_CED_MORE             "cedmore"
+#include "3DLoader.h"
+#include "matrix.h"
+#include "RCT3Structs.h"
 
-void cRawParser::ParseANR(cXmlNode& node) {
-    USE_PREFIX(node);
-    cAnimatedRide animride;
-    animride.name = ParseString(node, wxT(RAWXML_ANR), wxT("name"), NULL, useprefix).ToAscii();
-    animride.attraction.name = ParseString(node, wxT(RAWXML_ANR), wxT("nametxt"), NULL, useprefix).ToAscii();
-    animride.attraction.description = ParseString(node, wxT(RAWXML_ANR), wxT("description"), NULL, useprefix).ToAscii();
-    animride.sid = ParseString(node, wxT(RAWXML_ANR), wxT("sid"), NULL, useprefix).ToAscii();
-    wxLogVerbose(wxString::Format(_("Adding anr %s to %s."), wxString(animride.name.c_str(), wxConvLocal).c_str(), m_output.GetFullPath().c_str()));
-
-    foreach (const cXmlNode& child, node.children()) {
-        DO_CONDITION_COMMENT_FOR(child);
-
-        if (child(RAWXML_ATTRACTION)) {
-            ParseAttraction(child, animride.attraction);
-        } else if (child(RAWXML_RIDE)) {
-            ParseRide(child, animride.ride);
-        } else if (child(RAWXML_UNKNOWNS)) {
-            OPTION_PARSE(unsigned long, animride.unk22, ParseUnsigned(child, RAWXML_ANR "/" RAWXML_UNKNOWNS, wxT("u22")));
-            OPTION_PARSE(unsigned long, animride.unk23, ParseUnsigned(child, RAWXML_ANR "/" RAWXML_UNKNOWNS, wxT("u23")));
-            OPTION_PARSE(unsigned long, animride.unk24, ParseUnsigned(child, RAWXML_ANR "/" RAWXML_UNKNOWNS, wxT("u24")));
-            OPTION_PARSE(unsigned long, animride.unk25, ParseUnsigned(child, RAWXML_ANR "/" RAWXML_UNKNOWNS, wxT("u25")));
-            OPTION_PARSE(unsigned long, animride.unk8, ParseUnsigned(child, RAWXML_ANR "/" RAWXML_UNKNOWNS, wxT("u8")));
-            OPTION_PARSE(unsigned long, animride.unk9, ParseUnsigned(child, RAWXML_ANR "/" RAWXML_UNKNOWNS, wxT("u9")));
-        } else if (child(RAWXML_ANR_SHOWITEM)) {
-            cAnimatedRideShowItem si;
-            si.animation = ParseUnsigned(child, RAWXML_ANR_SHOWITEM, wxT("animationIndex"));
-            si.name = child();
-            boost::trim(si.name);
-            animride.showitems.push_back(si);
-        } else if (child.element()) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in anr tag."), STRING_FOR_FORMAT(child.name())));
-        }
-    }
-
-    ovlANRManager* c_anr = m_ovl.GetManager<ovlANRManager>();
-    c_anr->AddRide(animride);
-    wxLogVerbose(wxString::Format(_("Adding anr %s to %s. -- Done"), wxString(animride.name.c_str(), wxConvLocal).c_str(), m_output.GetFullPath().c_str()));
-}
-
-void cRawParser::ParseBAN(cXmlNode& node) {
-    USE_PREFIX(node);
-    cBoneAnim ban;
-    wxString name = ParseString(node, RAWXML_BAN, "name", NULL, useprefix);
-    ban.name = name.ToAscii();
-    wxLogVerbose(wxString::Format(_("Adding ban %s to %s."), name.c_str(), m_output.GetFullPath().c_str()));
-
-    if (node.hasProp("modelFile")) {
-        wxString animname = ParseString(node, RAWXML_BAN, "name", NULL);
-        ParseStringOption(animname, node, "modelAnimation", NULL);
-        wxFSFileName modelfile = ParseString(node, RAWXML_BAN, "modelFile", NULL);
-        if (!modelfile.IsAbsolute())
-            modelfile.MakeAbsolute(m_input.GetPath(wxPATH_GET_SEPARATOR | wxPATH_GET_VOLUME));
-
-        // TODO: baking
-
-        boost::shared_ptr<c3DLoader> model(c3DLoader::LoadFile(modelfile.GetFullPath().c_str()));
-        if (!model.get())
-            throw MakeNodeException<RCT3Exception>(_("ban tag: Model file not readable or has unknown format: ") + modelfile.GetFullPath(), node);
-
-        if (!model->GetAnimations().size()) {
-            throw MakeNodeException<RCT3Exception>(_("ban tag: Model file does not contain animations: ") + modelfile.GetFullPath(), node);
-        }
-
-        std::map<wxString, c3DAnimation>::const_iterator sp = model->GetAnimations().find(animname);
-        if (sp == model->GetAnimations().end()) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("ban tag: Model file '%s' does not contain animation '%s'."), modelfile.GetFullPath().c_str(), animname.c_str()), node);
-        }
-
-        c3DLoaderOrientation ori = ParseOrientation(node, wxString::Format(wxT("ban(%s) tag"), name.c_str()), model->GetOrientation());
-        ban.calc_time = true;
-
-        foreach(const c3DAnimBone::pair& bone, sp->second.m_bones) {
-            cBoneAnimBone cbone;
-            cbone.name = bone.second.m_name.ToAscii();
-            foreach(const txyz& fr, bone.second.m_translations) {
-                cbone.translations.insert(cTXYZ(fr).GetFixed(ori, false));
-            }
-            foreach(const txyz& fr, bone.second.m_rotations) {
-                cbone.rotations.insert(cTXYZ(fr).GetFixed(ori, true, bone.second.m_axis));
-            }
-            ban.bones.push_back(cbone);
-        }
-
-    } else {
-        c3DLoaderOrientation ori = ParseOrientation(node, wxString::Format(wxT("ban(%s) tag"), name.c_str()));
-        OPTION_PARSE(float, ban.totaltime, ParseFloat(node, wxT(RAWXML_BAN), wxT("totaltime")));
-        if (ban.totaltime != 0.0)
-            ban.calc_time = false;
-        cXmlNode child(node.children());
-        while (child) {
-            DO_CONDITION_COMMENT(child);
-
-            if (child(RAWXML_BAN_BONE)) {
-                cBoneAnimBone banim;
-                wxString bonename = ParseString(child, wxT(RAWXML_BAN_BONE), wxT("name"), NULL);
-                banim.name = bonename.ToAscii();
-                cXmlNode subchild(child.children());
-                while (subchild) {
-                    DO_CONDITION_COMMENT(subchild);
-
-                    if (subchild(RAWXML_BAN_BONE_TRANSLATION)) {
-                        txyz frame;
-                        frame.Time = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_TRANSLATION), wxT("time"));
-                        frame.X = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_TRANSLATION), wxT("x"));
-                        frame.Y = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_TRANSLATION), wxT("y"));
-                        frame.Z = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_TRANSLATION), wxT("z"));
-                        if (ori != ORIENTATION_LEFT_YUP)
-                            doFixOrientation(frame, ori);
-                        banim.translations.insert(frame);
-                    } else if (subchild(RAWXML_BAN_BONE_ROTATION)) {
-                        txyz frame;
-                        frame.Time = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_ROTATION), wxT("time"));
-                        frame.X = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_ROTATION), wxT("x"));
-                        frame.Y = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_ROTATION), wxT("y"));
-                        frame.Z = ParseFloat(subchild, wxT(RAWXML_BAN_BONE_ROTATION), wxT("z"));
-                        if (ori != ORIENTATION_LEFT_YUP)
-                            doFixOrientation(frame, ori);
-                        banim.rotations.insert(frame);
-                    } else if (subchild.element()) {
-                        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in ban(%s)/banbone(%s)."), STRING_FOR_FORMAT(subchild.name()), name.c_str(), bonename.c_str()), subchild);
-                    }
-
-                    subchild.go_next();
-                }
-
-                ban.bones.push_back(banim);
-            } else if (child.element()) {
-                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in ban tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()), child);
-            }
-
-            child.go_next();
-        }
-    }
-
-    ovlBANManager* c_ban = m_ovl.GetManager<ovlBANManager>();
-    c_ban->AddAnimation(ban);
-}
 
 void cRawParser::ParseBSH(cXmlNode& node) {
     USE_PREFIX(node);
@@ -209,8 +70,8 @@ void cRawParser::ParseBSH(cXmlNode& node) {
                 wxString meshname = ParseString(child, wxT(RAWXML_BSH_MESH), wxT("meshname"), NULL);
                 bool modelfilevar = false;
                 wxFSFileName modelfile = ParseString(child, wxT(RAWXML_BSH_MESH), wxT("modelfile"), &modelfilevar);
-                wxString hand = UTF8STRINGWRAP(child.getPropVal("handedness", "left"));
-                wxString up = UTF8STRINGWRAP(child.getPropVal("up", "y"));
+                wxString hand = child.wxgetPropVal("handedness", "left");
+                wxString up = child.wxgetPropVal("up", "y");
                 c3DLoaderOrientation ori = ORIENTATION_LEFT_YUP;
                 if (hand == wxT("left")) {
                     if (up == wxT("x")) {
@@ -220,7 +81,7 @@ void cRawParser::ParseBSH(cXmlNode& node) {
                     } else if (up == wxT("z")) {
                         ori = ORIENTATION_LEFT_ZUP;
                     } else {
-                        throw RCT3Exception(wxString::Format(_("Unknown value '%s' for up attribute in bsh(%s)/bshmesh tag."), up.c_str(), name.c_str()));
+                        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown value '%s' for up attribute in bsh(%s)/bshmesh tag."), up.c_str(), name.c_str()), child);
                     }
                 } else if (hand == wxT("right")) {
                     if (up == wxT("x")) {
@@ -230,10 +91,10 @@ void cRawParser::ParseBSH(cXmlNode& node) {
                     } else if (up == wxT("z")) {
                         ori = ORIENTATION_RIGHT_ZUP;
                     } else {
-                        throw RCT3Exception(wxString::Format(_("Unknown value '%s' for up attribute in bsh(%s)/bshmesh tag."), up.c_str(), name.c_str()));
+                        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown value '%s' for up attribute in bsh(%s)/bshmesh tag."), up.c_str(), name.c_str()), child);
                     }
                 } else {
-                    throw RCT3Exception(wxString::Format(_("Unknown value '%s' for handedness attribute in bsh(%s)/bshmesh tag."), up.c_str(), name.c_str()));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown value '%s' for handedness attribute in bsh(%s)/bshmesh tag."), up.c_str(), name.c_str()), child);
                 }
 
                 if (!modelfile.IsAbsolute())
@@ -257,17 +118,17 @@ void cRawParser::ParseBSH(cXmlNode& node) {
 */
                 boost::shared_ptr<c3DLoader> model(c3DLoader::LoadFile(modelfile.GetFullPath().c_str()));
                 if (!model.get())
-                    throw RCT3Exception(_("bsh tag: Model file cannot be read or has unknown format: ") + modelfile.GetFullPath());
+                    throw MakeNodeException<RCT3Exception>(_("bsh tag: Model file cannot be read or has unknown format: ") + modelfile.GetFullPath(), child);
 
                 int meshnr = -1;
-                for (int i = 0; i < model->GetObjectCount(); ++i) {
-                    if (meshname == model->GetObjectName(i)) {
+                for (unsigned int i = 0; i < model->getObjectCount(); ++i) {
+                    if (meshname == model->getObjectName(i)) {
                         meshnr = i;
                         break;
                     }
                 }
                 if (meshnr == -1)
-                    throw RCT3Exception(wxString::Format(_("bsh tag: Model file '%s' does not contain a mesh called '%s'."), modelfile.GetFullPath().c_str(), meshname.c_str()));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("bsh tag: Model file '%s' does not contain a mesh called '%s'."), modelfile.GetFullPath().c_str(), meshname.c_str()), child);
 
                 unsigned long fudgenormals = CMS_FUDGE_NONE;
                 OPTION_PARSE(unsigned long, fudgenormals, ParseUnsigned(child, wxT(RAWXML_BSH_MESH), wxT("fudge")));
@@ -316,7 +177,7 @@ void cRawParser::ParseBSH(cXmlNode& node) {
                         ParseMatrix(subchild, m, wxT(RAWXML_BSH_MESH_TRANSFORM));
                         do_matrix = true;
                     } else if (subchild.element()) {
-                        throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in bsh(%s)/bshmesh."), STRING_FOR_FORMAT(subchild.name()), name.c_str()));
+                        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in bsh(%s)/bshmesh."), subchild.wxname().c_str(), name.c_str()), subchild);
                     }
                     subchild.go_next();
                 }
@@ -324,11 +185,11 @@ void cRawParser::ParseBSH(cXmlNode& node) {
                 boundsInit(&temp_min, &temp_max);
                 if (child.hasProp("bone")) {
                     char bone = ParseSigned(child, wxT(RAWXML_BSH_MESH), wxT("bone"));
-                    model->FetchObject(meshnr, bone, &bsh2, &temp_min, &temp_max,
+                    model->fetchObject(meshnr, bone, &bsh2, &temp_min, &temp_max,
                                               do_matrix?&m:NULL,
                                               c_pfudge_normal);
                 } else {
-                    model->FetchObject(meshnr, &bsh2, &temp_min, &temp_max,
+                    model->fetchObject(meshnr, &bsh2, &temp_min, &temp_max,
                                               do_matrix?&m:NULL,
                                               c_pfudge_normal);
                 }
@@ -369,7 +230,7 @@ void cRawParser::ParseBSH(cXmlNode& node) {
                             }
                         }
                     }
-                    for(int l = 0; l < bsh2.indices.size(); l+=3) {
+                    for(size_t l = 0; l < bsh2.indices.size(); l+=3) {
                         cXmlNode tri(child.newChild(RAWXML_BSH_MESH_TRIANGLE));
                         tri.addProp("a", wxString::Format(wxT("%hu"), bsh2.indices[l]).mb_str(wxConvUTF8));
                         tri.addProp("b", wxString::Format(wxT("%hu"), bsh2.indices[l+1]).mb_str(wxConvUTF8));
@@ -387,7 +248,7 @@ void cRawParser::ParseBSH(cXmlNode& node) {
                         v.tu = ParseFloat(subchild, wxT(RAWXML_BSH_MESH_VERTEX2), wxT("u"));
                         v.tv = ParseFloat(subchild, wxT(RAWXML_BSH_MESH_VERTEX2), wxT("v"));
                         if (subchild.hasProp("colour")) {
-                            wxString scol = UTF8STRINGWRAP(subchild.getPropVal("colour"));
+                            wxString scol = subchild.wxgetPropVal("colour");
                             unsigned long lcol = 0;
                             if (sscanf(scol.ToAscii(), "%lx", &lcol))
                                 v.color = lcol;
@@ -407,18 +268,18 @@ void cRawParser::ParseBSH(cXmlNode& node) {
                                 ParseVector(thirdchild, v.normal, wxT(RAWXML_BSH_MESH_VERTEX2_N));
                             } else if (thirdchild(RAWXML_BSH_MESH_VERTEX2_B)) {
                                 if (bone == 3)
-                                    throw RCT3Exception(wxString::Format(_("Too many boneassignments in bsh(%s)/bshmesh/vertex2."), name.c_str()));
+                                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Too many boneassignments in bsh(%s)/bshmesh/vertex2."), name.c_str()), thirdchild);
                                 v.bone[bone] = ParseSigned(thirdchild, wxT(RAWXML_BSH_MESH_VERTEX2_B), wxT("bone"));
                                 v.boneweight[bone] = ParseUnsigned(thirdchild, wxT(RAWXML_BSH_MESH_VERTEX2_B), wxT("weight"));
                                 bone++;
                             } else if (thirdchild.element()) {
-                                throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in bsh(%s)/bshmesh/vertex2."), STRING_FOR_FORMAT(thirdchild.name()), name.c_str()));
+                                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in bsh(%s)/bshmesh/vertex2."), thirdchild.wxname().c_str(), name.c_str()), thirdchild);
                             }
                             thirdchild.go_next();
                         }
 
                         if (nopos || nonorm)
-                            throw RCT3Exception(wxString::Format(_("Position or normal missing in bsh(%s)/bshmesh/vertex2."), name.c_str()));
+                            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Position or normal missing in bsh(%s)/bshmesh/vertex2."), name.c_str()), subchild);
 
                         if (!(bb1 || bb2))
                             boundsContain(&v.position, &bsh1.bbox1, &bsh1.bbox2);
@@ -432,7 +293,7 @@ void cRawParser::ParseBSH(cXmlNode& node) {
                         index = ParseUnsigned(subchild, wxT(RAWXML_BSH_MESH_TRIANGLE), wxT("c"));
                         bsh2.indices.push_back(index);
                     } else if (subchild.element()) {
-                        throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in bsh(%s)/bshmesh."), STRING_FOR_FORMAT(subchild.name()), name.c_str()));
+                        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in bsh(%s)/bshmesh."), subchild.wxname().c_str(), name.c_str()), subchild);
                     }
                     subchild.go_next();
                 }
@@ -459,18 +320,18 @@ void cRawParser::ParseBSH(cXmlNode& node) {
                         missp2 = false;
                         ParseMatrix(subchild, bones.pos2, wxT(RAWXML_BSH_BONE_POS2));
                     } else if (subchild.element()) {
-                        throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in bsh(%s)/bshbone(%s)."), STRING_FOR_FORMAT(subchild.name()), name.c_str(), bonename.c_str()));
+                        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in bsh(%s)/bshbone(%s)."), subchild.wxname().c_str(), name.c_str(), bonename.c_str()), subchild);
                     }
                     subchild.go_next();
                 }
                 if (missp1)
-                    throw RCT3Exception(wxString::Format(_("Missing position1 in bsh(%s)/bshbone(%s)."), name.c_str(), bonename.c_str()));
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Missing position1 in bsh(%s)/bshbone(%s)."), name.c_str(), bonename.c_str()), child);
                 if (missp2)
                     bones.pos2 = bones.pos1;
             }
             bsh1.bones.push_back(bones);
         } else if (child.element()) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in bsh tag '%s'."), STRING_FOR_FORMAT(child.name()), name.c_str()));
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in bsh tag '%s'."), child.wxname().c_str(), name.c_str()), child);
         }
         child.go_next();
     }
@@ -493,33 +354,5 @@ void cRawParser::ParseBSH(cXmlNode& node) {
             node.insertNodeAsFirstChild(bb);
         }
     }
-}
-
-void cRawParser::ParseCED(cXmlNode& node) {
-    USE_PREFIX(node);
-    cCarriedItemExtra ced;
-    ced.name = ParseString(node, wxT(RAWXML_CED), wxT("name"), NULL, useprefix).ToAscii();
-    ced.nametxt = ParseString(node, wxT(RAWXML_CED), wxT("nametxt"), NULL, useprefix).ToAscii();
-    ced.icon = ParseString(node, wxT(RAWXML_CED), wxT("icon"), NULL, useprefix).ToAscii();
-    wxLogVerbose(wxString::Format(_("Adding ced %s to %s."), wxString(ced.name.c_str(), wxConvLocal).c_str(), m_output.GetFullPath().c_str()));
-
-    cXmlNode child(node.children());
-    while (child) {
-        DO_CONDITION_COMMENT(child);
-
-        if (child(RAWXML_CED_MORE)) {
-            OPTION_PARSE(float, ced.hunger, ParseFloat(child, wxT(RAWXML_CED_MORE), wxT("hunger")));
-            OPTION_PARSE(float, ced.thirst, ParseFloat(child, wxT(RAWXML_CED_MORE), wxT("thirst")));
-            OPTION_PARSE(unsigned long, ced.unk1, ParseUnsigned(child, wxT(RAWXML_CED_MORE), wxT("u1")));
-            OPTION_PARSE(unsigned long, ced.unk4, ParseUnsigned(child, wxT(RAWXML_CED_MORE), wxT("u4")));
-            OPTION_PARSE(float, ced.unk7, ParseFloat(child, wxT(RAWXML_CED_MORE), wxT("u7")));
-        } else if (child.element()) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ced tag."), STRING_FOR_FORMAT(child.name())));
-        }
-        child.go_next();
-    }
-
-    ovlCEDManager* c_ced = m_ovl.GetManager<ovlCEDManager>();
-    c_ced->AddExtra(ced);
 }
 

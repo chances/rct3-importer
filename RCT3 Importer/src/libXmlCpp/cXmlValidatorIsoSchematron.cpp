@@ -27,14 +27,18 @@
 
 #ifdef XMLCPP_USE_ISO_SCHEMATRON
 
+#include "pretty.h"
+
 #include "cXmlException.h"
 #include "cXmlInputOutputCallbackString.h"
 #include "cXmlNode.h"
 #include "cXmlXPath.h"
 #include "cXmlXPathResult.h"
 
-#include "xsl/iso_simple.xsl.h"
-#include "xsl/iso_schematron_skeleton.xsl.h"
+//#include "xsl/iso_simple.xsl.h"
+//#include "xsl/iso_schematron_skeleton.xsl.h"
+#include "xsl/schematron/iso_simple.xsl.gz.h"
+#include "xsl/schematron/iso_schematron_skeleton.xsl.gz.h"
 
 using namespace std;
 
@@ -49,8 +53,11 @@ cXmlValidatorIsoSchematron::~cXmlValidatorIsoSchematron() {
 void cXmlValidatorIsoSchematron::Init() {
     if (!g_resinit) {
         cXmlInputOutputCallbackString::Init();
-        cXmlInputOutputCallbackString::add(string(cXmlInputOutputCallbackString::INTERNAL)+"/schematron/iso_schematron_skeleton.xsl", reinterpret_cast<const char*>(iso_schematron_skeleton_xsl_h));
-        cXmlInputOutputCallbackString::add(string(cXmlInputOutputCallbackString::INTERNAL)+"/schematron/iso_simple.xsl", reinterpret_cast<const char*>(iso_simple_xsl_h));
+        //cXmlInputOutputCallbackString::add(string(cXmlInputOutputCallbackString::INTERNAL)+"/schematron/iso_schematron_skeleton.xsl", reinterpret_cast<const char*>(iso_schematron_skeleton_xsl_h));
+        //cXmlInputOutputCallbackString::add(string(cXmlInputOutputCallbackString::INTERNAL)+"/schematron/iso_simple.xsl", reinterpret_cast<const char*>(iso_simple_xsl_h));
+		XMLCPP_RES_ADD_ONCE(iso_simple, xsl);
+		XMLCPP_RES_ADD_ONCE(iso_schematron_skeleton, xsl);
+
         g_resinit = true;
     }
     m_transform = cXsltStylesheet();
@@ -63,14 +70,22 @@ bool cXmlValidatorIsoSchematron::read(cXmlDoc& doc, const std::map<std::string, 
     if (!doc.ok())
         throw eXml("Tried to read schematron schema from broken document");
 
-    string sch = string(cXmlInputOutputCallbackString::PROTOCOL)+string(cXmlInputOutputCallbackString::INTERNAL)+"/schematron/iso_simple.xsl";
-    cXmlDoc schemadoc(sch.c_str());
+    //string sch = string(cXmlInputOutputCallbackString::PROTOCOL)+string(cXmlInputOutputCallbackString::INTERNAL)+"/schematron/iso_simple.xsl";
+    //cXmlDoc schemadoc(sch.c_str());
+    cXmlDoc schemadoc(XMLCPP_RES_USE(iso_simple, xsl).c_str());
+    if (!schemadoc.ok())
+        throw eXml("Internal error: could not load schematron xsl.");
 
     m_schema = cXmlDoc(doc.getRaw(), false);
 
     cXsltStylesheet schemash(schemadoc);
-    if (!schemash.ok())
-        throw eXml("Internal error: could not load schematron xsl.");
+    if (!schemash.ok()) {
+//		if (!schemash.hasErrors())
+//			fprintf(stderr, "No errors reported!\n");
+//		foreach(const string& e, schemash.getGenericErrors())
+//			fprintf(stderr, "%s\n", e.c_str());
+        throw eXml("Internal error: could not make schematron xsl.");
+	}
     schemash.setParameters(options);
     cXmlDoc temp = schemash.transform(doc);
 

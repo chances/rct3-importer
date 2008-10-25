@@ -65,7 +65,7 @@ inline void parseVector(V& v, const cXmlNode& n) {
 inline bool parseTXYZ(txyz& v, float& w, const cXmlNode& n) {
     parseVector(v, n);
     parseFloatC(n.getPropVal("w"), w);
-    return parseFloatC(n.getPropVal("time"), v.time);
+	return parseFloatC(n.getPropVal("time"), v.time);
 }
 
 void cXML3DLoader::parseVertex(VERTEX2& v, cXmlNode n, c3DMesh& mesh) {
