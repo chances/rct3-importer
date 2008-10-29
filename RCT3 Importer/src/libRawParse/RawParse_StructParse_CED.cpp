@@ -52,7 +52,7 @@ void cRawParser::ParseCED(cXmlNode& node) {
             OPTION_PARSE(unsigned long, ced.unk4, ParseUnsigned(child, wxT(RAWXML_CED_MORE), wxT("u4")));
             OPTION_PARSE(float, ced.unk7, ParseFloat(child, wxT(RAWXML_CED_MORE), wxT("u7")));
         } else if (child.element()) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ced tag."), child.wxname().c_str()));
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ced tag"), child.wxname().c_str()));
         }
         child.go_next();
     }

@@ -122,7 +122,7 @@ void cOVLDump::Load(const char* filename) {
         m_file[OVLT_COMMON] = fn;
         int r = fn.rfind(".common.", fn.size());
         if (r == string::npos)
-            throw EOvlD("Filename passed to Load must include the 'common.ovl' extension.");
+            throw EOvlD("Filename passed to Load must include the 'common.ovl' extension");
         fn.replace(r, 8, ".unique.");
         m_file[OVLT_UNIQUE] = fn;
     }
@@ -801,7 +801,7 @@ void cOVLDump::MakeCRC(cOvlType type) {
     m_crc[type] = calcCRC(reinterpret_cast<unsigned char*>(m_data[type].get()), m_size[type], true);
 }
 
-unsigned long cOVLDump::calcCRC(unsigned char* pdata, unsigned long len, bool padded) {
+unsigned long cOVLDump::calcCRC(const unsigned char* pdata, unsigned long len, bool padded) {
     unsigned long CRC = 0xFFFFFFFF;
     for (unsigned long i = 0; i < len; ++i) {
         unsigned char data = pdata[i];

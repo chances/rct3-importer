@@ -61,7 +61,7 @@ void cXmlOutputCallback::reg_out(cXmlOutputCallback* handler) {
         g_regid = xmlRegisterOutputCallbacks(cXmlOutputCallback::matchfunc_out, cXmlOutputCallback::openfunc_out,
                                              cXmlOutputCallback::writefunc, cXmlOutputCallback::closefunc_out);
         if (g_regid == -1)
-            throw eXml("Failed to register callbacks for cXmlOutputCallback.");
+            throw eXml("Failed to register callbacks for cXmlOutputCallback");
 #ifdef DUMP
 fprintf(stderr, "Register cXmlOutputCallback\n");
 #endif
@@ -91,7 +91,7 @@ void cXmlOutputCallback::unreg_out(cXmlOutputCallback* handler) {
 //    if (!g_handlers.size()) {
 //        int regid = xmlPopOutputCallbacks();
 //        if (regid != g_regid)
-//            throw eXml("Failed to unregister callbacks for cXmlOutputCallback.");
+//            throw eXml("Failed to unregister callbacks for cXmlOutputCallback");
 //        g_regid = -1;
 //    }
 }

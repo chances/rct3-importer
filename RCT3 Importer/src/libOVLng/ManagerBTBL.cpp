@@ -122,7 +122,7 @@ unsigned long cTexture::GetDimension(unsigned long _format, unsigned long _size)
 void ovlBTBLManager::Init(cOvl* ovl) {
     ovlOVLManager::Init(ovl);
     if (ovl->HasManager<ovlFLICManager>())
-        throw EOvl("Tried to init BmpTbl after adding textures.");
+        throw EOvl("Tried to init BmpTbl after adding textures");
 
     GetLSRManager()->AddLoader(OVLT_COMMON);
 }

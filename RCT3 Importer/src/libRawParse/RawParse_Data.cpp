@@ -70,7 +70,7 @@ cRawDatablock cRawParser::MakeDataBlock(const wxString& ref, const wxFSFileName&
             std::auto_ptr<wxMemoryOutputStream> buffer(new wxMemoryOutputStream(block.data().get(), block.datasize()));
             buffer->Write(*filestream);
         } else {
-            throw RCT3Exception(wxString::Format(_("File '%s' in data tag not found."), fname.GetFullPath().c_str()));
+            throw RCT3Exception(wxString::Format(_("File '%s' in data tag not found"), fname.GetFullPath().c_str()));
         }
     } else if (type.IsSameAs(wxT("binary"))) {
         wxString tex = node.wxcontent();
@@ -100,7 +100,7 @@ cRawDatablock cRawParser::MakeDataBlock(const wxString& ref, const wxFSFileName&
         memcpy(block.data().get(), buf.data(), strlen(buf.data()));
 
     } else {
-        throw RCT3Exception(wxString::Format(_("Unknown type '%s' in data tag %s."), type.c_str(), ref.c_str()));
+        throw RCT3Exception(wxString::Format(_("Unknown type '%s' in data tag %s"), type.c_str(), ref.c_str()));
     }
 
     return block;
@@ -116,7 +116,7 @@ cRawDatablock cRawParser::GetDataBlock(const wxString& ref, const cXmlNode& node
         wxFSFileName input;
         cXmlNode* refd = FindDataReference(guid, input);
         if (!refd)
-            throw RCT3Exception(wxString::Format(_("GUID '%s' not found in data tag %s."), guid.c_str(), ref.c_str()));
+            throw RCT3Exception(wxString::Format(_("GUID '%s' not found in data tag %s"), guid.c_str(), ref.c_str()));
         return MakeDataBlock(ref, input, node, *refd);
     } else {
         return MakeDataBlock(ref, m_input, node);

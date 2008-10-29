@@ -132,6 +132,8 @@ void dlgLoadFromFile::OnFileSelect(wxCommandEvent& event) {
             default:
                 throw RCT3Exception(wxT("Internal error: unsupported type"));
         }
+    } catch (WXException& e) {
+		wxLogError(e.formatLong());
     } catch (exception& e) {
         wxLogError(e.what());
     }
@@ -187,6 +189,8 @@ void dlgLoadFromFile::OnLoad(wxCommandEvent& event) {
                 }
             }
         }
+    } catch (WXException& e) {
+		::wxMessageBox(e.formatLong());
     } catch (exception& e) {
         ::wxMessageBox(e.what());
     }

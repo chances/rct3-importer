@@ -90,7 +90,7 @@ void cRawParser::ParseSVD(cXmlNode& node) {
                     else
                         lod.animations.push_back(std::string(anim.ToAscii()));
                 } else if (subchild.element()) {
-                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in svd(%s)/svdlod(%s)."), subchild.wxname().c_str(), name.c_str(), lodname.c_str()), subchild);
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in svd(%s)/svdlod(%s)"), subchild.wxname().c_str(), name.c_str(), lodname.c_str()), subchild);
                 }
 
                 subchild.go_next();
@@ -98,7 +98,7 @@ void cRawParser::ParseSVD(cXmlNode& node) {
 
             svd.lods.push_back(lod);
         } else if (child.element()) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in svd tag '%s'."), child.wxname().c_str(), name.c_str()), child);
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in svd tag '%s'"), child.wxname().c_str(), name.c_str()), child);
         }
 
         child.go_next();

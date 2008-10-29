@@ -51,8 +51,6 @@
 #define RAWXML_VARIABLES "variables"
 #define RAWXML_DATAREF   "dataref"
 
-typedef boost::error_info<struct tag_node_line, int> node_line_info;
-
 //WX_DECLARE_STRING_HASH_MAP(wxString, cRawParserVars);
 typedef std::map<wxString, wxString> cRawParserVars;
 

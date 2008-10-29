@@ -161,14 +161,18 @@ void wxModelListBox::UpdateContents() {
 
 wxString wxModelListBox::OnGetItem(size_t n) const {
     wxString ret = wxT("<font size='2'>");
-    if (m_contents->models[n].fatal_error) {
+    if (m_contents->models[n].stored_exception) {
         ret += wxT("<font color='#FF3C3C'>");
-    } else if (m_contents->models[n].error.size()) {
+    } else if (m_contents->models[n].errors.size()) {
         ret += wxT("<font color='#FFCC00'>");
     }
     ret += wxEncodeHtmlEntities(m_contents->models[n].name);
-    if ((m_contents->models[n].fatal_error) || (m_contents->models[n].error.size())) {
+    if (m_contents->models[n].hasIssues()) {
         ret += wxT("</font>");
+		if (m_contents->models[n].stored_exception) {
+			ret += HTML_INSET_START "Error: " + m_contents->models[n].stored_exception->wxwhat() + HTML_INSET_END "</font>";
+			return ret;
+		}
     }
     unsigned long mesh_enabled = 0;
     unsigned long mesh_faces = 0;
@@ -226,15 +230,19 @@ void wxAnimatedModelListBox::UpdateContents() {
 
 wxString wxAnimatedModelListBox::OnGetItem(size_t n) const {
     wxString ret = wxT("<font size='2'>");
-    if (m_contents->animatedmodels[n].fatal_error) {
+    if (m_contents->animatedmodels[n].stored_exception) {
         ret += wxT("<font color='#FF3C3C'>");
-    } else if (m_contents->animatedmodels[n].error.size()) {
+    } else if (m_contents->animatedmodels[n].errors.size()) {
         ret += wxT("<font color='#FFCC00'>");
     }
     ret += wxEncodeHtmlEntities(m_contents->animatedmodels[n].name);
-    if ((m_contents->animatedmodels[n].fatal_error) || (m_contents->animatedmodels[n].error.size())) {
+    if (m_contents->animatedmodels[n].hasIssues()) {
         ret += wxT("</font>");
-    }
+		if (m_contents->animatedmodels[n].stored_exception) {
+			ret += HTML_INSET_START "Error: " + m_contents->animatedmodels[n].stored_exception->wxwhat() + HTML_INSET_END "</font>";
+			return ret;
+		}
+    } 
     unsigned long mesh_enabled = 0;
     unsigned long mesh_faces = 0;
     for(cMeshStruct::iterator it = m_contents->animatedmodels[n].meshstructs.begin(); it != m_contents->animatedmodels[n].meshstructs.end(); it++) {

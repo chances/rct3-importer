@@ -657,16 +657,16 @@ void wxGXImage::ClearCache() {
   */
 bool wxGXImage::CheckGraphicsMagick(const wxString& apppath) {
     if (sizeof(Magick::Quantum) != 1) {
-        throw Magick::Exception("Compiled against GraphicsMagick with wrong quantum size. 8 bit quantum required.");
+        throw Magick::Exception("Compiled against GraphicsMagick with wrong quantum size. 8 bit quantum required");
     }
     if (!wxFileName::FileExists(apppath + "colors.mgk"))
-        throw Magick::Exception("'colors.mgk' not found.");
+        throw Magick::Exception("'colors.mgk' not found");
     if (!wxFileName::FileExists(apppath + "log.mgk"))
-        throw Magick::Exception("'log.mgk' not found.");
+        throw Magick::Exception("'log.mgk' not found");
     if (!wxFileName::FileExists(apppath + "magic.mgk"))
-        throw Magick::Exception("'magic.mgk' not found.");
+        throw Magick::Exception("'magic.mgk' not found");
     if (!wxFileName::FileExists(apppath + "modules.mgk"))
-        throw Magick::Exception("'modules.mgk' not found.");
+        throw Magick::Exception("'modules.mgk' not found");
     wxString appenv = wxT("MAGICK_CONFIGURE_PATH=") + apppath;
     putenv(appenv.mb_str(wxConvLocal));
     return true;

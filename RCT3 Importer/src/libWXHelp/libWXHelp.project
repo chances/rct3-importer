@@ -31,6 +31,9 @@
     <File Name="wxutilityfunctions.cpp"/>
     <File Name="wxutilityfunctions.h"/>
     <File Name="wx_pch.h"/>
+    <File Name="wxexception.cpp"/>
+    <File Name="wxexception.h"/>
+    <File Name="wxexception_libxmlcpp.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="filedlg">
     <File Name="auifiledlg.h"/>

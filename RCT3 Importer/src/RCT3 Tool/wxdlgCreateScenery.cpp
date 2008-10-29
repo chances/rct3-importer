@@ -487,7 +487,7 @@ bool dlgCreateScenery::Save(bool as) {
 				wxBusyInfo bi("saving...");
 				wxWindowDisabler wd;
                 if (!m_SCN.Save())
-                    throw RCT3Exception(_("Saving scenery file failed. You will be asked for a new file name now."));
+                    throw RCT3Exception(_("Saving scenery file failed. You will be asked for a new file name now"));
                 MakeDirty(false);
                 UpdateControlState();
                 return true;
@@ -522,7 +522,7 @@ bool dlgCreateScenery::Save(bool as) {
 			wxBusyInfo bi("saving...");
 			wxWindowDisabler wd;
             if (!m_SCN.Save())
-                throw RCT3Exception(_("Error saving SCN file."));
+                throw RCT3Exception(_("Error saving SCN file"));
             MakeDirty(false);
             UpdateControlState();
             return true;
@@ -618,7 +618,35 @@ void dlgCreateScenery::OnToolBar(wxCommandEvent& event) {
                     m_nbAnSpline->ChangeSelection(0);
                 }
             } catch (RCT3Exception& e) {
-                wxLogError(_("Error loading scenery file.\n") + e.wxwhat());
+				wxString er = _("Error loading scenery file.\n\n");
+				er += e.formatLong();
+				/*
+				er += _("Error: ") + e.wxwhat();
+				{
+					boost::shared_ptr<wxString const> err = boost::get_error_info<wxe_file>(e);
+					if( err )
+						er += _("\nFile: ") + *err;
+				}
+				{
+					boost::shared_ptr<int const> err = boost::get_error_info<wxe_xml_node_line>(e);
+					if( err ) {
+						if (*err)
+							er += wxString::Format(_("\nLine: %d"), *err);
+					}
+				}
+				{
+					boost::shared_ptr<wxe_xml_error_infos const> err = boost::get_error_info<wxe_xml_errors>(e);
+					if( err ) {
+						if (err->size()) {
+							er += _("\nXML errors:");
+							foreach(const wxe_xml_error_info& inf, *err) {
+								er += wxString::Format("\n%03d: [%s] %s", inf.line, inf.severity.c_str(), inf.error.c_str());
+							}
+						}
+					}
+				}
+				*/
+                wxLogError(er);
                 m_SCN = cSCNFile();
             }
             wxLog::FlushActive();
@@ -1131,7 +1159,11 @@ void dlgCreateScenery::OnModelEdit(wxCommandEvent& WXUNUSED(event)) {
     int sel = m_htlbModel->GetSelection();
     if (sel < 0)
         return;
-    dlgModel *dialog = new dlgModel(this, m_SCN);
+    boost::shared_ptr<dlgModel> dialog(new dlgModel(this, m_SCN), wxWindowDestroyer);
+	
+	bool haderror = m_SCN.models[sel].hasIssues();
+	
+/*
     if (m_SCN.models[sel].error.size()) {
         wxString errtext;
         foreach(wxString& err, m_SCN.models[sel].error)
@@ -1139,14 +1171,25 @@ void dlgCreateScenery::OnModelEdit(wxCommandEvent& WXUNUSED(event)) {
         ::wxMessageBox(errtext, wxString(m_SCN.models[sel].fatal_error?_("Error"):_("Warning")) + _(" during model file loading"), wxOK | (m_SCN.models[sel].fatal_error?wxICON_ERROR:wxICON_WARNING), this);
         m_SCN.models[sel].error.clear();
     }
+*/
     m_SCN.models[sel].Sync();
-    if (m_SCN.models[sel].error.size()) {
-        wxString errtext;
-        foreach(wxString& err, m_SCN.models[sel].error)
-            errtext += (errtext.IsEmpty()?wxT(""):wxT("\n\n")) + err;
-        ::wxMessageBox(errtext, wxString(m_SCN.models[sel].fatal_error?_("Error"):_("Warning")) + _(" during model file loading"), wxOK | (m_SCN.models[sel].fatal_error?wxICON_ERROR:wxICON_WARNING), this);
-        m_SCN.models[sel].error.clear();
-    }
+    if (m_SCN.models[sel].hasIssues()) {
+        wxString errtext(_("Model file has one or more issues:\n\n"));
+		if (m_SCN.models[sel].stored_exception)
+			errtext += m_SCN.models[sel].stored_exception->formatLong();
+		if (m_SCN.models[sel].errors.size()) {
+			if (m_SCN.models[sel].stored_exception)
+				errtext += _("\n\n\nWarnings:");
+			foreach(wxString& err, m_SCN.models[sel].errors)
+				errtext += (errtext.IsEmpty()?wxT(""):wxT("\n\n")) + err;
+		}
+        ::wxMessageBox(errtext, wxString(m_SCN.models[sel].stored_exception?_("Error"):_("Warning")) + _(" during model file loading"), wxOK | (m_SCN.models[sel].stored_exception?wxICON_ERROR:wxICON_WARNING), this);
+        m_SCN.models[sel].errors.clear();
+    } else {
+		if (haderror) {
+			::wxMessageBox("The model file had reported some errors, but they seem to be gone now", "Information", wxICON_INFORMATION, this);
+		}
+	}
     dialog->SetModel(m_SCN.models[sel]);
     if (dialog->ShowModal() == wxID_OK) {
         cModel mod = dialog->GetModel();
@@ -1160,11 +1203,11 @@ void dlgCreateScenery::OnModelEdit(wxCommandEvent& WXUNUSED(event)) {
         }
         m_SCN.models[sel] = mod;
         MakeDirty();
-        m_htlbModel->UpdateContents();
-        m_htlbLOD->UpdateContents();
-        UpdateControlState();
     }
-    dialog->Destroy();
+	m_htlbModel->UpdateContents();
+	m_htlbAModel->UpdateContents();
+	m_htlbLOD->UpdateContents();
+	UpdateControlState();
 }
 
 void dlgCreateScenery::OnModelCopy(wxCommandEvent& WXUNUSED(event)) {
@@ -1300,7 +1343,8 @@ void dlgCreateScenery::OnAModelEdit(wxCommandEvent& WXUNUSED(event)) {
     int sel = m_htlbAModel->GetSelection();
     if (sel < 0)
         return;
-    dlgModel *dialog = new dlgModel(this, m_SCN, true);
+    boost::shared_ptr<dlgModel> dialog(new dlgModel(this, m_SCN, true), wxWindowDestroyer);
+/*
     if (m_SCN.animatedmodels[sel].error.size()) {
         wxString errtext;
         foreach(wxString& err, m_SCN.animatedmodels[sel].error)
@@ -1308,14 +1352,27 @@ void dlgCreateScenery::OnAModelEdit(wxCommandEvent& WXUNUSED(event)) {
         ::wxMessageBox(errtext, wxString(m_SCN.animatedmodels[sel].fatal_error?_("Error"):_("Warning")) + _(" during model file loading"), wxOK | (m_SCN.animatedmodels[sel].fatal_error?wxICON_ERROR:wxICON_WARNING), this);
         m_SCN.animatedmodels[sel].error.clear();
     }
+*/
+	bool haderror = m_SCN.animatedmodels[sel].hasIssues();
     m_SCN.animatedmodels[sel].Sync();
-    if (m_SCN.animatedmodels[sel].error.size()) {
-        wxString errtext;
-        foreach(wxString& err, m_SCN.animatedmodels[sel].error)
-            errtext += (errtext.IsEmpty()?wxT(""):wxT("\n\n")) + err;
-        ::wxMessageBox(errtext, wxString(m_SCN.animatedmodels[sel].fatal_error?_("Error"):_("Warning")) + _(" during model file loading"), wxOK | (m_SCN.animatedmodels[sel].fatal_error?wxICON_ERROR:wxICON_WARNING), this);
-        m_SCN.animatedmodels[sel].error.clear();
-    }
+    if (m_SCN.animatedmodels[sel].hasIssues()) {
+        wxString errtext(_("Model file has one or more issues:\n\n"));
+		if (m_SCN.animatedmodels[sel].stored_exception)
+			errtext += m_SCN.animatedmodels[sel].stored_exception->formatLong();
+		if (m_SCN.animatedmodels[sel].errors.size()) {
+			if (m_SCN.animatedmodels[sel].stored_exception)
+				errtext += _("\n\n\nWarnings:");
+			foreach(wxString& err, m_SCN.animatedmodels[sel].errors)
+				errtext += (errtext.IsEmpty()?wxT(""):wxT("\n\n")) + err;
+		}
+        ::wxMessageBox(errtext, wxString(m_SCN.animatedmodels[sel].stored_exception?_("Error"):_("Warning")) + _(" during model file loading"), wxOK | (m_SCN.animatedmodels[sel].stored_exception?wxICON_ERROR:wxICON_WARNING), this);
+        m_SCN.animatedmodels[sel].errors.clear();
+    } else {
+		if (haderror) {
+			::wxMessageBox("The model file had reported some errors, but they seem to be gone now", "Information", wxICON_INFORMATION, this);
+		}
+	}
+    	
     dialog->SetAnimatedModel(m_SCN.animatedmodels[sel]);
     if (dialog->ShowModal() == wxID_OK) {
         cAnimatedModel mod = dialog->GetAnimatedModel();
@@ -1329,11 +1386,11 @@ void dlgCreateScenery::OnAModelEdit(wxCommandEvent& WXUNUSED(event)) {
         }
         m_SCN.animatedmodels[sel] = mod;
         MakeDirty();
-        m_htlbAModel->UpdateContents();
-        m_htlbLOD->UpdateContents();
-        UpdateControlState();
     }
-    dialog->Destroy();
+	m_htlbModel->UpdateContents();
+	m_htlbAModel->UpdateContents();
+	m_htlbLOD->UpdateContents();
+	UpdateControlState();
 }
 
 void dlgCreateScenery::OnAModelCopy(wxCommandEvent& WXUNUSED(event)) {

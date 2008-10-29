@@ -80,7 +80,7 @@ void cRawParser::ParseFTX(cXmlNode& node) {
 
                 if (subchild(RAWXML_FTX_FRAME_IMAGE)) {
                     if ((c_fts.palette.get() || c_fts.texture.get()) && (m_mode != MODE_BAKE))
-                        throw MakeNodeException<RCT3Exception>(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe/image: multiple datasources."), subchild);
+                        throw MakeNodeException<RCT3Exception>(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe/image: multiple datasources"), subchild);
 
                     bool usealpha = false;
                     OPTION_PARSE(unsigned long, usealpha, ParseUnsigned(subchild, wxT(RAWXML_FTX_FRAME_IMAGE), wxT("usealpha")));
@@ -205,7 +205,7 @@ void cRawParser::ParseFTX(cXmlNode& node) {
 
                 } else if (subchild(RAWXML_FTX_FRAME_ALPHA)) {
                     if (c_fts.alpha.get() && (m_mode != MODE_BAKE))
-                        throw MakeNodeException<RCT3Exception>(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe/alpha: multiple datasources."), subchild);
+                        throw MakeNodeException<RCT3Exception>(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe/alpha: multiple datasources"), subchild);
 
                     wxString t = subchild.wxcontent();
                     bool filevar = MakeVariable(t);
@@ -278,7 +278,7 @@ void cRawParser::ParseFTX(cXmlNode& node) {
                     }
                 } else if (subchild(RAWXML_FTX_FRAME_PDATA)) {
                     if (c_fts.palette.get() && (m_mode != MODE_BAKE))
-                        throw MakeNodeException<RCT3Exception>(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe/palettedata: multiple datasources."), subchild);
+                        throw MakeNodeException<RCT3Exception>(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe/palettedata: multiple datasources"), subchild);
 
                     BAKE_SKIP(subchild);
 
@@ -302,17 +302,17 @@ void cRawParser::ParseFTX(cXmlNode& node) {
                             throw MakeNodeException<RCT3Exception>(wxString(_("Unknown base64 error decoding ftx/ftxframe/palettedata tag ")) + name, subchild);
                     }
                     if (outlen != 256 * sizeof(COLOURQUAD))
-                        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Datasize mismatch (%ld/%d) error in ftx('%s')/ftxframe/palettedata tag."), outlen, 256 * sizeof(COLOURQUAD),name.c_str()), subchild);
+                        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Datasize mismatch (%ld/%d) error in ftx('%s')/ftxframe/palettedata tag"), outlen, 256 * sizeof(COLOURQUAD),name.c_str()), subchild);
                 } else if (subchild(RAWXML_FTX_FRAME_TDATA)) {
                     if (c_fts.texture.get() && (m_mode != MODE_BAKE))
-                        throw MakeNodeException<RCT3Exception>(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe/texturedata: multiple datasources."), subchild);
+                        throw MakeNodeException<RCT3Exception>(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe/texturedata: multiple datasources"), subchild);
                     if (m_mode == MODE_BAKE) {
                         subchild.go_next();
                         continue;
                     }
 
                     if (!c_fts.dimension)
-                        throw MakeNodeException<RCT3Exception>(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe: dimension missing for decoding texturedata."), subchild);
+                        throw MakeNodeException<RCT3Exception>(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe: dimension missing for decoding texturedata"), subchild);
 
                     if (!c_fti.dimension)
                         c_fti.dimension = c_fts.dimension;
@@ -340,7 +340,7 @@ void cRawParser::ParseFTX(cXmlNode& node) {
                         throw MakeNodeException<RCT3Exception>(wxString(_("Datasize mismatch error in ftx/ftxframe/texturedata tag ")) + name, subchild);
                 } else if (subchild(RAWXML_FTX_FRAME_ADATA)) {
                     if (c_fts.alpha.get() && (m_mode != MODE_BAKE))
-                        throw MakeNodeException<RCT3Exception>(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe/alphadata: multiple datasources."), subchild);
+                        throw MakeNodeException<RCT3Exception>(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe/alphadata: multiple datasources"), subchild);
 
                     if (m_mode == MODE_BAKE) {
                         subchild.go_next();
@@ -348,7 +348,7 @@ void cRawParser::ParseFTX(cXmlNode& node) {
                     }
 
                     if (!c_fts.dimension)
-                        throw MakeNodeException<RCT3Exception>(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe: dimension missing for decoding alphadata."), subchild);
+                        throw MakeNodeException<RCT3Exception>(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe: dimension missing for decoding alphadata"), subchild);
 
                     wxString tex = subchild.wxcontent();
                     MakeVariable(tex);
@@ -372,7 +372,7 @@ void cRawParser::ParseFTX(cXmlNode& node) {
                     if (outlen != c_fts.dimension * c_fts.dimension)
                         throw MakeNodeException<RCT3Exception>(wxString(_("Datasize mismatch error in ftx/ftxframe/alphadata tag ")) + name, subchild);
                 } else if (subchild.element()) {
-                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in ftx/ftxframe tag."), subchild.wxname().c_str()), subchild);
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in ftx/ftxframe tag"), subchild.wxname().c_str()), subchild);
                 }
 
                 subchild.go_next();
@@ -380,13 +380,13 @@ void cRawParser::ParseFTX(cXmlNode& node) {
 
             if (m_mode != MODE_BAKE) {
                 if (!c_fts.palette.get())
-                    throw MakeNodeException<RCT3Exception>(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe: palette data missing."), child);
+                    throw MakeNodeException<RCT3Exception>(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe: palette data missing"), child);
                 if (!c_fts.texture.get())
-                    throw MakeNodeException<RCT3Exception>(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe: texture data missing."), child);
+                    throw MakeNodeException<RCT3Exception>(wxString(wxT("ftx tag '"))+name+wxT("'/ftxframe: texture data missing"), child);
                 c_fti.frames.push_back(c_fts);
             }
         } else if (child.element()) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in ftx tag."), child.wxname().c_str()), child);
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in ftx tag"), child.wxname().c_str()), child);
         }
         child.go_next();
 

@@ -11,7 +11,8 @@
 
 #include "RCT3Exception.h"
 
+/*
 RCT3Exception::RCT3Exception(const wxString& message) {
     m_message = message;
 }
-
+*/

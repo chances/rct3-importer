@@ -4,8 +4,11 @@
                 exclude-result-prefixes="saxon"
                 version="1.0">
 
+<!--
   <xsl:output method="xml" indent="no"
               doctype-system="schema/tdg.dtd"/>
+-->
+  <xsl:output method="xml" indent="no"/>
 
   <xsl:preserve-space elements="*"/>
 

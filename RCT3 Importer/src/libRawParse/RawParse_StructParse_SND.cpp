@@ -29,7 +29,7 @@
 
 #include "ManagerSND.h"
 
-#include "wave\WAVE.h"
+#include "wave/WAVE.h"
 #include <boost/iostreams/device/array.hpp>
 #include <boost/iostreams/stream.hpp>
 
@@ -58,31 +58,31 @@ void cRawParser::ParseSND(cXmlNode& node) {
                 datanode.go_next();
 
             if (!datanode)
-                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Tag snd(%s)/sound misses data."), name.c_str()), child);
+                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Tag snd(%s)/sound misses data"), name.c_str()), child);
 
             cRawDatablock data = GetDataBlock(wxString::Format(_("tag snd(%s)/sound"), name.c_str()), datanode);
             if (data.datatype().IsEmpty()) {
-                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Could not determine data type in tag snd(%s)/sound."), name.c_str()), child);
+                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Could not determine data type in tag snd(%s)/sound"), name.c_str()), child);
             } else if (data.datatype().IsSameAs(wxT("processed"))) {
-                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Processed data not supported in tag snd(%s)/sound."), name.c_str()), child);
+                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Processed data not supported in tag snd(%s)/sound"), name.c_str()), child);
             } else {
                 WaveFile wave;
                 boost::iostreams::array_source wavedata(reinterpret_cast<char*>(data.data().get()), data.datasize());
                 boost::iostreams::stream_buffer<boost::iostreams::array_source> wavebuf(wavedata);
                 if (!wave.OpenRead(&wavebuf)) {
-                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Failed to open sound data in tag snd(%s)/sound."), name.c_str()), child);
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Failed to open sound data in tag snd(%s)/sound"), name.c_str()), child);
                 }
                 if ((wave.GetBitsPerChannel() != 16) || (wave.GetNumChannels() != 1) || (wave.GetFormatType() != 1))
-                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Sound data in tag snd(%s)/sound is not 16 bit / mono / uncompressed."), name.c_str()), child);
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Sound data in tag snd(%s)/sound is not 16 bit / mono / uncompressed"), name.c_str()), child);
                 sound.format.nSamplesPerSec = wave.GetSampleRate();
                 sound.format.nAvgBytesPerSec = wave.GetBytesPerSecond();
                 sound.channel1_size = wave.GetDataLength();
                 sound.channel1.reset(new int16_t[wave.GetNumSamples()]);
                 if (!wave.ReadSamples(sound.channel1.get(), wave.GetNumSamples()))
-                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Failed to read sound data in tag snd(%s)/sound."), name.c_str()), child);
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Failed to read sound data in tag snd(%s)/sound"), name.c_str()), child);
             }
         } else if (child.element()) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in snd(%s) tag."), child.wxname().c_str(), name.c_str()), child);
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in snd(%s) tag"), child.wxname().c_str(), name.c_str()), child);
         }
         child.go_next();
     }

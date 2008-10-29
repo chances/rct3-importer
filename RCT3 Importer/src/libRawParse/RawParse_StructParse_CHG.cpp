@@ -46,7 +46,7 @@ void cRawParser::ParseCHG(cXmlNode& node) {
         if (child(RAWXML_ATTRACTION)) {
             ParseAttraction(child, room.attraction);
         } else if (child.element()) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in chg tag."), child.wxname().c_str()),child);
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in chg tag"), child.wxname().c_str()),child);
         }
 
         child.go_next();

@@ -74,7 +74,7 @@ bool cXmlValidatorIsoSchematron::read(cXmlDoc& doc, const std::map<std::string, 
     //cXmlDoc schemadoc(sch.c_str());
     cXmlDoc schemadoc(XMLCPP_RES_USE(iso_simple, xsl).c_str());
     if (!schemadoc.ok())
-        throw eXml("Internal error: could not load schematron xsl.");
+        throw eXml("Internal error: could not load schematron xsl");
 
     m_schema = cXmlDoc(doc.getRaw(), false);
 
@@ -84,7 +84,7 @@ bool cXmlValidatorIsoSchematron::read(cXmlDoc& doc, const std::map<std::string, 
 //			fprintf(stderr, "No errors reported!\n");
 //		foreach(const string& e, schemash.getGenericErrors())
 //			fprintf(stderr, "%s\n", e.c_str());
-        throw eXml("Internal error: could not make schematron xsl.");
+        throw eXml("Internal error: could not make schematron xsl");
 	}
     schemash.setParameters(options);
     cXmlDoc temp = schemash.transform(doc);

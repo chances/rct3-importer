@@ -62,7 +62,7 @@ void cXmlInputCallback::reg_in(cXmlInputCallback* handler) {
         g_regid = xmlRegisterInputCallbacks(cXmlInputCallback::matchfunc_in, cXmlInputCallback::openfunc_in,
                                             cXmlInputCallback::readfunc, cXmlInputCallback::closefunc_in);
         if (g_regid == -1)
-            throw eXml("Failed to register callbacks for cXmlInputCallback.");
+            throw eXml("Failed to register callbacks for cXmlInputCallback");
 #ifdef DUMP
 fprintf(stderr, "Register cXmlInputCallback\n");
 fflush(stderr);
@@ -93,7 +93,7 @@ void cXmlInputCallback::unreg_in(cXmlInputCallback* handler) {
     if (!g_handlers.size()) {
         int regid = xmlPopInputCallbacks();
         if (regid != g_regid)
-            throw eXml("Failed to unregister callbacks for cXmlInputCallback.");
+            throw eXml("Failed to unregister callbacks for cXmlInputCallback");
         g_regid = -1;
     }
 }

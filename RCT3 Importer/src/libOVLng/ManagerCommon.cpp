@@ -346,7 +346,7 @@ void cAttraction::Fill(Attraction_V* attv) const {
         att->addonascn = addonascn;
         att->unk12 = unk12;
     } else {
-        throw EOvl("cAttractionType::Fill, cannot determine structure type.");
+        throw EOvl("cAttractionType::Fill, cannot determine structure type");
     }
 */
 }
@@ -497,7 +497,7 @@ unsigned long cRideOption::GetSize() const {
         case 11: return 3*4;
         case 12: return 4*4;
         default:
-            throw EOvl("cRideOption::GetSize, unknown option type.");
+            throw EOvl("cRideOption::GetSize, unknown option type");
     }
 }
 
@@ -532,7 +532,7 @@ void cRideOption::SetType(unsigned long t) {
             }
             break;
         default:
-            throw EOvl("cRideOption::GetSize, unknown option type.");
+            throw EOvl("cRideOption::GetSize, unknown option type");
     }
 }
 
@@ -610,7 +610,7 @@ void cRideOption::Fill(r3::RideOption* r) const {
             }
             break;
         default:
-            throw EOvl("cRideOption::Fill, unknown option type.");
+            throw EOvl("cRideOption::Fill, unknown option type");
     }
 }
 

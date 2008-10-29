@@ -81,10 +81,26 @@ c3DLoader* DoLoadFile(const wxChar *filename) {
 }
 
 c3DLoaderCacheEntry::c3DLoaderCacheEntry(wxString filename) {
-    m_object = boost::shared_ptr<c3DLoader>(DoLoadFile(filename.c_str()));
+    //m_object = boost::shared_ptr<c3DLoader>(DoLoadFile(filename.c_str()));
     m_file = filename;
-    if (m_object.get())
-        m_mtime = m_file.GetModificationTime();
+	LoadFile();
+    //if (m_object.get())
+    //    m_mtime = m_file.GetModificationTime();
+}
+
+void c3DLoaderCacheEntry::LoadFile() {
+	m_exception.reset();
+	m_object.reset();
+	if (m_file.IsFileReadable()) {
+		m_mtime = m_file.GetModificationTime();
+		try {
+			m_object.reset(DoLoadFile(m_file.GetFullPath().c_str()));
+		} catch (E3DLoader& e) {
+			m_exception.reset(new E3DLoader(e));
+		}
+	} else {
+		m_mtime = wxDateTime();
+	}
 }
 
 boost::shared_ptr<c3DLoader> c3DLoaderCacheEntry::Get() {
@@ -102,22 +118,40 @@ boost::shared_ptr<c3DLoader> c3DLoaderCacheEntry::Get() {
         }
         if (m_mtime != lastmod) {
             wxString lfile = m_file.GetFullPath();
-            boost::shared_ptr<c3DLoader> reload(DoLoadFile(lfile.c_str()));
-            if (reload) {
-                m_object = reload;
-                if (m_object)
+			try {
+				boost::shared_ptr<c3DLoader> reload(DoLoadFile(lfile.c_str()));
+				if (reload) {
+					m_object = reload;
                     m_mtime = lastmod;
-            } else {
+				} else {
+					throw E3DLoader(_("File was not recognizead as model file any more")) << wxe_file(lfile);
+				}
+            } catch (E3DLoader& e) {
                 // New file kaput
-                wxLogWarning(_("Model Cache Warning: File '%s' was modified and is now broken. Using cached copy."), m_file.GetFullPath().fn_str());
+                wxLogWarning(_("Model Cache Warning: File '%s' was modified and is now broken. Using cached copy.\n\n%s"), m_file.GetFullPath().fn_str(), e.formatLong().c_str());
             }
         }
         return m_object;
     } else {
+		// First check if reloading would be for naught
+		if (m_exception) {
+			if (m_mtime.IsValid()) {
+				if (m_file.IsFileReadable()) {
+					wxDateTime lastmod;
+					if (m_file.GetTimes(NULL, &lastmod, NULL)) {
+						if (lastmod == m_mtime) {
+							// Noting changed
+							throw E3DLoader(*m_exception);
+						}
+					}
+				}
+			}
+		}
         // Try again
-        m_object.reset(DoLoadFile(m_file.GetFullPath().c_str()));
-        if (m_object)
-            m_mtime = m_file.GetModificationTime();
+		LoadFile();
+		if (m_exception) {
+			throw E3DLoader(*m_exception);
+		}
         return m_object;
     }
 }
@@ -137,7 +171,7 @@ vector<SplineNode> c3DSpline::GetFixed(const c3DLoaderOrientation ori) const {
     return ret;
 }
 
-
+/*
 E3DLoader::E3DLoader(const wxString& message) {
     m_message = message;
 }
@@ -149,7 +183,7 @@ const char* E3DLoader::what() const throw() {
 const wxString& E3DLoader::wxwhat() const throw() {
     return m_message;
 }
-
+*/
 
 c3DLoaderCache c3DLoader::g_cache;
 
@@ -181,7 +215,7 @@ VERTEX2 c3DLoader::getObjectVertex2(unsigned int mesh, unsigned int vertex) {
 const set<wxString>& c3DLoader::getObjectBones(const wxString& mesh) const {
     map<wxString, c3DMesh>::const_iterator it = m_meshes.find(mesh);
     if (it == m_meshes.end())
-        throw E3DLoader(wxString::Format(_("Unknown mesh '%s' used (c3DLoader::GetObjectBones)."), mesh.c_str()));
+        throw E3DLoader(wxString::Format(_("Unknown mesh '%s' used (c3DLoader::GetObjectBones)"), mesh.c_str()));
     return it->second.m_bones;
 }
 
@@ -407,7 +441,7 @@ boost::shared_ptr<c3DLoader> c3DLoader::LoadFile(const wxChar *filename) {
         return it->second->Get();
     } else {
         boost::shared_ptr<c3DLoaderCacheEntry> nw(new c3DLoaderCacheEntry(fn));
-        if (nw->Valid()) {
+        if (nw->Recognized()) {
             g_cache[fn] = nw;
             return nw->Get();
         } else {

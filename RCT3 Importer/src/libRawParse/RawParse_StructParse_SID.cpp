@@ -162,7 +162,7 @@ void cRawParser::ParseSID(cXmlNode& node) {
                     if (!c.IsEmpty())
                         sid.flatride.individual_animations.push_back(static_cast<const char*>(c.ToAscii()));
                 } else if (subchild.element()) {
-                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in sid/flatRide tag."), subchild.wxname().c_str()), subchild);
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in sid/flatRide tag"), subchild.wxname().c_str()), subchild);
                 }
             }
         } else if (child(RAWXML_SID_SOUND)) {
@@ -207,14 +207,14 @@ void cRawParser::ParseSID(cXmlNode& node) {
                                 scr.parameter[1] = (scr.parameter[1]-1.0)/fps;
                             commands.push_back(scr);
                         } else if (grandchild.element()) {
-                            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in sid/sound/animation tag."), subchild.wxname().c_str()), subchild);
+                            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in sid/sound/animation tag"), subchild.wxname().c_str()), subchild);
                         }
                     }
                     if (last_command)
                         commands.push_back(cSidSoundScript(last_time));
                     sound.animationscripts.push_back(commands);
                 } else if (subchild.element()) {
-                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in sid/sound tag."), subchild.wxname().c_str()), subchild);
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in sid/sound tag"), subchild.wxname().c_str()), subchild);
                 }
             }
 
@@ -223,7 +223,7 @@ void cRawParser::ParseSID(cXmlNode& node) {
             USE_PREFIX(child);
             svd = HandleStringContent(child(), NULL, useprefix);
             if (svd.IsEmpty())
-                throw MakeNodeException<RCT3Exception>(wxString::Format(_("An svd in sid tag '%s' is empty."), name.c_str()), child);
+                throw MakeNodeException<RCT3Exception>(wxString::Format(_("An svd in sid tag '%s' is empty"), name.c_str()), child);
             sid.svds.push_back(std::string(svd.ToAscii()));
         } else if (child(RAWXML_SID_PARAMETER)) {
             cSidParam param;
@@ -235,7 +235,7 @@ void cRawParser::ParseSID(cXmlNode& node) {
             }
             sid.parameters.push_back(param);
         } else if (child.element()) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in sid tag '%s'."), child.wxname().c_str(), name.c_str()), child);
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in sid tag '%s'"), child.wxname().c_str(), name.c_str()), child);
         }
 
         child.go_next();

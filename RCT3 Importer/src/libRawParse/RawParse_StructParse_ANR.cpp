@@ -65,7 +65,7 @@ void cRawParser::ParseANR(cXmlNode& node) {
             boost::trim(si.name);
             animride.showitems.push_back(si);
         } else if (child.element()) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in anr tag."), child.wxname().c_str()));
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in anr tag"), child.wxname().c_str()));
         }
     }
 

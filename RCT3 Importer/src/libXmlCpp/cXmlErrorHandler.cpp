@@ -127,6 +127,17 @@ string cXmlStructuredError::getPath() const {
     return ret;
 }
 
+int cXmlStructuredError::getLine() const {
+    if (line)
+        return line;
+    if (!node)
+        return 0;
+    cXmlNode temp(reinterpret_cast<xmlNodePtr>(node));
+    if (!temp.ok())
+        return 0;
+    return temp.line();
+}
+
 void cXmlErrorHandler::Init() {
 #ifdef DUMP
 fprintf(stderr, "Errorhandler Init\n");

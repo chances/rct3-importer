@@ -46,7 +46,7 @@ void cRawParser::ParseSAT(cXmlNode& node) {
         if (child(RAWXML_ATTRACTION)) {
             ParseAttraction(child, spa.attraction);
         } else if (child.element()) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in sat tag '%s'."), child.wxname().c_str(), name.c_str()), child);
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in sat tag '%s'"), child.wxname().c_str(), name.c_str()), child);
         }
 
         child.go_next();

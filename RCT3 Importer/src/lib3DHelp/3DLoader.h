@@ -36,6 +36,8 @@
 
 #include "pretty.h"
 
+#include "wxexception.h"
+
 #include "spline.h"
 #include "vertex.h"
 //#include "counted_ptr.h"
@@ -142,24 +144,38 @@ public:
     c3DTexture(): m_recol(0), m_alphaType(0), m_referenced(false), m_fps(0) {}
 };
 
+class E3DLoader: public WXException {
+public:
+	INHERIT_WXEXCEPTION(E3DLoader)
+};
+
+class E3DLoaderNotMyBeer: public E3DLoader {
+public:
+    E3DLoaderNotMyBeer(): E3DLoader("Wrong Format") {}
+};
+
 class c3DLoader;
 class c3DLoaderCacheEntry: public wxObject {
 private:
     boost::shared_ptr<c3DLoader> m_object;
+	boost::shared_ptr<E3DLoader> m_exception;
     wxFileName m_file;
     wxDateTime m_mtime;
+	
+	void LoadFile();
 public:
     c3DLoaderCacheEntry(wxString filename);
     boost::shared_ptr<c3DLoader> Get();
-    bool Valid() {
-        return m_object.get();
+    bool Recognized() {
+        return m_object.get() || m_exception.get();
     }
 };
 
 //WX_DECLARE_STRING_HASH_MAP(boost::shared_ptr<c3DLoaderCacheEntry>, c3DLoaderCache);
 typedef std::map<wxString, boost::shared_ptr<c3DLoaderCacheEntry> > c3DLoaderCache;
 
-class E3DLoader: public std::exception {
+/*
+class E3DLoader: public std::exception, public boost::exception {
 protected:
     wxString m_message;
 public:
@@ -168,11 +184,7 @@ public:
     virtual const wxString& wxwhat() const throw();
     ~E3DLoader() throw() {};
 };
-
-class E3DLoaderNotMyBeer: public E3DLoader {
-public:
-    E3DLoaderNotMyBeer(): E3DLoader("Wrong Format") {}
-};
+*/
 
 class c3DLoader {
 friend class c3DLoaderCacheEntry;
@@ -247,7 +259,7 @@ public:
     virtual const wxArrayString& getWarnings() const {return m_warnings;};
     virtual const wxString& getObjectName(unsigned int index) {
         if (index>=m_meshes.size())
-            throw E3DLoader(wxT("c3DLoader::GetObjectName called with illegal index"));
+            throw E3DLoader("c3DLoader::GetObjectName called with illegal index");
         return m_meshes[m_meshId[index]].m_name;
     };
     virtual int getObjectVertexCount(unsigned int index) {
@@ -273,7 +285,7 @@ public:
     }
     virtual inline c3DBone& getBone(const wxString& bone) {
         if (!pretty::has(m_bones, bone))
-            throw E3DLoader(wxString::Format(_("Unknown bone '%s'."), bone.c_str()));
+            throw E3DLoader(wxString::Format(_("Unknown bone '%s'"), bone.c_str()));
         return m_bones[bone];
     }
     virtual inline const std::map<wxString, c3DBone>& getBones() const {

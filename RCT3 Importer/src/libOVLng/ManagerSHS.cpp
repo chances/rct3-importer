@@ -266,7 +266,7 @@ void ovlSHSManager::AddModel(const cStaticShape1& item) {
 #ifndef GLASS_OLD
         if ((it->IsAlgoNone()) && (it->placetexturing != 0)) {
             if (it->indices.size() % 3)
-                throw EOvl("ovlSHSManager::AddModel: mesh has triangle sort algorithm none but indices aren't divisible by 3.");
+                throw EOvl("ovlSHSManager::AddModel: mesh has triangle sort algorithm none but indices aren't divisible by 3");
         }
         if ((it->placetexturing != 0) && (!it->IsAlgoNone())) {
             m_blobs[item.name].size += 2 * it->indices.size() * sizeof(unsigned long);

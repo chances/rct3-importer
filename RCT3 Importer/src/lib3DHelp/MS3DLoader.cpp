@@ -40,6 +40,7 @@
 #include "pretty.h"
 #include "rct3constants.h"
 #include "xmlhelper.h"
+#include "wxexception_libxmlcpp.h"
 
 #include "cXmlDoc.h"
 #include "cXmlInputOutputCallbackString.h"
@@ -111,14 +112,19 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
             try {
                 cXmlValidatorRNVRelaxNG val(XMLCPP_RES_USE(ms3d_comment, rnc).c_str());
                 if (!val) {
-                    wxString error(_("Internal Error: could not load ms3d comment schema:\n"));
+                    wxString error(_("Internal Error: could not load ms3d comment schema."));
+					wxe_xml_error_infos einfos;
                     foreach(const cXmlStructuredError& se, val.getStructuredErrors()) {
+						einfos.push_back(makeXmlErrorInfo(se));
+						/*
                         error += wxString::Format(wxT("Line %d: %s\n"), se.line,
                             wxString::FromUTF8(se.message.c_str()).c_str());
+						*/
                     }
                     foreach(const std::string& ge, val.getGenericErrors())
-                        error += wxString::FromUTF8(ge.c_str()) + "\n";
-                    throw E3DLoader(error);
+						einfos.push_back(wxString::FromUTF8(ge.c_str()));
+                        //error += wxString::FromUTF8(ge.c_str()) + "\n";
+                    throw E3DLoader(error) << wxe_xml_errors(einfos);
                 }
                 if (comm.validate(val)) {
                     wxString error(_("The comment of the MS3D file is not valid:\n"));

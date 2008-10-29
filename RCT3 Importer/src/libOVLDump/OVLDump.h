@@ -112,7 +112,7 @@ public:
     unsigned long GetCRC(cOvlType type) {
         return m_crc[type];
     }
-    unsigned long calcCRC(unsigned char* pdata, unsigned long len, bool padded);
+    unsigned long calcCRC(const unsigned char* pdata, unsigned long len, bool padded);
 
     void InjectReference(cOvlType type, const char* ref) {
         m_injectreferences[type].push_back(ref);
@@ -143,6 +143,9 @@ public:
     const structmap_t& GetStructures(cOvlType type) const {
         return m_structmap[type];
     }
+    const std::vector<OvlSymbol>& GetSymbols(cOvlType type) const {
+		return m_symbols[type];
+	}
     std::map<unsigned long, void*>& GetTargets() {
         return m_targets;
     }

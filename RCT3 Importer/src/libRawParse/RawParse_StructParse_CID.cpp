@@ -95,7 +95,7 @@ void cRawParser::ParseCID(cXmlNode& node) {
             OPTION_PARSE(unsigned long, cid.unknowns.unk28, ParseUnsigned(child, wxT(RAWXML_CID_UNK), wxT("u28")));
             OPTION_PARSE(unsigned long, cid.unknowns.unk33, ParseUnsigned(child, wxT(RAWXML_CID_UNK), wxT("u33")));
         } else if (child.element()) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in cid tag."), child.wxname().c_str()), child);
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in cid tag"), child.wxname().c_str()), child);
         }
         child.go_next();
     }

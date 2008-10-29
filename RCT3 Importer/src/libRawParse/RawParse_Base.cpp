@@ -215,120 +215,125 @@ void cRawParser::CopyBaseAttributes(const cXmlNode& from, cXmlNode& to) {
 }
 
 void cRawParser::Load(cXmlNode& root) {
-    if (!root)
-        throw RCT3Exception(wxT("cRawParser::Load, root is broken"));
-    bool subonly = false;
+	try {
+		if (!root)
+			throw MakeNodeException<RCT3Exception>(wxT("cRawParser::Load, root is broken"), root);
+		bool subonly = false;
 
-    wxLogMessage("-----");
-    wxLogVerbose(wxString::Format(_("Parsing from raw xml %s."), m_input.GetFullPath().c_str()));
+		wxLogMessage("-----");
+		wxLogVerbose(wxString::Format(_("Parsing from raw xml %s."), m_input.GetFullPath().c_str()));
 
-    for (cRawParserVars::iterator it = m_variables.begin(); it != m_variables.end(); ++it) {
-        wxLogVerbose(wxString::Format(_("  var '%s'->'%s'."), it->first.c_str(), it->second.c_str()));
-    }
+		for (cRawParserVars::iterator it = m_variables.begin(); it != m_variables.end(); ++it) {
+			wxLogVerbose(wxString::Format(_("  var '%s'->'%s'."), it->first.c_str(), it->second.c_str()));
+		}
 
-    if (m_bakeroot == wxT(""))
-        m_bakeroot = m_input;
+		if (m_bakeroot == wxT(""))
+			m_bakeroot = m_input;
 
-    m_firstchild = root.children();
+		m_firstchild = root.children();
 
-    if (m_mode != MODE_BAKE) {
-        if (root.hasProp("conditions")) {
-            wxString cond(root.getPropVal("conditions", "").c_str(), wxConvUTF8);
-            MakeVariable(cond);
-            ParseConditions(cond);
-        }
-    }
+		if (m_mode != MODE_BAKE) {
+			if (root.hasProp("conditions")) {
+				wxString cond(root.getPropVal("conditions", "").c_str(), wxConvUTF8);
+				MakeVariable(cond);
+				ParseConditions(cond);
+			}
+		}
 
-    if (root(RAWXML_ROOT) || root(RAWXML_SUBROOT)) {
-        // <rawovl|subovl file="outputfile" basedir="dir outputfile is relative to">
-        {
-            wxString basedir(root.getPropVal("basedir").c_str(), wxConvUTF8);
-            MakeVariable(basedir);
-            if ((m_mode == MODE_INSTALL) && root.hasProp("installdir")) {
-                basedir = wxString(root.getPropVal("installdir").c_str(), wxConvUTF8);
-            }
-            if (!basedir.IsEmpty()) {
-                wxFileName temp;
-                temp.SetPath(basedir);
-                if (!temp.IsAbsolute()) {
-                    temp.MakeAbsolute(m_outputbasedir.GetPathWithSep());
-                }
-                m_outputbasedir = temp;
-            }
-        }
+		if (root(RAWXML_ROOT) || root(RAWXML_SUBROOT)) {
+			// <rawovl|subovl file="outputfile" basedir="dir outputfile is relative to">
+			{
+				wxString basedir(root.getPropVal("basedir").c_str(), wxConvUTF8);
+				MakeVariable(basedir);
+				if ((m_mode == MODE_INSTALL) && root.hasProp("installdir")) {
+					basedir = wxString(root.getPropVal("installdir").c_str(), wxConvUTF8);
+				}
+				if (!basedir.IsEmpty()) {
+					wxFileName temp;
+					temp.SetPath(basedir);
+					if (!temp.IsAbsolute()) {
+						temp.MakeAbsolute(m_outputbasedir.GetPathWithSep());
+					}
+					m_outputbasedir = temp;
+				}
+			}
 
-        if ((m_dryrun) || (m_mode == MODE_BAKE)) {
-            if (!CanBeWrittenTo(m_outputbasedir)) {
-                wxLogWarning(wxString::Format(_("Output directory '%s' cannot be written to."), m_outputbasedir.GetFullPath().c_str()));
-            }
-        } else {
-            if (!CanBeWrittenTo(m_outputbasedir)) {
-                throw RCT3Exception(wxString::Format(_("Output directory '%s' cannot be written to."), m_outputbasedir.GetFullPath().c_str()));
-            }
-            if (!EnsureDir(m_outputbasedir))
-                throw RCT3Exception(_("Failed to create directory: ")+m_outputbasedir.GetPathWithSep());
-        }
-        if (m_output == wxT("")) {
-            wxString output(root.getPropVal("file").c_str(), wxConvUTF8);
-            MakeVariable(output);
-            m_output = output;
-        }
+			if ((m_dryrun) || (m_mode == MODE_BAKE)) {
+				if (!CanBeWrittenTo(m_outputbasedir)) {
+					wxLogWarning(wxString::Format(_("Output directory '%s' cannot be written to."), m_outputbasedir.GetFullPath().c_str()));
+				}
+			} else {
+				if (!CanBeWrittenTo(m_outputbasedir)) {
+					throw RCT3Exception(wxString::Format(_("Output directory '%s' cannot be written to"), m_outputbasedir.GetFullPath().c_str()));
+				}
+				if (!EnsureDir(m_outputbasedir))
+					throw RCT3Exception(_("Failed to create directory: ")+m_outputbasedir.GetPathWithSep());
+			}
+			if (m_output == wxT("")) {
+				wxString output(root.getPropVal("file").c_str(), wxConvUTF8);
+				MakeVariable(output);
+				m_output = output;
+			}
 
-        if (m_output != wxT("")) {
-            if (!m_output.IsAbsolute())
-                m_output.MakeAbsolute(m_outputbasedir.GetPathWithSep());
-            m_output.SetExt(wxT(""));
-            if (m_output.GetName().EndsWith(wxT(".common"))) {
-                wxString temp = m_output.GetName();
-                temp.Replace(wxT(".common"), wxT(""), true);
-                m_output.SetName(temp);
-            }
+			if (m_output != wxT("")) {
+				if (!m_output.IsAbsolute())
+					m_output.MakeAbsolute(m_outputbasedir.GetPathWithSep());
+				m_output.SetExt(wxT(""));
+				if (m_output.GetName().EndsWith(wxT(".common"))) {
+					wxString temp = m_output.GetName();
+					temp.Replace(wxT(".common"), wxT(""), true);
+					m_output.SetName(temp);
+				}
 
-            wxFileName temp = m_output;
-            temp.SetExt(wxT("common.ovl"));
-            if ((m_dryrun) || (m_mode == MODE_BAKE)) {
-                if (!CanBeWrittenTo(temp)) {
-                    wxLogWarning(wxString::Format(_("File '%s' cannot be written to."), temp.GetFullPath().c_str()));
-                }
-            } else {
-                if (!CanBeWrittenTo(temp)) {
-                    throw RCT3Exception(wxString::Format(_("File '%s' cannot be written to."), temp.GetFullPath().c_str()));
-                }
-                if (!EnsureDir(temp))
-                    throw RCT3Exception(_("Failed to create directory for file: ")+temp.GetFullPath());
-            }
+				wxFileName temp = m_output;
+				temp.SetExt(wxT("common.ovl"));
+				if ((m_dryrun) || (m_mode == MODE_BAKE)) {
+					if (!CanBeWrittenTo(temp)) {
+						wxLogWarning(wxString::Format(_("File '%s' cannot be written to."), temp.GetFullPath().c_str()));
+					}
+				} else {
+					if (!CanBeWrittenTo(temp)) {
+						throw RCT3Exception(wxString::Format(_("File '%s' cannot be written to"), temp.GetFullPath().c_str()));
+					}
+					if (!EnsureDir(temp))
+						throw RCT3Exception(_("Failed to create directory for file: ")+temp.GetFullPath());
+				}
 
-            if (temp.FileExists()) {
-                m_modifiedfiles.push_back(m_output);
-            } else {
-                m_newfiles.push_back(m_output);
-            }
+				if (temp.FileExists()) {
+					m_modifiedfiles.push_back(m_output);
+				} else {
+					m_newfiles.push_back(m_output);
+				}
 
-            if ((!m_dryrun) && (m_mode != MODE_BAKE)) {
-#ifdef UNICODE
-                m_ovl.Init(m_output.GetFullPath().mb_str(wxConvFile).data());
-#else
-                m_ovl.Init(m_output.GetFullPath().fn_str());
-#endif
-            }
-            wxLogMessage(_("Writing ovl from raw: ")+m_output.GetFullPath()+wxT(".common.ovl"));
-        } else {
-            subonly = true;
-            wxLogMessage(_("Parsing rawovl context. Base output dir: ")+m_outputbasedir.GetPathWithSep());
-        }
+				if ((!m_dryrun) && (m_mode != MODE_BAKE)) {
+	#ifdef UNICODE
+					m_ovl.Init(m_output.GetFullPath().mb_str(wxConvFile).data());
+	#else
+					m_ovl.Init(m_output.GetFullPath().fn_str());
+	#endif
+				}
+				wxLogMessage(_("Writing ovl from raw: ")+m_output.GetFullPath()+wxT(".common.ovl"));
+			} else {
+				subonly = true;
+				wxLogMessage(_("Parsing rawovl context. Base output dir: ")+m_outputbasedir.GetPathWithSep());
+			}
 
-        // Start parsing
-        Parse(root);
+			// Start parsing
+			Parse(root);
 
-        if ((!subonly) && (!m_dryrun) && (m_mode != MODE_BAKE)) {
-            wxLogVerbose(wxString::Format(_("Saving OVL '%s'..."), m_output.GetFullPath().c_str()));
-            m_ovl.Save();
-            wxLogMessage(_("...Success!"));
-        }
-    } else {
-        throw MakeNodeException<RCT3Exception>("cRawParser::Load, wrong root", root);
-    }
-
+			if ((!subonly) && (!m_dryrun) && (m_mode != MODE_BAKE)) {
+				wxLogVerbose(wxString::Format(_("Saving OVL '%s'..."), m_output.GetFullPath().c_str()));
+				m_ovl.Save();
+				wxLogMessage(_("...Success!"));
+			}
+		} else {
+			throw MakeNodeException<RCT3Exception>("cRawParser::Load, wrong root", root);
+		}
+	} catch (WXException& e) {
+		if ((!boost::get_error_info<wxe_file>(e)) && (m_input != ""))
+			e << wxe_file(m_input.GetFullPath());
+		throw;		
+	}
 }
 
 void cRawParser::LoadVariables(const wxFSFileName& fn, bool command, cXmlNode* target) {
@@ -363,7 +368,7 @@ void cRawParser::LoadVariables(const wxFSFileName& fn, bool command, cXmlNode* t
             }
         }
     } else {
-        throw RCT3Exception(wxT("cRawParser::LoadVariables, wrong root"));
+        throw MakeNodeException<RCT3Exception>(wxT("cRawParser::LoadVariables, wrong root"), root) << wxe_file(fn.GetFullPath());
     }
 }
 

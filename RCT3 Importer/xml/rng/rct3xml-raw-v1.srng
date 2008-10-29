@@ -3,6 +3,7 @@
 <grammar xmlns="http://relaxng.sourceforge.net/ns/shorthand" 
 	xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0" 
 	xmlns:sch="http://purl.oclc.org/dsdl/schematron" 
+	xmlns:strip="http://strip.xml/strip" 
 	datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" 
 	ns="http://rct3.sourceforge.net/rct3xml/raw">
 
@@ -275,7 +276,7 @@
 		</define>
 	</div>
 	<define name="impref">
-		<attribute name="impref" occurs="?" type="IDREF"/>
+		<attribute name="impref" occurs="?" type="string"/>
 	</define>
 	<define name="validate">
 		<attribute name="validate" occurs="?">
@@ -286,10 +287,9 @@
 		</attribute>
 	</define>
 	<define name="baseattrs">
-		<attribute name="comment" occurs="?" type="string">
-			<a:documentation>A comment that is shown when processing the tag.</a:documentation>
-		</attribute>
-		<attribute name="useprefix" occurs="?" type="boolean" a:defaultValue="1" />
+		<a:documentation>A comment that is shown when processing the tag.</a:documentation>
+		<attribute name="comment" occurs="?" type="string"/>
+		<attribute name="useprefix" occurs="?" type="boolean"/>
 		<attribute name="if" occurs="?" type="string"/>
 		<attribute name="ifnot" occurs="?" type="string"/>
 		<ref name="impref"/>
@@ -323,24 +323,24 @@
 			<ref name="variables"/>
 			<ref name="set"/>
 			<ref name="unset"/>
-			<ref name="check"/>
+			<ref name="check" strip:strip="1"/>
 		</choice>
 	</define>
 	<define name="ovltags">
 		<choice>
 			<ref name="section"/>
 			<ref name="subovl"/>
-			<ref name="copy"/>
-			<ref name="patch"/>
-			<ref name="write"/>
+			<ref name="copy" strip:strip="1"/>
+			<ref name="patch" strip:strip="1"/>
+			<ref name="write" strip:strip="1"/>
 			<ref name="import"/>
 			<ref name="anr"/>
 			<ref name="ban"/>
-			<ref name="btbl"/>
+			<ref name="btbl" strip:strip="1"/>
 			<ref name="bsh"/>
-			<ref name="ced"/>
+			<ref name="ced" strip:strip="1"/>
 			<ref name="chg"/>
-			<ref name="cid"/>
+			<ref name="cid" strip:strip="1"/>
 			<ref name="ftx"/>
 			<ref name="gsi"/>
 			<ref name="ptd"/>
@@ -353,10 +353,10 @@
 			<ref name="sta"/>
 			<ref name="svd"/>
 			<ref name="tex"/>
-			<ref name="tks"/>
+			<ref name="tks" strip:strip="1"/>
 			<ref name="trr"/>
 			<ref name="txt"/>
-			<ref name="wai"/>
+			<ref name="wai" strip:strip="1"/>
 			<ref name="reference"/>
 			<ref name="symbol"/>
 		</choice>
@@ -520,7 +520,7 @@
 				<attribute name="unset" type="string"/>
 			</element>
 		</define>
-		<define name="check">
+		<define name="check" strip:strip="1">
 			<a:documentation>Check needs filename with extension. Reference checking needs the .common.ovl name (with extension).</a:documentation>
 			<element name="check">
 				<ref name="baseattrs"/>
@@ -559,7 +559,7 @@
 	<div>
 		<a:documentation>Main content tags</a:documentation>
 		<div>
-			<define name="copy">
+			<define name="copy" strip:strip="1">
 				<a:documentation>Copy needs filenames with extension.</a:documentation>
 				<element name="copy">
 					<attribute name="from">
@@ -580,7 +580,7 @@
 					</optional>
 				</element>
 			</define>
-			<define name="patch">
+			<define name="patch" strip:strip="1">
 				<a:documentation>Patch needs filenames with extension, .common.ovl for ovl files.</a:documentation>
 				<element name="patch">
 					<attribute name="file">
@@ -599,7 +599,7 @@
 					</optional>
 				</element>
 			</define>
-			<define name="write">
+			<define name="write" strip:strip="1">
 				<a:documentation>Copy needs filenames with extension.</a:documentation>
 				<element name="write">
 					<choice>
@@ -649,7 +649,7 @@
 						<value>splines</value>
 					</choice>
 				</attribute>
-				<attribute name="id" occurs="?" type="ID"/>
+				<attribute name="id" occurs="?" type="string"/>
 			</element>
 		</define>
 		<define name="attraction">
@@ -849,7 +849,7 @@
 				</element>
 			</define>
 		</div>
-		<define name="btbl">
+		<define name="btbl" strip:strip="1">
 			<element name="btbl">
 				<ref name="baseattrs"/>
 			</element>
@@ -1011,7 +1011,7 @@
 				</element>
 			</define>
 		</div>
-		<div>
+		<div strip:strip="1">
 			<a:documentation>ced tags</a:documentation>
 			<define name="ced">
 				<element name="ced">
@@ -1072,7 +1072,7 @@
 				<ref name="attraction" occurs="?"/>
 			</element>
 		</define>
-		<div>
+		<div strip:strip="1">
 			<a:documentation>cid tags</a:documentation>
 			<define name="cid">
 				<element name="cid">
@@ -2185,11 +2185,11 @@
 				<attribute name="name" type="string"/>
 				<attribute name="format" occurs="?">
 					<choice>
-						<value>2</value>
+						<value strip:strip="1">2</value>
 						<value>18</value>
 						<value>19</value>
 						<value>20</value>
-						<data type="unsignedInt"/>
+						<data type="unsignedInt" strip:strip="1"/>
 					</choice>
 				</attribute>
 				<attribute name="txs" occurs="?" ref="TXSReference"/>
@@ -2201,7 +2201,7 @@
 				</element>
 			</element>
 		</define>
-		<div>
+		<div strip:strip="1">
 			<a:documentation>tks tags</a:documentation>
 			<define name="tks">
 				<sch:pattern>
@@ -2574,7 +2574,7 @@
 				<data type="string"/>
 			</element>
 		</define>
-		<div>
+		<div strip:strip="1">
 			<a:documentation>wai tags</a:documentation>
 			<define name="wai">
 				<element name="wai">

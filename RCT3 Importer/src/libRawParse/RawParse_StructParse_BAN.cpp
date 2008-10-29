@@ -62,7 +62,7 @@ void cRawParser::ParseBAN(cXmlNode& node) {
 
         std::map<wxString, c3DAnimation>::const_iterator sp = model->getAnimations().find(animname);
         if (sp == model->getAnimations().end()) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("ban tag: Model file '%s' does not contain animation '%s'."), modelfile.GetFullPath().c_str(), animname.c_str()), node);
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("ban tag: Model file '%s' does not contain animation '%s'"), modelfile.GetFullPath().c_str(), animname.c_str()), node);
         }
 
         c3DLoaderOrientation ori = ParseOrientation(node, wxString::Format(wxT("ban(%s) tag"), name.c_str()), model->getOrientation());
@@ -116,7 +116,7 @@ void cRawParser::ParseBAN(cXmlNode& node) {
                             doFixOrientation(frame, ori);
                         banim.rotations.insert(frame);
                     } else if (subchild.element()) {
-                        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in ban(%s)/banbone(%s)."), subchild.wxname().c_str(), name.c_str(), bonename.c_str()), subchild);
+                        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in ban(%s)/banbone(%s)"), subchild.wxname().c_str(), name.c_str(), bonename.c_str()), subchild);
                     }
 
                     subchild.go_next();
@@ -124,7 +124,7 @@ void cRawParser::ParseBAN(cXmlNode& node) {
 
                 ban.bones.push_back(banim);
             } else if (child.element()) {
-                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in ban tag '%s'."), child.wxname().c_str(), name.c_str()), child);
+                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in ban tag '%s'"), child.wxname().c_str(), name.c_str()), child);
             }
 
             child.go_next();

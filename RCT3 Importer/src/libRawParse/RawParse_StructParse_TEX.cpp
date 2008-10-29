@@ -65,23 +65,23 @@ void cRawParser::ParseTEX(cXmlNode& node) {
                 datanode.go_next();
 
             if (!datanode)
-                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Tag tex(%s)/texture misses data."), name.c_str()), child);
+                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Tag tex(%s)/texture misses data"), name.c_str()), child);
 
             cRawDatablock data = GetDataBlock(wxString::Format(_("tag tex(%s)/texture"), name.c_str()), datanode);
             if (data.datatype().IsEmpty()) {
-                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Could not determine data type in tag tex(%s)/texture."), name.c_str()), child);
+                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Could not determine data type in tag tex(%s)/texture"), name.c_str()), child);
             } else if (data.datatype().IsSameAs(wxT("processed"))) {
                 unsigned long datadim = cTexture::GetDimension(texture.texture.format, data.datasize());
                 if (!mip.dimension)
                     mip.dimension = datadim;
                 if (mip.dimension != datadim)
-                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Dimension mismatch in tag tex(%s)/texture."), name.c_str()), child);
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Dimension mismatch in tag tex(%s)/texture"), name.c_str()), child);
                 mip.data = data.data();
             } else {
                 wxGXImage img;
                 img.read(data.data().get(), data.datasize(), std::string(data.datatype().mb_str(wxConvLocal)));
                 if (!img.Ok())
-                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Error decoding image in tag tex(%s)/texture."), name.c_str()), child);
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Error decoding image in tag tex(%s)/texture"), name.c_str()), child);
 
                 img.flip();
                 if (!mainimage.Ok())
@@ -112,23 +112,23 @@ void cRawParser::ParseTEX(cXmlNode& node) {
                         img.DxtCompress(mip.data.get(), wxDXT5);
                         break;
                     default:
-                        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown format 0x%02lx in tag tex(%s)/texture."), texture.texture.format, name.c_str()), child);
+                        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown format 0x%02lx in tag tex(%s)/texture"), texture.texture.format, name.c_str()), child);
                 }
             }
 
             texture.texture.mips.insert(mip);
         } else if (child.element()) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in tex(%s) tag."), child.wxname().c_str(), name.c_str()), child);
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in tex(%s) tag"), child.wxname().c_str(), name.c_str()), child);
         }
         child.go_next();
     }
 
     if (mips) {
         if ((texture.texture.mips.size() > 1) && (mips != texture.texture.mips.size()))
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Mip count mismatch in tag tex(%s)."), name.c_str()), node);
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Mip count mismatch in tag tex(%s)"), name.c_str()), node);
         if ((texture.texture.mips.size() == 1) && (mips > 1)) {
             if (!mainimage.Ok())
-                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Cannot auto-generate mips in tag tex(%s)."), name.c_str()), node);
+                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Cannot auto-generate mips in tag tex(%s)"), name.c_str()), node);
             for (unsigned long i = 1; i < mips; ++i) {
                 mainimage.Rescale(mainimage.GetWidth() / 2, mainimage.GetHeight() / 2);
                 if (mainimage.GetWidth() < 4) {
@@ -152,7 +152,7 @@ void cRawParser::ParseTEX(cXmlNode& node) {
                         mainimage.DxtCompress(mip.data.get(), wxDXT5);
                         break;
                     default:
-                        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown format 0x%02lx in tag tex(%s)."), texture.texture.format, name.c_str()), node);
+                        throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown format 0x%02lx in tag tex(%s)"), texture.texture.format, name.c_str()), node);
                 }
                 texture.texture.mips.insert(mip);
             }
@@ -170,7 +170,7 @@ void cRawParser::ParseTEX(cXmlNode& node) {
 
         if (child->GetName() == RAWXML_TEX_FILE) {
             if (data.get() && (m_mode != MODE_BAKE))
-                throw RCT3Exception(wxString(wxT("tex tag '"))+name+wxT("': multiple datasources."));
+                throw RCT3Exception(wxString(wxT("tex tag '"))+name+wxT("': multiple datasources"));
 
             wxString t = child->GetNodeContent();
             bool filevar = MakeVariable(t);
@@ -242,7 +242,7 @@ void cRawParser::ParseTEX(cXmlNode& node) {
                 continue;
             }
             if (data.get())
-                throw RCT3Exception(wxString(wxT("tex tag '"))+name+wxT("': multiple datasources."));
+                throw RCT3Exception(wxString(wxT("tex tag '"))+name+wxT("': multiple datasources"));
             dimension = ParseUnsigned(child, RAWXML_TEX_DATA, wxT("dimension"));
             datasize = squish::GetStorageRequirements(dimension, dimension, wxDXT3);
             unsigned long outlen = datasize;
@@ -265,7 +265,7 @@ void cRawParser::ParseTEX(cXmlNode& node) {
                 throw RCT3Exception(wxString(_("Datasize mismatch error in tex tag ")) + name);
 
         } else if COMPILER_WRONGTAG(child) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in tex tag."), child->GetName().c_str()));
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in tex tag"), child->GetName().c_str()));
         }
         child = child->GetNext();
     }
@@ -273,7 +273,7 @@ void cRawParser::ParseTEX(cXmlNode& node) {
 
     if (m_mode != MODE_BAKE) {
         if (!texture.texture.mips.size())
-            throw RCT3Exception(wxString(wxT("tex tag '"))+name+wxT("': no data."));
+            throw RCT3Exception(wxString(wxT("tex tag '"))+name+wxT("': no data"));
         ovlTEXManager* c_tex = m_ovl.GetManager<ovlTEXManager>();
         c_tex->AddTexture(texture);
         //c_tex->AddTexture(std::string(name.ToAscii()), dimension, datasize, reinterpret_cast<unsigned long*>(data.get()));

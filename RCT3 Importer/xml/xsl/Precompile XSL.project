@@ -41,6 +41,7 @@
     <File Name="RNG2Schtrn.xsl"/>
     <File Name="RNG2Schtrn.xsl.gz.h"/>
     <File Name="strip.xsl"/>
+    <File Name="stripstrip.xsl"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <Configuration Name="Precompile" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">

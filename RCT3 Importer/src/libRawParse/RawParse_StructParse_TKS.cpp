@@ -100,7 +100,7 @@ void cRawParser::ParseTKS(cXmlNode& node) {
                 } else if (subchild(RAWXML_TKS_BASIC_EXIT)) {
                     ParseEntryExit(subchild, section.basic.exit, RAWXML_TKS_BASIC_EXIT);
                 } else if (subchild.element()) {
-                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in tks/basic tag."), subchild.wxname().c_str()), subchild);
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in tks/basic tag"), subchild.wxname().c_str()), subchild);
                 }
             }
         } else if (child(RAWXML_TKS_SPLINES)) {
@@ -117,7 +117,7 @@ void cRawParser::ParseTKS(cXmlNode& node) {
                 } else if (subchild(RAWXML_TKS_SPLINES_WATER)) {
                     ParseSplinePair(subchild, section.splines.water, RAWXML_TKS_SPLINES_WATER);
                 } else if (subchild.element()) {
-                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in tks/splines tag."), subchild.wxname().c_str()), subchild);
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in tks/splines tag"), subchild.wxname().c_str()), subchild);
                 }
             }
         } else if (child(RAWXML_TKS_ANIMATIONS)) {
@@ -195,7 +195,7 @@ void cRawParser::ParseTKS(cXmlNode& node) {
                         if (speedchild(RAWXML_TKS_SPLINES)) {
                             ParseSplinePair(speedchild, speeds.splines, RAWXML_TKS_SPLINES);
                         } else if (speedchild.element()) {
-                            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in tks/soked/speedSplines tag."), speedchild.wxname().c_str()), speedchild);
+                            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in tks/soked/speedSplines tag"), speedchild.wxname().c_str()), speedchild);
                         }
                     }
                     section.soaked.speeds.push_back(speeds);
@@ -224,7 +224,7 @@ void cRawParser::ParseTKS(cXmlNode& node) {
                     boost::trim(gr);
                     section.soaked.groups_must_not_be_at_exit.push_back(gr);
                 } else if (subchild.element()) {
-                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in tks/soaked tag."), subchild.wxname().c_str()), subchild);
+                    throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in tks/soaked tag"), subchild.wxname().c_str()), subchild);
                 }
             }
 
@@ -237,7 +237,7 @@ void cRawParser::ParseTKS(cXmlNode& node) {
             OPTION_PARSE(float, section.wild.tower_cap01, ParseFloat(child, RAWXML_TKS_WILD, wxT("towerCap01")));
             OPTION_PARSE(float, section.wild.tower_cap02, ParseFloat(child, RAWXML_TKS_WILD, wxT("towerCap02")));
         } else if (child.element()) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in tks tag."), child.wxname().c_str()), child);
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in tks tag"), child.wxname().c_str()), child);
         }
     }
 

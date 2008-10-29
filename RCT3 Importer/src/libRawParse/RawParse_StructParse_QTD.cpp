@@ -73,7 +73,7 @@ void cRawParser::ParseQTD(cXmlNode& node) {
             else
                 qtd.slopestraight[1] = c.ToAscii();
         } else if (child.element()) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in qtd tag '%s'."), cname.c_str(), name.c_str()), child);
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in qtd tag '%s'"), cname.c_str(), name.c_str()), child);
         }
 
         child.go_next();

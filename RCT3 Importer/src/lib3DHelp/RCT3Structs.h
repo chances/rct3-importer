@@ -360,16 +360,17 @@ public:
     bool auto_sort;
 
     c3DLoaderOrientation fileorientation; // This is the orientation reported by the 3DLoader
-	wxArrayString error;
-	bool fatal_error;
+	std::list<wxString> errors;
+	//bool fatal_error;
+	boost::shared_ptr<WXException> stored_exception;
 	bool used;          // Used during ovl generation to see if the model is actually used.
 	std::map<wxString, c3DBone> model_bones;
 	std::vector<std::vector<int> > mesh_compaction;
 
-	cModel(): name(wxT("")), file(wxT("")), usedorientation(ORIENTATION_UNKNOWN), auto_bones(false), auto_sort(false), fileorientation(ORIENTATION_UNKNOWN), fatal_error(false) {};
+	cModel(): name(wxT("")), file(wxT("")), usedorientation(ORIENTATION_UNKNOWN), auto_bones(false), auto_sort(false), fileorientation(ORIENTATION_UNKNOWN) {};
 	cModel(const cAnimatedModel& model);
 	cModel(r3::MATRIX def, c3DLoaderOrientation ori);
-	cModel(wxString filen): name(wxT("")), file(filen), usedorientation(ORIENTATION_UNKNOWN), auto_bones(false), auto_sort(false), fileorientation(ORIENTATION_UNKNOWN), fatal_error(false) {
+	cModel(wxString filen): name(wxT("")), file(filen), usedorientation(ORIENTATION_UNKNOWN), auto_bones(false), auto_sort(false), fileorientation(ORIENTATION_UNKNOWN) {
         Load(false);
     };
 	virtual bool Load(bool asoverlay);
@@ -382,6 +383,9 @@ public:
 	bool Sync(wxFileName filen) {
 	    file = filen;
 	    return Sync();
+	}
+	virtual bool hasIssues() {
+		return stored_exception || errors.size();
 	}
 
 	virtual bool Check(cModelMap& modnames);

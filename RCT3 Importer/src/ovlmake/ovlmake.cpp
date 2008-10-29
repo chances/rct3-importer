@@ -68,6 +68,7 @@
 #include "lib3Dconfig.h"
 #include "confhelp.h"
 #include "bzipstream.h"
+#include "wxexception_libxmlcpp.h"
 #include "xmldefs.h"
 
 #include "version_wrap.h"
@@ -82,33 +83,100 @@ using namespace r3;
 using namespace std;
 using namespace xmlcpp;
 
+#define LOGINFO "Info"
+
+void logOutput(bool brief, const char* file, int line, const char* severity, const char* message) {
+	if (brief) {
+		fprintf(stderr, "%s::%u::%s::%s\n", file, line, severity, message);
+	} else {
+		if (strcasecmp(severity, LOGINFO))
+			fprintf(stderr, "%s: ", severity);
+		fprintf(stderr, "%s\n", message);
+		if (line) {
+			fprintf(stderr, "  Line: %d\n", line);
+			fprintf(stderr, "  File: %s\n", file);
+		}
+	}
+}
+
+class wxAutoLog {
+public:
+	wxAutoLog(wxLog* log) {
+		m_oldlog = wxLog::GetActiveTarget();
+		m_thelog.reset(log);
+		wxLog::SetActiveTarget(log);
+	}
+	~wxAutoLog() {
+		if (m_thelog)
+			m_thelog->Flush();
+		wxLog::SetActiveTarget(m_oldlog);
+	}
+	wxLog* get() {
+		return m_thelog.get();
+	}
+private:
+	wxLog* m_oldlog;
+	boost::shared_ptr<wxLog> m_thelog;
+};
+
+class wxCustomLog: public wxLog {
+public:
+	wxCustomLog(const wxString& file, bool brief): m_file(file), m_brief(brief) {}
+    virtual void DoLog(wxLogLevel level, const wxString& szString, time_t t) {
+		const char* severity;
+		if (level <= wxLOG_Error) {
+			severity = "Error";
+		} else if (level == wxLOG_Warning) {
+			severity = "Warning";
+		} else {
+			severity = LOGINFO;
+		}
+		logOutput(m_brief, m_file.mb_str(), 0, severity, szString.mb_str());
+	}
+private:
+	const wxString& m_file;
+	bool m_brief;
+};
+
 void printVersion() {
     fprintf(stderr, "%s", UNIPTR(GetAppVersion()));
 }
 
-void logXmlErrors(cXmlErrorHandler* err, bool verbose) {
+void logXmlErrors(cXmlErrorHandler* err, bool verbose, bool brief, const char* file) {
     foreach(const std::string& ge, err->getGenericErrors())
-        wxLogError(wxString::FromUTF8(ge.c_str()));
+        //wxLogError(wxString::FromUTF8(ge.c_str()));
+		logOutput(brief, file, 0, "Error", wxString::FromUTF8(ge.c_str()).mb_str());
     foreach(const cXmlStructuredError& se, err->getStructuredErrors()) {
-        wxString message = wxString::Format(_("Line %d: %s"), se.line, wxString::FromUTF8(se.message.c_str()).c_str());
+        //wxString message = wxString::Format(_("Line %d: %s"), se.line, wxString::FromUTF8(se.message.c_str()).c_str());
+		const char* severity;
         if (se.level == XML_ERR_NONE) {
-            wxLogMessage(message);
+            //wxLogMessage(message);
+			severity = LOGINFO;
         } else if (se.level == XML_ERR_WARNING) {
-            wxLogWarning(message);
+            //wxLogWarning(message);
+			severity = "Warning";
         } else {
-            wxLogError(message);
+            //wxLogError(message);
+			severity = "Error";
         }
+		logOutput(brief, file, se.line, severity, wxString::FromUTF8(se.message.c_str()).mb_str());
+		
         if (verbose)
-            wxLogVerbose(wxString::Format(_("   XPath: %s"), wxString::FromUTF8(se.getPath().c_str()).c_str()));
+            //wxLogVerbose(wxString::Format(_("   XPath: %s"), wxString::FromUTF8(se.getPath().c_str()).c_str()));
+			logOutput(brief, file, se.line, LOGINFO, wxString::Format(_("   XPath: %s"), wxString::FromUTF8(se.getPath().c_str()).c_str()).mb_str());
     }
 }
 
 int DoCompile(const wxCmdLineParser& parser) {
     int ret = 0;
+	wxString inputfilestr;
+	bool briefout = parser.Found("b");
+	wxAutoLog log(new wxCustomLog(inputfilestr, briefout));
     try {
         bool verbose = parser.Found(wxT("v"));
         if (!parser.Found(wxT("s"))) {
-            printVersion();
+			if (!briefout)
+				printVersion();
             wxLog::SetVerbose(verbose);
             if (parser.Found(wxT("q")))
                 wxLog::SetLogLevel(wxLOG_Warning);
@@ -118,7 +186,6 @@ int DoCompile(const wxCmdLineParser& parser) {
         WRITE_RCT3_REPORTVALIDATION(true);
         wxString p;
         wxFSFileName inputfile;
-        wxString inputfilestr;
         std::auto_ptr<wxFSFile> inputfsfile;
         wxFileName outputfile;
         bool convert = parser.Found(wxT("c"));
@@ -169,7 +236,7 @@ int DoCompile(const wxCmdLineParser& parser) {
                 delete[] temp;
                 RegCloseKey(key);
                 if (res != ERROR_SUCCESS) {
-                    throw RCT3Exception(_("Cannot determine installation directory. Use --installdir to set manually."));
+                    throw RCT3Exception(_("Cannot determine installation directory. Use --installdir to set manually"));
                 }
 #endif
 					wxRegKey key("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{907B4640-266B-4A21-92FB-CD1A86CD0F63}");
@@ -182,7 +249,7 @@ int DoCompile(const wxCmdLineParser& parser) {
 					throw 1;
 #endif
 				} catch(...) {
-                    throw RCT3Exception(_("Cannot determine installation directory. Use --installdir to set manually."));					
+                    throw RCT3Exception(_("Cannot determine installation directory. Use --installdir to set manually"));					
 				}
             }
 
@@ -220,171 +287,8 @@ int DoCompile(const wxCmdLineParser& parser) {
 
         cSCNFile c_scn;
         if (inputfile.GetExt().Lower() == wxT("xml")) {
-            //wxXmlDocument doc;
             cXmlDoc doc;
 
-#ifdef LIBXMLTEST
-{
-            {
-                xmlcpp::cXmlDoc doc2;
-                xmlcpp::cXmlInputOutputCallbackString::Init();
-                xmlcpp::wxXmlInputCallbackFileSystem::Init();
-                doc2 = xmlcpp::cXmlDoc("testa.xml");
-//                doc2 = xmlcpp::cXmlDoc("stalltest_baked.xml");
-//                doc2.write("string:test");
-//                fprintf(stderr, "%s", xmlcpp::cXmlInputOutputCallbackString::get("test").c_str());
-                //xmlcpp::cXmlValidatorRelaxNG val;
-                //xmlcpp::cXsltStylesheet sht;
-
-                //sht.read("C:\\Download\\Development\\iso_simple.xsl");
-                //if (sht.ok()) {
-                //    xmlcpp::cXmlDoc docs = sht.getDoc();
-                //    docs.write("simpletest.xsl");
-                //}
-
-                //val.read("C:\\Development\\svn\\RCT3 Importer\\doc\\xml\\rct3xml-raw-v1.rng");
-                xmlcpp::cXmlValidatorIsoSchematron val;
-                //xmlcpp::cXmlValidatorRNVRelaxNG val;
-                std::string st =
-                   "<schema xmlns=\"http://www.ascc.net/xml/schematron\" >\
-                      <pattern name=\"Test\">\
-                        <rule context=\"rawovl\">\
-                          <assert test=\"@version\">Version missing</assert>\
-                          <report test=\"@version\">Version present</report>\
-                          <assert test=\"@bogus\">Bogus missing</assert>\
-                          <report test=\"@version\">Bogus present</report>\
-                        </rule>\
-                      </pattern>\
-                    </schema>\
-                    ";
-                //val.read("schematron.xml");
-                val.read("C:\\Development\\svn\\RCT3 Importer\\doc\\xml\\rct3xml-raw-v1.sch");
-                //val.read("test.rnc");
-                //val.read("docbook.rnc");
-                fprintf(stderr, "Validator parsing errors\n");
-                for (std::vector<xmlcpp::cXmlStructuredError>::const_iterator it = val.getStructuredErrors().begin(); it != val.getStructuredErrors().end(); ++it)
-                    wxLogError(wxString(it->message.c_str(), wxConvUTF8).Trim(true));
-                val.clearStructuredErrors();
-
-#if 1
-                // XPath tests
-                {
-                    xmlcpp::cXmlXPath xpath(doc2);
-                    xpath.registerNs("rct3", "http://rct3.sourceforge.net/rct3xml/raw");
-                    xmlcpp::cXmlXPathResult xres = xpath("//rct3:rawovl");
-                    for (int i = 0; i < xres.size(); ++i) {
-                        fprintf(stderr, "%d, %s, %s\n", i, xres[i].name().c_str(), xres[i].path().c_str());
-                    }
-                    xpath.setNodeContext(xres[1]);
-                    xres = xpath("@comment");
-                    for (int i = 0; i < xres.size(); ++i) {
-                        fprintf(stderr, "%d, %s %s\n", i, xres[i].name().c_str(), xres[i].content().c_str());
-                    }
-                }
-#endif
-
-#if 0
-                {
-                    if (val.ok()) {
-                        wxDateTime start = wxDateTime::Now();
-
-                        for (int p = 0; p < 100; ++p) {
-                            val.reparse();
-                        }
-
-                        wxTimeSpan took = wxDateTime::Now().Subtract(start);
-                        wxLogError(wxString::Format(_("Took %s for rnc performance test."), took.Format(wxT("%H:%M:%S")).c_str()));
-                    }
-                    fprintf(stderr, "Validator parsing errors (after test)\n");
-                    for (std::vector<xmlcpp::cXmlStructuredError>::const_iterator it = val.getStructuredErrors().begin(); it != val.getStructuredErrors().end(); ++it)
-                        wxLogError(wxString(it->message.c_str(), wxConvUTF8).Trim(true));
-                    val.clearStructuredErrors();
-
-                    {
-                        xmlcpp::cXmlDoc doct("c:\\Development\\docbook-rng-1.0b1\\docbook.rng");
-                        xmlcpp::cXsltStylesheet sht("c:\\Development\\rng-incelim-1.2\\incelim.xsl");
-
-                        if (sht.ok() && doct.ok()) {
-                            wxDateTime start = wxDateTime::Now();
-
-                            for (int p = 0; p < 1; ++p) {
-                                sht.transform(doct);
-                            }
-
-                            wxTimeSpan took = wxDateTime::Now().Subtract(start);
-                            wxLogError(wxString::Format(_("Took %s for include performance test."), took.Format(wxT("%H:%M:%S")).c_str()));
-
-                            xmlcpp::cXmlDoc doct2(sht.transform(doct));
-                            xmlcpp::cXsltStylesheet sht2("c:\\Development\\RngToRnc-1_4\\RngToRncClassic.xsl");
-                            if (sht2.ok() && doct2.ok()) {
-                                wxDateTime start = wxDateTime::Now();
-
-                                for (int p = 0; p < 1; ++p) {
-                                    sht2.transformToString(doct2);
-                                }
-
-                                wxTimeSpan took = wxDateTime::Now().Subtract(start);
-                                wxLogError(wxString::Format(_("Took %s for transform performance test."), took.Format(wxT("%H:%M:%S")).c_str()));
-                            }
-                        }
-                    }
-                } // Performance test
-
-#endif
-
-//                val.read("test.rnc");
-//                fprintf(stderr, "Validator parsing errors\n");
-//                for (std::vector<xmlcpp::cXmlStructuredError>::const_iterator it = val.getStructuredErrors().begin(); it != val.getStructuredErrors().end(); ++it)
-//                    wxLogError(wxString(it->message.c_str(), wxConvUTF8).Trim(true));
-//                doc2.validate(val);
-//                fprintf(stderr, "Validator errors\n");
-//                for (std::vector<xmlcpp::cXmlStructuredError>::const_iterator it = val.getStructuredErrors().begin(); it != val.getStructuredErrors().end(); ++it)
-//                    wxLogError(wxString(it->message.c_str(), wxConvUTF8).Trim(true));
-//                val.clearStructuredErrors();
-//
-
-/*
-                wxInputStream* filestream = inputfsfile->GetStream(); // Stream is destroyed by wxFSFile
-                filestream->SeekI(0, wxFromEnd);
-
-                int datasize = filestream->TellI();
-                boost::shared_array<unsigned char> buf(new unsigned char[datasize]);
-                filestream->SeekI(0);
-                std::auto_ptr<wxMemoryOutputStream> buffer(new wxMemoryOutputStream(buf.get(), datasize));
-                buffer->Write(*filestream);
-                filestream->SeekI(0);
-*/
-//                if (doc2.read(buf.get(), inputfilestr.mb_str(wxConvUTF8), NULL, XML_PARSE_DTDLOAD)) {
-                if (doc2.read(inputfilestr.mb_str(wxConvUTF8), NULL, XML_PARSE_DTDLOAD)) {
-                    wxLogMessage(wxT("xml2 ok"));
-
-                    wxLogMessage(wxT("%d"), doc2.validate(val, xmlcpp::cXmlValidator::OPT_DETERMINE_NODE_BY_XPATH));
-                    fprintf(stderr, "Validation errors\n");
-                    for (std::vector<xmlcpp::cXmlStructuredError>::const_iterator it = val.getStructuredErrors().begin(); it != val.getStructuredErrors().end(); ++it) {
-                        fprintf(stderr, "Line: %d\n", it->line);
-                        wxLogError(wxString(it->message.c_str(), wxConvUTF8).Trim(true));
-                        wxLogError(wxT("Path: ") + wxString(it->getPath().c_str(), wxConvUTF8).Trim(true));
-                    }
-                    for (std::vector<std::string>::const_iterator it = val.getGenericErrors().begin(); it != val.getGenericErrors().end(); ++it)
-                        wxLogError(wxString(it->c_str(), wxConvUTF8));
-                    //doc2.write("string:test");
-                    //fprintf(stderr, "%s", xmlcpp::cXmlOutputCallbackString::get("test").c_str());
-
-                } else {
-                    wxLogMessage(wxT("xml2 kaput"));
-                    fprintf(stderr, "Document parsing errors\n");
-                    for (std::vector<xmlcpp::cXmlStructuredError>::const_iterator it = doc2.getStructuredErrors().begin(); it != doc2.getStructuredErrors().end(); ++it)
-                        wxLogError(wxString(it->message.c_str(), wxConvUTF8).Trim(true));
-                    for (std::vector<std::string>::const_iterator it = doc2.getGenericErrors().begin(); it != doc2.getGenericErrors().end(); ++it)
-                        wxLogError(wxString(it->c_str(), wxConvUTF8));
-//                    xmlErrorPtr err = xmlGetLastError();
-//                    wxLogError(wxT("%s in line %d. Error %d"), wxString(err->message, wxConvUTF8).c_str(), err->line, err->code);
-                }
-            }
-}
-#endif
-
-//            if (doc.Load(inputfile.GetFullPath())) {
             if (doc.read(inputfilestr.mb_str(wxConvUTF8), NULL, XML_PARSE_DTDLOAD)) {
                 cXmlNode root(doc.root());
                 if (root(RAWXML_ROOT)) {
@@ -402,13 +306,13 @@ int DoCompile(const wxCmdLineParser& parser) {
                         wxLogMessage(_("Validating..."));
                         val = cRawParser::Validator();
                         valres = doc.validate(*val, cXmlValidator::OPT_DETERMINE_NODE_BY_XPATH, cXmlValidatorResult::VR_NONE);
-                        if (valres) {
-                            logXmlErrors(val.get(), verbose);
-                        }
                         if (valres(parser.Found("strict")?cXmlValidatorResult::VR_WARNING:cXmlValidatorResult::VR_ERROR)) {
-                            wxLogMessage(_("...Failed!"));
-                            return -1;
-                        }
+							wxe_xml_error_infos einfos;
+							transferXmlErrors(*val, einfos);
+                            throw RCT3Exception(_("Validation Error")) << wxe_xml_errors(einfos);
+                        } else if (valres) {
+                            logXmlErrors(val.get(), verbose, briefout, inputfilestr.mb_str());							
+						}
                         wxLogMessage(_("...Ok!"));
                     }
 
@@ -428,7 +332,8 @@ int DoCompile(const wxCmdLineParser& parser) {
                             } else if (entry("repeatValidationResult")) {
                                 repeatvalres = true;
                             } else {
-                                wxLogWarning(wxString::Format(_("Unknown ovlmake metadata element '%s'."), entry.wxname()));
+                                //wxLogWarning(wxString::Format(_("Unknown ovlmake metadata element '%s'."), entry.wxname()));
+								logOutput(briefout, inputfilestr.mb_str(), entry.line(), "Warning", wxString::Format(_("Unknown ovlmake metadata element '%s'."), entry.wxname()).mb_str());
                             }
                         }
                     }
@@ -469,24 +374,38 @@ int DoCompile(const wxCmdLineParser& parser) {
                     if (repeatvalres && val && val->ok() && valres) {
                         wxLogMessage("-----");
                         wxLogMessage("Validation results:");
-                        logXmlErrors(val.get(), verbose);
+                        logXmlErrors(val.get(), verbose, briefout, inputfilestr.mb_str());
                     }
 
                     if (dryrun) {
                         fprintf(stderr, "\nDryrun results:\n");
                         for (std::vector<wxFileName>::const_iterator it = rovl.GetModifiedFiles().begin(); it != rovl.GetModifiedFiles().end(); ++it) {
+							if (briefout) {
+								logOutput(true, it->GetFullPath().mb_str(), 0, "Report", "Modified");
+							} else {
+								logOutput(false, it->GetFullPath().mb_str(), 0, LOGINFO, wxString::Format(_("Modified: %s"), it->GetFullPath().c_str()).mb_str());
+							}
+/*
 #ifdef UNICODE
                             fprintf(stderr, "Modified: %s\n", it->GetFullPath().mb_str(wxConvFile).data());
 #else
                             fprintf(stderr, "Modified: %s\n", it->GetFullPath().c_str());
 #endif
+*/
                         }
                         for (std::vector<wxFileName>::const_iterator it = rovl.GetNewFiles().begin(); it != rovl.GetNewFiles().end(); ++it) {
+							if (briefout) {
+								logOutput(true, it->GetFullPath().mb_str(), 0, "Report", "New");
+							} else {
+								logOutput(false, it->GetFullPath().mb_str(), 0, LOGINFO, wxString::Format(_("New: %s"), it->GetFullPath().c_str()).mb_str());
+							}
+/*
 #ifdef UNICODE
                             fprintf(stderr, "New: %s\n", it->GetFullPath().mb_str(wxConvFile).data());
 #else
                             fprintf(stderr, "New: %s\n", it->GetFullPath().c_str());
 #endif
+*/
                         }
                     }
                     return ret;
@@ -496,14 +415,15 @@ int DoCompile(const wxCmdLineParser& parser) {
                     c_scn.Load();
                 }
             } else {
-                logXmlErrors(&doc, verbose);
-                throw RCT3Exception(_("Error in xml file"));
+                //logXmlErrors(&doc, verbose);
+				wxe_xml_error_infos einfos;
+				transferXmlErrors(doc, einfos);
+                throw RCT3Exception(_("General XML parsing failure")) << wxe_xml_errors(einfos);
             }
         } else if (inputfile.GetExt().Lower() == wxT("ms3d")) {
             boost::shared_ptr<c3DLoader> object = c3DLoader::LoadFile(inputfile.GetFullPath().c_str());
             if (!object.get()) {
-                wxLogError(_("Failed to load input file."));
-                return -1;
+                throw RCT3Exception(_("Failed to load input file"));
             }
             wxString outputxml = inputfile.GetFullPath() + wxT(".xml");
 
@@ -602,7 +522,7 @@ int DoCompile(const wxCmdLineParser& parser) {
         }
 
         if (install || dryrun)
-            throw RCT3Exception(_("Cannot dryrun or install non-raw xml file."));
+            throw RCT3Exception(_("Cannot dryrun or install non-raw xml file"));
 
         if (parser.GetParamCount() < 2) {
             outputfile = inputfilestr.BeforeFirst(wxT('#'));
@@ -667,17 +587,37 @@ int DoCompile(const wxCmdLineParser& parser) {
             }
         }
 
-    } catch (RCT3Exception& e) {
-        wxLogMessage(_("Compiling error: ")+e.wxwhat());
-        boost::shared_ptr<int const> line = boost::get_error_info<node_line_info>(e);
-        if (line)
-            wxLogMessage(_("  Line: %d"), *line);
+    } catch (WXException& e) {
+        //wxLogMessage(_("Compiling error: ")+e.wxwhat());
+        boost::shared_ptr<int const> line = boost::get_error_info<wxe_xml_node_line>(e);
+        boost::shared_ptr<wxString const> file = boost::get_error_info<wxe_file>(e);
+		boost::shared_ptr<wxe_xml_error_infos const> xmlerr = boost::get_error_info<wxe_xml_errors>(e);
+		wxString rfile = inputfilestr;
+		if (file)
+			rfile = *file;
+		wxString msg = e.wxwhat();
+		if (xmlerr && xmlerr->size())
+			msg += _(", xml errors follow.");
+		else
+			msg += ".";
+		logOutput(briefout, rfile.mb_str(), line?*line:0, "Error", msg.mb_str());
+		if (xmlerr) {
+			foreach(const wxe_xml_error_info& inf, *xmlerr) {
+				logOutput(briefout, rfile.mb_str(), inf.line, inf.severity.mb_str(), inf.error.mb_str());
+			}
+		}
+        //if (line)
+        //    wxLogMessage(_("  Line: %d"), *line);
         ret = -1;
     } catch (EOvl& e) {
-        wxLogMessage(_("Error in ovl creation: %s"), wxString(e.what(), wxConvLocal).c_str());
+		wxString msg = _("OVL creation: ");
+		msg += wxString(e.what(), wxConvLocal);
+		logOutput(briefout, inputfilestr.mb_str(), 0, "Error", msg.mb_str());
         ret = -1;
     } catch (std::exception& e) {
-        wxLogMessage(_("General error: %s"), wxString(e.what(), wxConvLocal).c_str());
+		wxString msg = _("General: ");
+		msg += wxString(e.what(), wxConvLocal);
+		logOutput(briefout, inputfilestr.mb_str(), 0, "Error", msg.mb_str());
         ret = -1;
     }
     return ret;
@@ -760,6 +700,7 @@ int main(int argc, char **argv)
         { wxCMD_LINE_SWITCH, "v", "verbose", "enable verbose logging" },
         { wxCMD_LINE_SWITCH, "q", "quiet", "in quiet mode only warnings and errors are shown" },
         { wxCMD_LINE_SWITCH, "s", "silent", "in silent mode only errors are shown" },
+        { wxCMD_LINE_SWITCH, "b", "brief", "use brief message output format suitable for parsing by frontends" },
         { wxCMD_LINE_SWITCH, NULL, "novalid", "do not validate xml files" },
         { wxCMD_LINE_SWITCH, NULL, "deep", "do a deep validation of some xml files (warning: this can take a long time!)" },
 
@@ -783,6 +724,7 @@ int main(int argc, char **argv)
         { wxCMD_LINE_SWITCH, "v", "verbose", "enable verbose logging" },
         { wxCMD_LINE_SWITCH, "q", "quiet", "in quiet mode only warnings and errors are shown" },
         { wxCMD_LINE_SWITCH, "s", "silent", "in silent mode only errors are shown" },
+        { wxCMD_LINE_SWITCH, "b", "brief", "use brief message output format suitable for parsing by frontends" },
         { wxCMD_LINE_SWITCH, NULL, "novalid", "do not validate xml files" },
         { wxCMD_LINE_SWITCH, NULL, "deep", "do a deep validation of some xml files (warning: this can take a long time!)" },
         { wxCMD_LINE_SWITCH, NULL, "strict", "treat validation warnings as errors" },

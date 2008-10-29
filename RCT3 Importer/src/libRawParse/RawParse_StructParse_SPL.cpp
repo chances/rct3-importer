@@ -61,10 +61,10 @@ void cRawParser::ParseSPL(cXmlNode& node) {
 
         std::map<wxString, c3DSpline>::const_iterator sp = model->getSplines().find(splinename);
         if (sp == model->getSplines().end()) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("spline tag: Model file '%s' does not contain spline '%s'."), modelfile.GetFullPath().c_str(), splinename.c_str()), node);
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("spline tag: Model file '%s' does not contain spline '%s'"), modelfile.GetFullPath().c_str(), splinename.c_str()), node);
         }
         if (!sp->second.m_nodes.size()) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("spline tag: Model file '%s', spline '%s' has no nodes."), modelfile.GetFullPath().c_str(), splinename.c_str()), node);
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("spline tag: Model file '%s', spline '%s' has no nodes"), modelfile.GetFullPath().c_str(), splinename.c_str()), node);
         }
 
         c3DLoaderOrientation ori = ParseOrientation(node, wxString::Format(wxT("spl(%s) tag"), name.c_str()), model->getOrientation());
@@ -127,7 +127,7 @@ void cRawParser::ParseSPL(cXmlNode& node) {
                 }
                 spl.datas.push_back(dt);
             } else if (child.element()) {
-                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in spl(%s) tag."), child.wxname().c_str(), name.c_str()), child);
+                throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in spl(%s) tag"), child.wxname().c_str(), name.c_str()), child);
             }
             child.go_next();
         }

@@ -39,6 +39,7 @@
 #include "rct3constants.h"
 #include "xmldefs.h"
 #include "xmlhelper.h"
+#include "wxexception_libxmlcpp.h"
 
 #include "cXmlDoc.h"
 #include "cXmlInputOutputCallbackString.h"
@@ -185,6 +186,7 @@ void cXML3DLoader::parseAnimation(c3DAnimation& a, xmlcpp::cXmlNode n, float _ma
 cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(ORIENTATION_RIGHT_XUP) {
     wxString fn(filename);
     cXmlDoc doc(fn.utf8_str(), NULL, XML_PARSE_DTDLOAD);
+	
     if (!doc) {
         if (!doc.getStructuredErrors().size())
             throw E3DLoaderNotMyBeer();
@@ -192,9 +194,11 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
         if ((err == XML_ERR_DOCUMENT_EMPTY) || (err == XML_ERR_GT_REQUIRED))
             throw E3DLoaderNotMyBeer(); // Not an xml file
         // Broken xml file
-        wxString error(_("Invalid xml file:\n"));
-        error += doc.wxgetErrorList();
-        throw E3DLoader(error);
+        //wxString error(_("Invalid xml file:\n"));
+        //error += doc.wxgetErrorList();
+		wxe_xml_error_infos einfos;
+		int eline = transferXmlErrors(doc, einfos);
+        throw E3DLoader(_("Invalid xml file")) << wxe_xml_errors(einfos) << wxe_xml_node_line(eline) << wxe_file(filename);
     }
 
     if (doc.root().ns() != XML_NAMESPACE_MODEL)
@@ -209,14 +213,18 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
         }
         cXmlValidatorRNVRelaxNG val(XMLCPP_RES_USE(model, rnc).c_str());
         if (!val) {
-            wxString error(_("Internal Error: could not load modxml schema:\n"));
-            error += val.wxgetErrorList();
-            throw E3DLoader(error);
+            //wxString error(_("Internal Error: could not load modxml schema:\n"));
+            //error += val.wxgetErrorList();
+			wxe_xml_error_infos einfos;
+			int eline = transferXmlErrors(val, einfos);
+			throw E3DLoader("Internal Error: could not load modxml schema") << wxe_xml_errors(einfos) << wxe_xml_node_line(eline);
         }
         if (doc.validate(val)) {
-            wxString error(_("Invalid modxml file:\n"));
-            error += val.wxgetErrorList();
-            throw E3DLoader(error);
+            //wxString error(_("Invalid modxml file:\n"));
+            //error += val.wxgetErrorList();
+			wxe_xml_error_infos einfos;
+			int eline = transferXmlErrors(val, einfos);
+			throw E3DLoader(_("Invalid modxml file")) << wxe_xml_errors(einfos) << wxe_xml_node_line(eline) << wxe_file(filename);
         }
 
         if (READ_RCT3_DEEPVALIDATE()) {
@@ -226,14 +234,18 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
             }
             cXmlValidatorIsoSchematron val(XMLCPP_RES_USE(model, sch).c_str());
             if (!val) {
-                wxString error(_("Internal Error: could not load modxml schema:\n"));
-                error += val.wxgetErrorList();
-                throw E3DLoader(error);
+                //wxString error(_("Internal Error: could not load modxml schema:\n"));
+                //error += val.wxgetErrorList();
+				wxe_xml_error_infos einfos;
+				int eline = transferXmlErrors(val, einfos);
+				throw E3DLoader("Internal Error: could not load modxml schematron schema") << wxe_xml_errors(einfos) << wxe_xml_node_line(eline);
             }
             if (doc.validate(val)) {
-                wxString error(_("Invalid modxml file:\n"));
-                error += val.wxgetErrorList();
-                throw E3DLoader(error);
+                //wxString error(_("Invalid modxml file:\n"));
+                //error += val.wxgetErrorList();
+				wxe_xml_error_infos einfos;
+				int eline = transferXmlErrors(val, einfos);
+				throw E3DLoader(_("Invalid modxml file")) << wxe_xml_errors(einfos) << wxe_xml_node_line(eline) << wxe_file(filename);
             }
 
         }
@@ -396,9 +408,9 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
             if (vertices[i].hasProp("index")) {
                 unsigned long ind = 0;
                 if (!parseULongC(vertices[i].getPropVal("index"), ind))
-                    throw E3DLoader("Vertex with illegal index attribute");
+                    throw E3DLoader("Vertex with illegal index attribute") << wxe_xml_node_line(vertices[i].line()) << wxe_file(filename);
                 if (ind >= static_cast<unsigned long>(vertices.size()))
-                    throw E3DLoader("Vertex with out-of-range index attribute");
+                    throw E3DLoader("Vertex with out-of-range index attribute") << wxe_xml_node_line(vertices[i].line()) << wxe_file(filename);
                 parseVertex(vertices_read[ind], vertices[i], cmesh);
             } else {
                 parseVertex(vertices_read[i], vertices[i], cmesh);
@@ -417,7 +429,7 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
 
             //parseVertex(tv, vertices[a], cmesh);
             if (a >= static_cast<unsigned long>(vertices.size()))
-                throw E3DLoader("Triangle references index out-of-range");
+                throw E3DLoader("Triangle references index out-of-range") << wxe_xml_node_line(triangles[i].line()) << wxe_file(filename);
             tv = vertices_read[a];
 
             // now see if we have already added this point
@@ -439,7 +451,7 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
             // now for the second one
             //parseVertex(tv, vertices[b], cmesh);
             if (b >= static_cast<unsigned long>(vertices.size()))
-                throw E3DLoader("Triangle references index out-of-range");
+                throw E3DLoader("Triangle references index out-of-range") << wxe_xml_node_line(triangles[i].line()) << wxe_file(filename);;
             tv = vertices_read[b];
 
             // now see if we have already added this point
@@ -461,7 +473,7 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
             // now for the third one
             //parseVertex(tv, vertices[c], cmesh);
             if (c >= static_cast<unsigned long>(vertices.size()))
-                throw E3DLoader("Triangle references index out-of-range");
+                throw E3DLoader("Triangle references index out-of-range") << wxe_xml_node_line(triangles[i].line()) << wxe_file(filename);;
             tv = vertices_read[c];
 
             // now see if we have already added this point
@@ -553,7 +565,7 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
             wxString ipath = wxString::Format("/*/mod:animation[@name=\"%s\"]", xanim.wxgetPropVal("inherit").c_str());
             cXmlXPathResult ianim = ianimpath(ipath.utf8_str());
             if (ianim.size() != 1)
-                throw E3DLoader(_("Model XML loader: animation tried to inherit from undefined or multi-defined animation."));
+                throw E3DLoader(_("Model XML loader: animation tried to inherit from undefined or multi-defined animation")) << wxe_xml_node_line(xanim.line()) << wxe_file(filename);;
             parseAnimation(canim, ianim[0], f);
         }
 
@@ -617,9 +629,9 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
                 if (frames[i].hasProp("index")) {
                     unsigned long ind = 0;
                     if (!parseULongC(frames[i].getPropVal("index"), ind))
-                        throw E3DLoader("Texture frame with illegal index attribute");
+                        throw E3DLoader("Texture frame with illegal index attribute") << wxe_xml_node_line(frames[i].line()) << wxe_file(filename);
                     if (ind >= static_cast<unsigned long>(frames.size()))
-                        throw E3DLoader("Texture frame with out-of-range index attribute");
+                        throw E3DLoader("Texture frame with out-of-range index attribute") << wxe_xml_node_line(frames[i].line()) << wxe_file(filename);
                     ctex.m_frames[ind] = fr;
                 } else {
                     ctex.m_frames[i] = fr;
@@ -628,9 +640,9 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
             for(int i = 0; i < sequence.size(); ++i) {
                 unsigned long ind = 0;
                 if (!parseULongC(sequence[i].content(), ind))
-                    throw E3DLoader("Texture sequence with illegal content");
+                    throw E3DLoader("Texture sequence with illegal content") << wxe_xml_node_line(sequence[i].line()) << wxe_file(filename);
                 if (ind >= static_cast<unsigned long>(frames.size()))
-                    throw E3DLoader("Texture sequence with out-of-range content");
+                    throw E3DLoader("Texture sequence with out-of-range content") << wxe_xml_node_line(sequence[i].line()) << wxe_file(filename);
                 ctex.m_sequence.push_back(ind);
             }
         }

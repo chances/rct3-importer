@@ -155,7 +155,7 @@ unsigned long cSidSoundScript::GetCommonSize() const {
         case 4:
             return 16;
         default:
-            throw EOvl("Unknown sound script command.");
+            throw EOvl("Unknown sound script command");
     }
 }
 

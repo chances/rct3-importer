@@ -54,7 +54,7 @@ void ovlOVLManager::Init(cOvl* ovl) {
 
 void ovlOVLManager::DeferMake(ovlOVLManager* man) {
     if (!m_deferable)
-        throw EOvl("ovlOVLManager("+string(Tag())+")::DeferMake called on undeferable type.");
+        throw EOvl("ovlOVLManager("+string(Tag())+")::DeferMake called on undeferable type");
     DUMP_LOG("Trace: ovlOVLManager::DeferMake(%s)", UNISTR(man->Tag()));
     if (m_defermake) {
         m_defermake->DeferMake(man);

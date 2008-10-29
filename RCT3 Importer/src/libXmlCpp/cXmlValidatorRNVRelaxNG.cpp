@@ -660,7 +660,7 @@ cXmlValidatorRNVRelaxNG::~cXmlValidatorRNVRelaxNG() {
             boost::shared_array<char> buf(new char[buf_size]); \
             r = uncompress(reinterpret_cast<Bytef*>(buf.get()), &buf_size, reinterpret_cast<const Bytef*>(resname ## _xsl), resname ## _xsl_size); \
             if (r != Z_OK) \
-                throw eXml("Uncompressing " #resname ".xsl failed."); \
+                throw eXml("Uncompressing " #resname ".xsl failed"); \
             string t(buf.get(), static_cast<size_t>(buf_size+1)); \
             cXmlInputOutputCallbackString::add(string(cXmlInputOutputCallbackString::INTERNAL)+"/xsl/" #resname ".xsl", t); \
         }
@@ -681,7 +681,7 @@ void cXmlValidatorRNVRelaxNG::Init() {
             boost::shared_array<char> buf(new char[buf_size]);
             r = uncompress(reinterpret_cast<Bytef*>(buf.get()), &buf_size, reinterpret_cast<const Bytef*>(relaxng_rng), relaxng_rng_size);
             if (r != Z_OK)
-                throw eXml("Uncompressing relaxng.rng failed.");
+                throw eXml("Uncompressing relaxng.rng failed");
             string t(buf.get(), static_cast<size_t>(buf_size+1));
             cXmlInputOutputCallbackString::add(string(cXmlInputOutputCallbackString::INTERNAL)+"/rnc/relaxng.rnc", t);
         }

@@ -209,7 +209,7 @@ void cRawParser::ParseTRR(cXmlNode& node) {
             OPTION_PARSE(unsigned long, ride.wild.split_flag, ParseUnsigned(child, RAWXML_TRR_WILD, wxT("splitFlag")));
             ParseStringOption(ride.wild.internalname, child, wxT("name"), NULL);
         } else if (child.element()) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in trr tag."), child.wxname().c_str()), child);
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in trr tag"), child.wxname().c_str()), child);
         }
     }
 

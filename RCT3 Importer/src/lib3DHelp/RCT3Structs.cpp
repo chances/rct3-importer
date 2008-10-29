@@ -343,7 +343,7 @@ bool cMeshStruct::FromCompilerXml(cXmlNode& node, const wxString& path) {
 
     Name = wxString::FromUTF8(node.getPropVal("name").c_str());
     if (Name.IsEmpty())
-        throw RCT3Exception(_("GEOMOBJ tag lacks name attribute"));
+        throw RCT3Exception(_("GEOMOBJ tag lacks name attribute")) << wxe_xml_node_line(node.line());
 
     unsigned long t;
     std::string temp;
@@ -390,11 +390,11 @@ bool cMeshStruct::FromCompilerXml(cXmlNode& node, const wxString& path) {
         FTX = wxT("UseAdTexture");
         TXS = wxT("SIOpaque");
     } else if (!sflags.IsEmpty()) {
-        throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Unknown flags value '%s'."), Name.c_str(), sflags.c_str()));
+        throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Unknown flags value '%s'"), Name.c_str(), sflags.c_str())) << wxe_xml_node_line(node.line());
     }
 
     if (FTX.IsEmpty() || TXS.IsEmpty()) {
-        throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Missing ftx or txs attribute."), Name.c_str()));
+        throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Missing ftx or txs attribute"), Name.c_str())) << wxe_xml_node_line(node.line());
     }
 
     if (node.hasProp("transparency")) {
@@ -406,7 +406,7 @@ bool cMeshStruct::FromCompilerXml(cXmlNode& node, const wxString& path) {
         } else if (placing.IsSameAs(wxT("none"))) {
             place = 0;
         } else {
-            throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Unknown transparency value '%s'."), Name.c_str(), placing.c_str()));
+            throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s': Unknown transparency value '%s'"), Name.c_str(), placing.c_str())) << wxe_xml_node_line(node.line());
         }
     } else {
         place = cMeshStruct::getRightTransparencyValue(TXS);
@@ -829,17 +829,17 @@ bool cFlexiTexture::Check() {
 
     // Lazyness check
     if (Name.IsSameAs("Tex", false) || Name.Upper().StartsWith("TEX.")) {
-        throw RCT3Exception(wxString::Format(_("Texture '%s': A texture may not have a Blender default name ('Tex' or start with 'Tex.')."), Name.c_str()));
+        throw RCT3Exception(wxString::Format(_("Texture '%s': A texture may not have a Blender default name ('Tex' or start with 'Tex.')"), Name.c_str()));
     }
 	
 	// Reserved check
 	if (isReserved(Name)) {
-        throw RCT3Exception(wxString::Format(_("Texture '%s': A texture may not have a reserved texture name."), Name.c_str()));
+        throw RCT3Exception(wxString::Format(_("Texture '%s': A texture may not have a reserved texture name"), Name.c_str()));
 	}
 
     if (!Frames.size()) {
         // No texture frames added.
-        throw RCT3Exception(wxString::Format(_("Texture '%s': No texture frames defined."), Name.c_str()));
+        throw RCT3Exception(wxString::Format(_("Texture '%s': No texture frames defined"), Name.c_str()));
     }
 
     if ((FPS == 0) && ((Frames.size()>1) || (Animation.size()>1))) {
@@ -847,7 +847,7 @@ bool cFlexiTexture::Check() {
         if (READ_RCT3_EXPERTMODE()) {
             wxLogWarning(_("Texture '%s': Animation defined but FPS is 0."), Name.c_str());
         } else {
-            throw RCT3Exception(wxString::Format(_("Texture '%s': Animation defined but FPS is 0."), Name.c_str()));
+            throw RCT3Exception(wxString::Format(_("Texture '%s': Animation defined but FPS is 0"), Name.c_str()));
         }
     }
 
@@ -891,7 +891,7 @@ bool cFlexiTexture::Check() {
         for (unsigned long i = 0; i < Animation.size(); i++) {
             if (Animation[i].frame() >= Frames.size()) {
                 // Illegal reference
-                throw RCT3Exception(wxString::Format(_("Texture '%s': Animation step %d references non-existing frame."), Name.c_str(), i+1));
+                throw RCT3Exception(wxString::Format(_("Texture '%s': Animation step %d references non-existing frame"), Name.c_str(), i+1));
             }
             Frames[Animation[i].frame()].used = true;
         }
@@ -945,11 +945,11 @@ bool cFlexiTexture::FromCompilerXml(cXmlNode& node, const wxString& path) {
 
     Name = wxString::FromUTF8(node.getPropVal("name").c_str());
     if (Name.IsEmpty())
-        throw RCT3Exception(_("Texture lacks name attribute"));
+        throw RCT3Exception(_("Texture lacks name attribute")) << wxe_xml_node_line(node.line());
 
     wxString tex = wxString::FromUTF8(node.getPropVal("image").c_str());
     if (tex.IsEmpty())
-        throw RCT3Exception(_("Texture lacks image attribute"));
+        throw RCT3Exception(_("Texture lacks image attribute")) << wxe_xml_node_line(node.line());
     wxFileName texfn = tex;
     if (!texfn.IsAbsolute())
         texfn.MakeAbsolute(path);
@@ -1162,15 +1162,17 @@ cModel::cModel(const cAnimatedModel& model) {
     meshstructs = model.meshstructs;
     usedorientation = model.usedorientation;
     fileorientation = model.fileorientation;
-    error = model.error;
-    fatal_error = model.fatal_error;
+    errors = model.errors;
+    stored_exception.reset();
+	if (model.stored_exception)
+		stored_exception.reset(model.stored_exception->clone());
     for (vector<cModelBone>::const_iterator it = model.modelbones.begin(); it != model.modelbones.end(); it++) {
         cEffectPoint p(*it);
         effectpoints.push_back(p);
     }
 }
 
-cModel::cModel(MATRIX def, c3DLoaderOrientation ori): name(wxT("")), file(wxT("")), usedorientation(ori), fileorientation(ORIENTATION_UNKNOWN), fatal_error(false) {
+cModel::cModel(MATRIX def, c3DLoaderOrientation ori): name(wxT("")), file(wxT("")), usedorientation(ori), fileorientation(ORIENTATION_UNKNOWN) {
     transforms.push_back(def);
     transformnames.push_back(_("Default Matrix"));
 }
@@ -1181,7 +1183,7 @@ void cModel::SetupFileProperties(cMeshStruct* ms, const boost::shared_ptr<c3DLoa
             || (!obj->isObjectValid(n))) {
         ms->valid = false;
         if (!ms->disabled)
-            error.push_back(wxString::Format(_("Mesh '%s' has been automatically disabled as it is invalid (broken or missing uv-mapping)."), obj->getObjectName(n).c_str()));
+            errors.push_back(wxString::Format(_("Mesh '%s' has been automatically disabled as it is invalid (usually broken or missing uv-mapping)."), obj->getObjectName(n).c_str()));
         ms->disabled = true;
     } else {
         ms->valid = true;
@@ -1221,11 +1223,17 @@ cMeshStruct cModel::MakeMesh(const boost::shared_ptr<c3DLoader>& obj, unsigned i
 }
 
 bool cModel::Load(bool asoverlay) {
-    boost::shared_ptr<c3DLoader> obj = c3DLoader::LoadFile(file.GetFullPath().c_str());
+    boost::shared_ptr<c3DLoader> obj;
+	try {
+		obj = c3DLoader::LoadFile(file.GetFullPath().c_str());
+	} catch (E3DLoader& e) {
+		stored_exception.reset(new E3DLoader(e));
+		return false;
+	}
 
     if (!obj.get()) {
-        fatal_error = true;
-        error.Add(wxString::Format(_("Couldn't load file '%s'. Wrong format or file not found."), file.GetFullPath().c_str()));
+        stored_exception.reset(new E3DLoader(_("Couldn't load file. Wrong format or file not found.")));
+		*stored_exception << wxe_file(file.GetFullPath());
         return false;
     }
 
@@ -1235,8 +1243,8 @@ bool cModel::Load(bool asoverlay) {
         wxFileName t = file;
         newname = t.GetName();
     }
-    fatal_error = false;
-    error.clear();
+    stored_exception.reset();
+    errors.clear();
 
     if (!asoverlay) {
         deducedname = newname;
@@ -1267,16 +1275,16 @@ bool cModel::Load(bool asoverlay) {
     }
 
     if (obj->getWarnings().size() > 0) {
-        error.Add(_("The 3D model loader reported the following problems:"));
-        error.insert(error.end(), obj->getWarnings().begin(), obj->getWarnings().end());
+        errors.push_back(_("The 3D model loader reported the following problems:"));
+        errors.insert(errors.end(), obj->getWarnings().begin(), obj->getWarnings().end());
     }
 
     return true;
 }
 
 bool cModel::Sync() {
-    fatal_error = false;
-    error.clear();
+    stored_exception.reset();
+    errors.clear();
 
     // No model file, no need to sync
     if (file == wxT(""))
@@ -1290,14 +1298,14 @@ bool cModel::Sync() {
     boost::shared_ptr<c3DLoader> obj;
     try {
         obj = c3DLoader::LoadFile(file.GetFullPath().c_str());
-    } catch (E3DLoader& e) {
-        fatal_error = true;
-        error.push_back(e.wxwhat());
-        return false;
-    }
+	} catch (E3DLoader& e) {
+		stored_exception.reset(new E3DLoader(e));
+		return false;
+	}
+
     if (!obj.get()) {
-        fatal_error = true;
-        error.push_back(wxString::Format(_("Model file '%s' not found or of an unknown format."), file.GetFullPath().c_str()));
+        stored_exception.reset(new E3DLoader(_("Couldn't load file. Wrong format or file not found.")));
+		*stored_exception << wxe_file(file.GetFullPath());
         return false;
     }
 
@@ -1331,7 +1339,7 @@ bool cModel::Sync() {
         } else if (obj->getObjectCount() > meshstructs.size()) {
             // New meshes in the model file
             // Warn about it
-            error.push_back(wxString::Format(_("%d new mesh(es) in the model file.\nAs the scn file is too old to map the meshes, the ones known were assigned in order and the new ones appended.\nYou should probably check if everything is alright."),
+            errors.push_back(wxString::Format(_("%d new mesh(es) in the model file.\nAs the scn file is too old to map the meshes, the ones known were assigned in order and the new ones appended.\nYou should probably check if everything is alright."),
                         obj->getObjectCount()-meshstructs.size()));
             // Assign the ones present
             for(unsigned int i = 0; i < meshstructs.size(); i++)
@@ -1342,7 +1350,7 @@ bool cModel::Sync() {
         } else if (obj->getObjectCount() < meshstructs.size()) {
             // Meshes were removed from the model file
             // Warn about it
-            error.push_back(wxString::Format(_("%d mesh(es) were removed from the model file.\nAs the scn file is too old to map the meshes, the ones known were assigned in order and the rest was deleted.\nYou should probably check if everything is alright."),
+            errors.push_back(wxString::Format(_("%d mesh(es) were removed from the model file.\nAs the scn file is too old to map the meshes, the ones known were assigned in order and the rest was deleted.\nYou should probably check if everything is alright."),
                         meshstructs.size()-obj->getObjectCount()));
             // Assign the ones present
             for(unsigned int i = 0; i < obj->getObjectCount(); i++)
@@ -1403,7 +1411,7 @@ bool cModel::Sync() {
             // More meshes in the model file
             notify += wxString::Format(_("\nThere were %d new meshes in the model file."), obj->getObjectCount() - nrfound);
         }
-        error.push_back(notify);
+        errors.push_back(notify);
         meshstructs = fixup;
         goto fixupsinglevertexmeshes;
     }
@@ -1411,7 +1419,7 @@ bool cModel::Sync() {
     // Didn't work. Yay! -.-
     // Special case: Nothing worked, but we have the same number of meshes/objects
     if ((obj->getObjectCount() == meshstructs.size()) && (obj->getObjectCount() == msinfile)) {
-        error.push_back(_("The model file contents changed completely.\nAs the number of meshes stayed constant, the settings were transferred in order.\nYou should probably check if everything is alright."));
+        errors.push_back(_("The model file contents changed completely.\nAs the number of meshes stayed constant, the settings were transferred in order.\nYou should probably check if everything is alright."));
         for (unsigned int i = 0; i < obj->getObjectCount(); i++) {
             meshstructs[i].Name = obj->getObjectName(i);
         }
@@ -1420,7 +1428,7 @@ bool cModel::Sync() {
 
     // Special case: Meshes/Objects disappeared
     if (nrfound == obj->getObjectCount()) {
-        error.push_back(_("The model file contents changed, it seems like you deleted at least one mesh.\nAll meshes in the object file could be matched, so probably everything is ok.\nYou should still check if everything is alright."));
+        errors.push_back(_("The model file contents changed, it seems like you deleted at least one mesh.\nAll meshes in the object file could be matched, so probably everything is ok.\nYou should still check if everything is alright."));
         meshstructs.clear();
         meshstructs = fixup;
         goto fixupsinglevertexmeshes;
@@ -1455,7 +1463,7 @@ bool cModel::Sync() {
     } else {
         notify += _("\nThe number of meshes in the model file matched.\n(Note: This is the result you probably get if you renamed a mesh in the model file.)");
     }
-    error.push_back(notify + _("\nYou should check if everything is alright."));
+    errors.push_back(notify + _("\nYou should check if everything is alright."));
     meshstructs.clear();
     meshstructs = fixup;
 
@@ -1464,8 +1472,8 @@ fixupsinglevertexmeshes:
         SetupFileProperties(&meshstructs[i], obj, i);
 
     if (obj->getWarnings().size() > 0) {
-        error.Add(_("The 3D model loader reported the following problems:"));
-        error.insert(error.end(), obj->getWarnings().begin(), obj->getWarnings().end());
+        errors.push_back(_("The 3D model loader reported the following problems:"));
+        errors.insert(errors.end(), obj->getWarnings().begin(), obj->getWarnings().end());
     }
 
     if (auto_bones)
@@ -1568,13 +1576,25 @@ bool cModel::CheckMeshes(bool animated) {
         usedorientation = ORIENTATION_LEFT_YUP;
 
     if (!(file.IsOk() && file.FileExists())) {
-        fatal_error = true;
+        if (!stored_exception) {
+			stored_exception.reset(new E3DLoader(_("Model file not found.")));
+			*stored_exception << wxe_file(file.GetFullName());
+		}
         wxLogWarning(_("Model '%s': Model file not found."), name.c_str());
         return false;
     }
-    boost::shared_ptr<c3DLoader> object = c3DLoader::LoadFile(file.GetFullPath().c_str());
+    boost::shared_ptr<c3DLoader> object;
+	try {
+		object = c3DLoader::LoadFile(file.GetFullPath().c_str());
+	} catch (E3DLoader& e) {
+		stored_exception.reset(new E3DLoader(e));
+        wxLogWarning(_("Model '%s': Error loading model file."), name.c_str());
+		return false;
+	}
+
     if (!object.get()) {
-        fatal_error = true;
+        stored_exception.reset(new E3DLoader(_("Couldn't load file. Wrong format or file not found.")));
+		*stored_exception << wxe_file(file.GetFullPath());
         wxLogWarning(_("Model '%s': Error loading model file."), name.c_str());
         return false;
     }
@@ -1608,7 +1628,7 @@ bool cModel::CheckMeshes(bool animated) {
 
         if (animated) {
             if (object->getObjectVertexCount(c_mesh)>SHRT_MAX){
-                throw RCT3Exception(wxString::Format(_("Animated model '%s': Group '%s' has too many vertices for an animated mesh. This is an internal limitation, but as the limit is at %d, your object has too many faces anyways."), name.c_str(), i_mesh->Name.c_str(), SHRT_MAX));
+                throw RCT3Exception(wxString::Format(_("Animated model '%s': Group '%s' has too many vertices for an animated mesh. This is an internal limitation, but as the limit is at %d, your object has too many faces anyways"), name.c_str(), i_mesh->Name.c_str(), SHRT_MAX));
             }
         }
 
@@ -1670,12 +1690,12 @@ bool cModel::CheckMeshes(bool animated) {
     //wxLogMessage("Compaction: %d", mesh_compaction.size());
 
     if (!valid_meshes) {
-        fatal_error = true;
+        stored_exception.reset(new RCT3Exception(_("No usable groups left. Model invalid.")));
         wxLogWarning(_("Model '%s': No usable groups left. Model invalid."), name.c_str());
         return false;
     }
     if (mesh_compaction.size()>31) {
-        fatal_error = true;
+        stored_exception.reset(new RCT3Exception(_("More than 31 activated groups. Model invalid.")));
         wxLogWarning(_("Model '%s': More than 31 activated groups. Model invalid."), name.c_str());
         return false;
     }
@@ -1685,7 +1705,7 @@ bool cModel::CheckMeshes(bool animated) {
 bool cModel::Check(cModelMap& modnames) {
     wxLogDebug(wxT("Trace, cModel::Check '%s'"), name.c_str());
     Sync();
-    if (fatal_error)
+    if (stored_exception)
         return false;
 
     bool warning = !CheckMeshes();
@@ -1825,35 +1845,35 @@ bool cModelBone::FromCompilerXml(cXmlNode& node, const wxString& path) {
 
     name = wxString::FromUTF8(node.getPropVal("name").c_str());
     if (name.IsEmpty())
-        throw RCT3Exception(_("BONE tag lacks name attribute"));
+        throw RCT3Exception(_("BONE tag lacks name attribute")) << wxe_xml_node_line(node.line());
     parent = wxString::FromUTF8(node.getPropVal("parent").c_str());
 
     cXmlNode child(node.children());
     while(child) {
         if (child(COMPILER_POS1)) {
             if (positions1.size())
-                throw RCT3Exception(wxString::Format(_("Duplicate pos1 tag of bone '%s'."), name.c_str()));
+                throw RCT3Exception(wxString::Format(_("Duplicate pos1 tag of bone '%s'"), name.c_str())) << wxe_xml_node_line(child.line());
 
             MATRIX t;
             std::string positions = child();
             if (!parseMatrix(positions, t)) {
-                throw RCT3Exception(wxString::Format(_("POS1 tag of bone '%s' must contain 16 decimal values."), name.c_str()));
+                throw RCT3Exception(wxString::Format(_("POS1 tag of bone '%s' must contain 16 decimal values"), name.c_str())) << wxe_xml_node_line(child.line());
             }
             positions1.push_back(t);
             position1names.push_back(_("Imported pos1 matrix"));
         } else if (child(COMPILER_POS2)) {
             if (positions2.size())
-                throw RCT3Exception(wxString::Format(_("Duplicate pos2 tag of bone '%s'."), name.c_str()));
+                throw RCT3Exception(wxString::Format(_("Duplicate pos2 tag of bone '%s'"), name.c_str())) << wxe_xml_node_line(child.line());
 
             MATRIX t;
             std::string positions = child();
             if (!parseMatrix(positions, t)) {
-                throw RCT3Exception(wxString::Format(_("POS2 tag of bone '%s' must contain 16 decimal values."), name.c_str()));
+                throw RCT3Exception(wxString::Format(_("POS2 tag of bone '%s' must contain 16 decimal values"), name.c_str())) << wxe_xml_node_line(child.line());
             }
             positions2.push_back(t);
             position2names.push_back(_("Imported pos2 matrix"));
         } else if (child.element()) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in bone tag."), STRING_FOR_FORMAT(child.name())));
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in bone tag"), STRING_FOR_FORMAT(child.name()))) << wxe_xml_node_line(child.line());
         }
         ++child;
     }
@@ -1958,8 +1978,10 @@ cAnimatedModel::cAnimatedModel(const cModel& model) {
     meshstructs = model.meshstructs;
     usedorientation = model.usedorientation;
     fileorientation = model.fileorientation;
-    error = model.error;
-    fatal_error = model.fatal_error;
+    errors = model.errors;
+    stored_exception.reset();
+	if (model.stored_exception)
+		stored_exception.reset(model.stored_exception->clone());
     for (vector<cEffectPoint>::const_iterator it = model.effectpoints.begin(); it != model.effectpoints.end(); ++it) {
         cModelBone b(*it);
         modelbones.push_back(b);
@@ -2097,12 +2119,12 @@ void cAnimatedModel::syncBones() {
 bool cAnimatedModel::Check(cAnimatedModelMap& amodnames) {
     wxLogDebug(wxT("Trace, cAnimatedModel::Check '%s'"), name.c_str());
     Sync();
-    if (fatal_error)
+    if (stored_exception)
         return false;
 
     bool warning = !CheckMeshes(true);
 
-    if (fatal_error)
+    if (stored_exception)
         return false;
 
     cMeshStructMap meshmap;
@@ -2127,25 +2149,25 @@ bool cAnimatedModel::Check(cAnimatedModelMap& amodnames) {
 			
 			// Lazyness check
 			if (modelbones[i].name.IsSameAs("Bone", false) || modelbones[i].name.Upper().StartsWith("BONE.")) {
-				throw RCT3Exception(wxString::Format(_("Animated Model '%s': A bone may not have a Blender default name ('Bone' or start with 'Bone.')."), name.c_str()));
+				throw RCT3Exception(wxString::Format(_("Animated Model '%s': A bone may not have a Blender default name ('Bone' or start with 'Bone.')"), name.c_str()));
 			}
 			
             if (modelbones[i].name == modelbones[i].parent) {
-                throw RCT3Exception(wxString::Format(_("Animated Model '%s': Bone '%s' is it's own parent."), name.c_str(), modelbones[i].name.c_str()));
+                throw RCT3Exception(wxString::Format(_("Animated Model '%s': Bone '%s' is it's own parent"), name.c_str(), modelbones[i].name.c_str()));
             }
             modelbones[i].nparent = -1;
             for (unsigned int j = 0; j < modelbones.size(); ++j) {
                 if (j == i)
                     continue;
                 if (modelbones[i].name == modelbones[j].name) {
-                    throw RCT3Exception(wxString::Format(_("Animated Model '%s': Duplicate bone name '%s'."), name.c_str(), modelbones[i].name.c_str()));
+                    throw RCT3Exception(wxString::Format(_("Animated Model '%s': Duplicate bone name '%s'"), name.c_str(), modelbones[i].name.c_str()));
                 }
                 if (modelbones[i].parent == modelbones[j].name) {
                     modelbones[i].nparent = j+1;
                 }
             }
             if ((modelbones[i].nparent == -1) && (modelbones[i].parent != wxT(""))) {
-                throw RCT3Exception(wxString::Format(_("Animated Model '%s': Bone '%s' misses it's parent '%s'."), name.c_str(), modelbones[i].name.c_str(), modelbones[i].parent.c_str()));
+                throw RCT3Exception(wxString::Format(_("Animated Model '%s': Bone '%s' misses it's parent '%s'"), name.c_str(), modelbones[i].name.c_str(), modelbones[i].parent.c_str()));
             }
 
             // Assign meshes
@@ -2189,13 +2211,13 @@ bool cAnimatedModel::FromCompilerXml(cXmlNode& node, const wxString& path) {
 
     name = wxString::FromUTF8(node.getPropVal("name").c_str());
     if (name.IsEmpty())
-        throw RCT3Exception(_("BSH tag lacks name attribute"));
+        throw RCT3Exception(_("BSH tag lacks name attribute")) << wxe_xml_node_line(node.line());
 
     wxString f = wxString::FromUTF8(node.getPropVal("model").c_str());
     if (f.IsEmpty())
         f = wxString::FromUTF8(node.getPropVal("ase").c_str());
     if (f.IsEmpty())
-        throw RCT3Exception(_("BSH tag lacks model attribute"));
+        throw RCT3Exception(_("BSH tag lacks model attribute")) << wxe_xml_node_line(node.line());
     file = f;
     if (!file.IsAbsolute())
         file.MakeAbsolute(path);
@@ -2214,15 +2236,15 @@ bool cAnimatedModel::FromCompilerXml(cXmlNode& node, const wxString& path) {
                 ret = false;
             modelbones.push_back(bone);
         } else if (child.element()) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in bsh tag."), STRING_FOR_FORMAT(child.name())));
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in bsh tag"), STRING_FOR_FORMAT(child.name()))) << wxe_xml_node_line(child.line());
         }
         ++child;
     }
 
-    fatal_error = false;
+    stored_exception.reset();
     Load(false);
-    if (fatal_error)
-        throw RCT3Exception(error[error.size()-1]);
+    if (stored_exception)
+        throw RCT3Exception(stored_exception->wxwhat(), *stored_exception);
 
     for (cMeshStruct::iterator it = meshstructs.begin(); it != meshstructs.end(); ++it) {
         it->disabled = true;
@@ -2237,7 +2259,7 @@ bool cAnimatedModel::FromCompilerXml(cXmlNode& node, const wxString& path) {
     }
 
     if (filestructs.size())
-        throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s' references unknown group in model file."), filestructs[0].Name.c_str()));
+        throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s' references unknown group in model file"), filestructs[0].Name.c_str())) << wxe_xml_node_line(node.line());
 
     for (cModelBone::iterator it = modelbones.begin(); it != modelbones.end(); ++it) {
         if (it->parent.IsEmpty())
@@ -2247,10 +2269,10 @@ bool cAnimatedModel::FromCompilerXml(cXmlNode& node, const wxString& path) {
         wxString temp;
         if (!it->parent.ToULong(&t)) {
             // Assume that parent is given as string. Discrepancies will be found in Check
-            //throw RCT3Exception(wxString::Format(_("Bone '%s': Bad parent value '%s'."), it->name.c_str(), it->parent.c_str()));
+            //throw RCT3Exception(wxString::Format(_("Bone '%s': Bad parent value '%s'"), it->name.c_str(), it->parent.c_str()));
         } else {
             if (t > modelbones.size())
-                throw RCT3Exception(wxString::Format(_("Bone '%s': Bad parent value '%s'."), it->name.c_str(), it->parent.c_str()));
+                throw RCT3Exception(wxString::Format(_("Bone '%s': Bad parent value '%s'"), it->name.c_str(), it->parent.c_str())) << wxe_xml_node_line(node.line());
             it->parent = modelbones[t - 1].name;
         }
     }
@@ -2266,17 +2288,17 @@ bool cAnimatedModel::FromCompilerXml(cXmlNode& node, const wxString& path) {
                     }
                 }
                 if (!found)
-                    throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s' assigned to unknown bone '%s'."), it->Name.c_str(), it->bonename.c_str()));
+                    throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s' assigned to unknown bone '%s'"), it->Name.c_str(), it->bonename.c_str())) << wxe_xml_node_line(node.line());
             } else {
                 if (it->bone > modelbones.size())
-                    throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s' assigned to unknown bone."), it->Name.c_str()));
+                    throw RCT3Exception(wxString::Format(_("GEOMOBJ '%s' assigned to unknown bone"), it->Name.c_str())) << wxe_xml_node_line(node.line());
                 modelbones[it->bone - 1].meshes.Add(it->Name);
             }
             it->bone = 0;
         }
     }
 
-    return ret && (!error.size());
+    return ret && (!errors.size()) && !stored_exception;
 }
 
 bool cAnimatedModel::FromNode(cXmlNode& node, const wxString& path, unsigned long version) {
@@ -2439,38 +2461,38 @@ bool cBoneAnimation::FromCompilerXml(cXmlNode& node, const wxString& path) {
 
     name = wxString::FromUTF8(node.getPropVal("name").c_str());
     if (name.IsEmpty())
-        throw RCT3Exception(_("BONE tag lacks name attribute"));
+        throw RCT3Exception(_("BONE tag lacks name attribute")) << wxe_xml_node_line(node.line());
 
     cXmlNode child = node.children();
     while(child) {
         if (child(COMPILER_TRANSLATE)) {
             temp = child.getPropVal("time");
             if (temp == "")
-                throw RCT3Exception(_("TRANSLATE tag lacks time attribute"));
+                throw RCT3Exception(_("TRANSLATE tag lacks time attribute")) << wxe_xml_node_line(child.line());
             txyz v;
             if (!parseFloat(temp, v.Time))
-                throw RCT3Exception(_("TRANSLATE tag has malformed time attribute"));
+                throw RCT3Exception(_("TRANSLATE tag has malformed time attribute")) << wxe_xml_node_line(child.line());
 
             temp = child();
             if (!parseCompilerVector(temp, v))
-                throw RCT3Exception(_("TRANSLATE tag has malformed content"));
+                throw RCT3Exception(_("TRANSLATE tag has malformed content")) << wxe_xml_node_line(child.line());
 
             translations.push_back(v);
         } else if (child(COMPILER_ROTATE)) {
             temp = child.getPropVal("time");
             if (temp == "")
-                throw RCT3Exception(_("ROTATE tag lacks time attribute"));
+                throw RCT3Exception(_("ROTATE tag lacks time attribute")) << wxe_xml_node_line(child.line());
             txyz v;
             if (!parseFloat(temp, v.Time))
-                throw RCT3Exception(_("ROTATE tag has malformed time attribute"));
+                throw RCT3Exception(_("ROTATE tag has malformed time attribute")) << wxe_xml_node_line(child.line());
 
             temp = child();
             if (!parseCompilerVector(temp, v))
-                throw RCT3Exception(_("ROTATE tag has malformed content"));
+                throw RCT3Exception(_("ROTATE tag has malformed content")) << wxe_xml_node_line(child.line());
 
             rotations.push_back(v);
         } else if (child.element()) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in bone tag."), STRING_FOR_FORMAT(child.name())));
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in bone tag"), STRING_FOR_FORMAT(child.name()))) << wxe_xml_node_line(child.line());
         }
         ++child;
     }
@@ -2555,14 +2577,14 @@ bool cAnimation::Check(const wxSortedArrayString& presentbones) {
 
     // Lazyness check
     if (name.IsSameAs("Action", false) || name.IsSameAs("AnimationTemplate", false) || name.Upper().StartsWith("ACTION.")) {
-        throw RCT3Exception(wxString::Format(_("Animation '%s': An animation may not have a Blender default name ('Action', 'AnimationTemplate' or start with 'Action.')."), name.c_str()));
+        throw RCT3Exception(wxString::Format(_("Animation '%s': An animation may not have a Blender default name ('Action', 'AnimationTemplate' or start with 'Action.')"), name.c_str()));
     }
 
     // Remove bad bones
     for (int i = boneanimations.size() - 1; i >= 0; --i) {
 		// Lazyness check
 		if (boneanimations[i].name.IsSameAs("Bone", false) || boneanimations[i].name.Upper().StartsWith("BONE.")) {
-			throw RCT3Exception(wxString::Format(_("Animation '%s': A bone may not have a Blender default name ('Bone' or start with 'Bone.')."), name.c_str()));
+			throw RCT3Exception(wxString::Format(_("Animation '%s': A bone may not have a Blender default name ('Bone' or start with 'Bone.')"), name.c_str()));
 		}
 
 		if (presentbones.Index(boneanimations[i].name) == wxNOT_FOUND) {
@@ -2588,9 +2610,9 @@ void cAnimation::CheckTimes() {
         lasttime = -1.0;
         for (cTXYZ::iterator i_txyz = i_anim->translations.begin(); i_txyz != i_anim->translations.end(); ++i_txyz) {
             if (i_txyz->v.Time < 0.0)
-                throw RCT3Exception(wxString::Format(_("Animation '%s': Bone '%s' has transformation with time below 0."), name.c_str(), i_anim->name.c_str()));
+                throw RCT3Exception(wxString::Format(_("Animation '%s': Bone '%s' has transformation with time below 0"), name.c_str(), i_anim->name.c_str()));
             if (i_txyz->v.Time <= lasttime)
-                throw RCT3Exception(wxString::Format(_("Animation '%s': Bone '%s' has transformation with duplicate or out-of-order time."), name.c_str(), i_anim->name.c_str()));
+                throw RCT3Exception(wxString::Format(_("Animation '%s': Bone '%s' has transformation with duplicate or out-of-order time"), name.c_str(), i_anim->name.c_str()));
             if (i_txyz->v.Time > totaltime)
                 totaltime = i_txyz->v.Time;
             lasttime = i_txyz->v.Time;
@@ -2598,9 +2620,9 @@ void cAnimation::CheckTimes() {
         lasttime = -1.0;
         for (cTXYZ::iterator i_txyz = i_anim->rotations.begin(); i_txyz != i_anim->rotations.end(); ++i_txyz) {
             if (i_txyz->v.Time < 0.0)
-                throw RCT3Exception(wxString::Format(_("Animation '%s': Bone '%s' has rotation with time below 0."), name.c_str(), i_anim->name.c_str()));
+                throw RCT3Exception(wxString::Format(_("Animation '%s': Bone '%s' has rotation with time below 0"), name.c_str(), i_anim->name.c_str()));
             if (i_txyz->v.Time <= lasttime)
-                throw RCT3Exception(wxString::Format(_("Animation '%s': Bone '%s' has rotation with duplicate or out-of-order time."), name.c_str(), i_anim->name.c_str()));
+                throw RCT3Exception(wxString::Format(_("Animation '%s': Bone '%s' has rotation with duplicate or out-of-order time"), name.c_str(), i_anim->name.c_str()));
             if (i_txyz->v.Time > totaltime)
                 totaltime = i_txyz->v.Time;
             lasttime = i_txyz->v.Time;
@@ -2615,7 +2637,7 @@ bool cAnimation::FromCompilerXml(cXmlNode& node, const wxString& path) {
 
     name = wxString::FromUTF8(node.getPropVal("name").c_str());
     if (name.IsEmpty())
-        throw RCT3Exception(_("BAN tag lacks name attribute"));
+        throw RCT3Exception(_("BAN tag lacks name attribute")) << wxe_xml_node_line(node.line());
 
     cXmlNode child = node.children();
     while(child) {
@@ -2625,7 +2647,7 @@ bool cAnimation::FromCompilerXml(cXmlNode& node, const wxString& path) {
                 ret = false;
             boneanimations.push_back(bone);
         } else if (child.element()) {
-            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ban tag."), STRING_FOR_FORMAT(child.name())));
+            throw RCT3Exception(wxString::Format(_("Unknown tag '%s' in ban tag"), STRING_FOR_FORMAT(child.name()))) << wxe_xml_node_line(child.line());
         }
         ++child;
     }
@@ -2773,7 +2795,7 @@ bool cImpSpline::Check() {
 
     // Lazyness check
     if (spline.m_name.IsSameAs("Curve", false) || spline.m_name.IsSameAs("CurveCircle", false) || spline.m_name.Upper().StartsWith("CURVE.") || spline.m_name.Upper().StartsWith("CURVECIRCLE.")) {
-        throw RCT3Exception(wxString::Format(_("Spline '%s': A spline may not have a Blender default name ('Curve', 'CurveCircle' or start with one of these followed by a '.')."), spline.m_name.c_str()));
+        throw RCT3Exception(wxString::Format(_("Spline '%s': A spline may not have a Blender default name ('Curve', 'CurveCircle' or start with one of these followed by a '.')"), spline.m_name.c_str()));
     }
 
     return ret;

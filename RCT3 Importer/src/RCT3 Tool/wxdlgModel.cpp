@@ -1491,15 +1491,16 @@ void dlgModel::CheckModel() {
 //    }
     cModel smodel = m_smodel;
     cAnimatedModel amodel = m_amodel;
-    while (m_model->fatal_error) {
+    while (m_model->stored_exception) {
         if (::wxMessageBox(_("The model file could not be found or read, please select a new one.\nIf you press 'Cancel', all model related data (file name and mesh settings) will be cleared."), _("Error loading model file"), wxOK|wxCANCEL|wxICON_ERROR) == wxCANCEL) {
             // User requested delete
-            m_model->fatal_error = false;
+            m_model->stored_exception.reset();
+			m_model->errors.clear();
             m_model->file = wxT("");
             m_model->meshstructs.clear();
             break;
         }
-        wxFileDialog *dialog = new wxFileDialog(
+        boost::shared_ptr<wxFileDialog> dialog(new wxFileDialog(
                                    this,
                                    _("Select Model File"),
                                    wxEmptyString,
@@ -1508,7 +1509,7 @@ void dlgModel::CheckModel() {
                                    wxFD_FILE_MUST_EXIST|wxFD_CHANGE_DIR,
                                    wxDefaultPosition,
                                    wxSize(600,400)
-                               );
+                               ), wxWindowDestroyer);
         if (m_model->file != wxT("")) {
             dialog->SetDirectory(m_model->file.GetPath());
             dialog->SetFilename(m_model->file.GetFullName());
@@ -1517,7 +1518,7 @@ void dlgModel::CheckModel() {
         if (dialog->ShowModal() == wxID_OK) {
             ::wxGetApp().g_workdir.AssignDir(wxFileName(dialog->GetPath()).GetPath());
             m_model->Sync(dialog->GetPath());
-            if (m_model->fatal_error) {
+            if (m_model->stored_exception) {
                 // Load error
                 if (m_animated) {
                     m_amodel = amodel;
@@ -1526,12 +1527,12 @@ void dlgModel::CheckModel() {
                 }
                 continue;
             }
-            if (m_model->error.size()) {
-                wxString errtext = m_model->error[0];
-                while (m_model->error.erase(m_model->error.begin()) != m_model->error.end()) {
-                    errtext += wxT("\n\n") + m_model->error[0];
+            if (m_model->errors.size()) {
+                wxString errtext;
+                foreach(const wxString& err, m_model->errors) {
+                    errtext += wxT("\n\n") + err;
                 }
-                if (::wxMessageBox(_("The following warnings were encountered while loading the model file:\n") + errtext + _("\n\nDo you want to select a different one?"), _("Warning during model file loading"), wxYES_NO | wxNO_DEFAULT | wxICON_WARNING) == wxYES) {
+                if (::wxMessageBox(_("The following warnings were encountered while loading the model file:") + errtext + _("\n\nDo you want to select a different one?"), _("Warning during model file loading"), wxYES_NO | wxNO_DEFAULT | wxICON_WARNING) == wxYES) {
                     // Select a different one, restore the model
                     if (m_animated) {
                         m_amodel = amodel;
@@ -1539,7 +1540,7 @@ void dlgModel::CheckModel() {
                         m_smodel = smodel;
                     }
                 } else {
-                    m_model->error.clear();
+                    m_model->errors.clear();
                 }
             }
         }
@@ -1729,24 +1730,29 @@ void dlgModel::OnModelOpen(wxCommandEvent& event) {
             }
 
             if (m_loadoverlay) {
-                if (m_model->error.size()) {
+                if (m_model->errors.size()) {
                     wxString errtext;
-                    foreach(wxString& err, m_model->error)
+                    foreach(wxString& err, m_model->errors)
                         errtext += (errtext.IsEmpty()?wxT(""):wxT("\n\n")) + err;
-                    ::wxMessageBox(errtext, wxString(m_model->fatal_error?_("Error"):_("Warning")) + _(" during model file loading"), wxOK | (m_model->fatal_error?wxICON_ERROR:wxICON_WARNING), this);
-                    m_model->error.clear();
+                    ::wxMessageBox(errtext, _("Warning during model file loading"), wxOK | wxICON_WARNING, this);
+                    m_model->errors.clear();
                 }
             }
 
         } else {
-            ::wxMessageBox(m_model->error[0], _("Error"), wxOK | wxICON_ERROR, this);
+			wxString errtext;
+			if (m_model->stored_exception)
+				errtext = m_model->stored_exception->formatLong();
+			else
+				errtext = _("Unknown error");
+            ::wxMessageBox(errtext, _("Error"), wxOK | wxICON_ERROR, this);
             if (m_animated)
                 m_amodel = *dynamic_cast<cAnimatedModel*>(backup.get());
             else
                 m_smodel = *backup.get();
         }
     } catch (E3DLoader& e) {
-        ::wxMessageBox(e.wxwhat(), _("Error"), wxOK | wxICON_ERROR, this);
+        ::wxMessageBox(e.formatLong(), _("Error"), wxOK | wxICON_ERROR, this);
         if (m_animated)
             m_amodel = *dynamic_cast<cAnimatedModel*>(backup.get());
         else

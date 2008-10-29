@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="public">
+
+  <uri name="http://rct3.sourceforge.net/rct3xml/raw" uri="rct3xml-raw-v1.rng"/>
+  <uri name="http://rct3.sourceforge.net/rct3xml/scenery" uri="rct3xml-scenery-v1.rng"/>
+  <uri name="http://rct3.sourceforge.net/rct3xml/ovlcompiler" uri="rct3xml-ovlcompiler-v1.rng"/>
+  <uri name="http://rct3.sourceforge.net/rct3xml/model" uri="model.rng"/>
+
+</catalog>

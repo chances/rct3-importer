@@ -12,11 +12,17 @@
 #ifndef RCT3EXCEPTION_H_INCLUDED
 #define RCT3EXCEPTION_H_INCLUDED
 
-#include <exception>
-#include <boost/exception.hpp>
 #include <wx/strconv.h>
 #include <wx/string.h>
 
+#include "wxexception.h"
+
+class RCT3Exception: public WXException {
+public:
+	INHERIT_WXEXCEPTION(RCT3Exception)
+};
+
+/*
 class RCT3Exception: public std::exception, public boost::exception {
 public:
     RCT3Exception(const wxString& message);
@@ -30,5 +36,6 @@ public:
 protected:
     wxString m_message;
 };
+*/
 
 #endif

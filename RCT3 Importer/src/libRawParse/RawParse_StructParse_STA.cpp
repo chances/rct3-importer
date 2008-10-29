@@ -62,7 +62,7 @@ void cRawParser::ParseSTA(cXmlNode& node) {
             OPTION_PARSE(unsigned long, stall.unknowns.unk5, ParseUnsigned(child, wxT(RAWXML_STA_STALLUNKNOWNS), wxT("u5")));
             OPTION_PARSE(unsigned long, stall.unknowns.unk6, ParseUnsigned(child, wxT(RAWXML_STA_STALLUNKNOWNS), wxT("u6")));
         } else if (child.element()) {
-            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in sta tag '%s'."), child.wxname().c_str(), name.c_str()), child);
+            throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in sta tag '%s'"), child.wxname().c_str(), name.c_str()), child);
         }
 
         child.go_next();

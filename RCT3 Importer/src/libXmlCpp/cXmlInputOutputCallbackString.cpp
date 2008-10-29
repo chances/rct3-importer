@@ -69,7 +69,7 @@ void cXmlInputOutputCallbackString::add(const std::string& filename, const unsig
     boost::shared_array<char> buf(new char[buf_size]);
     int r = uncompress(reinterpret_cast<Bytef*>(buf.get()), &buf_size, reinterpret_cast<const Bytef*>(data), datasize);
     if (r != Z_OK)
-        throw eXml("Uncompressing "+filename+" failed.");
+        throw eXml("Uncompressing "+filename+" failed");
     string t(buf.get(), static_cast<size_t>(buf_size+1));
     add(filename, t);
 }

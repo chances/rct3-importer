@@ -347,7 +347,7 @@ public:
 template<class E>
 E MakeNodeException(const wxString& message, const cXmlNode& node) {
     if (node.line())
-        return E(message) << node_line_info(node.line());
+        return E(message) << wxe_xml_node_line(node.line());
     else
         return E(message);
 }

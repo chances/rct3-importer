@@ -59,6 +59,7 @@ struct cXmlStructuredError {
 
     cXmlStructuredError(xmlErrorPtr error = NULL);
     std::string getPath() const;
+	int getLine() const;
 };
 
 class cXmlErrorHandler {
@@ -85,9 +86,9 @@ protected:
     inline void addStructuredError(const cXmlStructuredError& err) { m_structurederrors.push_back(err); }
     inline void addGenericError(const std::string& err) { m_genericerrors.push_back(err); }
 public:
-    inline const std::vector<cXmlStructuredError>& getStructuredErrors() { return m_structurederrors; }
+    inline const std::vector<cXmlStructuredError>& getStructuredErrors() const { return m_structurederrors; }
     inline void clearStructuredErrors() { m_structurederrors.clear(); }
-    inline const std::vector<std::string>& getGenericErrors() { return m_genericerrors; }
+    inline const std::vector<std::string>& getGenericErrors() const { return m_genericerrors; }
     inline void clearGenericErrors() { m_genericerrors.clear(); }
     virtual void resetErrors() {
         clearStructuredErrors();

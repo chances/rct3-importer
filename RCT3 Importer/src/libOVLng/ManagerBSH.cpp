@@ -203,7 +203,7 @@ void ovlBSHManager::AddModel(const cBoneShape1& item) {
 #ifndef GLASS_OLD
         if ((it->IsAlgoNone()) && (it->placetexturing != 0)) {
             if (it->indices.size() % 3)
-                throw EOvl("ovlSHSManager::AddModel: mesh has triangle sort algorithm none but indices aren't divisible by 3.");
+                throw EOvl("ovlSHSManager::AddModel: mesh has triangle sort algorithm none but indices aren't divisible by 3");
         }
         if ((it->placetexturing != 0) && (!it->IsAlgoNone())) {
             m_blobs[item.name].size += 2 * it->indices.size() * sizeof(unsigned short);
@@ -337,7 +337,7 @@ void ovlBSHManager::AddModel(const char* name, unsigned long meshes, unsigned lo
     if (m_bonecount)
         throw EOvl("ovlBSHManager::AddModel called but last model misses bones");
     if (!bones)
-        throw EOvl("ovlBSHManager::AddModel called with zero bones. At least one bone is necessary for the scene root.");
+        throw EOvl("ovlBSHManager::AddModel called with zero bones. At least one bone is necessary for the scene root");
 
     BoneShape1* c_bsh = new BoneShape1;
     c_bsh->TotalIndexCount = 0;
