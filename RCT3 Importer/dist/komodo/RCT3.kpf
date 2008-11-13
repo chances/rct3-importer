@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Komodo Project File - DO NOT EDIT -->
+<project id="195c7d14-64e2-42f0-9ccb-52a6dc5e6412" kpf_version="4" name="RCT3.kpf">
+<command cwd="" doNotOpenOutputWindow="0" env="" id="1e882984-0e5f-4d04-85cf-420e884a33eb" idref="195c7d14-64e2-42f0-9ccb-52a6dc5e6412" insertOutput="0" keyboard_shortcut="" name="ovlmake, make" operateOnSelection="0" parseOutput="1" parseRegex="^(?P&lt;file&gt;.*?)::(?P&lt;line&gt;\d+)::(?P&lt;content&gt;.*)$" runIn="command-output-window" showParsedOutputList="1">
+ovlmake --brief "%F"</command>
+<URL id="3b194902-59d8-4ca4-b523-a23761445765" idref="195c7d14-64e2-42f0-9ccb-52a6dc5e6412" keyboard_shortcut="" name="Sourceforge Project Page">
+sourceforge.net/projects/rct3</URL>
+<URL id="3cd0d3c7-d36d-4e79-ac52-492cbc5167fc" idref="195c7d14-64e2-42f0-9ccb-52a6dc5e6412" keyboard_shortcut="" name="Sourceforge Homepage">
+rct3.sourceforge.net</URL>
+<folder id="4d5a6d51-6fc1-4813-921d-e43f581e4624" idref="195c7d14-64e2-42f0-9ccb-52a6dc5e6412" name="Abbreviations">
+</folder>
+<command cwd="" doNotOpenOutputWindow="0" env="" id="6935eec0-ee94-474b-b3b0-d74b26fdb67b" idref="195c7d14-64e2-42f0-9ccb-52a6dc5e6412" insertOutput="0" keyboard_shortcut="" name="ovlmake, install" operateOnSelection="0" parseOutput="1" parseRegex="^(?P&lt;file&gt;.*?)::(?P&lt;line&gt;\d+)::(?P&lt;content&gt;.*)$" runIn="command-output-window" showParsedOutputList="1">
+ovlmake --brief --install "%F"</command>
+<command cwd="" doNotOpenOutputWindow="0" env="" id="739e4b33-96c5-42b1-b8d7-5e3775d94f0f" idref="195c7d14-64e2-42f0-9ccb-52a6dc5e6412" insertOutput="0" keyboard_shortcut="" name="ovlmake, validate" operateOnSelection="0" parseOutput="1" parseRegex="^(?P&lt;file&gt;.*?)::(?P&lt;line&gt;\d+)::(?P&lt;content&gt;.*)$" runIn="command-output-window" showParsedOutputList="1">
+ovlmake --check --brief "%F"</command>
+<folder id="676db271-68f7-4310-ad02-019e40defd2e" idref="4d5a6d51-6fc1-4813-921d-e43f581e4624" name="XML">
+</folder>
+<snippet id="368acebc-848e-4552-9cd5-c17dc49d181f" idref="676db271-68f7-4310-ad02-019e40defd2e" indent_relative="true" keyboard_shortcut="" name="importn" set_selection="false">
+&lt;import file="[[%tabstop:file.xml]]" name="[[%tabstop:internal name]]"/&gt;
+[[%tabstop:]]!@#_currentPos!@#_anchor</snippet>
+<snippet id="3ba4dd61-d1cd-49b7-9768-9ceae192ad72" idref="676db271-68f7-4310-ad02-019e40defd2e" indent_relative="false" keyboard_shortcut="" name="rawroot" set_selection="true">
+&lt;rawovl basedir="[[%tabstop:output\\!@#_currentPos!@#_anchor]]" installdir="[[%tabstop:]]" xmlns="http://rct3.sourceforge.net/rct3xml/raw"&gt;
+    [[%tabstop:]]
+&lt;/rawovl&gt;
+</snippet>
+<snippet id="40d96979-4cd8-4f13-a344-4b605c1cfad9" idref="676db271-68f7-4310-ad02-019e40defd2e" indent_relative="false" keyboard_shortcut="" name="txt" set_selection="false">
+&lt;txt name="[[%tabstop:internal name]]" type="text"&gt;[[%tabstop:your text string]]&lt;/txt&gt;
+[[%tabstop:]]!@#_currentPos!@#_anchor</snippet>
+<snippet id="4385278f-9d6d-4620-9bc7-5b5bca3d4ed5" idref="676db271-68f7-4310-ad02-019e40defd2e" indent_relative="true" keyboard_shortcut="" name="rawovlf" set_selection="false">
+&lt;rawovl file="[[%tabstop:ovl file name]]"&gt;
+    [[%tabstop:]]
+&lt;/rawovl&gt;!@#_currentPos!@#_anchor</snippet>
+<snippet id="4d410b22-6408-4fd0-8260-74d1127f6c6f" idref="676db271-68f7-4310-ad02-019e40defd2e" indent_relative="true" keyboard_shortcut="" name="texgsi" set_selection="true">
+&lt;tex name="[[%tabstop1:internal texture name]]" format="[[%tabstop:20]]"&gt;
+    &lt;texture&gt;&lt;data type="file"&gt;[[%tabstop:texture file]]&lt;/data&gt;&lt;/texture&gt;
+&lt;/tex&gt;
+&lt;gsi name="[[%tabstop:internal icon name]]" tex="[[%tabstop1]]" left="[[%tabstop:0]]" top="[[%tabstop:0]]" right="[[%tabstop:80]]" bottom="[[%tabstop:64]]" /&gt;
+[[%tabstop:!@#_currentPos!@#_anchor]]</snippet>
+<snippet id="4e88ebe6-440b-465c-8bf8-5f13c15ae2f0" idref="676db271-68f7-4310-ad02-019e40defd2e" indent_relative="true" keyboard_shortcut="" name="rawovld" set_selection="false">
+&lt;rawovl basedir="[[%tabstop:subdir]]"&gt;
+    [[%tabstop:]]
+&lt;/rawovl&gt;!@#_currentPos!@#_anchor</snippet>
+<snippet id="6b06ebb0-342b-43c7-bfdd-e35f1bbfcf7a" idref="676db271-68f7-4310-ad02-019e40defd2e" indent_relative="true" keyboard_shortcut="" name="gsi" set_selection="true">
+!@#_currentPos!@#_anchor&lt;gsi name="[[%tabstop:internal icon name]]" tex="[[%tabstop:internal texture name]]" left="[[%tabstop:0]]" top="[[%tabstop:0]]" right="[[%tabstop:80]]" bottom="[[%tabstop:64]]" /&gt;
+[[%tabstop:]]</snippet>
+<snippet id="76dbfb12-2dd5-4667-9e5e-6482ad78a697" idref="676db271-68f7-4310-ad02-019e40defd2e" indent_relative="true" keyboard_shortcut="" name="tex" set_selection="true">
+&lt;tex name="[[%tabstop:internal texture name]]" format="[[%tabstop:20]]"&gt;
+    &lt;texture&gt;&lt;data type="file"&gt;[[%tabstop:texture file]]&lt;/data&gt;&lt;/texture&gt;
+&lt;/tex&gt;
+!@#_currentPos!@#_anchor[[%tabstop:]]</snippet>
+<snippet id="adc7f050-c2de-4abc-84d3-985576a1a804" idref="676db271-68f7-4310-ad02-019e40defd2e" indent_relative="true" keyboard_shortcut="" name="imports" set_selection="false">
+&lt;import file="[[%tabstop:file.xml]]" use="splines" id="[[%tabstop:id reference for splines]]"/&gt;
+[[%tabstop:]]!@#_currentPos!@#_anchor</snippet>
+<preference-set idref="195c7d14-64e2-42f0-9ccb-52a6dc5e6412">
+  <boolean id="import_live">1</boolean>
+</preference-set>
+</project>

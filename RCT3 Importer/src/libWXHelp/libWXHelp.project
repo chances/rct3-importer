@@ -34,6 +34,7 @@
     <File Name="wxexception.cpp"/>
     <File Name="wxexception.h"/>
     <File Name="wxexception_libxmlcpp.h"/>
+    <File Name="msgdlgg_28.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="filedlg">
     <File Name="auifiledlg.h"/>
@@ -230,10 +231,10 @@
       </AdditionalRules>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug"/>
   <Dependencies Name="DebugBaseUnicode"/>
   <Dependencies Name="DebugUnicode"/>
-  <Dependencies Name="Release"/>
   <Dependencies Name="ReleaseBaseUnicode"/>
   <Dependencies Name="ReleaseUnicode"/>
+  <Dependencies Name="Debug"/>
+  <Dependencies Name="Release"/>
 </CodeLite_Project>

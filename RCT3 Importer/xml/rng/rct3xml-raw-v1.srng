@@ -1816,7 +1816,22 @@
 						<ref name="sidimporterunknowns" occurs="?"/>
 						<ref name="sidstallunknowns" occurs="?"/>
 						<ref name="sidextra" occurs="?"/>
+                        <element name="unknowns" occurs="?">
+                            <ref name="baseattrs"/>
+                            <attribute name="u27" occurs="?" type="unsignedInt"/>
+                            <attribute name="u28" occurs="?" type="unsignedInt"/>
+                            <attribute name="u34" occurs="?" type="unsignedInt"/>
+                            <attribute name="u35" occurs="?" type="unsignedInt"/>
+                            <attribute name="u36" occurs="?" type="unsignedInt"/>
+                            <attribute name="u37" occurs="?" type="unsignedInt"/>
+                            <attribute name="u38" occurs="?" type="unsignedInt"/>
+                            <attribute name="u39" occurs="?" type="unsignedInt"/>
+                            <attribute name="u40" occurs="?" type="unsignedInt"/>
+                            <attribute name="u41" occurs="?" type="unsignedInt"/>
+                            <attribute name="u44" occurs="?" type="unsignedInt"/>
+                        </element>
 						<element name="flatRide" occurs="?">
+						    <ref name="baseattrs"/>
 							<attribute name="ageAlternatives" occurs="?" type="unsignedInt"/>
 							<attribute name="runAnimations" occurs="?" type="unsignedInt"/>
 							<attribute name="cyclesPerCircuit" occurs="?" type="unsignedInt"/>
@@ -1907,8 +1922,16 @@
 				<element name="importerUnknowns">
 					<ref name="baseattrs"/>
 					<attribute name="flags" occurs="?" ref="flags"/>
-					<attribute name="u1" occurs="?" type="unsignedInt"/>
-					<attribute name="u2" occurs="?" type="unsignedInt"/>
+                    <choice>
+                        <group>
+                                <attribute name="u1" occurs="?" type="unsignedInt"/>
+                                <attribute name="u2" occurs="?" type="unsignedInt"/>
+                        </group>
+                        <group>
+                                <attribute name="u4" occurs="?" type="unsignedInt"/>
+                                <attribute name="u17" occurs="?" type="unsignedInt"/>
+                        </group>
+                    </choice>
 				</element>
 			</define>
 			<define name="sidsquareunknowns">
@@ -1964,8 +1987,11 @@
 							<value>2</value>
 						</choice>
 					</attribute>
-					<attribute name="addonpack" occurs="?" type="unsignedInt"/>
-					<attribute name="billboardaspect" occurs="?" type="int"/>
+					<attribute name="addonPack" occurs="?" type="unsignedInt"/>
+					<attribute name="genericAddon" occurs="?" type="unsignedInt"/>
+					<attribute name="soakedUnk" occurs="?" type="unsignedInt"/>
+					<attribute name="billboardAspect" occurs="?" type="int"/>
+					<attribute name="wildUnk" occurs="?" type="float"/>
 				</element>
 			</define>
 			<define name="sidvisual">

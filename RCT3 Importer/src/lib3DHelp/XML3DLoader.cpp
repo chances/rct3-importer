@@ -656,6 +656,17 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
         cXmlNode xgroup = groups[s];
         c3DGroup cgroup;
         cgroup.m_name = xgroup.wxgetPropVal("name");
+		if (xgroup.hasProp("animated")) {
+			unsigned long a = 0;
+			if (parseULongC(xgroup.getPropVal("animated"), a)) {
+				if (a)
+					cgroup.m_forceanim = c3DGroup::ANIMATED;
+				else
+					cgroup.m_forceanim = c3DGroup::NONANIMATED;
+			} else {
+				throw E3DLoader("Unknown content of 'animated' attribute") << wxe_xml_node_line(xgroup.line()) << wxe_file(filename);				
+			}
+		}
 
         foreach(const cXmlNode& entries, xgroup.children()) {
             if (entries("mesh")) {
@@ -663,7 +674,9 @@ cXML3DLoader::cXML3DLoader(const wxChar *filename): c3DLoader(filename), m_ori(O
             } else if (entries("bone")) {
                 cgroup.m_bones.insert(entries.wxcontent());
             } else if (entries("animation")) {
-                cgroup.m_animations.push_back(entries.wxcontent());
+				wxString ani(entries.wxcontent());
+				if (!ani.IsEmpty())
+					cgroup.m_animations.push_back(ani);
             } else if (entries("metadata")) {
                 if (entries.getPropVal("role") == "rct3") {
                     foreach(const cXmlNode& met, entries.children()) {

@@ -57,6 +57,8 @@
 #include <wx/fileconf.h>
 #include <wx/tooltip.h>
 
+//#include <wx/generic/msgdlgg.h>
+
 #include <float.h>
 #include <commdlg.h>
 #include <shlobj.h>
@@ -156,6 +158,43 @@ bool InstallTheme(HWND hwnd);
 bool ReadIconTexture(HWND hwnd, IconTexture * t);
 char *LastCreatedOVL = NULL;
 
+/*
+#include <wx/artprov.h>
+
+class wxSvgArtProvider: public wxArtProvider {
+protected:
+    virtual wxBitmap CreateBitmap(const wxArtID& id,
+                                  const wxArtClient& client,
+                                  const wxSize& size)
+	{
+		//wxMessageBox(wxString::Format("CreateBitmap %s", id.c_str()));
+		wxSize lsize = size;
+		if (size == wxDefaultSize) {
+			lsize = GetSizeHint(client);
+		}
+		//wxMessageBox(wxString::Format("CreateBitmap %s %d %d", id.c_str(), lsize.GetWidth(), lsize.GetHeight()));
+		if (id == wxART_ERROR) {
+			//wxSVGDocument doc("C:\\Development\\Icons\\tango-icon-theme-0.8.1\\scalable\\status\\dialog-error.svg");
+			//wxImage img = doc.Render(lsize.GetWidth(), lsize.GetHeight());
+			wxImage img("C:\\Development\\Icons\\gnome-icon-theme-2.18.0\\16x16\\status\\dialog-error.png");
+			return wxBitmap(img);
+		}
+		if (id == wxART_WARNING) {
+			//wxSVGDocument doc("C:\\Development\\Icons\\tango-icon-theme-0.8.1\\scalable\\status\\dialog-warning.svg");
+			//wxImage img = doc.Render();
+			wxImage img("C:\\Development\\Icons\\gnome-icon-theme-2.18.0\\16x16\\status\\dialog-warning.png");
+			return wxBitmap(img);
+		}
+		if (id == wxART_INFORMATION) {
+			//wxSVGDocument doc("C:\\Development\\Icons\\tango-icon-theme-0.8.1\\scalable\\status\\dialog-warning.svg");
+			//wxImage img = doc.Render();
+			wxImage img("C:\\Development\\Icons\\gnome-icon-theme-2.18.0\\16x16\\status\\dialog-information.png");
+			return wxBitmap(img);
+		}
+		return wxBitmap();
+	}
+};
+*/
 
 BOOL CALLBACK TextEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
     switch (Message) {
@@ -3167,6 +3206,12 @@ bool ToolApp::OnInit()
     wxXmlResource::Get()->InitAllHandlers();
     InitXmlResource();
     InitResources();
+	//wxArtProvider::Push(new wxSvgArtProvider);
+/*	{
+		wxGenericMessageDialog dia(NULL, "Test", "Blah", wxICON_INFORMATION|wxOK);
+		dia.ShowModal();
+	}
+	*/
 
     char *dir = new char[MAX_PATH];
     GetCurrentDirectory(MAX_PATH, dir);

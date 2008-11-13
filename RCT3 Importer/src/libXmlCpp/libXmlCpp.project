@@ -349,14 +349,14 @@ xsl/iso_simple.xsl.h:  xsl/iso_simple.xsl ../../xml/xsl/strip.xsl
       </AdditionalRules>
     </Configuration>
   </Settings>
+  <Dependencies Name="DebugBaseUnicode"/>
+  <Dependencies Name="ReleaseBaseUnicode"/>
   <Dependencies Name="Debug">
     <Project Name="Precompile RNG"/>
     <Project Name="Precompile XSL"/>
   </Dependencies>
-  <Dependencies Name="DebugBaseUnicode"/>
   <Dependencies Name="Release">
     <Project Name="Precompile RNG"/>
     <Project Name="Precompile XSL"/>
   </Dependencies>
-  <Dependencies Name="ReleaseBaseUnicode"/>
 </CodeLite_Project>

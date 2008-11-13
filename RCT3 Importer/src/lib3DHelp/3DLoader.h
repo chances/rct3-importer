@@ -104,15 +104,20 @@ public:
 class c3DGroup {
 public:
     typedef std::pair<const wxString, c3DGroup> pair;
+	enum FORCE {
+		NOTHING,
+		ANIMATED,
+		NONANIMATED
+	};
 public:
     wxString m_name;
     float m_loddistance;
     std::set<wxString> m_meshes;
     std::set<wxString> m_bones;
     std::vector<wxString> m_animations;
-    bool m_forceanim;
+    FORCE m_forceanim;
 
-    c3DGroup(): m_loddistance(-1.0), m_forceanim(false) {}
+    c3DGroup(): m_loddistance(-1.0), m_forceanim(NOTHING) {}
 };
 
 class c3DSpline {

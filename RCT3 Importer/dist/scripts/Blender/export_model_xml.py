@@ -67,16 +67,16 @@ def infomsg(msg, silent = False):
     printmsg("Info", msg, silent)
 
 def get_Name(ob):
-	name = ob.name
+    name = ob.name
     try:
         name = ob.properties['modxml']['general']['name']
     except:
         pass
-	for c in name:
-		if c in '"<>':
-			errormsg("Name of object '%s' contains illegal character (\"<>)" % name)
-			raise "Fatal error"
-	return name
+    for c in name:
+        if c in '"<>':
+            errormsg("Name of object '%s' contains illegal character (\"<>)" % name)
+            raise "Fatal error"
+    return name
 
 def getMatrix_Empty(obj):
     m = obj.matrix.copy()
@@ -1505,9 +1505,16 @@ def write_groups(file):
    for group in Group.Get():
       if group.name[0] == '_':
          continue
+      
+      isAnimated = False
 
       distance = RCT3GroupBag(group).lodDistance
       actions = ModxmlGroupBag(group).animations.split(",")
+      
+      for an in actions:
+        if an != "":
+          isAnimated = True
+          break
 
       objects = group.objects
 
@@ -1515,6 +1522,10 @@ def write_groups(file):
       for obj in objects:
          if (guiTable['SELO'] == 1) and (not obj.isSelected()):
             continue
+         
+         if obj.getType() == 'Armature':
+            # Does not matter if the Armature is exported, so it can be used as a tag
+            isAnimated = True
 
          if obj.name[0] == '_':
             continue
@@ -1541,7 +1552,7 @@ def write_groups(file):
             groupobjs.append(obj)
 
       if groupobjs:
-         file.write("%s<group name=\"%s\">\n" % (Tab, get_Name(group)))
+         file.write("%s<group name=\"%s\" animated=\"%s\">\n" % (Tab, get_Name(group), isAnimated and "true" or "false"))
          if distance>0.0:
             file.write("%s<metadata role=\"rct3\">\n" % (Tab*2))
             file.write("%s<lodDistance>%f</lodDistance>\n" % (Tab*3, distance))
@@ -1565,6 +1576,7 @@ def write_groups(file):
                file.write("%s<bone>%s</bone>\n" % ((Tab*2), get_Name(grobj)))
 
          for an in actions:
+            if an != "":
                file.write("%s<animation>%s</animation>\n" % ((Tab*2), an))
 
          file.write("%s</group>\n" % (Tab))

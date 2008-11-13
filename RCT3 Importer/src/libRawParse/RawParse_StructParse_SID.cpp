@@ -120,6 +120,8 @@ void cRawParser::ParseSID(cXmlNode& node) {
         } else if (child(RAWXML_SID_IMPORTERUNKNOWNS)) {
             OPTION_PARSE(unsigned long, sid.importerunknowns.unk1, ParseUnsigned(child, wxT(RAWXML_SID_IMPORTERUNKNOWNS), wxT("u1")));
             OPTION_PARSE(unsigned long, sid.importerunknowns.unk2, ParseUnsigned(child, wxT(RAWXML_SID_IMPORTERUNKNOWNS), wxT("u2")));
+            OPTION_PARSE(unsigned long, sid.importerunknowns.unk1, ParseUnsigned(child, wxT(RAWXML_SID_IMPORTERUNKNOWNS), wxT("u4")));
+            OPTION_PARSE(unsigned long, sid.importerunknowns.unk2, ParseUnsigned(child, wxT(RAWXML_SID_IMPORTERUNKNOWNS), wxT("u17")));
             OPTION_PARSE(unsigned long, sid.importerunknowns.flags, ParseUnsigned(child, wxT(RAWXML_SID_IMPORTERUNKNOWNS), wxT("flags")));
             /*
             if (child.hasProp("flags")) {
@@ -144,8 +146,23 @@ void cRawParser::ParseSID(cXmlNode& node) {
             OPTION_PARSE(unsigned long, sid.stallunknowns.unk2, ParseUnsigned(child, wxT(RAWXML_SID_STALLUNKNOWNS), wxT("u2")));
         } else if (child(RAWXML_SID_EXTRA)) {
             OPTION_PARSE(unsigned long, sid.extra.version, ParseUnsigned(child, wxT(RAWXML_SID_EXTRA), wxT("version")));
-            OPTION_PARSE(unsigned long, sid.extra.AddonPack, ParseUnsigned(child, wxT(RAWXML_SID_EXTRA), wxT("addonpack")));
-            OPTION_PARSE(long, sid.extra.billboardaspect, ParseSigned(child, wxT(RAWXML_SID_EXTRA), wxT("billboardaspect")));
+            OPTION_PARSE(unsigned long, sid.extra.AddonPack, ParseUnsigned(child, wxT(RAWXML_SID_EXTRA), wxT("addonPack")));
+            OPTION_PARSE(unsigned long, sid.extra.GenericAddon, ParseUnsigned(child, wxT(RAWXML_SID_EXTRA), wxT("genericAddon")));
+            OPTION_PARSE(unsigned long, sid.extra.unk2, ParseUnsigned(child, wxT(RAWXML_SID_EXTRA), wxT("soakedUnk")));
+            OPTION_PARSE(long, sid.extra.billboardaspect, ParseSigned(child, wxT(RAWXML_SID_EXTRA), wxT("billboardAspect")));
+            OPTION_PARSE(float, sid.extra.unkf, ParseFloat(child, wxT(RAWXML_SID_EXTRA), wxT("wildUnk")));
+		} else if (child(RAWXML_UNKNOWNS)) {
+            OPTION_PARSE(unsigned long, sid.unknowns.unk27, ParseUnsigned(child, wxT(RAWXML_UNKNOWNS), wxT("u27")));
+            OPTION_PARSE(unsigned long, sid.unknowns.unk28, ParseUnsigned(child, wxT(RAWXML_UNKNOWNS), wxT("u28")));
+            OPTION_PARSE(unsigned long, sid.unknowns.unk34, ParseUnsigned(child, wxT(RAWXML_UNKNOWNS), wxT("u34")));
+            OPTION_PARSE(unsigned long, sid.unknowns.unk35, ParseUnsigned(child, wxT(RAWXML_UNKNOWNS), wxT("u35")));
+            OPTION_PARSE(unsigned long, sid.unknowns.unk36, ParseUnsigned(child, wxT(RAWXML_UNKNOWNS), wxT("u36")));
+            OPTION_PARSE(unsigned long, sid.unknowns.unk37, ParseUnsigned(child, wxT(RAWXML_UNKNOWNS), wxT("u37")));
+            OPTION_PARSE(unsigned long, sid.unknowns.unk38, ParseUnsigned(child, wxT(RAWXML_UNKNOWNS), wxT("u38")));
+            OPTION_PARSE(unsigned long, sid.unknowns.unk39, ParseUnsigned(child, wxT(RAWXML_UNKNOWNS), wxT("u39")));
+            OPTION_PARSE(unsigned long, sid.unknowns.unk40, ParseUnsigned(child, wxT(RAWXML_UNKNOWNS), wxT("u40")));
+            OPTION_PARSE(unsigned long, sid.unknowns.unk41, ParseUnsigned(child, wxT(RAWXML_UNKNOWNS), wxT("u41")));
+            OPTION_PARSE(unsigned long, sid.unknowns.unk44, ParseUnsigned(child, wxT(RAWXML_UNKNOWNS), wxT("u44")));
         } else if (child(RAWXML_SID_FLATRIDE)) {
             OPTION_PARSE(unsigned long, sid.flatride.chunked_anr_animation_chunks, ParseUnsigned(child, wxT(RAWXML_SID_FLATRIDE), wxT("chunkCount")));
             if (sid.flatride.chunked_anr_animation_chunks)

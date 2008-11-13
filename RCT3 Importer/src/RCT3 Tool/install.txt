@@ -1,0 +1,2 @@
+Put everything in a new dir.
+If you have an old version of the importer, make sure you overwrite all files.

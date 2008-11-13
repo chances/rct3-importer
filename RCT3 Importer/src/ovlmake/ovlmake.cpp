@@ -650,13 +650,9 @@ int main(int argc, char **argv)
 #endif
 
     // *&^$% GraphicsMagick
-    wxFileName app = wxString(wxArgv[0]);
+    wxFileName app = wxStandardPaths::Get().GetExecutablePath();
     if (!app.IsAbsolute())
         app.MakeAbsolute();
-    /*
-    wxString appenv = wxT("MAGICK_CONFIGURE_PATH=") + app.GetPathWithSep();
-    putenv(appenv.mb_str(wxConvLocal));
-    */
     try {
 //        fprintf(stderr, "All .mgk files expected in '%s'.\n", static_cast<const char*>(app.GetPathWithSep().mb_str(wxConvLocal)));
         wxGXImage::CheckGraphicsMagick(app.GetPathWithSep());

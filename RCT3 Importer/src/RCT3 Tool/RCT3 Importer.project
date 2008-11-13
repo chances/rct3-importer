@@ -152,6 +152,7 @@
     <File Name="changelog.txt"/>
     <File Name="changes.tmp"/>
     <File Name="credits.txt"/>
+    <File Name="install.txt"/>
   </VirtualDirectory>
   <Dependencies Name="Debug">
     <Project Name="Precompile RNG"/>
@@ -166,7 +167,7 @@
   </Dependencies>
   <Settings Type="Executable">
     <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
-      <General OutputFile="../../bin/$(ProjectName)d.exe" IntermediateDirectory="../../lib/obj/RCT3Importer/Debug" Command="./$(ProjectName)d.exe" CommandArguments="" WorkingDirectory="../../bin" PauseExecWhenProcTerminates="yes"/>
+      <General OutputFile="../../bin/RCT3_Importerd.exe" IntermediateDirectory="../../lib/obj/RCT3Importer/Debug" Command="RCT3_Importerd.exe" CommandArguments="" WorkingDirectory="../../bin" PauseExecWhenProcTerminates="yes"/>
       <Compiler Required="yes" Options="-g;$(WX2_CXX_PD);-Wall;-fno-strict-aliasing;-mthreads;-fexceptions">
         <IncludePath Value="."/>
         <IncludePath Value="../../include"/>
@@ -255,7 +256,7 @@ res_spline.cpp: xrc/spline.fbp
       </AdditionalRules>
     </Configuration>
     <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
-      <General OutputFile="&quot;../../bin/$(ProjectName).exe&quot;" IntermediateDirectory="../../lib/obj/RCT3Importer/Release" Command="&quot;./RCT3 Importer.exe&quot;" CommandArguments="" WorkingDirectory="../../bin" PauseExecWhenProcTerminates="no"/>
+      <General OutputFile="../../bin/RCT3_Importer.exe" IntermediateDirectory="../../lib/obj/RCT3Importer/Release" Command="RCT3_Importer.exe" CommandArguments="" WorkingDirectory="../../bin" PauseExecWhenProcTerminates="no"/>
       <Compiler Required="yes" Options="-O2;$(WX2_CXX_PR);-fno-strict-aliasing;-mthreads;-fexceptions">
         <IncludePath Value="."/>
         <IncludePath Value="../../include"/>
@@ -275,7 +276,7 @@ res_spline.cpp: xrc/spline.fbp
         <Preprocessor Value="XMLCPP_USE_EXSLT"/>
         <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
       </Compiler>
-      <Linker Required="yes" Options="-O2;-s;$(WX2_LIB_PR);-lexpat">
+      <Linker Required="yes" Options="-O2;$(WX2_LIB_PR);-lexpat">
         <LibraryPath Value="../../lib"/>
         <LibraryPath Value="../../bin"/>
         <Library Value="libOVL"/>

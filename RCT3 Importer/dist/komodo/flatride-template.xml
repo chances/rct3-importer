@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rawovl xmlns="http://rct3.sourceforge.net/rct3xml/raw" basedir="output\" installdir="">
+	<!--
+	Please enter your nick and the internal name for your flat ride in the two
+	spots below. You should only use alphanumeric AscII characters for both
+	(a-z, A-Z, 0-9), if you must, you can also use - or _, but try not to.
+	-->
+	<rawovl basedir="Style\Custom\[[%tabstop1:your nick]]\[[%tabstop2:flat name]]\" prefix="[[%tabstop1]]-">
+		<rawovl file="[[%tabstop2]]">
+            <!--
+            This template uses the up-to-date alternative described in the advanced
+            section of the flatride tutorial. Refer to section 6.3.4.
+            -->
+            <import file="[[%tabstop:scenery xml]]" name="[[%tabstop2]]"/>
+            <import file="[[%tabstop3:modxml]]" use="splines" id="mainimport"/>
+            <import file="[[%tabstop3]]" use="animations"/>
+        </rawovl>
+        
+        <rawovl file="Style">
+            <!--
+            The format attribute is explained in the tutorial. In brief, use 20 if
+            your icon texture has gradual transparency. If not, use 18.
+            -->
+            <tex name="[[%tabstop2]]Texture" format="[[%tabstop:20]]">
+                <texture>
+                    <!--
+                    Enter the file name of your icon texture
+                    -->
+                    <data type="file">[[%tabstop:icon.png]]</data>
+                </texture>
+            </tex>
+            <gsi name="[[%tabstop2]]" tex="[[%tabstop2]]Texture" left="0" top="0" right="80" bottom="64"/>
+            <!--
+            Enter the name and description of your flat ride as it should appear in
+            the game menu.
+            -->
+            <txt name="[[%tabstop2]]" type="text">[[%tabstop:display name]]</txt>
+            <txt name="[[%tabstop2]]Desc" type="text">[[%tabstop:ride description]]</txt>
+            
+            <anr name="[[%tabstop2]]" nametxt="[[%tabstop2]]" description="[[%tabstop2]]Desc" sid="[[%tabstop2]]">
+                <!--
+                First, enter the attraction type of your flat ride, the category which
+                it will appear under in the game. Usually you'll want to use 1 (gentle),
+                4 (thrill), 5 (other) or 6 (junior). The full list is available in
+                the tutorial.
+                Next, enter the name of your loop spline, peep spline and mech spline.
+                If you need more than one peep spline, add them later before the mech
+                spline.
+                -->
+                <attraction type="[[%tabstop:4]]" version="0" loopSpline="[[%tabstop:loop spline]]" impref="mainimport">
+                    <attractionPath spline="[[%tabstop:peep spline]]" impref="mainimport"/>
+                    <attractionPath spline="[[%tabstop:mech spline]]" impref="mainimport"/>
+                </attraction>
+                <!--
+                These are explained in the flatride tutorial.
+                This template will not go through the ride options, you'll have to
+                change them later. Refer to the tutorial for their exact meaning if
+                known.
+                -->
+                <ride attractivity="[[%tabstop:50]]" entryFee="[[%tabstop:10]]" seating="[[%tabstop:10]]">
+                    <!-- Price tolerance -->
+                    <rideOption type="12">
+                        <parameter>60</parameter>
+                        <parameter>20</parameter>
+                        <parameter>10</parameter>
+                    </rideOption>
+                    <!-- durability decrease -->
+                    <rideOption type="10">
+                        <parameter>10</parameter>
+                    </rideOption>
+                    <rideOption type="0"/>
+                    <!-- ratings per cycle -->
+                    <rideOption type="8" suboptionValue="2">
+                        <parameter>0.8</parameter>
+                        <parameter>0.4</parameter>
+                        <parameter>0.3</parameter>
+                        <parameter>0.33</parameter>
+                    </rideOption>
+                    <rideOption type="0"/>
+                    <!-- ratings per scenery -->
+                    <rideOption type="8" suboptionValue="5">
+                        <parameter>0.8</parameter>
+                        <parameter>0</parameter>
+                        <parameter>0.04</parameter>
+                        <parameter>1</parameter>
+                    </rideOption>
+                    <!-- base ratings -->
+                    <rideOption type="8">
+                        <parameter>5</parameter>
+                        <parameter>5</parameter>
+                        <parameter>5</parameter>
+                        <parameter>1</parameter>
+                    </rideOption>
+                    <rideOption type="0"/>
+                    <rideOption type="11">
+                        <parameter>0</parameter>
+                    </rideOption>
+                </ride>
+            </anr>
+            <sid name="[[%tabstop2]]" nametxt="[[%tabstop2]]" icon="[[%tabstop2]]" ovlpath="Style\Custom\[[%tabstop1]]\[[%tabstop2]]\[[%tabstop2]]" svd="[[%tabstop2]]">
+                <type scenerytype="23"/>
+                <!--
+                Set your flat's size as described in the tutorial. Remember it
+                needs to be given in the game coordinate system.
+                -->
+                <position xsize="[[%tabstop:20]]" ysize="[[%tabstop4:10]]" zsize="[[%tabstop:20]]" xsquares="[[%tabstop:5]]" zsquares="[[%tabstop:5]]"/>
+                <squareUnknowns flags="0x00000003" minHeight="0" maxHeight="[[%tabstop4]]" supports="1"/>
+            </sid>
+            <!--
+            Set the theme for your flat ride. The theme needs a respective entry
+            and exit, so the available choices are 0 (generic), 1 (western),
+            2 (spooky), 3 (sci-fi) and 4 (adventure).
+            -->
+            <symbol name="StyleIndex" target="common" type="int" data="[[%tabstop:0]]"/>
+        </rawovl>
+    </rawovl>
+    
+</rawovl>

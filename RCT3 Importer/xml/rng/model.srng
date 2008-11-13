@@ -360,6 +360,7 @@
 						</sch:rule>
 					</sch:pattern>
 					<attribute name="name" type="string"/>
+					<attribute name="animated" type="boolean" occurs="?"/>
 					<a:documentation>'metadata' elements represent information specific for a reading application. As the need arises,
 					'metadata' elments will be added to other elemens beside 'group'.</a:documentation>
 					<element name="metadata" occurs="?">

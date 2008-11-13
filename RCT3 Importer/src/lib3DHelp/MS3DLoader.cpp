@@ -161,7 +161,8 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
                             gr.m_name = n.getPropVal("name");
                             parseFloatC(n.getPropVal("distance"), gr.m_loddistance);
                             parseULongC(n.getPropVal("forceanim"), forceanim);
-                            gr.m_forceanim = forceanim;
+                            if (forceanim)
+								gr.m_forceanim = c3DGroup::ANIMATED;
                             foreach(const cXmlNode& ch, n.children()) {
                                 if (ch("mesh")) {
                                     gr.m_meshes.insert(ch.wxcontent());

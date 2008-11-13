@@ -285,14 +285,6 @@ bmy.pal.h: bmy.pal
       </AdditionalRules>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug">
-    <Project Name="Precompile RNG"/>
-    <Project Name="Precompile XSL"/>
-    <Project Name="libASE"/>
-    <Project Name="libOVLng"/>
-    <Project Name="libXmlCpp"/>
-    <Project Name="libWXHelp"/>
-  </Dependencies>
   <Dependencies Name="DebugBaseUnicode">
     <Project Name="Precompile RNG"/>
     <Project Name="Precompile XSL"/>
@@ -318,6 +310,14 @@ bmy.pal.h: bmy.pal
     <Project Name="libWXHelp"/>
   </Dependencies>
   <Dependencies Name="ReleaseUnicode">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libASE"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libXmlCpp"/>
+    <Project Name="libWXHelp"/>
+  </Dependencies>
+  <Dependencies Name="Debug">
     <Project Name="Precompile RNG"/>
     <Project Name="Precompile XSL"/>
     <Project Name="libASE"/>

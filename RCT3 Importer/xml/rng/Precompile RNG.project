@@ -29,7 +29,7 @@
     <File Name="rct3xml-scenery-v1.srng"/>
     <File Name="rct3xml-shared-v1.srng"/>
     <File Name="relaxng.srng"/>
-    <File Name="shortrelaxng.rng"/>
+    <File Name="shortrelaxng.rng.protect"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <Configuration Name="Precompile" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">

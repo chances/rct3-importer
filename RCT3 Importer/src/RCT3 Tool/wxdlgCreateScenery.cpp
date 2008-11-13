@@ -1505,7 +1505,7 @@ void dlgCreateScenery::OnLODAdd(wxCommandEvent& WXUNUSED(event)) {
         ::wxMessageBox(_("There are duplicate model names. A model name must be unique, no matter whether it's animated or not"), _("Error"), wxOK|wxICON_ERROR, this);
         return;
     }
-    dlgLOD *dialog = new dlgLOD(m_SCN, this);
+    boost::shared_ptr<dlgLOD> dialog(new dlgLOD(m_SCN, this), wxWindowDestroyer);
     if (m_nbModels->GetSelection() != 1) {
         int sel = m_htlbModel->GetSelection();
         if (sel >= 0) {
@@ -1541,7 +1541,6 @@ void dlgCreateScenery::OnLODAdd(wxCommandEvent& WXUNUSED(event)) {
         m_htlbLOD->SetSelection(sel);
         UpdateControlState();
     }
-    dialog->Destroy();
 }
 
 void dlgCreateScenery::OnLODEdit(wxCommandEvent& WXUNUSED(event)) {
@@ -1552,7 +1551,7 @@ void dlgCreateScenery::OnLODEdit(wxCommandEvent& WXUNUSED(event)) {
     int sel = m_htlbLOD->GetSelection();
     if (sel < 0)
         return;
-    dlgLOD *dialog = new dlgLOD(m_SCN, this);
+    boost::shared_ptr<dlgLOD> dialog(new dlgLOD(m_SCN, this), wxWindowDestroyer);
     dialog->SetLOD(m_SCN.lods[sel]);
     if (dialog->ShowModal() == wxID_OK) {
         m_SCN.lods.erase(m_SCN.lods.begin() + sel);
@@ -1574,7 +1573,6 @@ void dlgCreateScenery::OnLODEdit(wxCommandEvent& WXUNUSED(event)) {
         m_htlbLOD->SetSelection(sel);
         UpdateControlState();
     }
-    dialog->Destroy();
 }
 
 void dlgCreateScenery::OnLODCopy(wxCommandEvent& WXUNUSED(event)) {

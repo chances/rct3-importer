@@ -1,0 +1,186 @@
+Ovlcompiler
+===========
+
+Introduzione
+------------
+
+OvlCompiler è uno strumento a linea di comando che può essere usata per compilare semplici files xml in files ovl che contengono animazioni. Un file xml specifica le meshes (le parti da cui è formato l'oggetto)(in formato ase), le textures (in formato bmp), i dettagli dei bones (le ossa dell'armatura) e i passi dell'animazione dei bones. Questo strumento si limita a semplici animazioni in cui una singola mesh è assegnata a un singolo bone. 
+
+
+Utilizzo della linea di comando
+-------------------------------
+
+Il programma viene richiamato utilizzando il seguente formato: 
+
+    ovlcompiler inputfile outputfile
+
+dove "inputfile" specifica un file .xml e "outputfile" specifica un file .common.ovl, esempio:
+
+    ovlcompiler c:\test.xml c:\test.common.ovl
+
+il nome dell'outputfile deve corrispondere al nome dato al bsh nella descrizione dell'xml o si potrebbe verificare l'errore "No SVD for SID".
+
+
+
+Importare i files ovl in RCT3
+-----------------------------
+
+Una volta che l'ovlcompiler ha generato un file .common.ovl esso può essere aggiunto in un tema attraverso l'importer nel modo usuale. Un tipico file .sid è provvisto al fine di creare dei ride events.
+
+
+Formato XML
+-----------
+
+Il seguente è un esempio dell'xml che ovlcompiler comprende:
+
+<?xml version="1.0"?>
+<ovl xmlns="http://rct3.sourceforge.net/rct3xml/ovlcompiler">
+  <bsh name="test" model="C:\test.ASE">
+    <geomobj name="TEST" bone="testbone" ftx="texture" txs="SIOpaque" />
+    <bone name="testbone">
+        <pos1>1.0 0.0 0.0 0.0   0.0 1.0 0.0 0.0   0.0 0.0 1.0 0.0   0.0 0.0 0.0 1.0</pos1>
+        <pos2>1.0 0.0 0.0 0.0   0.0 1.0 0.0 0.0   0.0 0.0 1.0 0.0   0.0 0.0 0.0 1.0</pos2>
+    </bone>
+  </bsh>
+  <ban name="test">
+    <bone name="testbone">
+      <translate time="0.0">0.0 0.0 0.0</translate>
+      <translate time="2.0">0.0 1.0 0.0</translate>
+      <translate time="5.0">0.0 1.0 0.0</translate>
+      <translate time="7.0">0.0 0.0 0.0</translate>
+      <rotate time="0.0">0.0      0.0 0.0 </rotate>
+      <rotate time="1.0">1.570796 0.0 0.0 </rotate>
+      <rotate time="6.0">1.570796 0.0 0.0 </rotate>
+      <rotate time="7.0">0.0      0.0 0.0 </rotate>
+    </bone>
+  </ban>
+  <ftx name="texture" image="C:\test.bmp" alpha="C:\test_alpha.bmp"/>
+</ovl>
+
+ovl:        ovl è il root node e deve sempre essere presente.
+fix:        Descrive il sistema di coordinate per il modello, matrice e keyframes.
+            handedness:     Se il vostro sistema di coordinate è "left"- o "right"handed. In quasi tutti i casi "right" è la scelta corretta.
+            up:             Determina quale asse ("x", "y" o "z") punta verso l'alto nel vostro sistema di coordinate. "z" per molti programmi (Blender, SketchUp), "y" per Milkshape.
+            Importante: La scelta di default è usare il sistema di coordinate utilizzato da RCT3 ("left", "y"), che in molti casi è diverso da quello dell'utente.
+            Attualmente con c'è un modo per fissare in automatico questi settaggi per i files ms3d! pertanto dovete aggiungere quest tag.
+            Il settaggio è globale per il file, il tag "fix" è un figlio di ovl.
+            Velocemente:
+              <fix handedness="right" up="z" /> per Blender & Sketchup,
+              <fix handedness="right" up="y" /> per Milkshape
+bsh:        bsh descrive il bone meshes, un figlio di  ovl
+            name:           Il nome dell'oggetto. Deve coincidere sia con il nome nel nodo ban che con il nome del file usato per l'output.
+            model:          Il persorso del file ase o ms3d  che contiene i dati delle mesh.
+geomobj:    geomobj descrive i mapping delle mesh nel modello dell'oggetto, il numero dei bones e le textures. Gli elementi Geomobj sono figli degli elementi bsh, deve essere presente almeno un geomobj.
+            name:           Il nome delle mesh così come assegnate nel modello. The name of the mesh as given in the model file. Attenzione alle maiuscole e alle minuscole in quanto cè distinzione.
+            bone:           In nome del bone acui questa mesh è assegnata. Se l'attributo non è specificato allora verrà utilizzato il root bone (il padre di tutti gli altri bone). Il root bone è generato automaticamente dall'ovlcompiler.
+            ftx:            Il nome della texture da usare. Le texture sono specificate usando gli elementi "ftx" a livello "ovl".
+            txs:            Lo stile con cui ogni texture deve essere applicata al modello.
+            transparency:   I settings per la trasparenza  (formalmente "placing"). Opzionale. Può essre "none", "masked" o "regular". Se lo omettete, la regolazione adeguata per il vostro stile di texture sarà impostata in automatico, percui generalmente non c'è ragione per aggiungere questo tag.
+            flags:          I flags setting per la texture. Opzionale. Può essere "none" (default), "sign", "terrain", "cliff", "water", "watermask", "billboard" o "animatedbillboard"
+                            Nota: Se lo impostate come "sign", non dovete aggiungere un attributo  txs.
+                                  Se lo impostate su qualcos'altro (che non sia "sign" o "none"), non dovete aggiungere gli attributi ne ftx che txs.
+            doublesided:    Determina se le facce sono texturizzate su un solo lato (0, default) o su entrambi (1). Opzionale.
+bone:       Descrive i bones nell'oggetto. Un figlio di bsh. Possono esserci tanti bones in un unico oggetto.
+            name:           Il nome del bone. Deve coincidere con un nome dei bones presenti nell'elemento ban
+            parent:         Il bone che è parente (genitore) di questo bone.
+pos1:       La posizione e l'orientamento del bone. le 16 serie di numeri (es. <pos1>1.0 0.0 0.0 0.0   0.0 1.0 0.0 0.0   0.0 0.0 1.0 0.0   0.0 0.0 0.0 1.0</pos1>)  rappresentano una matrice da 4x4, espressa riga per riga. Un figlio di bone. pos1 rende la matrice del bone relativamente al suo bone parente (genitore): se non c'è un bone parente è identica a pos2.
+pos2:       dà la posizione del bone nello spazio dell'oggetto. Per calcolare pos1 da pos2 e il suo parente pos2, moltiplicate il pos2 del bone per l'inverso del pos2 del parente.
+ban:        ban descrive le animazioni del bone. Un figlio di ovl.
+            name:           Il nome dell'animazione. Deve coincidere sia con il nome nel nodo bsh che con il nome utilizzato per il file in output.
+bone:       Descrive l'animazione per il bone. Un figlio di ban.
+            name:           Il nome del bone. Deve corrispondere a uno dei nomi dei bones nell'elemento bsh.The name of the bone. 
+translate:  Un keyframe di translazione (spostamento) che consiste in 3 serie di numeri che specificano la posizione rispetto a  x,y,z. Un figlio di bone. 
+            time:           Il tempo in secondi in cui il keyframe si presenta.
+rotate:     Un keyframe di rotazione  che consiste in 3 serie di numeri che specificano la rotazione, in radianti, intorno agli assi x, y e z del bone. Un figlio di bone. 
+            time:           Il tempo in secondi in cui il keyframe si presenta.
+ftx:        ftx descrive una texture, un figlio di ovl. Opzionale se usi un texture.ovl (Guarda "reference" di seguito).
+            name:           Il nome della texture, deve coincidere con uno dei nomi assegnati nell'attributo ftx nel nodo geomobj.
+            image:          Il percorso del file bmp che contiene l'immagine per questa texture. L'immagine deve essere 8bpp, con altezza e larghezza multipli di 2 (es 64x64, 128x128...) 
+            alpha:          Il percorso del file bmp che contiene la maschera alpha per questa tezture. Può essere lasciato vuoto. L'immagine deve essere 8bpp, con altezza e larghezza multipli di 2 (es 64x64, 128x128...) .
+reference:  Crea un riferimento a un file texture ovl. Dare il percorso relativo per il file texture ovl SENZA ".common.ovl".
+
+
+Il seguente esempio illustra un'animazione che ruota e abbassa la mesh "TEST" che può essere trovata in c:\test.ase.
+
+
+
+XML Esempi
+----------
+
+Rotazione rispetto a un punto arbitrario
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+La rotazione si verifica rispetto al frame di riferimento del bone, tale riferimento viene specificato tramite le matrici in pos1 e pos2.
+
+  <bsh ... >
+    <bone name="testbone">
+        <pos1>1.0 0.0 0.0 0.0   0.0 1.0 0.0 0.0   0.0 0.0 1.0 0.0   0.0 8.0 0.0 1.0</pos1>
+        <pos2>1.0 0.0 0.0 0.0   0.0 1.0 0.0 0.0   0.0 0.0 1.0 0.0   0.0 8.0 0.0 1.0</pos2>
+    </bone>
+  </bsh>
+
+  <ban ... >
+    <bone name="testbone">
+      <translate time="0.0">0.0 8.0 0.0</translate>
+      <translate time="7.0">0.0 8.0 0.0</translate>
+      <rotate time="0.0">0.0      0.0 0.0 </rotate>
+      <rotate time="1.0">1.570796 0.0 0.0 </rotate>
+      <rotate time="6.0">1.570796 0.0 0.0 </rotate>
+      <rotate time="7.0">0.0      0.0 0.0 </rotate>
+    </bone>
+  </ban>
+
+Il precedente esempio illustra una rotazione rispetto a un punto rialzato di 8 unità rispetto all'origine. gli elmenti pos1 e pos2 definiscono infatti l'origine del bone a y=8.0 .  I frame di transizione (Translation) devono contenere y=8.0 per poter muovere la mesh di nuovo in posizione poichè l'inverso della matrice è applicata alla mesh, quindi i passaggi dell'animazione della rotazione sono applicati rispetto all'origine, infine i passaggi di transazione vengono applicati. 
+
+Parent Bones
+~~~~~~~~~~~~
+I movimenti di un bone possono essere specificati in relazione ad un altro bone, ad esempio l'osso della mano dipende dall'osso del braccio. Questo viene fatto specificando l'attributo parent in un elemento bone. Esempio:
+
+  <bsh ... >
+    <bone name="parentbone">
+        <pos1>1.0 0.0 0.0 0.0   0.0 1.0 0.0 0.0   0.0 0.0 1.0 0.0   0.0 0.0 0.0 1.0</pos1>
+        <pos2>1.0 0.0 0.0 0.0   0.0 1.0 0.0 0.0   0.0 0.0 1.0 0.0   0.0 0.0 0.0 1.0</pos2>
+    </bone>
+    <bone name="childbone" parent="parentbone">
+        <pos1>1.0 0.0 0.0 0.0   0.0 1.0 0.0 0.0   0.0 0.0 1.0 0.0   0.0 0.0 0.0 1.0</pos1>
+        <pos2>1.0 0.0 0.0 0.0   0.0 1.0 0.0 0.0   0.0 0.0 1.0 0.0   0.0 0.0 0.0 1.0</pos2>
+    </bone>
+  </bsh>
+
+Il frame di riferimento del bone figlio (childbone) dipende ora dall'orientamento del bone genitore (parentbone) e si muoverà quando il "parentbone" si muove.
+
+Effects Points
+~~~~~~~~~~~~~~
+Gli Effects points possono essere aggiunti creando un bone con il nome dell'effects point, esempio:
+
+    <bone name="simplelight01">
+        <pos1>1.0 0.0 0.0 0.0   0.0 1.0 0.0 0.0   0.0 0.0 1.0 0.0   0.0 0.0 0.0 1.0</pos1>
+        <pos2>1.0 0.0 0.0 0.0   0.0 1.0 0.0 0.0   0.0 0.0 1.0 0.0   0.0 0.0 0.0 1.0</pos2>
+    </bone>
+
+Le animazione possono essere utilizzate per muovere gli effects point. Se uno "start" point coincide con il suo "end" point allora l'effect non funziona (è spento). Gli effects possono essere accesi e spenti allontanando tra di loro lo start e l'endpoint usando l'animazione e quindi facendoli dinuovo coincidere. 
+
+References
+~~~~~~~~~~~~~~
+Crea un riferimento a un file texture ovl. Dare il percorso relativo per il file texture ovl SENZA ".common.ovl". Seguendo le raccomandazione nell'importer, un esempio potrebbe essere: 
+    <reference>../shared/thecook-test-texture</reference>
+
+
+Errori conosciuti
+-----------------
+
+- Generalmente non vengono generati avvisi d'errore, semplicemente non viene generato alcun file.
+
+
+
+RCT3 Limitazioni
+----------------
+
+- L'illuminazione dinamica non è supportata, ad esempio l'animazione non può essere usata per accendere/spegnere le luci.
+- Gli Speakers (altoparlanti) non possono essere utilizzati come Ride Events.
+
+
+
+
+
+The Cook
+June '07

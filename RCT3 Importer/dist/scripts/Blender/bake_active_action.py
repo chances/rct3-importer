@@ -54,7 +54,10 @@ def bakeAction(action,armatureObject):
 
     print "-------------------------------------"
     print "Baking Action "+action.getName()
-    baked_action = Armature.NLA.NewAction("baked_"+action.getName())
+    baked_name = "baked_"+action.getName()
+    if action.getName()[0] == "_":
+        baked_name = action.getName()[1:]
+    baked_action = Armature.NLA.NewAction(baked_name)
 
 
     old_quats={}

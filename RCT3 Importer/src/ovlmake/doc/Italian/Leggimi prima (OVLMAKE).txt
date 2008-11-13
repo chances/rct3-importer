@@ -1,0 +1,97 @@
+OvlMake
+=======
+Nota: OvlMake è rilasciato con licenza GPLv3. Fra molte cose, pricipalmente riguardo agli sviluppatori, per gli utilizzatori questo significa che lo usate a VOSTRO RISCHIO!
+Leggete il License.txt per maggiori informazioni.
+A partire dalla versione 0.4 l'inserimento dell'xml viene controllato e ovlmake avvisa degli errori.
+
+Introduzione
+------------
+OvlMake è il successore dell'OvlCompliler, uno strumento a linea di comando per compilare (convertire) semplici files xml in files Ovl. OvlCompiler fu scritto da the_cook al fine di avere uno strumento che permettesse la creazione di oggetti animati per RCT3. 
+A partire dalla versione 0.4, ovlmake non è più completamente compatibile con ovlcompiler!  Di conseguenza leggi l'originale ReadMe di the_cook's che ho incluso ("OvlCompiler ReadMe.txt") prima di continuare qui (ovviamente devi scrivere "ovlmake" al posto di "ovlcompiler" :-) ) e modificato per tutti i cambiamenti.  Ora è importante anche l'ordine delle istruzioni quindi è importante eseguirle nell'ordine in cui sono spiegate.
+
+Miglioramenti rispetto all'OvlCompiler
+--------------------------------------
+* Non è necessario specificare un output file. !!! Leggete di seguito per capire cosa succede se non lo mettete !!!
+* OvlMake supporta qualche opzione a linea di comando: eseguitelo senza dare un imput file per poterle vedere. 
+* Non dovete più preoccuparvi di far combaciare i nomi degli attributi bsh e ban, così come non serve far combaciare i nomi dei files dell'xml e/o dell'ovl.
+* Puoi dare anche più di un attributo ban, ma più di uno genera un avviso visto che i CS animati ne usano uno solo.
+* Minor LOD support, influisce sul modo in cui vengono trattati gli attributi bsh. Leggi più avanti per maggiori informazioni.
+* La root dell'attributo ovl supporta due nuovi attributi: "name" e "file". Questi hanno influenza su quello che succede se non specifichi un nome per il file in output (leggi di seguito per una spiegazione completa) 
+* Ora in grado di supportare tutti i formati immagine utilizzabili nell'importer.
+* OvlMake è essenzialmente uno strumento a linea di comando che utilizza le librerie che verranno utilizzate nella prossima versione dell'importer. In pratica questo significa una riscrittura completa dell'ovlcompiler.  Tutti i difetti e gli errori originali quindi sono stati sostituiti da altri completamente nuovi =)
+* OvlMake supporta 3 differenti formati per l'imput. Il primo è l'xml generato dall'ovlcompile con le dovute modifiche precedentemente trattate. Il secondo è il file scn generato dall'importer. Il terzo è un nuovo formato xml che sarà utilizzato dalle nuove versioni dell'importer. Questo formato non è stato disegnato per essere scritto dagli umani, visto che alcuni degli attributi utilizzati hanno dei valori sconosciuti. Potete convertire l'xml dell'ovlcompiler e i files scn dell'importer in questo nuovo formato mediante una conversione a linea di comando. !!!Attenzione: ovlmake distingue scn e files xml files dalla loro estensione, non dal contenuto. Qualunque cosa che non è xml verrà trattata come scn. apart by the extension, not the content. Everything that doesn't have xml will be treated as a scn file. Non inserite files qualunque o si potrebbero verificare dei blocchi nel programma!!!
+
+!!!Non specificare un nome per il file in output!!!
+---------------------------------------------------
+Se non specificate un nome per il file in uscita, ovlmake cerca di "fare la cosa giusta". Generalmente è quello che vogliamo, ma ci sono dei casi in cui vorremmo qualcosa di diverso. Pertanto è importante sapere cosa succede se non specifichi un nome per l'output:
+!!!ovlmake sovrascrive i files senza avvisare!!!
+Ci sono essenzialmente due casi: Il file utilizzato come imput contiene informazioni su dove e con che nome salvare oppure non le contiene.
+Prima che io li spieghi, mettetevi in testa che questa informazione è archiviata in due parti. La prima è la base del nome del file ovl (es. "xyz" in "xyz.common.ovl), la seconda è il percorso in cui viene creato l'ovl.
+
+1. Se il file contiene le informazioni
+Se le contiene vengono utilizzate. Questo è il caso dei nuovi file scn che vengono salvati dopo aver creato il file ovl. Lo stesso vale per gli xml generati dal nuovo importer.  Può anche venire assegnato tramite gli attributi "name" e "file" dell'attributo ovl nel file xml dell'ovlcompiler. !!!L'attributo "file" contiene solo i dati della directory, assicuratevi che termini con un separatore di percorso ('\')!!!
+
+2. Il file non contiene le informazioni
+Facile. Verranno assegnate di default il nome e la directory del file in imput.
+
+Se tu specifichi un nome per il file in output, esso sostituirà qualunque informazione contenuta nel file. Se viene specificata solo una parte delle informazioni contenute nel file, le altre verranno inserite come da default.
+
+Minor LOD support
+-----------------
+Per default, ovlmake funziona come ovlcompiler e scrive un LOD a 4000 di distanza. A partire dalla versione 0.1.3, puoi aggiungere un elemento "options" con attributo "lods". Questo elemento deve essere inserito come ultima voce dell'attributo ovl. Puoi impostarlo ai valori 1, 3 o 4. 
+ Esempio:
+<options lods="3" />
+Se tu imposti 4 lods, l'ultimo sarà statico. Le distanze sono 40/100/4000 per 3, 40/100/300/4000 per 4 lods.
+Il modo in cui ovlmake rocessa i dati dipende dal numero di attributi bsh che vengono definiti.
+1 bsh : Il singolo modello è copiato (e reso statico per il 4° lod se applicabile).
+2 bsh : Non supportato, viene trattato come uno e viene generato un avviso per il secondo (che non viene usato).
+3 bsh : Usati nell'ordine in cui vengono definiti. Per 4 lods l'ultimo viene copiato e reso statico.
+4 bsh : Usati nell'ordine, l'ultimo è reso statico (non c'è così bisogno di definire dei bones per quest'ultimo). Viene generato un avviso per 3 lods.
+Di più: Trattati come 4, i superflui sono ignorati e generano avvisi. 
+Se avete bisogno di definire maggiori dettagli, convertite in un importer xml e fatelo là (dovrebbe essere ovvio ^.^).
+
+Adeguata trasparenza
+--------------------
+Dopo molto tempo ora ho trovato come ottenere un'adeguata trasparenza e, nel limite del possibile, ridurre l'effetto raggi x. Nel limite del possibile poichè dopo molti esperimenti sono giunto alla conclusione che per alcuni oggetti non si può proprio evitare di avere l'effetto x-ray (così come succede anche per alcuni oggetti originali del gioco se li si osserva da vicino). Penso che l'effetto residuo sia molto meno importante di prima ed è limitato all'oggetto stesso (o probabilmente) a solo alcune parti di una stessa mesh. Sembra altresì che si noti di più osservando l'oggetto dalla sinistra, meno se lo ruotate. Sinistra in relazione alla vista originale di quando iniziate una nuova partita in modalità illimitata (guardando l'entrata dall'esterno del parco).   
+Perchè si verifichi l'effetto raggi x non potrei ben spiegarlo. In generale posso dire che più un oggetto è complesso, più facilmente si verifica. Potrebbe anche essere causato da qualche misterioso Voodoo. Se il tuo oggetto genera l'effetto raggi x, ho provveduto a un paio di opzioni che pottrebbero aiutare (o forse no...). Per capirle, devo prima spiegarti come funziona la trasparenza in RCT3. 
+Le Meshes (le strutture degli oggetti) sono immagazzinate nell'ovl in due porzioni di dati, una contiene la lista di tutti i vertici e l'altra le facce (triangoli) come una struttura ad albero nella lista dei vertici. Per gli oggetti trasparenti (attributo geomobj nei file xml dell'ovlcompiler con trasparenza masked o regular / files scn dell'importer con meshes impostate con Placing TextureOnly o Unknown) il file ovl immagazzina la lista delle facce 3 volte, una per ogni asse. Ora il punto essenziale è in che modo debbano essere ordinate le facce. Dagli ovl originali mi sembra che solo le coordinate più basse (nelle direzioni date) del triangolo abbiano importanza. Inoltre ho implementato diversi algoritmi che prendono in considerazione altri fattori. Per settare questo algoritmo hai diverse opzioni. La prima è di impostarlo come default tramite la linea di comando dell'ovlmake. Potete impostare "tutti default" con la -t o --trianglesort opzione da linea di comando. Se necessario, puoi impostare i default per il singolo asse con --trianglesortx, --trianglesorty e --trianglesortz.
+La seconda opzione è di settare l'algoritmo per ogni singola mesh. Puoi farlo usando gli attributi sortx, sorty e sortz nell'attributo geomobj per i files xml dell'ovlcompiler o negli attributi meshes nei files xml da scn dell'importer. Nota che questi attributi surclassano qualunque altro dato tramite le opzioni da linea di comando.
+Nota che gli assi sono quelli del gioco, cosi che y è in alto.
+Questa è una lista degli algoritmi che puoi usare:
+min: Ordina dalle coordinate più basse. Sembra essere usato dagli ovl del gioco.
+max: Ordina dalle coordinate più alte.
+mean: Ordina dalla media delle tre coordinate.
+minmax: Ordina dalla coordinate più basse, se combaciano, ordina dalle più alte. Questo è il default utilizzato quando l'algoritmo non viene utilizzato.
+maxmin: Ordina dalle coordinate più alte, se combaciano, ordina dalle più basse. 
+I seguenti algoritmi sono sperimentali. Potete provarli ma , nei miei esperimenti, hanno peggiorato le cose o comunque non sono stati d'aiuto.
+angle45: Ordina come se incontrato da un angolo di visione di 45° sopra la terra nel senso di z e di x, da min a max in Y.
+minXZbyY: Ordina x (o z) per le coordinate più basse, se coincidono, riordina dalle più basse di y, la direzione di y è ordinata da min a max.
+minXZbyOther: Ordina x (o z) per le coordinate più basse, se coincidono, riordina per l'altro asse (z per x e x per z). la direzione di y è ordinata da min a max
+minYbyX: Ordina y dalle coordinate più basse, se queste coincidono, riordina dalle coordinate più basse di x. x e z sono in ordine da min a max.
+minYbyZ: Ordina y dalle coordinate più basse, se coincidono, riordina dalle coordinate più basse di z. x e z sono ordinati da min a max.
+mininv: Ordina dalle coordinate più basse ma nella direzione inversa. Questo generalmente inverte l'effetto raggi x (ora si nota di più dalla destra).
+minmaxinv: Ordina da min a max, ma nella direzione inversa. Stesso effetto di mininv.
+L'unica cosa che posso fare è augurarti buona fortuna. Ricordati che puoi convertire i files scn in files xml dell'importer per meglio settare i tuoi parametri usando il comando  -c / --convert . C'è anche il nuovo comando di conversione -v che mostra altri tipi di output. Tra l'altro, ti dirà quali procedure sono state usate per ogni mesh. 
+
+Adeguata trasparenza, un breve tutorial per i non pratici di linea di comando
+-----------------------------------------------------------------------------
+- Impostate i vostro file di scenario come di consueto nell'importer. Nei settings dei group/mesh impostate: "placing" come
+  - "Texture Only" per masked transparency (per SIAlphaMask... styles).
+  - "Unknown" per la gamma di meshes completamente trasparenti (SIGlass, SIWater or SIAlpha... styles)
+  - Mantieni Texture&Mesh per gli altri styles.
+- Create un file OVL nell'importer, poi salvate lo scn file (l'ordine è importante!).
+- Importate il file ovl per essere sicuri che esso funzioni e che non abbiate ignorato qualche particolare importante.  
+- Leggete e capite la sezione "Non specificare un nome per il file in output" precedente, poichè è quello che farete nel prossimo passaggio.
+- Tirate e rilasciate il file scn sul file eseguibile (l'.exe) dell'ovlmake, NON spostate il file scn in una nuova directory per far questo, deve rimanere nella directory dove l'avete salvato.
+- Il file ovl che avevate creato con l'importer viene sovrascritto.
+- Reimportate
+
+Alcune parole per terminare
+---------------------------
+Ho fatto un condiderevole sforzo per capire come funzionano i file ovl. Anche se non ho ancora capito tutto, posso riscrivere il codice in un modo più pulito. Questo significa anche che i files prodotti con l'ovlmake sono più puliti. Per questo può essere una buona idea compilare con l'ovlmake i files scn anche per gli scenari statici. Non spiegherò qui in dettaglio il formato xml del nuovo importer, come ho detto prima non è leggibile/scrivibile da esseri umani. Al momento c'è solo una cosa per cui potresti essere tentato di usarlo: per utilizzare lods multipli per le animazioni. Io credo che chiunque sia incline a fare ciò sia abbastanza avventuroso da mettersi a convertire i files scn e xml dell'ovlcompiler =)
+
+
+Infine voglio ringraziare the_cook per l'originale ovlcompiler e spero non me ne voglia per averlo rimpiazzato  =)
+
+Saluti
+Belgabor

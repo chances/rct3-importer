@@ -914,11 +914,11 @@ void cOVLDump::SetString(unsigned long id, const char* newstr) {
   *
   * @todo: document this function
   */
-string cOVLDump::GetSymbolReference(void* ptr) const {
+string cOVLDump::GetSymbolReference(void* ptr, bool emptyiffail) const {
     if (has(m_symbolreferences, ptr)) {
         return m_symbolreferences.find(ptr)->second;
     } else {
-        return "- NA -";
+        return emptyiffail?"":"- NA -";
     }
 }
 
@@ -998,3 +998,6 @@ bool cOVLDump::IsVarPointerRelocated(void* ptr) const {
 }
 
 
+bool cOVLDump::IsVarPointerSymRef(void* ptr) const {
+	return has(m_symbolreferences, ptr);
+}

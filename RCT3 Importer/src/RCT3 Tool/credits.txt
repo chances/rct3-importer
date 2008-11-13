@@ -3,19 +3,37 @@ The RCT3 Importer uses the follwing libraries and objects:
 zlib-1.2.3 
   http://www.zilb.net
   License: AS-IS
-expat-2.0.0
+expat-2.0.1
   http://expat.sourceforge.net
   License: AS-IS
 jpeg-6b
   http://www.ijg.org/
   License: Special, see homepage
-libpng-1.2.12
+libpng-1.2.33
   http://www.libpng.org/pub/png/libpng.html
   License: AS-IS
 tiff-3.8.2
   http://www.remotesensing.org/libtiff/
   License: AS-IS
-wxWidgets-cvs
+freetype-2.3.7
+  http://freetype.sourceforge.net/freetype2/index.html
+  License: FTL or GPLv2
+GraphicsMagick-1.2.5
+  http://www.graphicsmagick.org/
+  License: Special MIT-like
+libxml-1.7.2
+  http://xmlsoft.org/
+  License: MIT
+libxslt-1.1.24
+  http://xmlsoft.org/XSLT/
+  License: MIT  
+squish-1.10
+  http://code.google.com/p/libsquish/
+  License: MIT
+cryptopp-5.5.2
+  http://www.cryptopp.com/
+  License: Mainly Public Domain, the part used by the importer is.
+wxWidgets-svn, 2.8 branch
   http://www.wxwidgets.org
   License: wxWidgets v3.1
 Crystal Clear Icons

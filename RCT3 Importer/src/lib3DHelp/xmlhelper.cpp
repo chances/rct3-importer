@@ -50,7 +50,19 @@ bool parseFloat_(std::string& str, double& a) {
 
 bool parseULong_(std::string& str, unsigned long& a) {
     boost::algorithm::trim(str);
-    return parse(str.c_str(), uint_p[assign_a(a)], space_p).full;
+	if (parse(str.c_str(), uint_p[assign_a(a)], space_p).full) {
+		return true;
+	} else {
+		if (str == "true") {
+			a = 1;
+			return true;
+		}
+		if (str == "false") {
+			a = 0;
+			return true;
+		}
+		return false;
+	}
 }
 
 bool parseHexULong_(std::string& str, unsigned long& a) {

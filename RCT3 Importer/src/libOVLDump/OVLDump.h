@@ -153,12 +153,13 @@ public:
         return m_symbolreferences;
     }
 
-    std::string GetSymbolReference(void* ptr) const;
+    std::string GetSymbolReference(void* ptr, bool emptyiffail = false) const;
     std::string GetStringFromVarPtr(void* ptr) const;
     std::string IdentifyVarPtr(void* ptr) const;
 
     long RelocationFromVarPtr(void* ptr) const;
     bool IsVarPointerRelocated(void* ptr) const;
+	bool IsVarPointerSymRef(void* ptr) const;
 };
 
 #endif

@@ -30,6 +30,9 @@
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/format.hpp>
+#include <boost/lambda/bind.hpp>
+#include <boost/lambda/lambda.hpp>
+namespace bll = boost::lambda;
 #include <sstream>
 #include <stdio.h>
 
@@ -1293,15 +1296,24 @@ bool cSCNFile::FromModelFile(boost::shared_ptr<c3DLoader>& model) {
     // Groups
     foreach(const c3DGroup::pair& gr, model->getGroups()) {
         // Find out wheter it is animated or not
-        bool animated = gr.second.m_forceanim;
-        if (!animated) {
-            foreach(const wxString& bn, gr.second.m_bones) {
-                if ((model->getBone(bn).m_type == "Bone") || (!model->getBone(bn).m_parent.IsEmpty())) {
-                    animated = true;
-                    break;
-                }
-            }
-        }
+        bool animated = false;
+		switch (gr.second.m_forceanim) {
+			case c3DGroup::NOTHING: {
+					foreach(const wxString& bn, gr.second.m_bones) {
+						if ((model->getBone(bn).m_type == "Bone") || (!model->getBone(bn).m_parent.IsEmpty())) {
+							animated = true;
+							break;
+						}
+					}
+				}
+				break;
+			case c3DGroup::ANIMATED: 
+				animated = true;
+				break;
+			case c3DGroup::NONANIMATED:
+				// Fall through, false is default
+				break;
+		}
 
         // Find out which bones we need
         set<wxString> usedbones = gr.second.m_bones;
@@ -1368,6 +1380,8 @@ bool cSCNFile::FromModelFile(boost::shared_ptr<c3DLoader>& model) {
         }
 
     }
+	
+	sort(lods.begin(), lods.end(), bll::bind(&cLOD::distance, bll::_1) < bll::bind(&cLOD::distance, bll::_2));
 
     return true;
 }
