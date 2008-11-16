@@ -11,9 +11,9 @@ blender_scripts_name := rct3-blender-scripts-svn$(svn_rev)
 blender_scripts_dir := pub/$(blender_scripts_name)
 ovlmake_name := $(shell grep DIST_DIR ../src/ovlmake/version_ovlmake.h | sed 's:.*DIST_DIR.*"\(.*\)".*//.*:\1:g')
 ovlmake_dir := pub/$(ovlmake_name)
-ovlmake_doc = ReadMe$(space)1st.txt ReadMe$(space)1st.html OvlCompiler$(space)Readme.txt License.txt changelog.txt
+ovlmake_doc = ReadMe_1st.txt ReadMe_1st.html OvlCompiler_Readme.txt License.txt changelog.txt
 
-generated_docs := ../src/RCT3\ Tool/readme.html ../src/ovlmake/ReadMe\ 1st.html ../xml/readme.html scripts/Blender/readme.html komodo/readme.html ../doc/flatrides/flatrides.pdf ../doc/new_in_v18/notes_v18.pdf
+generated_docs := ../src/RCT3\ Tool/readme.html ../xml/rng/readme.html scripts/Blender/readme.html komodo/readme.html ../doc/flatrides/flatrides.pdf ../doc/new_in_v18/notes_v18.pdf ../src/ovlmake/ReadMe_1st.html
 
 UPX := upx --lzma
 P7Z := 7z
@@ -28,7 +28,7 @@ all: prepare schemata importer blender-scripts ovlmake
 %.pdf: %.xml ../doc/rct3dblatex/rct3imp.specs ../doc/new_in_v18/general.xml
 	docbook2latex -V -t pdf -b pdftex -c ../doc/rct3dblatex/rct3imp.specs -i ../doc/rct3dblatex $<
 
-doc: generated_docs
+doc: $(generated_docs)
 
 pub/%.zip:
 	sh -c "cd pub && $(P7Z) a -r -tzip $*.zip $* && cd .."
