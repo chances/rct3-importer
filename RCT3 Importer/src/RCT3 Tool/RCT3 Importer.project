@@ -153,6 +153,7 @@
     <File Name="changes.tmp"/>
     <File Name="credits.txt"/>
     <File Name="install.txt"/>
+    <File Name="todo.log"/>
   </VirtualDirectory>
   <Dependencies Name="Debug">
     <Project Name="Precompile RNG"/>

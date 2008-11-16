@@ -1,28 +1,62 @@
 Version 0.1
 * First Release
 
+
 Version 0.1.1
 * Fixed handling and checking of output file name
+
 
 Version 0.1.2
 * Fixed bug in bsh writing
 * Fixed issue with GraphicsMagick not finding it's config files
 * Write the three "classic" lods, not just one as ovlcompiler did
 
+
 Version 0.1.3
 * Minor LOD handling
 * Fixed reading of new importer xml format
+
 
 Version 0.1.4
 * Fixed a bug in importer xml writing concerning rotational keyframes
 * Now writes ovls that have the same data distribution as vanilla ovls
 
+
 Version 0.1.5
 * Fixed some bugs regarding texture handling
 * Added "animatedbillboard" mesh flag (for geomobj tags).
 
+
 Version 0.2
 * Fixed glass and see-through objects (placing = texture and glass).
 
+
 Version 0.3
 * Fixed issue with loading scn files
+
+
+Version 0.4
+* A lot
+
+
+Version 0.5
+ovlmake
+* [Added] Support for multi-chunk and multi-animation flats
+* [Added] Support for binding sound to scenery
+* [Added] Support for custom sound
+* [Added] Brief message output format, mostly for evaluation by front-ends
+* [Changed] Error report system to give as much error information as available
+* [Fixed] Spelling mistakes
+
+engine
+* [Added] Partial workaround for the 31 mesh limit. Meshes with the same settings will be merged on import.
+* [Added] Support for bone weights and meshes assigned to more than one bone
+* [Added] Option to automatically update from model fires and/or sort bones
+* [Added] Reject Blender default animation, bone, texture and spline names
+* [Fixed] Sense of rotation matrices corrected for right handed coordinate system
+* [Fixed] Animation import from ms3d
+* [Fixed] Crash on broken modxml
+* [Fixed] Rare-occurring bug that lead to creation of broken ovls
+* [Cleaned] Fixed a lot of compiler warnings
+
+

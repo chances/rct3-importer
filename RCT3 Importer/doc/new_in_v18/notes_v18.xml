@@ -3,22 +3,229 @@
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <article>
   <title>Roller Coaster Tycoon® 3 Importer v18</title>
+
   <articleinfo>
     <date>13.7.2008</date>
+
     <author>
       <surname>Belgabor</surname>
     </author>
+
     <legalnotice>
       <para>Copyright (C) 2008 Belgabor, some rights reserved.</para>
+
       <para>This work is licensed under a <ulink
       url="http://creativecommons.org/licenses/by-nc-nd/3.0/">Creative Commons
       Attribution-NonCommercial-NoDerivs 3.0 License</ulink>.</para>
     </legalnotice>
   </articleinfo>
-  <xi:include href="general.xml" xmlns:xi="http://www.w3.org/2001/XInclude"
-              xpointer="element(/1)" />
+
+  <xi:include href="general.xml" xpointer="element(/1)"
+              xmlns:xi="http://www.w3.org/2001/XInclude" />
+
+  <section>
+    <title>Change log</title>
+
+    <para>As the importer and ovlmake use a common importing and model
+    read/treatment engine, I'll usually release both at once. Since documents
+    can apply to both, it's a bit troubresome to get all the versions
+    straight, so every published package will now list a svn revision in its
+    file name. Using this revision number, you can see what belongs together.
+    In the case of documentation or supplementary scripts, the number might
+    also be higher than that of the <application>importer</application> or
+    <application>ovlmake</application> package to denote corrections done
+    after, as long as no new
+    <application>importer</application>/<application>ovlmake</application>
+    pack is out, they still apply to the latest one.</para>
+
+    <para>In the following change log, the <quote>Engine</quote> section
+    describes changes in the mentioned engine and therefore affect both the
+    <application>Importer</application> and
+    <application>ovlmake</application>.</para>
+
+    <section>
+      <title>Importer v18b2 / ovlmake v0.5 (svn130)</title>
+
+      <section>
+        <title>Engine</title>
+
+        <itemizedlist>
+          <listitem>
+            <para>[Added] Partial workaround for the 31 mesh limit. Meshes
+            with the same settings will be merged on import.</para>
+          </listitem>
+
+          <listitem>
+            <para>[Added] Support for bone weights and meshes assigned to more
+            than one bone</para>
+          </listitem>
+
+          <listitem>
+            <para>[Added] Option to automatically update from model fires
+            and/or sort bones</para>
+          </listitem>
+
+          <listitem>
+            <para>[Added] Reject Blender default animation, bone, texture and
+            spline names</para>
+          </listitem>
+
+          <listitem>
+            <para>[Fixed] Sense of rotation matrices corrected for right
+            handed coordinate system</para>
+          </listitem>
+
+          <listitem>
+            <para>[Fixed] Animation import from ms3d</para>
+          </listitem>
+
+          <listitem>
+            <para>[Fixed] Crash on broken modxml</para>
+          </listitem>
+
+          <listitem>
+            <para>[Fixed] Rare-occurring bug that lead to creation of broken
+            ovls</para>
+          </listitem>
+
+          <listitem>
+            <para>[Cleaned] Fixed a lot of compiler warnings </para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section>
+        <title><application>Importer</application></title>
+
+        <itemizedlist>
+          <listitem>
+            <para>[Added] Right double-click on A to re-auto model bones
+            without confirmation</para>
+          </listitem>
+
+          <listitem>
+            <para>[Added] Toggle for the animation display on LODs</para>
+          </listitem>
+
+          <listitem>
+            <para>[Added] Detect Problems menu command to find some issues
+            that can lead to a 60% crash or a no sid for svd.</para>
+          </listitem>
+
+          <listitem>
+            <para>[Added] More visual flags</para>
+          </listitem>
+
+          <listitem>
+            <para>[Added] Some support for moving theme files around. The
+            importer is able to fix the paths of all files if the directory
+            structure did not change.</para>
+          </listitem>
+
+          <listitem>
+            <para>[Added] Busy notice while loading or saving scenery
+            files.</para>
+          </listitem>
+
+          <listitem>
+            <para>[Added] When changing a bone name in a model window, ask the
+            user if he wants to change the name in other animated models or
+            animations.</para>
+          </listitem>
+
+          <listitem>
+            <para>[Fixed] Show selected item in list boxes after update</para>
+          </listitem>
+
+          <listitem>
+            <para>[Fixed] Load error for empty matrix stacks</para>
+          </listitem>
+
+          <listitem>
+            <para>[Fixed] Prefix missing on returned filename if creating from
+            scenery settings dialog</para>
+          </listitem>
+
+          <listitem>
+            <para>[Fixed] Clear prefix when loading old scn file</para>
+          </listitem>
+
+          <listitem>
+            <para>[Fixed] Make auto coordinate system from file button work.
+            Also gives somewhat helpful suggestion when no coordinate system
+            information is available.</para>
+          </listitem>
+
+          <listitem>
+            <para>[Fixed] Up/down spin controls no longer activated if nothing
+            is selected</para>
+          </listitem>
+
+          <listitem>
+            <para>[Fixed] Bugs when trying to load broken modxml files.</para>
+          </listitem>
+
+          <listitem>
+            <para>[Fixed] OK and Cancel buttons hidden in bone settings window
+            if the assigend meshes list was too long.</para>
+          </listitem>
+
+          <listitem>
+            <para>[Fixed] Prevent errors due to size in squares being set to
+            more than 1.</para>
+          </listitem>
+
+          <listitem>
+            <para>[Fixed] Update parents of bones when changing the parent's
+            name.</para>
+          </listitem>
+
+          <listitem>
+            <para>[Removed] The fix orientation matrix is now gone for good as
+            it created a lot of confusion. That removes the use of a default
+            matrix, so that's gone as well.</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section>
+        <title><application>ovlmake</application></title>
+
+        <itemizedlist>
+          <listitem>
+            <para>[Added] Support for multi-chunk and multi-animation
+            flats</para>
+          </listitem>
+
+          <listitem>
+            <para>[Added] Support for binding sound to scenery</para>
+          </listitem>
+
+          <listitem>
+            <para>[Added] Support for custom sound</para>
+          </listitem>
+
+          <listitem>
+            <para>[Added] Brief message output format, mostly for evaluation
+            by front-ends</para>
+          </listitem>
+
+          <listitem>
+            <para>[Changed] Error report system to give as much error
+            information as available</para>
+          </listitem>
+
+          <listitem>
+            <para>[Fixed] Spelling mistakes</para>
+          </listitem>
+        </itemizedlist>
+      </section>
+    </section>
+  </section>
+
   <section>
     <title>Proper transparency</title>
+
     <para>After a very long time I now found out how to do proper transparency
     and, as far as possible, got rid of the X-ray effect. By <quote>as far as
     possible</quote> I mean that after lots of experiments I came to the
@@ -34,6 +241,7 @@
     include some unknown voodoo. If your object shows it, I've provided a few
     customization options that may help or not. To understand them, I first
     need to explain how proper transparency in RCT3 works.</para>
+
     <para>Meshes are stored in OVLs in two data chunks, one contains a list of
     all the vertices and the other the faces (triangles) as three indices into
     the vertex list. For transparent objects, the ovl file stores the face
@@ -44,14 +252,17 @@
     account. You can only influence the triangle sorting mechanism in ovlmake
     (see respective readme), the Importer normally uses the default
     <quote>minmax</quote> algorithm.</para>
+
     <para>RCT3 knows three transparency modes, none, masked and regular. The
     importer sets this automatically accorting to the texture style, so there
     is no reason for you to change it (although you can do so in the
     <guilabel>Transparency</guilabel> column). If it doesn't match the texture
     style, the importer displays it in red.</para>
   </section>
+
   <section>
     <title>Trees, or manipulating normals</title>
+
     <para>If you have tried to create trees or plants with foliage, you may
     have noticed that lighting seems to be different from the ones in the
     game. This works by forcing the mesh normals of foliage to point straight
@@ -59,11 +270,14 @@
     this by setting the <guilabel>Normals</guilabel> column to + whatever axis
     points up in your model (usually matching your coordinate system).</para>
   </section>
+
   <section>
     <title><application>MilkShape</application> support</title>
+
     <para>The Importer now reads the comments for various things from ms3d
     files and uses them to automatically fill some information for scenery.
     This only works if you load a ms3d file as a scenery file.</para>
+
     <note>
       <para>MilkShape indexes animation keyframes by frame index, starting at
       1. RCT3 uses time codes starting at 0. The Importer manages this, but
@@ -71,11 +285,14 @@
       second, you need to set it at frame 31 in MilkShape (it uses 30 fps by
       default, which you should keep as RCT3 does as well).</para>
     </note>
+
     <section>
       <title>Model comment</title>
+
       <para>The model comment is the most complex and therefore uses a simple
       xml syntax. I won't go into much detail at them moment, so I'll just
       gine you an example and add a few brief notes.</para>
+
       <programlisting>&lt;ms3d&gt;
   &lt;name&gt;TestObject&lt;/name&gt;
   &lt;animation&gt;testobject_anim_rest&lt;/animation&gt;
@@ -94,28 +311,35 @@
     &lt;bone&gt;child&lt;/bone&gt;
   &lt;/lod&gt;
 &lt;/ms3d&gt;</programlisting>
+
       <para>The <emphasis>animation</emphasis> element(s) name(s) the
       animation(s) in the Importer. The <emphasis>frame</emphasis> attribute
       can be used to split the MilkShape animation into multiple animations in
       the importer (the number is a MilkShape frame index, so the example uses
       the first frame alone as the rest animation and as first frame of the
       start animation).</para>
+
       <para>The <emphasis>lod</emphasis> element defines both models and LODs
       that use them. The syntax should be obvious from the example. The bone
       names you need to use are the redefined ones (see <xref
       linkend="s_joint_comment" />).</para>
     </section>
+
     <section>
       <title>Group comment</title>
+
       <para>The group comment is a list of whitespace delimited simple tags
       defining mesh settings (I recommend using newlines to separate, ie one
       per line).</para>
+
       <para>Tags you can use:</para>
+
       <itemizedlist>
         <listitem>
           <para><emphasis>ds</emphasis> or <emphasis>doublesided</emphasis>
           Makes the mesh double-sided.</para>
         </listitem>
+
         <listitem>
           <para>A flags tag (<emphasis>sign</emphasis>,
           <emphasis>terrain</emphasis>, <emphasis>cliff</emphasis>,
@@ -123,18 +347,23 @@
           <emphasis>billboard</emphasis> or
           <emphasis>animatedbillboard</emphasis>)</para>
         </listitem>
+
         <listitem>
           <para>A texture style (e.g. <emphasis>SIOpaque</emphasis>,
           <emphasis>SIAlpha</emphasis>)</para>
         </listitem>
       </itemizedlist>
     </section>
+
     <section>
       <title>Material comment</title>
+
       <para>The material comment is a list of whitespace delimited simple tags
       defining texture settings (I recommend using newlines to separate, ie
       one per line).</para>
+
       <para>Tags you can use:</para>
+
       <itemizedlist>
         <listitem>
           <para><emphasis>recol</emphasis> Sets the texture recolourable.
@@ -142,6 +371,7 @@
           for first, 2 for second and 3 for third. These need to be in order
           (e.g. to activate all choices, use <quote>recol 123</quote>).</para>
         </listitem>
+
         <listitem>
           <para><emphasis>ref</emphasis> Marks the texture as being
           referenced, i.e. it will not be automatically added. Needs to be
@@ -154,17 +384,80 @@
         </listitem>
       </itemizedlist>
     </section>
+
     <section id="s_joint_comment">
       <title>Joint comment</title>
+
       <para>The joint comment consists of a single tag defining a new name for
       the joint. <application>MilkShape</application> has a limit of 32
       characters for joint names, so if you need more (e.g. for effect bones),
       use this feature.</para>
     </section>
   </section>
+
   <section>
     <title><application>Blender</application></title>
+
     <para>Please refer to the readme coming with the
     <application>Blender</application> scripts.</para>
+  </section>
+
+  <section>
+    <title>Credits</title>
+
+    <itemizedlist>
+      <listitem>
+        <para><ulink
+        url="http://creativecommons.org/licenses/by-nc-nd/3.0/"><inlinemediaobject>
+            <imageobject>
+              <imagedata fileref="http://i.creativecommons.org/l/by-nc-nd/3.0/88x31.png"
+                         scale="100" scalefit="0" />
+            </imageobject>
+          </inlinemediaobject></ulink>This work is licensed under a <ulink
+        url="http://creativecommons.org/licenses/by-nc-nd/3.0/">Creative
+        Commons Attribution-NonCommercial-NoDerivs 3.0 License</ulink>.</para>
+      </listitem>
+
+      <listitem>
+        <para>Atari® and Roller Coaster Tycoon 3® are trademarks of Atari Inc.
+        All Rights Reserved.</para>
+      </listitem>
+
+      <listitem>
+        <para>The docbook css used for the html version of this document is
+        based upon the one created by <ulink
+        url="http://www.karakas-online.de">Chris Karakas</ulink>.</para>
+      </listitem>
+
+      <listitem>
+        <para>This CSS stylesheet uses <ulink
+        url="http://www.matterform.com/qbullets/index.php">QBullets</ulink> in
+        links. Thanks to Matterform Media for providing QBullets for free. If
+        you plan to use them on your website, please observe the <ulink
+        url="http://www.matterform.com/qbullets/usage.html">QBullets usage
+        terms</ulink>.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para role="matterform"><ulink
+    url="http://www.matterform.com/"><inlinemediaobject>
+        <imageobject>
+          <imagedata fileref="/images/qb_credit.gif" scale="100" scalefit="0" />
+        </imageobject>
+      </inlinemediaobject></ulink></para>
+
+    <para><ulink url="http://sourceforge.net/"><inlinemediaobject>
+        <imageobject role="html">
+          <imagedata fileref="http://sourceforge.net/sflogo.php?group_id=181524&amp;type=4" />
+        </imageobject>
+
+        <imageobject role="pdf">
+          <imagedata fileref="/images/sflogo.png" />
+        </imageobject>
+
+        <imageobject role="chm">
+          <imagedata fileref="/images/sflogo.png" />
+        </imageobject>
+      </inlinemediaobject></ulink></para>
   </section>
 </article>

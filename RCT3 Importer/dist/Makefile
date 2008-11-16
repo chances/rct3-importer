@@ -33,12 +33,14 @@ doc: $(generated_docs)
 pub/%.zip:
 	sh -c "cd pub && $(P7Z) a -r -tzip $*.zip $* && cd .."
 
-prepare:
+prepare: $(generated_docs)
 	mkdir -p pub
 	mkdir -p pub/rct3-flatride-tutorial-svn$(svn_rev)
 	mkdir -p pub/rct3-flatride-tutorial-svn$(svn_rev)/lists
+	cp ../doc/flatrides/*.pdf pub/rct3-flatride-tutorial-svn$(svn_rev)
 	cp ../doc/flatrides/lists/*.pdf pub/rct3-flatride-tutorial-svn$(svn_rev)/lists
 	mkdir -p pub/rct3-utility-notes-svn$(svn_rev)
+	cp ../doc/new_in_v18/*.pdf pub/rct3-utility-notes-svn$(svn_rev)
 	
 schemata-prepare: prepare
 	mkdir -p $(schemata_dir)

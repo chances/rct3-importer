@@ -280,11 +280,37 @@ Version 17 (Belgabor):
 * FIX3: Added Extra Parameters for pool items. Ramps don't seem to work and the Life Guard can currently not be done fully (requires two extra parameters, which the importer cannot do).
 * FIX3: Replaced Unknowns 3-5 with Def.Color 1-3
 
-Version 18 (Belgabor):
+Version 18b1 (Belgabor):
 * Too much to list
 
-Todos:
-// NOTE (belgabor#1#): Test other texture styles for billboards
-// NOTE (belgabor#1#): List update scrolling
-// NOTE (belgabor#1#): Load matrices from files
-// NOTE (belgabor#9#): Wizard
+Version 18b2 (Belgabor):
+Importer
+* [Added] Right double-click on A to re-auto model bones without confirmation
+* [Added] Toggle for the animation display on LODs
+* [Added] Detect Problems menu command to find some issues that can lead to a 60% crash or a no sid for svd.
+* [Added] More visual flags
+* [Added] Some support for moving theme files around. The importer is able to fix the paths of all files if the directory structure did not change.
+* [Added] Busy notice while loading or saving scenery files.
+* [Added] When changing a bone name in a model window, ask the user if he wants to change the name in other animated models or animations.
+* [Fixed] Show selected item in list boxes after update
+* [Fixed] Load error for empty matrix stacks
+* [Fixed] Prefix missing on returned filename if creating from scenery settings dialog
+* [Fixed] Clear prefix when loading old scn file
+* [Fixed] Make auto coordinate system from file button work. Also gives somewhat helpful suggestion when no coordinate system information is available.
+* [Fixed] Up/down spin controls no longer activated if nothing is selected
+* [Fixed] Bugs when trying to load broken modxml files.
+* [Fixed] OK and Cancel buttons hidden in bone settings window if the assigend meshes list was too long.
+* [Fixed] Prevent errors due to size in squares being set to more than 1.
+* [Fixed] Update parents of bones when changing the parent's name.
+* [Removed] The fix orientation matrix is now gone for good as it created a lot of confusion. That removes the use of a default matrix, so that's gone as well.
+
+engine
+* [Added] Partial workaround for the 31 mesh limit. Meshes with the same settings will be merged on import.
+* [Added] Support for bone weights and meshes assigned to more than one bone
+* [Added] Option to automatically update from model fires and/or sort bones
+* [Added] Reject Blender default animation, bone, texture and spline names
+* [Fixed] Sense of rotation matrices corrected for right handed coordinate system
+* [Fixed] Animation import from ms3d
+* [Fixed] Crash on broken modxml
+* [Fixed] Rare-occurring bug that lead to creation of broken ovls
+* [Cleaned] Fixed a lot of compiler warnings
