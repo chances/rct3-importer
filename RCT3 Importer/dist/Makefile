@@ -1,6 +1,6 @@
 space :=  
 space +=  
-svn_rev := $(shell svn info --xml ../xml/rng | xmllint - | grep "<commit" | sed 's:.*"\(.*\)".*:\1:g')
+svn_rev := $(shell svn info --xml ../.. | xmllint - | grep "<commit" | sed 's:.*"\(.*\)".*:\1:g')
 schemata_name := rct3-schemata-svn$(svn_rev)
 schemata_dir := pub/$(schemata_name)
 importer_name := $(shell grep DIST_DIR ../src/RCT3\ Tool/version_importer.h | sed 's:.*DIST_DIR.*"\(.*\)".*//.*:\1:g')
@@ -33,7 +33,7 @@ doc: $(generated_docs)
 pub/%.zip:
 	sh -c "cd pub && $(P7Z) a -r -tzip $*.zip $* && cd .."
 
-prepare: $(generated_docs)
+prepare:
 	mkdir -p pub
 	mkdir -p pub/rct3-flatride-tutorial-svn$(svn_rev)
 	mkdir -p pub/rct3-flatride-tutorial-svn$(svn_rev)/lists
@@ -66,6 +66,7 @@ importer-copy: importer-prepare
 	cp ../bin/*.mgk $(importer_dir)
 	cp RCT3\ Recolorable\ Texture\ Info.zip $(importer_dir)
 	cp $(foreach df,$(importer_doc),../src/RCT3\ Tool/$(df)) $(importer_dir)
+	cp mingwm10.dll $(importer_dir)
 	
 ${importer_dir}/RCT3\ Importer.exe: ../bin/RCT3_Importer.exe
 	cp $< "$@"
@@ -99,8 +100,9 @@ ovlmake-prepare: prepare
 ovlmake-copy: ovlmake-prepare
 	cp ../bin/*.mgk $(ovlmake_dir)
 	cp $(foreach df,$(ovlmake_doc),../src/ovlmake/$(df)) $(ovlmake_dir)
-	cp ../src/ovlmake/*.txt $(ovlmake_dir)/doc
-	cp ../src/ovlmake/Italian/*.txt $(ovlmake_dir)/doc/Italian
+	cp ../src/ovlmake/doc/*.txt $(ovlmake_dir)/doc
+	cp ../src/ovlmake/doc/Italian/*.txt $(ovlmake_dir)/doc/Italian
+	cp mingwm10.dll $(ovlmake_dir)
 	
 ${ovlmake_dir}/ovlmake.exe: ../bin/ovlmake.exe
 	cp $< "$@"
