@@ -25,9 +25,10 @@ only does a basic syntax check. But for most RCT3-related xml files, ovlmake can
 Prerequisites
 -------------
 
-- Installed Komodo Edit 5 (may work with earlier versions, but this is untested)
+- Installed Komodo Edit 5 (may work with earlier versions, but that's untested)
 - ovlmake v0.5. The executable needs to be in your execution path (refer to windows tutorials about
-  how to do that)
+  how to do that) or you need to edit the commands and replace `ovlmake` in the command with the full
+  path to `ovlmake.exe`.
 - The RelaxNG-schemata and catalog file in this pack.
 
 

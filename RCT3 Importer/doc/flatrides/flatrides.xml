@@ -2141,13 +2141,14 @@
           <title>Programmed flatrides</title>
 
           <para>Unfortunately this type of flatride requires deeper intrusion
-          into RCT3 than CS or other flatrides, so it is not feasible to
-          publish them at the current time. Additionally they have a serious
-          caveat making them less usful than they might be. Frontier seems to
-          hane done some <quote>optimisation</quote> on them meaning that
-          effect bones are not updated fluently durnig animation. This does
-          not matter for the animal shows as no effect bones are animated, but
-          is a show-stopper for a custom flatride that does.</para>
+          into RCT3 than CS or other flatrides (modification of original
+          files), so it is not feasible to publish them at the current time.
+          Additionally they have a serious caveat making them less usful than
+          they might be. Frontier seems to have done some
+          <quote>optimisation</quote> on them meaning that effect bones are
+          not updated fluently during animation. This does not matter for the
+          animal shows as no effect bones are animated, but is a show-stopper
+          for a custom flatride that does.</para>
 
           <para>For this two reasons I will currently not explain how to do
           these.</para>
@@ -2182,10 +2183,26 @@
           probably enough so you don't even need to think about using your own
           for most use cases. For copyright reasons I cannot provide you with
           these sounds, but in the <quote>lists</quote> folder you can find
-          two files that help you a bit. The first lists every sound in the
-          game by the ovl that contains it, how long it is and whether it's a
-          sound loop or not. The second one lists all objects with sounds and
-          which sounds it plays.</para>
+          two files that help you a bit.</para>
+
+          <orderedlist>
+            <listitem>
+              <para>The first (<filename>sound_list.pdf</filename>) lists
+              every sound in the game by the ovl that contains it
+              (<emphasis>ovl</emphasis>), how long it is
+              (<emphasis>length</emphasis>, in seconds) and whether it's a
+              sound loop or not (<emphasis>loop</emphasis>).</para>
+            </listitem>
+
+            <listitem>
+              <para>The second one lists all objects with sounds and which
+              sounds it plays with the name of the sid structure
+              (<emphasis>object name</emphasis>), the styre ovl that contains
+              it (<emphasis>ovl</emphasis>), the zero-based index of the
+              <quote>sound tie</quote> (<emphasis>#</emphasis>) and the sounds
+              it uses (<emphasis>sounds</emphasis>).</para>
+            </listitem>
+          </orderedlist>
 
           <para>To use sounds from an ovl, you need to reference it. Add a
           <emphasis>reference</emphasis> element after the last
@@ -2197,7 +2214,11 @@
           <para>The content of the element is the relative path to the sound
           ovl (as always for references, without the .common/.unique.ovl). The
           example should be correct if you followed the tutorial and want to
-          use sounds from the main sound ovl.</para>
+          use sounds from the main sound ovl. The <emphasis>Sounds</emphasis>
+          ovl in the example seems to be the main one and (if you take a
+          careful look at the list) seems to contain the sounds of the other
+          ovls in the Sounds folder as well, so you normally shouldn't need to
+          reference anything else.</para>
 
           <note>
             <para>You do not need to (and in fact should not) reference the
@@ -2221,7 +2242,7 @@
           <emphasis>sid</emphasis> and <emphasis>anr</emphasis>
           elements:</para>
 
-          <programlisting>      &lt;snd name="YourSound" loop="1"&gt;
+          <programlisting language="xml">      &lt;snd name="YourSound" loop="1"&gt;
         &lt;sound&gt;&lt;data type="file"&gt;mysound.wav&lt;/data&gt;&lt;/sound&gt;
       &lt;/snd&gt;</programlisting>
 
@@ -2291,7 +2312,7 @@
           add <emphasis>command</emphasis> elements that control the sound.
           There are four types of commands (five in fact, but one is only used
           to terminate the script and is added by ovlmake automatically). The
-          command types are, idetntified by the <emphasis>type</emphasis>
+          command types are, identified by the <emphasis>type</emphasis>
           attribute:</para>
 
           <orderedlist>
