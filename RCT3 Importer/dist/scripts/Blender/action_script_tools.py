@@ -901,11 +901,9 @@ class ActionSelector(object):
         return bag
 
 class Errors(object):
-	total = { 'errors'   : 0,
-			  'warnings' : 0,
-			  'info'     : 0 }
-	silent = True
-	userSilent = 0
+    total = { 'errors'   : 0, 'warnings' : 0, 'info'     : 0 }
+    silent = True
+    userSilent = 0
 
     @staticmethod
     def processErr(etype,cat='',msg1='',msg2='', Silent=False):
