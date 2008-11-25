@@ -43,7 +43,7 @@
 
 #include "validatormain.h"
 
-#include "version.h"
+#include "version_validator.h"
 
 IMPLEMENT_APP(ValidatorApp);
 

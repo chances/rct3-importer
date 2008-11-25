@@ -1,0 +1,1 @@
+* [Added] auto attribute for rawovl tex elements. This will scale the texture up (auto="rescale") or resize it (original texture is in the top left, auto="resize") to the next RCT3-compatible size.

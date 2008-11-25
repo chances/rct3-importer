@@ -172,7 +172,9 @@ void wxLogGuiExt::Flush() {
 
     unsigned repeatCount = 0;
     if ( wxLog::GetRepetitionCounting() ) {
+#if !wxCHECK_VERSION(2, 9, 0)
         repeatCount = wxLog::DoLogNumberOfRepeats();
+#endif
     }
 
     wxString appName = wxTheApp->GetAppName();
@@ -432,7 +434,7 @@ void wxExtLogDialog::CreateDetailsControls()
         }
 
         m_listctrl->InsertItem(n, m_messages[n], image);
-        m_listctrl->SetItem(n, 1, TimeStamp(fmt, (time_t)m_times[n]));
+        m_listctrl->SetItem(n, 1, TimeStamp(fmt.c_str(), (time_t)m_times[n]));
     }
 
     // let the columns size themselves
@@ -498,7 +500,7 @@ void wxExtLogDialog::OnSave(wxCommandEvent& WXUNUSED(event))
     for ( size_t n = 0; ok && (n < count); n++ )
     {
         wxString line;
-        line << TimeStamp(fmt, (time_t)m_times[n])
+        line << TimeStamp(fmt.c_str(), (time_t)m_times[n])
              << _T(": ")
              << m_messages[n]
              << wxTextFile::GetEOL();

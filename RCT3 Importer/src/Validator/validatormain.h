@@ -26,6 +26,7 @@
 #define VALIDATORMAIN_H_INCLUDED
 
 #include <boost/shared_ptr.hpp>
+#include <wx/filedlg.h>
 #include <wx/stc/stc.h>
 
 #include "cXmlValidatorMulti.h"

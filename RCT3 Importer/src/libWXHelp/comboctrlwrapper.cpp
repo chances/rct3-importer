@@ -11,6 +11,8 @@
 
 #ifndef WXHELP_BASE
 
+#ifndef DEF_DVC
+
 #include "comboctrlwrapper.h"
 
 #include <wx/msgdlg.h>
@@ -171,5 +173,7 @@ void wxComboCtrlWrapper::Finish()
         wxPendingDelete.Append( this );
     }
 }
+
+#endif
 
 #endif

@@ -92,15 +92,6 @@ class cSCNFile;
 
 #define RAWXML_UNKNOWNS "unknowns"
 
-#define RAWXML_CID_SHAPE            "cidshape"
-#define RAWXML_CID_MORE             "cidmore"
-#define RAWXML_CID_EXTRA            "cidextra"
-#define RAWXML_CID_SETTINGS         "cidsettings"
-#define RAWXML_CID_TRASH            "cidtrash"
-#define RAWXML_CID_SOAKED           "cidsoaked"
-#define RAWXML_CID_SIZEUNK          "cidsizeunknowns"
-#define RAWXML_CID_UNK              "cidunknowns"
-
 #define RAWXML_PTD_TEXTURE_A        "texture_a"
 #define RAWXML_PTD_TEXTURE_B        "texture_b"
 #define RAWXML_PTD_FLAT             "flat"

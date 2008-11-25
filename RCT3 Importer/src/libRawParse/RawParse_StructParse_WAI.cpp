@@ -32,8 +32,8 @@
 
 #include "ManagerWAI.h"
 
-#define RAWXML_WAI_PARAMETERS       "waiparameters"
-#define RAWXML_WAI_UNKNOWNS         "waiunknowns"
+#define RAWXML_WAI_PARAMETERS       "parameters"
+#define RAWXML_WAI_UNKNOWNS         "unknowns"
 
 void cRawParser::ParseWAI(cXmlNode& node) {
     USE_PREFIX(node);

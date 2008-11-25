@@ -32,6 +32,7 @@
 
 #include "ManagerTEX.h"
 
+#include "rct3log.h"
 #include "texcheck.h"
 
 #define RAWXML_TEX_TEXTURE          "texture"
@@ -51,6 +52,19 @@ void cRawParser::ParseTEX(cXmlNode& node) {
     unsigned long mips = 0;
     OPTION_PARSE(unsigned long, mips, ParseUnsigned(node, wxT(RAWXML_TEX), wxT("mips")));
     ParseStringOption(texture.texturestyle, node, wxT("txs"), NULL);
+	enum {
+		DO_RESIZE,
+		DO_RESCALE,
+		DO_NONE
+	} process_img = DO_NONE;
+	{
+		wxString pr;
+		ParseStringOption(pr, node, "auto", NULL);
+		if (pr == "resize")
+			process_img = DO_RESIZE;
+		else if (pr == "rescale")
+			process_img = DO_RESCALE;
+	}
 
     cXmlNode child(node.children());
     while (child) {
@@ -89,6 +103,21 @@ void cRawParser::ParseTEX(cXmlNode& node) {
                 if (mip.dimension) {
                     img.Rescale(mip.dimension, mip.dimension);
                 } else {
+					if (process_img != DO_NONE) {
+						unsigned int a = max(img.GetWidth(), img.GetHeight());
+						unsigned int al = 1 << local_log2(a);
+						if (al != a)
+							a = 1 << (local_log2(a)+1);
+						if (process_img == DO_RESCALE) {
+							img.Rescale(a, a);
+						} else {
+							wxGXImage timg(a, a);
+							timg.opacity(TransparentOpacity);
+							timg.composite(img, 0, a-img.GetHeight(), Magick::OverCompositeOp);
+							img = timg;
+						}
+						wxLogVerbose(wxString::Format(_("Image for texture '%s' %s to %dx%d."), name.c_str(), ((process_img == DO_RESCALE)?wxString("rescaled"):wxString("resized")).c_str(), a, a));
+					}
                     mip.dimension = img.GetWidth();
                 }
                 try {

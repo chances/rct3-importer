@@ -136,7 +136,7 @@
 						</srng:except>
 					</srng:anyName>
 				</srng:attribute>
-				<srng:ref name="any"/>
+				<srng:ref name="any" occurs="*"/>
 			</srng:element>
 			<srng:ref name="textureany"/>
 			<srng:element name="textureframe" occurs="+">

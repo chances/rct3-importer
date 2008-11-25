@@ -12,6 +12,8 @@
 #ifndef __EXDATAVIEWCTRLH__
 #define __EXDATAVIEWCTRLH__
 
+#ifndef DEF_DVC
+
 #ifdef _WIN32
 #include "win_predefine.h"
 #endif
@@ -105,5 +107,7 @@ private:
     DECLARE_EVENT_TABLE()
 };
 
+#endif
 
 #endif // __GENERICDATAVIEWCTRLH__
+

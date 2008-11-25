@@ -12,6 +12,8 @@
 #ifndef COMBOCTRLWRAPPER_H_INCLUDED
 #define COMBOCTRLWRAPPER_H_INCLUDED
 
+#ifndef DEF_DVC
+
 #include <wx/combo.h>
 #include <wx/dataview.h>
 
@@ -52,5 +54,6 @@ private:
     DECLARE_EVENT_TABLE()
 };
 
+#endif
 
 #endif // COMBOCTRLWRAPPER_H_INCLUDED

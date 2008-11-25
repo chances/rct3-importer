@@ -195,7 +195,7 @@
     <File Name="..\..\include\xmldefs.h"/>
     <File Name="..\..\include\cryptoguid.h"/>
   </VirtualDirectory>
-  <Dependencies Name="DebugBaseUnicode"/>
   <Dependencies Name="Debug"/>
+  <Dependencies Name="DebugBaseUnicode"/>
   <Dependencies Name="Release"/>
 </CodeLite_Project>

@@ -156,20 +156,32 @@ public:
     void GetAs8bitForced(unsigned char* data, unsigned char* palette, bool special = false) const;
 
     // GraphicsMagick++ functions
-/*
     // FloodFill doesn't work for some reason -.-
     void colorFuzz(double _fuzz) { m_image.colorFuzz(_fuzz); }
     double colorFuzz() const { return m_image.colorFuzz(); }
+/*
     void floodFillTexture(unsigned int x, unsigned int y, const wxGXImage& texture) {
         m_image.floodFillTexture(x, y, texture.m_image);
     }
 */
+    inline void floodFillOpacity(long x, long y, unsigned int _opacity, Magick::PaintMethod _method = Magick::PointMethod) {
+		m_image.floodFillOpacity(x, y, _opacity, _method);
+	}
+	inline void matte(bool _matte) {m_image.matte(_matte);}
+	inline void opacity(unsigned int _opacity) {m_image.opacity(_opacity);}
+	inline void composite(const Magick::Image& compositeImage_, int xOffset_, int yOffset_, Magick::CompositeOperator compose_ = Magick::InCompositeOp) {
+		m_image.composite(compositeImage_, xOffset_, yOffset_, compose_);
+	}
+	inline void composite(const wxGXImage& compositeImage_, int xOffset_, int yOffset_, Magick::CompositeOperator compose_ = Magick::InCompositeOp) {
+		composite(compositeImage_.m_image, xOffset_, yOffset_, compose_);
+	}
+
     wxString magick() {return wxString(m_image.magick().c_str(), wxConvLocal);}
-    void flip() {m_image.flip();}
-    void flop() {m_image.flop();}
+    inline void flip() {m_image.flip();}
+    inline void flop() {m_image.flop();}
     void crop(unsigned int x, unsigned int y, unsigned int width, unsigned int height) { crop(wxString::Format("%ux%u+%u+%u", width, height, x, y)); }
     void crop(const char* geometry) {m_image.crop(geometry);}
-    void crop(const wxString& geometry) {crop(static_cast<const char*>(geometry.c_str()));}
+    void crop(const wxString& geometry) {crop(static_cast<const char*>(geometry.utf8_str()));}
     Magick::ImageType type() {return m_image.type();}
     void read(const Magick::Blob& blob) {
 #ifdef CACHE_GXIMAGE
@@ -202,6 +214,9 @@ public:
         else
             read(Magick::Blob(blob, size), magick);
     }
+    void size(unsigned int width, unsigned int height) { size(wxString::Format("%ux%u", width, height)); }
+    void size(const char* geometry) {m_image.size(geometry);}
+    void size(const wxString& geometry) {size(static_cast<const char*>(geometry.utf8_str()));}
     void write(Magick::Blob& blob) {m_image.write(&blob);}
     void write(Magick::Blob& blob, std::string magick) {m_image.write(&blob, magick);}
 

@@ -11,6 +11,8 @@
 
 #ifndef WXHELP_BASE
 
+#ifndef DEF_DVC
+
 #include "choicewrapper.h"
 
 #include "wrappereditevent.h"
@@ -208,5 +210,7 @@ void wxChoiceWrapper::Finish()
         wxPendingDelete.Append( this );
     }
 }
+
+#endif
 
 #endif

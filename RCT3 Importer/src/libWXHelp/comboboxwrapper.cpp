@@ -11,6 +11,8 @@
 
 #ifndef WXHELP_BASE
 
+#ifndef DEF_DVC
+
 #include "comboboxwrapper.h"
 
 #include "wrappereditevent.h"
@@ -176,5 +178,7 @@ void wxComboBoxWrapper::Finish()
         wxPendingDelete.Append( this );
     }
 }
+
+#endif
 
 #endif

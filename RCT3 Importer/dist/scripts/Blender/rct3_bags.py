@@ -50,6 +50,17 @@ class ModxmlGroupBag(ConfigBag):
         self["animations"] = anim
     animations = property(lambda self:self["animations"], setAnimations)
 
+class RCT3TextureBag(ConfigBag):
+    def __init__(self, obj):
+        super(RCT3TextureBag, self).__init__(Application="modxml", Group="rct3", StoreObject=obj)
+        bag = self.addBag()
+        bag.addSetting("reference", "", 's', "Ref. Path", "Reference Path", AutoDelete="")
+        self.retrieve()
+
+    def setReference(self, ref):
+        self["reference"] = ref
+    reference = property(lambda self:self["reference"], setReference)
+
 class RCT3GroupBag(ConfigBag):
     def __init__(self, obj):
         super(RCT3GroupBag, self).__init__(Application="modxml", Group="rct3", StoreObject=obj)

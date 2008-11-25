@@ -31,12 +31,13 @@
 
 #include "spline.h"
 
+#include "texcheck.h"
+
 #include "confhelp.h"
 #include "lib3Dconfig.h"
 #include "matrix.h"
 #include "ManagerCommon.h"
 #include "RCT3Exception.h"
-#include "texcheck.h"
 #include "gximage.h"
 #include "xmldefs.h"
 #include "xmlhelper.h"

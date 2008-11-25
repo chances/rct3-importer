@@ -1016,48 +1016,17 @@
 			<define name="ced">
 				<element name="ced">
 					<ref name="baseattrs"/>
-					<attribute name="name">
-						<data type="string"/>
-					</attribute>
-					<attribute name="nametxt">
-						<ref name="TXTReference"/>
-					</attribute>
-					<attribute name="icon">
-						<ref name="GSIReference"/>
-					</attribute>
-					<optional>
-						<ref name="cedmore"/>
-					</optional>
-				</element>
-			</define>
-			<define name="cedmore">
-				<element name="cedmore">
-					<ref name="baseattrs"/>
-					<optional>
-						<attribute name="u7">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u4">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u1">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="thirst">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="hunger">
-							<data type="float"/>
-						</attribute>
-					</optional>
+					<attribute name="name" type="string"/>
+					<attribute name="nametxt" ref="TXTReference"/>
+					<attribute name="icon" ref="GSIReference"/>
+                    <element name="more" occurs="?">
+                        <ref name="baseattrs"/>
+                        <attribute name="thirst" occurs="?" type="float"/>
+                        <attribute name="hunger" occurs="?" type="float"/>
+                        <attribute name="u1" occurs="?" type="unsignedInt"/>
+                        <attribute name="u4" occurs="?" type="unsignedInt"/>
+                        <attribute name="u7" occurs="?" type="float"/>
+                    </element>
 				</element>
 			</define>
 		</div>
@@ -1077,258 +1046,106 @@
 			<define name="cid">
 				<element name="cid">
 					<ref name="baseattrs"/>
-					<attribute name="name">
-						<data type="string"/>
-					</attribute>
-					<attribute name="nametxt">
-						<ref name="TXTReference"/>
-					</attribute>
-					<attribute name="pluralnametxt">
-						<ref name="TXTReference"/>
-					</attribute>
+					<attribute name="name" type="string"/>
+					<attribute name="nametxt" ref="TXTReference"/>
+					<attribute name="pluralnametxt" ref="TXTReference"/>
 					<interleave>
 						<ref name="cidshape"/>
-						<optional>
-							<ref name="cidmore"/>
-						</optional>
-						<optional>
-							<ref name="cidsettings"/>
-						</optional>
-						<optional>
-							<ref name="cidtrash"/>
-						</optional>
-						<optional>
-							<ref name="cidsoaked"/>
-						</optional>
-						<optional>
-							<ref name="cidsizeunknowns"/>
-						</optional>
-						<optional>
-							<ref name="cidunknowns"/>
-						</optional>
-						<zeroOrMore>
-							<ref name="cidextra"/>
-						</zeroOrMore>
+						<ref name="cidmore" occurs="?"/>
+                        <ref name="cidsettings" occurs="?"/>
+                        <ref name="cidtrash" occurs="?"/>
+                        <ref name="cidsoaked" occurs="?"/>
+                        <ref name="cidsizeunknowns" occurs="?"/>
+                        <ref name="cidunknowns" occurs="?"/>
+                        <ref name="cidextra" occurs="*"/>
 					</interleave>
 				</element>
 			</define>
 			<define name="cidshape">
-				<element name="cidshape">
+				<element name="shape">
 					<ref name="baseattrs"/>
 					<choice>
 						<group>
 							<attribute name="shaped">
 								<value type="boolean">0</value>
 							</attribute>
-							<attribute name="ftx">
-								<ref name="FTXReference"/>
-							</attribute>
-							<optional>
-								<attribute name="scalex">
-									<data type="float"/>
-								</attribute>
-							</optional>
-							<optional>
-								<attribute name="scaley">
-									<data type="float"/>
-								</attribute>
-							</optional>
+							<attribute name="ftx" ref="FTXReference"/>
+							<attribute name="scalex" occurs="?" type="float"/>
+							<attribute name="scaley" occurs="?" type="float"/>
 						</group>
 						<group>
 							<attribute name="shaped">
 								<value type="boolean">1</value>
 							</attribute>
-							<attribute name="shape1">
-								<ref name="SHSReference"/>
-							</attribute>
-							<attribute name="shape2">
-								<ref name="SHSReference"/>
-							</attribute>
+							<attribute name="shape1" ref="SHSReference"/>
+							<attribute name="shape2" ref="SHSReference"/>
 						</group>
 					</choice>
-					<optional>
-						<attribute name="defaultcolour">
-							<ref name="ovlDefaultColour"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="distance">
-							<data type="float"/>
-						</attribute>
-					</optional>
+                    <attribute name="defaultcolour" occurs="?" ref="ovlDefaultColour"/>
+                    <attribute name="distance" occurs="?" type="float"/>
 				</element>
 			</define>
 			<define name="cidextra">
-				<element name="cidextra">
+				<element name="extra">
 					<ref name="baseattrs"/>
-					<attribute name="name">
-						<ref name="CEDReference"/>
-					</attribute>
+					<attribute name="name" ref="CEDReference"/>
 				</element>
 			</define>
 			<define name="cidmore">
-				<element name="cidmore">
+				<element name="more">
 					<ref name="baseattrs"/>
-					<optional>
-						<attribute name="icon">
-							<ref name="GSIReference"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="addonpack">
-							<ref name="ovlExtraPack"/>
-						</attribute>
-					</optional>
+                    <attribute name="icon" occurs="?" ref="GSIReference"/>
+                    <attribute name="addonpack" occurs="?" ref="ovlExtraPack"/>
 				</element>
 			</define>
 			<define name="cidsettings">
-				<element name="cidsettings">
+				<element name="settings">
 					<ref name="baseattrs"/>
-					<optional>
-						<attribute name="lightprotectionfactor">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="thirst">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="hunger">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="type">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="ageclass">
-							<data type="int"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="flags">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
+					<attribute name="lightprotectionfactor" occurs="?" type="float"/>
+					<attribute name="thirst" occurs="?" type="float"/>
+					<attribute name="hunger" occurs="?" type="float"/>
+					<attribute name="type" occurs="?" type="unsignedInt"/>
+					<attribute name="ageclass" occurs="?" type="int"/>
+					<attribute name="flags" occurs="?" type="unsignedInt"/>
 				</element>
 			</define>
 			<define name="cidsizeunknowns">
-				<element name="cidsizeunknowns">
+				<element name="priceUnknowns">
 					<ref name="baseattrs"/>
-					<optional>
-						<attribute name="u4">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u3">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u2">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u1">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
+					<attribute name="u1" occurs="?" type="unsignedInt"/>
+					<attribute name="u2" occurs="?" type="unsignedInt"/>
+					<attribute name="u3" occurs="?" type="unsignedInt"/>
+					<attribute name="u4" occurs="?" type="unsignedInt"/>
 				</element>
 			</define>
 			<define name="cidsoaked">
-				<element name="cidsoaked">
+				<element name="soaked">
 					<ref name="baseattrs"/>
-					<optional>
-						<attribute name="textureoption">
-							<data type="string"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="unknown">
-							<data type="unsignedLong"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="femalelegs">
-							<data type="string"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="femalebody">
-							<data type="string"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="malelegs">
-							<data type="string"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="malebody">
-							<data type="string"/>
-						</attribute>
-					</optional>
+					<attribute name="textureoption" occurs="?" type="string"/>
+					<attribute name="unknown" occurs="?" type="unsignedInt"/>
+					<attribute name="malebody" occurs="?" type="string"/>
+					<attribute name="malelegs" occurs="?" type="string"/>
+					<attribute name="femalebody" occurs="?" type="string"/>
+					<attribute name="femalelegs" occurs="?" type="string"/>
 				</element>
 			</define>
 			<define name="cidtrash">
-				<element name="cidtrash">
+				<element name="trash">
 					<ref name="baseattrs"/>
-					<optional>
-						<attribute name="wrapper">
-							<ref name="CIDReference"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="trash1">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="trash2">
-							<data type="int"/>
-						</attribute>
-					</optional>
+                    <attribute name="wrapper" occurs="?" ref="CIDReference"/>
+					<attribute name="trash1" occurs="?" type="float"/>
+					<attribute name="trash2" occurs="?" type="int"/>
 				</element>
 			</define>
 			<define name="cidunknowns">
-				<element name="cidunknowns">
+				<element name="unknowns">
 					<ref name="baseattrs"/>
-					<optional>
-						<attribute name="u33">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u28">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u27">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u26">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u3">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u1">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
+					<attribute name="u1" occurs="?" type="unsignedInt"/>
+					<attribute name="u3" occurs="?" type="unsignedInt"/>
+					<attribute name="u26" occurs="?" type="unsignedInt"/>
+					<attribute name="u27" occurs="?" type="unsignedInt"/>
+					<attribute name="u28" occurs="?" type="unsignedInt"/>
+					<attribute name="u33" occurs="?" type="unsignedInt"/>
 				</element>
 			</define>
 		</div>
@@ -2220,6 +2037,13 @@
 				</attribute>
 				<attribute name="txs" occurs="?" ref="TXSReference"/>
 				<attribute name="mips" occurs="?" type="unsignedInt"/>
+                <attribute name="auto" occurs="?">
+                    <choice>
+                        <value>resize</value>
+                        <value>rescale</value>
+                        <value>none</value>
+                    </choice>
+                </attribute>
 				<element name="texture" occurs="+">
 					<ref name="baseattrs"/>
 					<attribute name="dimension" occurs="?" ref="ovlTextureDimension"/>
@@ -2588,9 +2412,7 @@
 			</sch:pattern>
 			<element name="txt">
 				<ref name="baseattrs"/>
-				<attribute name="name">
-					<data type="string"/>
-				</attribute>
+				<attribute name="name" type="string"/>
 				<attribute name="type">
 					<choice>
 						<value type="string">raw</value>
@@ -2605,132 +2427,44 @@
 			<define name="wai">
 				<element name="wai">
 					<ref name="baseattrs"/>
-					<attribute name="name">
-						<data type="string"/>
-					</attribute>
-					<attribute name="shortname">
-						<data type="string"/>
-					</attribute>
-					<attribute name="nametxt">
-						<ref name="TXTReference"/>
-					</attribute>
-					<attribute name="description">
-						<ref name="TXTReference"/>
-					</attribute>
-					<attribute name="icon">
-						<ref name="GSIReference"/>
-					</attribute>
-					<attribute name="staticshape">
-						<ref name="SHSReference"/>
-					</attribute>
+					<attribute name="name" type="string"/>
+					<attribute name="shortname" type="string"/>
+					<attribute name="nametxt" ref="TXTReference"/>
+					<attribute name="description" ref="TXTReference"/>
+					<attribute name="icon" ref="GSIReference"/>
+					<attribute name="staticshape" ref="SHSReference"/>
 					<interleave>
-						<optional>
-							<ref name="waiparameters"/>
-						</optional>
-						<optional>
-							<ref name="waiunknowns"/>
-						</optional>
+						<ref name="waiparameters" occurs="?"/>
+						<ref name="waiunknowns" occurs="?"/>
 					</interleave>
 				</element>
 			</define>
 			<define name="waiparameters">
-				<element name="waiparameters">
+				<element name="parameters">
 					<ref name="baseattrs"/>
-					<optional>
-						<attribute name="distance">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="cost">
-							<data type="int"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="refund">
-							<data type="int"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="inversedurability">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="xsize">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="ysize">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="zsize">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="flags">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="weight">
-							<data type="float"/>
-						</attribute>
-					</optional>
+					<attribute name="distance" occurs="?" type="float"/>
+					<attribute name="cost" occurs="?" type="int"/>
+					<attribute name="refund" occurs="?" type="int"/>
+					<attribute name="inversedurability" occurs="?" type="float"/>
+                    <attribute name="xsize" occurs="?" type="float"/>
+                    <attribute name="ysize" occurs="?" type="float"/>
+                    <attribute name="zsize" occurs="?" type="float"/>
+                    <attribute name="flags" occurs="?" type="unsignedInt"/>
+                    <attribute name="weight" occurs="?" type="float"/>
 				</element>
 			</define>
 			<define name="waiunknowns">
-				<element name="waiunknowns">
+				<element name="unknowns">
 					<ref name="baseattrs"/>
-					<optional>
-						<attribute name="u1">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u2">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u3">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u4">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u11">
-							<data type="unsignedInt"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u17">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u18">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u19">
-							<data type="float"/>
-						</attribute>
-					</optional>
-					<optional>
-						<attribute name="u20">
-							<data type="float"/>
-						</attribute>
-					</optional>
+                    <attribute name="u1" occurs="?" type="unsignedInt"/>
+                    <attribute name="u2" occurs="?" type="unsignedInt"/>
+                    <attribute name="u3" occurs="?" type="unsignedInt"/>
+                    <attribute name="u4" occurs="?" type="unsignedInt"/>
+                    <attribute name="u11" occurs="?" type="unsignedInt"/>
+                    <attribute name="u17" occurs="?" type="unsignedInt"/>
+                    <attribute name="u18" occurs="?" type="unsignedInt"/>
+                    <attribute name="u19" occurs="?" type="unsignedInt"/>
+                    <attribute name="u20" occurs="?" type="unsignedInt"/>
 				</element>
 			</define>
 		</div>
@@ -2739,9 +2473,7 @@
 				<element name="reference">
 					<ref name="baseattrs"/>
 					<choice>
-						<attribute name="path">
-							<data type="string"/>
-						</attribute>
+						<attribute name="path" type="string"/>
 						<data type="string"/>
 					</choice>
 				</element>
@@ -2749,9 +2481,7 @@
 			<define name="symbol">
 				<element name="symbol">
 					<ref name="baseattrs"/>
-					<attribute name="name">
-						<data type="string"/>
-					</attribute>
+					<attribute name="name" type="string"/>
 					<attribute name="target">
 						<choice>
 							<value type="string">unique</value>
@@ -2763,17 +2493,13 @@
 							<attribute name="type">
 								<value type="string">int</value>
 							</attribute>
-							<attribute name="data">
-								<data type="unsignedInt"/>
-							</attribute>
+							<attribute name="data" type="unsignedInt"/>
 						</group>
 						<group>
 							<attribute name="type">
 								<value type="string">float</value>
 							</attribute>
-							<attribute name="data">
-								<data type="float"/>
-							</attribute>
+							<attribute name="data" type="float"/>
 						</group>
 					</choice>
 				</element>

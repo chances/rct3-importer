@@ -11,6 +11,8 @@
 
 #ifndef WXHELP_BASE
 
+#ifndef DEF_DVC
+
 #include "exdataview.h"
 
 #ifdef _WIN32
@@ -1515,5 +1517,7 @@ int wxExDataViewCtrl::GetSelections(wxArrayInt& WXUNUSED(aSelections) ) const
 
     return 0;
 }
+
+#endif
 
 #endif

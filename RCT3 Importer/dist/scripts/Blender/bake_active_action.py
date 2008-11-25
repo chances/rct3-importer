@@ -26,7 +26,7 @@ menu of the 3d View.
 
 from Blender import *
 from Blender import Types
-import sys
+import sys, time
 from action_script_tools import *
 
 def invertMatrix(mtx):
@@ -42,11 +42,12 @@ def bakeAction(action,armatureObject):
         Bakes supplied action for supplied armature.
         Returns baked action.
     """
-    global settings
+    global settings, scene
     pose=armatureObject.getPose()
     armature_data=armatureObject.getData();
     pose_bones= pose.bones.values()
     rest_bones= armature_data.bones
+    rcontext = scene.getRenderingContext()
 
 
     startFrame= min(action.getFrameNumbers());
@@ -63,14 +64,22 @@ def bakeAction(action,armatureObject):
     old_quats={}
     old_locs={}
 
-    baked_locs={}
-    baked_quats={}
+    length = float(endFrame-startFrame+1)
+    baked_frame_locs = []
+    baked_frame_quats = []
 
     action.setActive(armatureObject)
+    print "Baking..."
     for current_frame in xrange(startFrame, endFrame+1):
         Redraw()
+        progress = (current_frame-startFrame+1)/length
+        Window.DrawProgressBar(progress, "[%.1f] %d/%d" % (progress*100.0, current_frame, length))
 
-        Set('curframe', current_frame)
+        #Set('curframe', current_frame)
+        rcontext.currentFrame(current_frame)
+
+        baked_locs={}
+        baked_quats={}
 
         for i in range(len(pose_bones)):
 
@@ -102,29 +111,41 @@ def bakeAction(action,armatureObject):
             matrix=matrix*invertMatrix(rest_matrix)
 
 
-            old_quats[bone_name]=Mathutils.Quaternion(pose_bones[i].quat);
-            old_locs[bone_name]=Mathutils.Vector(pose_bones[i].loc);
+            #old_quats[bone_name]=Mathutils.Quaternion(pose_bones[i].quat);
+            #old_locs[bone_name]=Mathutils.Vector(pose_bones[i].loc);
 
 
 
             baked_locs[bone_name]=Mathutils.Vector(matrix.translationPart())
             baked_quats[bone_name]=Mathutils.Quaternion(matrix.toQuat())
 
-        baked_action.setActive(armatureObject)
-        Set('curframe', current_frame)
+        baked_frame_locs.append(baked_locs)
+        baked_frame_quats.append(baked_quats)
+
+    print "Creating new action..."
+    baked_action.setActive(armatureObject)
+    for current_frame in xrange(startFrame, endFrame+1):
+        baked_locs = baked_frame_locs[current_frame-startFrame]
+        baked_quats = baked_frame_quats[current_frame-startFrame]
+
+        #Set('curframe', current_frame)
+        rcontext.currentFrame(current_frame)
+        Redraw()
         for i in range(len(pose_bones)):
             pose_bones[i].quat=baked_quats[pose_bones[i].name]
             pose_bones[i].loc=baked_locs[pose_bones[i].name]
             pose_bones[i].insertKey(armatureObject, current_frame, POSE_XFORM)
 
-        action.setActive(armatureObject)
-        Set('curframe', current_frame)
+    action.setActive(armatureObject)
+    rcontext.currentFrame(current_frame)
+        #Set('curframe', current_frame)
+        #rcontext.currentFrame(current_frame)
 
-        for name, quat in old_quats.iteritems():
-            pose.bones[name].quat=quat
+        #for name, quat in old_quats.iteritems():
+        #    pose.bones[name].quat=quat
 
-        for name, loc in old_locs.iteritems():
-            pose.bones[name].loc=loc
+        #for name, loc in old_locs.iteritems():
+        #    pose.bones[name].loc=loc
 
     QuaternionFixer.fixActionBagged(baked_action, settings)
     Simplifier2.simplifyActionBagged(baked_action, settings, inPlace=True)
@@ -135,7 +156,7 @@ def main():
     '''
     Main script driver
     '''
-    global settings
+    global settings, scene
     # Get current scene
     scene= Scene.GetCurrent()
     # Get current object(must be armature)
@@ -199,9 +220,12 @@ def main():
 
     action=armatureObject.getAction()
 
+    start = time.clock()
     Window.WaitCursor(1)
     bakeAction(action,armatureObject)
     Window.WaitCursor(0)
+    end = time.clock()
+    print "Baked in %.2f %s" % (end-start, "seconds")
 
 
 

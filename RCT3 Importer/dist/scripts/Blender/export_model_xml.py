@@ -73,8 +73,8 @@ def get_Name(ob):
     except:
         pass
     for c in name:
-        if c in '"<>':
-            errormsg("Name of object '%s' contains illegal character (\"<>)" % name)
+        if c in '"<>&':
+            errormsg("Name of object '%s' contains illegal character (\"<>&)" % name)
             raise "Fatal error"
     return name
 
@@ -431,6 +431,11 @@ def write(filename):
          if tex['alpha']:
             file.write("%s<useAlpha/>\n" % (Tab*3))
          file.write("%s<recol>%d</recol>\n" % (Tab*3, tex['recol']))
+         try:
+            file.write("%s<referenced>%s</referenced>\n" % (Tab*3, tex['ref']))
+         except:
+            pass
+
          file.write("%s</metadata>\n" % (Tab*2))
          file.write("%s</texture>\n" % (Tab))
    write_post(file, filename, scn, worldTable)
@@ -1309,6 +1314,10 @@ def write_mesh(file, scn, exp_list, matTable, total):
                         if tex.tex.rgbCol[2]>1.0:
                             recol = recol + 4
                         tex_list[texname]['recol'] = recol
+                        ref = RCT3TextureBag(tex.tex).reference
+                        if ref and (ref != ""):
+                            tex_list[texname]['ref'] = ref
+                        
 
 
       #Open Geomobject

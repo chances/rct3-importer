@@ -31,7 +31,7 @@
 
 #include "ManagerCED.h"
 
-#define RAWXML_CED_MORE             "cedmore"
+#define RAWXML_CED_MORE             "more"
 
 void cRawParser::ParseCED(cXmlNode& node) {
     USE_PREFIX(node);

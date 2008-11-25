@@ -1,84 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<CodeLite_Project Name="ovlmake">
+<CodeLite_Project Name="Schema_Validator">
   <Description/>
   <Dependencies/>
-  <VirtualDirectory Name="src">
-    <File Name="ovlmake.cpp"/>
-    <File Name="version_ovlmake.h"/>
-    <File Name="version_wrap.h"/>
-    <File Name="version_wrap.cpp"/>
+  <VirtualDirectory Name="src"/>
+  <VirtualDirectory Name="resources">
+    <File Name="resources\abbreviation.fbp"/>
+    <File Name="resources\keyframe.fbp"/>
+    <File Name="resources\main.fbp"/>
+    <File Name="resources\res_main.h"/>
+    <File Name="resources\res_abbreviation.cpp"/>
+    <File Name="resources\res_abbreviation.h"/>
+    <File Name="resources\res_keyframe.cpp"/>
+    <File Name="resources\res_keyframe.h"/>
+    <File Name="resources\res_main.cpp"/>
   </VirtualDirectory>
-  <VirtualDirectory Name="doc">
-    <File Name="todo.txt"/>
-    <File Name="changelog.txt"/>
-    <File Name="changes.tmp"/>
-    <File Name="License.txt"/>
-    <File Name="OvlCompiler ReadMe.txt"/>
-    <File Name="ReadMe 1st.txt"/>
+  <VirtualDirectory Name="Validator">
+    <File Name="validatorapp.cpp"/>
+    <File Name="validatorapp.h"/>
+    <File Name="validatormain.cpp"/>
+    <File Name="validatormain.h"/>
+    <File Name="validator_abbreviation.cpp"/>
+    <File Name="validator_abbreviation.h"/>
+    <File Name="validator_keyframes.cpp"/>
+    <File Name="validator_keyframes.h"/>
+    <File Name="version_validator.h"/>
   </VirtualDirectory>
-  <Dependencies Name="DebugBaseUnicode">
-    <Project Name="Precompile RNG"/>
-    <Project Name="Precompile XSL"/>
-    <Project Name="libXmlCpp"/>
-    <Project Name="libASE"/>
-    <Project Name="libOVLDump"/>
-    <Project Name="libOVLng"/>
-    <Project Name="libWXHelp"/>
-    <Project Name="lib3DHelp"/>
-    <Project Name="libRawParse"/>
-  </Dependencies>
   <Settings Type="Executable">
-    <Configuration Name="DebugBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
-      <General OutputFile="../../bin/$(ProjectName)d" IntermediateDirectory="../../lib/obj/ovlmake/Debug" Command="./$(ProjectName)d" CommandArguments="" WorkingDirectory="../../bin" PauseExecWhenProcTerminates="yes"/>
-      <Compiler Required="yes" Options="-g;$(WX3_CXX_BD);-Wall;-fstrict-aliasing;-Wstrict-aliasing=2;-mthreads;-fexceptions">
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
+      <General OutputFile="../../bin/validator/$(ProjectName)d" IntermediateDirectory="../../lib/obj/Validator/Debug" Command="./$(ProjectName)d" CommandArguments="" WorkingDirectory="../../bin/validator/" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="$(WX3_CXX_PD);-fno-strict-aliasing;-mthreads;-fexceptions">
         <IncludePath Value="."/>
         <IncludePath Value="../../include"/>
         <IncludePath Value="../libOVLng"/>
         <IncludePath Value="../libOVLDump"/>
-        <IncludePath Value="../libRawParse"/>
         <IncludePath Value="../libWXHelp"/>
         <IncludePath Value="../lib3DHelp"/>
-        <IncludePath Value="../libASE-1.0"/>
         <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
         <IncludePath Value="$(SYSINCLUDE)/libxml2"/>
         <IncludePath Value="../libXmlCpp"/>
         <IncludePath Value="../../xml"/>
-        <Preprocessor Value="USE_SQUISH"/>
-        <Preprocessor Value="CACHE_GXIMAGE"/>
-        <Preprocessor Value="XMLCPP_USE_XSLT"/>
-        <Preprocessor Value="XMLCPP_USE_EXSLT"/>
-        <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
       </Compiler>
-      <Linker Required="yes" Options="$(WX3_LIB_BD);-lexpat">
-        <LibraryPath Value="../../lib"/>
-        <Library Value="libRawParseud"/>
-        <Library Value="3DHelpbud"/>
-        <Library Value="WXHelpbud"/>
-        <Library Value="libASEd"/>
-        <Library Value="libOVLngud"/>
-        <Library Value="libOVLDumpd"/>
-        <Library Value="XmlCppud"/>
-        <Library Value="GraphicsMagick++"/>
-        <Library Value="GraphicsMagick"/>
-        <Library Value="freetype"/>
-        <Library Value="xml2"/>
-        <Library Value="xslt"/>
-        <Library Value="exslt"/>
-        <Library Value="squish"/>
-        <Library Value="bz2"/>
-        <Library Value="jpeg"/>
-        <Library Value="png"/>
-        <Library Value="tiff"/>
-        <Library Value="cryptopp"/>
-      </Linker>
+      <Linker Required="yes" Options=""/>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""/>
       <ResourceCompiler Required="no" Options=""/>
-      <PreBuild>
-        <Command Enabled="yes">../../../Utilities/autover/autover.exe -dte1 -u version_ovlmake.h</Command>
-      </PreBuild>
-      <PostBuild>
-        <Command Enabled="yes">../../../Utilities/autover/autover.exe -2 -u version_ovlmake.h</Command>
-      </PostBuild>
+      <PreBuild/>
+      <PostBuild/>
       <CustomBuild Enabled="no">
         <CleanCommand/>
         <BuildCommand/>
@@ -93,7 +59,7 @@
       </AdditionalRules>
     </Configuration>
     <Configuration Name="Invalid" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
-      <General OutputFile="" IntermediateDirectory="./Debug" Command="" CommandArguments="" WorkingDirectory="./Debug" PauseExecWhenProcTerminates="yes"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="" CommandArguments="" WorkingDirectory="./Debug" PauseExecWhenProcTerminates="no"/>
       <Compiler Required="yes" Options="-g">
         <IncludePath Value="."/>
       </Compiler>
@@ -118,17 +84,15 @@
         <CustomPreBuild/>
       </AdditionalRules>
     </Configuration>
-    <Configuration Name="ReleaseBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
-      <General OutputFile="../../bin/$(ProjectName)" IntermediateDirectory="../../lib/obj/ovlmake/Release" Command="./$(ProjectName)" CommandArguments="" WorkingDirectory="../../bin" PauseExecWhenProcTerminates="yes"/>
-      <Compiler Required="yes" Options="-O2;$(WX3_CXX_BR);-fstrict-aliasing;-mthreads;-fexceptions">
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
+      <General OutputFile="../../bin/validator/$(ProjectName)" IntermediateDirectory="../../lib/obj/Validator/Release" Command="./$(ProjectName)" CommandArguments="" WorkingDirectory="../../bin/validator/" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-O2;$(WX3_CXX_PR);-fno-strict-aliasing;-mthreads;-fexceptions">
         <IncludePath Value="."/>
         <IncludePath Value="../../include"/>
         <IncludePath Value="../libOVLng"/>
         <IncludePath Value="../libOVLDump"/>
-        <IncludePath Value="../libRawParse"/>
         <IncludePath Value="../libWXHelp"/>
         <IncludePath Value="../lib3DHelp"/>
-        <IncludePath Value="../libASE-1.0"/>
         <IncludePath Value="$(SYSINCLUDE)/GraphicsMagick"/>
         <IncludePath Value="$(SYSINCLUDE)/libxml2"/>
         <IncludePath Value="../libXmlCpp"/>
@@ -139,12 +103,11 @@
         <Preprocessor Value="XMLCPP_USE_EXSLT"/>
         <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
       </Compiler>
-      <Linker Required="yes" Options="-O2;-s;$(WX3_LIB_BR);-lexpat">
+      <Linker Required="yes" Options="-O2;$(WX3_LIB_PR);-lexpat">
         <LibraryPath Value="../../lib"/>
-        <Library Value="libRawParseu"/>
-        <Library Value="3DHelpbu"/>
-        <Library Value="WXHelpbu"/>
-        <Library Value="libASE"/>
+        <LibraryPath Value="../../bin"/>
+        <Library Value="3DHelpu"/>
+        <Library Value="WXHelpu"/>
         <Library Value="libOVLng"/>
         <Library Value="libOVLDump"/>
         <Library Value="XmlCppu"/>
@@ -164,10 +127,10 @@
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""/>
       <ResourceCompiler Required="no" Options=""/>
       <PreBuild>
-        <Command Enabled="yes">../../../Utilities/autover/autover.exe -dte1 -u version_ovlmake.h</Command>
+        <Command Enabled="yes">../../../Utilities/autover/autover.exe -dte1 -u version_validator.h</Command>
       </PreBuild>
       <PostBuild>
-        <Command Enabled="yes">../../../Utilities/autover/autover.exe -2 -u version_ovlmake.h</Command>
+        <Command Enabled="yes">../../../Utilities/autover/autover.exe -2 -u version_validator.h</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
         <CleanCommand/>
@@ -179,20 +142,19 @@
       </CustomBuild>
       <AdditionalRules>
         <CustomPostBuild/>
-        <CustomPreBuild/>
+        <CustomPreBuild>resources/res_abbreviation.cpp resources/res_abbreviation.h resources/res_keyframe.cpp resources/res_keyframe.h resources/res_main.cpp resources/res_main.h
+resources/res_%.cpp resources/res_%.h: resources/%.fbp
+	$(FORMBUILDER) -g $&lt;
+	touch -r $&lt; $@
+</CustomPreBuild>
       </AdditionalRules>
     </Configuration>
   </Settings>
-  <Dependencies Name="Invalid"/>
-  <Dependencies Name="ReleaseBaseUnicode">
+  <Dependencies Name="Release">
     <Project Name="Precompile RNG"/>
     <Project Name="Precompile XSL"/>
     <Project Name="libXmlCpp"/>
-    <Project Name="libASE"/>
-    <Project Name="libOVLDump"/>
-    <Project Name="libOVLng"/>
     <Project Name="libWXHelp"/>
     <Project Name="lib3DHelp"/>
-    <Project Name="libRawParse"/>
   </Dependencies>
 </CodeLite_Project>

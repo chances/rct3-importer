@@ -6,3 +6,7 @@ Added	Enhanced keyframe only mode to grab Blender easing with less frames
 Added	Support for bone weights
 Added	Constraint baking scripts
 Fixed	Reject names with characters that need to be escaped in xml ("<>)
+
+Fixed	Indetation bug in action_script_tools.py
+Added	Support for referenced textures (additional script and export)
+Fixed	Name character & also needs to be rejected

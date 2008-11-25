@@ -30,7 +30,6 @@
 #include "validator_keyframes.h"
 
 #include <boost/tokenizer.hpp>
-#include <boost/fusion/view/reverse_view.hpp>
 #include <wx/aboutdlg.h>
 #include <wx/file.h>
 #include <wx/textfile.h>
@@ -47,7 +46,7 @@
 
 #include "fileselectorcombowrap.h"
 #include "pretty.h"
-#include "version.h"
+#include "version_validator.h"
 
 #include "rng/rct3xml-ovlcompiler-v1.rngi.gz.h"
 #include "rng/rct3xml-raw-v1.rngi.gz.h"
@@ -504,11 +503,18 @@ void frmMain::OnInsertXInclude(wxCommandEvent& event) {
         wxMessageBox(_("You have no XML file loaded or not saved your current work."));
         return;
     }
-    if (m_fdlgFile->ShowModal() == wxID_OK) {
-        wxFileName xi(m_fdlgFile->GetPath());
-        xi.MakeRelativeTo(wxFileName(m_xmlfile).GetPathWithSep());
-        int inspos = m_stcMain->GetCurrentPos();
-        m_stcMain->InsertText(inspos, wxString::Format("<xi:include href=\"%s\" xmlns:xi=\"http://www.w3.org/2001/XInclude\" xpointer=\"element(/1)\" />", xi.GetFullPath().c_str()));
+    boost::shared_ptr<wxFileDialog> exdlg( new wxFileDialog(this,
+        _("Select file(s) ..."),
+        wxT(""), wxT(""), _("XML files|*.xml|All files|*.*"), wxFD_OPEN | wxFD_MULTIPLE), wxWindowDestroyer);
+    if (exdlg->ShowModal() == wxID_OK) {
+		wxArrayString files;
+		exdlg->GetPaths(files);
+		foreach(wxString &f, files) {
+			wxFileName xi(f);
+			xi.MakeRelativeTo(wxFileName(m_xmlfile).GetPathWithSep());
+			int inspos = m_stcMain->GetCurrentPos();
+			m_stcMain->InsertText(inspos, wxString::Format("<xi:include href=\"%s\" xmlns:xi=\"http://www.w3.org/2001/XInclude\" xpointer=\"element(/1)\" />", xi.GetFullPath().c_str()));
+		}
     }
 }
 
@@ -649,7 +655,7 @@ void frmMain::DoAbbreviation(bool quick) {
             }
         }
 
-        foreach(const AbbreviationMacro& m, reverse_view<AbbreviationMacro::vec>(macros)) {
+        reverse_foreach(const AbbreviationMacro& m, macros) {
             m_lbResults->Append(wxString::Format(_("%d/%d %s/%s/%s"), m.start, m.length, m.name, m.def, m.replaceby));
             full.replace(m.start, m.length, m.replaceby);
         }

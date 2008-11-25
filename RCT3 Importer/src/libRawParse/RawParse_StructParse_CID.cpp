@@ -29,6 +29,15 @@
 
 #include "ManagerCID.h"
 
+#define RAWXML_CID_SHAPE            "shape"
+#define RAWXML_CID_MORE             "more"
+#define RAWXML_CID_EXTRA            "extra"
+#define RAWXML_CID_SETTINGS         "settings"
+#define RAWXML_CID_TRASH            "trash"
+#define RAWXML_CID_SOAKED           "soaked"
+#define RAWXML_CID_SIZEUNK          "priceUnknowns"
+#define RAWXML_CID_UNK              "unknowns"
+
 void cRawParser::ParseCID(cXmlNode& node) {
     USE_PREFIX(node);
     cCarriedItem cid;
