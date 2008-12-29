@@ -43,11 +43,16 @@ unsigned long cTextureMIP::CalcSize(unsigned long blocksize) const {
     return dimension * dimension * blocksize / 16;
 }
 
-void cTextureMIP::FillHeader(unsigned long blocksize, FlicMipHeader* header) const {
+void cTextureMIP::FillHeader(unsigned long blocksize, FlicMipHeader* header, int format) const {
     header->MHeight = dimension;
     header->MWidth = dimension;
-    header->Pitch = header->MWidth * blocksize / 4;
-    header->Blocks = header->MHeight / 4;
+	if (format == cTexture::FORMAT_A8R8G8B8) {
+		header->Pitch = header->MWidth * blocksize / 16;
+		header->Blocks = header->MHeight;
+	} else {
+		header->Pitch = header->MWidth * blocksize / 4;
+		header->Blocks = header->MHeight / 4;
+	}
 }
 
 unsigned long cTextureMIP::FillRawData(unsigned long blocksize, unsigned char* _data) const {

@@ -34,6 +34,7 @@
 #include "OVLException.h"
 
 using namespace std;
+using namespace r3;
 
 const char* ovlPTDManager::NAME = "PathType";
 const char* ovlPTDManager::TAG = "ptd";

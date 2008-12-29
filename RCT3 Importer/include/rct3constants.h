@@ -170,6 +170,51 @@ struct Constants {
         };
         typedef Recolourable Recolorable;
     };
+	
+	struct GSI {
+		struct Type {
+			enum {
+				Icon = 			0, ///< four values.
+								   /**<
+								     * (left) from x
+									 * (top) from y
+									 * (right) to x
+									 * (bottom) to y
+									 **/ 
+				Special = 		1, ///< no values
+				Background =    2, ///< eight values, probably same as Frame
+				Frame = 		3, ///< eight values
+								   /**<
+								     * left border from x
+									 * left border to x
+									 * right border from x
+									 * right border to x
+									 * top border from y
+									 * top border to y
+									 * bottom border from y
+									 * bottom border to y
+									 **/ 
+				Horizontal_Bar =4, ///< six values
+								   /**<
+								     * left rim (?) from x
+									 * left rim (?) to x
+									 * right rim (?) from x
+									 * right rim (?) to x
+									 * from y (top)
+									 * to y (bottom)
+									 **/ 
+				Vertical_Bar =  5  ///< six values
+								   /**<
+								     * from x (left)
+									 * to x (right)
+									 * top rim (?) from y
+									 * top rim (?) to y
+									 * bottom rim(?) from y
+									 * bottom rim(?) to y
+									 **/ 
+			};
+		};
+	};
 
     struct Mesh {
         struct SupportType {

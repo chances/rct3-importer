@@ -12,6 +12,9 @@
 #include "CommonOVL.h"
 #include "StyleOVL.h"
 #include "guiskin.h"
+
+using namespace r3old;
+
 std::vector<GUISkin *> GUISkin::GUISkins;
 int GUISkin::LoaderNumber;
 

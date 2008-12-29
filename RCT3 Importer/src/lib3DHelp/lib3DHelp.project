@@ -317,7 +317,7 @@ bmy.pal.h: bmy.pal
     <Project Name="libXmlCpp"/>
     <Project Name="libWXHelp"/>
   </Dependencies>
-  <Dependencies Name="ReleaseBaseUnicode">
+  <Dependencies Name="ReleaseUnicode">
     <Project Name="Precompile RNG"/>
     <Project Name="Precompile XSL"/>
     <Project Name="libASE"/>
@@ -325,7 +325,7 @@ bmy.pal.h: bmy.pal
     <Project Name="libXmlCpp"/>
     <Project Name="libWXHelp"/>
   </Dependencies>
-  <Dependencies Name="ReleaseUnicode">
+  <Dependencies Name="ReleaseBaseUnicode">
     <Project Name="Precompile RNG"/>
     <Project Name="Precompile XSL"/>
     <Project Name="libASE"/>

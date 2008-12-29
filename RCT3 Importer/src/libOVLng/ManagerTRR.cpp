@@ -54,7 +54,7 @@ const char* ovlTRRManager::TAG = "trr";
 void cTrackedRide::WildStuff::Fill(r3::TrackedRide_W& trr, ovlStringTable* tab, ovlRelocationManager* rel) const {
     trr.w.robo_flag = robo_flag;
     trr.w.spinner_control = spinner_control;
-    trr.w.unk107 = unk107;
+    trr.w.equivalent_inversion = unk107;
     trr.w.unk108 = unk108;
     trr.w.split_val = split_val;
     trr.w.split_flag = split_flag;

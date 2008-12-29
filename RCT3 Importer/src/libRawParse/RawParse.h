@@ -119,6 +119,7 @@ private:
     wxString HandleStringContent(const wxString& content, bool* variable, bool addprefix = false);
     void ParseStringOption(std::string& str, const xmlcpp::cXmlNode& node, const wxString& attribute, bool* variable, bool addprefix = false);
     void ParseStringOption(wxString& str, const xmlcpp::cXmlNode& node, const wxString& attribute, bool* variable, bool addprefix = false);
+    unsigned long HandleUnsignedContent(const wxString& content, const xmlcpp::cXmlNode& node, const wxString& nodes, const wxString& attribute = "");
     unsigned long ParseUnsigned(const xmlcpp::cXmlNode& node, const wxString& nodes, const wxString& attribute);
     long ParseSigned(const xmlcpp::cXmlNode& node, const wxString& nodes, const wxString& attribute);
     double ParseFloat(const xmlcpp::cXmlNode& node, const wxString& nodes, const wxString& attribute);
@@ -154,6 +155,7 @@ private:
     void ParseCHG(xmlcpp::cXmlNode& node);
     void ParseCID(xmlcpp::cXmlNode& node);
     void ParseFTX(xmlcpp::cXmlNode& node);
+    void ParseGSI(xmlcpp::cXmlNode& node);
     void ParsePTD(xmlcpp::cXmlNode& node);
     void ParseQTD(xmlcpp::cXmlNode& node);
     void ParseSAT(xmlcpp::cXmlNode& node);

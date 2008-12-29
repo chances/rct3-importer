@@ -16,17 +16,6 @@
     <File Name="OvlCompiler ReadMe.txt"/>
     <File Name="ReadMe 1st.txt"/>
   </VirtualDirectory>
-  <Dependencies Name="DebugBaseUnicode">
-    <Project Name="Precompile RNG"/>
-    <Project Name="Precompile XSL"/>
-    <Project Name="libXmlCpp"/>
-    <Project Name="libASE"/>
-    <Project Name="libOVLDump"/>
-    <Project Name="libOVLng"/>
-    <Project Name="libWXHelp"/>
-    <Project Name="lib3DHelp"/>
-    <Project Name="libRawParse"/>
-  </Dependencies>
   <Settings Type="Executable">
     <Configuration Name="DebugBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
       <General OutputFile="../../bin/$(ProjectName)d" IntermediateDirectory="../../lib/obj/ovlmake/Debug" Command="./$(ProjectName)d" CommandArguments="" WorkingDirectory="../../bin" PauseExecWhenProcTerminates="yes"/>
@@ -184,6 +173,17 @@
     </Configuration>
   </Settings>
   <Dependencies Name="Invalid"/>
+  <Dependencies Name="DebugBaseUnicode">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libXmlCpp"/>
+    <Project Name="libASE"/>
+    <Project Name="libOVLDump"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libWXHelp"/>
+    <Project Name="lib3DHelp"/>
+    <Project Name="libRawParse"/>
+  </Dependencies>
   <Dependencies Name="ReleaseBaseUnicode">
     <Project Name="Precompile RNG"/>
     <Project Name="Precompile XSL"/>

@@ -43,6 +43,9 @@
     <File Name="strip.xsl"/>
     <File Name="stripstrip.xsl"/>
   </VirtualDirectory>
+  <Dependencies Name="Precompile">
+    <Project Name="bin2c"/>
+  </Dependencies>
   <Settings Type="Static Library">
     <Configuration Name="Precompile" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName).so" IntermediateDirectory="./Release" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
@@ -50,25 +53,27 @@
         <IncludePath Value="."/>
       </Compiler>
       <Linker Required="no" Options="-O2"/>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands></PostConnectCommands>
+        <StartupCommands></StartupCommands>
+      </Debugger>
       <ResourceCompiler Required="no" Options=""/>
       <PreBuild/>
       <PostBuild/>
       <CustomBuild Enabled="yes">
-        <CleanCommand>make clean</CleanCommand>
-        <BuildCommand>make</BuildCommand>
-        <SingleFileCommand/>
-        <MakefileGenerationCommand/>
+        <CleanCommand>$(MAKE) clean</CleanCommand>
+        <BuildCommand>$(MAKE)</BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory/>
+        <WorkingDirectory></WorkingDirectory>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild/>
-        <CustomPreBuild/>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild>
+
+</CustomPreBuild>
       </AdditionalRules>
     </Configuration>
   </Settings>
-  <Dependencies Name="Precompile">
-    <Project Name="bin2c"/>
-  </Dependencies>
 </CodeLite_Project>

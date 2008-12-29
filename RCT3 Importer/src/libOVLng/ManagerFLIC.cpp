@@ -135,7 +135,7 @@ void ovlFLICManager::Make(cOvlInfo* info) {
             for (set<cTextureMIP>::iterator i_mip = it->second.mips.begin(); i_mip != it->second.mips.end(); ++i_mip) {
                 c_mip = reinterpret_cast<FlicMipHeader*>(c_extra);
                 c_extra += sizeof(FlicMipHeader);
-                i_mip->FillHeader(cTexture::GetBlockSize(it->second.format), c_mip);
+                i_mip->FillHeader(cTexture::GetBlockSize(it->second.format), c_mip, it->second.format);
 
                 c_extra += i_mip->FillRawData(cTexture::GetBlockSize(it->second.format), c_extra);
             }

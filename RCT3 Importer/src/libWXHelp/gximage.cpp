@@ -526,6 +526,21 @@ void wxGXImage::SetAlpha(const void* data) {
     }
 }
 
+void wxGXImage::FudgeAlpha(float f) {
+    wxLogDebug(wxT("TRACE wxGXImage::FudgeAlpha"));
+	try {
+		m_image.matte(true);
+		Magick::PixelPacket* pixels = m_image.getPixels(0, 0, m_image.columns(), m_image.rows());
+		for (int i = 0; i < m_image.columns() * m_image.rows(); ++i) {
+			pixels[i].opacity = 255.0 - ((255.0 - pixels[i].opacity) * (1.0-f));
+		}
+		m_image.syncPixels();
+	} catch (Magick::Exception e) {
+		m_error = wxString(e.what(), wxConvLocal);
+		wxLogDebug(wxT("Error in wxGXImage::FudgeAlpha: %s"), e.what());
+	}
+}
+
 void wxGXImage::InvertAlpha() {
     if (HasAlpha()) {
         wxLogDebug(wxT("TRACE wxGXImage::InvertAlpha"));

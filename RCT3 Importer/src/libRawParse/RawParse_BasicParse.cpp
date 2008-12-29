@@ -105,33 +105,51 @@ void cRawParser::ParseStringOption(wxString& str, const cXmlNode& node, const wx
 	}
 }
 
-unsigned long cRawParser::ParseUnsigned(const cXmlNode& node, const wxString& nodes, const wxString& attribute) {
-    wxString t(node.wxgetPropVal(attribute));
+unsigned long cRawParser::HandleUnsignedContent(const wxString& content, const cXmlNode& node, const wxString& nodes, const wxString& attribute) {
+    wxString t(content);
     MakeVariable(t);
     unsigned long i;
     if (t.IsEmpty())
-        throw MakeNodeException<RCT3Exception>(nodes+_(" tag misses ") + attribute + _(" attribute"), node);
+		if (attribute.IsEmpty())
+			throw MakeNodeException<RCT3Exception>(wxString::Format(_("Tag '%s' misses content"), nodes.c_str()), node);
+		else
+			throw MakeNodeException<RCT3Exception>(wxString::Format(_("Tag '%s' misses attribute '%s'"), nodes.c_str(), attribute.c_str()), node);
 
     if (t.StartsWith('b')) {
         try {
             bitset<32> bits(string(t.utf8_str()), 1);
             i = bits.to_ulong();
         } catch (exception& e) {
-            throw MakeNodeException<RCT3InvalidValueException>(nodes+_(" tag, ") + attribute + _(" attribute: invalid binary value ")+t, node);
+			if (attribute.IsEmpty())
+				throw MakeNodeException<RCT3Exception>(wxString::Format(_("Tag '%s': invalid binary content '%s'"), nodes.c_str(), t.c_str()), node);
+			else
+				throw MakeNodeException<RCT3Exception>(wxString::Format(_("Tag '%s', '%s': invalid binary content '%s'"), nodes.c_str(), attribute.c_str(), t.c_str()), node);
         }
     } else if (t.StartsWith('h') || t.StartsWith("0x")) {
         wxString hex;
         if (!t.StartsWith('h', &hex))
             t.StartsWith("0x", &hex);
-        if (!parseHexULong(hex, i))
-            throw MakeNodeException<RCT3InvalidValueException>(nodes+_(" tag, ") + attribute + _(" attribute: invalid hexadecimal value ")+t, node);
+        if (!parseHexULong(hex, i)) {
+			if (attribute.IsEmpty())
+				throw MakeNodeException<RCT3Exception>(wxString::Format(_("Tag '%s': invalid hex content '%s'"), nodes.c_str(), t.c_str()), node);
+			else
+				throw MakeNodeException<RCT3Exception>(wxString::Format(_("Tag '%s', '%s': invalid hex content '%s'"), nodes.c_str(), attribute.c_str(), t.c_str()), node);
+		}
     } else if (t == "true") {
         i = 1;
     } else if (t == "false") {
         i = 0;
-    } else if (!t.ToULong(&i))
-        throw MakeNodeException<RCT3InvalidValueException>(nodes+_(" tag, ") + attribute + _(" attribute: invalid value ")+t, node);
+    } else if (!t.ToULong(&i)) {
+		if (attribute.IsEmpty())
+			throw MakeNodeException<RCT3Exception>(wxString::Format(_("Tag '%s': invalid value '%s'"), nodes.c_str(), t.c_str()), node);
+		else
+			throw MakeNodeException<RCT3Exception>(wxString::Format(_("Tag '%s', '%s': invalid value '%s'"), nodes.c_str(), attribute.c_str(), t.c_str()), node);
+	}
     return i;
+}
+
+unsigned long cRawParser::ParseUnsigned(const cXmlNode& node, const wxString& nodes, const wxString& attribute) {
+    return HandleUnsignedContent(node.wxgetPropVal(attribute), node, nodes, attribute);
 }
 
 long cRawParser::ParseSigned(const cXmlNode& node, const wxString& nodes, const wxString& attribute) {

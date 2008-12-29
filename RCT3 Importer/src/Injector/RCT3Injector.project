@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CodeLite_Project Name="RCT3Injector">
+  <Description/>
+  <Dependencies/>
+  <VirtualDirectory Name="resources">
+    <File Name="resources\main.fbp"/>
+    <File Name="resources\res_main.h"/>
+    <File Name="resources\res_main.cpp"/>
+  </VirtualDirectory>
+  <VirtualDirectory Name="Injector">
+    <File Name="version_injector.h"/>
+    <File Name="injector_main.h"/>
+    <File Name="injector_main.cpp"/>
+    <File Name="injector_app.h"/>
+    <File Name="injector_app.cpp"/>
+    <File Name="version_wrap.h"/>
+    <File Name="version_wrap.cpp"/>
+  </VirtualDirectory>
+  <Dependencies Name="Debug">
+    <Project Name="libOVLng"/>
+    <Project Name="libOVLDump"/>
+  </Dependencies>
+  <Settings Type="Executable">
+    <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
+      <General OutputFile="../../bin/injector/$(ProjectName)d" IntermediateDirectory="../../lib/obj/Injector/Debug" Command="./$(ProjectName)d" CommandArguments="" WorkingDirectory="../../bin/injector/" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="$(WX3_CXX_PD);-fno-strict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="../libOVLng"/>
+        <IncludePath Value="../libOVLDump"/>
+      </Compiler>
+      <Linker Required="yes" Options=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""></Debugger>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild>
+
+</CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="Invalid" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="" CommandArguments="" WorkingDirectory="./Debug" PauseExecWhenProcTerminates="no"/>
+      <Compiler Required="yes" Options="-g">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Required="yes" Options="-O0">
+        <LibraryPath Value="."/>
+        <LibraryPath Value="Debug"/>
+      </Linker>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""></Debugger>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild/>
+      <PostBuild/>
+      <CustomBuild Enabled="yes">
+        <CleanCommand>error</CleanCommand>
+        <BuildCommand>error</BuildCommand>
+        <SingleFileCommand>error</SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild>
+
+</CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+    <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
+      <General OutputFile="../../bin/injector/$(ProjectName)" IntermediateDirectory="../../lib/obj/Injector/Release" Command="./$(ProjectName)" CommandArguments="" WorkingDirectory="../../bin/injector/" PauseExecWhenProcTerminates="yes"/>
+      <Compiler Required="yes" Options="-O2;$(WX3_CXX_PR);-fno-strict-aliasing;-mthreads;-fexceptions">
+        <IncludePath Value="."/>
+        <IncludePath Value="../../include"/>
+        <IncludePath Value="../libOVLng"/>
+        <IncludePath Value="../libOVLDump"/>
+      </Compiler>
+      <Linker Required="yes" Options="-O2;$(WX3_LIB_PR);-lexpat">
+        <LibraryPath Value="../../lib"/>
+        <LibraryPath Value="../../bin"/>
+        <Library Value="libOVLng"/>
+        <Library Value="libOVLDump"/>
+        <Library Value="jpeg"/>
+        <Library Value="png"/>
+        <Library Value="tiff"/>
+        <Library Value="cryptopp"/>
+      </Linker>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""></Debugger>
+      <ResourceCompiler Required="no" Options=""/>
+      <PreBuild>
+        <Command Enabled="yes">../../../Utilities/autover/autover.exe -dte1 -u version_injector.h</Command>
+      </PreBuild>
+      <PostBuild>
+        <Command Enabled="yes">../../../Utilities/autover/autover.exe -2 -u version_injector.h</Command>
+      </PostBuild>
+      <CustomBuild Enabled="no">
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <ThirdPartyToolName>None</ThirdPartyToolName>
+        <WorkingDirectory></WorkingDirectory>
+      </CustomBuild>
+      <AdditionalRules>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild>resources/res_main.cpp resources/res_main.h
+resources/res_%.cpp resources/res_%.h: resources/%.fbp
+	$(FORMBUILDER) -g $&lt;
+	touch -r $&lt; $@
+</CustomPreBuild>
+      </AdditionalRules>
+    </Configuration>
+  </Settings>
+  <VirtualDirectory Name="sha">
+    <File Name="wxsha.h"/>
+    <File Name="wxsha.cpp"/>
+  </VirtualDirectory>
+  <Dependencies Name="Release">
+    <Project Name="libOVLng"/>
+    <Project Name="libOVLDump"/>
+  </Dependencies>
+</CodeLite_Project>

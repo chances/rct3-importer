@@ -276,7 +276,11 @@ struct TrackedRide_Wext {
     SceneryItemVisual_V* splitter_ref;
     uint32_t            robo_flag;                  ///< Usually 0, 1 activates the joint control
     uint32_t            spinner_control;            ///< Usually 0, 1 activates the eurospinner control
-    uint32_t            unk107;                     ///< Usually 0, BallCoaster, Endless and FrequentFaller 1
+    uint32_t            equivalent_inversion;       ///< Usually 0, BallCoaster, Endless and FrequentFaller 1
+													/**<
+													 * If set, inverted and non-inverted may follow each-other 
+													 * immediately when building vertically
+													 **/ 
     uint32_t            unk108;                     ///< Usually 1, ElephantTransport has 0
     int32_t             split_val;                  ///< Usually -1, Seizmic has 2
     uint32_t            split_flag;                 ///< Usually 0, Seizmic has 1

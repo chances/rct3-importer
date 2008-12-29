@@ -35,6 +35,7 @@
 #include "OVLException.h"
 
 using namespace std;
+using namespace r3;
 
 const char* ovlQTDManager::NAME = "QueueType";
 const char* ovlQTDManager::TAG = "qtd";

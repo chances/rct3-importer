@@ -151,6 +151,7 @@ public:
     void GetAlpha(unsigned char* data) const;
     void SetAlpha(const void* data);
     void InvertAlpha();
+	void FudgeAlpha(float f);
     void GetGrayscale(unsigned char* data) const;
     void GetAs8bit(unsigned char* data, unsigned char* palette) const;
     void GetAs8bitForced(unsigned char* data, unsigned char* palette, bool special = false) const;
@@ -167,6 +168,7 @@ public:
     inline void floodFillOpacity(long x, long y, unsigned int _opacity, Magick::PaintMethod _method = Magick::PointMethod) {
 		m_image.floodFillOpacity(x, y, _opacity, _method);
 	}
+	inline bool matte() const {return m_image.matte();}
 	inline void matte(bool _matte) {m_image.matte(_matte);}
 	inline void opacity(unsigned int _opacity) {m_image.opacity(_opacity);}
 	inline void composite(const Magick::Image& compositeImage_, int xOffset_, int yOffset_, Magick::CompositeOperator compose_ = Magick::InCompositeOp) {
@@ -217,6 +219,8 @@ public:
     void size(unsigned int width, unsigned int height) { size(wxString::Format("%ux%u", width, height)); }
     void size(const char* geometry) {m_image.size(geometry);}
     void size(const wxString& geometry) {size(static_cast<const char*>(geometry.utf8_str()));}
+	inline Magick::ImageType type() const {return m_image.type();}
+	inline void type(Magick::ImageType _type) {m_image.type(_type);}
     void write(Magick::Blob& blob) {m_image.write(&blob);}
     void write(Magick::Blob& blob, std::string magick) {m_image.write(&blob, magick);}
 

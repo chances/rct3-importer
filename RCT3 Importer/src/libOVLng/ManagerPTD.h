@@ -86,7 +86,7 @@ public:
     cPath() {
         unk1 = FLAG_BASIC;
     }
-    void Fill(PathType2* ptd, ovlStringTable* tab, ovlRelocationManager* rel);
+    void Fill(r3::PathType2* ptd, ovlStringTable* tab, ovlRelocationManager* rel);
     void DoCopy(ovlStringTable* tab);
 };
 

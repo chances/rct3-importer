@@ -28,7 +28,6 @@
 #include "RawParse_cpp.h"
 
 #include "ManagerBTBL.h"
-#include "ManagerGSI.h"
 #include "ManagerTXT.h"
 
 #include "base64.h"
@@ -450,18 +449,8 @@ void cRawParser::Parse(cXmlNode& node) {
             ParseFTX(child);
         } else if (child(RAWXML_GSI)) {
             // <gsi name="string" tex="string" top="long int" left="long int" bottom="long int" right="long int" />
-            USE_PREFIX(child);
             BAKE_SKIP(child);
-            wxString name = ParseString(child, wxT(RAWXML_GSI), wxT("name"), NULL, useprefix);
-            wxString tex = ParseString(child, wxT(RAWXML_GSI), wxT("tex"), NULL, useprefix);
-            unsigned long top = ParseUnsigned(child, wxT(RAWXML_GSI), wxT("top"));
-            unsigned long left = ParseUnsigned(child, wxT(RAWXML_GSI), wxT("left"));
-            unsigned long bottom = ParseUnsigned(child, wxT(RAWXML_GSI), wxT("bottom"));
-            unsigned long right = ParseUnsigned(child, wxT(RAWXML_GSI), wxT("right"));
-            wxLogVerbose(wxString::Format(_("Adding gsi %s to %s."), name.c_str(), m_output.GetFullPath().c_str()));
-
-            ovlGSIManager* c_gsi = m_ovl.GetManager<ovlGSIManager>();
-            c_gsi->AddItem(name.ToAscii(), tex.ToAscii(), left, top, right, bottom);
+			ParseGSI(child);
         } else if (child(RAWXML_PTD)) {
             BAKE_SKIP(child);
             ParsePTD(child);

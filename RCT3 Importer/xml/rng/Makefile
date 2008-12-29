@@ -34,7 +34,7 @@ rct3xml-raw-v1.rng: rct3xml-shared-v1.rng rct3xml-installer-shared-v1.rng
 	xsltproc --novalid ../xsl/RNG2Schtrn.xsl $< > $@
 
 %.gz.h: %
-	bin2c -c -z -g 9 $< $@
+	../../../Utilities/bin2c/bin2c -c -z -g 9 $< $@
 
 #%.sch.gz.h: %.sch
 #	bin2c -c -z -g 9 $< $@

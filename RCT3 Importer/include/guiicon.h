@@ -13,6 +13,8 @@
 
 #include "icontexture.h"
 
+namespace r3old {
+
 //presnt in importer
 struct Icon
 {
@@ -42,6 +44,19 @@ struct GSI
 {
 	GUISkinItem g1;
 	GUISkinItemPos g2;
+};
+
+};
+
+namespace r3 {
+
+struct GUISkinItem {
+	uint32_t 		gsi_type;
+	TextureStruct*	tex_ref; //0 on disk files
+	uint32_t* 		pos;
+	uint32_t 		unk2; //0 on disk files
+};
+
 };
 
 #endif

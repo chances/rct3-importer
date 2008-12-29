@@ -1276,26 +1276,83 @@
 				</element>
 			</define>
 		</div>
-		<define name="gsi">
-			<sch:pattern>
-				<sch:title>GSI checks</sch:title>
-				<sch:rule context="//raw:gsi/@name">
-					<sch:extends rule="uniqueness"/>
-				</sch:rule>
-				<sch:rule context="//raw:gsi/@tex">
-					<sch:extends rule="refcheck-tex"/>
-				</sch:rule>
-			</sch:pattern>
-			<element name="gsi">
-				<ref name="baseattrs"/>
-				<attribute name="name" type="string"/>
-				<attribute name="tex" ref="TEXReference"/>
-				<attribute name="right" type="unsignedInt"/>
-				<attribute name="left" type="unsignedInt"/>
-				<attribute name="bottom" type="unsignedInt"/>
-				<attribute name="top" type="unsignedInt"/>
-			</element>
-		</define>
+		<div>
+			<define name="gsi">
+				<sch:pattern>
+					<sch:title>GSI checks</sch:title>
+					<sch:rule context="//raw:gsi/@name">
+						<sch:extends rule="uniqueness"/>
+					</sch:rule>
+					<sch:rule context="//raw:gsi/@tex">
+						<sch:extends rule="refcheck-tex"/>
+					</sch:rule>
+				</sch:pattern>
+				<element name="gsi">
+					<ref name="baseattrs"/>
+					<attribute name="name" type="string"/>
+					<attribute name="tex" ref="TEXReference"/>
+					<attribute name="unk" occurs="?" type="unsignedInt"/>
+					<choice>
+						<group>
+							<attribute name="right" type="unsignedInt"/>
+							<attribute name="left" type="unsignedInt"/>
+							<attribute name="bottom" type="unsignedInt"/>
+							<attribute name="top" type="unsignedInt"/>
+						</group>
+						<group>
+							<attribute name="type">
+								<value>0</value>
+							</attribute>
+							<ref name="gsipos"/>
+							<ref name="gsipos"/>
+							<ref name="gsipos"/>
+							<ref name="gsipos"/>
+						</group>
+						<group>
+							<attribute name="type">
+								<value>1</value>
+							</attribute>
+						</group>
+						<group>
+							<attribute name="type">
+								<choice>
+									<value>2</value>
+									<value>3</value>
+								</choice>
+							</attribute>
+							<ref name="gsipos"/>
+							<ref name="gsipos"/>
+							<ref name="gsipos"/>
+							<ref name="gsipos"/>
+							<ref name="gsipos"/>
+							<ref name="gsipos"/>
+							<ref name="gsipos"/>
+							<ref name="gsipos"/>
+						</group>
+						<group>
+							<attribute name="type">
+								<choice>
+									<value>4</value>
+									<value>5</value>
+								</choice>
+							</attribute>
+							<ref name="gsipos"/>
+							<ref name="gsipos"/>
+							<ref name="gsipos"/>
+							<ref name="gsipos"/>
+							<ref name="gsipos"/>
+							<ref name="gsipos"/>
+						</group>
+					</choice>
+				</element>
+			</define>
+			<define name="gsipos">
+				<element name="value">
+					<ref name="baseattrs"/>
+					<data type="unsignedInt"/>
+				</element>					
+			</define>
+		</div>
 		<define name="ptd">
 			<element name="ptd">
 				<ref name="baseattrs"/>
@@ -2037,16 +2094,22 @@
 				</attribute>
 				<attribute name="txs" occurs="?" ref="TXSReference"/>
 				<attribute name="mips" occurs="?" type="unsignedInt"/>
-                <attribute name="auto" occurs="?">
-                    <choice>
-                        <value>resize</value>
-                        <value>rescale</value>
-                        <value>none</value>
-                    </choice>
-                </attribute>
 				<element name="texture" occurs="+">
 					<ref name="baseattrs"/>
 					<attribute name="dimension" occurs="?" ref="ovlTextureDimension"/>
+					<attribute name="auto" occurs="?">
+						<choice>
+							<value>resize</value>
+							<value>rescale</value>
+							<value>none</value>
+						</choice>
+					</attribute>
+					<attribute name="opacity" occurs="?">
+						<data type="float">
+							<param name="minInclusive">0</param>
+							<param name="maxInclusive">1</param>
+						</data>
+					</attribute>
 					<ref name="data"/>
 				</element>
 			</element>
@@ -2285,7 +2348,7 @@
 						<element name="options" occurs="?">
 							<attribute name="onlyOnWater" occurs="?" ref="flag"/>
 							<attribute name="blocksPossible" occurs="?" ref="flag"/>
-							<attribute name="carRotation" occurs="?" ref="flag"/>
+							<attribute name="carRotation" occurs="?" type="unsignedInt"/>
 							<attribute name="loopNotAllowed" occurs="?" ref="flag"/>
 							<attribute name="deconstructEverywhere" occurs="?" ref="flag"/>
 						</element>
@@ -2387,7 +2450,10 @@
 							<attribute name="splitter" occurs="?" type="string"/>
 							<attribute name="boneControl" occurs="?" ref="flag"/>
 							<attribute name="spinnerControl" occurs="?" ref="flag"/>
-							<attribute name="u107" occurs="?" ref="flag"/>
+							<choice>
+								<attribute name="u107" occurs="?" ref="flag"/>
+								<attribute name="equivalentInversion" occurs="?" ref="flag"/>
+							</choice>
 							<attribute name="u108" occurs="?" ref="flag"/>
 							<attribute name="splitVal" occurs="?" type="int"/>
 							<attribute name="splitFlag" occurs="?" ref="flag"/>

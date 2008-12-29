@@ -52,19 +52,6 @@ void cRawParser::ParseTEX(cXmlNode& node) {
     unsigned long mips = 0;
     OPTION_PARSE(unsigned long, mips, ParseUnsigned(node, wxT(RAWXML_TEX), wxT("mips")));
     ParseStringOption(texture.texturestyle, node, wxT("txs"), NULL);
-	enum {
-		DO_RESIZE,
-		DO_RESCALE,
-		DO_NONE
-	} process_img = DO_NONE;
-	{
-		wxString pr;
-		ParseStringOption(pr, node, "auto", NULL);
-		if (pr == "resize")
-			process_img = DO_RESIZE;
-		else if (pr == "rescale")
-			process_img = DO_RESCALE;
-	}
 
     cXmlNode child(node.children());
     while (child) {
@@ -73,6 +60,25 @@ void cRawParser::ParseTEX(cXmlNode& node) {
         if (child(RAWXML_TEX_TEXTURE)) {
             cTextureMIP mip;
             OPTION_PARSE(unsigned long, mip.dimension, ParseUnsigned(child, wxT(RAWXML_TEX_TEXTURE), wxT("dimension")));
+			enum {
+				DO_RESIZE,
+				DO_RESCALE,
+				DO_NONE
+			} process_img = DO_NONE;
+			{
+				wxString pr;
+				ParseStringOption(pr, child, "auto", NULL);
+				if (pr == "resize")
+					process_img = DO_RESIZE;
+				else if (pr == "rescale")
+					process_img = DO_RESCALE;
+			}
+			bool do_op = false;
+			float op = 0;
+			if (child.hasProp("opacity")) {
+				do_op = true;
+				op = ParseFloat(child, RAWXML_TEX_TEXTURE, "opacity");
+			}
 
             cXmlNode datanode(child.children());
             while (datanode && (!datanode(RAWXML_DATA)))
@@ -125,11 +131,20 @@ void cRawParser::ParseTEX(cXmlNode& node) {
                 } catch (RCT3TextureException& e) {
                     throw MakeNodeException<RCT3Exception>(wxString::Format(_("Image in tag tex(%s)/texture is not fit for RCT3: "), name.c_str())+e.wxwhat(), child);
                 }
+				if (do_op) {
+					//if (!img.matte())
+					//	img.matte(true);
+					//img.type(Magick::TrueColorMatteType);
+					//img.floodFillOpacity(1,1,(1.0-op) * static_cast<float>(TransparentOpacity));
+					//img.opacity(127);
+					img.FudgeAlpha(1.0-op);
+					//img.SaveFile("I:\\test.png");
+				}
 
                 mip.data = boost::shared_array<unsigned char>(new unsigned char[mip.CalcSize(cTexture::GetBlockSize(texture.texture.format))]);
                 switch (texture.texture.format) {
                     case cTexture::FORMAT_A8R8G8B8:
-                        img.GetData("RGBA", mip.data.get(), true);
+                        img.GetData("BGRA", mip.data.get(), true);
                         break;
                     case cTexture::FORMAT_DXT1:
                         img.DxtCompress(mip.data.get(), wxDXT1);

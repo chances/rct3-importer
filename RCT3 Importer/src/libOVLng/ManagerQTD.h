@@ -52,7 +52,7 @@ public:
     std::string slopedown;
     std::string slopestraight[2];
 
-    void Fill(QueueType* qtd, ovlStringTable* tab, ovlRelocationManager* rel);
+    void Fill(r3::QueueType* qtd, ovlStringTable* tab, ovlRelocationManager* rel);
     void DoCopy(ovlStringTable* tab);
 };
 

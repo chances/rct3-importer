@@ -157,4 +157,5 @@ resources/res_%.cpp resources/res_%.h: resources/%.fbp
     <Project Name="libWXHelp"/>
     <Project Name="lib3DHelp"/>
   </Dependencies>
+  <Dependencies Name="Invalid"/>
 </CodeLite_Project>

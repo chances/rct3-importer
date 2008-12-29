@@ -166,18 +166,6 @@
     <Project Name="libWXHelp"/>
     <Project Name="lib3DHelp"/>
   </Dependencies>
-  <Dependencies Name="Release">
-    <Project Name="Precompile RNG"/>
-    <Project Name="Precompile XSL"/>
-    <Project Name="libASE"/>
-    <Project Name="libOVL"/>
-    <Project Name="libOVLDump"/>
-    <Project Name="libOVLng"/>
-    <Project Name="libXmlCpp"/>
-    <Project Name="libWXHelp"/>
-    <Project Name="lib3DHelp"/>
-  </Dependencies>
-  <Dependencies Name="Invalid"/>
   <Settings Type="Executable">
     <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
       <General OutputFile="../../bin/RCT3_Importerd.exe" IntermediateDirectory="../../lib/obj/RCT3Importer/Debug" Command="RCT3_Importerd.exe" CommandArguments="" WorkingDirectory="../../bin" PauseExecWhenProcTerminates="yes"/>
@@ -220,7 +208,7 @@
         <Library Value="squish"/>
         <Library Value="cryptopp"/>
       </Linker>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""></Debugger>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""/>
       <ResourceCompiler Required="yes" Options=""/>
       <PreBuild>
         <Command Enabled="yes">../../../Utilities/autover/autover.exe -dte1 -u version_importer.h</Command>
@@ -229,15 +217,15 @@
         <Command Enabled="yes">../../../Utilities/autover/autover.exe -2 -u version_importer.h</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
-        <CleanCommand></CleanCommand>
-        <BuildCommand></BuildCommand>
-        <SingleFileCommand></SingleFileCommand>
-        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory></WorkingDirectory>
+        <WorkingDirectory/>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild></CustomPostBuild>
+        <CustomPostBuild/>
         <CustomPreBuild>xrc_bitmap_crystal.cpp xrc_bitmap_icons.cpp res_animation.cpp res_createscenery.cpp res_lod.cpp res_misc.cpp res_spline.cpp xrc_attract.cpp
 %.xrc: %.fbp
 	$(FORMBUILDER) -g $&lt;	
@@ -277,7 +265,7 @@ res_spline.cpp: xrc/spline.fbp
         <LibraryPath Value="."/>
         <LibraryPath Value="Debug"/>
       </Linker>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""></Debugger>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""/>
       <ResourceCompiler Required="no" Options=""/>
       <PreBuild/>
       <PostBuild/>
@@ -285,15 +273,13 @@ res_spline.cpp: xrc/spline.fbp
         <CleanCommand>error</CleanCommand>
         <BuildCommand>error</BuildCommand>
         <SingleFileCommand>error</SingleFileCommand>
-        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <MakefileGenerationCommand/>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory></WorkingDirectory>
+        <WorkingDirectory/>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild></CustomPostBuild>
-        <CustomPreBuild>
-
-</CustomPreBuild>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
       </AdditionalRules>
     </Configuration>
     <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
@@ -336,7 +322,7 @@ res_spline.cpp: xrc/spline.fbp
         <Library Value="squish"/>
         <Library Value="cryptopp"/>
       </Linker>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""></Debugger>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""/>
       <ResourceCompiler Required="yes" Options=""/>
       <PreBuild>
         <Command Enabled="yes">../../../Utilities/autover/autover.exe -dte1 -u version_importer.h</Command>
@@ -345,15 +331,15 @@ res_spline.cpp: xrc/spline.fbp
         <Command Enabled="yes">../../../Utilities/autover/autover.exe -2 -u version_importer.h</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
-        <CleanCommand></CleanCommand>
-        <BuildCommand></BuildCommand>
-        <SingleFileCommand></SingleFileCommand>
-        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory></WorkingDirectory>
+        <WorkingDirectory/>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild></CustomPostBuild>
+        <CustomPostBuild/>
         <CustomPreBuild>xrc_bitmap_crystal.cpp xrc_bitmap_icons.cpp res_animation.cpp res_createscenery.cpp res_lod.cpp res_misc.cpp res_spline.cpp xrc_attract.cpp xrc_attractman.cpp xrc_effect.cpp xrc_effectmenu.cpp xrc_info.cpp xrc_matrix.cpp xrc_model.cpp xrc_stall.cpp xrc_stallman.cpp xrc_texture.cpp xrc_texturesimple.cpp
 %.xrc: %.fbp
 	$(FORMBUILDER) -g $&lt;	
@@ -421,4 +407,16 @@ res_spline.cpp: xrc/spline.fbp
       </AdditionalRules>
     </Configuration>
   </Settings>
+  <Dependencies Name="Invalid"/>
+  <Dependencies Name="Release">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libASE"/>
+    <Project Name="libOVL"/>
+    <Project Name="libOVLDump"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libXmlCpp"/>
+    <Project Name="libWXHelp"/>
+    <Project Name="lib3DHelp"/>
+  </Dependencies>
 </CodeLite_Project>

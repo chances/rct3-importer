@@ -71,7 +71,7 @@ public:
         return dimension > rhs.dimension;
     }
     unsigned long CalcSize(unsigned long blocksize) const;
-    void FillHeader(unsigned long blocksize, FlicMipHeader* header) const;
+    void FillHeader(unsigned long blocksize, FlicMipHeader* header, int format) const;
     unsigned long FillRawData(unsigned long blocksize, unsigned char* _data) const;
 };
 

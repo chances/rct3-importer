@@ -28,37 +28,85 @@
 
 #include "ManagerGSI.h"
 
+#include <boost/format.hpp>
+
 #include "OVLException.h"
+#include "pretty.h"
+#include "rct3constants.h"
 
 #include "ManagerTEX.h"
 
 using namespace std;
+using namespace r3;
 
 const char* ovlGSIManager::LOADER = "FGDK";
 const char* ovlGSIManager::NAME = "GUISkinItem";
 const char* ovlGSIManager::TAG = "gsi";
 
-void ovlGSIManager::AddItem(const char* name, const char* texture, unsigned long left, unsigned long top, unsigned long right, unsigned long bottom) {
+void cGUISkinItem::Check() const {
+	size_t len = 4;
+	switch(gsi_type) {
+		case 0:
+			break;
+		case 1:
+			len = 0;
+			break;
+		case 2:
+		case 3:
+			len = 8;
+			break;
+		case 4:
+		case 5:
+			len = 6;
+		default:
+			throw EOvl(boost::str(boost::format("cGUISkinType '%s' has unknown type '%d'") % name % gsi_type));
+	}
+	if (len != values.size()) {
+		throw EOvl(boost::str(boost::format("cGUISkinType '%s' has %d values, but according to it's type, it should have %d.") % name % values.size() % len));
+	}
+}
+
+unsigned long cGUISkinItem::GetCommonSize() const {
+	switch(gsi_type) {
+		case 0:
+			return 4 * sizeof(uint32_t);
+		case 1:
+			return 0;
+		case 2:
+		case 3:
+			return 8 * sizeof(uint32_t);
+		case 4:
+		case 5:
+			return 6 * sizeof(uint32_t);
+		default:
+			throw EOvl(boost::str(boost::format("cGUISkinType '%s' has unknown type '%d'") % name % gsi_type));
+	}
+}
+
+unsigned long cGUISkinItem::GetUniqueSize() const {
+	return sizeof(GUISkinItem);
+}
+
+
+void ovlGSIManager::AddItem(const cGUISkinItem& item) {
     Check("ovlGSIManager::AddItem");
+    if (item.name == "")
+        throw EOvl("ovlGSIManager::AddItem called without name");
+    if (m_items.find(item.name) != m_items.end())
+        throw EOvl("ovlGSIManager::AddItem: Item with name '"+item.name+"' already exists");
+	item.Check();
 
-    m_gsinames.push_back(string(name));
-    m_gsitextures.push_back(string(texture));
-    GUISkinItemPos pos;
-    pos.left = left;
-    pos.top = top;
-    pos.right = right;
-    pos.bottom = bottom;
-    m_gsipositions.push_back(pos);
+    m_items[item.name] = item;
 
-    // Text
-    m_size += sizeof(GUISkinItem);
-    m_commonsize += sizeof(GUISkinItemPos);
+    // Base structures
+    m_size += item.GetUniqueSize();
+    m_commonsize += item.GetCommonSize();
 
     GetLSRManager()->AddLoader(OVLT_UNIQUE);
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
     GetLSRManager()->AddSymRef(OVLT_UNIQUE);
-    GetStringTable()->AddSymbolString(name, Tag());
-    GetStringTable()->AddSymbolString(texture, ovlTEXManager::TAG);
+    GetStringTable()->AddSymbolString(item.name, Tag());
+    GetStringTable()->AddSymbolString(item.texture, ovlTEXManager::TAG);
 }
 
 void ovlGSIManager::Make(cOvlInfo* info) {
@@ -67,27 +115,39 @@ void ovlGSIManager::Make(cOvlInfo* info) {
         throw EOvl("ovlGSIManager::Make called without valid info");
 
     m_blobs["0"] = cOvlMemBlob(OVLT_UNIQUE, 2, m_size);
-    m_blobs["1"] = cOvlMemBlob(OVLT_COMMON, 2, m_commonsize);
+	if (m_commonsize)
+		m_blobs["1"] = cOvlMemBlob(OVLT_COMMON, 2, m_commonsize);
     ovlOVLManager::Make(info);
     unsigned char* c_data = m_blobs["0"].data;
-    unsigned char* c_commondata = m_blobs["1"].data;
+    unsigned char* c_commondata = NULL;
+	if (m_commonsize)
+		c_commondata = m_blobs["1"].data;
 
-    for (unsigned long t = 0; t < m_gsinames.size(); ++t) {
+    foreach(const cGUISkinItem::mapentry item, m_items) {
         // Data setup, GUISkinItem
         GUISkinItem* c_gsi = reinterpret_cast<GUISkinItem*>(c_data);
         c_data += sizeof(GUISkinItem);
-        c_gsi->tex = NULL;
-        c_gsi->unk1 = 0;
-        c_gsi->unk2 = 0;
+        c_gsi->tex_ref = NULL;
+        c_gsi->gsi_type = item.second.gsi_type;
+        c_gsi->unk2 = item.second.unk2;
 
-        c_gsi->pos = reinterpret_cast<GUISkinItemPos*>(c_commondata);
-        c_commondata += sizeof(GUISkinItemPos);
-        GetRelocationManager()->AddRelocation((unsigned long*)&c_gsi->pos);
-        *c_gsi->pos = m_gsipositions[t];
+		if (item.second.gsi_type != r3::Constants::GSI::Type::Special) {
+			c_gsi->pos = reinterpret_cast<uint32_t*>(c_commondata);
+			c_commondata += item.second.GetCommonSize();
+			uint32_t* c_gsipos = c_gsi->pos;
+			foreach(unsigned long p, item.second.values) {
+				*c_gsipos = p;
+				c_gsipos++;
+			}
+			GetRelocationManager()->AddRelocation((unsigned long*)&c_gsi->pos);
+		} else {
+			c_gsi->pos = NULL;
+		}
+		
 
-        SymbolStruct* s_gsi = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(m_gsinames[t].c_str(), Tag()), reinterpret_cast<unsigned long*>(c_gsi));
+        SymbolStruct* s_gsi = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(item.first, Tag()), reinterpret_cast<unsigned long*>(c_gsi));
         GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_gsi), 0, s_gsi);
-        GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(m_gsitextures[t].c_str(), ovlTEXManager::TAG), reinterpret_cast<unsigned long*>(&c_gsi->tex));
+        GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(item.second.texture, ovlTEXManager::TAG), reinterpret_cast<unsigned long*>(&c_gsi->tex_ref));
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
     }
 

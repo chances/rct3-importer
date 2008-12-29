@@ -48,7 +48,7 @@ LIBOVL_API void AddStyleOVLInfo_SceneryItem(r3old::Scenery *scn);
 LIBOVL_API void DeleteStyleOVLInfo_SceneryItems();
 LIBOVL_API void AddStyleOVLInfo_IconTexture(IconTexture *ict);
 LIBOVL_API void DeleteStyleOVLInfo_IconTextures();
-LIBOVL_API void AddStyleOVLInfo_Icon(Icon *ico);
+LIBOVL_API void AddStyleOVLInfo_Icon(r3old::Icon *ico);
 LIBOVL_API void DeleteStyleOVLInfo_Icons();
 LIBOVL_API void AddStyleOVLInfo_TextString(Text *txt);
 LIBOVL_API void DeleteStyleOVLInfo_TextStrings();

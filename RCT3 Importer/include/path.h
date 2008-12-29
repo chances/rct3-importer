@@ -14,6 +14,8 @@
 #include "flexitexture.h"
 #include "guiicon.h"
 
+namespace r3 {
+
 struct Research
 {
 	unsigned char *ResearchCategory;
@@ -105,6 +107,8 @@ struct QueueType
 	char *SlopeStraight2;
 	unsigned long ResearchCategoryCount;
 	Research *ResearchCategory;
+};
+
 };
 
 #endif

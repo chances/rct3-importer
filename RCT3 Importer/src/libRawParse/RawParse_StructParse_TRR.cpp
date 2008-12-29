@@ -205,6 +205,7 @@ void cRawParser::ParseTRR(cXmlNode& node) {
             OPTION_PARSE(unsigned long, ride.wild.robo_flag, ParseUnsigned(child, RAWXML_TRR_WILD, wxT("boneControl")));
             OPTION_PARSE(unsigned long, ride.wild.spinner_control, ParseUnsigned(child, RAWXML_TRR_WILD, wxT("spinnerControl")));
             OPTION_PARSE(unsigned long, ride.wild.unk107, ParseUnsigned(child, RAWXML_TRR_WILD, wxT("u107")));
+            OPTION_PARSE(unsigned long, ride.wild.unk107, ParseUnsigned(child, RAWXML_TRR_WILD, wxT("equivalentInversion")));
             OPTION_PARSE(unsigned long, ride.wild.unk108, ParseUnsigned(child, RAWXML_TRR_WILD, wxT("u108")));
             OPTION_PARSE(unsigned long, ride.wild.split_flag, ParseUnsigned(child, RAWXML_TRR_WILD, wxT("splitFlag")));
             ParseStringOption(ride.wild.internalname, child, wxT("name"), NULL);

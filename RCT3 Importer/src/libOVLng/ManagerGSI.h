@@ -36,15 +36,31 @@
 
 #include "guiicon.h"
 
+struct cGUISkinItem {
+    typedef std::pair<std::string, cGUISkinItem> mapentry;
+	std::string name;
+	unsigned long gsi_type;
+	std::string texture;
+	std::vector<unsigned long> values;
+	unsigned long unk2;
+	
+	cGUISkinItem() {
+		gsi_type = 0;
+		unk2 = 0;
+	}
+	
+    unsigned long GetCommonSize() const;
+    unsigned long GetUniqueSize() const;
+	void Check() const;
+};
+
 class ovlGSIManager: public ovlOVLManager {
 public:
     static const char* LOADER;
     static const char* NAME;
     static const char* TAG;
 private:
-    std::vector<std::string> m_gsinames;
-    std::vector<std::string> m_gsitextures;
-    std::vector<GUISkinItemPos> m_gsipositions;
+    std::map<std::string, cGUISkinItem>  m_items;
 
     unsigned long m_commonsize;
 public:
@@ -53,7 +69,7 @@ public:
     };
     virtual ~ovlGSIManager(){};
 
-    void AddItem(const char* name, const char* texture, unsigned long left, unsigned long top, unsigned long right, unsigned long bottom);
+    void AddItem(const cGUISkinItem& item);
 
     virtual void Make(cOvlInfo* info);
 
