@@ -133,7 +133,7 @@ struct MeshStruct {
     D3DVECTOR effectpoint_vert;
 };
 */
-std::vector <Icon *> Icons;
+std::vector <r3old::Icon *> Icons;
 std::vector <IconTexture *> IconTextures;
 std::vector <r3old::Scenery *> SceneryItems;
 //std::vector <EffectPoint *> EffectPoints;
@@ -147,7 +147,7 @@ extern std::vector <r3old::StallStr *> Stalls;
 
 //std::vector < EffectPoint * >::iterator EffectPointsIterator;
 std::vector<cText>::iterator TextStringsIterator;
-std::vector < Icon * >::iterator IconsIterator;
+std::vector < r3old::Icon * >::iterator IconsIterator;
 std::vector < IconTexture * >::iterator IconTexturesIterator;
 std::vector < r3old::Scenery * >::iterator SceneryItemsIterator;
 const char *stdstyle = "Style\\Themed\\";
@@ -345,7 +345,7 @@ BOOL CALLBACK GSIEditDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                     delete Icons[CurrentIcon]->name;
                     delete Icons[CurrentIcon]->texture;
                 } else {
-                    Icon *t = new Icon;
+                    r3old::Icon *t = new r3old::Icon;
                     Icons.push_back(t);
                     CurrentIcon = Icons.size() - 1;
                 }
@@ -1590,7 +1590,7 @@ BOOL CALLBACK GSIAutoDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                                      (*IconTexturesIterator)->name.c_str(), (x + (y * n)) + 1, x + 1,
                                      y + 1);
 
-                            Icon *t = new Icon;
+                            r3old::Icon *t = new r3old::Icon;
                             Icons.push_back(t);
                             CurrentIcon = Icons.size() - 1;
                             Icons[CurrentIcon]->name = new char[strlen(temp) + 1];
@@ -1911,7 +1911,7 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                         wxLogError(wxString::Format(_("Icon texture '%s' error: %s"), tex->name.c_str(), e.what()));
                     }
                 }
-                foreach(Icon* ico, Icons) {
+                foreach(r3old::Icon* ico, Icons) {
                     bool found = false;
                     foreach(IconTexture* tex, IconTextures) {
                         if (!stricmp(tex->name.c_str(), ico->texture)) {
@@ -1983,7 +1983,7 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                         wxLogError(wxString::Format(_("Scenery item '%s' error: icon not set."),identifier.c_str()));
                     } else {
                         bool found = false;
-                        foreach(Icon* ico, Icons) {
+                        foreach(r3old::Icon* ico, Icons) {
                             if (!stricmp(scen->icon, ico->name)) {
                                 found = true;
                                 break;
@@ -1996,7 +1996,7 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                     }
                     if (scen->wallicon) {
                         bool found = false;
-                        foreach(Icon* ico, Icons) {
+                        foreach(r3old::Icon* ico, Icons) {
                             if (!stricmp(scen->wallicon, ico->name)) {
                                 found = true;
                                 break;
@@ -2520,7 +2520,7 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 }
                 fread(&len, 4, 1, f);
                 for (i = 0; i < len; i++) {
-                    Icon *t = new Icon;
+                    r3old::Icon *t = new r3old::Icon;
                     fread(&len2, 4, 1, f);
                     t->name = new char[len2];
                     fread(t->name, len2, 1, f);
@@ -2889,7 +2889,7 @@ BOOL CALLBACK MainDlgProc(HWND hwnd, UINT Message, WPARAM wParam, LPARAM) {
                 }
                 fread(&len, 4, 1, f);
                 for (i = 0; i < len; i++) {
-                    Icon *t = new Icon;
+                    r3old::Icon *t = new r3old::Icon;
                     fread(&len2, 4, 1, f);
                     t->name = new char[len2];
                     fread(t->name, len2, 1, f);
@@ -3490,7 +3490,7 @@ bool InstallTheme(HWND hwnd) {
         AddStyleOVLInfo_IconTexture(icot);
     }
     for (i = 0; i < Icons.size(); i++) {
-        Icon *ico = Icons[i];
+        r3old::Icon *ico = Icons[i];
         AddStyleOVLInfo_Icon(ico);
     }
     for (unsigned long i = 0; i < SceneryItems.size(); i++) {

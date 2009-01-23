@@ -357,6 +357,7 @@ public:
     c3DLoaderOrientation usedorientation;
     wxString deducedname;
     bool auto_bones;
+	bool auto_delete_bones;
     bool auto_sort;
 
     c3DLoaderOrientation fileorientation; // This is the orientation reported by the 3DLoader
@@ -367,10 +368,10 @@ public:
 	std::map<wxString, c3DBone> model_bones;
 	std::vector<std::vector<int> > mesh_compaction;
 
-	cModel(): name(wxT("")), file(wxT("")), usedorientation(ORIENTATION_UNKNOWN), auto_bones(false), auto_sort(false), fileorientation(ORIENTATION_UNKNOWN) {};
+	cModel(): name(wxT("")), file(wxT("")), usedorientation(ORIENTATION_UNKNOWN), auto_bones(false), auto_delete_bones(false), auto_sort(false), fileorientation(ORIENTATION_UNKNOWN) {};
 	cModel(const cAnimatedModel& model);
 	cModel(r3::MATRIX def, c3DLoaderOrientation ori);
-	cModel(wxString filen): name(wxT("")), file(filen), usedorientation(ORIENTATION_UNKNOWN), auto_bones(false), auto_sort(false), fileorientation(ORIENTATION_UNKNOWN) {
+	cModel(wxString filen): name(wxT("")), file(filen), usedorientation(ORIENTATION_UNKNOWN), auto_bones(false), auto_delete_bones(false), auto_sort(false), fileorientation(ORIENTATION_UNKNOWN) {
         Load(false);
     };
 	virtual bool Load(bool asoverlay);
@@ -394,6 +395,10 @@ public:
 	virtual void autoBones(const std::set<wxString>* onlyaddfrom = NULL);
 	virtual void syncBones();
 	virtual void sortBones();
+	virtual void deleteBones() {
+		effectpoints.clear();
+	}
+	virtual void addBones();
 
     virtual bool FromNode(xmlcpp::cXmlNode& node, const wxString& path, unsigned long version);
     virtual void AddNodeContent(xmlcpp::cXmlNode& node, const wxString& path, bool do_local);
@@ -472,6 +477,11 @@ public:
 	virtual void autoBones(const std::set<wxString>* onlyaddfrom = NULL);
 	virtual void syncBones();
 	virtual void sortBones();
+	virtual void deleteBones() {
+		modelbones.clear();
+	}
+	virtual void addBones();
+
 
     bool FromCompilerXml(xmlcpp::cXmlNode& node, const wxString& path);
 

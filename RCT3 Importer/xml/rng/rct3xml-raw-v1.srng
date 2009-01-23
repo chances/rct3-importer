@@ -102,6 +102,13 @@
 			</data>
 		</choice>
 	</define>
+	<define name="version023">
+		<choice>
+			<value>0</value>
+			<value>2</value>
+			<value>3</value>
+		</choice>
+	 </define>
 	<div>
 		<a:documentation>Reference Types</a:documentation>
 		<define name="BANReference">
@@ -345,6 +352,7 @@
 			<ref name="gsi"/>
 			<ref name="ptd"/>
 			<ref name="qtd"/>
+			<ref name="ric"/>
 			<ref name="sat"/>
 			<ref name="shs"/>
 			<ref name="sid"/>
@@ -1547,6 +1555,168 @@
 				</interleave>
 			</element>
 		</define>
+		<div>
+			<a:documentation>ric tags</a:documentation>
+			<define name="ric">
+				<sch:pattern>
+					<sch:title>RIC checks</sch:title>
+					<sch:rule context="//raw:ric/@name">
+						<sch:extends rule="uniqueness"/>
+					</sch:rule>
+					<sch:rule context="//raw:ric/@svd">
+						<sch:extends rule="refcheck-svd"/>
+					</sch:rule>
+					<sch:rule context="//raw:ric/movingPart">
+						<sch:extends rule="refcheck-svd"/>
+					</sch:rule>
+					<sch:rule context="//raw:ric/wheels/frontRight">
+						<sch:extends rule="refcheck-svd"/>
+					</sch:rule>
+					<sch:rule context="//raw:ric/wheels/frontLeft">
+						<sch:extends rule="refcheck-svd"/>
+					</sch:rule>
+					<sch:rule context="//raw:ric/wheels/backRight">
+						<sch:extends rule="refcheck-svd"/>
+					</sch:rule>
+					<sch:rule context="//raw:ric/wheels/backLeft">
+						<sch:extends rule="refcheck-svd"/>
+					</sch:rule>
+					<sch:rule context="//raw:ric/axels/front">
+						<sch:extends rule="refcheck-svd"/>
+					</sch:rule>
+					<sch:rule context="//raw:ric/axels/rear">
+						<sch:extends rule="refcheck-svd"/>
+					</sch:rule>
+					<sch:rule context="//raw:ric/wild/@svdFlipped">
+						<sch:extends rule="refcheck-svd"/>
+					</sch:rule>
+					<sch:rule context="//raw:ric/wild/@svdMovingFlipped">
+						<sch:extends rule="refcheck-svd"/>
+					</sch:rule>
+				</sch:pattern>
+				<element name="ric">
+					<ref name="baseattrs"/>
+					<attribute name="name" type="string"/>
+					<attribute name="svd" ref="SVDReference"/>
+					<attribute name="internalName" type="string"/>
+					<attribute name="otherInternalName" type="string"/>
+					<attribute name="version" ref="version023" occurs="?"/>
+					<attribute name="inertia" type="float"/>
+					<interleave>
+						<element name="seating" occurs="+" type="unisgedInt"/>
+						<element name="movingPart" occurs="?">
+							<ref name="baseattrs"/>
+							<attribute name="inertia" type="float"/>
+							<ref name="SVDReference"/>
+						</element>
+						<element name="axis" occurs="?">
+							<ref name="baseattrs"/>
+							<attribute name="type" type="unsignedInt"/>
+							<attribute name="stability" occurs="?" type="float"/>
+							<attribute name="u01" occurs="?" type="float"/>
+							<attribute name="u02" occurs="?" type="float"/>
+							<attribute name="momentum" occurs="?" type="float"/>
+							<attribute name="u03" occurs="?" type="float"/>
+							<attribute name="u04" occurs="?" type="float"/>
+							<attribute name="maximum" occurs="?" type="float"/>
+						</element>
+						<element name="bobbing" occurs="?">
+							<ref name="baseattrs"/>
+							<attribute name="flag" type="unsignedInt"/>
+							<attribute name="x" occurs="?" type="float"/>
+							<attribute name="y" occurs="?" type="float"/>
+							<attribute name="z" occurs="?" type="float"/>
+						</element>
+						<element name="animations" occurs="?">
+							<ref name="baseattrs"/>
+							<attribute name="start" occurs="?" type="int"/>
+							<attribute name="started" occurs="?" type="int"/>
+							<attribute name="stop" occurs="?" type="int"/>
+							<attribute name="stopped" occurs="?" type="int"/>
+							<attribute name="beltOpen" occurs="?" type="int"/>
+							<attribute name="beltOpened" occurs="?" type="int"/>
+							<attribute name="beltClose" occurs="?" type="int"/>
+							<attribute name="beltClosed" occurs="?" type="int"/>
+							<attribute name="doorsOpen" occurs="?" type="int"/>
+							<attribute name="doorsOpened" occurs="?" type="int"/>
+							<attribute name="doorsClose" occurs="?" type="int"/>
+							<attribute name="doorsClosed" occurs="?" type="int"/>
+							<attribute name="rowBoth" occurs="?" type="int"/>
+							<attribute name="rowLeft" occurs="?" type="int"/>
+							<attribute name="rowRight" occurs="?" type="int"/>
+							<attribute name="canoeStationIdle" occurs="?" type="int"/>
+							<attribute name="canoeFrontIdle" occurs="?" type="int"/>
+							<attribute name="canoeBackIdle" occurs="?" type="int"/>
+							<attribute name="canoeRowIdle" occurs="?" type="int"/>
+							<attribute name="canoeIdle" occurs="?" type="int"/>
+							<attribute name="rudder" occurs="?" type="int"/>
+						</element>
+						<element name="wheels" occurs="?">
+							<ref name="baseattrs"/>
+							<interleave>
+								<element name="frontRight" occurs="?" ref="ricpair"/>
+								<element name="frontLeft" occurs="?" ref="ricpair"/>
+								<element name="backRight" occurs="?" ref="ricpair"/>
+								<element name="backLeft" occurs="?" ref="ricpair"/>
+							</interleave>
+						</element>
+						<element name="axels" occurs="?">
+							<ref name="baseattrs"/>
+							<interleave>
+								<element name="front" occurs="?" ref="ricpair"/>
+								<element name="rear" occurs="?" ref="ricpair"/>
+							</interleave>
+						</element>
+						<element name="unknowns" occurs="?">
+							<ref name="baseattrs"/>
+							<attribute name="u54" type="unsignedInt"/>
+							<attribute name="vsU01" occurs="?" type="float"/>
+							<attribute name="vsU02" occurs="?" type="float"/>
+							<attribute name="u60" occurs="?" type="float"/>
+						</element>
+						<element name="sliding" occurs="?">
+							<ref name="baseattrs"/>
+							<attribute name="skyslideU01" occurs="?" type="int"/>
+							<attribute name="skyslideU02" occurs="?" type="float"/>
+							<attribute name="skyslideU03" occurs="?" type="float"/>
+							<attribute name="skyslideU04" occurs="?" type="float"/>
+							<attribute name="slideU01" occurs="?" type="unsignedInt"/>
+							<attribute name="skyslideU05" occurs="?" type="unsignedInt"/>
+							<attribute name="unstableU01" occurs="?" type="unsignedInt"/>
+							<attribute name="slideU02" occurs="?" type="float"/>
+							<attribute name="slideU03" occurs="?" type="float"/>
+						</element>
+						<element name="soaked" occurs="?">
+							<ref name="baseattrs"/>
+							<attribute name="u62" occurs="?" type="unsignedInt"/>
+							<attribute name="u63" occurs="?" type="unsignedInt"/>
+							<attribute name="u64" occurs="?" type="float"/>
+							<attribute name="supersoakerU01" occurs="?" type="float"/>
+							<attribute name="supersoakerU02" occurs="?" type="unsignedInt"/>
+							<attribute name="u70" occurs="?" type="unsignedInt"/>
+							<attribute name="u72" occurs="?" type="unsignedInt"/>
+						</element>
+						<element name="wild" occurs="?">
+							<attribute name="flipU" occurs="?" type="unsignedInt"/>
+							<attribute name="svdFlipped" occurs="?" ref="SVDReference"/>
+							<attribute name="svdMovingFlipped" occurs="?" ref="SVDReference"/>
+							<attribute name="u77" occurs="?" type="unsignedInt"/>
+							<attribute name="driftingU" occurs="?" type="float"/>
+							<attribute name="u79" occurs="?" type="float"/>
+							<attribute name="was" occurs="?" ref="WASReference"/>
+							<attribute name="paddleSteamerU01" occurs="?" type="float"/>
+							<attribute name="paddleSteamerU02" occurs="?" type="unsignedInt"/>
+							<attribute name="ballCoasterU" occurs="?" type="unsignedInt"/>
+						</element>
+					</interleave>
+				</element>
+			</define>
+			<define name="ricpair">
+				<ref name="baseattrs"/>
+				<attribute name="type" occurs="?" type="unsignedInt" />
+				<ref name="SVDReference" />
+			</define>
+		</div>
 		<define name="sat">
 			<element name="sat">
 				<ref name="baseattrs"/>
@@ -2166,13 +2336,7 @@
 					<ref name="baseattrs"/>
 					<attribute name="name" type="string"/>
 					<attribute name="internalname" type="string"/>
-					<attribute name="version" occurs="?">
-						<choice>
-							<value>0</value>
-							<value>2</value>
-							<value>3</value>
-						</choice>
-					</attribute>
+					<attribute name="version" occurs="?" ref="version023"/>
 					<attribute name="sid" ref="SIDReference"/>
 					<interleave>
 						<element name="speed" occurs="*">
@@ -2359,6 +2523,7 @@
 							<attribute name="startPossibilities" occurs="?" ref="flags"/>
 							<attribute name="stationRollSpeed" occurs="?" type="float"/>
 							<attribute name="modusFlags" occurs="?" ref="flags"/>
+							<attribute name="accelerationBehaviour" occurs="?" type="float"/>
 						</element>
 						<element name="launched" occurs="?" ref="trrpmms"/>
 						<element name="chain" occurs="?">
@@ -2401,7 +2566,7 @@
 							<attribute name="u32" occurs="?" type="float"/>
 							<attribute name="u33" occurs="?" type="float"/>
 							<attribute name="u34" occurs="?" type="float"/>
-							<attribute name="u38" occurs="?" type="unsignedInt"/>
+							<attribute name="u38" occurs="?" type="int"/>
 							<attribute name="u43" occurs="?" type="float"/>
 							<attribute name="u45" occurs="?" type="float"/>
 							<attribute name="u48" occurs="?" type="float"/>
@@ -2431,10 +2596,20 @@
 							<attribute name="u95" occurs="?" type="unsignedInt"/>
 							<attribute name="u96" occurs="?" type="int"/>
 							<attribute name="u97" occurs="?" type="unsignedInt"/>
-							<attribute name="shortStruct" occurs="?" type="unsignedInt"/>
-							<attribute name="u99" occurs="?" type="float"/>
-							<attribute name="u100" occurs="?" type="float"/>
-							<attribute name="u101" occurs="?" type="float"/>
+							<choice>
+								<group>
+									<attribute name="shortStruct" occurs="?" type="unsignedInt"/>
+									<attribute name="u99" occurs="?" type="float"/>
+									<attribute name="u100" occurs="?" type="float"/>
+									<attribute name="u101" occurs="?" type="float"/>
+								</group>
+								<element name="waterSpeed" occurs="?">
+									<attribute name="flag" occurs="?" ref="flags"/>
+									<attribute name="constant" occurs="?" type="float"/>
+									<attribute name="accel" occurs="?" type="float"/>
+									<attribute name="decel" occurs="?" type="float"/>
+								</element>
+							</choice>
 							<attribute name="u102" occurs="?" type="float"/>
 							<attribute name="u103" occurs="?" type="float"/>
 							<element name="sectionGroupDefinitionBatch" occurs="*">
@@ -2451,12 +2626,18 @@
 							<attribute name="boneControl" occurs="?" ref="flag"/>
 							<attribute name="spinnerControl" occurs="?" ref="flag"/>
 							<choice>
-								<attribute name="u107" occurs="?" ref="flag"/>
-								<attribute name="equivalentInversion" occurs="?" ref="flag"/>
+								<group>
+									<attribute name="u107" occurs="?" ref="flag"/>
+									<attribute name="splitVal" occurs="?" type="int"/>
+									<attribute name="splitFlag" occurs="?" ref="flag"/>
+								</group>
+								<group>
+									<attribute name="equivalentInversion" occurs="?" ref="flag"/>
+									<attribute name="trainsDefault" occurs="?" type="int"/>
+									<attribute name="stationSyncDefault" occurs="?" ref="flag"/>
+								</group>
 							</choice>
 							<attribute name="u108" occurs="?" ref="flag"/>
-							<attribute name="splitVal" occurs="?" type="int"/>
-							<attribute name="splitFlag" occurs="?" ref="flag"/>
 							<attribute name="name" occurs="?" type="string"/>
 						</element>
 					</interleave>

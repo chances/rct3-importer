@@ -47,6 +47,7 @@
 #define RAWXML_TRR_SPLINES          "splines"
 #define RAWXML_TRR_TOWER            "tower"
 #define RAWXML_TRR_SOAKED           "soaked"
+#define RAWXML_TRR_SOAKED_WATER     "waterSpeed"
 #define RAWXML_TRR_WILD             "wild"
 
 bool TrackSectionSort(const cTrackedRideSection& a, const cTrackedRideSection& b) {
@@ -119,6 +120,7 @@ void cRawParser::ParseTRR(cXmlNode& node) {
             OPTION_PARSE(unsigned long, ride.station.start_possibilities, ParseUnsigned(child, RAWXML_TRR_STATION, wxT("startPossibilities")));
             OPTION_PARSE(float, ride.station.station_roll_speed, ParseFloat(child, RAWXML_TRR_STATION, wxT("stationRollSpeed")));
             OPTION_PARSE(unsigned long, ride.station.modus_flags, ParseUnsigned(child, RAWXML_TRR_STATION, wxT("modusFlags")));
+			OPTION_PARSE(float, ride.unknowns.acceleration_behaviour, ParseFloat(child, RAWXML_TRR_STATION, wxT("accelerationBehaviour")));
         } else if (child(RAWXML_TRR_LAUNCHED)) {
             OPTION_PARSE(float, ride.launched.preset, ParseFloat(child, RAWXML_TRR_LAUNCHED, wxT("preset")));
             OPTION_PARSE(float, ride.launched.min, ParseFloat(child, RAWXML_TRR_LAUNCHED, wxT("min")));
@@ -165,7 +167,7 @@ void cRawParser::ParseTRR(cXmlNode& node) {
             OPTION_PARSE(float, ride.unknowns.unk32, ParseFloat(child, RAWXML_TRR "/" RAWXML_UNKNOWNS, wxT("u32")));
             OPTION_PARSE(float, ride.unknowns.unk33, ParseFloat(child, RAWXML_TRR "/" RAWXML_UNKNOWNS, wxT("u33")));
             OPTION_PARSE(float, ride.unknowns.unk34, ParseFloat(child, RAWXML_TRR "/" RAWXML_UNKNOWNS, wxT("u34")));
-            OPTION_PARSE(unsigned long, ride.unknowns.unk38, ParseUnsigned(child, RAWXML_TRR "/" RAWXML_UNKNOWNS, wxT("u38")));
+            OPTION_PARSE(long, ride.unknowns.on_water_offset, ParseSigned(child, RAWXML_TRR "/" RAWXML_UNKNOWNS, wxT("u38")));
             OPTION_PARSE(float, ride.unknowns.unk43, ParseFloat(child, RAWXML_TRR "/" RAWXML_UNKNOWNS, wxT("u43")));
             OPTION_PARSE(float, ride.unknowns.unk45, ParseFloat(child, RAWXML_TRR "/" RAWXML_UNKNOWNS, wxT("u45")));
             OPTION_PARSE(float, ride.unknowns.unk48, ParseFloat(child, RAWXML_TRR "/" RAWXML_UNKNOWNS, wxT("u48")));
@@ -178,7 +180,10 @@ void cRawParser::ParseTRR(cXmlNode& node) {
             OPTION_PARSE(unsigned long, ride.unknowns.unk60, ParseUnsigned(child, RAWXML_TRR "/" RAWXML_UNKNOWNS, wxT("u60")));
             OPTION_PARSE(unsigned long, ride.unknowns.unk61, ParseUnsigned(child, RAWXML_TRR "/" RAWXML_UNKNOWNS, wxT("u61")));
             OPTION_PARSE(unsigned long, ride.unknowns.unk69, ParseUnsigned(child, RAWXML_TRR "/" RAWXML_UNKNOWNS, wxT("u69")));
-            OPTION_PARSE(float, ride.unknowns.unk95, ParseFloat(child, RAWXML_TRR "/" RAWXML_UNKNOWNS, wxT("u95")));
+			if (child.hasProp("u95")) {
+				OPTION_PARSE(float, ride.unknowns.acceleration_behaviour, ParseFloat(child, RAWXML_TRR "/" RAWXML_UNKNOWNS, wxT("u95")));
+				wxLogWarning("trr/unknowns(u95) is deprecated. Use trr/station(accelerationBehaviour).");
+			}
         } else if (child(RAWXML_TRR_SOAKED)) {
             OPTION_PARSE(unsigned long, ride.soaked.unk80, ParseUnsigned(child, RAWXML_TRR_SOAKED, wxT("u80")));
             OPTION_PARSE(unsigned long, ride.soaked.unk81, ParseUnsigned(child, RAWXML_TRR_SOAKED, wxT("u81")));
@@ -192,22 +197,38 @@ void cRawParser::ParseTRR(cXmlNode& node) {
             OPTION_PARSE(float, ride.soaked.unk93, ParseFloat(child, RAWXML_TRR_SOAKED, wxT("u93")));
             OPTION_PARSE(float, ride.soaked.unk94, ParseFloat(child, RAWXML_TRR_SOAKED, wxT("u94")));
             OPTION_PARSE(unsigned long, ride.soaked.unk95, ParseUnsigned(child, RAWXML_TRR_SOAKED, wxT("u95")));
-            OPTION_PARSE(long, ride.soaked.unk96, ParseSigned(child, RAWXML_TRR_SOAKED, wxT("u96")));
+            OPTION_PARSE(long, ride.soaked.min_length, ParseSigned(child, RAWXML_TRR_SOAKED, wxT("u96")));
             OPTION_PARSE(unsigned long, ride.soaked.unk97, ParseUnsigned(child, RAWXML_TRR_SOAKED, wxT("u97")));
-            OPTION_PARSE(unsigned long, ride.soaked.short_struct, ParseUnsigned(child, RAWXML_TRR_SOAKED, wxT("shortStruct")));
-            OPTION_PARSE(float, ride.soaked.unk99, ParseFloat(child, RAWXML_TRR_SOAKED, wxT("u99")));
-            OPTION_PARSE(float, ride.soaked.unk100, ParseFloat(child, RAWXML_TRR_SOAKED, wxT("u100")));
-            OPTION_PARSE(float, ride.soaked.unk101, ParseFloat(child, RAWXML_TRR_SOAKED, wxT("u101")));
+            OPTION_PARSE(unsigned long, ride.soaked.water_section_flag, ParseUnsigned(child, RAWXML_TRR_SOAKED, wxT("shortStruct")));
+            OPTION_PARSE(float, ride.soaked.water_section_speed, ParseFloat(child, RAWXML_TRR_SOAKED, wxT("u99")));
+            OPTION_PARSE(float, ride.soaked.water_section_accel, ParseFloat(child, RAWXML_TRR_SOAKED, wxT("u100")));
+            OPTION_PARSE(float, ride.soaked.water_section_decel, ParseFloat(child, RAWXML_TRR_SOAKED, wxT("u101")));
             OPTION_PARSE(float, ride.soaked.unk102, ParseFloat(child, RAWXML_TRR_SOAKED, wxT("u102")));
             OPTION_PARSE(float, ride.soaked.unk103, ParseFloat(child, RAWXML_TRR_SOAKED, wxT("u103")));
-        } else if (child(RAWXML_TRR_WILD)) {
+			
+			foreach (const cXmlNode& subchild, child.children()) {
+				DO_CONDITION_COMMENT_FOR(subchild);
+				
+				if (subchild(RAWXML_TRR_SOAKED_WATER)) {
+					OPTION_PARSE(unsigned long, ride.soaked.water_section_flag, ParseUnsigned(child, RAWXML_TRR_SOAKED_WATER, wxT("flag")));
+					OPTION_PARSE(float, ride.soaked.water_section_speed, ParseFloat(child, RAWXML_TRR_SOAKED_WATER, wxT("constant")));
+					OPTION_PARSE(float, ride.soaked.water_section_accel, ParseFloat(child, RAWXML_TRR_SOAKED_WATER, wxT("accel")));
+					OPTION_PARSE(float, ride.soaked.water_section_decel, ParseFloat(child, RAWXML_TRR_SOAKED_WATER, wxT("decel")));
+				} else if (subchild.element()) {
+					throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in trr/soaked tag"), subchild.wxname().c_str()), subchild);
+				}
+			}
+		} else if (child(RAWXML_TRR_WILD)) {
             ParseStringOption(ride.wild.splitter, child, wxT("splitter"), NULL);
             OPTION_PARSE(unsigned long, ride.wild.robo_flag, ParseUnsigned(child, RAWXML_TRR_WILD, wxT("boneControl")));
             OPTION_PARSE(unsigned long, ride.wild.spinner_control, ParseUnsigned(child, RAWXML_TRR_WILD, wxT("spinnerControl")));
             OPTION_PARSE(unsigned long, ride.wild.unk107, ParseUnsigned(child, RAWXML_TRR_WILD, wxT("u107")));
             OPTION_PARSE(unsigned long, ride.wild.unk107, ParseUnsigned(child, RAWXML_TRR_WILD, wxT("equivalentInversion")));
             OPTION_PARSE(unsigned long, ride.wild.unk108, ParseUnsigned(child, RAWXML_TRR_WILD, wxT("u108")));
-            OPTION_PARSE(unsigned long, ride.wild.split_flag, ParseUnsigned(child, RAWXML_TRR_WILD, wxT("splitFlag")));
+            OPTION_PARSE(unsigned long, ride.wild.trains_default, ParseUnsigned(child, RAWXML_TRR_WILD, wxT("splitVal")));
+            OPTION_PARSE(unsigned long, ride.wild.station_sync_default, ParseUnsigned(child, RAWXML_TRR_WILD, wxT("splitFlag")));
+            OPTION_PARSE(unsigned long, ride.wild.trains_default, ParseUnsigned(child, RAWXML_TRR_WILD, wxT("trainsDefault")));
+            OPTION_PARSE(unsigned long, ride.wild.station_sync_default, ParseUnsigned(child, RAWXML_TRR_WILD, wxT("stationSyncDefault")));
             ParseStringOption(ride.wild.internalname, child, wxT("name"), NULL);
         } else if (child.element()) {
             throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in trr tag"), child.wxname().c_str()), child);

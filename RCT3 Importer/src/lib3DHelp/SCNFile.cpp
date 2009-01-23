@@ -1360,6 +1360,7 @@ bool cSCNFile::FromModelFile(boost::shared_ptr<c3DLoader>& model) {
         }
 
         accmod.auto_bones = true;
+		accmod.auto_delete_bones = true;
         accmod.auto_sort = true;
         accmod.sortBones();
 

@@ -149,7 +149,7 @@ public:
         r3::float_t             unk32;
         r3::float_t             unk33;
         r3::float_t             unk34;
-        r3::uint32_t            unk38;                          ///< Markus: always 0
+        r3::int32_t             on_water_offset;                          ///< Markus: always 0
         r3::float_t             unk43;
         r3::float_t             unk45;
         r3::float_t             unk48;
@@ -162,10 +162,10 @@ public:
         r3::uint32_t            unk60;
         r3::uint32_t            unk61;
         r3::uint32_t            unk69;                          ///< Markus: always 0
-        r3::float_t             unk95;                          ///< Markus: always -1.0
-        Unknowns(): unk31(4.0), unk32(-8.0), unk33(1.0), unk34(0.5), unk38(0), unk43(10000), unk45(50000),
+        r3::float_t             acceleration_behaviour;                          ///< Markus: always -1.0
+        Unknowns(): unk31(4.0), unk32(-8.0), unk33(1.0), unk34(0.5), on_water_offset(0), unk43(10000), unk45(50000),
             unk48(4.0), unk49(5000.0), unk50(4.0), unk51(10000.0), unk57(8000), unk58(2000), unk59(2000),
-            unk60(4000), unk61(1000), unk69(0), unk95(-1.0) {}
+            unk60(4000), unk61(1000), unk69(0), acceleration_behaviour(-1.0) {}
         void Fill(r3::TrackedRide_Common& trr) const;
     } unknowns;
     struct SoakedStuff {
@@ -181,17 +181,17 @@ public:
         r3::float_t             unk93;                      ///< Usually -1.0, MasterBlaster has 1.5
         r3::float_t             unk94;                      ///< Usually -1.0, MasterBlaster has 2.0
         r3::uint32_t            unk95;                      ///< Usually 0, ElephantTransport, HoponTram and SafariTransport have 1
-        r3::int32_t             unk96;                      ///< Usually -1, Elevator has 2, GiantSlide has 3
+        r3::int32_t             min_length;                      ///< Usually -1, Elevator has 2, GiantSlide has 3
         r3::uint32_t            unk97;                      ///< Usually 0, LazyRiver has 1
-        r3::uint32_t            short_struct;               ///< Usually 0, if 1, the struct is one long shorter and 99-101 have special values
-        r3::float_t             unk99;                      ///< -1.0 if short_struct 0. Rafts and SplashBoats have 3.0. WaterCoaster has 5.0
-        r3::float_t             unk100;                     ///< 0.0 if short_struct 0. Rafts and SplashBoats have 1000.0. WaterCoaster has 2500.0
-        r3::float_t             unk101;                     ///< 0.0 if short_struct 0. Rafts and SplashBoats have 2000.0. WaterCoaster has 5000.0
+        r3::uint32_t            water_section_flag;               ///< Usually 0, if 1, the struct is one long shorter and 99-101 have special values
+        r3::float_t             water_section_speed;                      ///< -1.0 if short_struct 0. Rafts and SplashBoats have 3.0. WaterCoaster has 5.0
+        r3::float_t             water_section_accel;                     ///< 0.0 if short_struct 0. Rafts and SplashBoats have 1000.0. WaterCoaster has 2500.0
+        r3::float_t             water_section_decel;                     ///< 0.0 if short_struct 0. Rafts and SplashBoats have 2000.0. WaterCoaster has 5000.0
         r3::float_t             unk102;                     ///< Always 4.0
         r3::float_t             unk103;                     ///< Usually 0.0, Aquarium, InsectHouse, NocturnalHouse and ReptileHouse have 4.0
         SoakedStuff(): unk80(0), unk81(0), unk82(0.001), unk85(0), unk86(0),
-            unk87(0), unk88(-1), unk89(1.0), unk90(1.0), unk93(-1.0), unk94(-1.0), unk95(0), unk96(-1), unk97(0),
-            short_struct(0), unk99(-1.0), unk100(0.0), unk101(0.0), unk102(4.0), unk103(0.0) {}
+            unk87(0), unk88(-1), unk89(1.0), unk90(1.0), unk93(-1.0), unk94(-1.0), unk95(0), min_length(-1), unk97(0),
+            water_section_flag(0), water_section_speed(-1.0), water_section_accel(0.0), water_section_decel(0.0), unk102(4.0), unk103(0.0) {}
         void Fill(r3::TrackedRide_S& trr) const;
     } soaked;
     struct WildStuff {
@@ -203,10 +203,10 @@ public:
         r3::uint32_t            spinner_control;            ///< Usually 0, EuroSpinner has 1
         r3::uint32_t            unk107;                     ///< Usually 0, BallCoaster, Endless and FrequentFaller 1
         r3::uint32_t            unk108;                     ///< Usually 1, ElephantTransport has 0
-        r3::int32_t             split_val;                  ///< Usually -1, Seizmic has 2
-        r3::uint32_t            split_flag;                 ///< Usually 0, Seizmic has 1
+        r3::int32_t             trains_default;                  ///< Usually -1, Seizmic has 2
+        r3::uint32_t            station_sync_default;                 ///< Usually 0, Seizmic has 1
         std::string             internalname;
-        WildStuff(): robo_flag(0), spinner_control(0), unk107(0), unk108(1), split_val(-1), split_flag(0),
+        WildStuff(): robo_flag(0), spinner_control(0), unk107(0), unk108(1), trains_default(-1), station_sync_default(0),
             internalname("customtrr") {}
         void Fill(r3::TrackedRide_W& trr, ovlStringTable* tab, ovlRelocationManager* rel) const;
     } wild;

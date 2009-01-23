@@ -56,8 +56,8 @@ void cTrackedRide::WildStuff::Fill(r3::TrackedRide_W& trr, ovlStringTable* tab, 
     trr.w.spinner_control = spinner_control;
     trr.w.equivalent_inversion = unk107;
     trr.w.unk108 = unk108;
-    trr.w.split_val = split_val;
-    trr.w.split_flag = split_flag;
+    trr.w.trains_default = trains_default;
+    trr.w.station_sync_default = station_sync_default;
     STRINGLIST_ASSIGN(trr.w.internalname, internalname, false, tab, rel);
 }
 
@@ -78,14 +78,14 @@ void cTrackedRide::SoakedStuff::Fill(r3::TrackedRide_S& trr) const {
     DO_ASSIGN(trr, unk93);
     DO_ASSIGN(trr, unk94);
     DO_ASSIGN(trr, unk95);
-    DO_ASSIGN(trr, unk96);
+    DO_ASSIGN(trr, min_length);
     DO_ASSIGN(trr, unk97);
-    DO_ASSIGN(trr, short_struct);
-    DO_ASSIGN(trr, unk99);
-    DO_ASSIGN(trr, unk100);
-    DO_ASSIGN(trr, unk101);
+    DO_ASSIGN(trr, water_section_flag);
+    DO_ASSIGN(trr, water_section_speed);
+    DO_ASSIGN(trr, water_section_accel);
+    DO_ASSIGN(trr, water_section_decel);
     DO_ASSIGN(trr, unk102);
-    if (!short_struct)
+    if (!water_section_flag)
         DO_ASSIGN(trr, unk103);
 }
 
@@ -98,7 +98,7 @@ void cTrackedRide::Unknowns::Fill(r3::TrackedRide_Common& trr) const {
     DO_ASSIGN(trr, unk32);
     DO_ASSIGN(trr, unk33);
     DO_ASSIGN(trr, unk34);
-    DO_ASSIGN(trr, unk38);
+    DO_ASSIGN(trr, on_water_offset);
     DO_ASSIGN(trr, unk43);
     DO_ASSIGN(trr, unk45);
     DO_ASSIGN(trr, unk48);
@@ -111,7 +111,7 @@ void cTrackedRide::Unknowns::Fill(r3::TrackedRide_Common& trr) const {
     DO_ASSIGN(trr, unk60);
     DO_ASSIGN(trr, unk61);
     DO_ASSIGN(trr, unk69);
-    DO_ASSIGN(trr, unk95);
+    DO_ASSIGN(trr, acceleration_behaviour);
 }
 
 /** @brief Fill
@@ -298,7 +298,7 @@ void cTrackedRide::Fill(r3::TrackedRide_S* trr, ovlStringTable* tab, ovlRelocati
 
     if (attraction.wild()) {
         wild.Fill(reinterpret_cast<TrackedRide_W&>(*trr), tab, rel);
-        trr->short_struct = 0;
+        trr->water_section_flag = 0;
         trr->unk103 = soaked.unk103;
     }
 
@@ -400,7 +400,7 @@ unsigned long cTrackedRide::GetUniqueSize() const {
         if (attraction.wild()) {
             return sizeof(TrackedRide_W);
         } else {
-            if (!soaked.short_struct)
+            if (!soaked.water_section_flag)
                 return sizeof(TrackedRide_S);
             else
                 return sizeof(TrackedRide_S)-4;

@@ -1477,8 +1477,13 @@ fixupsinglevertexmeshes:
         errors.insert(errors.end(), obj->getWarnings().begin(), obj->getWarnings().end());
     }
 
-    if (auto_bones)
+    if (auto_bones) {
+		if (auto_delete_bones)
+			deleteBones();
         syncBones();
+		if (auto_delete_bones)
+			addBones();
+	}
     else if (auto_sort)
         sortBones();
     return true;
@@ -1541,6 +1546,20 @@ void cModel::autoBones(const set<wxString>* onlyaddfrom) {
   */
 void cModel::sortBones() {
     sort(effectpoints.begin(), effectpoints.end(), NameCompare<cEffectPoint, cEffectPoint>);
+}
+
+/** @brief addBones
+  *
+  * @todo: document this function
+  */
+void cModel::addBones() {
+	foreach(const c3DBone::pair& bn, model_bones) {
+		if (!contains_if(effectpoints, NamePredicate<cEffectPoint>(bn.second))) {
+			addBone(bn.second);
+		}
+	}
+    if (auto_sort)
+        sortBones();
 }
 
 /** @brief syncBones
@@ -1761,6 +1780,18 @@ bool cModel::FromNode(cXmlNode& node, const wxString& path, unsigned long versio
     } else {
         auto_bones = false;
     }
+    if (node.getPropVal("autoDelBones", &temp)) {
+        unsigned long l = 0;
+        if (!parseULong(temp, l)) {
+            auto_delete_bones = false;
+            wxLogError(_("Model, autoDelBones failed parsing."));
+            ret = false;
+        } else {
+            auto_delete_bones = l;
+        }
+    } else {
+        auto_delete_bones = false;
+    }
     if (node.getPropVal("autoSort", &temp)) {
         unsigned long l = 0;
         if (!parseULong(temp, l)) {
@@ -1811,6 +1842,8 @@ void cModel::AddNodeContent(cXmlNode& node, const wxString& path, bool do_local)
     node.prop("orientation", boost::str(boost::format("%lu") % l).c_str());
     if (auto_bones)
         node.prop("autoBones", "1");
+    if (auto_delete_bones)
+        node.prop("autoDelBones", "1");
     if (auto_sort)
         node.prop("autoSort", "1");
 
@@ -2059,6 +2092,21 @@ void cAnimatedModel::autoBones(const set<wxString>* onlyaddfrom) {
 void cAnimatedModel::sortBones() {
     sort(modelbones.begin(), modelbones.end(), NameCompare<cModelBone, cModelBone>);
 }
+
+/** @brief addBones
+  *
+  * @todo: document this function
+  */
+void cAnimatedModel::addBones() {
+	foreach(const c3DBone::pair& bn, model_bones) {
+		if (!contains_if(modelbones, NamePredicate<cEffectPoint>(bn.second))) {
+			addBone(bn.second);
+		}
+	}
+    if (auto_sort)
+        sortBones();
+}
+
 
 /** @brief syncBones
   *
@@ -2340,6 +2388,18 @@ bool cAnimatedModel::FromNode(cXmlNode& node, const wxString& path, unsigned lon
         }
     } else {
         auto_bones = false;
+    }
+    if (node.getPropVal("autoDelBones", &temp)) {
+        unsigned long l = 0;
+        if (!parseULong(temp, l)) {
+            auto_delete_bones = false;
+            wxLogError(_("AnimatedModel, autoDelBones failed parsing."));
+            ret = false;
+        } else {
+            auto_delete_bones = l;
+        }
+    } else {
+        auto_delete_bones = false;
     }
     if (node.getPropVal("autoSort", &temp)) {
         unsigned long l = 0;

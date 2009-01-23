@@ -457,6 +457,9 @@ void cRawParser::Parse(cXmlNode& node) {
         } else if (child(RAWXML_QTD)) {
             BAKE_SKIP(child);
             ParseQTD(child);
+        } else if (child(RAWXML_RIC)) {
+            BAKE_SKIP(child);
+            ParseRIC(child);
         } else if (child(RAWXML_SAT)) {
             BAKE_SKIP(child);
             ParseSAT(child);

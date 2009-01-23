@@ -77,6 +77,8 @@
     <File Name="ManagerBAN.cpp"/>
     <File Name="ManagerANR.h"/>
     <File Name="ManagerANR.cpp"/>
+    <File Name="ManagerRIC.h"/>
+    <File Name="ManagerRIC.cpp"/>
   </VirtualDirectory>
   <Dependencies Name="DebugUnicode"/>
   <Settings Type="Static Library">
@@ -185,6 +187,7 @@
     <File Name="..\..\include\tracksection.h"/>
     <File Name="..\..\include\vertex.h"/>
     <File Name="..\..\include\wildanimalitem.h"/>
+    <File Name="..\..\include\train.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="common includes">
     <File Name="..\..\include\boost_unordered_extension.h"/>

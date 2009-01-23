@@ -25,6 +25,7 @@
 
 #include "3DLoader.h"
 
+#include <wx/app.h>
 #include <wx/log.h>
 
 #include "matrix.h"
@@ -40,6 +41,7 @@
 #include "confhelp.h"
 #include "lib3Dconfig.h"
 #include "pretty.h"
+#include "wxLocalLog.h"
 
 using namespace pretty;
 using namespace r3;
@@ -383,6 +385,7 @@ bool c3DLoader::fetchObject(unsigned int index, cBoneShape2* sh, VECTOR *bbox_mi
   * @todo: document this function
   */
 bool c3DLoader::fetchObject(unsigned int index, vector<wxString>& bonenames, cBoneShape2* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal) {
+	wxLogDebug("c3DLoader::fetchObject(%d, %s, %d)", index, getObjectName(index).c_str());
     int i;
     if (m_meshes.size() <= 0)
         return false;
@@ -410,6 +413,9 @@ bool c3DLoader::fetchObject(unsigned int index, vector<wxString>& bonenames, cBo
                     sh->vertices[vertex_offset + i].bone[b] = 0;
                     continue;
                 }
+				if (id >= m_boneId.size()) {
+					wxLocalLog("Bone blown: %d, %d", index, id);
+				}
                 wxString bn = m_boneId[id];
                 vector<wxString>::iterator it = find_in(bonenames, bn);
                 if (it != bonenames.end()) {

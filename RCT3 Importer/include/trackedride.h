@@ -65,7 +65,7 @@ struct TrackedRide_Common {
 	char*               station_name;
 	uint32_t            platform_height_over_track;
 	uint32_t            only_on_water;
-	int32_t             unk38;                          ///< Usually 0, -3 for MiniSubs
+	int32_t             on_water_offset;                          ///< Usually 0, -3 for MiniSubs, was unk38
 	uint32_t            start_preset;
 // 20
 	uint32_t            start_possibilities;
@@ -95,7 +95,11 @@ struct TrackedRide_Common {
 	uint32_t            upkeep_per_train;
 	uint32_t            upkeep_per_car;
 	uint32_t            upkeep_per_station;
-	uint32_t            car_rotation;
+	uint32_t            car_rotation;					///< Decides rotation step
+														/**<
+														 * 0 = Off
+														 * Everything else are the number of degrees per step
+														 **/
 	float_t             tower_top_duration;
 	float_t	            tower_top_distance;
 	uint32_t            loop_not_allowed;
@@ -128,7 +132,7 @@ struct TrackedRide_Common {
 	Spline*             car_spline_ref;
 	Spline*             car_swing_spline_ref;
 	float_t             free_space_profile_height;      ///< ???
-	float_t             unk95;                          ///< Markus: always -1.0
+	float_t             acceleration_behaviour;         ///< Determines acceleration behaviour. Usually -1, Elevator has 0 (was unk95)
 };
 
 /// Tracked ride structure, Vanilla
@@ -249,7 +253,7 @@ struct TrackedRide_S {
     uint32_t            unk80;                      ///< Always 0
     uint32_t            unk81;                      ///< Always 0
     float_t             unk82;                      ///< Usually 0.001, SkySwinger has 0.5
-    uint32_t                    group_definition_count; ///< These define grouping behavior, ie automatically choosing start/mid/end pieces
+    uint32_t            group_definition_count;     ///< These define grouping behavior, ie automatically choosing start/mid/end pieces
     TrackedRideGroupDefinitionArray* group_definitions;
     uint32_t            unk85;                      ///< Always 0
     uint32_t            unk86;                      ///< Always 0
@@ -262,12 +266,32 @@ struct TrackedRide_S {
     float_t             unk93;                      ///< Usually -1.0, MasterBlaster has 1.5
     float_t             unk94;                      ///< Usually -1.0, MasterBlaster has 2.0
     uint32_t            unk95;                      ///< Usually 0, ElephantTransport, HoponTram and SafariTransport have 1
-    int32_t             unk96;                      ///< Usually -1, Elevator has 2, GiantSlide has 3
+    int32_t             min_length;                 ///< Minimal number of track segments, -1 for no limit
+													/**<
+													 * Usually -1, Elevator has 2, GiantSlide has 3
+													 * (was unk96) 
+													 **/ 
     uint32_t            unk97;                      ///< Usually 0, LazyRiver has 1
-    uint32_t            short_struct;               ///< Usually 0, if 1, the struct is one long shorter and 99-101 have special values
-    float_t             unk99;                      ///< -1.0 if short_struct 0. Rafts and SplashBoats have 3.0. WaterCoaster has 5.0
-    float_t             unk100;                     ///< 0.0 if short_struct 0. Rafts and SplashBoats have 1000.0. WaterCoaster has 2500.0
-    float_t             unk101;                     ///< 0.0 if short_struct 0. Rafts and SplashBoats have 2000.0. WaterCoaster has 5000.0
+    uint32_t            water_section_flag;         ///< Activates following speed options for water sections, if set, unk103 is missing
+													/**<
+													 * Usually 0, if 1, the struct is one long shorter and 99-101 have special values
+													 * (was short_struct)
+													 **/ 
+    float_t             water_section_speed;        ///< Constant speed for water section
+													/**<
+													 * -1.0 if short_struct 0. Rafts and SplashBoats have 3.0. WaterCoaster has 5.0
+													 * (was unk99)
+													 **/ 
+    float_t             water_section_accel;        ///< Acceleration value if train is slower than speed
+													/**<
+													 * 0.0 if short_struct 0. Rafts and SplashBoats have 1000.0. WaterCoaster has 2500.0
+													 * (was unk100)
+													 **/ 
+    float_t             water_section_decel;        ///< Deceleration value if train is faster than speed
+													/**<
+													 * 0.0 if short_struct 0. Rafts and SplashBoats have 2000.0. WaterCoaster has 5000.0
+													 * (was unk101)
+													 **/ 
     float_t             unk102;                     ///< Always 4.0
     float_t             unk103;                     ///< Usually 0.0, Aquarium, InsectHouse, NocturnalHouse and ReptileHouse have 4.0
 };
@@ -282,8 +306,14 @@ struct TrackedRide_Wext {
 													 * immediately when building vertically
 													 **/ 
     uint32_t            unk108;                     ///< Usually 1, ElephantTransport has 0
-    int32_t             split_val;                  ///< Usually -1, Seizmic has 2
-    uint32_t            split_flag;                 ///< Usually 0, Seizmic has 1
+    int32_t             trains_default;             ///< Default number of trains
+													/**< 
+													 * Usually -1, Seizmic has 2
+													 **/
+    uint32_t            station_sync_default;       ///< If set, sync adjacent stations is on by default
+													/**<
+													 * Usually 0, Seizmic has 1
+													 **/
     char*               internalname;
 };
 

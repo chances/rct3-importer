@@ -54,17 +54,24 @@ struct Constants {
             enum {
                 No_Kids =                   0x00000001, ///< Seems to indicate that small kids cannot ride
                 Unknown_2 =                 0x00000002,
-                Unknown_3 =                 0x00000004, ///< Related to some water coasters and pool rides
+                Running_Water =             0x00000004, ///< Related to some water coasters and pool rides
                                                         /**<
                                                          * Set for Log Flume, Rafts, Rapids, Splash Boats,
-                                                         * White Water Rapids and Lasy River
+                                                         * White Water Rapids and Lazy River
+														 * 
+														 * Selects which running water texture to show for
+														 * rides with a water channel (fast or slow)
+														 * 
                                                          **/
                 Unknown_4 =                 0x00000008, ///< Related to some water coasters
                                                         /**<
                                                          * Set only on Log Flume, Rafts, Rapids and Splash Boats
                                                          **/
                 No_Testing =                0x00000010, ///< If set, the attraction doesn't support testing
-                RotoDrop =                  0x00000020, ///< Set only on Roto Drop
+                Stop_Animation_on_Top =     0x00000020, ///< Animation on tower rides stops on top
+														/**<
+														 * Set only on Roto Drop
+														 **/
                 Unknown_7 =                 0x00000040, ///< Related to some water rides.
                                                         /**<
                                                          * Set only for Bumper Boats, Jet Skies, Swan Boats,
@@ -237,9 +244,9 @@ struct Constants {
             enum {
                 None =                  0x00000000, //    0,
                 ScrollingSign =         0x0000000C, //   12,
-                WaterWheelChain =       0x00000014, //   20,
-                Wheels1 =               0x00000024, //   36,
-                Wheels2 =               0x00000044, //   68,
+                WheelsTop =       		0x00000014, //   20,
+                WheelsUnder =           0x00000024, //   36,
+                WheelsSide =            0x00000044, //   68,
                 Terrain =               0x00003000, //12288,
                 Cliff =                 0x00005000, //20480,
                 AnimatedBillboard =     0x00008000, //32768,
@@ -536,6 +543,13 @@ struct Constants {
                 Lazy_River =                    0x00008000
             };
         };
+		struct Modus_Flags {
+			enum {
+				Almost_None = 					0x00000000,
+				No_Leaves =						0x00000001, ///< Do not show "Start train when other train leaves station"
+				All = 							0xFFFFFFFF
+			};
+		};
         struct Group_Flags {
             enum {
                 Type_Group_Name =               0x00000000,

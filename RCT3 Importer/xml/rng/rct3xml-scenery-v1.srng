@@ -195,6 +195,12 @@
 					<srng:value>1</srng:value>
 				</srng:choice>
 			</srng:attribute>
+			<srng:attribute name="autoDelBones" occurs="?">
+				<srng:choice>
+					<srng:value>0</srng:value>
+					<srng:value>1</srng:value>
+				</srng:choice>
+			</srng:attribute>
 			<srng:attribute name="autoSort" occurs="?">
 				<srng:choice>
 					<srng:value>0</srng:value>
@@ -208,6 +214,7 @@
 						<srng:name>file</srng:name>
 						<srng:name>orientation</srng:name>
 						<srng:name>autoBones</srng:name>
+						<srng:name>autoDelBones</srng:name>
 						<srng:name>autoSort</srng:name>
 					</srng:except>
 				</srng:anyName>
@@ -262,6 +269,12 @@
 					<srng:value>1</srng:value>
 				</srng:choice>
 			</srng:attribute>
+			<srng:attribute name="autoDelBones" occurs="?">
+				<srng:choice>
+					<srng:value>0</srng:value>
+					<srng:value>1</srng:value>
+				</srng:choice>
+			</srng:attribute>
 			<srng:attribute name="autoSort" occurs="?">
 				<srng:choice>
 					<srng:value>0</srng:value>
@@ -275,6 +288,7 @@
 						<srng:name>file</srng:name>
 						<srng:name>orientation</srng:name>
 						<srng:name>autoBones</srng:name>
+						<srng:name>autoDelBones</srng:name>
 						<srng:name>autoSort</srng:name>
 					</srng:except>
 				</srng:anyName>

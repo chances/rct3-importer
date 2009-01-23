@@ -19,20 +19,20 @@
 namespace r3 {
 
 struct RideCar_V {
-    char*	     	    name;			// Possibly a language lookup
-    char*		        username;
+    char*	     	    name;			///< Possibly a language lookup, shown in error messages
+    char*		        username;		///< No known effect in game
     uint8_t             seating;        ///< Seating type (@see RCT3_Seating)
     uint8_t             version;        ///< Structure version (0 Vanilla, 2 Soaked and 3 Wild)
     uint16_t		    unused;
     SceneryItemVisual_V* svd_ref;
-    float_t		        weight1;	    ///< car body weight.
+    float_t		        inertia;	    ///< car body inertia.
                                         /**<
                                          * Is zero if there isn't really a main body (eg slides, suspended,
                                          * bobs).
                                          * otherwise in the range 0.1 - 5500. Never < 0.
                                          **/
-    SceneryItemVisual_V* seatsvd_ref;    ///< If seats move in some way (rotating mouse, multidimensional)
-    uint32_t            free_axis;      ///< Rotation axis for seat vs. base movement
+    SceneryItemVisual_V* moving_svd_ref;    ///< If the car has a moving part (rotating mouse, multidimensional)
+    uint32_t            axis_type;      ///< Rotation axis for moving part vs. base movement
                                         /**<
                                          * 0 none
                                          * 2 horizontal axis, crossing the track (y in right handed z up).
@@ -41,125 +41,218 @@ struct RideCar_V {
                                          *   Used for bobs, slides and free hanging suspended. Many only use
                                          *   a virtual base to rotate against. Bobs and slides use this to achive
                                          *   the illusion of free movement in curves.
-                                         * 4 horizontal axis, along the track (x in rhzu)
+                                         * 4 vertical axis (z in rhzu)
                                          *   Spinnig and sliding cars.
                                          **/
-    float_t             weight2;        ///< Probably weight of seats. -1.0 for cars withot rotation
+    float_t             moving_inertia;	///< Inertia of seats. -1.0 for cars without rotation
                                         /**<
                                          * otherwise in the range 40 - 990
                                          **/
-    float_t             unk9;           ///< Mostly 4
+    float_t             axis_stability; ///< Distance of seat mass to rotation axis
                                         /**<
+										 * Usually 4
+										 * 
                                          * 0.1 chair lift cars
-                                         * 0.2 - 0.8 mostly free spinning cars, includes BallCoaster
+                                         * 0.2 - 0.8 on some free spinning cars, includes BallCoaster
                                          * 2 Suspendend and bobs, some slides, Xtend Drifting and Wild Mine
                                          **/
-    float_t             unk10;          ///< Almost allways 0
+    float_t             axis_unk01;     ///< Probably something with swinging/sideways movement
                                         /**<
+										 * Usually 0
+										 * 
                                          * 0.2 - 12 for slides.
                                          * 4 for WildMine
-                                         * Probably something with swinging/sideways movement
+                                         * 
                                          **/
-    float_t             unk11;          ///< Almost allways -1
+    float_t             axis_unk02;     ///< Almost allways -1
                                         /**<
+										 * Usually -1
+										 * 
                                          * 3 for BallCoaster
                                          * 5 for River Raft cars
                                          **/
-    float_t             unk12;          ///< Mostly 0.1
+    float_t             axis_momentum;  ///< Momentum added by movement along the track
                                         /**<
+										 * Usually 0.1
+										 * 
                                          * 0.01 for Chair and Ski Lift
                                          * 0.2 for suspendeds, bobs, some slides
                                          * 0.3 for most spinnig cars (virginial reel cars, but also halfpipe and eurospinner)
                                          * 0.5-0.7 for Xtend Drifting, two slides, Wild Mine and BallCoaster
                                          **/
-    float_t             unk13;          ///< Almost always 0
+    float_t             axis_unk03;     ///< Probably related to left/right swinging for fixed situations
                                         /**<
+										 * Usually 0
+										 * 
                                          * 4000 for Xtend Drifting
-                                         * 10000 for Wild Mine
-                                         * Probably related to left/right swinging for fixed situations
+                                         * 100000 for Wild Mine
                                          **/
-    float_t             unk14;          ///< Mostly 0
+    float_t             axis_unk04;     ///< Probably related to the left/right swinging/physics
                                         /**<
+										 * Usually 0
+										 * 
                                          * 0.1 for suspended and bobs
                                          * 0.5-0.9 for slides
-                                         * Probably related to the left/right swinging/physics
                                          **/
-    float_t             unk15;          ///< Almost always -1.0
+    float_t             axis_maximum;   ///< Maximum rotational displacement
                                         /**<
+										 * Almost always -1.0
+										 * 
                                          * 0 for FrequentFaller
                                          * 0.2 for Wild Mine
                                          * 0.785 for Xtend Drifting
                                          * 0.9 for Super Soaker
                                          **/
-    uint32_t            water_car;      ///< 1 for water cars, 0 otherwise.
+    uint32_t            bobbing_flag;   ///< Activate bobbing
                                         /**<
-                                         * maybe floating, bobbing?
+                                         * Set on water cars
+										 * 
+										 * Following values are in in-game coordinate system
                                          **/
-    float_t             water_float1;   // Seen 0
-    float_t             water_float2;   // Seen 0
-    float_t             water_float3;   // Seen 0
-    int32_t             anim_start;     ///< -1, 1 or 3.
-                                        /**<
-                                         * -1 Most common
-                                         * 1 Several. Among them are eg the tour boats, but also others. No idea
-                                         * 3 for rotating tower cars (observation towers and rotodrop)
-                                         **/
-    int32_t             anim_run;       // Seen -1
-    int32_t             anim_stop;      // Seen -1
-    int32_t             anim_station_idle;  // Seen -1
-    int32_t             anim_belt_open;          // Seen 0
-    int32_t             anim_belt_idle;          // Seen 1
-    int32_t             anim_belt_close;          // Seen 2
-    int32_t             anim_unknown01;          // Always -1
-    int32_t             anim_doors_open;          // Seen -1
-    int32_t             anim_doors_open_idle;          // Seen -1
-    int32_t             anim_doors_close;          // Seen -1
-    int32_t             anim_unknown02;          // Always -1
-    int32_t             anim_row_both;          // Seen -1
-    int32_t             anim_row_left;          // Seen -1
-    int32_t             anim_row_right;          // Seen -1
-    int32_t             anim_canoe_station_idle;          // Seen -1
-    int32_t             anim_canoe_idle_front;          // Seen -1
-    int32_t             anim_canoe_idle_back;          // Seen -1
-    int32_t             anim_canoe_row_idle;          // Seen -1
-    int32_t             anim_canoe_row;          // Seen -1
-    uint32_t            car_type_count;
-    uint32_t*           car_types;
-    SceneryItemVisual_V* wheels_right_ref;          // Always 0
-    uint32_t            flip_left;          // Usually 0, Some 1; Left svd flipped, so a right one can be (re)used
-    SceneryItemVisual_V* wheels_left_ref;          // Always 0
-    uint32_t            unk45;          // Always 0
-    SceneryItemVisual_V* wheels_right2_ref;          // Always 0
-    uint32_t            flip_left2;          // Usually 0, Some 1
-    SceneryItemVisual_V* wheels_left2_ref;          // Always 0
-    uint32_t            unk49;          // Always 0
-    SceneryItemVisual_V* axel_front_ref;
-    SceneryItemVisual_V* axel_rear_ref;
-    uint32_t            axel_front_type;          // Usually 4 (= None), can be 1-4
-    uint32_t            axel_rear_type;          // Usually 4 (= None), can be 1-4
-    uint32_t            unk54;          // Seen 0
-    float_t             unk55;          // Seen -1.0, 0
-    int32_t             unk56;          // Seen -1, 0
-    float_t             unk57;          // Seen -1.0, rarely 40, 150 or 400 on Slides and SkyRider
-    float_t             unk58;          // Seen -1.0, 4.0, rarely 0.18, 0.2,
-    float_t             unk59;          // Seen -1.0, 0.0
-    float_t             unk60;          // Seen -1.0
+    float_t             bobbing_x;   	// Seen 0
+    float_t             bobbing_y;   	// Seen 0
+    float_t             bobbing_z;   	// Seen 0
+    int32_t             anim_start;     		///< Runs when the car starts
+    int32_t             anim_started_idle;		///< Runs when the car is on track
+    int32_t             anim_stop;      		///< Runs when the car stops
+    int32_t             anim_stopped_idle;  	///< Runs while the car is in a station
+    int32_t             anim_belt_open; 		///< Runs to open belts
+    int32_t             anim_belt_open_idle;	///< Runs while belts are open
+    int32_t             anim_belt_close;        ///< Runs to close belts
+    int32_t             anim_belt_closed_idle;	///< Runs while belts are closed
+    int32_t             anim_doors_open;		///< Runs to open doors
+    int32_t             anim_doors_open_idle;   ///< Runs while doors are open
+    int32_t             anim_doors_close;		///< Runs to close doors
+    int32_t             anim_doors_closed_idle; ///< Runs while doors are closed
+    int32_t             anim_row_both;
+    int32_t             anim_row_left;
+    int32_t             anim_row_right;
+    int32_t             anim_canoe_station_idle;
+    int32_t             anim_canoe_idle_front;
+    int32_t             anim_canoe_idle_back;
+    int32_t             anim_canoe_row_idle;
+    int32_t             anim_canoe_row;
+    uint32_t            seat_type_count;		///< Alternate seat postitions for peeps
+    uint32_t*           seat_types;
+    SceneryItemVisual_V* wheels_front_right_ref;	///< SVD for front right wheel
+    uint32_t            wheels_front_right_flipped; ///< Flip front right wheel (to reuse left)
+    SceneryItemVisual_V* wheels_front_left_ref;
+    uint32_t            wheels_front_left_flipped;
+    SceneryItemVisual_V* wheels_back_right_ref;
+    uint32_t            wheels_back_right_flipped;
+    SceneryItemVisual_V* wheels_back_left_ref;
+    uint32_t            wheels_back_left_flipped;
+    SceneryItemVisual_V* axel_front_ref;	///< SVD for front axel
+    SceneryItemVisual_V* axel_rear_ref;		///< SVD for rear axel
+    uint32_t            axel_front_type;	///< Probably rotation axis or type for front axel
+											/**<
+											 * 1 Vertical? (eg Arrows car)
+											 * 2 Only occurs on rear axel.
+											 * 3 Horizontal? (eg Heartline car)
+											 * 4 No axel (no svd)
+											 **/
+    uint32_t            axel_rear_type;		///< Probably rotation axis or type for rear axel
+    uint32_t            unk54;          ///< Always 0, never symref
+    float_t             vs_unk01;       // Seen -1.0, 0
+										/**<
+										 * Vanilla: always -1.0
+										 * Soaked/Wild: always 0
+										 **/
+    int32_t             skyslide_unk01; // Seen -1, 0, 4
+										/**<
+										 * Vanilla: always -1
+										 * Soaked/Wild:
+										 *   Usually 0
+										 *   Skyrider, BodySlide, MatSlide, RaftSlide, RingSlide 4
+										 **/ 
+    float_t             skyslide_unk02; // Seen -1.0, rarely 40, 150 or 400 on Slides and SkyRider
+										/**<
+										 * Usually -1
+										 * Skyrider 400
+										 * BodySlide, MatSlide 40
+										 * RaftSlide, RingSlide 150
+										 **/
+    float_t             skyslide_unk03; // Seen -1.0, 4.0, rarely 0.18, 0.2,
+										/**<
+										 * Vanilla: always -1
+										 * Soaked/Wild:
+										 *    Usually 4
+										 *    Skyrider, BodySlide, MatSlide, RingSlide 0.2
+										 *    Raftslide 0.18
+										 **/
+    float_t             vs_unk02;       // Seen -1.0, 0.0
+										/**<
+										 * Vanilla: always -1.0
+										 * Soaked/Wild: always 0
+										 **/
+    float_t             unk60;          ///< always -1.0
 };
 
 struct RideCar_Sext {
-    float_t             unk61;          // Seen 0.1
-    uint32_t            unk62;
-    uint32_t            unk63;
-    float_t             unk64;          // Seen -1.0
-    uint32_t            unk65;
-    uint32_t            unk66;          // Seen 1
-    uint32_t            unk67;
-    uint32_t            unk68;
-    uint32_t            unk69;          // Seen 1
-    uint32_t            unk70;
-    uint32_t            unk71;
-    uint32_t            unk72;          // Seen 0
-    float_t             unk73;          // Seen -9999.9 (0xc61c3f9a)
+    float_t             skyslide_unk04; // Seen 0.1
+										/**<
+										 * Usually 0.1
+										 * 
+										 * 0.25 RaftSlide
+										 * 0.3  Skyrider, BodySlide, MatSlide, RingSlide
+										 **/
+    uint32_t            unk62;			///< Always 0, never symref
+    uint32_t            unk63;			///< Always 0, never symref
+    float_t             unk64;          ///< Always -1.0
+    uint32_t            slide_unk01;	///< Seen 0, 1
+										/**<
+										 * Usually 0
+										 * 
+										 * BodySlide, MatSlide, RaftSlide, RingSlide 1
+										 * 
+										 * Flag?
+										 **/
+    uint32_t            skyslide_unk05; ///< Seen 1, 4
+										/**<
+										 * Usually 1
+										 * 
+										 * Skyrider, RaftSlide, RingSlide 4
+										 **/
+    float_t             supersoaker_unk01;	///< Seen 0, 4
+										/**<
+										 * Usually 0
+										 * 
+										 * SuperSoaker 4
+										 **/
+    uint32_t            supersoaker_unk02;	///< Seen 0, 1
+										/**<
+										 * Usually 0
+										 * 
+										 * SuperSoaker 1
+										 **/
+    uint32_t            unstable_unk01;	///< Occurs on bobs and slides, looks like flags
+										/**<
+										 *   1 0x0001 Usually
+										 * 
+										 *   9 0x0009 WindSurfer
+										 *  49 0x0031 LargeRiverRaft, RapidRiver
+										 * 112 0x0070 MasterBlaster
+										 * 624 0x0270 ProBowlRubberRing, RaftSlide, RingSlide
+										 * 625 0x0271 Bobsleigh, Dingy, PenguinBobsleigh
+										 * 626 0x0272 MatSlide
+										 * 630 0x0276 BodySlide
+										 **/
+    uint32_t            unk70;			///< Always 0, never symref
+    float_t             slide_unk02;	///< Seen 0, 1, 3.1
+										/**<
+										 * Usually 0
+										 * 
+										 * 1   MasterBlaster
+										 * 3.1 RaftSlide, RingSlide
+										 **/
+    uint32_t            unk72;          ///< always 0, never symref
+    float_t             slide_unk03;    ///< Seen -9999.9 (0xc61c3f9a), 0.2, 0.3
+										/**<
+										 * Usually -9999.9
+										 * 
+										 * 0.2 RaftSlide
+										 * 0.3 RingSlide
+										 **/
 };
 
 struct RideCar_S {
@@ -168,20 +261,40 @@ struct RideCar_S {
 };
 
 struct RideCar_Wext {
-    uint32_t            unk74;          // Seen 1
-    SceneryItemVisual_W* svd_flipped_ref;        ///< Flipped body svd for splitting (siezmic)
-    SceneryItemVisual_W* seatsvd_flipped_ref;    ///< Flipped seat svd for splitting (siezmic)
-    uint32_t            unk77;          // Seen 0
-    float_t             unk78;          // Seen 1.0
-    float_t             unk79;          // Seen 1.0
+    uint32_t            flip_unk;		///< Seen 1, 2
+										/**<
+										 * Usually 1
+										 * Siezmic 2
+										 **/
+    SceneryItemVisual_W* svd_flipped_ref;        	///< Flipped body svd for splitting (siezmic)
+    SceneryItemVisual_W* moving_svd_flipped_ref;    ///< Flipped seat svd for splitting (siezmic)
+    uint32_t            unk77;          ///< Always 0, never symref
+    float_t             drifting_unk;   ///< Seen 0, 1.0
+										/**<
+										 * Usually 1
+										 * XtendedDrifting 0
+										 **/
+    float_t             unk79;          ///< Always 1.0
     void*               was_ref;        ///< Symbol reference to a was (WildAnimalSpecies)
-                                        /**
+                                        /**<
                                          * Used for Elephant transport
                                          */
-    float_t             unk81;          // Seen 4.1
-    uint32_t            unk82;          // Seen 0
-    int32_t             anim_rudder;    // Seen -1
-    uint32_t            unk84;          // Seen 0
+    float_t             paddle_steamer_unk01;	// Seen 4.1, 0.05
+										/**<
+										 * Usually 4.1
+										 * PaddleSteamer 0.05
+										 **/
+    uint32_t            paddle_steamer_unk02;   // Seen 0, 1
+										/**<
+										 * Usually 0
+										 * PaddleSteamer 1
+										 **/
+    int32_t             anim_rudder;    ///< Rudder/fan animation, only used on AirBoat
+    uint32_t            ball_coaster_unk;	///< Seen 0, 1
+										/**<
+										 * Usually 0
+										 * BallCoaster 1
+										 **/
 };
 
 struct RideCar_W {
@@ -189,60 +302,6 @@ struct RideCar_W {
     RideCar_Sext        s;
     RideCar_Wext        w;
 };
-
-struct RideTrain_V {
-    char*           	name;              	///< txt for train name, not a symref. 0xFFFFFFFF for RideTrainB/C
-    char*            	description;        ///< txt for train description, not a symref
-                                            /**<
-                                             * In Soaked and Wild this could be user visible text, it contains spaces
-                                             * and stuff usually not present for an internal name.
-                                             **/
-    RideCar_V*         	frontcar_ref;
-    RideCar_V*         	secondcar_ref;
-    RideCar_V*         	midcar_ref;
-    RideCar_V*         	penultimatecar_ref;
-    RideCar_V*         	rearcar_ref;
-    RideCar_V*         	link_ref;	        /// Pointer to the object that links cars together.
-    uint32_t    	    minimum_cars;       /// the minimum number of cars for this train
-    uint32_t    	    maximum_cars;		/// the maximum number of cars for this train
-    uint32_t    	    initial_cars;		/// the initial number of cars for this train when the ride is created
-    float_t	     	    unkfloats1[33];		/// 35 unknown floats, unk12 - unk44
-    Spline*             liftcar_left_ref;
-    Spline*             liftcar_right_ref;
-    char*	     	    configuration;      /// Platform? Seen "NoPlatform"
-};
-
-struct RideTrain_Sext {
-    uint32_t    	    version;			///< 2 soaked, 3 wild
-    char*	     	    carname;            ///< Probably equivalent to name in V structure
-    uint32_t    	    unk50;              ///< Seen 0, 1, 2
-    uint32_t    	    unk51;              ///< Seen 0
-};
-
-struct RideTrain_S {
-    RideTrain_V         v;
-    RideTrain_Sext      s;
-};
-
-struct RideTrain_Wext {
-    uint32_t    	    unk52;              // Seen 0
-    uint32_t    	    unk53;              // Seen 0
-    uint32_t    	    unk54;              // Seen 0
-    float_t    	        unk55;              // Seen -1.0
-    float_t    	        unk56;              // Seen -1.0
-    float_t    	        unk57;              // Seen -1.0
-    float_t    	        unk58;              // Seen 1.0
-    uint32_t    	    unk59;              // Seen 0
-    uint32_t    	    unk60;              // Seen 0
-    float_t           	unk61;              // Seen 0.0, 90.0 on FrequentFaller
-};
-
-struct RideTrain_W {
-    RideTrain_V         v;
-    RideTrain_Sext      s;
-    RideTrain_Wext      w;
-};
-
 
 };
 

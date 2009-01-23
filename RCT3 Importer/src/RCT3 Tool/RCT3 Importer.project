@@ -155,17 +155,6 @@
     <File Name="install.txt"/>
     <File Name="todo.log"/>
   </VirtualDirectory>
-  <Dependencies Name="Debug">
-    <Project Name="Precompile RNG"/>
-    <Project Name="Precompile XSL"/>
-    <Project Name="libASE"/>
-    <Project Name="libOVL"/>
-    <Project Name="libOVLDump"/>
-    <Project Name="libOVLng"/>
-    <Project Name="libXmlCpp"/>
-    <Project Name="libWXHelp"/>
-    <Project Name="lib3DHelp"/>
-  </Dependencies>
   <Settings Type="Executable">
     <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
       <General OutputFile="../../bin/RCT3_Importerd.exe" IntermediateDirectory="../../lib/obj/RCT3Importer/Debug" Command="RCT3_Importerd.exe" CommandArguments="" WorkingDirectory="../../bin" PauseExecWhenProcTerminates="yes"/>
@@ -408,6 +397,17 @@ res_spline.cpp: xrc/spline.fbp
     </Configuration>
   </Settings>
   <Dependencies Name="Invalid"/>
+  <Dependencies Name="Debug">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libASE"/>
+    <Project Name="libOVL"/>
+    <Project Name="libOVLDump"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libXmlCpp"/>
+    <Project Name="libWXHelp"/>
+    <Project Name="lib3DHelp"/>
+  </Dependencies>
   <Dependencies Name="Release">
     <Project Name="Precompile RNG"/>
     <Project Name="Precompile XSL"/>

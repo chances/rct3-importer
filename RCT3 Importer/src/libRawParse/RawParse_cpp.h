@@ -77,6 +77,8 @@ class cSCNFile;
 #define RAWXML_GSI "gsi"
 #define RAWXML_PTD "ptd"
 #define RAWXML_QTD "qtd"
+#define RAWXML_RIC "ric"
+#define RAWXML_RIT "rit"
 #define RAWXML_SAT "sat"
 #define RAWXML_SHS "shs"
 #define RAWXML_SID "sid"

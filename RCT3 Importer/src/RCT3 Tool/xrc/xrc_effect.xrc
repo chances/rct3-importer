@@ -276,6 +276,21 @@
 			</object>
 			<object class="sizeritem">
 				<option>0</option>
+				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL</flag>
+				<border>5</border>
+				<object class="wxStaticText" name="m_stMessage">
+					<hidden>1</hidden>
+					<label>Your model is in auto-sync mode and this effect point is auto-generated from your model file.\nYou cannot edit any settings.</label>
+				</object>
+			</object>
+			<object class="spacer">
+				<option>1</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<size>0,0</size>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
 				<flag>wxEXPAND</flag>
 				<border>5</border>
 				<object class="wxBoxSizer">
@@ -385,6 +400,7 @@
 								<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxEXPAND</flag>
 								<border>5</border>
 								<object class="wxChoice" name="m_choiceParent">
+									<selection>0</selection>
 									<content />
 								</object>
 							</object>
@@ -406,6 +422,7 @@
 												<flag>wxBOTTOM|wxRIGHT|wxLEFT|wxEXPAND</flag>
 												<border>5</border>
 												<object class="wxChoice" name="m_choiceMesh">
+													<selection>0</selection>
 													<content />
 												</object>
 											</object>
@@ -971,6 +988,21 @@
 			</object>
 			<object class="sizeritem">
 				<option>0</option>
+				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL</flag>
+				<border>5</border>
+				<object class="wxStaticText" name="m_stMessage">
+					<hidden>1</hidden>
+					<label>Your model is in auto-sync mode and this bone is auto-generated from your model file.\nYou cannot edit any settings.</label>
+				</object>
+			</object>
+			<object class="spacer">
+				<option>1</option>
+				<flag>wxEXPAND</flag>
+				<border>5</border>
+				<size>0,0</size>
+			</object>
+			<object class="sizeritem">
+				<option>0</option>
 				<flag>wxEXPAND</flag>
 				<border>5</border>
 				<object class="wxBoxSizer">
@@ -1074,6 +1106,7 @@
 								<border>5</border>
 								<object class="wxChoice" name="m_choiceLightType">
 									<tooltip>Select the kind of light effect point you want to generate.\nThe boxes indicated whether the point will actually shed light (shines) or have a visible glow (bulb).</tooltip>
+									<selection>0</selection>
 									<content>
 										<item>Normal</item>
 										<item>Simple</item>
@@ -1117,6 +1150,7 @@
 						<border>5</border>
 						<object class="wxChoice" name="m_choiceLightOption">
 							<tooltip>Select a light effect point option.\nlamp: It&apos;s not completely clear what this does, but it may relate to how lights interact.\ntorch: Flickering, torch-like light.\nCustom Colour: Creates a recolorable light. Note: you have to add a mesh with a recolorable texture to make this work.</tooltip>
+							<selection>0</selection>
 							<content>
 								<item>None</item>
 								<item>Lamp</item>
@@ -1143,6 +1177,7 @@
 						<border>5</border>
 						<object class="wxChoice" name="m_choiceColour">
 							<tooltip>Select a colour option</tooltip>
+							<selection>0</selection>
 							<content>
 								<item>Fixed</item>
 								<item>Custom Colour 1</item>

@@ -71,8 +71,12 @@ protected:
 
     wxMenu* m_menuPos1;
     wxMenu* m_menuPos2;
+	
+	wxStaticText* m_stMessage;
 
     wxEffectCombo* m_textEffectName;
+	
+	bool m_readOnly;
 
     std::map<int, const c3DBone*> m_IdMap[2];
     std::map<int, wxString> m_IdNameMap[2];
@@ -135,6 +139,7 @@ private:
         m_btLoad = XRCCTRL(*this,"m_btLoad",wxButton);
         m_btOk = XRCCTRL(*this,"m_btOk",wxButton);
         m_btCancel = XRCCTRL(*this,"m_btCancel",wxButton);
+		m_stMessage = XRCCTRL(*this,"m_stMessage",wxStaticText);
     }
     void InitWidgetsFromXRCBone(wxWindow *parent){
         wxXmlResource::Get()->LoadObject(this,parent,_T("dlgBone"), _T("wxDialog"));
@@ -186,10 +191,11 @@ private:
         m_btLoad = XRCCTRL(*this,"m_btLoad",wxButton);
         m_btOk = XRCCTRL(*this,"m_btOk",wxButton);
         m_btCancel = XRCCTRL(*this,"m_btCancel",wxButton);
+		m_stMessage = XRCCTRL(*this,"m_stMessage",wxStaticText);
     }
     DECLARE_EVENT_TABLE()
 public:
-    dlgEffectBase(wxWindow *parent=NULL, bool effect=true);
+    dlgEffectBase(wxWindow *parent=NULL, bool effect=true, bool read_only=false);
     virtual ~dlgEffectBase() {
         if (m_menuPos1) delete m_menuPos1;
         if (m_menuPos2) delete m_menuPos2;
@@ -214,7 +220,7 @@ private:
     cEffectPoint m_ef;
     DECLARE_EVENT_TABLE()
 public:
-    dlgEffect(wxWindow *parent=NULL);
+    dlgEffect(wxWindow *parent=NULL, bool read_only=false);
     void SetEffect(const cEffectPoint& ep) {
         m_ef = ep;
         UpdateAll();
@@ -258,7 +264,7 @@ private:
     wxArrayString m_meshes;
     cAnimatedModel* m_model;
 public:
-    dlgBone(wxWindow *parent=NULL);
+    dlgBone(wxWindow *parent=NULL, bool read_only=false);
     void SetBone(const cModelBone& bn);
     cModelBone GetBone() const {
         cModelBone temp = m_bn;

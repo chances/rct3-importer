@@ -268,6 +268,10 @@ class ovlTXSManager: public ovlOVLManager {
 public:
     static const char* TAG;
 };
+class ovlWASManager: public ovlOVLManager {
+public:
+    static const char* TAG;
+};
 
 
 #endif

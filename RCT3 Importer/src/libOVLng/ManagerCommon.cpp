@@ -47,6 +47,7 @@ using namespace r3;
 using namespace std;
 
 const char* ovlTXSManager::TAG = "txs";
+const char* ovlWASManager::TAG = "was";
 
 ////////////////////////////////////////////////////////////////////////
 //

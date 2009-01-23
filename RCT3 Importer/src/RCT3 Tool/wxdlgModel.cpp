@@ -251,6 +251,15 @@ bool wxMeshListModel::SetValue( wxVariant &variant, unsigned int col, unsigned i
                             m_content->meshstructs[row].FTX = wxT("UseAdTexture");
                             m_content->meshstructs[row].TXS = wxT("SIOpaque");
                             break;
+						case 8:
+                            m_content->meshstructs[row].flags = r3::Constants::Mesh::Flags::WheelsTop;
+							break;
+						case 9:
+                            m_content->meshstructs[row].flags = r3::Constants::Mesh::Flags::WheelsUnder;
+							break;
+						case 10:
+                            m_content->meshstructs[row].flags = r3::Constants::Mesh::Flags::WheelsSide;
+							break;
                         default:
                             {
                                 m_content->meshstructs[row].flags = 0;
@@ -303,10 +312,27 @@ protected:
     long GetSel() {
         long sel = 0;
         if (m_value->flags == 0) {
-            sel = 0;
+			if (m_value->FTX != wxT("")) {
+				if (m_value->FTX.CmpNoCase("siwater") == 0) {
+					sel = 4;
+				}
+				if (m_value->FTX.CmpNoCase("watermask") == 0) {
+					sel = 5;
+				}
+			} else
+				sel = 0;
         }
         if (m_value->flags == 12) {
             sel = 1;
+        }
+        if (m_value->flags == r3::Constants::Mesh::Flags::WheelsTop) {
+            sel = 8;
+        }
+        if (m_value->flags == r3::Constants::Mesh::Flags::WheelsUnder) {
+            sel = 9;
+        }
+        if (m_value->flags == r3::Constants::Mesh::Flags::WheelsSide) {
+            sel = 10;
         }
         if (m_value->flags == 12288) {
             sel = 2;
@@ -319,14 +345,6 @@ protected:
         }
         if (m_value->flags == 32768) {
             sel = 7;
-        }
-        if (m_value->FTX != wxT("")) {
-            if (m_value->FTX.CmpNoCase("siwater") == 0) {
-                sel = 4;
-            }
-            if (m_value->FTX.CmpNoCase("watermask") == 0) {
-                sel = 5;
-            }
         }
         return sel;
     };
@@ -934,6 +952,9 @@ public:
 			wxMeshListFlagsRenderer::m_styles.Add(_("Water Mask Texture"));
 			wxMeshListFlagsRenderer::m_styles.Add(_("Billboard Texture"));
 			wxMeshListFlagsRenderer::m_styles.Add(_("Animated Billboard"));
+			wxMeshListFlagsRenderer::m_styles.Add(_("Wheels, Top"));
+			wxMeshListFlagsRenderer::m_styles.Add(_("Wheels, Under"));
+			wxMeshListFlagsRenderer::m_styles.Add(_("Wheels, Side"));
         }
     }
     bool SetValue( const wxVariant &value ) {
@@ -1370,6 +1391,7 @@ dlgModel::dlgModel(wxWindow *parent, cSCNFile& scn, bool animated):
         Connect(XRCID("m_btEffectClear"), wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(dlgModel::OnEffectClear));
     }
     Connect(XRCID("m_cbSyncBones"), wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(dlgModel::OnSyncBones));
+    Connect(XRCID("m_cbDelBones"), wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(dlgModel::OnDelBones));
     Connect(XRCID("m_cbSortBones"), wxEVT_COMMAND_CHECKBOX_CLICKED, wxCommandEventHandler(dlgModel::OnSortBones));
     m_btCoordinateSystem->Connect(wxEVT_RIGHT_DCLICK, wxMouseEventHandler( dlgModel::OnSystemAutoRDbl ));
     wxXmlResource::Get()->AttachUnknownControl(wxT("m_htlbEffect"), m_htlbEffect, m_panEffect);
@@ -1456,8 +1478,10 @@ dlgModel::dlgModel(wxWindow *parent, cSCNFile& scn, bool animated):
     Connect(m_menuAutoBones->Append(wxID_ANY, wxString::Format("&Sort %s", menutext.c_str()))->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(dlgModel::OnMenuSortBones));
     m_menuAutoBones->AppendSeparator();
     m_miSyncBones = m_menuAutoBones->AppendCheckItem(wxID_ANY, wxString::Format("Auto-synchronise %s", menutext.c_str()));
+    m_miDelBones = m_menuAutoBones->AppendCheckItem(wxID_ANY, wxString::Format("Full auto-synchronize %s", menutext.c_str()));
     m_miSortBones = m_menuAutoBones->AppendCheckItem(wxID_ANY, wxString::Format("Auto-sort %s", menutext.c_str()));
     Connect(m_miSyncBones->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(dlgModel::OnMenuAutoSyncBones));
+    Connect(m_miDelBones->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(dlgModel::OnMenuAutoDelBones));
     Connect(m_miSortBones->GetId(), wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(dlgModel::OnMenuAutoSortBones));
 
 
@@ -1570,9 +1594,15 @@ void dlgModel::UpdateAll() {
         return;
     ShowTransform();
     m_cbSyncBones->SetValue(m_model->auto_bones);
+	m_cbDelBones->SetValue(m_model->auto_delete_bones);
     m_cbSortBones->SetValue(m_model->auto_sort);
     m_miSyncBones->Check(m_model->auto_bones);
+    m_miDelBones->Check(m_model->auto_delete_bones);
     m_miSortBones->Check(m_model->auto_sort);
+	
+	m_cbDelBones->Enable(m_model->auto_bones);
+	m_miDelBones->Enable(m_model->auto_bones); 
+	m_btEffectAdd->Enable(!m_model->auto_delete_bones);
     //m_htlbMesh->UpdateContents();
     m_modelMesh->Cleared();
 /*
@@ -1668,18 +1698,26 @@ void dlgModel::UpdateAll() {
 void dlgModel::UpdateControlState() {
     if (!m_model)
         return;
-    int count = 0;
-    if (m_animated) {
-        count = dynamic_cast<cAnimatedModel*>(m_model)->modelbones.size();
-    } else {
-        count = m_model->effectpoints.size();
-    }
-    int sel = m_htlbEffect->GetSelection();
-    m_spinEffect->Enable(count>=2);
-    m_btEffectEdit->Enable(sel>=0);
-    m_btEffectCopy->Enable(sel>=0);
-    m_btEffectDel->Enable(sel>=0);
-    m_btEffectClear->Enable(count>=1);
+		
+	int sel = m_htlbEffect->GetSelection();
+	m_btEffectEdit->Enable(sel>=0);
+	if (m_model->auto_delete_bones) {
+		m_spinEffect->Enable(false);
+		m_btEffectCopy->Enable(false);
+		m_btEffectDel->Enable(false);
+		m_btEffectClear->Enable(false);
+	} else {
+		int count = 0;
+		if (m_animated) {
+			count = dynamic_cast<cAnimatedModel*>(m_model)->modelbones.size();
+		} else {
+			count = m_model->effectpoints.size();
+		}
+		m_spinEffect->Enable((count>=2) and (!m_model->auto_sort));
+		m_btEffectCopy->Enable(sel>=0);
+		m_btEffectDel->Enable((sel>=0) and (IsBoneEditable(sel)));
+		m_btEffectClear->Enable(count>=1);		
+	}
 
 //    m_btEditMesh->Enable(m_htlbMesh->GetSelection()>=0);
 
@@ -1922,7 +1960,7 @@ void dlgModel::OnEffectEdit(wxCommandEvent& WXUNUSED(event)) {
     int sel = m_htlbEffect->GetSelection();
     if (sel < 0)
         return;
-    dlgEffect *dialog = new dlgEffect(this);
+    dlgEffect *dialog = new dlgEffect(this, !IsBoneEditable(sel));
     dialog->SetEffect(m_model->effectpoints[sel]);
     if (dialog->ShowModal() == wxID_OK) {
         m_model->effectpoints[sel] = dialog->GetEffect();
@@ -2014,11 +2052,7 @@ void dlgModel::OnEffectClear(wxCommandEvent& WXUNUSED(event)) {
   * @todo: document this function
   */
 void dlgModel::OnSortBones(wxCommandEvent& event) {
-    m_model->auto_sort = m_cbSortBones->GetValue();
-    if (m_model->auto_sort) {
-        m_model->sortBones();
-    }
-    UpdateAll();
+    SetSortBones(m_cbSortBones->GetValue());
 }
 
 /** @brief OnSyncBones
@@ -2026,13 +2060,75 @@ void dlgModel::OnSortBones(wxCommandEvent& event) {
   * @todo: document this function
   */
 void dlgModel::OnSyncBones(wxCommandEvent& event) {
-    m_model->auto_bones = m_cbSyncBones->GetValue();
+    SetSyncBones(m_cbSyncBones->GetValue());
+}
+
+/** @brief OnSyncBones
+  *
+  * @todo: document this function
+  */
+void dlgModel::OnDelBones(wxCommandEvent& event) {
+	SetDelBones(m_cbDelBones->GetValue()) ;
+}
+
+void dlgModel::SetSyncBones(bool new_setting) {
+	if (new_setting) {
+		if (::wxMessageBox(_("This will undo all manual changes to bones defined in your model file! Do you want to continue?"), _("Warning"),  wxYES_NO, this) == wxNO)
+			return;
+	}
+    m_model->auto_bones = new_setting;
+	if (!new_setting)
+		m_model->auto_delete_bones = false;
+
     if (m_model->auto_bones) {
+		if (m_model->auto_delete_bones)
+			m_model->deleteBones();
         m_model->syncBones();
+		if (m_model->auto_delete_bones)
+			m_model->addBones();
     }
     UpdateAll();
 }
 
+void dlgModel::SetDelBones(bool new_setting) {
+	if (new_setting) {
+		if (::wxMessageBox(_("This will delete all manually added bones and add all bones defined in the model not in the list! Do you want to continue?"), _("Warning"),  wxYES_NO, this) == wxNO)
+			return;
+	}
+    m_model->auto_delete_bones = new_setting;
+    if (m_model->auto_bones) {
+		if (m_model->auto_delete_bones)
+			m_model->deleteBones();
+        m_model->syncBones();
+		if (m_model->auto_delete_bones)
+			m_model->addBones();
+    }
+    UpdateAll();
+}
+
+void dlgModel::SetSortBones(bool new_setting) {
+	if (new_setting) {
+		if (::wxMessageBox(_("This will undo all manual changes to the bone order and sort them alphabetically! Do you want to continue?"), _("Warning"),  wxYES_NO, this) == wxNO)
+			return;
+	}
+    m_model->auto_sort = new_setting;
+    if (m_model->auto_sort) {
+        m_model->sortBones();
+    }
+    UpdateAll();
+}
+
+bool dlgModel::IsBoneEditable(int nr) {
+	if (!m_model->auto_bones) {
+		return true;
+	}
+	if (m_animated) {
+		cAnimatedModel* amodel = dynamic_cast<cAnimatedModel*>(m_model);
+		return !has(m_model->model_bones, amodel->modelbones[nr].name);
+	} else {
+		return !has(m_model->model_bones, m_model->effectpoints[nr].name);
+	}
+}
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -2100,7 +2196,7 @@ void dlgModel::OnBoneEdit(wxCommandEvent& WXUNUSED(event)) {
     int sel = m_htlbEffect->GetSelection();
     if (sel < 0)
         return;
-    dlgBone *dialog = new dlgBone(this);
+    dlgBone *dialog = new dlgBone(this, !IsBoneEditable(sel));
     dialog->SetBone(amodel->modelbones[sel]);
     if (dialog->ShowModal() == wxID_OK) {
 		wxString oldname = amodel->modelbones[sel].name;
@@ -2364,10 +2460,7 @@ void dlgModel::OnMenuAddMissingBones(wxCommandEvent& event) {
   * @todo: document this function
   */
 void dlgModel::OnMenuAutoSortBones(wxCommandEvent& event) {
-    m_model->auto_sort = !m_model->auto_sort;
-    if (m_model->auto_sort)
-        m_model->sortBones();
-    UpdateAll();
+    SetSortBones(!m_model->auto_sort);
 }
 
 /** @brief OnMenuAutoSyncBones
@@ -2375,12 +2468,12 @@ void dlgModel::OnMenuAutoSortBones(wxCommandEvent& event) {
   * @todo: document this function
   */
 void dlgModel::OnMenuAutoSyncBones(wxCommandEvent& event) {
-    m_model->auto_bones = !m_model->auto_bones;
-    if (m_model->auto_bones)
-        m_model->syncBones();
-    UpdateAll();
+    SetSyncBones(!m_model->auto_bones);
 }
 
+void dlgModel::OnMenuAutoDelBones(wxCommandEvent& event) {
+    SetDelBones(!m_model->auto_delete_bones);
+}
 
 
 ////////////////////////////////////////////////////////////////////////

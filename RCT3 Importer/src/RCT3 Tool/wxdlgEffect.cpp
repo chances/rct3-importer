@@ -169,11 +169,20 @@ EVT_MENU(XRCID("menu_quickeffect_load1"), dlgEffectBase::OnQuickMenu1)
 END_EVENT_TABLE()
 
 
-dlgEffectBase::dlgEffectBase(wxWindow *parent, bool effect) {
+dlgEffectBase::dlgEffectBase(wxWindow *parent, bool effect, bool read_only): m_readOnly(read_only) {
     if (effect)
         InitWidgetsFromXRCEffect(parent);
     else
         InitWidgetsFromXRCBone(parent);
+
+	if (read_only) {
+		m_stMessage->Show();
+		m_btEdit1->Enable(false);
+		m_btQuick1->Enable(false);
+		m_btClear1->Enable(false);
+		m_btLoad->Show(false);
+		m_btOk->Show(false);
+	}
 
     SetExtraStyle(wxWS_EX_VALIDATE_RECURSIVELY);
 
@@ -519,7 +528,7 @@ EVT_BUTTON(XRCID("m_btClear1"), dlgEffect::OnClearClick)
 EVT_BUTTON(XRCID("m_btLoad"), dlgEffect::OnLoad)
 END_EVENT_TABLE()
 
-dlgEffect::dlgEffect(wxWindow *parent):dlgEffectBase(parent, true) {
+dlgEffect::dlgEffect(wxWindow *parent, bool read_only):dlgEffectBase(parent, true, read_only) {
     m_textEffectName->SetValidator(wxExtendedValidator(&m_ef.name, false));
     ShowTransform();
 }
@@ -683,9 +692,21 @@ EVT_MENU(XRCID("menu_quickeffect_load2"), dlgBone::OnQuickMenu2)
 
 END_EVENT_TABLE()
 
-dlgBone::dlgBone(wxWindow *parent):dlgEffectBase(parent, false) {
+dlgBone::dlgBone(wxWindow *parent, bool read_only):dlgEffectBase(parent, false, read_only) {
     m_textEffectName->SetValidator(wxExtendedValidator(&m_bn.name, false));
-
+		
+	if (read_only) {
+		m_btEdit2->Enable(false);
+		m_btQuick2->Enable(false);
+		m_btClear2->Enable(false);
+		m_cbUsePos2->Enable(false);
+		m_choiceParent->Enable(false);
+		m_choiceMesh->Enable(false);
+		m_btMeshAdd->Enable(false);
+		m_btMeshDel->Enable(false);
+		m_btMeshClear->Enable(false);
+	}
+		
     if (m_bn.parent == wxT("")) {
         m_bn.parent = wxT("-");
     }
@@ -776,10 +797,12 @@ void dlgBone::UpdateMeshes() {
 }
 
 void dlgBone::UpdateState() {
-    m_choiceMesh->Enable(!m_choiceMesh->IsEmpty());
-    m_btMeshAdd->Enable(m_choiceMesh->GetSelection()!=wxNOT_FOUND);
-    m_btMeshDel->Enable(m_lbMeshes->GetSelection()!=wxNOT_FOUND);
-    m_btMeshClear->Enable(!m_lbMeshes->IsEmpty());
+	if (!m_readOnly) {
+		m_choiceMesh->Enable(!m_choiceMesh->IsEmpty());
+		m_btMeshAdd->Enable(m_choiceMesh->GetSelection()!=wxNOT_FOUND);
+		m_btMeshDel->Enable(m_lbMeshes->GetSelection()!=wxNOT_FOUND);
+		m_btMeshClear->Enable(!m_lbMeshes->IsEmpty());
+	}
 }
 
 void dlgBone::SetBone(const cModelBone& bn) {
