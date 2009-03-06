@@ -31,8 +31,9 @@
 
 #include <exception>
 #include <string>
+#include <boost/exception.hpp>
 
-class EOvl: public std::exception {
+class EOvl: public boost::exception, public std::exception {
 public:
     EOvl(const std::string& message);
     virtual const char* what() const throw() {

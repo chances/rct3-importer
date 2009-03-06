@@ -88,7 +88,7 @@ public:
     /// Add a simple data symol to the ovl.
     void AddDataSymbol(cOvlType type, const char *symbol, unsigned long data) {
         if (!m_init)
-            throw EOvl("cOvl::AddDataSymbol called uninitialized");
+            BOOST_THROW_EXCEPTION(EOvl("cOvl::AddDataSymbol called uninitialized"));
         m_lsrmanager.AddSymbol(type, symbol, data);
     }
 
@@ -99,7 +99,7 @@ public:
     template <class M>
     M* GetManager() {
         if (!m_init)
-            throw EOvl("cOvl::GetManager called uninitialized");
+            BOOST_THROW_EXCEPTION(EOvl("cOvl::GetManager called uninitialized"));
         M* ret = dynamic_cast<M*>(GetManager(M::TAG));
         if (!ret) {
             ret = new M();

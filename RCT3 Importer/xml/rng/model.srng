@@ -110,6 +110,9 @@
 										<value>watermask</value>
 										<value>billboard</value>
 										<value>animatedbillboard</value>
+										<value>animslow</value>
+										<value>animmed</value>
+										<value>animfast</value>
 									</choice>
 								</element>
 								<element name="fudgeNormals" occurs="?">
@@ -406,7 +409,7 @@
 		<ref name="vector"/>
 		<a:documentation>The 'time' attribute can be set to 'max'. This will be replaced by the maximal numeric time within an
 		'animation' element. Therefore an 'animation' element must at least have one last keyframe with a numeric time value (validated
-		via a Schematron ruleu).</a:documentation>
+		via a Schematron rule).</a:documentation>
 		<attribute name="time">
 			<choice>
 				<data type="decimal"/>

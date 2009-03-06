@@ -11,7 +11,7 @@ all: sheets-incelim sheets-rngtornc sheets-shortrng sheets-schematron sheets-oth
 
 %.xsl.gz.h: %.xsl strip.xsl
 	xsltproc --novalid strip.xsl $< > $<.temp
-	bin2c -c -z -g 9 -n $< $<.temp $@
+	../../../Utilities/bin2c/bin2c -c -z -g 9 -n $< $<.temp $@
 	#touch -r $< $@
 	rm $<.temp
 

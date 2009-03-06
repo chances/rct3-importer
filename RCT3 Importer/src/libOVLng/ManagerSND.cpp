@@ -75,9 +75,9 @@ void cSound::Fill(r3::Sound& snd) const {
 void ovlSNDManager::AddItem(const cSound& item) {
     Check("ovlSNDManager::AddItem");
     if (item.name == "")
-        throw EOvl("ovlSNDManager::AddItem called without name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSNDManager::AddItem called without name"));
     if (m_items.find(item.name) != m_items.end())
-        throw EOvl("ovlSNDManager::AddItem: Item with name '"+item.name+"' already exists");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSNDManager::AddItem: Item with name '"+item.name+"' already exists"));
 
     m_items[item.name] = item;
 
@@ -92,7 +92,7 @@ void ovlSNDManager::AddItem(const cSound& item) {
 void ovlSNDManager::Make(cOvlInfo* info) {
     Check("ovlSNDManager::Make");
     if (!info)
-        throw EOvl("ovlSNDManager::Make called without valid info");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSNDManager::Make called without valid info"));
 
     ovlOVLManager::Make(info);
 

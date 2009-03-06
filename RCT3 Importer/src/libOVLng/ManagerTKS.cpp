@@ -345,19 +345,19 @@ void cTrackSection::Basic::Fill(r3::TrackSection_V& tva, ovlStringTable* tab, ov
 void ovlTKSManager::AddSection(const cTrackSection& item) {
     Check("ovlTKSManager::AddSection");
     if (item.name == "")
-        throw EOvl("ovlTKSManager::AddSection called without name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlTKSManager::AddSection called without name"));
     if (m_items.find(item.name) != m_items.end())
-        throw EOvl("ovlTKSManager::AddSection: Item with name '"+item.name+"' already exists");
+        BOOST_THROW_EXCEPTION(EOvl("ovlTKSManager::AddSection: Item with name '"+item.name+"' already exists"));
     if ((item.version == 1) || (item.version > 3))
-        throw EOvl("ovlTKSManager::AddSection called with illegal version");
+        BOOST_THROW_EXCEPTION(EOvl("ovlTKSManager::AddSection called with illegal version"));
     if (item.internalname == "")
-        throw EOvl("ovlTKSManager::AddSection called without internal name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlTKSManager::AddSection called without internal name"));
     if (item.sid == "")
-        throw EOvl("ovlTKSManager::AddSection called without sid reference");
+        BOOST_THROW_EXCEPTION(EOvl("ovlTKSManager::AddSection called without sid reference"));
     if ((item.splines.car.left == "") || (item.splines.car.right == ""))
-        throw EOvl("ovlTKSManager::AddSection called with missing car spline");
+        BOOST_THROW_EXCEPTION(EOvl("ovlTKSManager::AddSection called with missing car spline"));
     if ((item.splines.join.left == "") || (item.splines.join.right == ""))
-        throw EOvl("ovlTKSManager::AddSection called with missing join spline");
+        BOOST_THROW_EXCEPTION(EOvl("ovlTKSManager::AddSection called with missing join spline"));
 
     m_items[item.name] = item;
 

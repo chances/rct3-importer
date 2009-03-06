@@ -247,19 +247,15 @@ void cOVLDump::ReadFile(cOvlType type) {
             }
             break;
         case 5: {
-                m_exheader[type].unknownv5_count = *reinterpret_cast<unsigned long*>(c_data);
+                m_exheader[type].unknownv5_subvesion_flag = *reinterpret_cast<unsigned long*>(c_data);
                 c_data += 4;
-                if (m_exheader[type].unknownv5_count) {
-                    m_exheader[type].unknownv5_1 = *reinterpret_cast<unsigned long*>(c_data);
+                if (m_exheader[type].unknownv5_subvesion_flag) {
+                    m_exheader[type].unknownv5[0] = *reinterpret_cast<unsigned long*>(c_data);
                     c_data += 4;
-                    for (int i = 0; i < m_exheader[type].unknownv5_count; ++i) {
-                        unsigned long t = *reinterpret_cast<unsigned long*>(c_data);
-                        c_data += 4;
-                        m_exheader[type].unknownv5_list.push_back(t);
-                    }
-
-                    // There seems to be another long
-                    m_exheader[type].unknownv5_2 = *reinterpret_cast<unsigned long*>(c_data);
+                    m_exheader[type].unknownv5[1] = *reinterpret_cast<unsigned long*>(c_data);
+                    c_data += 4;
+                    // There seems to be another long, which is always 0 in the original OVLs
+                    m_exheader[type].unknownv5[2] = *reinterpret_cast<unsigned long*>(c_data);
                     c_data += 4;
 
                     // V5 Unknown Bytes
@@ -280,7 +276,11 @@ void cOVLDump::ReadFile(cOvlType type) {
                         c_data++;
                         m_exheader[type].unknownv5_padding.push_back(c);
                     }
-                }
+                } else {
+					m_exheader[type].unknownv5[0] = 0;
+					m_exheader[type].unknownv5[1] = 0;
+					m_exheader[type].unknownv5[2] = 0;
+				}
                 mp_referencecount[type] = reinterpret_cast<unsigned long*>(c_data);
                 m_exheader[type].ReferencesE = *reinterpret_cast<unsigned long*>(c_data);
                 c_data += 4;
@@ -351,28 +351,19 @@ void cOVLDump::ReadFile(cOvlType type) {
         m_loaderheaders[type].push_back(h);
     }
 
-    // V5 Loader Header stuff
+    // V5 Loader Header stuff, number of symbols for each file type / loader header by index
+	// This applies to the current common/unique file
     if (m_header[type].version == 5) {
         for (int i = 0; i < m_header2[type].FileTypeCount; ++i) {
-            m_loaderheaders[type][i].unknownv5[0] = *reinterpret_cast<unsigned long*>(c_data);
+			unsigned long index = *reinterpret_cast<unsigned long*>(c_data);
             c_data += 4;
-            m_loaderheaders[type][i].unknownv5[1] = *reinterpret_cast<unsigned long*>(c_data);
+            m_loaderheaders[type][index].symbol_count = *reinterpret_cast<unsigned long*>(c_data);
             c_data += 4;
         }
     }
 
     // Parse 9 blocks for count and unknown stuff
     for (int i = 0; i < 9; ++i) {
-        // Extended header unknown count unknowns
-        if (m_header[type].version == 5) {
-            if (m_exheader[type].unknownv5_count) {
-                for (int i = 0; i < m_exheader[type].unknownv5_count; ++i) {
-                    unsigned long t = *reinterpret_cast<unsigned long*>(c_data);
-                    c_data += 4;
-                    m_fileblocks[type][i].unknownv5_list.push_back(t);
-                }
-            }
-        }
 
         // Count
         m_fileblocks[type][i].count = *reinterpret_cast<unsigned long*>(c_data);
@@ -387,6 +378,14 @@ void cOVLDump::ReadFile(cOvlType type) {
             m_fileblocks[type][i].unknownv4v5_1 = *reinterpret_cast<unsigned long*>(c_data);
             c_data += 4;
 
+			// If v5 subversion is set
+			if (m_header[type].version == 5) {
+				if (m_exheader[type].unknownv5_subvesion_flag) {
+					m_fileblocks[type][i].unknownv5_extra = *reinterpret_cast<unsigned long*>(c_data);
+					c_data += 4;
+				}
+			}
+
             // Sizes
             for (unsigned long m = 0; m < m_fileblocks[type][i].count; ++m) {
                 m_fileblocks[type][i].blocks[m].size =  *reinterpret_cast<unsigned long*>(c_data);
@@ -396,21 +395,28 @@ void cOVLDump::ReadFile(cOvlType type) {
         }
     }
 
-    // Unknown stuff
+    // Unknown stuff.
     if (m_header[type].version == 4) {
+		// Both are always 0 in original ovls
         m_pbunknowns[type].unknownv4[0] = *reinterpret_cast<unsigned long*>(c_data);
         c_data += 4;
         m_pbunknowns[type].unknownv4[1] = *reinterpret_cast<unsigned long*>(c_data);
         c_data += 4;
     }
     if (m_header[type].version == 5) {
-        unsigned long s = *reinterpret_cast<unsigned long*>(c_data);
+        m_pbunknowns[type].unknownv5_bytes_count = *reinterpret_cast<unsigned long*>(c_data);
         c_data += 4;
-        for (unsigned long i = 0; i < s; ++i) {
-            m_pbunknowns[type].unknownv5_bytes.push_back(*c_data);
-            c_data++;
-        }
-        s = *reinterpret_cast<unsigned long*>(c_data);
+		
+		if (m_pbunknowns[type].unknownv5_bytes_count >= 4) {
+			m_pbunknowns[type].unknownv5_extra_struct_count = *reinterpret_cast<unsigned long*>(c_data);
+			m_pbunknowns[type].unknownv5_extra_structs = NULL;
+			if (m_pbunknowns[type].unknownv5_bytes_count > 4) {
+				m_pbunknowns[type].unknownv5_extra_structs = c_data + 4;
+				m_pbunknowns[type].unknownv5_bytes_final_int = *reinterpret_cast<unsigned long*>(c_data + m_pbunknowns[type].unknownv5_bytes_count - 4);
+			}
+		}
+		c_data += m_pbunknowns[type].unknownv5_bytes_count;
+        unsigned long s = *reinterpret_cast<unsigned long*>(c_data);
         c_data += 4;
         for (unsigned long i = 0; i < s; ++i) {
             m_pbunknowns[type].unknownv5_longs.push_back(*reinterpret_cast<unsigned long*>(c_data));
@@ -460,13 +466,12 @@ void cOVLDump::ReadFile(cOvlType type) {
     }
 
     // Post Relocation unkonwns (this is assumption)
-    if (m_header[type].version == 5) {
-        for (unsigned long i = 0; i < m_exheader[type].unknownv5_count; ++i) {
-            m_pbunknowns[type].unknownv5_postrelocationlongs.push_back(*reinterpret_cast<unsigned long*>(c_data));
-            c_data += 4;
-        }
+    if ((m_header[type].version == 5) && m_exheader[type].unknownv5_subvesion_flag) {
+        m_pbunknowns[type].unknownv45_postrelocationlong = *reinterpret_cast<unsigned long*>(c_data);
+        c_data += 4;
     } else if (m_header[type].version == 4) {
-        m_pbunknowns[type].unknownv4_postrelocationlong = *reinterpret_cast<unsigned long*>(c_data);
+		// Always 0 in original OVLs
+        m_pbunknowns[type].unknownv45_postrelocationlong = *reinterpret_cast<unsigned long*>(c_data);
         c_data += 4;
     }
 
@@ -568,7 +573,7 @@ void cOVLDump::MakeSymbols(cOvlType type) {
                 sy.data = reinterpret_cast<OvlRelocation*>(syms[s].data);
             }
             sy.unknown = syms[s].unknown;
-            sy.checksum = syms[s].Checksum;
+            sy.hash = syms[s].hash;
             sy.orgsymbol = reinterpret_cast<SymbolStruct*>(&syms[s]);
             m_symbols[type].push_back(sy);
         }

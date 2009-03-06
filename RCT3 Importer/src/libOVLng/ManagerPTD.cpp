@@ -182,13 +182,13 @@ void cPath::Fill(PathType2* ptd, ovlStringTable* tab, ovlRelocationManager* rel)
 void ovlPTDManager::AddPath(const cPath& item) {
     Check("ovlPTDManager::AddPath");
     if (item.name == "")
-        throw EOvl("ovlPTDManager::AddPath called without name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlPTDManager::AddPath called without name"));
     if (m_items.find(item.name) != m_items.end())
-        throw EOvl("ovlPTDManager::AddPath: Item with name '"+item.name+"' already exists");
+        BOOST_THROW_EXCEPTION(EOvl("ovlPTDManager::AddPath: Item with name '"+item.name+"' already exists"));
     if (item.nametxt == "")
-        throw EOvl("ovlPTDManager::AddPath called without name text");
+        BOOST_THROW_EXCEPTION(EOvl("ovlPTDManager::AddPath called without name text"));
     if (item.icon == "")
-        throw EOvl("ovlPTDManager::AddPath called without icon");
+        BOOST_THROW_EXCEPTION(EOvl("ovlPTDManager::AddPath called without icon"));
 
     m_items[item.name] = item;
     m_items[item.name].DoCopy(GetStringTable());

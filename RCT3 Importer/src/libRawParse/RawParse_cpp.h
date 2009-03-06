@@ -86,6 +86,7 @@ class cSCNFile;
 #define RAWXML_SPL "spl"
 #define RAWXML_STA "sta"
 #define RAWXML_SVD "svd"
+#define RAWXML_TER "ter"
 #define RAWXML_TEX "tex"
 #define RAWXML_TKS "tks"
 #define RAWXML_TRR "trr"

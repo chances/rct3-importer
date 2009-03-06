@@ -74,13 +74,13 @@ void cQueue::Fill(QueueType* qtd, ovlStringTable* tab, ovlRelocationManager* rel
 void ovlQTDManager::AddQueue(const cQueue& item) {
     Check("ovlQTDManager::AddQueue");
     if (item.name == "")
-        throw EOvl("ovlQTDManager::AddQueue called without name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlQTDManager::AddQueue called without name"));
     if (m_items.find(item.name) != m_items.end())
-        throw EOvl("ovlQTDManager::AddQueue: Item with name '"+item.name+"' already exists");
+        BOOST_THROW_EXCEPTION(EOvl("ovlQTDManager::AddQueue: Item with name '"+item.name+"' already exists"));
     if (item.nametxt == "")
-        throw EOvl("ovlQTDManager::AddQueue called without name text");
+        BOOST_THROW_EXCEPTION(EOvl("ovlQTDManager::AddQueue called without name text"));
     if (item.icon == "")
-        throw EOvl("ovlQTDManager::AddQueue called without icon");
+        BOOST_THROW_EXCEPTION(EOvl("ovlQTDManager::AddQueue called without icon"));
 
     m_items[item.name] = item;
     m_items[item.name].DoCopy(GetStringTable());

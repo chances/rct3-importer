@@ -40,6 +40,10 @@
 			<sch:let name="impref" value="ancestor::*[1]/@impref" />
 			<sch:assert test="(//raw:svd[@name = current()]) or (//raw:import[@name = current()]) or ($impref and (document(str:encode-uri(//raw:import[@id = $impref]/@file, false()), .)/sc:ovl[@name = current()]))" role="warning">No svd element for <sch:value-of select="name()"/> attribute of <sch:value-of select="name(ancestor::*[1])"/> element found (<sch:value-of select="name(ancestor::*[@name])"/> '<sch:value-of select="ancestor-or-self::*[@name]/@name"/>' in ovl '<sch:value-of select="$ovlpath"/>').</sch:assert>
 		</sch:rule>
+		<sch:rule id="refcheck-ric" abstract="true">
+			<sch:let name="ovlpath" value="concat(str:concat(ancestor::raw:rawovl/@basedir),ancestor::raw:rawovl[@file]/@file)" />
+			<sch:assert test="//raw:ric[@name = current()]" role="warning">No ric element for <sch:value-of select="name()"/> attribute of <sch:value-of select="name(ancestor::*[1])"/> element found (<sch:value-of select="name(ancestor::*[@name])"/> '<sch:value-of select="ancestor-or-self::*[@name]/@name"/>' in ovl '<sch:value-of select="$ovlpath"/>').</sch:assert>
+		</sch:rule>
 		<sch:rule id="refcheck-tex" abstract="true">
 			<sch:let name="ovlpath" value="concat(str:concat(ancestor::raw:rawovl/@basedir),ancestor::raw:rawovl[@file]/@file)" />
 			<sch:assert test="//raw:tex[@name = current()]" role="warning">No tex element for <sch:value-of select="name()"/> attribute of <sch:value-of select="name(ancestor::*[1])"/> element found (<sch:value-of select="name(ancestor::*[@name])"/> '<sch:value-of select="ancestor-or-self::*[@name]/@name"/>' in ovl '<sch:value-of select="$ovlpath"/>').</sch:assert>
@@ -137,6 +141,10 @@
 		</define>
 		<define name="SHSReference">
 			<a:documentation>Reference to a shs structure</a:documentation>
+			<data type="string"/>
+		</define>
+		<define name="RICReference">
+			<a:documentation>Reference to a ric structure</a:documentation>
 			<data type="string"/>
 		</define>
 		<define name="SIDReference">
@@ -281,6 +289,10 @@
 			<a:documentation>Reference to a txt structure</a:documentation>
 			<data type="string"/>
 		</define>
+		<define name="WASReference">
+			<a:documentation>Reference to a txt structure</a:documentation>
+			<data type="string"/>
+		</define>
 	</div>
 	<define name="impref">
 		<attribute name="impref" occurs="?" type="string"/>
@@ -353,6 +365,7 @@
 			<ref name="ptd"/>
 			<ref name="qtd"/>
 			<ref name="ric"/>
+			<ref name="rit"/>
 			<ref name="sat"/>
 			<ref name="shs"/>
 			<ref name="sid"/>
@@ -360,6 +373,7 @@
 			<ref name="spl"/>
 			<ref name="sta"/>
 			<ref name="svd"/>
+			<ref name="ter"/>
 			<ref name="tex"/>
 			<ref name="tks" strip:strip="1"/>
 			<ref name="trr"/>
@@ -650,14 +664,34 @@
 				<ref name="baseattrs"/>
 				<attribute name="file" type="string"/>
 				<attribute name="name" occurs="?" type="string"/>
-				<attribute name="use" occurs="?">
-					<choice>
-						<value>main</value>
-						<value>animations</value>
-						<value>splines</value>
-					</choice>
-				</attribute>
 				<attribute name="id" occurs="?" type="string"/>
+				<choice>
+					<empty/>
+					<attribute name="use">
+						<choice>
+							<value>main</value>
+							<value>animations</value>
+							<value>splines</value>
+						</choice>
+					</attribute>
+					<group>
+						<element name="main" occurs="?">
+							<empty/>
+						</element>
+						<choice occurs="?">
+							<element name="animations">
+								<empty/>
+							</element>
+							<element name="animation" type="string" occurs="+"/>
+						</choice>
+						<choice occurs="?">
+							<element name="splines">
+								<empty/>
+							</element>
+							<element name="spline" type="string" occurs="+"/>
+						</choice>
+					</group>
+				</choice>
 			</element>
 		</define>
 		<define name="attraction">
@@ -1603,7 +1637,7 @@
 					<attribute name="version" ref="version023" occurs="?"/>
 					<attribute name="inertia" type="float"/>
 					<interleave>
-						<element name="seating" occurs="+" type="unisgedInt"/>
+						<element name="seating" occurs="+" type="unsignedInt"/>
 						<element name="movingPart" occurs="?">
 							<ref name="baseattrs"/>
 							<attribute name="inertia" type="float"/>
@@ -1715,6 +1749,133 @@
 				<ref name="baseattrs"/>
 				<attribute name="type" occurs="?" type="unsignedInt" />
 				<ref name="SVDReference" />
+			</define>
+		</div>
+		<div>
+			<a:documentation>rit tags</a:documentation>
+			<define name="rit">
+				<sch:pattern>
+					<sch:title>RIT checks</sch:title>
+					<sch:rule context="//raw:rit/@name">
+						<sch:extends rule="uniqueness"/>
+					</sch:rule>
+					<sch:rule context="//raw:ric/cars/@front">
+						<sch:extends rule="refcheck-ric"/>
+					</sch:rule>
+					<sch:rule context="//raw:ric/cars/@second">
+						<sch:extends rule="refcheck-ric"/>
+					</sch:rule>
+					<sch:rule context="//raw:ric/cars/@mid">
+						<sch:extends rule="refcheck-ric"/>
+					</sch:rule>
+					<sch:rule context="//raw:ric/cars/@penultimate">
+						<sch:extends rule="refcheck-ric"/>
+					</sch:rule>
+					<sch:rule context="//raw:ric/cars/@rear">
+						<sch:extends rule="refcheck-ric"/>
+					</sch:rule>
+					<sch:rule context="//raw:ric/cars/@link">
+						<sch:extends rule="refcheck-ric"/>
+					</sch:rule>
+					<sch:rule context="//raw:ric/wild/@unknownCar">
+						<sch:extends rule="refcheck-ric"/>
+					</sch:rule>
+					<sch:rule context="//raw:ric/liftSplines/@left">
+						<sch:extends rule="refcheck-spl"/>
+					</sch:rule>
+					<sch:rule context="//raw:ric/liftSplines/@right">
+						<sch:extends rule="refcheck-spl"/>
+					</sch:rule>
+				</sch:pattern>
+				<element name="rit">
+					<ref name="baseattrs"/>
+					<attribute name="name" type="string"/>
+					<attribute name="internalName" type="string"/>
+					<attribute name="internalDescription" type="string"/>
+					<attribute name="version" ref="version023" occurs="?"/>
+					<attribute name="overtake" type="unsigendInt" occurs="?"/>
+					<attribute name="station" type="string" occurs="?"/>
+					<interleave>
+						<element name="cars">
+							<ref name="baseattrs"/>
+							<attribute name="front" ref="RICReference"/>
+							<attribute name="second" ref="RICReference" occurs="?"/>
+							<attribute name="mid" ref="RICReference" occurs="?"/>
+							<attribute name="penultimate" ref="RICReference" occurs="?"/>
+							<attribute name="rear" ref="RICReference" occurs="?"/>
+							<attribute name="link" ref="RICReference" occurs="?"/>
+							<attribute name="unknownCar" ref="RICReference" occurs="?"/>
+							<attribute name="countMin" type="unsigendInt" occurs="?"/>
+							<attribute name="countMax" type="unsigendInt" occurs="?"/>
+							<attribute name="countDefault" type="unsigendInt" occurs="?"/>
+						</element>
+						<element name="speed" occurs="?">
+							<ref name="baseattrs"/>
+							<attribute name="u01" occurs="?" type="float"/>
+							<attribute name="u02" occurs="?" type="float"/>
+							<attribute name="u03" occurs="?" type="float"/>
+						</element>
+						<element name="camera" occurs="?">
+							<ref name="baseattrs"/>
+							<attribute name="lookAhead" occurs="?" type="float"/>
+							<attribute name="gDispMult" occurs="?" type="float"/>
+							<attribute name="gDispMax" occurs="?" type="float"/>
+							<attribute name="gDispSmooth" occurs="?" type="float"/>
+							<attribute name="shakeMinSpeed" occurs="?" type="float"/>
+							<attribute name="shakeFactor" occurs="?" type="float"/>
+							<attribute name="shakeHMax" occurs="?" type="float"/>
+							<attribute name="shakeVMax" occurs="?" type="float"/>
+							<attribute name="chainShakeFactor" occurs="?" type="float"/>
+							<attribute name="chainShakeHMax" occurs="?" type="float"/>
+							<attribute name="chainShakeVMax" occurs="?" type="float"/>
+							<attribute name="smoothing" occurs="?" type="float"/>
+							<attribute name="tiltFactor" occurs="?" type="float"/>
+						</element>
+						<element name="water" occurs="?">
+							<ref name="baseattrs"/>
+							<attribute name="u01" occurs="?" type="float"/>
+							<attribute name="u02" occurs="?" type="float"/>
+							<attribute name="u03" occurs="?" type="float"/>
+							<attribute name="u04" occurs="?" type="float"/>
+							<attribute name="u05" occurs="?" type="float"/>
+							<attribute name="u06" occurs="?" type="float"/>
+							<attribute name="curveAngle" occurs="?" type="float"/>
+							<attribute name="u07" occurs="?" type="float"/>
+						</element>
+						<element name="liftSplines" occurs="?">
+							<ref name="baseattrs"/>
+							<attribute name="left" ref="SPLReference"/>
+							<attribute name="right" ref="SPLReference"/>
+						</element>
+						<element name="unknowns" occurs="?">
+							<ref name="baseattrs"/>
+							<attribute name="u37" occurs="?" type="float"/>
+							<attribute name="u38" occurs="?" type="float"/>
+							<attribute name="u39" occurs="?" type="float"/>
+							<attribute name="u40" occurs="?" type="float"/>
+							<attribute name="u41" occurs="?" type="float"/>
+							<attribute name="u42" occurs="?" type="float"/>
+							<attribute name="u43" occurs="?" type="float"/>
+							<attribute name="u44" occurs="?" type="float"/>
+						</element>
+						<element name="soaked" occurs="?">
+							<ref name="baseattrs"/>
+							<attribute name="icon" occurs="?" type="unsignedInt"/>
+							<attribute name="u51" occurs="?" type="unsignedInt"/>
+						</element>
+						<element name="wild" occurs="?">
+							<attribute name="airboatU01" occurs="?" type="float"/>
+							<attribute name="airboatU02" occurs="?" type="float"/>
+							<attribute name="airboatU03" occurs="?" type="float"/>
+							<attribute name="airboatU04" occurs="?" type="float"/>
+							<attribute name="airboatU05" occurs="?" type="float"/>
+							<attribute name="airboatU06" occurs="?" type="float"/>
+							<attribute name="u59" occurs="?" type="unsignedInt"/>
+							<attribute name="u60" occurs="?" type="unsignedInt"/>
+							<attribute name="ffSiezU" occurs="?" type="float"/>
+						</element>
+					</interleave>
+				</element>
 			</define>
 		</div>
 		<define name="sat">
@@ -2240,6 +2401,47 @@
 					<attribute name="u11" occurs="?" type="unsignedInt"/>
 					<attribute name="u12" occurs="?" type="unsignedInt"/>
 					<attribute name="u14" occurs="?" type="unsignedInt"/>
+				</element>
+			</define>
+		</div>
+		<div>
+			<a:documentation>ter tags</a:documentation>
+			<define name="ter">
+				<sch:pattern>
+					<sch:title>TER checks</sch:title>
+					<sch:rule context="//raw:ter/@name">
+						<sch:extends rule="uniqueness"/>
+					</sch:rule>
+					<sch:rule context="//raw:ter/@texture">
+						<sch:extends rule="refcheck-tex"/>
+					</sch:rule>
+				</sch:pattern>
+				<element name="ter">
+					<ref name="baseattrs"/>
+					<attribute name="name" type="string"/>
+					<attribute name="descriptionName" type="string"/>
+					<attribute name="iconName" type="string"/>
+					<attribute name="texture" ref="TEXReference"/>
+					<attribute name="version" type="unsignedInt" occurs="?"/>
+					<attribute name="addon" type="unsignedInt" occurs="?"/>
+					<attribute name="number" type="unsignedInt"/>
+					<attribute name="type" type="unsignedInt" occurs="?"/>
+					<interleave>
+						<element name="parameters" occurs="?">
+							<ref name="baseattrs"/>
+							<attribute name="colourSimple" ref="flags" occurs="?"/>
+							<attribute name="colourMap" ref="flags" occurs="?"/>
+							<attribute name="invWidth" type="float" occurs="?"/>
+							<attribute name="invHeight" type="float" occurs="?"/>
+						</element>
+						<element name="unknowns" occurs="?">
+							<ref name="baseattrs"/>
+							<attribute name="u02" occurs="?" type="unsignedInt"/>
+							<attribute name="u13" occurs="?" type="float"/>
+							<attribute name="u14" occurs="?" type="float"/>
+							<attribute name="u15" occurs="?" type="float"/>
+						</element>
+					</interleave>
 				</element>
 			</define>
 		</div>

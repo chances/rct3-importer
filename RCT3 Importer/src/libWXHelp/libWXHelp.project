@@ -68,7 +68,6 @@
   <Dependencies Name="Debug"/>
   <Dependencies Name="DebugBaseUnicode"/>
   <Dependencies Name="DebugUnicode"/>
-  <Dependencies Name="Release"/>
   <Dependencies Name="ReleaseUnicode"/>
   <Settings Type="Static Library">
     <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
@@ -239,4 +238,5 @@
     </Configuration>
   </Settings>
   <Dependencies Name="ReleaseBaseUnicode"/>
+  <Dependencies Name="Release"/>
 </CodeLite_Project>

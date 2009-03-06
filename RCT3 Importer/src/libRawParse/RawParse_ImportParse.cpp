@@ -77,7 +77,35 @@ void cRawParser::ParseImport(cXmlNode& node) {
 	} else {
 		wxLogVerbose(wxString::Format(_("Importing %s (%s) to %s."), filename.GetFullPath().c_str(), c_scn.name.c_str(), m_output.GetFullPath().c_str()));
 		if (use.IsEmpty()) {
-			c_scn.MakeToOvl(m_ovl);
+			bool hasSomething = false;
+			
+			foreach (const cXmlNode& child, node.children()) {
+				DO_CONDITION_COMMENT_FOR(child);
+				
+				if (child("main")) {
+					hasSomething = true;
+					c_scn.MakeToOvlMain(m_ovl);
+				} else if (child("animations")) {
+					hasSomething = true;
+					c_scn.MakeToOvlAnimations(m_ovl);
+				} else if (child("animation")) {
+					hasSomething = true;
+					wxString anim = HandleStringContent(child.wxcontent(), NULL, false);
+					c_scn.MakeToOvlAnimations(m_ovl, anim);
+				} else if (child("splines")) {
+					hasSomething = true;
+					c_scn.MakeToOvlSplines(m_ovl);
+				} else if (child("spline")) {
+					hasSomething = true;
+					wxString spl = HandleStringContent(child.wxcontent(), NULL, false);
+					c_scn.MakeToOvlSplines(m_ovl, spl);
+				} else if (child.element()) {
+					throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in import tag"), child.wxname().c_str()), child);
+				}
+			}
+			
+			if (!hasSomething)
+				c_scn.MakeToOvl(m_ovl);
 		} else if (use == "main") {
 			c_scn.MakeToOvlMain(m_ovl);
 		} else if (use == "animations") {

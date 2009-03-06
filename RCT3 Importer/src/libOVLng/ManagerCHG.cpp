@@ -52,15 +52,15 @@ void cChangingRoom::Fill(r3::ChangingRoom* chg) {
 void ovlCHGManager::AddRoom(const cChangingRoom& item) {
     Check("ovlCHGManager::AddRoom");
     if (item.name == "")
-        throw EOvl("ovlCHGManager::AddRoom called without name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlCHGManager::AddRoom called without name"));
     if (m_items.find(item.name) != m_items.end())
-        throw EOvl("ovlCHGManager::AddRoom: Item with name '"+item.name+"' already exists");
+        BOOST_THROW_EXCEPTION(EOvl("ovlCHGManager::AddRoom: Item with name '"+item.name+"' already exists"));
     if (item.sid == "")
-        throw EOvl("ovlCHGManager::AddRoom called without sid");
+        BOOST_THROW_EXCEPTION(EOvl("ovlCHGManager::AddRoom called without sid"));
     if (item.attraction.name == "")
-        throw EOvl("ovlCHGManager::AddRoom called without name text");
+        BOOST_THROW_EXCEPTION(EOvl("ovlCHGManager::AddRoom called without name text"));
     if (item.attraction.description == "")
-        throw EOvl("ovlCHGManager::AddRoom called without description text");
+        BOOST_THROW_EXCEPTION(EOvl("ovlCHGManager::AddRoom called without description text"));
 
     m_items[item.name] = item;
 

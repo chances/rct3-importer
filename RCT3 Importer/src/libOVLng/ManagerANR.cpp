@@ -86,39 +86,24 @@ void cAnimatedRide::Fill(r3::AnimatedRide_SW* anr) const {
 void ovlANRManager::AddRide(const cAnimatedRide& item) {
     Check("ovlANRManager::AddRide");
     if (item.name == "")
-        throw EOvl("ovlANRManager::AddRide called without name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlANRManager::AddRide called without name"));
     if (m_items.find(item.name) != m_items.end())
-        throw EOvl("ovlANRManager::AddRide: Item with name '"+item.name+"' already exists");
+        BOOST_THROW_EXCEPTION(EOvl("ovlANRManager::AddRide: Item with name '"+item.name+"' already exists"));
     if (item.sid == "")
-        throw EOvl("ovlANRManager::AddRide called without sid");
+        BOOST_THROW_EXCEPTION(EOvl("ovlANRManager::AddRide called without sid"));
     if (item.attraction.name == "")
-        throw EOvl("ovlANRManager::AddRide called without name text");
+        BOOST_THROW_EXCEPTION(EOvl("ovlANRManager::AddRide called without name text"));
     if (item.attraction.description == "")
-        throw EOvl("ovlANRManager::AddRide called without description text");
+        BOOST_THROW_EXCEPTION(EOvl("ovlANRManager::AddRide called without description text"));
 
     m_items[item.name] = item;
 
     // Base structures
     if (item.attraction.type & r3::Constants::Addon::Soaked_Hi) {
         m_size += sizeof(AnimatedRide_SW);
-/*
-        if ((item.attraction.type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
-            m_size += sizeof(Attraction_W);
-            m_size += sizeof(Ride_W);
-        } else {
-            m_size += sizeof(Attraction_S);
-            m_size += sizeof(Ride_S);
-        }
-*/
     } else {
         m_size += sizeof(AnimatedRide_V);
     }
-    // Spline pointers
-    //m_size += item.attraction.splines.size() * 4;
-
-    // Options
-    //m_commonsize += (item.ride.options.size()+1) * 4;
-    //m_commonsize += item.ride.GetOptionsSize();
     m_size += item.attraction.GetUniqueSize();
     m_commonsize += item.attraction.GetCommonSize();
     m_size += item.ride.GetUniqueSize(item.attraction);
@@ -139,23 +124,6 @@ void ovlANRManager::AddRide(const cAnimatedRide& item) {
 
     GetLSRManager()->AddSymRef(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(item.sid.c_str(), ovlSIDManager::TAG);
-/*
-    GetLSRManager()->AddSymRef(OVLT_UNIQUE);
-    GetStringTable()->AddSymbolString(item.attraction.name.c_str(), ovlTXTManager::TAG);
-    GetLSRManager()->AddSymRef(OVLT_UNIQUE);
-    GetStringTable()->AddSymbolString(item.attraction.description.c_str(), ovlTXTManager::TAG);
-    // The following is not an error, if not set these are symref'd to :gsi and :spl
-    GetLSRManager()->AddSymRef(OVLT_UNIQUE);
-    GetStringTable()->AddSymbolString(item.attraction.icon.c_str(), ovlGSIManager::TAG);
-    GetLSRManager()->AddSymRef(OVLT_UNIQUE);
-    GetStringTable()->AddSymbolString(item.attraction.spline.c_str(), ovlSPLManager::TAG);
-
-    for (vector<string>::const_iterator it = item.attraction.splines.begin(); it != item.attraction.splines.end(); ++it) {
-        GetLSRManager()->AddSymRef(OVLT_UNIQUE);
-        GetStringTable()->AddSymbolString(it->c_str(), ovlSPLManager::TAG);
-    }
-*/
-
 }
 
 void ovlANRManager::Make(cOvlInfo* info) {
@@ -176,39 +144,6 @@ void ovlANRManager::Make(cOvlInfo* info) {
 
             it->second.ride.MakePointers(&c_item->ride_sub_s, c_data, c_commondata, it->second.attraction, GetRelocationManager());
 
-/*
-            c_item->ride_sub_s = reinterpret_cast<Ride_S*>(c_data);
-            if ((it->second.attraction.type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
-                c_data += sizeof(Ride_W);
-            } else {
-                c_data += sizeof(Ride_S);
-            }
-            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_item->ride_sub_s));
-
-            c_item->ride_sub_s->s.att = reinterpret_cast<Attraction_S*>(c_data);
-            if ((it->second.attraction.type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
-                c_data += sizeof(Attraction_W);
-            } else {
-                c_data += sizeof(Attraction_S);
-            }
-            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_item->ride_sub_s->s.att));
-
-            if (it->second.attraction.splines.size()) {
-                c_item->ride_sub_s->s.att->v.paths_ref = reinterpret_cast<Spline**>(c_data);
-                c_data += it->second.attraction.splines.size() * 4;
-                GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_item->ride_sub_s->s.att->v.paths_ref));
-            }
-
-            c_item->ride_sub_s->v.options = reinterpret_cast<RideOption**>(c_commondata);
-            c_commondata += (it->second.ride.options.size()+1) * 4;
-            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_item->ride_sub_s->v.options));
-            for (int i = 0; i < it->second.ride.options.size(); ++i) {
-                c_item->ride_sub_s->v.options[i] = reinterpret_cast<RideOption*>(c_commondata);
-                c_commondata += it->second.ride.options[i].GetSize();
-                GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_item->ride_sub_s->v.options[i]));
-            }
-            c_item->ride_sub_s->v.options[it->second.ride.options.size()] = NULL;
-*/
             it->second.Fill(c_item);
             RELOC_ARRAY(it->second.showitems.size(), c_item->showitems, AnimatedRideShowItem, c_commondata);
             for(int i = 0; i < it->second.showitems.size(); ++i) {
@@ -221,21 +156,8 @@ void ovlANRManager::Make(cOvlInfo* info) {
 
             it->second.ride.MakeSymRefs(c_item->ride_sub_s, it->second.attraction, GetLSRManager(), GetStringTable());
 
-//            GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.name.c_str(), ovlTXTManager::TAG),
-//                                 reinterpret_cast<unsigned long*>(&c_item->ride_sub_s->s.att->v.name_ref));
-//            GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.description.c_str(), ovlTXTManager::TAG),
-//                                 reinterpret_cast<unsigned long*>(&c_item->ride_sub_s->s.att->v.description_ref));
             GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.sid.c_str(), ovlSIDManager::TAG),
                                  reinterpret_cast<unsigned long*>(&c_item->sid_ref));
-//            GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.icon.c_str(), ovlGSIManager::TAG),
-//                                 reinterpret_cast<unsigned long*>(&c_item->ride_sub_s->s.att->v.icon_ref));
-//            GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.spline.c_str(), ovlSPLManager::TAG),
-//                                 reinterpret_cast<unsigned long*>(&c_item->ride_sub_s->s.att->v.spline_ref));
-
-//            for (int i = 0; i < it->second.attraction.splines.size(); ++i) {
-//                GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.splines[i].c_str(), ovlSPLManager::TAG),
-//                                     reinterpret_cast<unsigned long*>(&c_item->ride_sub_s->s.att->v.paths_ref[i]));
-//            }
 
             GetLSRManager()->CloseLoader(OVLT_UNIQUE);
 
@@ -247,23 +169,6 @@ void ovlANRManager::Make(cOvlInfo* info) {
             it->second.attraction.MakePointers(&c_item->att, c_data, c_commondata, GetRelocationManager());
             it->second.ride.MakePointers(&c_item->ride, c_data, c_commondata, it->second.attraction, GetRelocationManager());
 
-/*
-            if (it->second.attraction.splines.size()) {
-                c_item->att.paths_ref = reinterpret_cast<Spline**>(c_data);
-                c_data += it->second.attraction.splines.size() * 4;
-                GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_item->att.paths_ref));
-            }
-
-            c_item->ride.options = reinterpret_cast<RideOption**>(c_commondata);
-            c_commondata += (it->second.ride.options.size()+1) * 4;
-            GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_item->ride.options));
-            for (int i = 0; i < it->second.ride.options.size(); ++i) {
-                c_item->ride.options[i] = reinterpret_cast<RideOption*>(c_commondata);
-                c_commondata += it->second.ride.options[i].GetSize();
-                GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_item->ride.options[i]));
-            }
-            c_item->ride.options[it->second.ride.options.size()] = NULL;
-*/
             it->second.Fill(c_item);
 
             SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), TAG), reinterpret_cast<unsigned long*>(c_item));
@@ -272,21 +177,8 @@ void ovlANRManager::Make(cOvlInfo* info) {
             it->second.attraction.MakeSymRefs(&c_item->att, GetLSRManager(), GetStringTable());
             it->second.ride.MakeSymRefs(&c_item->ride, it->second.attraction, GetLSRManager(), GetStringTable());
 
-//            GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.name.c_str(), ovlTXTManager::TAG),
-//                                 reinterpret_cast<unsigned long*>(&c_item->att.name_ref));
-//            GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.description.c_str(), ovlTXTManager::TAG),
-//                                 reinterpret_cast<unsigned long*>(&c_item->att.description_ref));
             GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.sid.c_str(), ovlSIDManager::TAG),
                                  reinterpret_cast<unsigned long*>(&c_item->sid_ref));
-//            GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.icon.c_str(), ovlGSIManager::TAG),
-//                                 reinterpret_cast<unsigned long*>(&c_item->att.icon_ref));
-//            GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.spline.c_str(), ovlSPLManager::TAG),
-//                                 reinterpret_cast<unsigned long*>(&c_item->att.spline_ref));
-
-//            for (int i = 0; i < it->second.attraction.splines.size(); ++i) {
-//                GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.attraction.splines[i].c_str(), ovlSPLManager::TAG),
-//                                     reinterpret_cast<unsigned long*>(&c_item->att.paths_ref[i]));
-//            }
 
             GetLSRManager()->CloseLoader(OVLT_UNIQUE);
 

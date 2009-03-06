@@ -252,13 +252,13 @@ bool wxMeshListModel::SetValue( wxVariant &variant, unsigned int col, unsigned i
                             m_content->meshstructs[row].TXS = wxT("SIOpaque");
                             break;
 						case 8:
-                            m_content->meshstructs[row].flags = r3::Constants::Mesh::Flags::WheelsTop;
+                            m_content->meshstructs[row].flags = r3::Constants::Mesh::Flags::AnimSlow;
 							break;
 						case 9:
-                            m_content->meshstructs[row].flags = r3::Constants::Mesh::Flags::WheelsUnder;
+                            m_content->meshstructs[row].flags = r3::Constants::Mesh::Flags::AnimMed;
 							break;
 						case 10:
-                            m_content->meshstructs[row].flags = r3::Constants::Mesh::Flags::WheelsSide;
+                            m_content->meshstructs[row].flags = r3::Constants::Mesh::Flags::AnimFast;
 							break;
                         default:
                             {
@@ -309,6 +309,17 @@ public:
 protected:
     cMeshStruct* m_value;
     dlgModel* m_dialog;
+	
+	bool LockFtx() {
+		long x = GetSel();
+		return ((x>=2) && (x<8));
+	}
+	
+	bool LockTxs() {
+		long x = GetSel();
+		return ((x>=2) && (x<8));		
+	}
+	
     long GetSel() {
         long sel = 0;
         if (m_value->flags == 0) {
@@ -325,13 +336,13 @@ protected:
         if (m_value->flags == 12) {
             sel = 1;
         }
-        if (m_value->flags == r3::Constants::Mesh::Flags::WheelsTop) {
+        if (m_value->flags == r3::Constants::Mesh::Flags::AnimSlow) {
             sel = 8;
         }
-        if (m_value->flags == r3::Constants::Mesh::Flags::WheelsUnder) {
+        if (m_value->flags == r3::Constants::Mesh::Flags::AnimMed) {
             sel = 9;
         }
-        if (m_value->flags == r3::Constants::Mesh::Flags::WheelsSide) {
+        if (m_value->flags == r3::Constants::Mesh::Flags::AnimFast) {
             sel = 10;
         }
         if (m_value->flags == 12288) {
@@ -688,14 +699,14 @@ public:
                     dc->SetTextForeground(GetStateColour(wxColor(wxT("#000000")), state));
                 }
                 dc->DrawText( m_value->FTX, rect.x+5, rect.y + top );
-                if (GetSel() >= 2)
+                if (LockFtx())
                     dc->DrawBitmap(wxXmlResource::Get()->LoadBitmap(wxT("admin_icon_16x16")), rect.x+2, rect.GetBottom()-12);
             }
         }
         return true;
     }
     bool Activate( wxRect cell, wxDataViewListModel *model, unsigned int col, unsigned int row ) {
-        if (m_value && (GetSel() < 2)) {
+        if (m_value && (!LockFtx())) {
             if (m_value->valid) {
 //            wxComboCtrl* combo = new wxComboCtrl();
 //            wxMeshListFTXListBox* list = new wxMeshListFTXListBox();
@@ -821,14 +832,14 @@ public:
                     dc->SetTextForeground(GetStateColour(wxColor(wxT("#000000")), state));
                 }
                 dc->DrawText( m_value->TXS, rect.x+5, rect.y + top );
-                if (GetSel() >= 2)
+                if (LockTxs())
                     dc->DrawBitmap(wxXmlResource::Get()->LoadBitmap(wxT("admin_icon_16x16")), rect.x+2, rect.GetBottom()-12);
             }
         }
         return true;
     }
     bool Activate( wxRect cell, wxDataViewListModel *model, unsigned int col, unsigned int row ) {
-        if (m_value && (GetSel() < 2)) {
+        if (m_value && (!LockTxs())) {
             if (m_value->valid) {
                 wxChoice* combo = new wxChoice();
                 wxString val = m_value->TXS;
@@ -952,9 +963,9 @@ public:
 			wxMeshListFlagsRenderer::m_styles.Add(_("Water Mask Texture"));
 			wxMeshListFlagsRenderer::m_styles.Add(_("Billboard Texture"));
 			wxMeshListFlagsRenderer::m_styles.Add(_("Animated Billboard"));
-			wxMeshListFlagsRenderer::m_styles.Add(_("Wheels, Top"));
-			wxMeshListFlagsRenderer::m_styles.Add(_("Wheels, Under"));
-			wxMeshListFlagsRenderer::m_styles.Add(_("Wheels, Side"));
+			wxMeshListFlagsRenderer::m_styles.Add(_("Auto-animated, slow"));
+			wxMeshListFlagsRenderer::m_styles.Add(_("Auto-animated, medium"));
+			wxMeshListFlagsRenderer::m_styles.Add(_("Auto-animated, fast"));
         }
     }
     bool SetValue( const wxVariant &value ) {

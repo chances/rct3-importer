@@ -498,7 +498,7 @@ unsigned long cRideOption::GetSize() const {
         case 11: return 3*4;
         case 12: return 4*4;
         default:
-            throw EOvl("cRideOption::GetSize, unknown option type");
+            BOOST_THROW_EXCEPTION(EOvl("cRideOption::GetSize, unknown option type"));
     }
 }
 
@@ -533,7 +533,7 @@ void cRideOption::SetType(unsigned long t) {
             }
             break;
         default:
-            throw EOvl("cRideOption::GetSize, unknown option type");
+            BOOST_THROW_EXCEPTION(EOvl("cRideOption::GetSize, unknown option type"));
     }
 }
 
@@ -611,7 +611,7 @@ void cRideOption::Fill(r3::RideOption* r) const {
             }
             break;
         default:
-            throw EOvl("cRideOption::Fill, unknown option type");
+            BOOST_THROW_EXCEPTION(EOvl("cRideOption::Fill, unknown option type"));
     }
 }
 

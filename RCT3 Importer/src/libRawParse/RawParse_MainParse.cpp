@@ -460,6 +460,9 @@ void cRawParser::Parse(cXmlNode& node) {
         } else if (child(RAWXML_RIC)) {
             BAKE_SKIP(child);
             ParseRIC(child);
+        } else if (child(RAWXML_RIT)) {
+            BAKE_SKIP(child);
+            ParseRIT(child);
         } else if (child(RAWXML_SAT)) {
             BAKE_SKIP(child);
             ParseSAT(child);
@@ -506,6 +509,9 @@ void cRawParser::Parse(cXmlNode& node) {
         } else if (child(RAWXML_SVD)) {
             BAKE_SKIP(child);
             ParseSVD(child);
+        } else if (child(RAWXML_TER)) {
+            BAKE_SKIP(child);
+            ParseTER(child);
         } else if (child(RAWXML_TEX)) {
             // <tex name="string" texture="texture file" />
 //            if ((m_mode == MODE_BAKE) && (m_bake.Index(RAWXML_TEX) == wxNOT_FOUND)) {

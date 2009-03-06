@@ -109,6 +109,16 @@
     <File Name="readme.txt"/>
     <File Name="license.txt"/>
   </VirtualDirectory>
+  <Dependencies Name="Debug">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+  </Dependencies>
+  <Dependencies Name="DebugBaseUnicode"/>
+  <Dependencies Name="ReleaseBaseUnicode"/>
+  <Dependencies Name="Release">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+  </Dependencies>
   <Settings Type="Static Library">
     <Configuration Name="Debug" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
       <General OutputFile="../../lib/$(ProjectName)d.a" IntermediateDirectory="../../lib/obj/libXmlCpp/Debug" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
@@ -147,20 +157,24 @@
         <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
       </Compiler>
       <Linker Required="yes" Options=""/>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands></PostConnectCommands>
+        <StartupCommands></StartupCommands>
+      </Debugger>
       <ResourceCompiler Required="no" Options=""/>
       <PreBuild/>
       <PostBuild/>
       <CustomBuild Enabled="no">
-        <CleanCommand/>
-        <BuildCommand/>
-        <SingleFileCommand/>
-        <MakefileGenerationCommand/>
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <PreprocessFileCommand></PreprocessFileCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory/>
+        <WorkingDirectory></WorkingDirectory>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild/>
+        <CustomPostBuild></CustomPostBuild>
         <CustomPreBuild>xsl/iso_schematron_skeleton.xsl.h xsl/iso_simple.xsl.h
 xsl/iso_schematron_skeleton.xsl.h:  xsl/iso_schematron_skeleton.xsl ../../xml/xsl/strip.xsl
 	xsltproc ../../xml/xsl/strip.xsl $&lt; | xmllint --noblanks - | ../../../Utilities/bin2c/bin2c -c -z - $@
@@ -207,20 +221,24 @@ xsl/iso_simple.xsl.h:  xsl/iso_simple.xsl ../../xml/xsl/strip.xsl
         <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
       </Compiler>
       <Linker Required="yes" Options=""/>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands></PostConnectCommands>
+        <StartupCommands></StartupCommands>
+      </Debugger>
       <ResourceCompiler Required="no" Options=""/>
       <PreBuild/>
       <PostBuild/>
       <CustomBuild Enabled="no">
-        <CleanCommand/>
-        <BuildCommand/>
-        <SingleFileCommand/>
-        <MakefileGenerationCommand/>
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <PreprocessFileCommand></PreprocessFileCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory/>
+        <WorkingDirectory></WorkingDirectory>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild/>
+        <CustomPostBuild></CustomPostBuild>
         <CustomPreBuild>xsl/iso_schematron_skeleton.xsl.h xsl/iso_simple.xsl.h
 xsl/iso_schematron_skeleton.xsl.h:  xsl/iso_schematron_skeleton.xsl ../../xml/xsl/strip.xsl
 	xsltproc ../../xml/xsl/strip.xsl $&lt; | xmllint --noblanks - | ../../../Utilities/bin2c/bin2c -c -z - $@
@@ -266,20 +284,24 @@ xsl/iso_simple.xsl.h:  xsl/iso_simple.xsl ../../xml/xsl/strip.xsl
         <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
       </Compiler>
       <Linker Required="yes" Options="-O2"/>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands></PostConnectCommands>
+        <StartupCommands></StartupCommands>
+      </Debugger>
       <ResourceCompiler Required="no" Options=""/>
       <PreBuild/>
       <PostBuild/>
       <CustomBuild Enabled="no">
-        <CleanCommand/>
-        <BuildCommand/>
-        <SingleFileCommand/>
-        <MakefileGenerationCommand/>
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <PreprocessFileCommand></PreprocessFileCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory/>
+        <WorkingDirectory></WorkingDirectory>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild/>
+        <CustomPostBuild></CustomPostBuild>
         <CustomPreBuild>xsl/iso_schematron_skeleton.xsl.h xsl/iso_simple.xsl.h
 xsl/iso_schematron_skeleton.xsl.h:  xsl/iso_schematron_skeleton.xsl ../../xml/xsl/strip.xsl
 	xsltproc ../../xml/xsl/strip.xsl $&lt; | xmllint --noblanks - | ../../../Utilities/bin2c/bin2c -c -z - $@
@@ -325,20 +347,24 @@ xsl/iso_simple.xsl.h:  xsl/iso_simple.xsl ../../xml/xsl/strip.xsl
         <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
       </Compiler>
       <Linker Required="yes" Options="-O2"/>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands></PostConnectCommands>
+        <StartupCommands></StartupCommands>
+      </Debugger>
       <ResourceCompiler Required="no" Options=""/>
       <PreBuild/>
       <PostBuild/>
       <CustomBuild Enabled="no">
-        <CleanCommand/>
-        <BuildCommand/>
-        <SingleFileCommand/>
-        <MakefileGenerationCommand/>
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <PreprocessFileCommand></PreprocessFileCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory/>
+        <WorkingDirectory></WorkingDirectory>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild/>
+        <CustomPostBuild></CustomPostBuild>
         <CustomPreBuild>xsl/iso_schematron_skeleton.xsl.h xsl/iso_simple.xsl.h
 xsl/iso_schematron_skeleton.xsl.h:  xsl/iso_schematron_skeleton.xsl ../../xml/xsl/strip.xsl
 	xsltproc ../../xml/xsl/strip.xsl $&lt; | xmllint --noblanks - | ../../../Utilities/bin2c/bin2c -c -z - $@
@@ -349,14 +375,4 @@ xsl/iso_simple.xsl.h:  xsl/iso_simple.xsl ../../xml/xsl/strip.xsl
       </AdditionalRules>
     </Configuration>
   </Settings>
-  <Dependencies Name="Debug">
-    <Project Name="Precompile RNG"/>
-    <Project Name="Precompile XSL"/>
-  </Dependencies>
-  <Dependencies Name="DebugBaseUnicode"/>
-  <Dependencies Name="Release">
-    <Project Name="Precompile RNG"/>
-    <Project Name="Precompile XSL"/>
-  </Dependencies>
-  <Dependencies Name="ReleaseBaseUnicode"/>
 </CodeLite_Project>

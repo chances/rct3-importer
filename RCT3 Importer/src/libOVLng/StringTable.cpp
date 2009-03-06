@@ -36,7 +36,7 @@ using namespace std;
 char* ovlStringTable::FindRawString(const string& findit) const {
     map<string, char*>::const_iterator fst = m_ptrmap.find(findit);
     if (fst == m_ptrmap.end()) {
-        throw EOvl("ovlStringTable::FindRawString: Could not find '"+findit+"'");
+        BOOST_THROW_EXCEPTION(EOvl("ovlStringTable::FindRawString: Could not find '"+findit+"'"));
         return NULL;
     }
     DUMP_LOG("ovlStringTable::FindRawString '%s': %s (%x/%x)", UNISTR(findit.c_str()), UNISTR(fst->second), fst->second, m_table);
@@ -65,7 +65,7 @@ void ovlStringTable::AddSymbolString(const string& lstring, const string& lexten
 
 char* ovlStringTable::Make(cOvlInfo* info) {
     if (!info)
-        throw EOvl("ovlStringTable::Make called without valid info");
+        BOOST_THROW_EXCEPTION(EOvl("ovlStringTable::Make called without valid info"));
 
     char* tempstr;
     if (m_table)

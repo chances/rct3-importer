@@ -41,6 +41,7 @@
 #endif
 
 #include <exception>
+#include <iostream>
 #include <stdlib.h>
 
 #include <boost/format.hpp>
@@ -171,6 +172,7 @@ int DoCompile(const wxCmdLineParser& parser) {
     int ret = 0;
 	wxString inputfilestr;
 	bool briefout = parser.Found("b");
+	bool debugout = parser.Found("d");
 	wxAutoLog log(new wxCustomLog(inputfilestr, briefout));
     try {
         bool verbose = parser.Found(wxT("v"));
@@ -608,6 +610,14 @@ int DoCompile(const wxCmdLineParser& parser) {
 		}
         //if (line)
         //    wxLogMessage(_("  Line: %d"), *line);
+		
+		if (debugout) {
+			std::cout << "*****" << std::endl;
+			std::cout << "Debug information:" << std::endl;
+			std::cout << boost::diagnostic_information(e);
+			std::cout << "*****" << std::endl;
+		}
+		
         ret = -1;
     } catch (EOvl& e) {
 		wxString msg = _("OVL creation: ");
@@ -718,6 +728,7 @@ int main(int argc, char **argv)
         { wxCMD_LINE_OPTION, NULL, "trianglesorty", "choose triangle sort algorithm in y-direction." },
         { wxCMD_LINE_OPTION, NULL, "trianglesortz", "choose triangle sort algorithm in z-direction." },
         { wxCMD_LINE_SWITCH, "v", "verbose", "enable verbose logging" },
+        { wxCMD_LINE_SWITCH, "d", "debug", "enable verbose error logging" },
         { wxCMD_LINE_SWITCH, "q", "quiet", "in quiet mode only warnings and errors are shown" },
         { wxCMD_LINE_SWITCH, "s", "silent", "in silent mode only errors are shown" },
         { wxCMD_LINE_SWITCH, "b", "brief", "use brief message output format suitable for parsing by frontends" },

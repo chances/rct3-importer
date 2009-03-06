@@ -27,14 +27,14 @@
 
 #include "cxmlconfig.h"
 
+#ifdef XMLCPP_USE_WXWIDGETS
+#include <wx/string.h>
+#endif
+
 #include <string>
 #include <vector>
 #include <libxml/parser.h>
 #include <boost/shared_ptr.hpp>
-
-#ifdef XMLCPP_USE_WXWIDGETS
-#include <wx/string.h>
-#endif
 
 #include "cXmlClasses.h"
 #include "cXmlInitHandler.h"

@@ -54,7 +54,7 @@ void ovlOVLManager::Init(cOvl* ovl) {
 
 void ovlOVLManager::DeferMake(ovlOVLManager* man) {
     if (!m_deferable)
-        throw EOvl("ovlOVLManager("+string(Tag())+")::DeferMake called on undeferable type");
+        BOOST_THROW_EXCEPTION(EOvl("ovlOVLManager("+string(Tag())+")::DeferMake called on undeferable type"));
     DUMP_LOG("Trace: ovlOVLManager::DeferMake(%s)", UNISTR(man->Tag()));
     if (m_defermake) {
         m_defermake->DeferMake(man);
@@ -79,31 +79,10 @@ ovlStringTable* ovlOVLManager::GetStringTable() {
 ovlRelocationManager* ovlOVLManager::GetRelocationManager() {
     return &m_ovl->m_relmanager;
 }
-/*
-void ovlOVLManager::WriteLoader(FILE* f) {
-    if (!f)
-        throw EOvl("ovlOVLManager("+string(Tag())+")::WriteLoader called with no file");
-
-    unsigned short len = strlen(Loader());
-    fwrite(&len, 2, 1, f);
-    fwrite(Loader(), len, 1, f);
-
-    len = strlen(Name());
-    fwrite(&len, 2, 1, f);
-    fwrite(Name(), len, 1, f);
-
-    unsigned long type = Type();
-    fwrite(&type, 4, 1, f);
-
-    len = strlen(Tag());
-    fwrite(&len, 2, 1, f);
-    fwrite(Tag(), len, 1, f);
-}
-*/
 
 void ovlOVLManager::WriteLoader(fstream& f) {
     if (!f.is_open())
-        throw EOvl("ovlOVLManager("+string(Tag())+")::WriteLoader called with closed file");
+        BOOST_THROW_EXCEPTION(EOvl("ovlOVLManager("+string(Tag())+")::WriteLoader called with closed file"));
 
     unsigned short len = strlen(Loader());
     f.write(reinterpret_cast<char*>(&len), 2);
@@ -139,23 +118,17 @@ void ovlOVLManager::Make(cOvlInfo* info) {
 void ovlOVLManager::Check(const string& err) {
     DUMP_LOG("Trace: ovlOVLManager(%s)::Check()", UNISTR(err.c_str()));
     if (!m_ovl)
-        throw EOvl("ovlOVLManager("+string(Tag())+")::Check failed due to ovl class unavailable in "+err);
+        BOOST_THROW_EXCEPTION(EOvl("ovlOVLManager("+string(Tag())+")::Check failed due to ovl class unavailable in "+err));
     if (m_data)
-        throw EOvl("ovlOVLManager("+string(Tag())+")::Check failed as Make was already called in "+err);
+        BOOST_THROW_EXCEPTION(EOvl("ovlOVLManager("+string(Tag())+")::Check failed as Make was already called in "+err));
 }
 
 unsigned char* ovlOVLManager::GetData() {
     if (!m_data)
-        throw EOvl("ovlOVLManager("+string(Tag())+")::GetData called with no data");
+        BOOST_THROW_EXCEPTION(EOvl("ovlOVLManager("+string(Tag())+")::GetData called with no data"));
     return m_data;
 }
 
 const unsigned long ovlOVLManager::GetSize() const {
     return m_size;
 }
-
-/*
-ovlOVLManager* ovlOVLManager::MakeManager(const char* tag) {
-    return NULL;
-}
-*/

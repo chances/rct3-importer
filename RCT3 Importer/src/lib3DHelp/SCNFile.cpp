@@ -2474,7 +2474,27 @@ void cSCNFile::MakeToOvlMain(cOvl& c_ovl) {
   *
   * @todo: document this function
   */
-void cSCNFile::MakeToOvlAnimations(cOvl& c_ovl) {
+  
+void addAnimation(cOvl& c_ovl, ovlBANManager* c_ban, cAnimation::iterator i_anim, const string& name) {
+	cBoneAnim c_item;
+	c_item.name = name;
+	wxLogVerbose(_("Adding animation: ") + i_anim->name);
+	for (cBoneAnimation::iterator i_bone = i_anim->boneanimations.begin(); i_bone != i_anim->boneanimations.end(); ++i_bone) {
+		cBoneAnimBone c_bone;
+		c_bone.name = i_bone->name.ToAscii();
+		wxLogVerbose(_("  Adding bone: ") + i_bone->name);
+		for (cTXYZ::iterator i_txyz = i_bone->translations.begin(); i_txyz != i_bone->translations.end(); ++i_txyz) {
+			c_bone.translations.insert(i_txyz->GetFixed(i_anim->usedorientation, false));
+		}
+		for (cTXYZ::iterator i_txyz = i_bone->rotations.begin(); i_txyz != i_bone->rotations.end(); ++i_txyz) {
+			c_bone.rotations.insert(i_txyz->GetFixed(i_anim->usedorientation, true, i_bone->axis));
+		}
+		c_item.bones.push_back(c_bone);
+	}
+	c_ban->AddAnimation(c_item);	
+}
+  
+void cSCNFile::MakeToOvlAnimations(cOvl& c_ovl, const wxString& select) {
 	try {
 		if (!m_work) {
 			// called from ovlmake
@@ -2486,24 +2506,17 @@ void cSCNFile::MakeToOvlAnimations(cOvl& c_ovl) {
 		if (use.animations.size()) {
 			wxLogDebug(wxT("TRACE cSCNFile::MakeToOvl BAN"));
 			ovlBANManager* c_ban = c_ovl.GetManager<ovlBANManager>();
-			for (cAnimation::iterator i_anim = use.animations.begin(); i_anim != use.animations.end(); ++i_anim) {
-				cBoneAnim c_item;
-				c_item.name = getPrefixed(i_anim->name).ToAscii();
-				wxLogVerbose(_("Adding animation: ") + i_anim->name);
-				for (cBoneAnimation::iterator i_bone = i_anim->boneanimations.begin(); i_bone != i_anim->boneanimations.end(); ++i_bone) {
-					cBoneAnimBone c_bone;
-					c_bone.name = i_bone->name.ToAscii();
-					wxLogVerbose(_("  Adding bone: ") + i_bone->name);
-					for (cTXYZ::iterator i_txyz = i_bone->translations.begin(); i_txyz != i_bone->translations.end(); ++i_txyz) {
-						c_bone.translations.insert(i_txyz->GetFixed(i_anim->usedorientation, false));
-					}
-					for (cTXYZ::iterator i_txyz = i_bone->rotations.begin(); i_txyz != i_bone->rotations.end(); ++i_txyz) {
-						c_bone.rotations.insert(i_txyz->GetFixed(i_anim->usedorientation, true, i_bone->axis));
-					}
-					c_item.bones.push_back(c_bone);
-				}
-				c_ban->AddAnimation(c_item);
+			if (select == "") {
+				for (cAnimation::iterator i_anim = use.animations.begin(); i_anim != use.animations.end(); ++i_anim) {
+					addAnimation(c_ovl, c_ban, i_anim, static_cast<const char*>(getPrefixed(i_anim->name).ToAscii()));
+				}				
+			} else {
+				cAnimation::iterator i_anim = pretty::find_in_if(animations, NamePredicate<cAnimation>(select));
+				if (i_anim == animations.end())
+					BOOST_THROW_EXCEPTION(RCT3Exception(wxString::Format(_("Requested import of animation '%s', which is not present in the file."), select.c_str())));
+				addAnimation(c_ovl, c_ban, i_anim, static_cast<const char*>(getPrefixed(i_anim->name).ToAscii()));
 			}
+
 		}
 	} catch (WXException& e) {
 		if ((!boost::get_error_info<wxe_file>(e)) && (filename != ""))
@@ -2516,7 +2529,17 @@ void cSCNFile::MakeToOvlAnimations(cOvl& c_ovl) {
   *
   * @todo: document this function
   */
-void cSCNFile::MakeToOvlSplines(cOvl& c_ovl) {
+  
+void addSpline(cOvl& c_ovl, ovlSPLManager* c_spl, const cImpSpline& cspl, const string& name) {
+	cSpline spl;
+	wxLogVerbose(_("Adding spline: ") + cspl.spline.m_name);
+	spl.name = name;
+	spl.cyclic = cspl.spline.m_cyclic;
+	spl.nodes = cspl.spline.GetFixed(cspl.usedorientation);
+	c_spl->AddSpline(spl);	
+}
+
+void cSCNFile::MakeToOvlSplines(cOvl& c_ovl, const wxString& select) {
 	try {
 		if (!m_work) {
 			// called from ovlmake
@@ -2527,13 +2550,15 @@ void cSCNFile::MakeToOvlSplines(cOvl& c_ovl) {
 		if (splines.size()) {
 			wxLogDebug(wxT("TRACE cSCNFile::MakeToOvl SPL"));
 			ovlSPLManager* c_spl = c_ovl.GetManager<ovlSPLManager>();
-			foreach(const cImpSpline& cspl, splines) {
-				cSpline spl;
-				wxLogVerbose(_("Adding spline: ") + cspl.spline.m_name);
-				spl.name = getPrefixed(cspl.spline.m_name).ToAscii();
-				spl.cyclic = cspl.spline.m_cyclic;
-				spl.nodes = cspl.spline.GetFixed(cspl.usedorientation);
-				c_spl->AddSpline(spl);
+			if (select == "") {
+				foreach(const cImpSpline& cspl, splines) {
+					addSpline(c_ovl, c_spl, cspl, static_cast<const char*>(getPrefixed(cspl.spline.m_name).ToAscii()));
+				}
+			} else {
+				cImpSpline::iterator i_spl = pretty::find_in_if(splines, NamePredicate<cImpSpline>(select));
+				if (i_spl == splines.end())
+					BOOST_THROW_EXCEPTION(RCT3Exception(wxString::Format(_("Requested import of spline '%s', which is not present in the file."), select.c_str())));
+				addSpline(c_ovl, c_spl, *i_spl, static_cast<const char*>(getPrefixed(i_spl->spline.m_name).ToAscii()));
 			}
 		}
 	} catch (WXException& e) {

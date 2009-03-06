@@ -169,11 +169,11 @@ void cSpline::Fill(Spline* spl) {
 void ovlSPLManager::AddSpline(const cSpline& item) {
     Check("ovlSPLManager::AddSpline");
     if (item.name == "")
-        throw EOvl("ovlSPLManager::AddSpline called without name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSPLManager::AddSpline called without name"));
     if (m_items.find(item.name) != m_items.end())
-        throw EOvl("ovlSPLManager::AddSpline: Item with name '"+item.name+"' already exists");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSPLManager::AddSpline: Item with name '"+item.name+"' already exists"));
     if (item.nodes.size() == 0)
-        throw EOvl("ovlSPLManager::AddSpline called without nodes");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSPLManager::AddSpline called without nodes"));
 
 
     m_items[item.name] = item;
@@ -182,9 +182,9 @@ void ovlSPLManager::AddSpline(const cSpline& item) {
     m_items[item.name].AssignData();
 
     if (m_items[item.name].lengths.size() != item.nodes.size() - (item.cyclic?0:1))
-        throw EOvl("ovlSPLManager::AddSpline called with wrong number of lengths");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSPLManager::AddSpline called with wrong number of lengths"));
     if (m_items[item.name].datas.size() != item.nodes.size() - (item.cyclic?0:1))
-        throw EOvl("ovlSPLManager::AddSpline called with wrong number of data items");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSPLManager::AddSpline called with wrong number of data items"));
 
     m_size += sizeof(Spline);
     m_size += m_items[item.name].nodes.size() * sizeof(SplineNode);

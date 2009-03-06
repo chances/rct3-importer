@@ -14,11 +14,13 @@
 
 #include <Magick++.h>
 
-#include <wx/control.h>
+#include <wx/object.h>
 
-#include "wx/icon.h"
-#include "wx/bitmap.h"
-#include "wx/image.h"
+#if wxUSE_IMAGE
+#include <wx/icon.h>
+#include <wx/bitmap.h>
+#include <wx/image.h>
+#endif
 
 #ifdef USE_SQUISH
 #include <squish.h>
@@ -121,7 +123,9 @@ public:
     void GetData(const char* channelmap, void* data, bool swapalpha = false);
     void FromPaletteData(int width, int height, const void* palette, const void* data);
 
+#if wxUSE_IMAGE
     bool SaveFile(const wxString& name, int type);
+#endif
     bool SaveFile(const wxString& name, const wxString& magick);
     bool SaveFile(const wxString& name);
 

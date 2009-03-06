@@ -43,8 +43,11 @@
 
 #define RelocationFromVar(m, s) \
     ((reinterpret_cast<unsigned long>(&m) + s.reloffset) - reinterpret_cast<unsigned long>(s.data))
-	
+
+class wxRCT3Filler;
+
 class cOVLDump {
+	friend class wxRCT3Filler;
 public:
 	typedef boost::unordered_map<std::string, OvlRelocation*, boost::algorithm::ihash, boost::algorithm::iequal_to> symbolmap_t;
 	typedef std::pair<std::string, OvlRelocation*> symbolmap_pair_t;

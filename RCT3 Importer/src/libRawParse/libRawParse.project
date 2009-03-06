@@ -36,6 +36,8 @@
     <File Name="RawParse_ImportParse.cpp"/>
     <File Name="RawParse_StructParse_GSI.cpp"/>
     <File Name="RawParse_StructParse_RIC.cpp"/>
+    <File Name="RawParse_StructParse_RIT.cpp"/>
+    <File Name="RawParse_StructParse_TER.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <Configuration Name="DebugBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
@@ -113,7 +115,7 @@
       </AdditionalRules>
     </Configuration>
   </Settings>
-  <Dependencies Name="DebugBaseUnicode">
+  <Dependencies Name="ReleaseBaseUnicode">
     <Project Name="Precompile RNG"/>
     <Project Name="Precompile XSL"/>
     <Project Name="libOVLDump"/>
@@ -121,7 +123,7 @@
     <Project Name="libWXHelp"/>
     <Project Name="libXmlCpp"/>
   </Dependencies>
-  <Dependencies Name="ReleaseBaseUnicode">
+  <Dependencies Name="DebugBaseUnicode">
     <Project Name="Precompile RNG"/>
     <Project Name="Precompile XSL"/>
     <Project Name="libOVLDump"/>

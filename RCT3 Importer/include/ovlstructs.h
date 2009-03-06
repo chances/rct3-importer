@@ -12,13 +12,13 @@
 #define __ovlstructs_h__
 
 struct OvlHeader {
-	unsigned long magic;
-	unsigned long reserved;
+	unsigned long magic;		// Always 0x0x4b524746
+	unsigned long reserved;		// 0 for v1, 2 for v4/5
 	unsigned long version;
-	unsigned long References;
+	unsigned long References;	// number of references for v1, for v4/5 always 16/0x10
 };
 struct OvlHeader2 {
-	unsigned long unk;
+	unsigned long unk;				// always 0 for v1/v4
 	unsigned long FileTypeCount;
 };
 struct File
@@ -47,7 +47,20 @@ struct SymbolStruct2
 	unsigned long *data;
 	unsigned short IsPointer;
 	unsigned short unknown; // FFFF for v5, 0000 for v4 it seems
-	unsigned long Checksum;
+	unsigned long hash; // hash of the symbol name
+	/*
+	 * Hash algorithm:
+	 * The hash algorithm is the so-called djb2 one, applied after converting the name to lower case.
+	 * Code (provided str is already converted to lower case):
+	 *   unsigned long hash(unsigned char *str) {
+     *       unsigned long hash = 5381;
+     *       int c;
+     *		 while (c = *str++)
+     *            hash = ((hash << 5) + hash) + c;
+     *
+     *		 return hash;
+     *   }
+	 */
 };
 struct LoaderStruct
 {
@@ -68,7 +81,7 @@ struct SymbolRefStruct2
 	unsigned long *reference;
 	char *Symbol;
 	LoaderStruct *ldr;
-	unsigned long Checksum;
+	unsigned long hash; // hash of the symbol name, see SymbolStruct2
 };
 
 struct OvlFile

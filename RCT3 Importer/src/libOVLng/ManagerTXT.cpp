@@ -48,7 +48,7 @@ void ovlTXTManager::AddText(const char* name, const char* str) {
 void ovlTXTManager::AddText(const char* name, const wchar_t* str) {
     Check("ovlTXTManager::AddText");
     if (m_items.find(string(name)) != m_items.end())
-        throw EOvl(string("ovlTXTManager::AddText: Item with name '")+name+"' already exists");
+        BOOST_THROW_EXCEPTION(EOvl(string("ovlTXTManager::AddText: Item with name '")+name+"' already exists"));
 
     counted_array_ptr<wchar_t> newstr(new wchar_t[wcslen(str)+1]);
     wcscpy(newstr.get(), str);
@@ -65,7 +65,7 @@ void ovlTXTManager::AddText(const char* name, const wchar_t* str) {
 void ovlTXTManager::Make(cOvlInfo* info) {
     Check("ovlFTXManager::Make");
     if (!info)
-        throw EOvl("ovlFTXManager::Make called without valid info");
+        BOOST_THROW_EXCEPTION(EOvl("ovlFTXManager::Make called without valid info"));
 
     m_blobs[""] = cOvlMemBlob(OVLT_COMMON, 2, m_size);
     ovlOVLManager::Make(info);

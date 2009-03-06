@@ -244,9 +244,9 @@ struct Constants {
             enum {
                 None =                  0x00000000, //    0,
                 ScrollingSign =         0x0000000C, //   12,
-                WheelsTop =       		0x00000014, //   20,
-                WheelsUnder =           0x00000024, //   36,
-                WheelsSide =            0x00000044, //   68,
+                AnimSlow =       		0x00000014, //   20, Slow automatic texture animation
+                AnimMed =           	0x00000024, //   36, Medium automatic texture animation
+                AnimFast =            	0x00000044, //   68, Fast automatic texture animation
                 Terrain =               0x00003000, //12288,
                 Cliff =                 0x00005000, //20480,
                 AnimatedBillboard =     0x00008000, //32768,

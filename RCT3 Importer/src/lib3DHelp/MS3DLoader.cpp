@@ -56,6 +56,8 @@ using namespace std;
 using namespace xmlcpp;
 
 //#define DUMP_ANIDATA
+//#define VERTEX_DUMP
+//#define BONE_DUMP
 
 inline void fixMS3DRotation(txyz& v) {
     float ax = fabs(v.x);
@@ -105,6 +107,9 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s)"), filename);
     //wxString animationname = animations[0];
 
 wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename, static_cast<unsigned int>(ms3df->GetNumGroups()), static_cast<unsigned int>(ms3df->GetNumVertices()));
+#ifdef VERTEX_DUMP
+wxLogMessage("Subversion: %d", ms3df->GetVertexExSubversion());
+#endif
 
     // Handle model comment
     foreach(const ms3d_comment_t& c, ms3df->GetModelComments()) {
@@ -284,6 +289,13 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
 				for(int c=0; c<4; ++c) {
 					bonesum += tv.boneweight[c];
 				}
+#ifdef VERTEX_DUMP
+wxLogMessage("%03d / %03d", index, i_vertex);
+wxLogMessage(wxString::Format(wxT("%s %hhd %hhd %hhd %hhd /  %hhd %hhd %hhd"), cmesh.m_name.c_str(),
+    vertex->boneId, vertexex->boneIds[0], vertexex->boneIds[1], vertexex->boneIds[2], vertexex->weights[0], vertexex->weights[1], vertexex->weights[2]));
+wxLogMessage(wxString::Format(wxT("-> %hhd %hhd %hhd %hhd /  %hhd %hhd %hhd %hhd [%d]"),
+    tv.bone[0], tv.bone[1], tv.bone[2], tv.bone[3], tv.boneweight[0], tv.boneweight[1], tv.boneweight[2], tv.boneweight[3], bonesum));
+#endif
 				if (bonesum>255) {
 #ifdef __WXDEBUG__
 					wxLogMessage("Bone weight blown: %d, %d (%hhd, %hhd, %hhd, %hhd) [%hhd, %hhd, %hhd, %hhd]", i_vertex, bonesum, tv.bone[0], tv.bone[1], tv.bone[2], tv.bone[3], tv.boneweight[0], tv.boneweight[1], tv.boneweight[2], tv.boneweight[3]);
@@ -371,6 +383,13 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
 				for(int c=0; c<4; ++c) {
 					bonesum += tv.boneweight[c];
 				}
+#ifdef VERTEX_DUMP
+wxLogMessage("%03d / %03d", index, i_vertex);
+wxLogMessage(wxString::Format(wxT("%s %hhd %hhd %hhd %hhd /  %hhd %hhd %hhd"), cmesh.m_name.c_str(),
+    vertex->boneId, vertexex->boneIds[0], vertexex->boneIds[1], vertexex->boneIds[2], vertexex->weights[0], vertexex->weights[1], vertexex->weights[2]));
+wxLogMessage(wxString::Format(wxT("-> %hhd %hhd %hhd %hhd /  %hhd %hhd %hhd %hhd [%d]"),
+    tv.bone[0], tv.bone[1], tv.bone[2], tv.bone[3], tv.boneweight[0], tv.boneweight[1], tv.boneweight[2], tv.boneweight[3], bonesum));
+#endif
 				if (bonesum>255) {
 #ifdef __WXDEBUG__
 					wxLogMessage("Bone weight blown: %d, %d (%hhd, %hhd, %hhd, %hhd) [%hhd, %hhd, %hhd, %hhd]", i_vertex, bonesum, tv.bone[0], tv.bone[1], tv.bone[2], tv.bone[3], tv.boneweight[0], tv.boneweight[1], tv.boneweight[2], tv.boneweight[3]);
@@ -458,6 +477,13 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
 				for(int c=0; c<4; ++c) {
 					bonesum += tv.boneweight[c];
 				}
+#ifdef VERTEX_DUMP
+wxLogMessage("%03d / %03d", index, i_vertex);
+wxLogMessage(wxString::Format(wxT("%s %hhd %hhd %hhd %hhd /  %hhd %hhd %hhd"), cmesh.m_name.c_str(),
+    vertex->boneId, vertexex->boneIds[0], vertexex->boneIds[1], vertexex->boneIds[2], vertexex->weights[0], vertexex->weights[1], vertexex->weights[2]));
+wxLogMessage(wxString::Format(wxT("-> %hhd %hhd %hhd %hhd /  %hhd %hhd %hhd %hhd [%d]"),
+    tv.bone[0], tv.bone[1], tv.bone[2], tv.bone[3], tv.boneweight[0], tv.boneweight[1], tv.boneweight[2], tv.boneweight[3], bonesum));
+#endif
 				if (bonesum>255) {
 #ifdef __WXDEBUG__
 					wxLogMessage("Bone weight blown: %d, %d (%hhd, %hhd, %hhd, %hhd) [%hhd, %hhd, %hhd, %hhd]", i_vertex, bonesum, tv.bone[0], tv.bone[1], tv.bone[2], tv.bone[3], tv.boneweight[0], tv.boneweight[1], tv.boneweight[2], tv.boneweight[3]);
@@ -520,6 +546,9 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
         ms3df->GetJointAt(m, &joint);
         c3DBone bone;
         bone.m_name = jointrenames[joint->name];
+#ifdef BONE_DUMP
+wxLogMessage("Bone %03d: %s", m, joint->name);
+#endif
         if (joint->parentName)
             bone.m_parent = jointrenames[joint->parentName];
         bone.m_type = wxT("Bone");
@@ -535,12 +564,12 @@ wxLocalLog(wxT("Trace, cMS3DLoader::cMS3DLoader(%s) Loaded g %d v %d"), filename
 
 	if (blown_bones.size()) {
 		foreach(const blown_bone_pair& p, blown_bones) {
-			wxLogWarning("MS3D File '%s': Group '%s' has broken vertex/joint assignments, probably to joint '%s'. These vertices have been fully assigned to that joint to correct the issue, if that doesn't help, please reassign the joint to the correct vertices in MilkShape. Maybe even a full reassignment of joints to the group is necessary.", filename, p.second.c_str(), m_boneId[p.first].c_str());
+			//wxLogWarning("MS3D File '%s': Group '%s' has broken vertex/joint assignments, probably to joint '%s'. These vertices have been fully assigned to that joint to correct the issue, if that doesn't help, please reassign the joint to the correct vertices in MilkShape. Maybe even a full reassignment of joints to the group is necessary.", filename, p.second.c_str(), m_boneId[p.first].c_str());
 		}
 	}
 	if (blown_bones2.size()) {
 		foreach(const blown_bone_pair& p, blown_bones2) {
-			wxLogWarning("MS3D File '%s': Group '%s' has vertices which are assigned to joint '%s' as first joint with weight 0. This indicates broken vertex/joint assignment. These vertices have been unassigned to correct the issue, if that doesn't help, please reassign the joint to the correct vertices in MilkShape. Maybe even a full reassignment of joints to the group is necessary.", filename, p.second.c_str(), m_boneId[p.first].c_str());
+			//wxLogWarning("MS3D File '%s': Group '%s' has vertices which are assigned to joint '%s' as first joint with weight 0. This indicates broken vertex/joint assignment. These vertices have been unassigned to correct the issue, if that doesn't help, please reassign the joint to the correct vertices in MilkShape. Maybe even a full reassignment of joints to the group is necessary.", filename, p.second.c_str(), m_boneId[p.first].c_str());
 		}
 	}
 

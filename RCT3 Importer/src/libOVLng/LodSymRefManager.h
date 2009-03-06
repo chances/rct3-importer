@@ -122,6 +122,8 @@ public:
         return m_symrefcount[type];
     }
 
+	unsigned long calcSymbolNameHash(const std::string& name);
+
     const std::vector<ovlExtraChunk*>& GetExtraChunks(cOvlType type) const {
         return m_loaderextras[type];
     }

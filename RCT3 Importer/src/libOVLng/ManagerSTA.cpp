@@ -77,15 +77,15 @@ void cStall::Fill(r3old::StallB* sta) {
 void ovlSTAManager::AddStall(const cStall& stall) {
     Check("ovlSTAManager::AddStall");
     if (stall.name == "")
-        throw EOvl("ovlSTAManager::AddStall called without name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSTAManager::AddStall called without name"));
     if (m_stalls.find(stall.name) != m_stalls.end())
-        throw EOvl("ovlSTAManager::AddStall: Item with name '"+stall.name+"' already exists");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSTAManager::AddStall: Item with name '"+stall.name+"' already exists"));
     if (stall.sid == "")
-        throw EOvl("ovlSTAManager::AddStall called without sid");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSTAManager::AddStall called without sid"));
     if (stall.attraction.name == "")
-        throw EOvl("ovlSTAManager::AddStall called without name text");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSTAManager::AddStall called without name text"));
     if (stall.attraction.description == "")
-        throw EOvl("ovlSTAManager::AddStall called without description text");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSTAManager::AddStall called without description text"));
 
     m_stalls[stall.name] = stall;
 

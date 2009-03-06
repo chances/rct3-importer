@@ -124,8 +124,8 @@ public:
 	void Make();
 	void MakeToOvl(cOvl& c_ovl);
 	void MakeToOvlMain(cOvl& c_ovl);
-	void MakeToOvlAnimations(cOvl& c_ovl);
-	void MakeToOvlSplines(cOvl& c_ovl);
+	void MakeToOvlAnimations(cOvl& c_ovl, const wxString& select = "");
+	void MakeToOvlSplines(cOvl& c_ovl, const wxString& select = "");
 	wxString getPrefixed(const wxString& pref, bool isTexture = false);
 	void CleanWork();
 

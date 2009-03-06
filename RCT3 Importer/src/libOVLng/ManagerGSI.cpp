@@ -59,10 +59,10 @@ void cGUISkinItem::Check() const {
 		case 5:
 			len = 6;
 		default:
-			throw EOvl(boost::str(boost::format("cGUISkinType '%s' has unknown type '%d'") % name % gsi_type));
+			BOOST_THROW_EXCEPTION(EOvl(boost::str(boost::format("cGUISkinType '%s' has unknown type '%d'") % name % gsi_type)));
 	}
 	if (len != values.size()) {
-		throw EOvl(boost::str(boost::format("cGUISkinType '%s' has %d values, but according to it's type, it should have %d.") % name % values.size() % len));
+		BOOST_THROW_EXCEPTION(EOvl(boost::str(boost::format("cGUISkinType '%s' has %d values, but according to it's type, it should have %d.") % name % values.size() % len)));
 	}
 }
 
@@ -79,7 +79,7 @@ unsigned long cGUISkinItem::GetCommonSize() const {
 		case 5:
 			return 6 * sizeof(uint32_t);
 		default:
-			throw EOvl(boost::str(boost::format("cGUISkinType '%s' has unknown type '%d'") % name % gsi_type));
+			BOOST_THROW_EXCEPTION(EOvl(boost::str(boost::format("cGUISkinType '%s' has unknown type '%d'") % name % gsi_type)));
 	}
 }
 
@@ -91,9 +91,9 @@ unsigned long cGUISkinItem::GetUniqueSize() const {
 void ovlGSIManager::AddItem(const cGUISkinItem& item) {
     Check("ovlGSIManager::AddItem");
     if (item.name == "")
-        throw EOvl("ovlGSIManager::AddItem called without name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlGSIManager::AddItem called without name"));
     if (m_items.find(item.name) != m_items.end())
-        throw EOvl("ovlGSIManager::AddItem: Item with name '"+item.name+"' already exists");
+        BOOST_THROW_EXCEPTION(EOvl("ovlGSIManager::AddItem: Item with name '"+item.name+"' already exists"));
 	item.Check();
 
     m_items[item.name] = item;
@@ -112,7 +112,7 @@ void ovlGSIManager::AddItem(const cGUISkinItem& item) {
 void ovlGSIManager::Make(cOvlInfo* info) {
     Check("ovlGSIManager::Make");
     if (!info)
-        throw EOvl("ovlGSIManager::Make called without valid info");
+        BOOST_THROW_EXCEPTION(EOvl("ovlGSIManager::Make called without valid info"));
 
     m_blobs["0"] = cOvlMemBlob(OVLT_UNIQUE, 2, m_size);
 	if (m_commonsize)

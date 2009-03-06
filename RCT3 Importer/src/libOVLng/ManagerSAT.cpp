@@ -61,15 +61,15 @@ void cSpecialAttraction::Fill(r3old::SpecialAttractionB* sp) {
 void ovlSATManager::AddAttraction(const cSpecialAttraction& item) {
     Check("ovlSATManager::AddAttraction");
     if (item.name == "")
-        throw EOvl("ovlSATManager::AddAttraction called without name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSATManager::AddAttraction called without name"));
     if (m_items.find(item.name) != m_items.end())
-        throw EOvl("ovlSATManager::AddAttraction: Item with name '"+item.name+"' already exists");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSATManager::AddAttraction: Item with name '"+item.name+"' already exists"));
     if (item.sid == "")
-        throw EOvl("ovlSATManager::AddAttraction called without sid");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSATManager::AddAttraction called without sid"));
     if (item.attraction.name == "")
-        throw EOvl("ovlSATManager::AddAttraction called without name text");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSATManager::AddAttraction called without name text"));
     if (item.attraction.description == "")
-        throw EOvl("ovlSATManager::AddAttraction called without description text");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSATManager::AddAttraction called without description text"));
 
     m_items[item.name] = item;
 

@@ -79,6 +79,10 @@
     <File Name="ManagerANR.cpp"/>
     <File Name="ManagerRIC.h"/>
     <File Name="ManagerRIC.cpp"/>
+    <File Name="ManagerRIT.h"/>
+    <File Name="ManagerRIT.cpp"/>
+    <File Name="ManagerTER.h"/>
+    <File Name="ManagerTER.cpp"/>
   </VirtualDirectory>
   <Dependencies Name="DebugUnicode"/>
   <Settings Type="Static Library">

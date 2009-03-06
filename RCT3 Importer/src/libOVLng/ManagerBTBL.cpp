@@ -74,14 +74,14 @@ unsigned long cTexture::CalcSize() const {
 
 void cTexture::Check() const {
     if (!mips.size())
-        throw EOvl("Texture misses mips: "+name);
+        BOOST_THROW_EXCEPTION(EOvl("Texture misses mips: "+name));
 
     GetBlockSize(format); // Throws on wrong format
 
     unsigned long d = mips.begin()->dimension;
     for (set<cTextureMIP>::const_iterator it = mips.begin(); it != mips.end(); ++it) {
         if (it->dimension != d)
-            throw EOvl("Texture mips are inconsistent: "+name);
+            BOOST_THROW_EXCEPTION(EOvl("Texture mips are inconsistent: "+name));
         d = d / 2;
     }
 
@@ -116,7 +116,7 @@ unsigned long cTexture::GetBlockSize(unsigned long _format) {
             return 16;
             break;
         default:
-            throw EOvl("Unknown format in cTexture::GetBlockSize()");
+            BOOST_THROW_EXCEPTION(EOvl("Unknown format in cTexture::GetBlockSize()"));
     }
 }
 
@@ -127,7 +127,7 @@ unsigned long cTexture::GetDimension(unsigned long _format, unsigned long _size)
 void ovlBTBLManager::Init(cOvl* ovl) {
     ovlOVLManager::Init(ovl);
     if (ovl->HasManager<ovlFLICManager>())
-        throw EOvl("Tried to init BmpTbl after adding textures");
+        BOOST_THROW_EXCEPTION(EOvl("Tried to init BmpTbl after adding textures"));
 
     GetLSRManager()->AddLoader(OVLT_COMMON);
 }
@@ -145,7 +145,7 @@ unsigned long ovlBTBLManager::AddTexture(const cTexture& item) {
 void ovlBTBLManager::Make(cOvlInfo* info) {
     Check("ovlBTBLManager::Make");
     if (!info)
-        throw EOvl("ovlBTBLManager::Make called without valid info");
+        BOOST_THROW_EXCEPTION(EOvl("ovlBTBLManager::Make called without valid info"));
 
     m_blobs[""] = cOvlMemBlob(OVLT_COMMON, 2, 8); // BmpTbl
     ovlOVLManager::Make(info);

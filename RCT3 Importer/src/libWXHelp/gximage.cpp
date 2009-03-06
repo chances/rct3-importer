@@ -449,6 +449,7 @@ void wxGXImage::FromPaletteData(int width, int height, const void* palette, cons
     FromData(width, height, "RGB", tempdata.get());
 }
 
+#if wxUSE_IMAGE
 bool wxGXImage::SaveFile(const wxString& name, int type) {
     switch (type) {
         case wxBITMAP_TYPE_BMP:
@@ -475,6 +476,7 @@ bool wxGXImage::SaveFile(const wxString& name, int type) {
         }
     }
 }
+#endif
 
 bool wxGXImage::SaveFile(const wxString& name, const wxString& magick) {
     try {

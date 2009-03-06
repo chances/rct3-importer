@@ -34,7 +34,7 @@ public:
     virtual const wxString& wxwhat() const throw() {
         return m_message;
     }
-	virtual WXException* clone() const {
+	virtual WXException* duplicate() const {
 		return new WXException(*this);
 	}
 	
@@ -49,6 +49,6 @@ private:
 	e(const wxString& message): WXException(message) {} \
 	e(e const& ex): WXException(ex) {} \
 	e(const wxString& message, boost::exception const& ex): WXException(message, ex) {} \
-	virtual WXException* clone() const { return new e(*this); }
-
+	virtual e* duplicate() const { return new e(*this); }
+	
 #endif // __wxexception__

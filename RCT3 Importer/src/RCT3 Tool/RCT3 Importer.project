@@ -412,10 +412,10 @@ res_spline.cpp: xrc/spline.fbp
     <Project Name="Precompile RNG"/>
     <Project Name="Precompile XSL"/>
     <Project Name="libASE"/>
+    <Project Name="libXmlCpp"/>
     <Project Name="libOVL"/>
     <Project Name="libOVLDump"/>
     <Project Name="libOVLng"/>
-    <Project Name="libXmlCpp"/>
     <Project Name="libWXHelp"/>
     <Project Name="lib3DHelp"/>
   </Dependencies>

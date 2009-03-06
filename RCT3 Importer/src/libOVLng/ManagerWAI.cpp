@@ -70,19 +70,19 @@ void cWildAnimalItem::Fill(r3::WildAnimalItem* wai) {
 void ovlWAIManager::AddItem(const cWildAnimalItem& item) {
     Check("ovlWAIManager::AddItem");
     if (item.name == "")
-        throw EOvl("ovlWAIManager::AddItem called without name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlWAIManager::AddItem called without name"));
     if (m_items.find(item.name) != m_items.end())
-        throw EOvl("ovlWAIManager::AddItem: Item with name '"+item.name+"' already exists");
+        BOOST_THROW_EXCEPTION(EOvl("ovlWAIManager::AddItem: Item with name '"+item.name+"' already exists"));
     if (item.nametxt == "")
-        throw EOvl("ovlWAIManager::AddItem called without name text");
+        BOOST_THROW_EXCEPTION(EOvl("ovlWAIManager::AddItem called without name text"));
     if (item.description == "")
-        throw EOvl("ovlWAIManager::AddItem called without description");
+        BOOST_THROW_EXCEPTION(EOvl("ovlWAIManager::AddItem called without description"));
     if (item.shortname == "")
-        throw EOvl("ovlWAIManager::AddItem called without short name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlWAIManager::AddItem called without short name"));
     if (item.staticshape == "")
-        throw EOvl("ovlWAIManager::AddItem called without static shape");
+        BOOST_THROW_EXCEPTION(EOvl("ovlWAIManager::AddItem called without static shape"));
     if (item.icon == "")
-        throw EOvl("ovlWAIManager::AddItem called without icon");
+        BOOST_THROW_EXCEPTION(EOvl("ovlWAIManager::AddItem called without icon"));
 
     m_items[item.name] = item;
 

@@ -41,14 +41,14 @@ public:
     // V4 and V5
     unsigned long ReferencesE;
     // V5 only
-    unsigned long unknownv5_count;
-    unsigned long unknownv5_1;
-    std::vector<unsigned long> unknownv5_list;
-    unsigned long unknownv5_2;
+    unsigned long unknownv5_subvesion_flag;			// Either 1 or 0
+    unsigned long unknownv5[3];
     std::vector<unsigned char> unknownv5_bytes;
     std::vector<unsigned char> unknownv5_padding;
 
-    OvlExtendedHeader() {
+    OvlExtendedHeader(): ReferencesE(0), unknownv5_subvesion_flag(0){
+		for (int i = 0; i < 3; ++i)
+			unknownv5[i] = 0;
     };
     ~OvlExtendedHeader() {
     };
@@ -66,7 +66,7 @@ public:
     std::string name;
     unsigned long type;
     std::string tag;
-    unsigned long unknownv5[2];
+    unsigned long symbol_count;
     OvlLoaderHeader(){};
 };
 
@@ -151,8 +151,8 @@ public:
     unsigned long reloffset;
     std::vector<OvlFileBlock> blocks;
 
-    std::vector<unsigned long> unknownv5_list;
     unsigned long unknownv4v5_1;
+    unsigned long unknownv5_extra;
 
     //char* data;
 
@@ -167,11 +167,22 @@ public:
 class OvlPostBlockUnknowns {
 public:
     unsigned long unknownv4[2];
-    std::vector<unsigned char> unknownv5_bytes;
+    unsigned long unknownv5_bytes_count;
+	unsigned long unknownv5_extra_struct_count;
+	char* unknownv5_extra_structs;
+	unsigned long unknownv5_bytes_final_int;
     std::vector<unsigned long> unknownv5_longs;
-    unsigned long unknownv4_postrelocationlong;
-    std::vector<unsigned long> unknownv5_postrelocationlongs;
-    OvlPostBlockUnknowns() {};
+    unsigned long unknownv45_postrelocationlong;
+    OvlPostBlockUnknowns():
+		unknownv5_bytes_count(0),
+		unknownv5_extra_struct_count(0),
+		unknownv5_extra_structs(NULL),
+		unknownv5_bytes_final_int(0),
+		unknownv45_postrelocationlong(0)
+		{
+			unknownv4[0] = 0;
+			unknownv4[1] = 0;
+		};
 };
 
 class OvlSymbol {
@@ -180,13 +191,13 @@ public:
     OvlRelocation* data;
     unsigned long IsPointer;
     unsigned long unknown;
-    unsigned long checksum;
+    unsigned long hash;
     SymbolStruct* orgsymbol;
     OvlSymbol() {
         data = NULL;
         IsPointer = 0;
         unknown = 0;
-        checksum = 0;
+        hash = 0;
         orgsymbol = NULL;
     };
     void SetData(unsigned long data);

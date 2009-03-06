@@ -30,23 +30,21 @@
         <IncludePath Value="../libOVLDump"/>
       </Compiler>
       <Linker Required="yes" Options=""/>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""></Debugger>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""/>
       <ResourceCompiler Required="no" Options=""/>
       <PreBuild/>
       <PostBuild/>
       <CustomBuild Enabled="no">
-        <CleanCommand></CleanCommand>
-        <BuildCommand></BuildCommand>
-        <SingleFileCommand></SingleFileCommand>
-        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory></WorkingDirectory>
+        <WorkingDirectory/>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild></CustomPostBuild>
-        <CustomPreBuild>
-
-</CustomPreBuild>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
       </AdditionalRules>
     </Configuration>
     <Configuration Name="Invalid" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
@@ -58,7 +56,7 @@
         <LibraryPath Value="."/>
         <LibraryPath Value="Debug"/>
       </Linker>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""></Debugger>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""/>
       <ResourceCompiler Required="no" Options=""/>
       <PreBuild/>
       <PostBuild/>
@@ -66,15 +64,13 @@
         <CleanCommand>error</CleanCommand>
         <BuildCommand>error</BuildCommand>
         <SingleFileCommand>error</SingleFileCommand>
-        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <MakefileGenerationCommand/>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory></WorkingDirectory>
+        <WorkingDirectory/>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild></CustomPostBuild>
-        <CustomPreBuild>
-
-</CustomPreBuild>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
       </AdditionalRules>
     </Configuration>
     <Configuration Name="Release" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
@@ -95,7 +91,7 @@
         <Library Value="tiff"/>
         <Library Value="cryptopp"/>
       </Linker>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""></Debugger>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""/>
       <ResourceCompiler Required="no" Options=""/>
       <PreBuild>
         <Command Enabled="yes">../../../Utilities/autover/autover.exe -dte1 -u version_injector.h</Command>
@@ -104,15 +100,15 @@
         <Command Enabled="yes">../../../Utilities/autover/autover.exe -2 -u version_injector.h</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
-        <CleanCommand></CleanCommand>
-        <BuildCommand></BuildCommand>
-        <SingleFileCommand></SingleFileCommand>
-        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <CleanCommand/>
+        <BuildCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory></WorkingDirectory>
+        <WorkingDirectory/>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild></CustomPostBuild>
+        <CustomPostBuild/>
         <CustomPreBuild>resources/res_main.cpp resources/res_main.h
 resources/res_%.cpp resources/res_%.h: resources/%.fbp
 	$(FORMBUILDER) -g $&lt;
@@ -129,4 +125,5 @@ resources/res_%.cpp resources/res_%.h: resources/%.fbp
     <Project Name="libOVLng"/>
     <Project Name="libOVLDump"/>
   </Dependencies>
+  <Dependencies Name="Invalid"/>
 </CodeLite_Project>

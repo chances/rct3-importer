@@ -82,7 +82,7 @@ ovlOVLManager* cOvl::GetManager(const char* tag) {
 
 void cOvl::InitAndAddManager(ovlOVLManager* man) {
     if (!man)
-        throw EOvl("cOvl::AddAndInitManager called with invalid manager");
+        BOOST_THROW_EXCEPTION(EOvl("cOvl::AddAndInitManager called with invalid manager"));
 
     man->Init(this);
     m_managers[man->Tag()] = man;
@@ -90,14 +90,14 @@ void cOvl::InitAndAddManager(ovlOVLManager* man) {
 
 void cOvl::AddReference(const char* ref) {
     if (!m_init)
-        throw EOvl("cOvl::AddReference called uninitialized");
+        BOOST_THROW_EXCEPTION(EOvl("cOvl::AddReference called uninitialized"));
     //m_references.push_back(string(ref));
     m_ovlinfo.OpenFiles[OVLT_UNIQUE].references.push_back(string(ref));
 }
 
 void cOvl::Save() {
     if (!m_init)
-        throw EOvl("cOvl::Save called uninitialized");
+        BOOST_THROW_EXCEPTION(EOvl("cOvl::Save called uninitialized"));
 
     // First make the string table
     m_stringtable.Make(&m_ovlinfo);
@@ -110,7 +110,7 @@ void cOvl::Save() {
         it->second->Make(&m_ovlinfo);
     }
 
-    // Now we make the loaders, symobls and symbol references
+    // Now we make the loaders, symbols and symbol references
     {
         map<string, unsigned long> c_loadertypes;
         unsigned long l = 0;
@@ -122,182 +122,13 @@ void cOvl::Save() {
         m_lsrmanager.Make(c_loadertypes);
     }
 
-    // First we assign the offsets so relocations can be set up corretly
+    // First we assign the offsets so relocations can be set up correctly
     m_ovlinfo.MakeOffsets();
 
-    // Them we relsolve the relocations
+    // Then we relsolve the relocations
     m_relmanager.Make();
 
     // And write the files
     m_ovlinfo.WriteFiles(m_managers, m_lsrmanager);
-
-/*
-    ////////////////////////
-    // Prepare UNIQUE file
-    m_ovlinfo.CurrentFile = OVL_UNIQUE;
-
-    // Type 0 files, ie the string table
-    File* c_type0file = new File;
-    c_type0file->size = m_stringtable.GetSize();
-    c_type0file->reloffset = 0;
-    c_type0file->data = reinterpret_cast<unsigned long*>(m_stringtable.Make());
-    c_type0file->unk = 0;
-    m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[0].count = 1;
-    m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[0].dataptr = c_type0file;
-    m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[0].reloffset = 0;
-    m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[0].size = 0;  // doesn't get written anywhere
-    m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[1].reloffset = c_type0file->reloffset + c_type0file->size;
-
-    // Type 2 files, ie everything else
-    File* c_type2files = new File[3 + m_managers.size()]; // managers plus 3 for loaders, symbols and refs
-    m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[2].size = 0;
-    int c_type2n = 0;
-
-    // Symbols
-    c_type2files[c_type2n].size = m_lsrmanager.GetSymbolCount() * sizeof(SymbolStruct);
-    c_type2files[c_type2n].reloffset = m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[1].reloffset;
-    c_type2files[c_type2n].data = reinterpret_cast<unsigned long*>(m_lsrmanager.GetSymbols());
-    c_type2files[c_type2n].unk = 0;
-    m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[2].size += c_type2files[c_type2n].size;
-    c_type2n++;
-
-    // Loaders
-    c_type2files[c_type2n].size = m_lsrmanager.GetLoaderCount() * sizeof(LoaderStruct);
-    c_type2files[c_type2n].reloffset = c_type2files[c_type2n-1].reloffset + c_type2files[c_type2n-1].size;
-    c_type2files[c_type2n].data = reinterpret_cast<unsigned long*>(m_lsrmanager.GetLoaders());
-    c_type2files[c_type2n].unk = 0;
-    m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[2].size += c_type2files[c_type2n].size;
-    c_type2n++;
-
-    // Symbol References
-    c_type2files[c_type2n].size = m_lsrmanager.GetSymRefCount() * sizeof(SymbolRefStruct);
-    c_type2files[c_type2n].reloffset = c_type2files[c_type2n-1].reloffset + c_type2files[c_type2n-1].size;
-    c_type2files[c_type2n].data = reinterpret_cast<unsigned long*>(m_lsrmanager.GetSymRefs());
-    c_type2files[c_type2n].unk = 0;
-    m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[2].size += c_type2files[c_type2n].size;
-    c_type2n++;
-
-    // Other managers
-    for (map<string, ovlOVLManager*>::iterator it = m_managers.begin(); it != m_managers.end(); ++it) {
-        ovlOVLManager* c_man = it->second;
-
-        c_type2files[c_type2n].size = c_man->GetSize();
-        c_type2files[c_type2n].reloffset = c_type2files[c_type2n-1].reloffset + c_type2files[c_type2n-1].size;
-        c_type2files[c_type2n].data = reinterpret_cast<unsigned long*>(c_man->GetData());
-        c_type2files[c_type2n].unk = 0;
-        m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[2].size += c_type2files[c_type2n].size;
-        c_type2n++;
-    }
-
-    // Finish type 2 data
-    m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[2].count = c_type2n;
-    m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[2].dataptr = c_type2files;
-    m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[2].reloffset = c_type2files[m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[2].count-1].reloffset;
-
-    // Set other data
-    m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[3].reloffset = m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[2].reloffset;
-    m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[4].reloffset = m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[2].reloffset;
-    m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[5].reloffset = m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[2].reloffset;
-    m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[6].reloffset = m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[2].reloffset;
-    m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[7].reloffset = m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[2].reloffset;
-    m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[8].reloffset = m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[2].reloffset;
-
-    // After setting up the file data, we can resolve relocations
-    m_relmanager.Make();
-
-
-    ////////////////////////
-    // Write UNIQUE file
-    FILE* f = fopen(m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].FileName,"wb");
-    if (!f)
-        throw EOvl("cOvl::Save: cannot open unique file for writing");
-
-    // Header 1
-    OvlHeader h;
-    h.magic = 0x4B524746;
-    h.References = m_references.size();
-    h.reserved = 0;
-    h.version = 1;
-    fwrite(&h, sizeof(OvlHeader), 1, f);
-
-    // References
-    for (unsigned int i = 0;i < m_references.size();i++) {
-        unsigned short len = static_cast<unsigned short>(m_references[i].length());
-        fwrite(&len,2,1,f);
-        fwrite(m_references[i].c_str(),len,1,f);
-    }
-
-    // Header 2
-    OvlHeader2 h2;
-    h2.FileTypeCount = m_managers.size();
-    h2.unk = 0;
-    fwrite(&h2, sizeof(OvlHeader2), 1, f);
-
-    // Loaders
-    for (map<string, ovlOVLManager*>::iterator it = m_managers.begin(); it != m_managers.end(); ++it) {
-        it->second->WriteLoader(f);
-    }
-
-    // Write the number of files of each type
-    for (unsigned int i = 0;i < 9;i++) {
-        fwrite(&m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[i].count, sizeof(unsigned long), 1, f);
-    }
-
-    // Write the files themselves.
-    for (unsigned int i = 0;i < 9;i++) {
-        for (unsigned long j = 0;j < m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[i].count;j++) {
-            fwrite(&m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[i].dataptr[j].size, sizeof(unsigned long), 1, f);
-            fwrite(m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[i].dataptr[j].data, m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].Types[i].dataptr[j].size,1,f);
-        }
-    }
-
-    // Write fixups
-    m_relmanager.WriteFixups(f);
-
-    // Close file
-    fclose(f);
-
-
-    ////////////////////////
-    // Write COMMON file
-    m_ovlinfo.CurrentFile = OVL_COMMON;
-    f = fopen(m_ovlinfo.OpenFiles[m_ovlinfo.CurrentFile].FileName,"wb");
-    if (!f)
-        throw EOvl("cOvl::Save: cannot open common file for writing");
-
-    // Header 1
-    //h.magic = 0x4B524746;
-    h.References = 0;
-    //h.reserved = 0;
-    //h.version = 1;
-    fwrite(&h, sizeof(OvlHeader), 1, f);
-
-    // Header 2
-    //h2.FileTypeCount = m_managers.size();
-    //h2.unk = 0;
-    fwrite(&h2, sizeof(OvlHeader2), 1, f);
-
-    // Loaders
-    for (map<string, ovlOVLManager*>::iterator it = m_managers.begin(); it != m_managers.end(); ++it) {
-        it->second->WriteLoader(f);
-    }
-
-    // Write number of files (zero)
-    unsigned long num = 0;
-    for (unsigned int i = 0;i < 9;i++) {
-        fwrite(&num, sizeof(unsigned long), 1, f);
-    }
-
-    // Write number of fixups (zero)
-    fwrite(&num, sizeof(unsigned long), 1, f);
-
-    // Close file
-    fclose(f);
-
-
-    // Clean Up
-    delete c_type0file;
-    delete[] c_type2files;
-*/
 }
 

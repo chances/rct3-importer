@@ -297,6 +297,12 @@ void cMeshStruct::autoMeshStyle(const wxString& style) {
             flags = 32768;
             FTX = wxT("UseAdTexture");
             TXS = wxT("SIOpaque");
+        } else if (t.IsSameAs(wxT("animslow"))) {
+            flags = r3::Constants::Mesh::Flags::AnimSlow;
+        } else if (t.IsSameAs(wxT("animmed"))) {
+            flags = r3::Constants::Mesh::Flags::AnimMed;
+        } else if (t.IsSameAs(wxT("animfast"))) {
+            flags = r3::Constants::Mesh::Flags::AnimFast;
         } else if (t.StartsWith("fudge:")) {
             wxString ff = t.AfterFirst(':');
             if (ff.IsSameAs("+X")) {
@@ -1166,7 +1172,7 @@ cModel::cModel(const cAnimatedModel& model) {
     errors = model.errors;
     stored_exception.reset();
 	if (model.stored_exception)
-		stored_exception.reset(model.stored_exception->clone());
+		stored_exception.reset(model.stored_exception->duplicate());
     for (vector<cModelBone>::const_iterator it = model.modelbones.begin(); it != model.modelbones.end(); it++) {
         cEffectPoint p(*it);
         effectpoints.push_back(p);
@@ -2015,7 +2021,7 @@ cAnimatedModel::cAnimatedModel(const cModel& model) {
     errors = model.errors;
     stored_exception.reset();
 	if (model.stored_exception)
-		stored_exception.reset(model.stored_exception->clone());
+		stored_exception.reset(model.stored_exception->duplicate());
     for (vector<cEffectPoint>::const_iterator it = model.effectpoints.begin(); it != model.effectpoints.end(); ++it) {
         cModelBone b(*it);
         modelbones.push_back(b);

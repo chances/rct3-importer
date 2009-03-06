@@ -69,11 +69,11 @@ void ovlFLICManager::AddTexture(const cTexture& item) {
 
 FlicStruct** ovlFLICManager::GetPointer1(const string& name) {
     if (!IsMade())
-        throw EOvl("ovlFLICManager::GetPointer1 called in unmade state");
+        BOOST_THROW_EXCEPTION(EOvl("ovlFLICManager::GetPointer1 called in unmade state"));
 
     map<string, unsigned long>::iterator it = m_itemmap.find(name);
     if (it == m_itemmap.end())
-        throw EOvl("ovlFLICManager::GetPointer1 called with unknown texture name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlFLICManager::GetPointer1 called with unknown texture name"));
     map<unsigned long, cTexture>::iterator it2 = m_items.find(it->second);
 
     return it2->second.madep1;
@@ -81,11 +81,11 @@ FlicStruct** ovlFLICManager::GetPointer1(const string& name) {
 
 FlicStruct* ovlFLICManager::GetPointer2(const string& name) {
     if (!IsMade())
-        throw EOvl("ovlFLICManager::GetPointer2 called in unmade state");
+        BOOST_THROW_EXCEPTION(EOvl("ovlFLICManager::GetPointer2 called in unmade state"));
 
     map<string, unsigned long>::iterator it = m_itemmap.find(name);
     if (it == m_itemmap.end())
-        throw EOvl("ovlFLICManager::GetPointer2 called with unknown texture name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlFLICManager::GetPointer2 called with unknown texture name"));
     map<unsigned long, cTexture>::iterator it2 = m_items.find(it->second);
 
     return it2->second.madep2;
@@ -94,7 +94,7 @@ FlicStruct* ovlFLICManager::GetPointer2(const string& name) {
 void ovlFLICManager::Make(cOvlInfo* info) {
     Check("ovlFLICManager::Make");
     if (!info)
-        throw EOvl("ovlFLICManager::Make called without valid info");
+        BOOST_THROW_EXCEPTION(EOvl("ovlFLICManager::Make called without valid info"));
 
     m_blobs[""] = cOvlMemBlob(OVLT_COMMON, 2, m_size);
     ovlOVLManager::Make(info);

@@ -1294,7 +1294,7 @@ def write_mesh(file, scn, exp_list, matTable, total):
                     me_options['texturestyle'] = get_Name(tex.tex)
                 if get_Name(tex.tex).startswith('fudge:'):
                     me_options['fudge'] = get_Name(tex.tex)
-                if get_Name(tex.tex) in ('terrain', 'cliff', 'water', 'watermask', 'billboard', 'animatedbillboard'):
+                if get_Name(tex.tex) in ('terrain', 'cliff', 'water', 'watermask', 'billboard', 'animatedbillboard', 'animslow', 'animmed', 'animfast'):
                     if tex.tex.getType() == 'None':
                         me_options['flags'] = get_Name(tex.tex)
                 elif tex.tex.getType() == 'Image':

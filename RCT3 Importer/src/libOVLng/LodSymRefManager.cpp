@@ -29,11 +29,13 @@
 #include "LodSymRefManager.h"
 
 #include <stdlib.h>
+#include <algorithm>
 
 #include "OVLDebug.h"
 #include "OVLException.h"
 #include "RelocationManager.h"
 #include "StringTable.h"
+#include "pretty.h"
 
 using namespace std;
 
@@ -80,11 +82,11 @@ void ovlLodSymRefManager::Init(ovlRelocationManager* relman, ovlStringTable* sta
 
 void ovlLodSymRefManager::Assign(cOvlInfo* info) {
     if (m_loaders[0] || m_symbols[0] || m_symrefs[0] || m_loaders[1] || m_symbols[1] || m_symrefs[1])
-        throw EOvl("ovlLodSymRefManager::Assign called twice");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::Assign called twice"));
     if (!info)
-        throw EOvl("ovlLodSymRefManager::Assign called without valid info");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::Assign called without valid info"));
     if (!m_stable)
-        throw EOvl("ovlLodSymRefManager::Assign called with unassigned string table");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::Assign called with unassigned string table"));
 
 
     for (int i = 0; i < 2; ++i) {
@@ -122,27 +124,27 @@ void ovlLodSymRefManager::Assign(cOvlInfo* info) {
 
 void ovlLodSymRefManager::Make(const map<string, unsigned long>& loadernumbers) {
     if (m_made)
-        throw EOvl("ovlLodSymRefManager::Make called twice");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::Make called twice"));
     if (!m_relman)
-        throw EOvl("ovlLodSymRefManager::Make called with unassigned relocation manager");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::Make called with unassigned relocation manager"));
     if (!m_assigned)
-        throw EOvl("ovlLodSymRefManager::Make called before assignment");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::Make called before assignment"));
     if (m_uloadercount[0] < m_loadercount[0])
-        throw EOvl("ovlLodSymRefManager::Make called with unassigned common loader(s)");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::Make called with unassigned common loader(s)"));
     if (m_uloadercount[1] < m_loadercount[1])
-        throw EOvl("ovlLodSymRefManager::Make called with unassigned unique loader(s)");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::Make called with unassigned unique loader(s)"));
     if (m_usymbolcount[0] < m_symbolcount[0])
-        throw EOvl("ovlLodSymRefManager::Make called with unassigned common symbol(s)");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::Make called with unassigned common symbol(s)"));
     if (m_usymbolcount[1] < m_symbolcount[1])
-        throw EOvl("ovlLodSymRefManager::Make called with unassigned unique symbol(s)");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::Make called with unassigned unique symbol(s)"));
     if (m_usymrefcount[0] < m_symrefcount[0])
-        throw EOvl("ovlLodSymRefManager::Make called with unassigned common symbol reference(s)");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::Make called with unassigned common symbol reference(s)"));
     if (m_usymrefcount[1] < m_symrefcount[1])
-        throw EOvl("ovlLodSymRefManager::Make called with unassigned unique symbol reference(s)");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::Make called with unassigned unique symbol reference(s)"));
     if (m_loadercount[0] != m_loadernames[0].size())
-        throw EOvl("ovlLodSymRefManager::Make: Inconsistency between common loadercount and size of loadername array");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::Make: Inconsistency between common loadercount and size of loadername array"));
     if (m_loadercount[1] != m_loadernames[1].size())
-        throw EOvl("ovlLodSymRefManager::Make: Inconsistency between unique loadercount and size of loadername array");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::Make: Inconsistency between unique loadercount and size of loadername array"));
 
     for (int i = 0; i < 2; ++i) {
         SymbolStruct *syms2 = (SymbolStruct *)m_symbols[i];
@@ -159,7 +161,7 @@ void ovlLodSymRefManager::Make(const map<string, unsigned long>& loadernumbers) 
         for (int m = 0; m < m_loadercount[i]; m++) {
             map<string, unsigned long>::const_iterator ld = loadernumbers.find(m_loadernames[i][m]);
             if (ld == loadernumbers.end())
-                throw EOvl("ovlLodSymRefManager::Make: Loader not registered: "+m_loadernames[i][m]);
+                BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::Make: Loader not registered: "+m_loadernames[i][m]));
             ldrs2[m].LoaderType = ld->second;
 
             for (int j = 0; j < m_symbolcount[i]; j++) {
@@ -175,20 +177,20 @@ void ovlLodSymRefManager::Make(const map<string, unsigned long>& loadernumbers) 
 
 void ovlLodSymRefManager::AddLoader(cOvlType type) {
     if (m_loaders[0] || m_symbols[0] || m_symrefs[0] || m_loaders[1] || m_symbols[1] || m_symrefs[1])
-        throw EOvl("ovlLodSymRefManager::AddLoader called after assignment");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::AddLoader called after assignment"));
     m_loadercount[type]++;
 }
 
 LoaderStruct* ovlLodSymRefManager::OpenLoader(cOvlType type, const char* ctype, unsigned long *data, unsigned long extradatacount, SymbolStruct *sym) {
     DUMP_LOG("Trace: ovlLodSymRefManager::OpenLoader('%s', %08lx, %ld, %08lx)", UNISTR(ctype), DPTR(data), extradatacount, DPTR(sym));
     if (!m_loaders[type])
-        throw EOvl("ovlLodSymRefManager::OpenLoader called before assignment");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::OpenLoader called before assignment"));
     if (!m_relman)
-        throw EOvl("ovlLodSymRefManager::OpenLoader called with unassigned relocation manager");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::OpenLoader called with unassigned relocation manager"));
     if (m_uloadercount[type] == m_loadercount[type])
-        throw EOvl("ovlLodSymRefManager::OpenLoader called when all loaders are already assigned");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::OpenLoader called when all loaders are already assigned"));
     if (m_loaderopen[type])
-        throw EOvl("ovlLodSymRefManager::OpenLoader called with open loader");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::OpenLoader called with open loader"));
 
     m_cloader[type]->LoaderType = 0; // Init to 0, fill out later
     m_cloader[type]->data = data;
@@ -215,9 +217,9 @@ LoaderStruct* ovlLodSymRefManager::OpenLoader(cOvlType type, const char* ctype, 
 
 void ovlLodSymRefManager::AddExtraData(cOvlType type, unsigned long size, unsigned char* data) {
     if (!m_loaderopen[type])
-        throw EOvl("ovlLodSymRefManager::AddExtraData called with closed loader");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::AddExtraData called with closed loader"));
     if (!m_loaderextracount[type])
-        throw EOvl("ovlLodSymRefManager::AddExtraData called with no unadded extra data left");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::AddExtraData called with no unadded extra data left"));
 
     m_loaderextras[type].push_back(new ovlExtraChunk(size, data));
     m_loaderextracount[type]--;
@@ -225,11 +227,11 @@ void ovlLodSymRefManager::AddExtraData(cOvlType type, unsigned long size, unsign
 
 LoaderStruct* ovlLodSymRefManager::CloseLoader(cOvlType type) {
     if (!m_loaders[type])
-        throw EOvl("ovlLodSymRefManager::CloseLoader called before assignment");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::CloseLoader called before assignment"));
     if (!m_loaderopen[type])
-        throw EOvl("ovlLodSymRefManager::CloseLoader called with closed loader");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::CloseLoader called with closed loader"));
     if (m_loaderextracount[type])
-        throw EOvl("ovlLodSymRefManager::CloseLoader called with unadded extra data");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::CloseLoader called with unadded extra data"));
 
     m_loaderopen[type] = false;
     m_uloadercount[type]++;
@@ -239,21 +241,21 @@ LoaderStruct* ovlLodSymRefManager::CloseLoader(cOvlType type) {
 /*
 LoaderStruct* ovlLodSymRefManager::GetLoaders() {
     if (!m_made)
-        throw EOvl("ovlLodSymRefManager::GetLoaders called before calling Make()");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::GetLoaders called before calling Make()");
     return m_loaders;
 }
 */
 void ovlLodSymRefManager::AddSymbol(cOvlType type) {
     if (m_loaders[0] || m_symbols[0] || m_symrefs[0] || m_loaders[1] || m_symbols[1] || m_symrefs[1])
-        throw EOvl("ovlLodSymRefManager::AddSymbol called after assignment");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::AddSymbol called after assignment"));
     m_symbolcount[type]++;
 }
 
 void ovlLodSymRefManager::AddSymbol(cOvlType type, const char* symbol, unsigned long data) {
     if (m_loaders[0] || m_symbols[0] || m_symrefs[0] || m_loaders[1] || m_symbols[1] || m_symrefs[1])
-        throw EOvl("ovlLodSymRefManager::AddSymbol(2) called after assignment");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::AddSymbol(2) called after assignment"));
     if (!m_stable)
-        throw EOvl("ovlLodSymRefManager::AddSymbol(2) called with unassigned string table");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::AddSymbol(2) called with unassigned string table"));
 
     m_symbolcount[type]++;
     m_npsymbols[type][string(symbol)] = data;
@@ -262,9 +264,9 @@ void ovlLodSymRefManager::AddSymbol(cOvlType type, const char* symbol, unsigned 
 
 SymbolStruct* ovlLodSymRefManager::MakeSymbol(cOvlType type, char* symbol, unsigned long *data) {
     if (!m_symbols[type])
-        throw EOvl("ovlLodSymRefManager::MakeSymbol called before assignment");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::MakeSymbol called before assignment"));
     if (m_usymbolcount[type] == m_symbolcount[type])
-        throw EOvl("ovlLodSymRefManager::MakeSymbol called when all symbols are already assigned");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::MakeSymbol called when all symbols are already assigned"));
 
     m_csymbol[type]->Symbol = symbol;
     m_csymbol[type]->data = data;
@@ -278,26 +280,26 @@ SymbolStruct* ovlLodSymRefManager::MakeSymbol(cOvlType type, char* symbol, unsig
 /*
 SymbolStruct* ovlLodSymRefManager::GetSymbols() {
     if (!m_made)
-        throw EOvl("ovlLodSymRefManager::GetSymbols called before calling Make()");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::GetSymbols called before calling Make()");
     return m_symbols;
 }
 */
 void ovlLodSymRefManager::AddSymRef(cOvlType type) {
     if (m_loaders[0] || m_symbols[0] || m_symrefs[0] || m_loaders[1] || m_symbols[1] || m_symrefs[1])
-        throw EOvl("ovlLodSymRefManager::AddSymRef called after assignment");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::AddSymRef called after assignment"));
     m_symrefcount[type]++;
 }
 
 SymbolRefStruct* ovlLodSymRefManager::MakeSymRef(cOvlType type, char* symbol, unsigned long *ref) {
     DUMP_LOG("ovlLodSymRefManager::MakeSymRef(%s)", symbol);
     if (!m_symrefs[type])
-        throw EOvl("ovlLodSymRefManager::MakeSymRef called before assignment");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::MakeSymRef called before assignment"));
     if (!m_relman)
-        throw EOvl("ovlLodSymRefManager::MakeSymRef called with unassigned relocation manager");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::MakeSymRef called with unassigned relocation manager"));
     if (!m_loaderopen[type])
-        throw EOvl("ovlLodSymRefManager::MakeSymRef called with closed loader");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::MakeSymRef called with closed loader"));
     if (m_usymrefcount[type] == m_symrefcount[type])
-        throw EOvl("ovlLodSymRefManager::MakeSymRef called when all symbol references are already assigned");
+        BOOST_THROW_EXCEPTION(EOvl("ovlLodSymRefManager::MakeSymRef called when all symbol references are already assigned"));
 
     m_csymref[type]->Symbol = symbol;
     m_relman->AddRelocation((unsigned long *)&m_csymref[type]->Symbol);
@@ -316,10 +318,15 @@ SymbolRefStruct* ovlLodSymRefManager::MakeSymRef(cOvlType type, char* symbol, un
 
     return m_csymref[type]++;
 }
-/*
-SymbolRefStruct* ovlLodSymRefManager::GetSymRefs() {
-    if (!m_made)
-        throw EOvl("ovlLodSymRefManager::GetSymRefs called before calling Make()");
-    return m_symrefs;
+
+unsigned long ovlLodSymRefManager::calcSymbolNameHash(const std::string& name) {
+	string sname = name;
+	std::transform(sname.begin(), sname.end(), sname.begin(), ::tolower);
+	
+	unsigned long hash = 5381;
+	foreach(char c, sname) {
+		hash = ((hash << 5) + hash) + c;
+	}
+		
+	return hash;
 }
-*/

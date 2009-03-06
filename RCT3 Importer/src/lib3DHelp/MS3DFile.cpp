@@ -21,6 +21,7 @@
 #include <strings.h>
 
 #include "wxLocalLog.h"
+#include <wx/log.h>
 
 CMS3DFile::CMS3DFile()
 :	m_fAnimationFPS(24.0f),
@@ -235,8 +236,10 @@ wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile model comments %d"), nNumModelCom
 				fread(&m_arrVerticesEx[i].boneIds[0], sizeof(char), 3, fp);
 				fread(&m_arrVerticesEx[i].weights[0], sizeof(unsigned char), 3, fp);
 				fread(&m_arrVerticesEx[i].extra, sizeof(unsigned int), 1, fp);
+//wxLogMessage("Raw: %03d: %hhd %hhd %hhd / %hhd %hhd %hhd", i, m_arrVerticesEx[i].boneIds[0], m_arrVerticesEx[i].boneIds[1], m_arrVerticesEx[i].boneIds[2], m_arrVerticesEx[i].weights[0], m_arrVerticesEx[i].weights[1], m_arrVerticesEx[i].weights[2]);
 				for (int c = 0; c < 3; ++c)
                     m_arrVerticesEx[i].weights[c] = float(m_arrVerticesEx[i].weights[c]) * 255.0 / 100.0;
+//wxLogMessage("Raw: %03d: %hhd %hhd %hhd / %hhd %hhd %hhd", i, m_arrVerticesEx[i].boneIds[0], m_arrVerticesEx[i].boneIds[1], m_arrVerticesEx[i].boneIds[2], m_arrVerticesEx[i].weights[0], m_arrVerticesEx[i].weights[1], m_arrVerticesEx[i].weights[2]);
 			}
 		} else if (m_subVersionVertexEx == 1) {
 			for (int i = 0; i < nNumVertices; i++) {
@@ -248,7 +251,7 @@ wxLocalLog(wxT("Trace, CMS3DFile::LoadFromFile model comments %d"), nNumModelCom
             fclose(fp);
             return 2;
 		}
-        fread(&m_arrVerticesEx[0], nNumVertices, sizeof(ms3d_vertex_ex_t), fp);
+        //fread(&m_arrVerticesEx[0], nNumVertices, sizeof(ms3d_vertex_ex_t), fp);
 	}
 
 	fclose(fp);

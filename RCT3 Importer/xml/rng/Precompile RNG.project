@@ -31,9 +31,6 @@
     <File Name="relaxng.srng"/>
     <File Name="shortrelaxng.rng.protect"/>
   </VirtualDirectory>
-  <Dependencies Name="Precompile">
-    <Project Name="bin2c"/>
-  </Dependencies>
   <Settings Type="Static Library">
     <Configuration Name="Precompile" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName).so" IntermediateDirectory="./Release" Command="" CommandArguments="" WorkingDirectory="$(IntermediateDirectory)" PauseExecWhenProcTerminates="yes"/>
@@ -42,8 +39,8 @@
       </Compiler>
       <Linker Required="no" Options="-O2"/>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
-        <PostConnectCommands></PostConnectCommands>
-        <StartupCommands></StartupCommands>
+        <PostConnectCommands/>
+        <StartupCommands/>
       </Debugger>
       <ResourceCompiler Required="no" Options=""/>
       <PreBuild/>
@@ -51,17 +48,18 @@
       <CustomBuild Enabled="yes">
         <CleanCommand>$(MAKE) clean</CleanCommand>
         <BuildCommand>$(MAKE)</BuildCommand>
-        <SingleFileCommand></SingleFileCommand>
-        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory></WorkingDirectory>
+        <WorkingDirectory/>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild></CustomPostBuild>
-        <CustomPreBuild>
-
-</CustomPreBuild>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
       </AdditionalRules>
     </Configuration>
   </Settings>
+  <Dependencies Name="Precompile">
+    <Project Name="bin2c"/>
+  </Dependencies>
 </CodeLite_Project>

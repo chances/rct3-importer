@@ -54,13 +54,13 @@ void cCarriedItemExtra::Fill(r3::CarriedItemExtra* ced) {
 void ovlCEDManager::AddExtra(const cCarriedItemExtra& item) {
     Check("ovlCEDManager::AddExtra");
     if (item.name == "")
-        throw EOvl("ovlCEDManager::AddExtra called without name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlCEDManager::AddExtra called without name"));
     if (m_extras.find(item.name) != m_extras.end())
-        throw EOvl("ovlCEDManager::AddExtra: Item with name '"+item.name+"' already exists");
+        BOOST_THROW_EXCEPTION(EOvl("ovlCEDManager::AddExtra: Item with name '"+item.name+"' already exists"));
     if (item.nametxt == "")
-        throw EOvl("ovlCEDManager::AddExtra called without name text");
+        BOOST_THROW_EXCEPTION(EOvl("ovlCEDManager::AddExtra called without name text"));
     if (item.icon == "")
-        throw EOvl("ovlCEDManager::AddExtra called without icon");
+        BOOST_THROW_EXCEPTION(EOvl("ovlCEDManager::AddExtra called without icon"));
 
     m_extras[item.name] = item;
 

@@ -417,17 +417,17 @@ unsigned long cTrackedRide::GetUniqueSize() const {
 void ovlTRRManager::AddRide(const cTrackedRide& item) {
     Check("ovlTRRManager::AddRide");
     if (item.name == "")
-        throw EOvl("ovlTRRManager::AddRide called without name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlTRRManager::AddRide called without name"));
     if (m_items.find(item.name) != m_items.end())
-        throw EOvl("ovlTRRManager::AddRide: Item with name '"+item.name+"' already exists");
+        BOOST_THROW_EXCEPTION(EOvl("ovlTRRManager::AddRide: Item with name '"+item.name+"' already exists"));
     if (item.attraction.name == "")
-        throw EOvl("ovlTRRManager::AddRide called without name text");
+        BOOST_THROW_EXCEPTION(EOvl("ovlTRRManager::AddRide called without name text"));
     if (item.attraction.description == "")
-        throw EOvl("ovlTRRManager::AddRide called without description text");
+        BOOST_THROW_EXCEPTION(EOvl("ovlTRRManager::AddRide called without description text"));
     if (item.attraction.icon == "")
-        throw EOvl("ovlTRRManager::AddRide called without icon");
+        BOOST_THROW_EXCEPTION(EOvl("ovlTRRManager::AddRide called without icon"));
     if (!item.trackpaths.size())
-        throw EOvl("ovlTRRManager::AddRide called without a track path");
+        BOOST_THROW_EXCEPTION(EOvl("ovlTRRManager::AddRide called without a track path"));
 
     m_items[item.name] = item;
 

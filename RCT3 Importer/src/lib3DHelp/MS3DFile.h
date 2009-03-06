@@ -1,5 +1,5 @@
 //------------
-//Copyright © 2003 Mete Ciragan, chUmbaLum sOft
+//Copyright Â© 2003 Mete Ciragan, chUmbaLum sOft
 //
 //This software is provided 'as-is', without any expressed or implied warranty. In no event will the authors be held liable for any damages arising from the use of this software.
 //
@@ -220,6 +220,9 @@ public:
 	float GetCurrentTimeM();
 	int GetTotalFrames();
 
+	int GetVertexExSubversion() {
+		return m_subVersionVertexEx;
+	}
 
 private:
 

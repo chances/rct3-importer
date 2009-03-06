@@ -155,7 +155,7 @@ unsigned long cSidSoundScript::GetCommonSize() const {
         case 4:
             return 16;
         default:
-            throw EOvl("Unknown sound script command");
+            BOOST_THROW_EXCEPTION(EOvl("Unknown sound script command"));
     }
 }
 
@@ -222,19 +222,19 @@ void cSid::Fill(r3::SceneryItem_V* i) {
 void ovlSIDManager::AddSID(const cSid& sid) {
     Check("ovlSIDManager::AddSID");
     if (sid.svds.size() == 0)
-        throw EOvl("ovlSIDManager::AddSID called without svds");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSIDManager::AddSID called without svds"));
     if (sid.name == "")
-        throw EOvl("ovlSIDManager::AddSID called without name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSIDManager::AddSID called without name"));
     if (m_sids.find(sid.name) != m_sids.end())
-        throw EOvl("ovlSIDManager::AddSID: Item with name '"+sid.name+"' already exists");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSIDManager::AddSID: Item with name '"+sid.name+"' already exists"));
     if (sid.ovlpath == "")
-        throw EOvl("ovlSIDManager::AddSID called without ovlpath");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSIDManager::AddSID called without ovlpath"));
     if (sid.ui.name == "")
-        throw EOvl("ovlSIDManager::AddSID called without menu name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSIDManager::AddSID called without menu name"));
     if ((sid.squareunknowns.size()>1) && (sid.squareunknowns.size() != (sid.position.xsquares * sid.position.zsquares)))
-        throw EOvl("ovlSIDManager::AddSID called with illegal numer of square unknowns");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSIDManager::AddSID called with illegal numer of square unknowns"));
     if (sid.extra.version > 2)
-        throw EOvl("ovlSIDManager::AddSID called without illegal structure version");
+        BOOST_THROW_EXCEPTION(EOvl("ovlSIDManager::AddSID called without illegal structure version"));
 
     m_sids[sid.name] = sid;
 

@@ -108,17 +108,17 @@ void cCarriedItem::Fill(r3::CarriedItem* cid) {
 void ovlCIDManager::AddItem(const cCarriedItem& item) {
     Check("ovlCIDManager::AddItem");
     if (item.name == "")
-        throw EOvl("ovlCIDManager::AddItem called without name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlCIDManager::AddItem called without name"));
     if (m_items.find(item.name) != m_items.end())
-        throw EOvl("ovlCIDManager::AddItem: Item with name '"+item.name+"' already exists");
+        BOOST_THROW_EXCEPTION(EOvl("ovlCIDManager::AddItem: Item with name '"+item.name+"' already exists"));
     if (item.nametxt == "")
-        throw EOvl("ovlCIDManager::AddItem called without name text");
+        BOOST_THROW_EXCEPTION(EOvl("ovlCIDManager::AddItem called without name text"));
     if (item.pluralnametxt == "")
-        throw EOvl("ovlCIDManager::AddItem called without plural name text");
+        BOOST_THROW_EXCEPTION(EOvl("ovlCIDManager::AddItem called without plural name text"));
     if ((item.shape.shape1 == "") && (item.shape.shape2 == "") && (item.shape.fts == ""))
-        throw EOvl("ovlCIDManager::AddItem called without shape info");
+        BOOST_THROW_EXCEPTION(EOvl("ovlCIDManager::AddItem called without shape info"));
     if (((item.shape.shape1 != "") || (item.shape.shape2 != "")) && (item.shape.fts != ""))
-        throw EOvl("ovlCIDManager::AddItem, cannot be both 3D and 2D");
+        BOOST_THROW_EXCEPTION(EOvl("ovlCIDManager::AddItem, cannot be both 3D and 2D"));
 
     m_items[item.name] = item;
 

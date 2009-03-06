@@ -162,7 +162,7 @@ unsigned long cRideCar::GetUniqueSize() const {
 		case 3:
 			return sizeof(RideCar_W);
 		default:
-			throw EOvl("cRideCar::GetUniqueSize() called with illegal version");
+			BOOST_THROW_EXCEPTION(EOvl("cRideCar::GetUniqueSize() called with illegal version"));
 	}
 }
 
@@ -170,8 +170,8 @@ void cRideCar::Fill(r3::RideCar_W* rc, ovlStringTable* tab, ovlRelocationManager
     STRINGLIST_ASSIGN(rc->v.name, internalname, true, tab, rel);
     STRINGLIST_ASSIGN(rc->v.username, otherinternalname, true, tab, rel);
 
-	rc->v.seat_type_count = seatings.size();
 	if (seatings.size()>1) {
+		rc->v.seat_type_count = seatings.size();
 		if (version) {
 			rc->v.seating = r3::Constants::SharedRide::Seating::MAX_SW;
 		} else {
@@ -181,6 +181,7 @@ void cRideCar::Fill(r3::RideCar_W* rc, ovlStringTable* tab, ovlRelocationManager
 			rc->v.seat_types[i] = seatings[i];
 		}
 	} else {
+		rc->v.seat_type_count = 0;
 		rc->v.seating = seatings[0];
 	}
     rc->v.version = version;
@@ -204,6 +205,7 @@ void cRideCar::Fill(r3::RideCar_W* rc, ovlStringTable* tab, ovlRelocationManager
 			animations.Fill(rc->v, tab, rel);
 		}
 	} else {
+		animations.Fill(rc->v, tab, rel);
 		sliding.Fill(rc->v, tab, rel);
 	}
 
@@ -213,19 +215,19 @@ void cRideCar::Fill(r3::RideCar_W* rc, ovlStringTable* tab, ovlRelocationManager
 void ovlRICManager::AddItem(const cRideCar& item) {
     Check("ovlRICManager::AddItem");
     if (item.name == "")
-        throw EOvl("ovlRICManager::AddItem called without name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlRICManager::AddItem called without name"));
     if (m_items.find(item.name) != m_items.end())
-        throw EOvl("ovlRICManager::AddItem: Item with name '"+item.name+"' already exists");
+        BOOST_THROW_EXCEPTION(EOvl("ovlRICManager::AddItem: Item with name '"+item.name+"' already exists"));
     if ((item.version == 1) || (item.version > 3))
-        throw EOvl("ovlRICManager::AddItem called with illegal version");
+        BOOST_THROW_EXCEPTION(EOvl("ovlRICManager::AddItem called with illegal version"));
     if (item.internalname == "")
-        throw EOvl("ovlRICManager::AddItem called without internal name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlRICManager::AddItem called without internal name"));
     if (item.otherinternalname == "")
-        throw EOvl("ovlRICManager::AddItem called without other internal name");
+        BOOST_THROW_EXCEPTION(EOvl("ovlRICManager::AddItem called without other internal name"));
     if (item.svd_ref == "")
-        throw EOvl("ovlRICManager::AddItem called without svd reference");
+        BOOST_THROW_EXCEPTION(EOvl("ovlRICManager::AddItem called without svd reference"));
     if (!item.seatings.size())
-        throw EOvl("ovlRICManager::AddItem called without seating");
+        BOOST_THROW_EXCEPTION(EOvl("ovlRICManager::AddItem called without seating"));
 
     m_items[item.name] = item;
 
