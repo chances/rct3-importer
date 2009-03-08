@@ -71,6 +71,13 @@ void ovlCHGManager::AddRoom(const cChangingRoom& item) {
         m_size += sizeof(Attraction_S);
     }
 
+	cLoader& loader = GetLSRManager()->reserveIndexElement(OVLT_UNIQUE, item.name, ovlCHGManager::TAG);
+	
+	item.attraction.DoAdd(loader);
+	loader.reserveSymbolReference(item.sid, ovlSIDManager::TAG);
+	loader.reserveSymbolReference(item.spline, ovlSPLManager::TAG);
+	
+	/*
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
     GetLSRManager()->AddLoader(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(item.name.c_str(), ovlCHGManager::TAG);
@@ -88,6 +95,7 @@ void ovlCHGManager::AddRoom(const cChangingRoom& item) {
     GetStringTable()->AddSymbolString(item.attraction.icon.c_str(), ovlGSIManager::TAG);
     GetLSRManager()->AddSymRef(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(item.attraction.spline.c_str(), ovlSPLManager::TAG);
+	 */
 
 }
 
@@ -113,6 +121,12 @@ void ovlCHGManager::Make(cOvlInfo* info) {
 
         it->second.Fill(c_item);
 
+		cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_UNIQUE, it->first, ovlCHGManager::TAG, c_item);
+		it->second.attraction.MakeSymRefs(c_item->att, loader);
+		loader.assignSymbolReference(it->second.sid, ovlSIDManager::TAG, &c_item->sid_ref);
+		loader.assignSymbolReference(it->second.spline, ovlSPLManager::TAG, &c_item->spline_ref);
+
+		/*
         SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), TAG), reinterpret_cast<unsigned long*>(c_item));
         GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_item), false, c_symbol);
 
@@ -130,6 +144,7 @@ void ovlCHGManager::Make(cOvlInfo* info) {
                              reinterpret_cast<unsigned long*>(&c_item->spline_ref));
 
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
+		 */
 
     }
 

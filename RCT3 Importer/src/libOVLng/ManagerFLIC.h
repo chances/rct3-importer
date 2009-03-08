@@ -89,41 +89,9 @@ public:
 
     virtual void Make(cOvlInfo* info);
 
-    virtual const char* Loader() const {
-        return LOADER;
-    };
-    virtual const char* Name() const {
-        return NAME;
-    };
-    virtual const char* Tag() const {
-        return TAG;
-    };
-    virtual const unsigned long Type() const {
-        return TYPE;
-    };
-};
-/*
-class ovlFLICManager: public ovlOVLManager {
-public:
-    static const char* LOADER;
-    static const char* NAME;
-    static const char* TAG;
-    static const unsigned long TYPE;
-private:
-    map<string, FlicInternal> m_flics;
-public:
-    ovlFLICManager(): ovlOVLManager() {
-        m_deferable = true;
-    };
-    virtual ~ovlFLICManager();
-
-    void AddTexture(const string& name, unsigned long dimension, unsigned long size, unsigned long* data);
-    void SetParameters(const string& name, unsigned long format = 0x13, unsigned long unk1 = 1, float unk2 = 1.0);
-
-    FlicStruct** GetPointer1(const string& name);
-    FlicStruct* GetPointer2(const string& name);
-
-    virtual void Make(cOvlInfo* info);
+	virtual int GetCount(r3::cOvlType type) const {
+		return 0;
+	}
 
     virtual const char* Loader() const {
         return LOADER;
@@ -138,5 +106,4 @@ public:
         return TYPE;
     };
 };
-*/
 #endif

@@ -108,47 +108,12 @@ public:
 
     virtual void Make(cOvlInfo* info);
 
-    virtual const char* Name() const {
-        return NAME;
-    };
-    virtual const char* Tag() const {
-        return TAG;
-    };
-};
-
-/*
-class ovlSHSManager: public ovlOVLManager {
-public:
-    static const char* NAME;
-    static const char* TAG;
-private:
-    vector<StaticShape1*> m_modellist;
-    vector<string> m_modelnames;
-    map<StaticShape2*, string> m_ftxmap;
-    map<StaticShape2*, string> m_txsmap;
-
-    StaticShape1* m_cmodel;
-    unsigned long m_nmesh;
-    long m_meshcount;
-    unsigned long m_neffect;
-    long m_effectcount;
-public:
-    ovlSHSManager(): ovlOVLManager() {
-        m_cmodel = NULL;
-        m_nmesh = 0;
-        m_neffect = 0;
-        m_meshcount = 0;
-        m_effectcount = 0;
-    };
-    virtual ~ovlSHSManager();
-
-    void AddModel(const char* name, unsigned long meshes, unsigned long effects);
-    void SetBoundingBox(const D3DVECTOR& bbox1, const D3DVECTOR& bbox2);
-    void AddEffectPoint(const char* name, const D3DMATRIX& matrix);
-    void AddMesh(const char* ftx, const char* txs, unsigned long place, unsigned long flags, unsigned long sides,
-                 unsigned long vertexcount, VERTEX* vertices, unsigned long indexcount, unsigned long* indices);
-
-    virtual void Make(cOvlInfo* info);
+	virtual int GetCount(r3::cOvlType type) const {
+		if (type == r3::OVLT_COMMON)
+			return 0;
+		else
+			return m_items.size();
+	}
 
     virtual const char* Name() const {
         return NAME;
@@ -157,5 +122,5 @@ public:
         return TAG;
     };
 };
-*/
+
 #endif

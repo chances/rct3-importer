@@ -414,7 +414,7 @@ bool c3DLoader::fetchObject(unsigned int index, vector<wxString>& bonenames, cBo
                     continue;
                 }
 				if (id >= m_boneId.size()) {
-					wxLocalLog("Bone blown: %d, %d", index, id);
+					//wxLocalLog("Bone blown: %d, %d", index, id);
 				}
                 wxString bn = m_boneId[id];
                 vector<wxString>::iterator it = find_in(bonenames, bn);

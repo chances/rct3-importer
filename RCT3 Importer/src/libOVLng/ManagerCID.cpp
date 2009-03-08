@@ -128,6 +128,31 @@ void ovlCIDManager::AddItem(const cCarriedItem& item) {
     m_size += item.extras.size() * 4;
 
 
+	cLoader& loader = GetLSRManager()->reserveIndexElement(OVLT_UNIQUE, item.name, ovlCIDManager::TAG);
+	
+	loader.reserveSymbolReference(item.nametxt, ovlTXTManager::TAG);
+	loader.reserveSymbolReference(item.pluralnametxt, ovlTXTManager::TAG);
+    // The following is not an error, if not set it's symref'd to :gsi
+	loader.reserveSymbolReference(item.icon, ovlGSIManager::TAG);
+
+	loader.reserveSymbolReference(item.shape.shape1, ovlSHSManager::TAG, false);
+	loader.reserveSymbolReference(item.shape.shape2, ovlSHSManager::TAG, false);
+	
+    // The following is not an error, if not set it's symref'd to :cid
+	loader.reserveSymbolReference(item.trash.wrapper, ovlCIDManager::TAG);
+	
+	foreach(const string& extra, item.extras)
+		loader.reserveSymbolReference(extra, ovlCEDManager::TAG);
+
+	loader.reserveSymbolReference(item.shape.fts, ovlFTXManager::TAG, false);
+	
+	STRINGLIST_ADD(item.soaked.male_morphmesh_body, true);
+	STRINGLIST_ADD(item.soaked.male_morphmesh_legs, true);
+	STRINGLIST_ADD(item.soaked.female_morphmesh_body, true);
+	STRINGLIST_ADD(item.soaked.female_morphmesh_legs, true);
+	STRINGLIST_ADD(item.soaked.textureoption, true);
+
+/*
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
     GetLSRManager()->AddLoader(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(item.name.c_str(), ovlCIDManager::TAG);
@@ -163,6 +188,7 @@ void ovlCIDManager::AddItem(const cCarriedItem& item) {
     GetStringTable()->AddString(item.soaked.female_morphmesh_body.c_str());
     GetStringTable()->AddString(item.soaked.female_morphmesh_legs.c_str());
     GetStringTable()->AddString(item.soaked.textureoption.c_str());
+	 */
 }
 
 void ovlCIDManager::Make(cOvlInfo* info) {
@@ -188,6 +214,28 @@ void ovlCIDManager::Make(cOvlInfo* info) {
         }
         it->second.Fill(c_item);
 
+		cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_UNIQUE, it->first, ovlCIDManager::TAG, c_item);
+		loader.assignSymbolReference(it->second.nametxt, ovlTXTManager::TAG, &c_item->name);
+		loader.assignSymbolReference(it->second.pluralnametxt, ovlTXTManager::TAG, &c_item->pluralname);
+		loader.assignSymbolReference(it->second.icon, ovlGSIManager::TAG, &c_item->GSI);
+		
+		loader.assignSymbolReference(it->second.shape.shape1, ovlSHSManager::TAG, &c_item->shape1, false);
+		loader.assignSymbolReference(it->second.shape.shape2, ovlSHSManager::TAG, &c_item->shape2, false);
+		
+		loader.assignSymbolReference(it->second.trash.wrapper, ovlCIDManager::TAG, &c_item->wrapper);
+		
+        unsigned long c = 0;
+		foreach(const string& extra, it->second.extras)
+			loader.assignSymbolReference(extra, ovlCEDManager::TAG, &c_item->extras[c++]);
+			
+		loader.assignSymbolReference(it->second.shape.fts, ovlFTXManager::TAG, &c_item->fts, false);
+		
+		STRINGLIST_ASSIGN(c_item->male_morphmesh_body, it->second.soaked.male_morphmesh_body, true, GetStringTable(), GetRelocationManager());
+		STRINGLIST_ASSIGN(c_item->male_morphmesh_legs, it->second.soaked.male_morphmesh_legs, true, GetStringTable(), GetRelocationManager());
+		STRINGLIST_ASSIGN(c_item->female_morphmesh_body, it->second.soaked.female_morphmesh_body, true, GetStringTable(), GetRelocationManager());
+		STRINGLIST_ASSIGN(c_item->female_morphmesh_legs, it->second.soaked.female_morphmesh_legs, true, GetStringTable(), GetRelocationManager());
+		STRINGLIST_ASSIGN(c_item->textureoption, it->second.soaked.textureoption, true, GetStringTable(), GetRelocationManager());
+		/*
         SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), TAG), reinterpret_cast<unsigned long*>(c_item));
         GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_item), false, c_symbol);
 
@@ -218,6 +266,7 @@ void ovlCIDManager::Make(cOvlInfo* info) {
             GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.shape.fts.c_str(), ovlFTXManager::TAG),
                                  reinterpret_cast<unsigned long*>(&c_item->fts));
         }
+		 
         c_item->male_morphmesh_body = GetStringTable()->FindString(it->second.soaked.male_morphmesh_body.c_str());
         GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_item->male_morphmesh_body));
         c_item->male_morphmesh_legs = GetStringTable()->FindString(it->second.soaked.male_morphmesh_legs.c_str());
@@ -230,6 +279,7 @@ void ovlCIDManager::Make(cOvlInfo* info) {
         GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_item->textureoption));
 
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
+		 */
 
     }
 }

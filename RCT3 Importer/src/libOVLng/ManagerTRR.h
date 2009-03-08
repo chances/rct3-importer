@@ -230,7 +230,7 @@ public:
 
     void MakeCommonPointers(r3::TrackedRide_Common* ptr, unsigned char*& uni_ptr, unsigned char*& com_ptr, ovlRelocationManager* rel) const;
 
-    void MakeCommonSymRefs(r3::TrackedRide_Common* trr, ovlLodSymRefManager* lsr, ovlStringTable* st) const;
+    void MakeCommonSymRefs(r3::TrackedRide_Common* trr, cLoader& loader) const;
 
     unsigned long GetCommonSize() const;
     unsigned long GetUniqueSize() const;
@@ -253,6 +253,13 @@ public:
     void AddRide(const cTrackedRide& item);
 
     virtual void Make(cOvlInfo* info);
+
+	virtual int GetCount(r3::cOvlType type) const {
+		if (type == r3::OVLT_COMMON)
+			return 0;
+		else
+			return m_items.size();
+	}
 
     virtual const char* Name() const {
         return NAME;

@@ -114,7 +114,7 @@ private:
     cOvl m_ovl;
 
     void Load(xmlcpp::cXmlNode& root);
-    cOvlType ParseType(const xmlcpp::cXmlNode& node, const wxString& nodes, const wxString& attribute = wxT("target"));
+    r3::cOvlType ParseType(const xmlcpp::cXmlNode& node, const wxString& nodes, const wxString& attribute = wxT("target"));
     wxString ParseString(const xmlcpp::cXmlNode& node, const wxString& nodes, const wxString& attribute, bool* variable, bool addprefix = false);
     wxString HandleStringContent(const wxString& content, bool* variable, bool addprefix = false);
     void ParseStringOption(std::string& str, const xmlcpp::cXmlNode& node, const wxString& attribute, bool* variable, bool addprefix = false);

@@ -33,6 +33,7 @@
 #include "OVLng.h"
 
 using namespace std;
+using namespace r3;
 
 const char* ovlBTBLManager::LOADER = "FGDK";
 const char* ovlBTBLManager::NAME = "BmpTbl";
@@ -129,7 +130,9 @@ void ovlBTBLManager::Init(cOvl* ovl) {
     if (ovl->HasManager<ovlFLICManager>())
         BOOST_THROW_EXCEPTION(EOvl("Tried to init BmpTbl after adding textures"));
 
-    GetLSRManager()->AddLoader(OVLT_COMMON);
+    //GetLSRManager()->AddLoader(OVLT_COMMON);
+	cLoader& loader = GetLSRManager()->reserveIndexElement(OVLT_COMMON, ovlBTBLManager::TAG);
+	loader.identify("singleton");
 }
 
 unsigned long ovlBTBLManager::AddTexture(const cTexture& item) {
@@ -153,27 +156,36 @@ void ovlBTBLManager::Make(cOvlInfo* info) {
     c_tbl->unk = 0;
     c_tbl->count = m_items.size();
 
-    GetLSRManager()->OpenLoader(OVLT_COMMON, TAG, reinterpret_cast<unsigned long*>(&c_tbl), 2, NULL);
-    unsigned char* c_extradata1 = new unsigned char[8 + (c_tbl->count * sizeof(FlicHeader))];
-    unsigned char* c_extra1 = c_extradata1;
+	cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_COMMON, "singleton", ovlBTBLManager::TAG, &c_tbl);
+    //GetLSRManager()->OpenLoader(OVLT_COMMON, TAG, reinterpret_cast<unsigned long*>(&c_tbl), 2, NULL);
+    //unsigned char* c_extradata1 = new unsigned char[8 + (c_tbl->count * sizeof(FlicHeader))];
+    boost::shared_array<unsigned char> c_extradata1(new unsigned char[8 + (c_tbl->count * sizeof(FlicHeader))]);
+    unsigned char* c_extra1 = c_extradata1.get();
     *reinterpret_cast<unsigned long*>(c_extra1) = 0;
     c_extra1 += 4;
     *reinterpret_cast<unsigned long*>(c_extra1) = 0;
     c_extra1 += 4;
     FlicHeader* c_headers = reinterpret_cast<FlicHeader*>(c_extra1);
 
-    unsigned char* c_extradata2 = new unsigned char[m_size];
-    unsigned char* c_extra2 = c_extradata2;
+    //unsigned char* c_extradata2 = new unsigned char[m_size];
+    boost::shared_array<unsigned char> c_extradata2(new unsigned char[m_size]);
+    unsigned char* c_extra2 = c_extradata2.get();
 
     for (vector<cTexture>::iterator it = m_items.begin(); it != m_items.end(); ++it) {
         it->FillHeader(c_headers);
         c_headers++;
         c_extra2 += it->FillRawData(c_extra2);
     }
+	
+	loader.addExtraChunk(8 + (c_tbl->count * sizeof(FlicHeader)), c_extradata1);
+	loader.addExtraChunk(m_size, c_extradata2);
+	loader.addExtraDataV5Info(V5INFO_2);
 
+	/*
     GetLSRManager()->AddExtraData(OVLT_COMMON, 8 + (c_tbl->count * sizeof(FlicHeader)), c_extradata1);
     GetLSRManager()->AddExtraData(OVLT_COMMON, m_size, c_extradata2);
+	GetLSRManager()->AddExtraDataV5Info(OVLT_COMMON, V5INFO_2);
 
     GetLSRManager()->CloseLoader(OVLT_COMMON);
-
+	*/
 }

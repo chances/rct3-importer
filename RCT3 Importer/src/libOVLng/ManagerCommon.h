@@ -165,12 +165,12 @@ public:
     void MakePointers(r3::Attraction_S** ptr, unsigned char*& uni_ptr, unsigned char*& com_ptr, ovlRelocationManager* rel) const;
     void MakePointers(r3::Attraction_V* ptr, unsigned char*& uni_ptr, unsigned char*& com_ptr, ovlRelocationManager* rel) const;
 
-    void MakeSymRefs(r3::Attraction_S* ptr, ovlLodSymRefManager* lsr, ovlStringTable* st) const;
-    void MakeSymRefs(r3::Attraction_V* ptr, ovlLodSymRefManager* lsr, ovlStringTable* st) const;
+    void MakeSymRefs(r3::Attraction_S* ptr, cLoader& loader) const;
+    void MakeSymRefs(r3::Attraction_V* ptr, cLoader& loader) const;
 
     unsigned long GetCommonSize() const;
     unsigned long GetUniqueSize() const;
-    void DoAdd(ovlStringTable* st, ovlLodSymRefManager* lsr) const;
+    void DoAdd(cLoader& loader) const;
 };
 
 class cRideOption {
@@ -253,13 +253,13 @@ public:
     void MakePointers(r3::Ride_S** ptr, unsigned char*& uni_ptr, unsigned char*& com_ptr, const cAttraction& att, ovlRelocationManager* rel) const;
     void MakePointers(r3::Ride_V* ptr, unsigned char*& uni_ptr, unsigned char*& com_ptr, const cAttraction& att, ovlRelocationManager* rel) const;
 
-    void MakeSymRefs(r3::Ride_S* ptr, const cAttraction& att, ovlLodSymRefManager* lsr, ovlStringTable* st) const;
-    void MakeSymRefs(r3::Ride_V* ptr, const cAttraction& att, ovlLodSymRefManager* lsr, ovlStringTable* st) const;
+    void MakeSymRefs(r3::Ride_S* ptr, const cAttraction& att, cLoader& loader) const;
+    void MakeSymRefs(r3::Ride_V* ptr, const cAttraction& att, cLoader& loader) const;
 
 
     unsigned long GetCommonSize(const cAttraction& att) const;
     unsigned long GetUniqueSize(const cAttraction& att) const;
-    void DoAdd(ovlStringTable* st, ovlLodSymRefManager* lsr) const;
+    void DoAdd(cLoader& loader) const;
 
 };
 

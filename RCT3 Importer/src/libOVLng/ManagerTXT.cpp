@@ -33,6 +33,7 @@
 #include "OVLException.h"
 
 using namespace std;
+using namespace r3;
 
 const char* ovlTXTManager::LOADER = "FGDK";
 const char* ovlTXTManager::NAME = "Text";
@@ -57,9 +58,12 @@ void ovlTXTManager::AddText(const char* name, const wchar_t* str) {
     // Text
     m_size += (wcslen(str)+1) * 2;
 
-    GetLSRManager()->AddLoader(OVLT_COMMON);
+	GetLSRManager()->reserveIndexElement(OVLT_COMMON, name, ovlTXTManager::TAG);
+	/*
+	GetLSRManager()->AddLoader(OVLT_COMMON);
     GetLSRManager()->AddSymbol(OVLT_COMMON);
     GetStringTable()->AddSymbolString(name, Tag());
+	 */
 }
 
 void ovlTXTManager::Make(cOvlInfo* info) {
@@ -71,18 +75,35 @@ void ovlTXTManager::Make(cOvlInfo* info) {
     ovlOVLManager::Make(info);
     unsigned char* c_data = m_blobs[""].data;
 
+	bool first = true;
+
     for (map<string, counted_array_ptr<wchar_t> >::iterator it = m_items.begin(); it != m_items.end(); ++it) {
         // Data Transfer, Text
         wchar_t* c_txt = reinterpret_cast<wchar_t*>(c_data);
         c_data += (wcslen(it->second.get())+1) * 2;
         wcscpy(c_txt, it->second.get());
 
+		cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_COMMON, it->first, ovlTXTManager::TAG, c_txt);
+		if (first) {
+			boost::shared_array<unsigned char> ex(new unsigned char[4]);
+			*reinterpret_cast<unsigned long*>(ex.get()) = 1;
+			loader.addExtraChunk(4, ex);
+			loader.addExtraDataV5Info(V5INFO_1);
+			first = false;
+		}
+		
+		/*
         SymbolStruct* s_txt = GetLSRManager()->MakeSymbol(OVLT_COMMON, GetStringTable()->FindSymbolString(it->first.c_str(), Tag()), reinterpret_cast<unsigned long*>(c_txt));
-        GetLSRManager()->OpenLoader(OVLT_COMMON, TAG, reinterpret_cast<unsigned long*>(c_txt), 1, s_txt);
-        unsigned char* ex = new unsigned char[4];
-        *reinterpret_cast<unsigned long*>(ex) = 1;
-        GetLSRManager()->AddExtraData(OVLT_COMMON, 4, ex);
+        GetLSRManager()->OpenLoader(OVLT_COMMON, TAG, reinterpret_cast<unsigned long*>(c_txt), first?1:0, s_txt);
+		if (first) {
+			unsigned char* ex = new unsigned char[4];
+			*reinterpret_cast<unsigned long*>(ex) = 1;
+			GetLSRManager()->AddExtraData(OVLT_COMMON, 4, ex);
+			GetLSRManager()->AddExtraDataV5Info(OVLT_COMMON, V5INFO_1);
+			first = false;
+		}
         GetLSRManager()->CloseLoader(OVLT_COMMON);
+		 */
     }
 
 }

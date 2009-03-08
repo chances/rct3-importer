@@ -53,6 +53,13 @@ public:
 
     virtual void Make(cOvlInfo* info);
 
+	virtual int GetCount(r3::cOvlType type) const {
+		if (type == r3::OVLT_COMMON)
+			return m_items.size();
+		else
+			return 0;
+	}
+
     virtual const char* Loader() const {
         return LOADER;
     };

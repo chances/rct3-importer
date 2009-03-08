@@ -36,6 +36,7 @@
 #endif
 
 using namespace std;
+using namespace r3;
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -43,16 +44,20 @@ using namespace std;
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-cOvl::cOvl(string file) {
-    Init(file);
+cOvl::cOvl(string file, int version) {
+    Init(file, version);
 }
 
-void cOvl::Init(string file) {
+void cOvl::Init(string file, int version) {
     m_file = file;
     m_init = true;
+	
+	if ((version != 1) and (version != 4) and (version != 5))
+		BOOST_THROW_EXCEPTION(EOvl("cOvl initialized with illegal version number"));
 
     //string temp = m_file + ".common.ovl";
     m_ovlinfo.OpenFiles[OVLT_COMMON].filename = m_file + ".common.ovl";
+    m_ovlinfo.OpenFiles[OVLT_COMMON].version = version;
     //strcpy(m_ovlinfo.OpenFiles[OVL_COMMON].FileName, temp.c_str());
     //m_ovlinfo.OpenFiles[OVL_COMMON].ReferenceCount=0;
     //m_ovlinfo.OpenFiles[OVL_COMMON].References=NULL;
@@ -60,6 +65,7 @@ void cOvl::Init(string file) {
 
     //temp = m_file + ".unique.ovl";
     m_ovlinfo.OpenFiles[OVLT_UNIQUE].filename = m_file + ".unique.ovl";
+    m_ovlinfo.OpenFiles[OVLT_UNIQUE].version = version;
     //strcpy(m_ovlinfo.OpenFiles[OVL_UNIQUE].FileName, temp.c_str());
     //memset(m_ovlinfo.OpenFiles[OVL_UNIQUE].Types,0,sizeof(m_ovlinfo.OpenFiles[OVL_UNIQUE].Types));
 

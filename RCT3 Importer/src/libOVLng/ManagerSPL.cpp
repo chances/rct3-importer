@@ -191,10 +191,12 @@ void ovlSPLManager::AddSpline(const cSpline& item) {
     m_size += m_items[item.name].lengths.size() * sizeof(float);
     m_size += m_items[item.name].datas.size() * 14;
 
+	GetLSRManager()->reserveIndexElement(OVLT_COMMON, item.name, ovlSPLManager::TAG);
+	/*
     GetLSRManager()->AddSymbol(OVLT_COMMON);
     GetLSRManager()->AddLoader(OVLT_COMMON);
     GetStringTable()->AddSymbolString(item.name.c_str(), ovlSPLManager::TAG);
-
+	*/
 }
 
 void ovlSPLManager::Make(cOvlInfo* info) {
@@ -224,10 +226,12 @@ void ovlSPLManager::Make(cOvlInfo* info) {
 
         it->second.Fill(c_item);
 
+		GetLSRManager()->assignIndexElement(OVLT_COMMON, it->first, ovlSPLManager::TAG, c_item);
+		/*
         SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_COMMON, GetStringTable()->FindSymbolString(it->first.c_str(), TAG), reinterpret_cast<unsigned long*>(c_item));
         GetLSRManager()->OpenLoader(OVLT_COMMON, TAG, reinterpret_cast<unsigned long*>(c_item), false, c_symbol);
         GetLSRManager()->CloseLoader(OVLT_COMMON);
-
+		*/
     }
 
 }

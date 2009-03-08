@@ -339,12 +339,22 @@ void cTrackedRide::MakeCommonPointers(r3::TrackedRide_Common* ptr, unsigned char
   *
   * @todo: document this function
   */
-void cTrackedRide::MakeCommonSymRefs(r3::TrackedRide_Common* trr, ovlLodSymRefManager* lsr, ovlStringTable* st) const {
+void cTrackedRide::MakeCommonSymRefs(r3::TrackedRide_Common* trr, cLoader& loader) const {
     for(int i = 0; i < sections.size(); ++i) {
-        lsr->MakeSymRef(OVLT_UNIQUE, st->FindSymbolString(sections[i].name, ovlTKSManager::TAG),
-                             reinterpret_cast<unsigned long*>(&trr->track_sections_ref[i]));
+		loader.assignSymbolReference(sections[i].name, ovlTKSManager::TAG, &trr->track_sections_ref[i]);
     }
-
+	
+	loader.assignSymbolReference(tower.other_top, ovlTKSManager::TAG, &trr->other_top_ref, false);
+	loader.assignSymbolReference(tower.other_mid, ovlTKSManager::TAG, &trr->other_mid_ref, false);
+	loader.assignSymbolReference(tower.top, ovlTKSManager::TAG, &trr->tower_top_ref, false);
+	loader.assignSymbolReference(tower.mid, ovlTKSManager::TAG, &trr->tower_mid_ref, false);
+	
+	loader.assignSymbolReference(splines.track, ovlSPLManager::TAG, &trr->track_spline_ref, false);
+	loader.assignSymbolReference(splines.track_big, ovlSPLManager::TAG, &trr->track_big_spline_ref, false);
+	loader.assignSymbolReference(splines.car, ovlSPLManager::TAG, &trr->car_spline_ref, false);
+	loader.assignSymbolReference(splines.car_swing, ovlSPLManager::TAG, &trr->car_swing_spline_ref, false);
+	
+/*
     if (tower.other_top != "") {
         lsr->MakeSymRef(OVLT_UNIQUE, st->FindSymbolString(tower.other_top, ovlTKSManager::TAG),
                              reinterpret_cast<unsigned long*>(&trr->other_top_ref));
@@ -377,6 +387,7 @@ void cTrackedRide::MakeCommonSymRefs(r3::TrackedRide_Common* trr, ovlLodSymRefMa
         lsr->MakeSymRef(OVLT_UNIQUE, st->FindSymbolString(splines.car_swing, ovlSPLManager::TAG),
                              reinterpret_cast<unsigned long*>(&trr->car_swing_spline_ref));
     }
+	 */
 }
 
 /** @brief GetCommonSize
@@ -448,6 +459,50 @@ void ovlTRRManager::AddRide(const cTrackedRide& item) {
     // track_section_structs
     m_commonsize += item.sections.size() * sizeof(TrackedRideTrackSectionStruct);
 
+	cLoader& loader = GetLSRManager()->reserveIndexElement(OVLT_UNIQUE, item.name, ovlTRRManager::TAG);
+	
+    item.attraction.DoAdd(loader);
+    item.ride.DoAdd(loader);
+
+    foreach(const cTrackedRideSection& section, item.sections) {
+		loader.reserveSymbolReference(section.name, ovlTKSManager::TAG);
+        GetStringTable()->AddString(boost::to_lower_copy(section.name));
+    }
+    foreach(const string& train, item.trains) {
+        GetStringTable()->AddString(train);
+    }
+	
+	STRINGLIST_ADD(item.specials.cable_lift, false);
+	STRINGLIST_ADD(item.specials.lift_car, false);
+
+	STRINGLIST_ADD(item.station.name, false);
+
+	loader.reserveSymbolReference(item.tower.other_top, ovlTKSManager::TAG, false);
+	loader.reserveSymbolReference(item.tower.other_mid, ovlTKSManager::TAG, false);
+	loader.reserveSymbolReference(item.tower.top, ovlTKSManager::TAG, false);
+	loader.reserveSymbolReference(item.tower.mid, ovlTKSManager::TAG, false);
+	
+	loader.reserveSymbolReference(item.splines.track, ovlSPLManager::TAG, false);
+	loader.reserveSymbolReference(item.splines.track_big, ovlSPLManager::TAG, false);
+	loader.reserveSymbolReference(item.splines.car, ovlSPLManager::TAG, false);
+	loader.reserveSymbolReference(item.splines.car_swing, ovlSPLManager::TAG, false);
+
+    if (item.attraction.isnew()) {
+        foreach(const string& trpath, item.trackpaths) {
+            GetStringTable()->AddString(trpath);
+        }
+// TODO (belgabor#1#): extraarrays
+		loader.reserveSymbolReference(item.tower.other_top_flipped, ovlTKSManager::TAG, false);
+		loader.reserveSymbolReference(item.tower.other_mid_flipped, ovlTKSManager::TAG, false);
+		
+        if (item.attraction.wild()) {
+			loader.reserveSymbolReference(item.wild.splitter, ovlSVDManager::TAG, false);
+			STRINGLIST_ADD(item.wild.internalname, false);
+        }
+    } else {
+        GetStringTable()->AddString(item.trackpaths[0]);
+    }
+/*
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
     GetLSRManager()->AddLoader(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(item.name, ovlTRRManager::TAG);
@@ -529,7 +584,7 @@ void ovlTRRManager::AddRide(const cTrackedRide& item) {
     } else {
         GetStringTable()->AddString(item.trackpaths[0]);
     }
-
+*/
 }
 
 void ovlTRRManager::Make(cOvlInfo* info) {
@@ -555,7 +610,19 @@ void ovlTRRManager::Make(cOvlInfo* info) {
             GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_item->track_paths));
 
             item.second.Fill(c_item, GetStringTable(), GetRelocationManager());
-
+			
+			cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_UNIQUE, item.first, ovlTRRManager::TAG, c_item);
+			
+            item.second.ride.MakeSymRefs(c_item->ride_sub_s, item.second.attraction, loader);
+            item.second.MakeCommonSymRefs(&c_item->common, loader);
+			
+			loader.assignSymbolReference(item.second.tower.other_top_flipped, ovlTKSManager::TAG, &c_item->other_top_flipped_ref, false);
+			loader.assignSymbolReference(item.second.tower.other_mid_flipped, ovlTKSManager::TAG, &c_item->other_mid_flipped_ref, false);
+			
+			if (item.second.attraction.wild()) {
+				loader.assignSymbolReference(item.second.wild.splitter, ovlSVDManager::TAG, &reinterpret_cast<TrackedRide_W*>(c_item)->w.splitter_ref, false);
+			}
+/*
             SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(item.first, TAG), reinterpret_cast<unsigned long*>(c_item));
             GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_item), false, c_symbol);
 
@@ -578,6 +645,7 @@ void ovlTRRManager::Make(cOvlInfo* info) {
             }
 
             GetLSRManager()->CloseLoader(OVLT_UNIQUE);
+*/
         } else {
             TrackedRide_V* c_item = reinterpret_cast<TrackedRide_V*>(c_data);
             c_data += sizeof(TrackedRide_V);
@@ -588,6 +656,12 @@ void ovlTRRManager::Make(cOvlInfo* info) {
 
             item.second.Fill(c_item, GetStringTable(), GetRelocationManager());
 
+			cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_UNIQUE, item.first, ovlTRRManager::TAG, c_item);
+			
+            item.second.attraction.MakeSymRefs(&c_item->att, loader);
+            item.second.ride.MakeSymRefs(&c_item->ride, item.second.attraction, loader);
+            item.second.MakeCommonSymRefs(&c_item->common, loader);
+			/*
             SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(item.first, TAG), reinterpret_cast<unsigned long*>(c_item));
             GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_item), false, c_symbol);
 
@@ -596,6 +670,7 @@ void ovlTRRManager::Make(cOvlInfo* info) {
             item.second.MakeCommonSymRefs(&c_item->common, GetLSRManager(), GetStringTable());
 
             GetLSRManager()->CloseLoader(OVLT_UNIQUE);
+			 */
         }
     }
 

@@ -192,6 +192,37 @@ void ovlBSHManager::AddModel(const cBoneShape1& item) {
     //m_size += 2 * c_bsh->BoneCount * sizeof(D3DMATRIX);
     m_blobs[item.name].size += 2 * item.bones.size() * sizeof(MATRIX);
 
+	cLoader& loader = GetLSRManager()->reserveIndexElement(OVLT_UNIQUE, item.name, ovlBSHManager::TAG);
+
+    // Meshes
+    foreach(const cBoneShape2& shape, item.meshes) {
+        // BoneShape2
+        m_size += sizeof(BoneShapeMesh);
+        // Vertices
+        m_blobs[item.name].size += shape.vertices.size() * sizeof(VERTEX2);
+        // Indices
+        m_blobs[item.name].size += shape.indices.size() * sizeof(unsigned short);
+#ifndef GLASS_OLD
+        if ((shape.IsAlgoNone()) && (shape.placetexturing != 0)) {
+            if (shape.indices.size() % 3)
+                BOOST_THROW_EXCEPTION(EOvl("ovlBSHManager::AddModel: mesh has triangle sort algorithm none but indices aren't divisible by 3"));
+        }
+        if ((shape.placetexturing != 0) && (!shape.IsAlgoNone())) {
+            m_blobs[item.name].size += 2 * shape.indices.size() * sizeof(unsigned short);
+        }
+#endif
+
+        // Symbol Refs
+		loader.reserveSymbolReference(shape.fts, ovlFTXManager::TAG);
+		loader.reserveSymbolReference(shape.texturestyle, ovlTXSManager::TAG);
+    }
+
+    // Bone names
+    for (vector<cBoneStruct>::const_iterator it = item.bones.begin(); it != item.bones.end(); ++it) {
+        GetStringTable()->AddString(it->name.c_str());
+    }
+
+/*
     // Meshes
     for (vector<cBoneShape2>::const_iterator it = item.meshes.begin(); it != item.meshes.end(); ++it) {
         // BoneShape2
@@ -225,7 +256,7 @@ void ovlBSHManager::AddModel(const cBoneShape1& item) {
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
     GetLSRManager()->AddLoader(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(item.name.c_str(), ovlBSHManager::TAG);
-
+ */
 }
 
 void ovlBSHManager::Make(cOvlInfo* info) {
@@ -249,8 +280,9 @@ void ovlBSHManager::Make(cOvlInfo* info) {
         DUMP_RELOCATION("ovlBSHManager::Make, BoneShape2 pointers", c_model->sh);
 
         // Symbol and Loader
-        SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), Tag()), reinterpret_cast<unsigned long*>(c_model));
-        GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_model), false, c_symbol);
+        //SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), Tag()), reinterpret_cast<unsigned long*>(c_model));
+        //GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_model), false, c_symbol);
+		cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_UNIQUE, it->first, ovlBSHManager::TAG, c_model);
 
         unsigned long s = 0;
         for (vector<cBoneShape2>::iterator itb = it->second.meshes.begin(); itb != it->second.meshes.end(); ++itb) {
@@ -275,8 +307,10 @@ void ovlBSHManager::Make(cOvlInfo* info) {
             DUMP_RELOCATION("ovlBSHManager::Make, Triangles", c_model->sh[s]->indices);
 
             // Symbol references
-            GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(itb->fts.c_str(), ovlFTXManager::TAG), reinterpret_cast<unsigned long*>(&c_model->sh[s]->ftx_ref));
-            GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(itb->texturestyle.c_str(), ovlTXSManager::TAG), reinterpret_cast<unsigned long*>(&c_model->sh[s]->txs_ref));
+            //GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(itb->fts.c_str(), ovlFTXManager::TAG), reinterpret_cast<unsigned long*>(&c_model->sh[s]->ftx_ref));
+            //GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(itb->texturestyle.c_str(), ovlTXSManager::TAG), reinterpret_cast<unsigned long*>(&c_model->sh[s]->txs_ref));
+			loader.assignSymbolReference(itb->fts, ovlFTXManager::TAG, &c_model->sh[s]->ftx_ref);
+			loader.assignSymbolReference(itb->texturestyle, ovlTXSManager::TAG, &c_model->sh[s]->txs_ref);
 
             s++;
         }
@@ -305,7 +339,7 @@ void ovlBSHManager::Make(cOvlInfo* info) {
         }
 
         it->second.Fill(c_model);
-        GetLSRManager()->CloseLoader(OVLT_UNIQUE);
+        //GetLSRManager()->CloseLoader(OVLT_UNIQUE);
     }
 
 }

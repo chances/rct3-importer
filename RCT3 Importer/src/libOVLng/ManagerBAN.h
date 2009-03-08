@@ -81,51 +81,12 @@ public:
 
     virtual void Make(cOvlInfo* info);
 
-    virtual const char* Name() const {
-        return NAME;
-    };
-    virtual const char* Tag() const {
-        return TAG;
-    };
-};
-
-/*
-class ovlBANManager: public ovlOVLManager {
-public:
-    static const char* NAME;
-    static const char* TAG;
-private:
-    vector<BoneAnim*> m_animationlist;
-    vector<string> m_animationnames;
-
-    //BoneAnim* m_canim;
-    BoneAnimBone* m_cbone;
-    long m_bonecount;
-    long m_transcount;
-    long m_rotcount;
-
-    unsigned long m_ntrans;
-    unsigned long m_nrot;
-
-    void CloseBone();
-public:
-    ovlBANManager(): ovlOVLManager() {
-        //m_canim = NULL;
-        m_cbone = NULL;
-        m_bonecount = 0;
-        m_transcount = 0;
-        m_rotcount = 0;
-        m_ntrans = 0;
-        m_nrot = 0;
-    };
-    virtual ~ovlBANManager();
-
-    void AddAnimation(const char* name, unsigned long bones, float totaltime);
-    void AddBone(const char* name, unsigned long translations, unsigned long rotations);
-    void AddTranslation(const txyz& t);
-    void AddRotation(const txyz& t);
-
-    virtual unsigned char* Make(cOvlInfo* info);
+	virtual int GetCount(r3::cOvlType type) const {
+		if (type == r3::OVLT_COMMON)
+			return m_items.size();
+		else
+			return 0;
+	}
 
     virtual const char* Name() const {
         return NAME;
@@ -134,6 +95,5 @@ public:
         return TAG;
     };
 };
-*/
 
 #endif

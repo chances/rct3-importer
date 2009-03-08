@@ -84,9 +84,12 @@ void ovlSNDManager::AddItem(const cSound& item) {
     // Data
     m_blobs[item.name] = cOvlMemBlob(OVLT_COMMON, 2, sizeof(Sound) + item.channel1_size + item.channel2_size);
 
+	GetLSRManager()->reserveIndexElement(OVLT_COMMON, item.name, ovlSNDManager::TAG);
+	/*
     GetLSRManager()->AddSymbol(OVLT_COMMON);
     GetLSRManager()->AddLoader(OVLT_COMMON);
     GetStringTable()->AddSymbolString(item.name.c_str(), ovlSNDManager::TAG);
+	 */
 }
 
 void ovlSNDManager::Make(cOvlInfo* info) {
@@ -110,8 +113,11 @@ void ovlSNDManager::Make(cOvlInfo* info) {
         }
         item.second.Fill(*c_sound);
 
+		GetLSRManager()->assignIndexElement(OVLT_COMMON, item.first, ovlSNDManager::TAG, c_sound);
+		/*
         SymbolStruct* s_item = GetLSRManager()->MakeSymbol(OVLT_COMMON, GetStringTable()->FindSymbolString(item.first, Tag()), reinterpret_cast<unsigned long*>(c_sound));
         GetLSRManager()->OpenLoader(OVLT_COMMON, TAG, reinterpret_cast<unsigned long*>(c_sound), false, s_item);
         GetLSRManager()->CloseLoader(OVLT_COMMON);
+		 */
     }
 }

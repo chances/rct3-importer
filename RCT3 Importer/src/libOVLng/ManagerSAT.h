@@ -48,8 +48,8 @@ public:
 	    attraction.unk6 = r3::Constants::Attraction::BaseUpkeep::Other;
 	    attraction.unk12 = r3::Constants::Attraction::Unknown12::Default;
     };
-    void Fill(r3old::SpecialAttractionA* sp);
-    void Fill(r3old::SpecialAttractionB* sp);
+    void Fill(r3::SpecialAttraction_V* sp);
+    void Fill(r3::SpecialAttraction_SW* sp);
 };
 
 class ovlSATManager: public ovlOVLManager {
@@ -66,6 +66,13 @@ public:
     void AddAttraction(const cSpecialAttraction& item);
 
     virtual void Make(cOvlInfo* info);
+
+	virtual int GetCount(r3::cOvlType type) const {
+		if (type == r3::OVLT_COMMON)
+			return 0;
+		else
+			return m_items.size();
+	}
 
     virtual const char* Name() const {
         return NAME;

@@ -25,14 +25,6 @@
 
 #include "RawParse_cpp.h"
 
-#include "cXmlInputOutputCallbackString.h"
-#include "cXmlValidatorIsoSchematron.h"
-#include "cXmlValidatorMulti.h"
-#include "cXmlValidatorRNVRelaxNG.h"
-
-#include "rng/rct3xml-raw-v1.rnc.gz.h"
-#include "rng/rct3xml-raw-v1.sch.gz.h"
-
 void cRawParser::FillAllBakes(wxSortedArrayString& tofill) {
     tofill.push_back(wxT(RAWXML_VARIABLES));
     tofill.push_back(wxT(RAWXML_IMPORT));
@@ -43,30 +35,6 @@ void cRawParser::FillAllBakes(wxSortedArrayString& tofill) {
     tofill.push_back(wxT(RAWXML_TEX));
     tofill.push_back(wxT(RAWXML_TXT));
 //    tofill.push_back(wxT(RAWBAKE_XML));
-}
-
-boost::shared_ptr<cXmlValidator> cRawParser::Validator() {
-	wxLogDebug("cRawParser::Validator()");
-    cXmlInputOutputCallbackString::Init();
-    XMLCPP_RES_ADD_ONCE(rct3xml_raw_v1, rnc);
-    XMLCPP_RES_ADD_ONCE(rct3xml_raw_v1, sch);
-
-    boost::shared_ptr<cXmlValidatorMulti> val(new cXmlValidatorMulti());
-	wxLogDebug("cRawParser::Validator(), primary");
-    val->primary(boost::shared_ptr<cXmlValidator>(new cXmlValidatorRNVRelaxNG(XMLCPP_RES_USE(rct3xml_raw_v1, rnc).c_str())));
-	wxLogDebug("cRawParser::Validator(), secondary");
-    val->secondary(boost::shared_ptr<cXmlValidator>(new cXmlValidatorIsoSchematron(XMLCPP_RES_USE(rct3xml_raw_v1, sch).c_str())));
-    if (!val->primary()->ok()) {
-        wxString error(_("Internal Error: could not load raw RelaxNG schema:\n"));
-        error += val->primary()->wxgetErrorList();
-        throw RCT3Exception(error);
-    }
-    if (!val->secondary()->ok()) {
-        wxString error(_("Internal Error: could not load raw Schematron schema:\n"));
-        error += val->secondary()->wxgetErrorList();
-        throw RCT3Exception(error);
-    }
-    return val;
 }
 
 void cRawParser::Process(const wxFSFileName& file, const wxFileName& outputdir, const wxFileName& output) {
@@ -276,6 +244,9 @@ void cRawParser::Load(cXmlNode& root) {
 			}
 
 			if (m_output != wxT("")) {
+				unsigned long version = 1;
+				OPTION_PARSE(unsigned long, version, ParseUnsigned(root, RAWXML_ROOT, "version"));
+				
 				if (!m_output.IsAbsolute())
 					m_output.MakeAbsolute(m_outputbasedir.GetPathWithSep());
 				m_output.SetExt(wxT(""));
@@ -307,9 +278,9 @@ void cRawParser::Load(cXmlNode& root) {
 
 				if ((!m_dryrun) && (m_mode != MODE_BAKE)) {
 	#ifdef UNICODE
-					m_ovl.Init(m_output.GetFullPath().mb_str(wxConvFile).data());
+					m_ovl.Init(m_output.GetFullPath().mb_str(wxConvFile).data(), version);
 	#else
-					m_ovl.Init(m_output.GetFullPath().fn_str());
+					m_ovl.Init(m_output.GetFullPath().fn_str(), version);
 	#endif
 				}
 				wxLogMessage(_("Writing ovl from raw: ")+m_output.GetFullPath()+wxT(".common.ovl"));

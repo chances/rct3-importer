@@ -109,11 +109,12 @@ unsigned long cRawParser::HandleUnsignedContent(const wxString& content, const c
     wxString t(content);
     MakeVariable(t);
     unsigned long i;
-    if (t.IsEmpty())
+    if (t.IsEmpty()) {
 		if (attribute.IsEmpty())
 			throw MakeNodeException<RCT3Exception>(wxString::Format(_("Tag '%s' misses content"), nodes.c_str()), node);
 		else
 			throw MakeNodeException<RCT3Exception>(wxString::Format(_("Tag '%s' misses attribute '%s'"), nodes.c_str(), attribute.c_str()), node);
+	}
 
     if (t.StartsWith('b')) {
         try {

@@ -172,6 +172,7 @@
       </AdditionalRules>
     </Configuration>
   </Settings>
+  <Dependencies Name="Invalid"/>
   <Dependencies Name="DebugBaseUnicode">
     <Project Name="Precompile RNG"/>
     <Project Name="Precompile XSL"/>
@@ -183,7 +184,6 @@
     <Project Name="lib3DHelp"/>
     <Project Name="libRawParse"/>
   </Dependencies>
-  <Dependencies Name="Invalid"/>
   <Dependencies Name="ReleaseBaseUnicode">
     <Project Name="Precompile RNG"/>
     <Project Name="Precompile XSL"/>

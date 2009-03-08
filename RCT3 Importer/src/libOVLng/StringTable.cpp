@@ -32,6 +32,7 @@
 #include "OVLException.h"
 
 using namespace std;
+using namespace r3;
 
 char* ovlStringTable::FindRawString(const string& findit) const {
     map<string, char*>::const_iterator fst = m_ptrmap.find(findit);

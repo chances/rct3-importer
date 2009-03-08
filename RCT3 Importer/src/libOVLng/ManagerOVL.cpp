@@ -35,6 +35,7 @@
 #include "OVLng.h"
 
 using namespace std;
+using namespace r3;
 
 const char* ovlOVLManager::LOADER = "RCT3";
 const unsigned long ovlOVLManager::TYPE = 1;

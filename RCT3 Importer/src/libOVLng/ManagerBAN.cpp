@@ -101,9 +101,12 @@ void ovlBANManager::AddAnimation(const cBoneAnim& item) {
     }
 
 
+	GetLSRManager()->reserveIndexElement(OVLT_COMMON, item.name, ovlBANManager::TAG);
+	/*
     GetLSRManager()->AddSymbol(OVLT_COMMON);
     GetLSRManager()->AddLoader(OVLT_COMMON);
     GetStringTable()->AddSymbolString(item.name.c_str(), ovlBANManager::TAG);
+	 */
 }
 
 void ovlBANManager::Make(cOvlInfo* info) {
@@ -143,8 +146,11 @@ void ovlBANManager::Make(cOvlInfo* info) {
         it->second.Fill(c_ban);
 
         // Symbol and Loader
+		GetLSRManager()->assignIndexElement(OVLT_COMMON, it->first, ovlBANManager::TAG, c_ban);
+		/*
         SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_COMMON, GetStringTable()->FindSymbolString(it->second.name.c_str(), Tag()), reinterpret_cast<unsigned long*>(c_ban));
         GetLSRManager()->OpenLoader(OVLT_COMMON, TAG, reinterpret_cast<unsigned long*>(c_ban), false, c_symbol);
         GetLSRManager()->CloseLoader(OVLT_COMMON);
+		 */
     }
 }

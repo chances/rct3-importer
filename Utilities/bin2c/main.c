@@ -4,6 +4,10 @@
  //
  // put into the public domain by Sandro Sigala
  //
+ // changes by Tobias Minich are also public domain
+ // (or to be considered licensed under WTFPL in
+ //  legislations where you cannot give up copyright)
+ //
  // syntax:  bin2c [-c] [-z] <input_file> <output_file>
  //
  //          -c    add the "const" keyword to definition

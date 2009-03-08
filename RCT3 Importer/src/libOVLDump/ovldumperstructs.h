@@ -67,6 +67,7 @@ public:
     unsigned long type;
     std::string tag;
     unsigned long symbol_count;
+    unsigned long symbol_count_order;
     OvlLoaderHeader(){};
 };
 
@@ -76,14 +77,14 @@ public:
 
     unsigned long relocation;
     unsigned long* relocationsite;
-    cOvlType r_filetype; // Common or unique
+    r3::cOvlType r_filetype; // Common or unique
     int r_file;     // 0-8
     unsigned long r_block;
     std::string r_inwhat;
 
     unsigned long targetrelocation;
     void* target;
-    cOvlType t_filetype; // Common or unique
+    r3::cOvlType t_filetype; // Common or unique
     int t_file;     // 0-8
     unsigned long t_block;
     std::string t_usedfor;
@@ -95,13 +96,13 @@ public:
     OvlRelocation() {
         relocation = 0;
         relocationsite = NULL;
-        r_filetype = OVLT_COMMON;
+        r_filetype = r3::OVLT_COMMON;
         r_file = -1;
         r_block = 0xFFFFFFFF;
         r_inwhat = "";
         targetrelocation = 0;
         target = NULL;
-        t_filetype = OVLT_COMMON;
+        t_filetype = r3::OVLT_COMMON;
         t_file = -1;
         t_block = 0xFFFFFFFF;
         t_usedfor = "";
@@ -192,7 +193,7 @@ public:
     unsigned long IsPointer;
     unsigned long unknown;
     unsigned long hash;
-    SymbolStruct* orgsymbol;
+    r3::SymbolStruct* orgsymbol;
     OvlSymbol() {
         data = NULL;
         IsPointer = 0;

@@ -105,7 +105,25 @@ void ovlSVDManager::AddSVD(const cSceneryItemVisual& item) {
     }
     // SceneryItemVisualLOD pointers & structures
     m_size += item.lods.size() * (sizeof(SceneryItemVisualLOD*) + sizeof(SceneryItemVisualLOD));
+	
+	cLoader& loader = GetLSRManager()->reserveIndexElement(OVLT_UNIQUE, item.name, ovlSVDManager::TAG);
+	
+	foreach(const cSceneryItemVisualLOD& lod, item.lods) {
+        GetStringTable()->AddString(lod.name);
+		
+		loader.reserveSymbolReference(lod.staticshape, ovlSHSManager::TAG, false);
+		loader.reserveSymbolReference(lod.boneshape, ovlBSHManager::TAG, false);
+		loader.reserveSymbolReference(lod.fts, ovlFTXManager::TAG, false);
+		loader.reserveSymbolReference(lod.txs, ovlTXSManager::TAG, false);
+		
+        // Animation array sizes, two pointers per animation
+        m_size += lod.animations.size() * 8;
+        // References
+		foreach(const string& anim, lod.animations)
+			loader.reserveSymbolReference(anim, ovlBANManager::TAG);
+	}
 
+/*
     // walk the lods
     for (vector<cSceneryItemVisualLOD>::const_iterator it = item.lods.begin(); it != item.lods.end(); ++it) {
         GetStringTable()->AddString(it->name.c_str());
@@ -144,6 +162,7 @@ void ovlSVDManager::AddSVD(const cSceneryItemVisual& item) {
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
     GetLSRManager()->AddLoader(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(item.name.c_str(), ovlSVDManager::TAG);
+*/
 }
 
 void ovlSVDManager::Make(cOvlInfo* info) {
@@ -170,6 +189,57 @@ void ovlSVDManager::Make(cOvlInfo* info) {
         GetRelocationManager()->AddRelocation((unsigned long *)&c_svd->lods);
         DUMP_RELOCATION("ovlSVDManager::Make, LodMeshes pointers", c_svd->lods);
 
+        // Symbol and Loader
+		cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_UNIQUE, it->first, ovlSVDManager::TAG, c_svd);
+
+        for (unsigned long s = 0; s < it->second.lods.size(); ++s) {
+            // Data Transfer, LOD
+            c_svd->lods[s] = reinterpret_cast<SceneryItemVisualLOD*>(c_data);
+            c_data += sizeof(SceneryItemVisualLOD);
+            GetRelocationManager()->AddRelocation((unsigned long*)&c_svd->lods[s]);
+            DUMP_RELOCATION("ovlSVDManager::Make, LodMesh", c_svd->lods[s]);
+
+            // LodName
+            c_svd->lods[s]->lod_name = GetStringTable()->FindString(it->second.lods[s].name.c_str());
+            GetRelocationManager()->AddRelocation((unsigned long*)&c_svd->lods[s]->lod_name);
+            DUMP_RELOCATION_STR("ovlSVDManager::Make, LodName", c_svd->lods[s]->lod_name);
+
+            // StaticShape
+			loader.assignSymbolReference(it->second.lods[s].staticshape, ovlSHSManager::TAG, &c_svd->lods[s]->shs_ref, false);
+
+            // BoneShape
+			loader.assignSymbolReference(it->second.lods[s].boneshape, ovlBSHManager::TAG, &c_svd->lods[s]->bsh_ref, false);
+
+            // Billboard
+			loader.assignSymbolReference(it->second.lods[s].fts, ovlFTXManager::TAG, &c_svd->lods[s]->ftx_ref, false);
+			loader.assignSymbolReference(it->second.lods[s].txs, ovlTXSManager::TAG, &c_svd->lods[s]->txs_ref, false);
+
+            // Animations
+            if (it->second.lods[s].animations.size()) {
+                // Allocate Space
+                c_svd->lods[s]->animations_ref = reinterpret_cast<BoneAnim***>(c_data);
+                c_data += it->second.lods[s].animations.size() * sizeof(BoneAnim**);
+                GetRelocationManager()->AddRelocation((unsigned long *)&c_svd->lods[s]->animations_ref);
+                DUMP_RELOCATION("ovlSVDManager::Make, AnimationArray pointers", c_svd->lods[s]->animations_ref);
+
+                for (unsigned long a = 0; a < it->second.lods[s].animations.size(); ++a) {
+                    // Allocate space for animation pointer
+                    c_svd->lods[s]->animations_ref[a] = reinterpret_cast<BoneAnim**>(c_data);
+                    c_data += sizeof(BoneAnim*);
+                    *c_svd->lods[s]->animations_ref[a] = NULL;
+                    GetRelocationManager()->AddRelocation((unsigned long *)&c_svd->lods[s]->animations_ref[a]);
+                    DUMP_RELOCATION("ovlSVDManager::Make, AnimationArray", c_svd->lods[s]->animations_ref[a]);
+
+                    // Symbol reference for ban name
+					loader.assignSymbolReference(it->second.lods[s].animations[a], ovlBANManager::TAG, c_svd->lods[s]->animations_ref[a], false);
+                }
+            }
+
+        }
+
+        it->second.Fill(c_svd);
+
+		/*
         // Symbol and Loader
         SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), Tag()), reinterpret_cast<unsigned long*>(c_svd));
         GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_svd), false, c_symbol);
@@ -235,5 +305,6 @@ void ovlSVDManager::Make(cOvlInfo* info) {
         it->second.Fill(c_svd);
 
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
+		*/
     }
 }

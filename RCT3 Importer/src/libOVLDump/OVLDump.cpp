@@ -36,7 +36,7 @@
 
 using namespace pretty;
 using namespace std;
-
+using namespace r3;
 
 unsigned long crctable[256] = {0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA,
                       0x076DC419, 0x706AF48F, 0xE963A535, 0x9E6495A3,
@@ -241,7 +241,7 @@ void cOVLDump::ReadFile(cOvlType type) {
             }
             break;
         case 4: {
-                mp_referencecount[type] = reinterpret_cast<unsigned long*>(c_data);
+                mp_referencecount[type] = reinterpret_cast<uint32_t*>(c_data);
                 m_exheader[type].ReferencesE = *reinterpret_cast<unsigned long*>(c_data);
                 c_data += 4;
             }
@@ -281,7 +281,7 @@ void cOVLDump::ReadFile(cOvlType type) {
 					m_exheader[type].unknownv5[1] = 0;
 					m_exheader[type].unknownv5[2] = 0;
 				}
-                mp_referencecount[type] = reinterpret_cast<unsigned long*>(c_data);
+                mp_referencecount[type] = reinterpret_cast<uint32_t*>(c_data);
                 m_exheader[type].ReferencesE = *reinterpret_cast<unsigned long*>(c_data);
                 c_data += 4;
             }
@@ -353,12 +353,15 @@ void cOVLDump::ReadFile(cOvlType type) {
 
     // V5 Loader Header stuff, number of symbols for each file type / loader header by index
 	// This applies to the current common/unique file
+	// The order the loaders appear here is important for the symbol order, they are primarily 
+	// sorted by the file type in this order, secondarily they are sorted by hash
     if (m_header[type].version == 5) {
         for (int i = 0; i < m_header2[type].FileTypeCount; ++i) {
 			unsigned long index = *reinterpret_cast<unsigned long*>(c_data);
             c_data += 4;
             m_loaderheaders[type][index].symbol_count = *reinterpret_cast<unsigned long*>(c_data);
             c_data += 4;
+			m_loaderheaders[type][index].symbol_count_order = i;
         }
     }
 

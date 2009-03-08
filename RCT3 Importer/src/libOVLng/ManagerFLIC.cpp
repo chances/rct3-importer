@@ -32,6 +32,7 @@
 #include "OVLng.h"
 
 using namespace std;
+using namespace r3;
 
 const char* ovlFLICManager::LOADER = "FGDK";
 const char* ovlFLICManager::NAME = "Flic";
@@ -64,7 +65,9 @@ void ovlFLICManager::AddTexture(const cTexture& item) {
     // FlicStruct and a pointer. Rest goes to extradata
     m_size += sizeof(Flic); //sizeof(FlicStruct) + 4;
 
-    GetLSRManager()->AddLoader(OVLT_COMMON);
+    //GetLSRManager()->AddLoader(OVLT_COMMON);
+	cLoader& loader = GetLSRManager()->reserveIndexElement(OVLT_COMMON, ovlFLICManager::TAG);
+	loader.identify(item.name);
 }
 
 FlicStruct** ovlFLICManager::GetPointer1(const string& name) {
@@ -115,18 +118,25 @@ void ovlFLICManager::Make(cOvlInfo* info) {
         it->second.madep1 = &c_flic->fl;
         it->second.madep2 = &c_flic->fl2;
 
-        GetLSRManager()->OpenLoader(OVLT_COMMON, TAG, reinterpret_cast<unsigned long*>(&c_flic->fl2), 1, NULL);
+		cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_COMMON, it->second.name, ovlFLICManager::TAG, &c_flic->fl2);
+        //GetLSRManager()->OpenLoader(OVLT_COMMON, TAG, reinterpret_cast<unsigned long*>(&c_flic->fl2), 1, NULL);
 
         // Extra Data
         if (m_btbl) {
             // easy
-            unsigned long* index = new unsigned long[1];
-            *index = it->first;
-            GetLSRManager()->AddExtraData(OVLT_COMMON, 4, reinterpret_cast<unsigned char*>(index));
+			boost::shared_array<unsigned char> ex(new unsigned char[4]);
+			*reinterpret_cast<unsigned long*>(ex.get()) = it->first;
+			loader.addExtraChunk(4, ex);
+			loader.addExtraDataV5Info(V5INFO_1);
+			
+            //unsigned long* index = new unsigned long[1];
+            //*index = it->first;
+            //GetLSRManager()->AddExtraData(OVLT_COMMON, 4, reinterpret_cast<unsigned char*>(index));
         } else {
             unsigned long c_extrasize = sizeof(FlicHeader) + (it->second.mips.size() * sizeof(FlicMipHeader)) + it->second.CalcSize() + sizeof(FlicMipHeader);
-            unsigned char* c_extradata = new unsigned char[c_extrasize];
-            unsigned char* c_extra = c_extradata;
+			boost::shared_array<unsigned char> c_extradata(new unsigned char[c_extrasize]);
+            //unsigned char* c_extradata = new unsigned char[c_extrasize];
+            unsigned char* c_extra = c_extradata.get();
             FlicHeader* c_header = reinterpret_cast<FlicHeader*>(c_extra);
             c_extra += sizeof(FlicHeader);
             it->second.FillHeader(c_header);
@@ -146,9 +156,12 @@ void ovlFLICManager::Make(cOvlInfo* info) {
             c_mip->Pitch = 0;
             c_mip->Blocks = 0;
 
-            GetLSRManager()->AddExtraData(OVLT_COMMON, c_extrasize, c_extradata);
+            //GetLSRManager()->AddExtraData(OVLT_COMMON, c_extrasize, c_extradata);
+			//GetLSRManager()->AddExtraDataV5Info(OVLT_COMMON, V5INFO_1);
+			loader.addExtraChunk(c_extrasize, c_extradata);
+			loader.addExtraDataV5Info(V5INFO_1);
         }
-        GetLSRManager()->CloseLoader(OVLT_COMMON);
+        //GetLSRManager()->CloseLoader(OVLT_COMMON);
     }
 
     if (m_defermake) {

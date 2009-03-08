@@ -72,7 +72,7 @@ public:
      * @param file Ovl base file name.
      * @see Init()
      */
-    cOvl(std::string file);
+    cOvl(std::string file, int version = 1);
     virtual ~cOvl();
 
     /// Initialize a cOvl instance
@@ -81,15 +81,15 @@ public:
      * @param file Ovl base file name (without .common.ovl or .unique.ovl extension).
      * @see cOvl()
      */
-    void Init(std::string file);
+    void Init(std::string file, int version = 1);
 
     /// Add a reference to the ovl.
     void AddReference(const char* ref);
     /// Add a simple data symol to the ovl.
-    void AddDataSymbol(cOvlType type, const char *symbol, unsigned long data) {
+    void AddDataSymbol(r3::cOvlType type, const char *name, const char* tag, unsigned long data) {
         if (!m_init)
             BOOST_THROW_EXCEPTION(EOvl("cOvl::AddDataSymbol called uninitialized"));
-        m_lsrmanager.AddSymbol(type, symbol, data);
+        m_lsrmanager.addDataSymbol(type, name, tag, data);
     }
 
     /// Create and save the ovl files.

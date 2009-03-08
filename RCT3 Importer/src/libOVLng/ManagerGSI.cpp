@@ -102,11 +102,16 @@ void ovlGSIManager::AddItem(const cGUISkinItem& item) {
     m_size += item.GetUniqueSize();
     m_commonsize += item.GetCommonSize();
 
+	cLoader& loader = GetLSRManager()->reserveIndexElement(OVLT_UNIQUE, item.name, ovlGSIManager::TAG);	
+	loader.reserveSymbolReference(item.texture, ovlTEXManager::TAG);
+	
+	/*
     GetLSRManager()->AddLoader(OVLT_UNIQUE);
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
     GetLSRManager()->AddSymRef(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(item.name, Tag());
     GetStringTable()->AddSymbolString(item.texture, ovlTEXManager::TAG);
+	 */
 }
 
 void ovlGSIManager::Make(cOvlInfo* info) {
@@ -145,10 +150,14 @@ void ovlGSIManager::Make(cOvlInfo* info) {
 		}
 		
 
+		cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_UNIQUE, item.first, ovlGSIManager::TAG, c_gsi);
+		loader.assignSymbolReference(item.second.texture, ovlTEXManager::TAG, &c_gsi->tex_ref);
+		/*
         SymbolStruct* s_gsi = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(item.first, Tag()), reinterpret_cast<unsigned long*>(c_gsi));
         GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_gsi), 0, s_gsi);
         GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(item.second.texture, ovlTEXManager::TAG), reinterpret_cast<unsigned long*>(&c_gsi->tex_ref));
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
+		 */
     }
 
 }

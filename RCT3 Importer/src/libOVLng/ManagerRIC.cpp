@@ -235,7 +235,29 @@ void ovlRICManager::AddItem(const cRideCar& item) {
     m_size += item.GetUniqueSize();
     m_commonsize += item.GetCommonSize();
 
+	cLoader& loader = GetLSRManager()->reserveIndexElement(OVLT_UNIQUE, item.name, ovlRICManager::TAG);
+	
+    STRINGLIST_ADD(item.internalname, true);
+    STRINGLIST_ADD(item.otherinternalname, true);
 
+	loader.reserveSymbolReference(item.svd_ref, ovlSVDManager::TAG);
+	loader.reserveSymbolReference(item.moving.svd_ref, ovlSVDManager::TAG, false);
+
+	loader.reserveSymbolReference(item.wheels.front_right.svd, ovlSVDManager::TAG, false);
+	loader.reserveSymbolReference(item.wheels.front_left.svd, ovlSVDManager::TAG, false);
+	loader.reserveSymbolReference(item.wheels.back_right.svd, ovlSVDManager::TAG, false);
+	loader.reserveSymbolReference(item.wheels.back_left.svd, ovlSVDManager::TAG, false);
+	
+	loader.reserveSymbolReference(item.axels.front.svd, ovlSVDManager::TAG, false);
+	loader.reserveSymbolReference(item.axels.rear.svd, ovlSVDManager::TAG, false);
+
+    if (item.version == 3) {
+		loader.reserveSymbolReference(item.wild.svd_flipped_ref, ovlSVDManager::TAG, false);
+		loader.reserveSymbolReference(item.wild.moving_svd_flipped_ref, ovlSVDManager::TAG, false);
+		
+		loader.reserveSymbolReference(item.wild.was_ref, ovlWASManager::TAG, false);
+    }
+/*
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
     GetLSRManager()->AddLoader(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(item.name, ovlRICManager::TAG);
@@ -260,7 +282,7 @@ void ovlRICManager::AddItem(const cRideCar& item) {
 		
 		SYMREF_ADD(OVLT_UNIQUE, item.wild.was_ref, ovlWASManager::TAG, false);
     }
-
+*/
 }
 
 void ovlRICManager::Make(cOvlInfo* info) {
@@ -296,6 +318,26 @@ void ovlRICManager::Make(cOvlInfo* info) {
 
         item.second.Fill(c_item, GetStringTable(), GetRelocationManager());
 
+		cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_UNIQUE, item.second.name, ovlRICManager::TAG, c_item);
+		
+		loader.assignSymbolReference(item.second.svd_ref, ovlSVDManager::TAG, &c_item->v.svd_ref);
+		loader.assignSymbolReference(item.second.moving.svd_ref, ovlSVDManager::TAG, &c_item->v.moving_svd_ref, false);
+
+		loader.assignSymbolReference(item.second.wheels.front_right.svd, ovlSVDManager::TAG, &c_item->v.wheels_front_right_ref, false);
+		loader.assignSymbolReference(item.second.wheels.front_left.svd, ovlSVDManager::TAG, &c_item->v.wheels_front_left_ref, false);
+		loader.assignSymbolReference(item.second.wheels.back_right.svd, ovlSVDManager::TAG, &c_item->v.wheels_back_right_ref, false);
+		loader.assignSymbolReference(item.second.wheels.back_left.svd, ovlSVDManager::TAG, &c_item->v.wheels_back_left_ref, false);
+		
+		loader.assignSymbolReference(item.second.axels.front.svd, ovlSVDManager::TAG, &c_item->v.axel_front_ref, false);
+		loader.assignSymbolReference(item.second.axels.rear.svd, ovlSVDManager::TAG, &c_item->v.axel_rear_ref, false);
+
+		if (item.second.version == 3) {
+			loader.assignSymbolReference(item.second.wild.svd_flipped_ref, ovlSVDManager::TAG, &c_item->w.svd_flipped_ref, false);
+			loader.assignSymbolReference(item.second.wild.moving_svd_flipped_ref, ovlSVDManager::TAG, &c_item->w.moving_svd_flipped_ref, false);
+			
+			loader.assignSymbolReference(item.second.wild.was_ref, ovlWASManager::TAG, &c_item->w.was_ref, false);
+		}
+/*
         SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(item.first, TAG), reinterpret_cast<unsigned long*>(c_item));
         GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_item), false, c_symbol);
 
@@ -318,7 +360,7 @@ void ovlRICManager::Make(cOvlInfo* info) {
 		}
 
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
-
+*/
     }
 
 }

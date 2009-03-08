@@ -36,32 +36,40 @@
 #include "OVLClasses.h"
 
 #define STRINGLIST_ASSIGN(var, name, alwaysassign, st, rm) \
-    if (alwaysassign || (name != "")) { \
-        var = st->FindString(name); \
-        rm->AddRelocation(reinterpret_cast<unsigned long*>(&var)); \
-    } else { \
-        var = NULL; \
-    }
+	{ \
+		if (alwaysassign || (name != "")) { \
+			var = st->FindString(name); \
+			rm->AddRelocation(reinterpret_cast<unsigned long*>(&var)); \
+		} else { \
+			var = NULL; \
+		} \
+	}
 #define STRINGLIST_ADD(name, alwaysassign) \
     { \
         if (alwaysassign || (name != "")) \
             GetStringTable()->AddString(name); \
     }
 #define SYMREF_ADD(ovl, name, tag, alwaysassign) \
-    if (alwaysassign || (name != "")) { \
-        GetLSRManager()->AddSymRef(ovl); \
-        GetStringTable()->AddSymbolString(name, tag); \
-    }
+	{ \
+		if (alwaysassign || (name != "")) { \
+			GetLSRManager()->AddSymRef(ovl); \
+			GetStringTable()->AddSymbolString(name, tag); \
+		} \
+	}
 #define SYMREF_MAKE(ovl, name, tag, ptr_to_var, alwaysassign) \
-    if (alwaysassign || (name != "")) { \
-    GetLSRManager()->MakeSymRef(ovl, GetStringTable()->FindSymbolString(name, tag), \
-                                     reinterpret_cast<unsigned long*>(ptr_to_var)); \
+	{ \
+		if (alwaysassign || (name != "")) { \
+		GetLSRManager()->MakeSymRef(ovl, GetStringTable()->FindSymbolString(name, tag), \
+										 reinterpret_cast<unsigned long*>(ptr_to_var)); \
+		} \
     }
 #define RELOC_ARRAY(size, var, structid, data) \
-    if (size) { \
-        var = reinterpret_cast<structid *>(data); \
-        data += size * sizeof(structid); \
-        GetRelocationManager()->AddRelocation(& var); \
+	{ \
+		if (size) { \
+			var = reinterpret_cast<structid *>(data); \
+			data += size * sizeof(structid); \
+			GetRelocationManager()->AddRelocation(& var); \
+		} \
     }
 
 class ovlStringTable {

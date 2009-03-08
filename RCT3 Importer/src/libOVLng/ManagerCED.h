@@ -75,6 +75,13 @@ public:
 
     virtual void Make(cOvlInfo* info);
 
+	virtual int GetCount(r3::cOvlType type) const {
+		if (type == r3::OVLT_COMMON)
+			return 0;
+		else
+			return m_extras.size();
+	}
+
     virtual const char* Name() const {
         return NAME;
     };

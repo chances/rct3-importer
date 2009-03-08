@@ -35,7 +35,7 @@ void OvlSymbol::SetData(unsigned long data) {
     if (IsPointer)
         throw EOvlD("Tried to set data for a pointer symbol");
 
-    orgsymbol->data = reinterpret_cast<unsigned long *>(data);
+    orgsymbol->data = reinterpret_cast<uint32_t *>(data);
 }
 
 void OvlStringTableEntry::SetString(const char* newstr) const {

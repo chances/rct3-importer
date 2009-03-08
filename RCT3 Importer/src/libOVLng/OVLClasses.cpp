@@ -39,6 +39,7 @@
 //#define DUMP_FILES
 
 using namespace std;
+using namespace r3;
 
 unsigned char* cOvlFileClass::GetBlock(int filetype, unsigned long size) {
     cOvlFile* fi= new cOvlFile(size);
@@ -70,7 +71,7 @@ fprintf(stderr, "  Size %08lx\n", types[i].size);
     return currel;
 }
 
-void cOvlFileClass::WriteStreamed(const map<string, ovlOVLManager*>& managers, const vector<ovlExtraChunk*>& extra) {
+void cOvlFileClass::WriteStreamed(r3::cOvlType type, const map<string, ovlOVLManager*>& managers, const std::vector<cLoader>& loaders) {
     fstream fstr(filename.c_str(), fstream::out | fstream::binary | fstream::trunc);
     if (!fstr.is_open())
         BOOST_THROW_EXCEPTION(EOvl("cOvlFileClass::WriteStreamed: cannot open file for writing"));
@@ -79,11 +80,30 @@ void cOvlFileClass::WriteStreamed(const map<string, ovlOVLManager*>& managers, c
     OvlHeader h;
     h.magic = 0x4B524746;
     h.References = references.size();
-    h.reserved = 0;
-    h.version = 1;
-    fstr.write(reinterpret_cast<char*>(&h), sizeof(OvlHeader));
+	if (version == 1) {
+		h.reserved = 0;		
+	} else {
+		h.reserved = 2;		
+	}
+    h.version = version;
+    //fstr.write(reinterpret_cast<char*>(&h), sizeof(OvlHeader));
+	fstr.write(reinterpret_cast<char*>(&h.magic), 4);
+	fstr.write(reinterpret_cast<char*>(&h.reserved), 4);
+	fstr.write(reinterpret_cast<char*>(&h.version), 4);
+	
+	if (version > 1) {
+		int32_t unknown = 16;
+		fstr.write(reinterpret_cast<char*>(&unknown), 4);
+		if (version == 5) {
+			unknown = 0;
+			// This is the subversion flag. It is not clear what follows if it's set, alas it only seems
+			// to be necessary for mdl structures, therefore we do not set it.
+			fstr.write(reinterpret_cast<char*>(&unknown), 4);			
+		}
+	}
 
     // References
+	fstr.write(reinterpret_cast<char*>(&h.References), 4);
     for (unsigned int i = 0;i < references.size();i++) {
         unsigned short len = static_cast<unsigned short>(references[i].length());
         fstr.write(reinterpret_cast<char*>(&len),2);
@@ -100,17 +120,80 @@ void cOvlFileClass::WriteStreamed(const map<string, ovlOVLManager*>& managers, c
     for (map<string, ovlOVLManager*>::const_iterator it = managers.begin(); it != managers.end(); ++it) {
         it->second->WriteLoader(fstr);
     }
+	
+	// v5 symbol count per loader
+	if (version == 5) {
+		unsigned long l = 0;
+		unsigned long c = 0;
+		for (map<string, ovlOVLManager*>::const_iterator it = managers.begin(); it != managers.end(); ++it) {
+			fstr.write(reinterpret_cast<char*>(&l), 4);
+			c = it->second->GetCount(type);
+			fstr.write(reinterpret_cast<char*>(&c), 4);
+			l++;
+		}
+	}
 
     // Write the number of files of each type
     for (unsigned int i = 0;i < 9;i++) {
         unsigned long count = types[i].files.size();
         fstr.write(reinterpret_cast<char*>(&count),4);
+		if (version > 1) {
+			// count repeated
+			fstr.write(reinterpret_cast<char*>(&count),4);
+			// and sizes
+			for (unsigned long j = 0;j < types[i].files.size();j++) {
+				fstr.write(reinterpret_cast<char*>(&types[i].files[j]->size),4);
+			}
+		}
     }
+	
+	// v4/v5 stuff
+	if (version == 4) {
+		uint32_t unknown = 0;
+		fstr.write(reinterpret_cast<char*>(&unknown), 4);		
+		fstr.write(reinterpret_cast<char*>(&unknown), 4);		
+	}
+	if (version == 5) {
+		uint32_t temp = 0;
+		int extras = 0;
+		foreach(const cLoader& l, loaders) {
+			extras += l.getExtraDataV5Infos().size();
+		}
+		if (extras) {
+			// We have extra
+			// Calculate and write byte size. 4 bytes for structure count, 14 bytes per structure and 4 bytes for the unknown
+			temp = 4 + extras * 14 + 4;
+			fstr.write(reinterpret_cast<char*>(&temp), 4);		
+			
+			// Write structure count
+			fstr.write(reinterpret_cast<char*>(&extras), 4);
+			
+			// Write structures
+			foreach(const cLoader& l, loaders) {
+				l.writeV5Extras(fstr);
+			}
+			
+			// Write the unknown long, which seems to duplicate the following long count (which we set to 0)
+			temp = 0;
+			fstr.write(reinterpret_cast<char*>(&temp), 4);			
+		} else {
+			// Empty byte structure, allways 4/0
+			temp = 4;
+			fstr.write(reinterpret_cast<char*>(&temp), 4);			
+			temp = 0;
+			fstr.write(reinterpret_cast<char*>(&temp), 4);			
+		}
+		// unknown long count, set to 0
+		temp = 0;
+		fstr.write(reinterpret_cast<char*>(&temp), 4);			
+	}
 
     // Write the files themselves.
     for (unsigned int i = 0;i < 9;i++) {
         for (unsigned long j = 0;j < types[i].files.size();j++) {
-            fstr.write(reinterpret_cast<char*>(&types[i].files[j]->size),4);
+			if (version == 1) {
+				fstr.write(reinterpret_cast<char*>(&types[i].files[j]->size),4);
+			}
             fstr.write(reinterpret_cast<char*>(types[i].files[j]->data), types[i].files[j]->size);
         }
     }
@@ -118,22 +201,29 @@ void cOvlFileClass::WriteStreamed(const map<string, ovlOVLManager*>& managers, c
     // Write fixups
     unsigned long size = fixups.size();
     fstr.write(reinterpret_cast<char*>(&size),4);
-//    while (fixups.empty() == false) {
-//        unsigned long c_fixup = fixups.front();
-//        fixups.pop();
-//        fwrite(&c_fixup, sizeof(unsigned long), 1, f);
-//    }
-//    for(set<unsigned long>::iterator it = fixups.begin(); it != fixups.end(); ++it) {
     foreach(const unsigned long& fixup, fixups) {
         fstr.write(reinterpret_cast<const char*>(&fixup),4);
     }
+	
+	// v4/v5 stuff (no v5 as we do not support the subversion flag)
+	if (version == 4) {
+		uint32_t unknown = 0;
+		fstr.write(reinterpret_cast<char*>(&unknown), 4);		
+	}
 
     // Write Extradata
-//    for (vector<ovlExtraChunk*>::const_iterator it = extra.begin(); it != extra.end(); ++it) {
-    foreach(const ovlExtraChunk* chunk, extra) {
+    foreach(const cLoader& l, loaders) {
+		/*
         fstr.write(reinterpret_cast<const char*>(&chunk->size),4);
         fstr.write(reinterpret_cast<const char*>(chunk->data),chunk->size);
+		*/
+		l.writeExtraChunks(fstr);
     }
+
+	if (version == 5) {
+		uint32_t unknown = 0;
+		fstr.write(reinterpret_cast<char*>(&unknown), 4);		
+	}
 
     // Close file
     fstr.close();
@@ -141,6 +231,6 @@ void cOvlFileClass::WriteStreamed(const map<string, ovlOVLManager*>& managers, c
 }
 
 void cOvlInfo::WriteFiles(const map<string, ovlOVLManager*>& managers, const ovlLodSymRefManager& lsrman) {
-    OpenFiles[OVLT_COMMON].WriteStreamed(managers, lsrman.GetExtraChunks(OVLT_COMMON));
-    OpenFiles[OVLT_UNIQUE].WriteStreamed(managers, lsrman.GetExtraChunks(OVLT_UNIQUE));
+    OpenFiles[OVLT_COMMON].WriteStreamed(OVLT_COMMON, managers, lsrman.getLoaders(OVLT_COMMON));
+    OpenFiles[OVLT_UNIQUE].WriteStreamed(OVLT_UNIQUE, managers, lsrman.getLoaders(OVLT_UNIQUE));
 }

@@ -59,14 +59,14 @@ protected:
     char* m_dataend[2];
     unsigned long m_size[2];
 
-    unsigned long* mp_referencecount[2];
+    r3::uint32_t* mp_referencecount[2];
     char* mp_references[2];
     std::vector<std::string> m_injectreferences[2];
 
-    OvlHeader m_header[2];
+    r3::OvlHeader m_header[2];
     OvlExtendedHeader m_exheader[2];
     std::vector<std::string> m_references[2];
-    OvlHeader2 m_header2[2];
+    r3::OvlHeader2 m_header2[2];
     std::vector<OvlLoaderHeader> m_loaderheaders[2];
     OvlFileTypeBlock m_fileblocks[2][9];
     OvlPostBlockUnknowns m_pbunknowns[2];
@@ -86,15 +86,15 @@ protected:
 
 
     void Init();
-    void ReadFile(cOvlType type);
-    void WriteFile(cOvlType type);
-    void ResolveRelocation(const unsigned long relocation, void** target, cOvlType& filetype, int& file, unsigned long& block);
-    void MakeStrings(cOvlType type);
-    void MakeSymbols(cOvlType type);
-    void MakeLoaders(cOvlType type);
-    void MakeStructureSizes(cOvlType type);
-    void MakeFlics(cOvlType type);
-    void MakeCRC(cOvlType type);
+    void ReadFile(r3::cOvlType type);
+    void WriteFile(r3::cOvlType type);
+    void ResolveRelocation(const unsigned long relocation, void** target, r3::cOvlType& filetype, int& file, unsigned long& block);
+    void MakeStrings(r3::cOvlType type);
+    void MakeSymbols(r3::cOvlType type);
+    void MakeLoaders(r3::cOvlType type);
+    void MakeStructureSizes(r3::cOvlType type);
+    void MakeFlics(r3::cOvlType type);
+    void MakeCRC(r3::cOvlType type);
 
 public:
     cOVLDump() {Init();};
@@ -105,48 +105,48 @@ public:
     void Save(); // Warning! clobbers the original files without further ado!
 
     unsigned long GetVersion() {
-        return m_header[OVLT_COMMON].version;
+        return m_header[r3::OVLT_COMMON].version;
     }
 
-    std::string GetFilename(cOvlType type) const {
+    std::string GetFilename(r3::cOvlType type) const {
         return m_file[type];
     }
 
-    unsigned long GetCRC(cOvlType type) {
+    unsigned long GetCRC(r3::cOvlType type) {
         return m_crc[type];
     }
     unsigned long calcCRC(const unsigned char* pdata, unsigned long len, bool padded);
 
-    void InjectReference(cOvlType type, const char* ref) {
+    void InjectReference(r3::cOvlType type, const char* ref) {
         m_injectreferences[type].push_back(ref);
     }
-    const std::vector<std::string>& GetReferences(cOvlType type) const {
+    const std::vector<std::string>& GetReferences(r3::cOvlType type) const {
         return m_references[type];
     }
 
-    unsigned long GetBlockCount(cOvlType type, int file);
-    unsigned long GetBlockSize(cOvlType type, int file, unsigned long block);
-    unsigned long GetBlockOffset(cOvlType type, int file, unsigned long block);
+    unsigned long GetBlockCount(r3::cOvlType type, int file);
+    unsigned long GetBlockSize(r3::cOvlType type, int file, unsigned long block);
+    unsigned long GetBlockOffset(r3::cOvlType type, int file, unsigned long block);
 
-    unsigned long GetSymbolCount(cOvlType type) {
+    unsigned long GetSymbolCount(r3::cOvlType type) {
         return m_symbols[type].size();
     }
-    const OvlSymbol& GetSymbol(cOvlType type, unsigned long id);
-    void SetSymbolData(cOvlType type, unsigned long id, unsigned long data);
-    unsigned long FindSymbol(cOvlType type, const char* name);
-    std::vector<unsigned long> FindSymbols(cOvlType type, const char* query);
+    const OvlSymbol& GetSymbol(r3::cOvlType type, unsigned long id);
+    void SetSymbolData(r3::cOvlType type, unsigned long id, unsigned long data);
+    unsigned long FindSymbol(r3::cOvlType type, const char* name);
+    std::vector<unsigned long> FindSymbols(r3::cOvlType type, const char* query);
 
-    unsigned long GetLoaderCount(cOvlType type) {
+    unsigned long GetLoaderCount(r3::cOvlType type) {
         return m_loaders[type].size();
     }
 
     const OvlStringTableEntry& GetString(unsigned long id);
     void SetString(unsigned long id, const char* newstr);
 
-    const structmap_t& GetStructures(cOvlType type) const {
+    const structmap_t& GetStructures(r3::cOvlType type) const {
         return m_structmap[type];
     }
-    const std::vector<OvlSymbol>& GetSymbols(cOvlType type) const {
+    const std::vector<OvlSymbol>& GetSymbols(r3::cOvlType type) const {
 		return m_symbols[type];
 	}
     std::map<unsigned long, void*>& GetTargets() {

@@ -102,9 +102,12 @@ void ovlFTXManager::AddTexture(const cFlexiTextureInfoStruct& item) {
         i++;
     }
 
+	GetLSRManager()->reserveIndexElement(OVLT_COMMON, item.name, ovlFTXManager::TAG);
+	/*
     GetLSRManager()->AddSymbol(OVLT_COMMON);
     GetLSRManager()->AddLoader(OVLT_COMMON);
     GetStringTable()->AddSymbolString(item.name.c_str(), ovlFTXManager::TAG);
+	 */
 }
 
 void ovlFTXManager::Make(cOvlInfo* info) {
@@ -151,9 +154,12 @@ void ovlFTXManager::Make(cOvlInfo* info) {
         }
         it->second.Fill(c_dftis);
 
+		GetLSRManager()->assignIndexElement(OVLT_COMMON, it->first, ovlFTXManager::TAG, c_dftis);
+		/*
         SymbolStruct* s_ftx = GetLSRManager()->MakeSymbol(OVLT_COMMON, GetStringTable()->FindSymbolString(it->first.c_str(), Tag()), reinterpret_cast<unsigned long*>(c_dftis));
         GetLSRManager()->OpenLoader(OVLT_COMMON, TAG, reinterpret_cast<unsigned long*>(c_dftis), false, s_ftx);
         GetLSRManager()->CloseLoader(OVLT_COMMON);
+		 */
     }
 
 }

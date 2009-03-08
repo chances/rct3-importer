@@ -273,6 +273,41 @@ void ovlSIDManager::AddSID(const cSid& sid) {
     if (sid.extra.version) {
         m_commonsize += sid.sounds.size() * sizeof(SceneryExtraSound);
     }
+	
+	cLoader& loader = GetLSRManager()->reserveIndexElement(OVLT_UNIQUE, sid.name, ovlSIDManager::TAG);
+	
+    foreach(const cSidSound& sound, sid.sounds) {
+        m_size += sound.sounds.size() * 4;
+        foreach(const string& sname, sound.sounds)
+			loader.reserveSymbolReference(sname, ovlSNDManager::TAG);
+        m_commonsize += sound.animationscripts.size() * 4;
+        foreach(const vector<cSidSoundScript>& scrvec, sound.animationscripts)
+            foreach(const cSidSoundScript& scr, scrvec)
+                m_commonsize += scr.GetCommonSize();
+    }
+
+	STRINGLIST_ADD(sid.ovlpath, true);
+	loader.reserveSymbolReference(sid.ui.name, ovlTXTManager::TAG);
+	loader.reserveSymbolReference(sid.ui.icon, ovlGSIManager::TAG, false);
+	STRINGLIST_ADD(sid.position.supports, true);
+
+    if ((sid.ui.group != "") && (sid.ui.groupicon != "")) {
+		loader.reserveSymbolReference(sid.ui.group, ovlTXTManager::TAG);
+		loader.reserveSymbolReference(sid.ui.groupicon, ovlGSIManager::TAG);
+    }
+	foreach(const string& svd, sid.svds)
+		loader.reserveSymbolReference(svd, ovlSVDManager::TAG);
+		
+	foreach(const cSidParam& p, sid.parameters) {
+		STRINGLIST_ADD(p.name, true);
+		STRINGLIST_ADD(p.param, true);
+	}
+		
+    foreach(const string& caranim, sid.flatride.individual_animations) {
+        STRINGLIST_ADD(caranim, true);
+    }
+
+/*
     foreach(const cSidSound& sound, sid.sounds) {
         m_size += sound.sounds.size() * 4;
         foreach(const string& sname, sound.sounds) {
@@ -315,7 +350,7 @@ void ovlSIDManager::AddSID(const cSid& sid) {
     foreach(const string& caranim, sid.flatride.individual_animations) {
         STRINGLIST_ADD(caranim, true);
     }
-
+ */
 }
 
 void ovlSIDManager::Make(cOvlInfo* info) {
@@ -400,6 +435,63 @@ void ovlSIDManager::Make(cOvlInfo* info) {
         }
 
         // Symbol and Loader
+		cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_UNIQUE, it->first, ovlSIDManager::TAG, c_sid);
+		loader.assignSymbolReference(it->second.ui.name, ovlTXTManager::TAG, &c_sid->name_ref);
+		loader.assignSymbolReference(it->second.ui.icon, ovlGSIManager::TAG, &c_sid->icon_ref, false);
+
+        if ((it->second.ui.group != "") && (it->second.ui.groupicon != "")) {
+			loader.assignSymbolReference(it->second.ui.group, ovlTXTManager::TAG, &c_sid->group_name_ref);
+			loader.assignSymbolReference(it->second.ui.groupicon, ovlGSIManager::TAG, &c_sid->group_icon_ref);
+        }
+        c_sid->svd_count = it->second.svds.size();
+        for (unsigned long c = 0; c < it->second.svds.size(); ++c) {
+			loader.assignSymbolReference(it->second.svds[c], ovlSVDManager::TAG, &c_sid->svds_ref[c]);
+        }
+
+        // Sounds
+        if (it->second.sounds.size()) {
+            RELOC_ARRAY(it->second.sounds.size(), c_sid->sounds, ScenerySound, c_data);
+            if (it->second.extra.version) {
+                RELOC_ARRAY(it->second.sounds.size(), reinterpret_cast<SceneryItem_S*>(c_sid)->s.sounds_extra, SceneryExtraSound, c_commondata);
+            }
+            for(int s = 0; s < it->second.sounds.size(); ++s) {
+                c_sid->sounds[s].sound_count = it->second.sounds[s].sounds.size();
+                c_sid->sounds[s].sound_script_count = it->second.sounds[s].animationscripts.size();
+                if (it->second.extra.version) {
+                    it->second.sounds[s].FillExtra(reinterpret_cast<SceneryItem_S*>(c_sid)->s.sounds_extra[s]);
+                }
+                RELOC_ARRAY(it->second.sounds[s].sounds.size(), c_sid->sounds[s].sound_refs, Sound*, c_data);
+                RELOC_ARRAY(it->second.sounds[s].animationscripts.size(), c_sid->sounds[s].sound_scripts, SoundScript*, c_commondata);
+                for(int ss = 0; ss < it->second.sounds[s].sounds.size(); ++ss) {
+					loader.assignSymbolReference(it->second.sounds[s].sounds[ss], ovlSNDManager::TAG, &c_sid->sounds[s].sound_refs[ss]);
+                }
+                for(int an = 0; an < it->second.sounds[s].animationscripts.size(); ++an) {
+                    if (it->second.sounds[s].animationscripts[an].size()) {
+                        c_sid->sounds[s].sound_scripts[an] = reinterpret_cast<SoundScript*>(c_commondata);
+                        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_sid->sounds[s].sound_scripts[an]));
+                        int index = 0;
+                        uint32_t* ints = reinterpret_cast<uint32_t*>(c_commondata);
+                        r3::float_t* floats = reinterpret_cast<r3::float_t*>(c_commondata);
+                        foreach(const cSidSoundScript& scr, it->second.sounds[s].animationscripts[an]) {
+                            floats[index++] = scr.time;
+                            ints[index++] = scr.command;
+                            if (scr.command >= 3) {
+                                floats[index++] = scr.parameter[0];
+                                floats[index++] = scr.parameter[1];
+                            }
+                        }
+                        c_commondata += index * 4;
+                    }
+                }
+            }
+        } else {
+            c_sid->sounds = NULL;
+            if (it->second.extra.version) {
+                reinterpret_cast<SceneryItem_S*>(c_sid)->s.sounds_extra = NULL;
+            }
+        }
+
+/*
         SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), TAG), reinterpret_cast<unsigned long*>(c_sid));
         GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_sid), false, c_symbol);
 
@@ -465,6 +557,7 @@ void ovlSIDManager::Make(cOvlInfo* info) {
         }
 
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
+*/
     }
 
 }

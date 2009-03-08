@@ -115,6 +115,12 @@ void ovlANRManager::AddRide(const cAnimatedRide& item) {
         }
     }
 
+	cLoader& loader = GetLSRManager()->reserveIndexElement(OVLT_UNIQUE, item.name, ovlANRManager::TAG);
+	
+    item.attraction.DoAdd(loader);
+    item.ride.DoAdd(loader);
+	loader.reserveSymbolReference(item.sid, ovlSIDManager::TAG);
+/*
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
     GetLSRManager()->AddLoader(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(item.name.c_str(), ovlANRManager::TAG);
@@ -124,6 +130,7 @@ void ovlANRManager::AddRide(const cAnimatedRide& item) {
 
     GetLSRManager()->AddSymRef(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(item.sid.c_str(), ovlSIDManager::TAG);
+*/
 }
 
 void ovlANRManager::Make(cOvlInfo* info) {
@@ -151,6 +158,12 @@ void ovlANRManager::Make(cOvlInfo* info) {
                 STRINGLIST_ASSIGN(c_item->showitems[i].name, it->second.showitems[i].name, true, GetStringTable(), GetRelocationManager());
             }
 
+			cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_UNIQUE, it->first, ovlANRManager::TAG, c_item);
+			
+            it->second.ride.MakeSymRefs(c_item->ride_sub_s, it->second.attraction, loader);
+			loader.assignSymbolReference(it->second.sid, ovlSIDManager::TAG, &c_item->sid_ref);
+			
+			/*
             SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), TAG), reinterpret_cast<unsigned long*>(c_item));
             GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_item), false, c_symbol);
 
@@ -160,6 +173,7 @@ void ovlANRManager::Make(cOvlInfo* info) {
                                  reinterpret_cast<unsigned long*>(&c_item->sid_ref));
 
             GetLSRManager()->CloseLoader(OVLT_UNIQUE);
+			 */
 
         } else {
             // Assign structs
@@ -171,6 +185,12 @@ void ovlANRManager::Make(cOvlInfo* info) {
 
             it->second.Fill(c_item);
 
+			cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_UNIQUE, it->first, ovlANRManager::TAG, c_item);
+			
+            it->second.attraction.MakeSymRefs(&c_item->att, loader);
+            it->second.ride.MakeSymRefs(&c_item->ride, it->second.attraction, loader);
+			loader.assignSymbolReference(it->second.sid, ovlSIDManager::TAG, &c_item->sid_ref);
+/*
             SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), TAG), reinterpret_cast<unsigned long*>(c_item));
             GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_item), false, c_symbol);
 
@@ -181,7 +201,7 @@ void ovlANRManager::Make(cOvlInfo* info) {
                                  reinterpret_cast<unsigned long*>(&c_item->sid_ref));
 
             GetLSRManager()->CloseLoader(OVLT_UNIQUE);
-
+*/
         }
     }
 

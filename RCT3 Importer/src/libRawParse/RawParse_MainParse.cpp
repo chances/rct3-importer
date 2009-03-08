@@ -626,12 +626,13 @@ void cRawParser::Parse(cXmlNode& node) {
             wxString name = ParseString(child, wxT(RAWXML_SYMBOL), wxT("name"), NULL);
             wxString type = ParseString(child, wxT(RAWXML_SYMBOL), wxT("type"), NULL);
             wxLogVerbose(wxString::Format(_("Adding symbol %s to %s."), name.c_str(), m_output.GetFullPath().c_str()));
+			wxString tag;
             unsigned long data;
             if (type == wxT("int")) {
-                name += wxT(":int");
+                tag = "int";
                 data = ParseUnsigned(child, wxT(RAWXML_SYMBOL), wxT("data"));
             } else if (type == wxT("float")) {
-                name += wxT(":flt");
+                tag = "flt";
                 float f = ParseFloat(child, wxT(RAWXML_SYMBOL), wxT("data"));
 				union {
 					unsigned long l;
@@ -642,7 +643,7 @@ void cRawParser::Parse(cXmlNode& node) {
             } else {
                 throw MakeNodeException<RCT3Exception>(wxString::Format(_("symbol tag has unimplemented type value '%s'"), type.c_str()), child);
             }
-            m_ovl.AddDataSymbol(target, name.ToAscii(), data);
+            m_ovl.AddDataSymbol(target, name.ToAscii(), tag.ToAscii(),  data);
         } else if (child.is(XML_ELEMENT_NODE)) {
             throw MakeNodeException<RCT3Exception>(wxString::Format(_("Unknown tag '%s' in rawovl tag"), child.wxname().c_str()), child);
         }

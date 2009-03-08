@@ -90,6 +90,7 @@ void ovlWAIManager::AddItem(const cWildAnimalItem& item) {
     m_size += sizeof(WildAnimalItem);
 
 
+/*
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
     GetLSRManager()->AddLoader(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(item.name.c_str(), ovlWAIManager::TAG);
@@ -102,6 +103,12 @@ void ovlWAIManager::AddItem(const cWildAnimalItem& item) {
     GetStringTable()->AddSymbolString(item.icon.c_str(), ovlGSIManager::TAG);
     GetLSRManager()->AddSymRef(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(item.staticshape.c_str(), ovlSHSManager::TAG);
+*/
+	cLoader& loader = GetLSRManager()->reserveIndexElement(OVLT_UNIQUE, item.name, ovlWAIManager::TAG);
+	loader.reserveSymbolReference(item.nametxt, ovlTXTManager::TAG);
+	loader.reserveSymbolReference(item.description, ovlTXTManager::TAG);
+	loader.reserveSymbolReference(item.icon, ovlGSIManager::TAG);
+	loader.reserveSymbolReference(item.staticshape, ovlSHSManager::TAG);
 
     GetStringTable()->AddString(item.shortname.c_str());
 
@@ -121,6 +128,16 @@ void ovlWAIManager::Make(cOvlInfo* info) {
 
         it->second.Fill(c_item);
 
+        c_item->shortname = GetStringTable()->FindString(it->second.shortname.c_str());
+        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_item->shortname));
+		
+		cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_UNIQUE, it->first, ovlWAIManager::TAG, c_item);
+		loader.assignSymbolReference(it->second.nametxt, ovlTXTManager::TAG, &c_item->name);
+		loader.assignSymbolReference(it->second.description, ovlTXTManager::TAG, &c_item->description);
+		loader.assignSymbolReference(it->second.icon, ovlGSIManager::TAG, &c_item->icon);
+		loader.assignSymbolReference(it->second.staticshape, ovlSHSManager::TAG, &c_item->staticshape);
+		
+		/*
         SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), TAG), reinterpret_cast<unsigned long*>(c_item));
         GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_item), false, c_symbol);
 
@@ -133,10 +150,8 @@ void ovlWAIManager::Make(cOvlInfo* info) {
         GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.staticshape.c_str(), ovlSHSManager::TAG),
                              reinterpret_cast<unsigned long*>(&c_item->staticshape));
 
-        c_item->shortname = GetStringTable()->FindString(it->second.shortname.c_str());
-        GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_item->shortname));
 
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
-
+		*/
     }
 }

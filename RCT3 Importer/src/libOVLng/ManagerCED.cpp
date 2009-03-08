@@ -67,7 +67,11 @@ void ovlCEDManager::AddExtra(const cCarriedItemExtra& item) {
     // Main
     m_size += sizeof(CarriedItemExtra);
 
-
+	cLoader& loader = GetLSRManager()->reserveIndexElement(OVLT_UNIQUE, item.name, ovlCEDManager::TAG);
+	
+	loader.reserveSymbolReference(item.nametxt, ovlTXTManager::TAG);
+	loader.reserveSymbolReference(item.icon, ovlGSIManager::TAG);
+/*
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
     GetLSRManager()->AddLoader(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(item.name.c_str(), ovlCEDManager::TAG);
@@ -76,7 +80,7 @@ void ovlCEDManager::AddExtra(const cCarriedItemExtra& item) {
     GetStringTable()->AddSymbolString(item.nametxt.c_str(), ovlTXTManager::TAG);
     GetLSRManager()->AddSymRef(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(item.icon.c_str(), ovlGSIManager::TAG);
-
+*/
 }
 
 void ovlCEDManager::Make(cOvlInfo* info) {
@@ -93,6 +97,10 @@ void ovlCEDManager::Make(cOvlInfo* info) {
 
         it->second.Fill(c_item);
 
+		cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_UNIQUE, it->first, ovlCEDManager::TAG, c_item);
+		loader.assignSymbolReference(it->second.nametxt, ovlTXTManager::TAG, &c_item->name);
+		loader.assignSymbolReference(it->second.icon, ovlGSIManager::TAG, &c_item->icon);
+/*
         SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), TAG), reinterpret_cast<unsigned long*>(c_item));
         GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_item), false, c_symbol);
 
@@ -102,6 +110,6 @@ void ovlCEDManager::Make(cOvlInfo* info) {
                              reinterpret_cast<unsigned long*>(&c_item->icon));
 
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
-
+*/
     }
 }

@@ -35,6 +35,7 @@
 #include "OVLng.h"
 
 using namespace std;
+using namespace r3;
 
 const char* ovlTEXManager::LOADER = "FGDK";
 const char* ovlTEXManager::NAME = "Texture";
@@ -78,11 +79,16 @@ void ovlTEXManager::AddTexture(const cTextureStruct& item) {
     // TextureStruct + TextureStruct2
     m_size += sizeof(Tex);
 
+	cLoader& loader = GetLSRManager()->reserveIndexElement(OVLT_UNIQUE, item.texture.name, ovlTEXManager::TAG);
+	loader.reserveSymbolReference(item.texturestyle, ovlTXSManager::TAG);
+
+/*
     GetLSRManager()->AddLoader(OVLT_UNIQUE);
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
     GetLSRManager()->AddSymRef(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(item.texture.name.c_str(), Tag());
     GetStringTable()->AddSymbolString(item.texturestyle.c_str(), ovlTXSManager::TAG);
+	 */
 }
 
 void ovlTEXManager::Make(cOvlInfo* info) {
@@ -112,10 +118,14 @@ void ovlTEXManager::Make(cOvlInfo* info) {
         GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_tex->t2.Texture));
         c_tex->t2.Flic = m_flicman->GetPointer2(it->first);
         GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_tex->t2.Flic));
-
+		
+		cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_UNIQUE, it->first, ovlTEXManager::TAG, c_tex);
+		loader.assignSymbolReference(it->second.texturestyle, ovlTXSManager::TAG, &c_tex->t1.TextureData);
+		/*
         SymbolStruct* s_tex = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), Tag()), reinterpret_cast<unsigned long*>(c_tex));
         GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_tex), 0, s_tex);
         GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->second.texturestyle.c_str(), ovlTXSManager::TAG), reinterpret_cast<unsigned long*>(&c_tex->t1.TextureData));
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
+		 */
     }
 }

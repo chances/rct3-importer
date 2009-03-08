@@ -86,42 +86,12 @@ public:
 
     virtual void Make(cOvlInfo* info);
 
-    virtual const char* Loader() const {
-        return LOADER;
-    };
-    virtual const char* Name() const {
-        return NAME;
-    };
-    virtual const char* Tag() const {
-        return TAG;
-    };
-    virtual const unsigned long Type() const {
-        return TYPE;
-    };
-};
-
-/*
-class ovlTEXManager: public ovlOVLManager {
-public:
-    static const char* LOADER;
-    static const char* NAME;
-    static const char* TAG;
-    static const unsigned long TYPE;
-private:
-    map<string, TextureStruct> m_textures;
-
-    ovlFLICManager* m_flicman;
-public:
-    ovlTEXManager(): ovlOVLManager() {};
-    virtual ~ovlTEXManager(){};
-
-    virtual void Init(cOvl* ovl);
-
-    void AddTexture(const string& name, unsigned long dimension, unsigned long size, unsigned long* data);
-    void SetUnknowns18(const string& name, unsigned long unk1 = 0x70007, unsigned long unk2 = 0x70007, unsigned long unk3 = 0x70007, unsigned long unk4 = 0x70007, unsigned long unk5 = 0x70007, unsigned long unk6 = 0x70007, unsigned long unk7 = 0x70007, unsigned long unk8 = 0x70007);
-    void SetUnknowns912(const string& name, unsigned long unk9 = 1, unsigned long unk10 = 8, unsigned long unk11 = 0x10, unsigned long unk12 = 1);
-
-    virtual void Make(cOvlInfo* info);
+	virtual int GetCount(r3::cOvlType type) const {
+		if (type == r3::OVLT_COMMON)
+			return 0;
+		else
+			return m_items.size();
+	}
 
     virtual const char* Loader() const {
         return LOADER;
@@ -136,5 +106,5 @@ public:
         return TYPE;
     };
 };
-*/
+
 #endif

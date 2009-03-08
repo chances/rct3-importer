@@ -40,21 +40,22 @@
 class ovlOVLManager;
 class ovlLodSymRefManager;
 class ovlExtraChunk;
+class cLoader;
 
 class cOvlMemBlob {
 public:
-    cOvlType type;
+    r3::cOvlType type;
     int file;
     unsigned long size;
     unsigned char* data;
 
     cOvlMemBlob() {
-        type = OVLT_COMMON;
+        type = r3::OVLT_COMMON;
         file = 0;
         size = 0;
         data = NULL;
     };
-    cOvlMemBlob(cOvlType t, int f, unsigned long s) {
+    cOvlMemBlob(r3::cOvlType t, int f, unsigned long s) {
         type = t;
         file = f;
         size = s;
@@ -130,16 +131,17 @@ public:
 
 class cOvlFileClass {
 public:
+	int version;
 	std::string filename;
 	cOvlFileType types[9];
     std::vector<std::string> references;
     std::set<unsigned long> fixups;
 
-    cOvlFileClass(){};
+    cOvlFileClass(): version(1) {};
     unsigned char* GetBlock(int filetype, unsigned long size);
     unsigned long MakeRelOffsets(unsigned long from);
     //void Write(const std::map<std::string, ovlOVLManager*>& managers, const std::vector<ovlExtraChunk*>& extra);
-    void WriteStreamed(const std::map<std::string, ovlOVLManager*>& managers, const std::vector<ovlExtraChunk*>& extra);
+    void WriteStreamed(r3::cOvlType type, const std::map<std::string, ovlOVLManager*>& managers, const std::vector<cLoader>& loaders);
 };
 
 class cOvlInfo {
@@ -149,10 +151,13 @@ public:
 
     cOvlInfo(){};
     void MakeOffsets() {
-        unsigned long off = OpenFiles[OVLT_COMMON].MakeRelOffsets(0);
-        OpenFiles[OVLT_UNIQUE].MakeRelOffsets(off);
+        unsigned long off = OpenFiles[r3::OVLT_COMMON].MakeRelOffsets(0);
+        OpenFiles[r3::OVLT_UNIQUE].MakeRelOffsets(off);
     };
     void WriteFiles(const std::map<std::string, ovlOVLManager*>& managers, const ovlLodSymRefManager& lsrman);
+	int version() {
+		return OpenFiles[0].version;
+	}
 };
 
 #endif

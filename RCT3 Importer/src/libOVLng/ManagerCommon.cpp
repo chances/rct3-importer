@@ -373,7 +373,17 @@ void cAttraction::Fill(r3old::SpecialAttractionA* sp) const {
   *
   * @todo: document this function
   */
-void cAttraction::DoAdd(ovlStringTable* st, ovlLodSymRefManager* lsr) const {
+void cAttraction::DoAdd(cLoader& loader) const {
+	loader.reserveSymbolReference(name, ovlTXTManager::TAG);
+	loader.reserveSymbolReference(description, ovlTXTManager::TAG);
+    // The following is not an error, if not set these are symref'd to :gsi and :spl
+	loader.reserveSymbolReference(icon, ovlGSIManager::TAG);
+	loader.reserveSymbolReference(spline, ovlSPLManager::TAG);
+	
+    foreach(const string& spl, splines) {
+		loader.reserveSymbolReference(spl, ovlSPLManager::TAG);
+	}
+/*
     lsr->AddSymRef(OVLT_UNIQUE);
     st->AddSymbolString(name, ovlTXTManager::TAG);
     lsr->AddSymRef(OVLT_UNIQUE);
@@ -388,6 +398,7 @@ void cAttraction::DoAdd(ovlStringTable* st, ovlLodSymRefManager* lsr) const {
         lsr->AddSymRef(OVLT_UNIQUE);
         st->AddSymbolString(spl, ovlSPLManager::TAG);
     }
+*/
 }
 
 /** @brief GetUniqueSize
@@ -418,7 +429,19 @@ unsigned long cAttraction::GetCommonSize() const {
   *
   * @todo: document this function
   */
-void cAttraction::MakeSymRefs(r3::Attraction_V* ptr, ovlLodSymRefManager* lsr, ovlStringTable* st) const {
+void cAttraction::MakeSymRefs(r3::Attraction_V* ptr, cLoader& loader) const {
+	loader.assignSymbolReference(name, ovlTXTManager::TAG, &ptr->name_ref);
+	loader.assignSymbolReference(description, ovlTXTManager::TAG, &ptr->description_ref);
+    // The following is not an error, if not set these are symref'd to :gsi and :spl
+	loader.assignSymbolReference(icon, ovlGSIManager::TAG, &ptr->icon_ref);
+	loader.assignSymbolReference(spline, ovlSPLManager::TAG, &ptr->spline_ref);
+	
+    for (int i = 0; i < splines.size(); ++i) {
+		loader.assignSymbolReference(splines[i], ovlSPLManager::TAG, &ptr->paths_ref[i]);
+    }
+	
+	
+	/*
     lsr->MakeSymRef(OVLT_UNIQUE, st->FindSymbolString(name, ovlTXTManager::TAG), reinterpret_cast<unsigned long*>(&ptr->name_ref));
     lsr->MakeSymRef(OVLT_UNIQUE, st->FindSymbolString(description, ovlTXTManager::TAG), reinterpret_cast<unsigned long*>(&ptr->description_ref));
     lsr->MakeSymRef(OVLT_UNIQUE, st->FindSymbolString(icon, ovlGSIManager::TAG), reinterpret_cast<unsigned long*>(&ptr->icon_ref));
@@ -428,14 +451,15 @@ void cAttraction::MakeSymRefs(r3::Attraction_V* ptr, ovlLodSymRefManager* lsr, o
         lsr->MakeSymRef(OVLT_UNIQUE, st->FindSymbolString(splines[i], ovlSPLManager::TAG),
                              reinterpret_cast<unsigned long*>(&ptr->paths_ref[i]));
     }
+	 */
 }
 
 /** @brief MakeSymRefs
   *
   * @todo: document this function
   */
-void cAttraction::MakeSymRefs(r3::Attraction_S* ptr, ovlLodSymRefManager* lsr, ovlStringTable* st) const {
-    MakeSymRefs(&ptr->v, lsr, st);
+void cAttraction::MakeSymRefs(r3::Attraction_S* ptr, cLoader& loader) const {
+    MakeSymRefs(&ptr->v, loader);
 }
 
 /** @brief MakePointers
@@ -646,7 +670,7 @@ void cRideStationLimit::Fill(r3::RideStationLimit* r) const {
   *
   * @todo: document this function
   */
-void cRide::DoAdd(ovlStringTable* st, ovlLodSymRefManager* lsr) const {
+void cRide::DoAdd(cLoader& loader) const {
     return;
 }
 
@@ -732,7 +756,7 @@ unsigned long cRide::GetCommonSize(const cAttraction& att) const {
   *
   * @todo: document this function
   */
-void cRide::MakeSymRefs(r3::Ride_V* ptr, const cAttraction& att, ovlLodSymRefManager* lsr, ovlStringTable* st) const {
+void cRide::MakeSymRefs(r3::Ride_V* ptr, const cAttraction& att, cLoader& loader) const {
     return;
 }
 
@@ -740,8 +764,8 @@ void cRide::MakeSymRefs(r3::Ride_V* ptr, const cAttraction& att, ovlLodSymRefMan
   *
   * @todo: document this function
   */
-void cRide::MakeSymRefs(r3::Ride_S* ptr, const cAttraction& att, ovlLodSymRefManager* lsr, ovlStringTable* st) const {
-    att.MakeSymRefs(ptr->s.att, lsr, st);
+void cRide::MakeSymRefs(r3::Ride_S* ptr, const cAttraction& att, cLoader& loader) const {
+    att.MakeSymRefs(ptr->s.att, loader);
 }
 
 /** @brief Fill

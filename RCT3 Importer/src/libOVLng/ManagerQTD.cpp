@@ -89,6 +89,13 @@ void ovlQTDManager::AddQueue(const cQueue& item) {
     m_size += sizeof(QueueType);
 
 
+	cLoader& loader = GetLSRManager()->reserveIndexElement(OVLT_UNIQUE, item.name, ovlQTDManager::TAG);
+	
+	loader.reserveSymbolReference(item.nametxt, ovlTXTManager::TAG);
+	loader.reserveSymbolReference(item.icon, ovlGSIManager::TAG);
+	loader.reserveSymbolReference(item.texture, ovlFTXManager::TAG);
+	
+	/*
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
     GetLSRManager()->AddLoader(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(item.name.c_str(), ovlQTDManager::TAG);
@@ -99,6 +106,7 @@ void ovlQTDManager::AddQueue(const cQueue& item) {
     GetStringTable()->AddSymbolString(item.icon.c_str(), ovlGSIManager::TAG);
     GetLSRManager()->AddSymRef(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(item.texture.c_str(), ovlFTXManager::TAG);
+	 */
 
 }
 
@@ -116,6 +124,12 @@ void ovlQTDManager::Make(cOvlInfo* info) {
 
         it->second.Fill(c_item, GetStringTable(), GetRelocationManager());
 
+		cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_UNIQUE, it->first, ovlQTDManager::TAG, c_item);
+		loader.assignSymbolReference(it->second.nametxt, ovlTXTManager::TAG, &c_item->Name);
+		loader.assignSymbolReference(it->second.icon, ovlGSIManager::TAG, &c_item->gsi);
+		loader.assignSymbolReference(it->second.texture, ovlFTXManager::TAG, &c_item->ftx);
+		
+		/*
         SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), TAG), reinterpret_cast<unsigned long*>(c_item));
         GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_item), false, c_symbol);
 
@@ -127,6 +141,7 @@ void ovlQTDManager::Make(cOvlInfo* info) {
                              reinterpret_cast<unsigned long*>(&c_item->ftx));
 
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
+		 */
 
     }
 }

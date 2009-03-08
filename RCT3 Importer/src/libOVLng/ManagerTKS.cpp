@@ -365,7 +365,56 @@ void ovlTKSManager::AddSection(const cTrackSection& item) {
     m_size += item.GetUniqueSize();
     m_commonsize += item.GetCommonSize();
 
+	cLoader& loader = GetLSRManager()->reserveIndexElement(OVLT_UNIQUE, item.name, ovlTKSManager::TAG);
 
+    STRINGLIST_ADD(item.internalname, true);
+		
+	loader.reserveSymbolReference(item.sid, ovlSIDManager::TAG);
+	
+	loader.reserveSymbolReference(item.splines.car.left, ovlSPLManager::TAG);
+	loader.reserveSymbolReference(item.splines.car.right, ovlSPLManager::TAG);
+	loader.reserveSymbolReference(item.splines.join.left, ovlSPLManager::TAG);
+	loader.reserveSymbolReference(item.splines.join.right, ovlSPLManager::TAG);
+    if ((item.splines.extra.left != "") && (item.splines.extra.right != "")) {
+		loader.reserveSymbolReference(item.splines.extra.left, ovlSPLManager::TAG);
+		loader.reserveSymbolReference(item.splines.extra.right, ovlSPLManager::TAG);
+    }
+	
+    STRINGLIST_ADD(item.basic.entry.group, false);
+    STRINGLIST_ADD(item.basic.exit.group, false);
+
+    STRINGLIST_ADD(item.options.chair_lift_station_end, false);
+	
+    if (item.version) {
+		loader.reserveSymbolReference(item.soaked.loop_path, ovlSPLManager::TAG, false);
+        foreach(const string& path, item.soaked.paths)
+			loader.reserveSymbolReference(path, ovlSPLManager::TAG);
+
+        STRINGLIST_ADD(item.soaked.auto_group, false);
+        foreach(const cTrackSectionSpeedSplines& spl, item.soaked.speeds) {
+			loader.reserveSymbolReference(spl.splines.left, ovlSPLManager::TAG);
+			loader.reserveSymbolReference(spl.splines.right, ovlSPLManager::TAG);
+        }
+
+        foreach(const string& gr, item.soaked.groups_is_at_entry)
+            STRINGLIST_ADD(gr, true);
+        foreach(const string& gr, item.soaked.groups_is_at_exit)
+            STRINGLIST_ADD(gr, true);
+        foreach(const string& gr, item.soaked.groups_must_have_at_entry)
+            STRINGLIST_ADD(gr, true);
+        foreach(const string& gr, item.soaked.groups_must_have_at_exit)
+            STRINGLIST_ADD(gr, true);
+        foreach(const string& gr, item.soaked.groups_must_not_be_at_entry)
+            STRINGLIST_ADD(gr, true);
+        foreach(const string& gr, item.soaked.groups_must_not_be_at_exit)
+            STRINGLIST_ADD(gr, true);
+
+        if (item.version == 3) {
+			loader.reserveSymbolReference(item.wild.splitter_joined_other_ref, ovlTKSManager::TAG, false);
+            STRINGLIST_ADD(item.wild.alternate_text_lookup, false);
+        }
+    }
+	/*
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
     GetLSRManager()->AddLoader(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(item.name, ovlTKSManager::TAG);
@@ -417,7 +466,7 @@ void ovlTKSManager::AddSection(const cTrackSection& item) {
             STRINGLIST_ADD(item.wild.alternate_text_lookup, false);
         }
     }
-
+	*/
 }
 
 void ovlTKSManager::Make(cOvlInfo* info) {
@@ -476,7 +525,36 @@ void ovlTKSManager::Make(cOvlInfo* info) {
         }
 
         item.second.Fill(c_item, GetStringTable(), GetRelocationManager());
+		
+		
+		cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_UNIQUE, item.first, ovlTKSManager::TAG, c_item);
 
+		loader.assignSymbolReference(item.second.sid, ovlSIDManager::TAG, &c_item->sid_ref);
+		
+		loader.assignSymbolReference(item.second.splines.car.left, ovlSPLManager::TAG, &c_item->spline_left_ref);
+		loader.assignSymbolReference(item.second.splines.car.right, ovlSPLManager::TAG, &c_item->spline_right_ref);
+		loader.assignSymbolReference(item.second.splines.join.left, ovlSPLManager::TAG, &c_item->join_spline_left_ref);
+		loader.assignSymbolReference(item.second.splines.join.right, ovlSPLManager::TAG, &c_item->join_spline_right_ref);
+		if ((item.second.splines.extra.left != "") && (item.second.splines.extra.right != "")) {
+			loader.assignSymbolReference(item.second.splines.extra.left, ovlSPLManager::TAG, &c_item->extra_spline_left_ref);
+			loader.assignSymbolReference(item.second.splines.extra.right, ovlSPLManager::TAG, &c_item->extra_spline_right_ref);
+		}		
+		
+		if (item.second.version) {
+			loader.assignSymbolReference(item.second.soaked.loop_path, ovlSPLManager::TAG, &c_item_w->s.loop_spline_ref, false);
+            for(size_t i = 0; i < item.second.soaked.paths.size(); ++i)
+				loader.assignSymbolReference(item.second.soaked.paths[i], ovlSPLManager::TAG, &c_item_w->s.paths_ref[i]);
+
+            for(size_t i = 0; i < item.second.soaked.speeds.size(); ++i) {
+				loader.assignSymbolReference(item.second.soaked.speeds[i].splines.left, ovlSPLManager::TAG, &c_item_w->s.speed_splines[i].left_ref);
+				loader.assignSymbolReference(item.second.soaked.speeds[i].splines.right, ovlSPLManager::TAG, &c_item_w->s.speed_splines[i].right_ref);
+			}
+
+			if (item.second.version == 3) {
+				loader.assignSymbolReference(item.second.wild.splitter_joined_other_ref, ovlTKSManager::TAG, &c_item_w->w.splitter_joined_other_ref, false);
+			}
+		}
+		/*
         SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(item.first, TAG), reinterpret_cast<unsigned long*>(c_item));
         GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_item), false, c_symbol);
 
@@ -507,7 +585,7 @@ void ovlTKSManager::Make(cOvlInfo* info) {
         }
 
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
-
+		*/
     }
 
 }

@@ -101,7 +101,7 @@
 			<data type="string">  <!-- hexadecimal -->
 				<param name="pattern">(h|0x)[0-9A-Fa-f]{8}</param>
 			</data>
-			<data type="string">  <!-- hexadecimal -->
+			<data type="string">  <!-- binary -->
 				<param name="pattern">b[0-1]{32}</param>
 			</data>
 		</choice>
@@ -319,7 +319,16 @@
 		<attribute name="prefix" occurs="?" type="string"/>
 		<attribute name="installdir" occurs="?" type="string"/>
 		<attribute name="basedir" occurs="?" type="string"/>
-		<attribute name="file" occurs="?" type="string"/>
+		<optional>
+			<attribute name="file" type="string"/>
+			<attribute name="version" occurs="?">
+				<choice>
+					<value type="int">1</value>
+					<value type="int">4</value>
+					<value type="int">5</value>
+				</choice>
+			</attribute>
+		</optional>
 	</define>
 	<define name="orientationattrs">
 		<attribute name="handedness" occurs="?">

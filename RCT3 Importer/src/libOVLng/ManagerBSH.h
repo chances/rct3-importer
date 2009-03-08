@@ -140,50 +140,16 @@ public:
 
     virtual void Make(cOvlInfo* info);
 
-    virtual const char* Name() const {
-        return NAME;
-    };
-    virtual const char* Tag() const {
-        return TAG;
-    };
-};
+	virtual int GetCount() const {
+		return m_items.size();
+	}
 
-/*
-class ovlBSHManager: public ovlOVLManager {
-public:
-    static const char* NAME;
-    static const char* TAG;
-private:
-    vector<BoneShape1*> m_modellist;
-    vector<string> m_modelnames;
-    map<BoneShape2*, string> m_ftxmap;
-    map<BoneShape2*, string> m_txsmap;
-
-    BoneShape1* m_cmodel;
-    unsigned long m_nmesh;
-    long m_meshcount;
-    unsigned long m_nbone;
-    long m_bonecount;
-    bool m_rootadded;
-public:
-    ovlBSHManager(): ovlOVLManager() {
-        m_cmodel = NULL;
-        m_nmesh = 0;
-        m_nbone = 0;
-        m_meshcount = 0;
-        m_bonecount = 0;
-        m_rootadded = false;
-    };
-    virtual ~ovlBSHManager();
-
-    void AddModel(const char* name, unsigned long meshes, unsigned long bones);
-    void SetBoundingBox(const D3DVECTOR& bbox1, const D3DVECTOR& bbox2);
-    void AddBone(const char* name, unsigned long parent, const D3DMATRIX& pos1, const D3DMATRIX& pos2, bool isroot = false);
-    void AddRootBone();
-    void AddMesh(const char* ftx, const char* txs, unsigned long place, unsigned long flags, unsigned long sides,
-                 unsigned long vertexcount, VERTEX2* vertices, unsigned long indexcount, unsigned short* indices);
-
-    virtual unsigned char* Make(cOvlInfo* info);
+	virtual int GetCount(r3::cOvlType type) const {
+		if (type == r3::OVLT_COMMON)
+			return 0;
+		else
+			return m_items.size();
+	}
 
     virtual const char* Name() const {
         return NAME;
@@ -192,6 +158,5 @@ public:
         return TAG;
     };
 };
-*/
 
 #endif

@@ -84,44 +84,12 @@ public:
 
     virtual void Make(cOvlInfo* info);
 
-    virtual const char* Loader() const {
-        return LOADER;
-    };
-    virtual const char* Name() const {
-        return NAME;
-    };
-    virtual const char* Tag() const {
-        return TAG;
-    };
-};
-
-/*
-class ovlFTXManager: public ovlOVLManager {
-public:
-    static const char* LOADER;
-    static const char* NAME;
-    static const char* TAG;
-private:
-    vector<FlexiTextureInfoStruct*> m_ftxlist;
-    vector<string> m_ftxnames;
-
-    FlexiTextureInfoStruct* m_cftis;
-    FlexiTextureStruct* m_cfts;
-    long m_ftscount;
-public:
-    ovlFTXManager(): ovlOVLManager() {
-        m_cftis = NULL;
-        m_cfts = NULL;
-        m_ftscount = 0;
-    };
-    virtual ~ovlFTXManager();
-
-    void AddTexture(const char* name, unsigned long dimension, unsigned long fps, unsigned long recol,
-                    unsigned long animationcount, unsigned long* animation, unsigned long framecount);
-    void AddTextureFrame(unsigned long dimension, unsigned long recol,
-                         unsigned char* palette, unsigned char* texture, unsigned char* alpha);
-
-    virtual void Make(cOvlInfo* info);
+	virtual int GetCount(r3::cOvlType type) const {
+		if (type == r3::OVLT_COMMON)
+			return m_items.size();
+		else
+			return 0;
+	}
 
     virtual const char* Loader() const {
         return LOADER;
@@ -133,5 +101,5 @@ public:
         return TAG;
     };
 };
-*/
+
 #endif

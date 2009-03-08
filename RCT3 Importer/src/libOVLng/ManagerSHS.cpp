@@ -255,6 +255,43 @@ void ovlSHSManager::AddModel(const cStaticShape1& item) {
     // Effect positions
     m_blobs[item.name].size += item.effects.size() * sizeof(MATRIX);
 
+	cLoader& loader = GetLSRManager()->reserveIndexElement(OVLT_UNIQUE, item.name, ovlSHSManager::TAG);
+	
+    // Meshes
+    foreach(const cStaticShape2& shape, item.meshes) {
+        // StaticShape2
+        m_size += sizeof(StaticShapeMesh);
+        // Vertices
+        m_blobs[item.name].size += shape.vertices.size() * sizeof(VERTEX);
+        // Indices
+        m_blobs[item.name].size += shape.indices.size() * sizeof(unsigned long);
+#ifndef GLASS_OLD
+        if ((shape.IsAlgoNone()) && (shape.placetexturing != 0)) {
+            if (shape.indices.size() % 3)
+                BOOST_THROW_EXCEPTION(EOvl("ovlSHSManager::AddModel: mesh has triangle sort algorithm none but indices aren't divisible by 3"));
+        }
+        if ((shape.placetexturing != 0) && (!shape.IsAlgoNone())) {
+            m_blobs[item.name].size += 2 * shape.indices.size() * sizeof(unsigned long);
+        }
+#endif
+
+        // Symbol Refs
+		loader.reserveSymbolReference(shape.fts, ovlFTXManager::TAG);
+		loader.reserveSymbolReference(shape.texturestyle, ovlTXSManager::TAG);
+    }
+
+    // Effect names
+    for (vector<cEffectStruct>::const_iterator it = item.effects.begin(); it != item.effects.end(); ++it) {
+        unsigned long namelength = it->name.length()+1;
+        // Add padded name size
+        while (namelength % 4 != 0) {
+            namelength++;
+        }
+        //m_size += namelength;
+        m_blobs[item.name].size += namelength;
+    }
+	
+/*
     // Meshes
     for (vector<cStaticShape2>::const_iterator it = item.meshes.begin(); it != item.meshes.end(); ++it) {
         // StaticShape2
@@ -294,6 +331,7 @@ void ovlSHSManager::AddModel(const cStaticShape1& item) {
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
     GetLSRManager()->AddLoader(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(item.name.c_str(), ovlSHSManager::TAG);
+ */
 }
 
 void ovlSHSManager::Make(cOvlInfo* info) {
@@ -317,8 +355,9 @@ void ovlSHSManager::Make(cOvlInfo* info) {
         DUMP_RELOCATION("ovlSHSManager::Make, BoneShape2 pointers", c_model->sh);
 
         // Symbol and Loader
-        SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), Tag()), reinterpret_cast<unsigned long*>(c_model));
-        GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_model), false, c_symbol);
+        //SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), Tag()), reinterpret_cast<unsigned long*>(c_model));
+        //GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_model), false, c_symbol);
+		cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_UNIQUE, it->first, ovlSHSManager::TAG, c_model);
 
         unsigned long s = 0;
         for (vector<cStaticShape2>::iterator itb = it->second.meshes.begin(); itb != it->second.meshes.end(); ++itb) {
@@ -343,8 +382,10 @@ void ovlSHSManager::Make(cOvlInfo* info) {
             DUMP_RELOCATION("ovlSHSManager::Make, Triangles", c_model->sh[s]->indices);
 
             // Symbol references
-            GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(itb->fts.c_str(), ovlFTXManager::TAG), reinterpret_cast<unsigned long*>(&c_model->sh[s]->ftx_ref));
-            GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(itb->texturestyle.c_str(), ovlTXSManager::TAG), reinterpret_cast<unsigned long*>(&c_model->sh[s]->txs_ref));
+            //GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(itb->fts.c_str(), ovlFTXManager::TAG), reinterpret_cast<unsigned long*>(&c_model->sh[s]->ftx_ref));
+            //GetLSRManager()->MakeSymRef(OVLT_UNIQUE, GetStringTable()->FindSymbolString(itb->texturestyle.c_str(), ovlTXSManager::TAG), reinterpret_cast<unsigned long*>(&c_model->sh[s]->txs_ref));
+			loader.assignSymbolReference(itb->fts, ovlFTXManager::TAG, &c_model->sh[s]->ftx_ref);
+			loader.assignSymbolReference(itb->texturestyle, ovlTXSManager::TAG, &c_model->sh[s]->txs_ref);
 
             s++;
         }
@@ -383,6 +424,6 @@ void ovlSHSManager::Make(cOvlInfo* info) {
         }
 
         it->second.Fill(c_model);
-        GetLSRManager()->CloseLoader(OVLT_UNIQUE);
+        //GetLSRManager()->CloseLoader(OVLT_UNIQUE);
     }
 }

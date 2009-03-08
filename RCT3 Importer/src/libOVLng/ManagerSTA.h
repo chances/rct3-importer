@@ -63,8 +63,8 @@ public:
         unk5 = 8;
         unk6 = 9;
     }
-    void Fill(r3old::StallA* sta);
-    void Fill(r3old::StallB* sta);
+    void Fill(r3::Stall_V* sta);
+    void Fill(r3::Stall_SW* sta);
 };
 
 class cStall {
@@ -76,8 +76,8 @@ public:
     std::string sid;
 
     cStall() {};
-    void Fill(r3old::StallA* sta);
-    void Fill(r3old::StallB* sta);
+    void Fill(r3::Stall_V* sta);
+    void Fill(r3::Stall_SW* sta);
 };
 
 class ovlSTAManager: public ovlOVLManager {
@@ -95,6 +95,13 @@ public:
     void AddStall(const cStall& stall);
 
     virtual void Make(cOvlInfo* info);
+
+	virtual int GetCount(r3::cOvlType type) const {
+		if (type == r3::OVLT_COMMON)
+			return 0;
+		else
+			return m_stalls.size();
+	}
 
     virtual const char* Name() const {
         return NAME;

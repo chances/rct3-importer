@@ -94,14 +94,16 @@ void ovlTERManager::AddItem(const cTerrain& item) {
     // Base structures
     m_size += item.GetUniqueSize();
 
-    GetLSRManager()->AddSymbol(OVLT_UNIQUE);
-    GetLSRManager()->AddLoader(OVLT_UNIQUE);
-    GetStringTable()->AddSymbolString(item.name, ovlTERManager::TAG);
+	cLoader& loader = GetLSRManager()->reserveIndexElement(OVLT_UNIQUE, item.name, ovlTERManager::TAG);
+    //GetLSRManager()->AddSymbol(OVLT_UNIQUE);
+    //GetLSRManager()->AddLoader(OVLT_UNIQUE);
+    //GetStringTable()->AddSymbolString(item.name, ovlTERManager::TAG);
 
     STRINGLIST_ADD(item.description_name, true);
     STRINGLIST_ADD(item.icon_name, true);
 
-    SYMREF_ADD(OVLT_UNIQUE, item.texture, ovlTEXManager::TAG, true);
+    //SYMREF_ADD(OVLT_UNIQUE, item.texture, ovlTEXManager::TAG, true);
+	loader.reserveSymbolReference(item.texture, ovlTEXManager::TAG);
 }
 
 void ovlTERManager::Make(cOvlInfo* info) {
@@ -117,12 +119,16 @@ void ovlTERManager::Make(cOvlInfo* info) {
 
         item.second.Fill(c_item, GetStringTable(), GetRelocationManager());
 
+		cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_UNIQUE, item.second.name, ovlTERManager::TAG, c_item);
+		loader.assignSymbolReference(item.second.texture, ovlTEXManager::TAG, &c_item->texture_ref);
+		
+		/*
         SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(item.first, TAG), reinterpret_cast<unsigned long*>(c_item));
         GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_item), false, c_symbol);
 
         SYMREF_MAKE(OVLT_UNIQUE, item.second.texture, ovlTEXManager::TAG, &c_item->texture_ref, true);
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
-
+		*/
     }
 
 }

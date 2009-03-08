@@ -174,6 +174,27 @@ void ovlRITManager::AddItem(const cRideTrain& item) {
     // Base structures
     m_size += item.GetUniqueSize();
 
+	cLoader& loader = GetLSRManager()->reserveIndexElement(OVLT_UNIQUE, item.name, ovlRITManager::TAG);
+	
+    STRINGLIST_ADD(item.internalname, true);
+    STRINGLIST_ADD(item.internaldescription, true);
+    STRINGLIST_ADD(item.station, false);
+
+	loader.reserveSymbolReference(item.cars.front, ovlRICManager::TAG);
+	loader.reserveSymbolReference(item.cars.second, ovlRICManager::TAG, false);
+	loader.reserveSymbolReference(item.cars.mid, ovlRICManager::TAG, false);
+	loader.reserveSymbolReference(item.cars.penultimate, ovlRICManager::TAG, false);
+	loader.reserveSymbolReference(item.cars.rear, ovlRICManager::TAG, false);
+	loader.reserveSymbolReference(item.cars.link, ovlRICManager::TAG, false);
+
+	loader.reserveSymbolReference(item.liftsplines.left, ovlSPLManager::TAG, false);
+	loader.reserveSymbolReference(item.liftsplines.right, ovlSPLManager::TAG, false);
+
+    if (item.version == 3) {
+		loader.reserveSymbolReference(item.cars.unknown, ovlRICManager::TAG, false);
+    }
+
+	/*
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
     GetLSRManager()->AddLoader(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(item.name, ovlRITManager::TAG);
@@ -195,6 +216,7 @@ void ovlRITManager::AddItem(const cRideTrain& item) {
     if (item.version == 3) {
 		SYMREF_ADD(OVLT_UNIQUE, item.cars.unknown, ovlRICManager::TAG, false);
     }
+	 */
 
 }
 
@@ -218,7 +240,24 @@ void ovlRITManager::Make(cOvlInfo* info) {
         }
 
         item.second.Fill(c_item, GetStringTable(), GetRelocationManager());
+		
+		cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_UNIQUE, item.second.name, ovlRITManager::TAG, c_item);
+		
+		loader.assignSymbolReference(item.second.cars.front, ovlRICManager::TAG, &c_item->v.frontcar_ref);
+		loader.assignSymbolReference(item.second.cars.second, ovlRICManager::TAG, &c_item->v.secondcar_ref, false);
+		loader.assignSymbolReference(item.second.cars.mid, ovlRICManager::TAG, &c_item->v.midcar_ref, false);
+		loader.assignSymbolReference(item.second.cars.penultimate, ovlRICManager::TAG, &c_item->v.penultimatecar_ref, false);
+		loader.assignSymbolReference(item.second.cars.rear, ovlRICManager::TAG, &c_item->v.rearcar_ref, false);
+		loader.assignSymbolReference(item.second.cars.link, ovlRICManager::TAG, &c_item->v.link_ref, false);
 
+		loader.assignSymbolReference(item.second.liftsplines.left, ovlSPLManager::TAG, &c_item->v.liftcar_left_ref, false);
+		loader.assignSymbolReference(item.second.liftsplines.right, ovlSPLManager::TAG, &c_item->v.liftcar_right_ref, false);
+
+		if (item.second.version == 3) {
+			loader.assignSymbolReference(item.second.cars.unknown, ovlRICManager::TAG, &c_item->w.unknown_ric_ref, false);
+		}
+
+/*
         SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(item.first, TAG), reinterpret_cast<unsigned long*>(c_item));
         GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_item), false, c_symbol);
 
@@ -237,7 +276,7 @@ void ovlRITManager::Make(cOvlInfo* info) {
 		}
 
         GetLSRManager()->CloseLoader(OVLT_UNIQUE);
-
+*/
     }
 
 }

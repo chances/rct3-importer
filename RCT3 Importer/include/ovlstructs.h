@@ -11,43 +11,48 @@
 #ifndef __ovlstructs_h__
 #define __ovlstructs_h__
 
+#include "rct3basetypes.h"
+
+namespace r3 {
+	
 struct OvlHeader {
-	unsigned long magic;		// Always 0x0x4b524746
-	unsigned long reserved;		// 0 for v1, 2 for v4/5
-	unsigned long version;
-	unsigned long References;	// number of references for v1, for v4/5 always 16/0x10
+	r3::uint32_t magic;		// Always 0x0x4b524746
+	r3::uint32_t reserved;		// 0 for v1, 2 for v4/5
+	r3::uint32_t version;
+	r3::uint32_t References;	// number of references for v1, for v4/5 always 16/0x10
 };
+
 struct OvlHeader2 {
-	unsigned long unk;				// always 0 for v1/v4
-	unsigned long FileTypeCount;
+	r3::uint32_t unk;				// always 0 for v1/v4
+	r3::uint32_t FileTypeCount;
 };
-struct File
-{
-	unsigned long size;
-	unsigned long reloffset;
-	unsigned long *data; //This in unsigned char* in importer
-	unsigned long unk;
+
+struct File {
+	r3::uint32_t  size;
+	r3::uint32_t  reloffset;
+	r3::uint32_t* data; //This in unsigned char* in importer
+	r3::uint32_t  unk;
 };
-struct FileType
-{
-	unsigned long count;
-	File *dataptr;
-	unsigned long reloffset;
-	unsigned long size;
+
+struct FileType {
+	r3::uint32_t count;
+	File*		 dataptr;
+	r3::uint32_t reloffset;
+	r3::uint32_t size;
 };
-struct SymbolStruct
-{
-	char *Symbol;
-	unsigned long *data;
-	unsigned long IsPointer;
+
+struct SymbolStruct {
+	char*			Symbol;
+	r3::uint32_t*	data;
+	r3::uint32_t 	IsPointer;
 };
-struct SymbolStruct2
-{
-	char *Symbol;
-	unsigned long *data;
-	unsigned short IsPointer;
-	unsigned short unknown; // FFFF for v5, 0000 for v4 it seems
-	unsigned long hash; // hash of the symbol name
+
+struct SymbolStruct2 {
+	char*			Symbol;
+	r3::uint32_t*	data;
+	r3::uint16_t 	IsPointer;
+	r3::uint16_t 	unknown; // mostly FFFF for v5 (0000 for mdl symbols), 0000 for v4 it seems
+	r3::uint32_t 	hash; // hash of the symbol name
 	/*
 	 * Hash algorithm:
 	 * The hash algorithm is the so-called djb2 one, applied after converting the name to lower case.
@@ -62,30 +67,41 @@ struct SymbolStruct2
      *   }
 	 */
 };
-struct LoaderStruct
-{
-	unsigned long LoaderType;
-	unsigned long *data;
-	unsigned long HasExtraData;
-	SymbolStruct *Sym;
-	unsigned long SymbolsToResolve;
-};
-struct SymbolRefStruct
-{
-	unsigned long *reference;
-	char *Symbol;
-	LoaderStruct *ldr;
-};
-struct SymbolRefStruct2
-{
-	unsigned long *reference;
-	char *Symbol;
-	LoaderStruct *ldr;
-	unsigned long hash; // hash of the symbol name, see SymbolStruct2
+
+struct LoaderStruct {
+	r3::uint32_t	LoaderType;
+	r3::uint32_t*	data;
+	r3::uint32_t 	HasExtraData;
+	SymbolStruct*	Sym;
+	r3::uint32_t	SymbolsToResolve;
 };
 
-struct OvlFile
-{
+struct SymbolRefStruct {
+	r3::uint32_t*	reference;
+	char*			Symbol;
+	LoaderStruct*	ldr;
+};
+
+struct SymbolRefStruct2 {
+	r3::uint32_t*	reference;
+	char*			Symbol;
+	LoaderStruct*	ldr;
+	r3::uint32_t 	hash; // hash of the symbol name, see SymbolStruct2
+};
+
+struct ExtraDataInfoV5 {
+	r3::uint32_t	index;
+	r3::uint16_t	unk01;	///< Usually 0xFFFF, only the second structure for mdl extradata has 0
+	r3::uint16_t	unk02;	///< 1 or 2
+							/**<
+							 * 1: mdl (2nd), flic, txt, modelanim
+							 * 2: bmptbl, mdl (1st)
+							 */
+	r3::uint32_t	unk03;	///< Only ever seen 1
+	r3::uint16_t	unk04;  ///< 1 or 2, usually matches unk02
+};
+
+struct OvlFile {
 	char *FileName; // is char FileName[MAX_PATH]; in importer
 	FileType Types[9];
 	char **References;
@@ -93,8 +109,7 @@ struct OvlFile
 	char *InternalName; //Added to store the unique id
 };
 
-struct OvlInfo
-{
+struct OvlInfo {
     unsigned long CurrentFile;
     OvlFile OpenFiles[2];
 };
@@ -107,6 +122,7 @@ enum cOvlType {
     OVLT_UNIQUE = 1
 };
 
+};
 
 #endif
 

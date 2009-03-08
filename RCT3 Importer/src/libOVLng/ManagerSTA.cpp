@@ -43,7 +43,7 @@ const char* ovlSTAManager::LOADER = "FGDK";
 const char* ovlSTAManager::NAME = "Stall";
 const char* ovlSTAManager::TAG = "sta";
 
-void cStallUnknowns::Fill(r3old::StallA* sta) {
+void cStallUnknowns::Fill(Stall_V* sta) {
     sta->unk11 = unk1;
     sta->unk12 = unk2;
     sta->unk13 = unk3;
@@ -51,24 +51,20 @@ void cStallUnknowns::Fill(r3old::StallA* sta) {
     sta->unk15 = unk5;
     sta->unk16 = unk6;
 }
-void cStallUnknowns::Fill(r3old::StallB* sta) {
-    sta->unk2 = unk1;
-    sta->unk3 = unk2;
-    sta->unk4 = unk3;
-    sta->unk5 = unk4;
-    sta->unk6 = unk5;
-    sta->unk7 = unk6;
+void cStallUnknowns::Fill(Stall_SW* sta) {
+    sta->unk11 = unk1;
+    sta->unk12 = unk2;
+    sta->unk13 = unk3;
+    sta->unk14 = unk4;
+    sta->unk15 = unk5;
+    sta->unk16 = unk6;
 }
 
-void cStall::Fill(r3old::StallA* sta) {
-    sta->Name = NULL;
-    sta->Description = NULL;
-    sta->GSI = NULL;
-    sta->spline = NULL;
-    attraction.Fill(sta);
+void cStall::Fill(Stall_V* sta) {
+    attraction.Fill(&sta->att);
     unknowns.Fill(sta);
 }
-void cStall::Fill(r3old::StallB* sta) {
+void cStall::Fill(Stall_SW* sta) {
     attraction.Fill(sta->att);
     unknowns.Fill(sta);
 }
@@ -92,7 +88,7 @@ void ovlSTAManager::AddStall(const cStall& stall) {
     // The following depends on the type of stall structure we want to write
     if (stall.attraction.type & r3::Constants::Addon::Soaked_Hi) {
         // Stall2
-        m_size += sizeof(r3old::StallB);
+        m_size += sizeof(Stall_SW);
         if ((stall.attraction.type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
             m_size += sizeof(Attraction_W);
         } else {
@@ -100,11 +96,20 @@ void ovlSTAManager::AddStall(const cStall& stall) {
         }
     } else {
         // Stall
-        m_size += sizeof(r3old::StallA);
+        m_size += sizeof(Stall_V);
     }
     // Both share items
     m_size += stall.items.size() * sizeof(StallItem);
 
+	cLoader& loader = GetLSRManager()->reserveIndexElement(OVLT_UNIQUE, stall.name, ovlSTAManager::TAG);
+	
+	stall.attraction.DoAdd(loader);
+	loader.reserveSymbolReference(stall.sid, ovlSIDManager::TAG);
+	foreach(const cStallItem& sitem, stall.items)
+		loader.reserveSymbolReference(sitem.item, ovlCIDManager::TAG);
+		
+	
+	/*
     GetLSRManager()->AddSymbol(OVLT_UNIQUE);
     GetLSRManager()->AddLoader(OVLT_UNIQUE);
     GetStringTable()->AddSymbolString(stall.name.c_str(), ovlSTAManager::TAG);
@@ -125,6 +130,7 @@ void ovlSTAManager::AddStall(const cStall& stall) {
         GetLSRManager()->AddSymRef(OVLT_UNIQUE);
         GetStringTable()->AddSymbolString(it->item.c_str(), ovlCIDManager::TAG);
     }
+	 */
 
 }
 
@@ -139,8 +145,8 @@ void ovlSTAManager::Make(cOvlInfo* info) {
         if (it->second.attraction.type & r3::Constants::Addon::Soaked_Hi) {
             // Stall2
             // Assign structs
-            r3old::StallB* c_stall = reinterpret_cast<r3old::StallB*>(c_data);
-            c_data += sizeof(r3old::StallB);
+            Stall_SW* c_stall = reinterpret_cast<Stall_SW*>(c_data);
+            c_data += sizeof(Stall_SW);
 
             c_stall->att = reinterpret_cast<Attraction_S*>(c_data);
             if ((it->second.attraction.type & r3::Constants::Addon::Wild_Hi) == r3::Constants::Addon::Wild_Hi) {
@@ -151,16 +157,29 @@ void ovlSTAManager::Make(cOvlInfo* info) {
             GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_stall->att));
 
             if (it->second.items.size()) {
-                c_stall->itemcount = it->second.items.size();
-                c_stall->Items = reinterpret_cast<r3old::StallItem*>(c_data);
-                c_data += c_stall->itemcount * sizeof(r3old::StallItem);
-                GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_stall->Items));
+                c_stall->item_count = it->second.items.size();
+                c_stall->items = reinterpret_cast<StallItem*>(c_data);
+                c_data += c_stall->item_count * sizeof(StallItem);
+                GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_stall->items));
             } else {
-                c_stall->itemcount = 0;
-                c_stall->Items = NULL;
+                c_stall->item_count = 0;
+                c_stall->items = NULL;
             }
             it->second.Fill(c_stall);
 
+			cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_UNIQUE, it->first, ovlSTAManager::TAG, c_stall);
+			it->second.attraction.MakeSymRefs(c_stall->att, loader);
+			loader.assignSymbolReference(it->second.sid, ovlSIDManager::TAG, &c_stall->sid_ref);
+			
+            unsigned long c = 0;
+            foreach(const cStallItem& sitem, it->second.items) {
+				loader.assignSymbolReference(sitem.item, ovlCIDManager::TAG, &c_stall->items[c].cid_ref);
+                c_stall->items[c].cid_ref = NULL;
+                c_stall->items[c].cost = sitem.cost;
+                c++;
+            }
+
+			/*
             SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), TAG), reinterpret_cast<unsigned long*>(c_stall));
             GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_stall), false, c_symbol);
 
@@ -184,23 +203,37 @@ void ovlSTAManager::Make(cOvlInfo* info) {
             }
 
             GetLSRManager()->CloseLoader(OVLT_UNIQUE);
+			 */
         } else {
             // Stall
             // Assign structs
-            r3old::StallA* c_stall = reinterpret_cast<r3old::StallA*>(c_data);
-            c_data += sizeof(r3old::StallA);
+            Stall_V* c_stall = reinterpret_cast<Stall_V*>(c_data);
+            c_data += sizeof(Stall_V);
 
             if (it->second.items.size()) {
-                c_stall->itemcount = it->second.items.size();
-                c_stall->Items = reinterpret_cast<r3old::StallItem*>(c_data);
-                c_data += c_stall->itemcount * sizeof(r3old::StallItem);
-                GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_stall->Items));
+                c_stall->item_count = it->second.items.size();
+                c_stall->items = reinterpret_cast<StallItem*>(c_data);
+                c_data += c_stall->item_count * sizeof(StallItem);
+                GetRelocationManager()->AddRelocation(reinterpret_cast<unsigned long*>(&c_stall->items));
             } else {
-                c_stall->itemcount = 0;
-                c_stall->Items = NULL;
+                c_stall->item_count = 0;
+                c_stall->items = NULL;
             }
             it->second.Fill(c_stall);
 
+			cLoader& loader = GetLSRManager()->assignIndexElement(OVLT_UNIQUE, it->first, ovlSTAManager::TAG, c_stall);
+			it->second.attraction.MakeSymRefs(&c_stall->att, loader);
+			loader.assignSymbolReference(it->second.sid, ovlSIDManager::TAG, &c_stall->sid_ref);
+			
+            unsigned long c = 0;
+            foreach(const cStallItem& sitem, it->second.items) {
+				loader.assignSymbolReference(sitem.item, ovlCIDManager::TAG, &c_stall->items[c].cid_ref);
+                c_stall->items[c].cid_ref = NULL;
+                c_stall->items[c].cost = sitem.cost;
+                c++;
+            }
+			
+			/*
             SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), TAG), reinterpret_cast<unsigned long*>(c_stall));
             GetLSRManager()->OpenLoader(OVLT_UNIQUE, TAG, reinterpret_cast<unsigned long*>(c_stall), false, c_symbol);
 
@@ -223,6 +256,7 @@ void ovlSTAManager::Make(cOvlInfo* info) {
             }
 
             GetLSRManager()->CloseLoader(OVLT_UNIQUE);
+			 */
         }
 
     }

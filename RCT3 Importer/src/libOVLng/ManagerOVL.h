@@ -72,6 +72,7 @@ public:
 
     virtual const unsigned long GetSize() const;
     virtual unsigned char* GetData();
+	virtual int GetCount(r3::cOvlType type) const = 0;
     virtual const char* Loader() const {
         return LOADER;
     };
