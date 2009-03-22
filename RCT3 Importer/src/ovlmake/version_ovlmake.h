@@ -18,14 +18,14 @@ namespace AutoVersion{
 	//Standard Version Type
 	static const long MAJOR = 0;									// av::var:major
 	static const long MINOR = 5;									// av::var:minor
-	static const long BUILD = 343;									// av::var:post
-	static const long REVISION = 1080;								// av::var:pre
+	static const long BUILD = 344;									// av::var:post
+	static const long REVISION = 1081;								// av::var:pre
 	
 	//Miscellaneous Version Types
 	static const long BUILDS_COUNT = 975;							// Ignore as cruft
-	#define RC_FILEVERSION 0,5,343,1080								// av::multi:major:minor:post:pre:"%1%,%2%,%3%,%4%"
-	#define RC_FILEVERSION_STRING "0, 5, 343, 1080\0"				// av::multi:major:minor:post:pre:"%1%, %2%, %3%, %4%\0"
-	static const char FULLVERSION_STRING[] = "0.5.343.1080";		// av::multi:major:minor:post:pre:"%1%.%2%.%3%.%4%"
+	#define RC_FILEVERSION 0,5,344,1081								// av::multi:major:minor:post:pre:"%1%,%2%,%3%,%4%"
+	#define RC_FILEVERSION_STRING "0, 5, 344, 1081\0"				// av::multi:major:minor:post:pre:"%1%, %2%, %3%, %4%\0"
+	static const char FULLVERSION_STRING[] = "0.5.344.1081";		// av::multi:major:minor:post:pre:"%1%.%2%.%3%.%4%"
 	
 	//SVN Version
 	static const char SVN_REVISION[] = "138";						// av::var:svnrev
@@ -40,6 +40,8 @@ namespace AutoVersion{
 
 }
 #endif //VERSION_H
+
+
 
 
 

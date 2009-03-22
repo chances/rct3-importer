@@ -1,2 +1,3 @@
 * [Fixed] Validation error for animated textures
 * [Fixed] Reading bone weights of MS3D files
+* [Fixed] Time offsets for animation splitting

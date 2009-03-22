@@ -11,9 +11,9 @@
   <Project Name="libOVL" Path="RCT3 Importer\src\libOVL\libOVL.project" Active="No"/>
   <Project Name="RCT3 Importer" Path="RCT3 Importer\src\RCT3 Tool\RCT3 Importer.project" Active="No"/>
   <Project Name="libOVLDump" Path="RCT3 Importer\src\libOVLDump\libOVLDump.project" Active="No"/>
-  <Project Name="RCT3 Dumper NG" Path="..\RCT3 Dumper\RCT3 Dumper NG\RCT3 Dumper NG.project" Active="No"/>
+  <Project Name="RCT3 Dumper NG" Path="..\RCT3 Dumper\RCT3 Dumper NG\RCT3 Dumper NG.project" Active="Yes"/>
   <Project Name="libRawParse" Path="RCT3 Importer\src\libRawParse\libRawParse.project" Active="No"/>
-  <Project Name="ovlmake" Path="RCT3 Importer\src\ovlmake\ovlmake.project" Active="Yes"/>
+  <Project Name="ovlmake" Path="RCT3 Importer\src\ovlmake\ovlmake.project" Active="No"/>
   <Project Name="Scripts" Path="RCT3 Importer\dist\scripts\Scripts.project"/>
   <Project Name="autover" Path="Utilities\autover\autover.project" Active="No"/>
   <Project Name="RCT3 Importer TNG" Path="RCT3 Importer\src\ImporterTNG\RCT3 Importer TNG.project" Active="No"/>
@@ -43,7 +43,7 @@
       <Project Name="bin2c" ConfigName="Debug"/>
       <Project Name="autover" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="Release" Selected="no">
+    <WorkspaceConfiguration Name="Release" Selected="yes">
       <Project Name="Ship Distribution" ConfigName="Release"/>
       <Project Name="Scripts" ConfigName="Release"/>
       <Project Name="Schema_Validator" ConfigName="Invalid"/>
@@ -131,7 +131,7 @@
       <Project Name="bin2c" ConfigName="Debug"/>
       <Project Name="autover" ConfigName="Debug"/>
     </WorkspaceConfiguration>
-    <WorkspaceConfiguration Name="ReleaseBaseUnicode" Selected="yes">
+    <WorkspaceConfiguration Name="ReleaseBaseUnicode" Selected="no">
       <Project Name="Ship Distribution" ConfigName="Release"/>
       <Project Name="Scripts" ConfigName="Debug"/>
       <Project Name="Schema_Validator" ConfigName="Invalid"/>

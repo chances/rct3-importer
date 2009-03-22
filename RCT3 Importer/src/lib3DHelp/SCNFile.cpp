@@ -1539,8 +1539,10 @@ bool cSCNFile::Check() {
 		}
 		
 		if (!prefix.IsEmpty() && !boost::all(prefix, boost::is_any_of(ASCIIALNUM))) {
-			wxLogWarning(_("Your prefix contains non-alphanumeric or non-AscII characters. This often works, but may lead to trouble if some exported names are not prefixed."));
-			warning = true;
+			if (READ_RCT3_WARNASCII()) {
+				wxLogWarning(_("Your prefix contains non-alphanumeric or non-AscII characters. This often works, but may lead to trouble if some exported names are not prefixed."));
+				warning = true;
+			}
 		}
 
 
@@ -1787,11 +1789,11 @@ void cSCNFile::Make() {
 		try {
 			wxFileName ovlfile = ovlpath;
 			ovlfile.SetName(prefix+name);
-			cOvl c_ovl(std::string(ovlfile.GetFullPath().mb_str(wxConvFile)));
+			cOvl c_ovl(std::string(ovlfile.GetFullPath().mb_str(wxConvFile)), READ_RCT3_OVLVERSION());
 			MakeToOvl(c_ovl);
 			c_ovl.Save();
 		} catch (EOvl& e) {
-			throw RCT3Exception(wxString::Format(_("Error during OVL creation: %s"), wxString(e.what(), wxConvLocal).c_str()));
+			throw RCT3Exception(wxString::Format(_("Error during OVL creation: %s"), wxString(e.what(), wxConvLocal).c_str()), e);
 		} catch (Magick::Exception& e) {
 			throw RCT3Exception(wxString::Format(_("Error from image library (during OVL creation): %s"), wxString(e.what(), wxConvLocal).c_str()));
 		}
@@ -1810,11 +1812,13 @@ wxString cSCNFile::getPrefixed(const wxString& pref, bool isTexture) {
 	if ((pref[0] == '[') && (pref[pref.size()-1] == ']')) {
 		wxString expref = pref.AfterFirst('[').BeforeLast(']');
 		if (!boost::all(string(expref.mb_str()), boost::is_any_of(ASCIIALNUM)))
-			wxLogWarning(wxString::Format(_("Name '%s' contains non-alphanumeric or non-AscII characters. This can lead to trouble."), expref.c_str()));
+			if (READ_RCT3_WARNASCII())
+				wxLogWarning(wxString::Format(_("Name '%s' contains non-alphanumeric or non-AscII characters. This can lead to trouble."), expref.c_str()));
         return expref;
     } else {
 		if (!boost::all(string(pref.mb_str()), boost::is_any_of(ASCIIALNUM)))
-			wxLogWarning(wxString::Format(_("Name '%s' contains non-alphanumeric or non-AscII characters. This can lead to trouble."), pref.c_str()));
+			if (READ_RCT3_WARNASCII())
+				wxLogWarning(wxString::Format(_("Name '%s' contains non-alphanumeric or non-AscII characters. This can lead to trouble."), pref.c_str()));
 		if (isTexture && cFlexiTexture::isReserved(pref))
 			return pref;
 		else

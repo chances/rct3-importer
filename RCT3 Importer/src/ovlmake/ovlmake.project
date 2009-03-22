@@ -16,6 +16,29 @@
     <File Name="OvlCompiler ReadMe.txt"/>
     <File Name="ReadMe 1st.txt"/>
   </VirtualDirectory>
+  <Dependencies Name="Invalid"/>
+  <Dependencies Name="DebugBaseUnicode">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libXmlCpp"/>
+    <Project Name="libASE"/>
+    <Project Name="libOVLDump"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libWXHelp"/>
+    <Project Name="lib3DHelp"/>
+    <Project Name="libRawParse"/>
+  </Dependencies>
+  <Dependencies Name="ReleaseBaseUnicode">
+    <Project Name="Precompile RNG"/>
+    <Project Name="Precompile XSL"/>
+    <Project Name="libXmlCpp"/>
+    <Project Name="libASE"/>
+    <Project Name="libOVLDump"/>
+    <Project Name="libOVLng"/>
+    <Project Name="libWXHelp"/>
+    <Project Name="lib3DHelp"/>
+    <Project Name="libRawParse"/>
+  </Dependencies>
   <Settings Type="Executable">
     <Configuration Name="DebugBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
       <General OutputFile="../../bin/$(ProjectName)d" IntermediateDirectory="../../lib/obj/ovlmake/Debug" Command="./$(ProjectName)d" CommandArguments="" WorkingDirectory="../../bin" PauseExecWhenProcTerminates="yes"/>
@@ -60,7 +83,10 @@
         <Library Value="tiff"/>
         <Library Value="cryptopp"/>
       </Linker>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands></PostConnectCommands>
+        <StartupCommands></StartupCommands>
+      </Debugger>
       <ResourceCompiler Required="no" Options=""/>
       <PreBuild>
         <Command Enabled="yes">../../../Utilities/autover/autover.exe -dte1 -u version_ovlmake.h</Command>
@@ -69,16 +95,17 @@
         <Command Enabled="yes">../../../Utilities/autover/autover.exe -2 -u version_ovlmake.h</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
-        <CleanCommand/>
-        <BuildCommand/>
-        <SingleFileCommand/>
-        <MakefileGenerationCommand/>
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <PreprocessFileCommand></PreprocessFileCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory/>
+        <WorkingDirectory></WorkingDirectory>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild/>
-        <CustomPreBuild/>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild></CustomPreBuild>
       </AdditionalRules>
     </Configuration>
     <Configuration Name="Invalid" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
@@ -90,21 +117,27 @@
         <LibraryPath Value="."/>
         <LibraryPath Value="Debug"/>
       </Linker>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands></PostConnectCommands>
+        <StartupCommands></StartupCommands>
+      </Debugger>
       <ResourceCompiler Required="no" Options=""/>
       <PreBuild/>
       <PostBuild/>
       <CustomBuild Enabled="yes">
         <CleanCommand>error</CleanCommand>
         <BuildCommand>error</BuildCommand>
+        <PreprocessFileCommand></PreprocessFileCommand>
         <SingleFileCommand>error</SingleFileCommand>
-        <MakefileGenerationCommand/>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory/>
+        <WorkingDirectory></WorkingDirectory>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild/>
-        <CustomPreBuild/>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild>
+
+</CustomPreBuild>
       </AdditionalRules>
     </Configuration>
     <Configuration Name="ReleaseBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
@@ -150,7 +183,10 @@
         <Library Value="tiff"/>
         <Library Value="cryptopp"/>
       </Linker>
-      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath=""/>
+      <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
+        <PostConnectCommands></PostConnectCommands>
+        <StartupCommands></StartupCommands>
+      </Debugger>
       <ResourceCompiler Required="no" Options=""/>
       <PreBuild>
         <Command Enabled="yes">../../../Utilities/autover/autover.exe -dte1 -u version_ovlmake.h</Command>
@@ -159,40 +195,18 @@
         <Command Enabled="yes">../../../Utilities/autover/autover.exe -2 -u version_ovlmake.h</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
-        <CleanCommand/>
-        <BuildCommand/>
-        <SingleFileCommand/>
-        <MakefileGenerationCommand/>
+        <CleanCommand></CleanCommand>
+        <BuildCommand></BuildCommand>
+        <PreprocessFileCommand></PreprocessFileCommand>
+        <SingleFileCommand></SingleFileCommand>
+        <MakefileGenerationCommand></MakefileGenerationCommand>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory/>
+        <WorkingDirectory></WorkingDirectory>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild/>
-        <CustomPreBuild/>
+        <CustomPostBuild></CustomPostBuild>
+        <CustomPreBuild></CustomPreBuild>
       </AdditionalRules>
     </Configuration>
   </Settings>
-  <Dependencies Name="Invalid"/>
-  <Dependencies Name="DebugBaseUnicode">
-    <Project Name="Precompile RNG"/>
-    <Project Name="Precompile XSL"/>
-    <Project Name="libXmlCpp"/>
-    <Project Name="libASE"/>
-    <Project Name="libOVLDump"/>
-    <Project Name="libOVLng"/>
-    <Project Name="libWXHelp"/>
-    <Project Name="lib3DHelp"/>
-    <Project Name="libRawParse"/>
-  </Dependencies>
-  <Dependencies Name="ReleaseBaseUnicode">
-    <Project Name="Precompile RNG"/>
-    <Project Name="Precompile XSL"/>
-    <Project Name="libXmlCpp"/>
-    <Project Name="libASE"/>
-    <Project Name="libOVLDump"/>
-    <Project Name="libOVLng"/>
-    <Project Name="libWXHelp"/>
-    <Project Name="lib3DHelp"/>
-    <Project Name="libRawParse"/>
-  </Dependencies>
 </CodeLite_Project>

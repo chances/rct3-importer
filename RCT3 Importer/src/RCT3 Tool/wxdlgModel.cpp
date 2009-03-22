@@ -1905,7 +1905,7 @@ void dlgModel::OnMatrixEdit(wxCommandEvent& WXUNUSED(event)) {
 
 void dlgModel::OnSystemAutoRDbl(wxMouseEvent& WXUNUSED(event)) {
     //WRITE_APP_MATRIX(matrixMultiply(m_model->transforms));
-    if (::wxMessageBox(_("Do you want to save the current model orientation as defalt?"), _("Save default"), wxYES_NO|wxICON_QUESTION, this) == wxYES) {
+    if (::wxMessageBox(_("Do you want to save the current model orientation as default?"), _("Save default"), wxYES_NO|wxICON_QUESTION, this) == wxYES) {
         WRITE_RCT3_ORIENTATION(m_model->usedorientation);
         wxcFlush();
     }

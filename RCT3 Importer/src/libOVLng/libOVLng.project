@@ -192,6 +192,7 @@
     <File Name="..\..\include\vertex.h"/>
     <File Name="..\..\include\wildanimalitem.h"/>
     <File Name="..\..\include\train.h"/>
+    <File Name="..\..\include\model.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="common includes">
     <File Name="..\..\include\boost_unordered_extension.h"/>

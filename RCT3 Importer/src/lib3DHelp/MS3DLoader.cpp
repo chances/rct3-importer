@@ -564,12 +564,12 @@ wxLogMessage("Bone %03d: %s", m, joint->name);
 
 	if (blown_bones.size()) {
 		foreach(const blown_bone_pair& p, blown_bones) {
-			//wxLogWarning("MS3D File '%s': Group '%s' has broken vertex/joint assignments, probably to joint '%s'. These vertices have been fully assigned to that joint to correct the issue, if that doesn't help, please reassign the joint to the correct vertices in MilkShape. Maybe even a full reassignment of joints to the group is necessary.", filename, p.second.c_str(), m_boneId[p.first].c_str());
+			wxLogWarning("MS3D File '%s': Group '%s' has broken vertex/joint assignments, probably to joint '%s'. These vertices have been fully assigned to that joint to correct the issue, if that doesn't help, please reassign the joint to the correct vertices in MilkShape. Maybe even a full reassignment of joints to the group is necessary.", filename, p.second.c_str(), m_boneId[p.first].c_str());
 		}
 	}
 	if (blown_bones2.size()) {
 		foreach(const blown_bone_pair& p, blown_bones2) {
-			//wxLogWarning("MS3D File '%s': Group '%s' has vertices which are assigned to joint '%s' as first joint with weight 0. This indicates broken vertex/joint assignment. These vertices have been unassigned to correct the issue, if that doesn't help, please reassign the joint to the correct vertices in MilkShape. Maybe even a full reassignment of joints to the group is necessary.", filename, p.second.c_str(), m_boneId[p.first].c_str());
+			wxLogWarning("MS3D File '%s': Group '%s' has vertices which are assigned to joint '%s' as first joint with weight 0. This indicates broken vertex/joint assignment. These vertices have been unassigned to correct the issue, if that doesn't help, please reassign the joint to the correct vertices in MilkShape. Maybe even a full reassignment of joints to the group is necessary.", filename, p.second.c_str(), m_boneId[p.first].c_str());
 		}
 	}
 
@@ -641,10 +641,11 @@ wxLogMessage("Bone %03d: %s", m, joint->name);
 #ifdef DUMP_ANIDATA
         wxLogMessage("  Translation frames:");
 #endif
+		float time_offset = 0.0;
         for (int i = 0; i < joint->numKeyFramesTrans; ++i) {
             txyz pf;
             unsigned int frame = roundf(joint->keyFramesTrans[i].time * fps);
-            pf.Time = static_cast<float>(frame - 1) / fps;
+            pf.Time = (static_cast<float>(frame - 1) / fps) - time_offset;
             MATRIX tr = matrixGetTranslation(joint->keyFramesTrans[i].position[0], joint->keyFramesTrans[i].position[1], joint->keyFramesTrans[i].position[2]);
             matrixMultiplyIP(tr, bone_m);
             pf.X = tr._41;
@@ -654,6 +655,8 @@ wxLogMessage("Bone %03d: %s", m, joint->name);
             if (has(animations, frame)) {
                 // Need to switch to the next animation
                 ani = &m_animations[animations[frame]];
+				time_offset = pf.Time;
+				pf.Time = 0.0;
                 ani->m_bones[m_boneId[m]].m_translations.push_back(pf);
             }
 #ifdef DUMP_ANIDATA
@@ -669,10 +672,11 @@ wxLogMessage("Bone %03d: %s", m, joint->name);
 #ifdef DUMP_ANIDATA
         wxLogMessage("  Rotation frames:");
 #endif
+		time_offset = 0.0;
         for (int i = 0; i < joint->numKeyFramesRot; ++i) {
             txyz pf;
             int frame = roundf(joint->keyFramesRot[i].time * fps);
-            pf.Time = static_cast<float>(frame - 1) / fps;
+            pf.Time = (static_cast<float>(frame - 1) / fps) - time_offset;
             MATRIX ro = matrixGetRotation(joint->keyFramesRot[i].rotation[0], joint->keyFramesRot[i].rotation[1], joint->keyFramesRot[i].rotation[2]);
             matrixMultiplyIP(ro, bone_m);
             matrixExtractAxisRotation(ro, pf.v);
@@ -680,6 +684,8 @@ wxLogMessage("Bone %03d: %s", m, joint->name);
             if (has(animations, frame)) {
                 // Need to switch to the next animation
                 ani = &m_animations[animations[frame]];
+				time_offset = pf.Time;
+				pf.Time = 0.0;
                 ani->m_bones[m_boneId[m]].m_rotations.push_back(pf);
             }
 #ifdef DUMP_ANIDATA

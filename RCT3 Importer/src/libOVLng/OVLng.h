@@ -94,6 +94,11 @@ public:
 
     /// Create and save the ovl files.
     void Save();
+	
+	/// Return ovl version
+	int version() {
+		return m_ovlinfo.OpenFiles[r3::OVLT_COMMON].version;
+	}
 
     /// Request a data manager pointer.
     template <class M>

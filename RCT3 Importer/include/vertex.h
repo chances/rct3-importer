@@ -21,6 +21,14 @@ struct VECTOR {
     float_t z;
 };
 
+struct QUATERNION {
+	// Not sure, w might be first
+    float_t x;
+    float_t y;
+    float_t z;
+    float_t w;
+};
+
 struct MATRIX {
 	union {
 		struct {

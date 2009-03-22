@@ -29,6 +29,9 @@
 #define READ_RCT3_ORIENTATION()      wxcRead<long>(wxT("RCT3/Orientation"), ORIENTATION_LEFT_YUP)
 #define WRITE_RCT3_ORIENTATION(v)   wxcWrite<long>(wxT("RCT3/Orientation"), v)
 
+#define READ_RCT3_OVLVERSION()       wxcRead<long>(wxT("RCT3/OVLVersion"), 1)
+#define WRITE_RCT3_OVLVERSION(v)    wxcWrite<long>(wxT("RCT3/OVLVersion"), v)
+
 #define READ_RCT3_TEXTURE()          wxcRead<long>(wxT("RCT3/TextureScaling"), RCT3_TEXTURE_ERROR_OUT)
 #define WRITE_RCT3_TEXTURE(v)       wxcWrite<long>(wxT("RCT3/TextureScaling"), v)
 
@@ -40,6 +43,9 @@
 
 #define READ_RCT3_WARNPREFIX()        wxcRead<bool>(wxT("RCT3/WarnPrefix"), true)
 #define WRITE_RCT3_WARNPREFIX(v)     wxcWrite<bool>(wxT("RCT3/WarnPrefix"), v)
+
+#define READ_RCT3_WARNASCII()         wxcRead<bool>(wxT("RCT3/WarnAscII"), true)
+#define WRITE_RCT3_WARNASCII(v)      wxcWrite<bool>(wxT("RCT3/WarnAscII"), v)
 
 #define READ_RCT3_COMPACTMESHES()     wxcRead<bool>(wxT("RCT3/CompactMeshes"), true)
 #define WRITE_RCT3_COMPACTMESHES(v)  wxcWrite<bool>(wxT("RCT3/CompactMeshes"), v)

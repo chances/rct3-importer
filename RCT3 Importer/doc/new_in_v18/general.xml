@@ -3,16 +3,20 @@
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <section>
   <title>General notes</title>
+
   <para>This section gives a basic rundown on things new in the importer for
   you to keep in mind if you want to experiment.</para>
+
   <itemizedlist>
     <listitem>
       <para>All changes affect only the creation of scenery ovls</para>
     </listitem>
+
     <listitem>
       <para>The importer now saves scenery settings in a entirely new format,
       so old versions are not able to open them.</para>
     </listitem>
+
     <listitem>
       <para>It can still open old (scn) files. It can also open
       ovlcompiler/ovlmake files and 3D model files. This is an
@@ -22,17 +26,20 @@
       is a special 3D model file format I created for the purpose of
       importing. So far there is only a Blender export script for it (provided
       in the attached archive).</para>
+
       <para>You (in some cases obviously) cannot save back into these formats,
       only the new xml format is supported for that. Also most information is
       not automatically updated (by that I mean if you change the original
       file, it will not be updated in the scenery file if you reload it). Only
       the <quote>classic</quote> thing, the 3D data of model files, is
       automatically updated.</para>
+
       <important>
         <para>I repeat, animations, splines and bones are <emphasis
         role="bold">not automatically reloaded</emphasis> from thier source
         files if you change them there!</para>
       </important>
+
       <para>(v18b2) The importer can now be set up to automatically
       synchronize (reload) bones in the model settings. You can also tell it
       to sort bones automatically (strictly alphabetical at the moment).
@@ -47,24 +54,29 @@
       the model file if you use this feature, otherwise it may readd it with
       it's original name! If you open a model file as a scenery file in the
       importer, auto-sync and auto-sort will be enabled automatically.</para>
+
       <para>(ovlmake 0.5) These settings are also honored by ovlmake.</para>
     </listitem>
+
     <listitem>
-      <para>Starting with v18, model files are chached in the background to
+      <para>Starting with v18, model files are cached in the background to
       speed up processing.</para>
+
       <para>(v18b2) In older versions, the contents of the model file where
-      only synchronised with the contents of the scenery file when you open
+      only synchronized with the contents of the scenery file when you open
       the latter one. Starting with v18b2, synchronization will also happen
       when you open the model settings window, when you checking the settings
       and when you create the ovls. Synchronizing the model file now includes
       synchronizing and sorting the bones if you activate the respective
       setting for the model.</para>
     </listitem>
+
     <listitem>
       <para>The format of the configuration file changed as well, so you need
       to reenter it. Currently I recommend putting this version in a new
       directory and not overwriting the stable version anyways.</para>
     </listitem>
+
     <listitem>
       <para>Adding animation made changing the coordinate system support
       necessary (the Fix Orientation matrix). Animations need to be fixed as
@@ -74,16 +86,19 @@
       the matrix, so press the button as in the old version (but don't edit
       the matrix). The correct choice is usually Right-Handed, Z-Up (or Y-Up
       for MilkShape).</para>
+
       <para>(v18v2) As people were confused, the fix orientation matrix is now
       completely gone for good. Therefore a default matrix is no longer
       necessary and has been removed. To save the default coordinate system,
       do a right double-click on the <guibutton>F</guibutton> button.</para>
     </listitem>
+
     <listitem>
       <para>The ovl-name was split up into a choice box for the directory, an
       edit box for the name itself and a prefix edit box. The 'A' button next
       to the name tries to automatically name it as was done in the old
       importer version.</para>
+
       <para>The prefix box needs a bit of more explanation. I chose to prefix
       more internal things, as I'm not sure whether splines and animations may
       become troublesome if names collide. Therefore every name written into
@@ -92,19 +107,24 @@
       versions of the importer, you need to put texture names into square
       brackets when assigning them in the mesh settings.</para>
     </listitem>
+
     <listitem>
       <para>You might have noticed that you cannot really edit animation in
       the importer. That's a decision I made to keep the work I need to do on
       the UI minimal. Any way that would have fulfilled my own quality
       standards would have taken a lot of work. Therefore animation has to
       come from other sources:</para>
+
       <para><emphasis>Model files.</emphasis> Supported are MS3D and MODXML.
       The first might not work fully correctly. People are testing this for me
       and I hope to get it working as good as possible.</para>
+
       <para><emphasis>ovlcompiler style xml files.</emphasis> Note that the
       syntax changed a bit. Refer to the readmes.</para>
+
       <para><emphasis>Other scenery xml files.</emphasis></para>
     </listitem>
+
     <listitem>
       <para>You can use the <guibutton>L</guibutton> button beside the
       animation list to load animations from these files. A right double click
@@ -114,13 +134,16 @@
       it is present (the right double click is not yet implemented
       everywhere).</para>
     </listitem>
+
     <listitem>
       <para>You <emphasis>can</emphasis> edit on animations the animation
       name, bone names and the coordinate system.</para>
     </listitem>
+
     <listitem>
       <para>Basically the same holds true for splines.</para>
     </listitem>
+
     <listitem>
       <para>Animations need to be assigned to a lod to affect the model.
       Animated scenery only uses one animation per lod, so the importer will
@@ -134,6 +157,7 @@
       selected one (you need to select it first, the right double click does
       not do that).</para>
     </listitem>
+
     <listitem>
       <para>All in all, animations and bone positions are very strange in
       RCT3. I currently recommend to always add translation and rotation
@@ -146,32 +170,39 @@
       effect bones, especially if they require a rotation (peeps, particles or
       fireworks for example).</para>
     </listitem>
+
     <listitem>
       <para>Parent-child relationships and bone positions are read from ms3d
       and modxml files. If you need to update these, press the A button next
       to the bone list in the model window.</para>
     </listitem>
+
     <listitem>
       <para>If you need to manually edit bone positions, you should be aware
       of the roles of pos1 and pos2.</para>
+
       <itemizedlist>
         <listitem>
           <para>pos1 is relative to the parent bone.</para>
         </listitem>
+
         <listitem>
           <para>pos2 is absolute in model space.</para>
         </listitem>
       </itemizedlist>
+
       <para>So usually if a bone has no parent, edit pos1 and deactivate pos2.
       If it has a parent, edit pos2 and calculate pos1 from it
       (<guibutton>Q</guibutton> button, Calculate). This requires correct
       setup of the pos2 matrix of the parent bone.</para>
     </listitem>
+
     <listitem>
       <para>Starting with Importer v18b2 / ovlmake 0.5, the importing engine
       merges all meshes that share the same settings when you create ovl
       files. This alleviates the 31 mesh limit of RCT3.</para>
     </listitem>
+
     <listitem>
       <para>Starting with Importer v18b2 / ovlmake 0.5, the importing engine
       supports meshes with vertices assigned to more than one bone including
@@ -184,13 +215,14 @@
       only work correctly if you don't rename any bone in the importer the
       mesh uses! The mesh will also not show up as assigend to any bone in the
       list!</emphasis></para>
+
       <note>
         <para>Meshes will only be detected as mult-bone if they have vertices
         assigned to more than one bone. If you have a mesh with vertices which
-        are assigned to only one bone with weights, the importer won't detect
-        that. If you want to use these bone weights, you need to enforce it's
-        treatment as multi-bone by pressing <keycode>Alt</keycode> while
-        clicking on its name.</para>
+        are assigned to only one bone with weights or assigned to only one
+        bone or not at all, the importer won't detect that. If you want to use
+        these bone weights, you need to enforce it's treatment as multi-bone
+        by pressing <keycode>Alt</keycode> while clicking on its name.</para>
       </note>
     </listitem>
   </itemizedlist>

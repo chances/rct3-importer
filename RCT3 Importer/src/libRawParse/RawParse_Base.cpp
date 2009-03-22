@@ -25,6 +25,9 @@
 
 #include "RawParse_cpp.h"
 
+#include "lib3Dconfig.h"
+#include "confhelp.h"
+
 void cRawParser::FillAllBakes(wxSortedArrayString& tofill) {
     tofill.push_back(wxT(RAWXML_VARIABLES));
     tofill.push_back(wxT(RAWXML_IMPORT));
@@ -244,7 +247,7 @@ void cRawParser::Load(cXmlNode& root) {
 			}
 
 			if (m_output != wxT("")) {
-				unsigned long version = 1;
+				unsigned long version = READ_RCT3_OVLVERSION();
 				OPTION_PARSE(unsigned long, version, ParseUnsigned(root, RAWXML_ROOT, "version"));
 				
 				if (!m_output.IsAbsolute())

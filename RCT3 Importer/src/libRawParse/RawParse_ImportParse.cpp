@@ -28,9 +28,23 @@
 #include "RawParse_cpp.h"
 #include "SCNFile.h"
 
+#include "lib3Dconfig.h"
+#include "confhelp.h"
+
+#include <boost/scope_exit.hpp>
+
 void cRawParser::ParseImport(cXmlNode& node) {
 	USE_PREFIX(node);
 	// <import file="scenery file" (name="internal svd name") />
+	
+	bool warnback = READ_RCT3_WARNASCII();
+	if (m_ovl.version()>1)
+		WRITE_RCT3_WARNASCII(false);
+		
+	BOOST_SCOPE_EXIT( (&warnback) ) {
+		WRITE_RCT3_WARNASCII(warnback);
+	} BOOST_SCOPE_EXIT_END
+	
 	bool filenamevar;
 	wxFSFileName filename = ParseString(node, RAWXML_IMPORT, "file", &filenamevar);
 	wxString name;
