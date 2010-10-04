@@ -27,7 +27,7 @@
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/exception.hpp>
+#include <boost/exception/all.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 namespace fs = boost::filesystem;
@@ -707,25 +707,25 @@ int main(int argc, char **argv)
 		parseFile(input_file, state);
 
 	} catch (eautover& e) {
-		boost::shared_ptr<bool const> do_usage = boost::get_error_info<ex_usage>(e);
+		bool* do_usage = boost::get_error_info<ex_usage>(e);
 		if( do_usage && *do_usage )
 			usage(avopts);
 		cerr << "Error";
-		if( boost::shared_ptr<string const> f=boost::get_error_info<ex_module>(e) ) {
+		if( string* f=boost::get_error_info<ex_module>(e) ) {
 			cerr << "[" << *f << "]";
 		}
 		cerr << ": ";
 		
-		if( boost::shared_ptr<string const> m=boost::get_error_info<ex_message>(e) ) {
+		if( string* m=boost::get_error_info<ex_message>(e) ) {
             cerr << *m << endl;
 		} else {
 			cerr << e.what() << endl;
 		}
-		if( boost::shared_ptr<string const> f=boost::get_error_info<ex_file>(e) ) {
+		if( string* f=boost::get_error_info<ex_file>(e) ) {
 			cerr << "File: '" << *f << "'" << endl;
 		}
-		boost::shared_ptr<string const> ls=boost::get_error_info<ex_line>(e);
-		boost::shared_ptr<long const> ln=boost::get_error_info<ex_lineno>(e);
+		string* ls=boost::get_error_info<ex_line>(e);
+		long* ln=boost::get_error_info<ex_lineno>(e);
 		if( ls || ln ) {
 			cerr << "Line: ";
 			if (ln) {

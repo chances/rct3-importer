@@ -13,7 +13,9 @@
 #define CONFHELP_H_INCLUDED
 
 #include <wx/confbase.h>
+#if wxUSE_IMAGE
 #include <wx/gdicmn.h>
+#endif
 //#ifndef DWORD
 //#include <windows.h>
 //#endif

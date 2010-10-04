@@ -26,6 +26,10 @@
 			<sch:let name="ovlpath" value="concat(str:concat(ancestor::raw:rawovl/@basedir),ancestor::raw:rawovl[@file]/@file)" />
 			<sch:assert test="//raw:gsi[@name = current()]" role="warning">No gsi element for <sch:value-of select="name()"/> attribute of <sch:value-of select="name(ancestor::*[1])"/> element found (<sch:value-of select="name(ancestor::*[@name])"/> '<sch:value-of select="ancestor-or-self::*[@name]/@name"/>' in ovl '<sch:value-of select="$ovlpath"/>').</sch:assert>
 		</sch:rule>
+		<sch:rule id="refcheck-mam" abstract="true">
+			<sch:let name="ovlpath" value="concat(str:concat(ancestor::raw:rawovl/@basedir),ancestor::raw:rawovl[@file]/@file)" />
+			<sch:assert test="//raw:mam[@name = current()]" role="warning">No mam element for <sch:value-of select="name()"/> attribute of <sch:value-of select="name(ancestor::*[1])"/> element found (<sch:value-of select="name(ancestor::*[@name])"/> '<sch:value-of select="ancestor-or-self::*[@name]/@name"/>' in ovl '<sch:value-of select="$ovlpath"/>').</sch:assert>
+		</sch:rule>
 		<sch:rule id="refcheck-sid" abstract="true">
 			<sch:let name="ovlpath" value="concat(str:concat(ancestor::raw:rawovl/@basedir),ancestor::raw:rawovl[@file]/@file)" />
 			<sch:assert test="//raw:sid[@name = current()]" role="warning">No sid element for <sch:value-of select="name()"/> attribute of <sch:value-of select="name(ancestor::*[1])"/> element found (<sch:value-of select="name(ancestor::*[@name])"/> '<sch:value-of select="ancestor-or-self::*[@name]/@name"/>' in ovl '<sch:value-of select="$ovlpath"/>').</sch:assert>
@@ -137,6 +141,10 @@
 		</define>
 		<define name="GSIReference">
 			<a:documentation>Reference to a gsi structure</a:documentation>
+			<data type="string"/>
+		</define>
+		<define name="MAMReference">
+			<a:documentation>Reference to a mam structure</a:documentation>
 			<data type="string"/>
 		</define>
 		<define name="SHSReference">
@@ -1404,6 +1412,58 @@
 				</element>					
 			</define>
 		</div>
+		<div>
+			<a:documentation>mam tags</a:documentation>
+			<define name="mam">
+				<element name="mam">
+					<ref name="baseattrs"/>
+					<attribute name="name" type="string"/>
+					<optional>
+						<element name="boundingboxmin" ref="ovlVector"/>
+						<element name="boundingboxmax" ref="ovlVector"/>
+					</optional>
+					<choice>
+						<group>
+							<attribute name="meshname" type="string"/>
+							<attribute name="modelfile" type="string"/>
+							<attribute name="fudge" occurs="?" ref="impFudge"/>
+							<choice>
+								<group>
+									<attribute name="handedness" occurs="?">
+										<choice>
+											<value type="string">left</value>
+											<value type="string">right</value>
+										</choice>
+									</attribute>
+									<attribute name="up" occurs="?">
+										<choice>
+											<value type="string">x</value>
+											<value type="string">y</value>
+											<value type="string">z</value>
+										</choice>
+									</attribute>
+								</group>
+								<element name="transformation" occurs="?" ref="impMatrix"/>
+							</choice>
+						</group>
+						<interleave>
+							<element name="vertex" occurs="+" ref="ovlVertex"/>
+							<element name="triangle" occurs="+">
+								<attribute name="a">
+									<data type="unsignedInt"/>
+								</attribute>
+								<attribute name="b">
+									<data type="unsignedInt"/>
+								</attribute>
+								<attribute name="c">
+									<data type="unsignedInt"/>
+								</attribute>
+							</element>
+						</interleave>
+					</choice>
+				</element>
+			</define>
+		</div>
 		<define name="ptd">
 			<element name="ptd">
 				<ref name="baseattrs"/>
@@ -2345,6 +2405,7 @@
 					<attribute name="sway" occurs="?" type="float"/>
 					<attribute name="brightness" occurs="?" type="float"/>
 					<attribute name="scale" occurs="?" type="float"/>
+					<attribute name="proxy_ref" ref="MAMReference"/>
 					<interleave>
 						<ref name="svdunknowns" occurs="?"/>
 						<ref name="svdlod" occurs="+"/>

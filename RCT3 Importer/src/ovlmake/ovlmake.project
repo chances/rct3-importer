@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <CodeLite_Project Name="ovlmake">
+  <Plugins>
+    <Plugin Name="qmake">
+      <![CDATA[00020001N0007Invalid0000000000000001N0018ReleaseBaseUnicode000000000000]]>
+    </Plugin>
+  </Plugins>
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
@@ -40,9 +45,8 @@
     <Project Name="libRawParse"/>
   </Dependencies>
   <Settings Type="Executable">
-    <Configuration Name="DebugBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
-      <General OutputFile="../../bin/$(ProjectName)d" IntermediateDirectory="../../lib/obj/ovlmake/Debug" Command="./$(ProjectName)d" CommandArguments="" WorkingDirectory="../../bin" PauseExecWhenProcTerminates="yes"/>
-      <Compiler Required="yes" Options="-g;$(WX3_CXX_BD);-Wall;-fstrict-aliasing;-Wstrict-aliasing=2;-mthreads;-fexceptions">
+    <Configuration Name="DebugBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g;$(WX3_CXX_BD);-Wall;-fstrict-aliasing;-Wstrict-aliasing=2;-mthreads;-fexceptions" Required="yes" PreCompiledHeader="">
         <IncludePath Value="."/>
         <IncludePath Value="../../include"/>
         <IncludePath Value="../libOVLng"/>
@@ -61,7 +65,7 @@
         <Preprocessor Value="XMLCPP_USE_EXSLT"/>
         <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
       </Compiler>
-      <Linker Required="yes" Options="$(WX3_LIB_BD);-lexpat">
+      <Linker Options="$(WX3_LIB_BD);-lexpat" Required="yes">
         <LibraryPath Value="../../lib"/>
         <Library Value="libRawParseud"/>
         <Library Value="3DHelpbud"/>
@@ -83,11 +87,12 @@
         <Library Value="tiff"/>
         <Library Value="cryptopp"/>
       </Linker>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="../../bin/$(ProjectName)d" IntermediateDirectory="../../lib/obj/ovlmake/Debug" Command="./$(ProjectName)d" CommandArguments="" WorkingDirectory="../../bin" PauseExecWhenProcTerminates="yes"/>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
-        <PostConnectCommands></PostConnectCommands>
-        <StartupCommands></StartupCommands>
+        <PostConnectCommands/>
+        <StartupCommands/>
       </Debugger>
-      <ResourceCompiler Required="no" Options=""/>
       <PreBuild>
         <Command Enabled="yes">../../../Utilities/autover/autover.exe -dte1 -u version_ovlmake.h</Command>
       </PreBuild>
@@ -95,54 +100,53 @@
         <Command Enabled="yes">../../../Utilities/autover/autover.exe -2 -u version_ovlmake.h</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
-        <CleanCommand></CleanCommand>
-        <BuildCommand></BuildCommand>
-        <PreprocessFileCommand></PreprocessFileCommand>
-        <SingleFileCommand></SingleFileCommand>
-        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory></WorkingDirectory>
+        <WorkingDirectory/>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild></CustomPostBuild>
-        <CustomPreBuild></CustomPreBuild>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
       </AdditionalRules>
     </Configuration>
-    <Configuration Name="Invalid" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
-      <General OutputFile="" IntermediateDirectory="./Debug" Command="" CommandArguments="" WorkingDirectory="./Debug" PauseExecWhenProcTerminates="yes"/>
-      <Compiler Required="yes" Options="-g">
+    <Configuration Name="Invalid" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-g" Required="yes" PreCompiledHeader="">
         <IncludePath Value="."/>
       </Compiler>
-      <Linker Required="yes" Options="-O0">
+      <Linker Options="-O0" Required="yes">
         <LibraryPath Value="."/>
         <LibraryPath Value="Debug"/>
       </Linker>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="" IntermediateDirectory="./Debug" Command="" CommandArguments="" WorkingDirectory="./Debug" PauseExecWhenProcTerminates="yes"/>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
-        <PostConnectCommands></PostConnectCommands>
-        <StartupCommands></StartupCommands>
+        <PostConnectCommands/>
+        <StartupCommands/>
       </Debugger>
-      <ResourceCompiler Required="no" Options=""/>
       <PreBuild/>
       <PostBuild/>
       <CustomBuild Enabled="yes">
+        <RebuildCommand/>
         <CleanCommand>error</CleanCommand>
         <BuildCommand>error</BuildCommand>
-        <PreprocessFileCommand></PreprocessFileCommand>
+        <PreprocessFileCommand/>
         <SingleFileCommand>error</SingleFileCommand>
-        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <MakefileGenerationCommand/>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory></WorkingDirectory>
+        <WorkingDirectory/>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild></CustomPostBuild>
-        <CustomPreBuild>
-
-</CustomPreBuild>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
       </AdditionalRules>
     </Configuration>
-    <Configuration Name="ReleaseBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable">
-      <General OutputFile="../../bin/$(ProjectName)" IntermediateDirectory="../../lib/obj/ovlmake/Release" Command="./$(ProjectName)" CommandArguments="" WorkingDirectory="../../bin" PauseExecWhenProcTerminates="yes"/>
-      <Compiler Required="yes" Options="-O2;$(WX3_CXX_BR);-fstrict-aliasing;-mthreads;-fexceptions">
+    <Configuration Name="ReleaseBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
+      <Compiler Options="-O2;$(WX3_CXX_BR);-fstrict-aliasing;-mthreads;-fexceptions;-static;-static-libgcc;-static-libstdc++" Required="yes" PreCompiledHeader="">
         <IncludePath Value="."/>
         <IncludePath Value="../../include"/>
         <IncludePath Value="../libOVLng"/>
@@ -161,7 +165,7 @@
         <Preprocessor Value="XMLCPP_USE_EXSLT"/>
         <Preprocessor Value="XMLCPP_USE_WXWIDGETS"/>
       </Compiler>
-      <Linker Required="yes" Options="-O2;-s;$(WX3_LIB_BR);-lexpat">
+      <Linker Options="-O2;-s;$(WX3_LIB_BR);-lexpat;-static;-static-libgcc;-static-libstdc++" Required="yes">
         <LibraryPath Value="../../lib"/>
         <Library Value="libRawParseu"/>
         <Library Value="3DHelpbu"/>
@@ -182,12 +186,14 @@
         <Library Value="png"/>
         <Library Value="tiff"/>
         <Library Value="cryptopp"/>
+        <Library Value="iconv"/>
       </Linker>
+      <ResourceCompiler Options="" Required="no"/>
+      <General OutputFile="../../bin/$(ProjectName)" IntermediateDirectory="../../lib/obj/ovlmake/Release" Command="./$(ProjectName)" CommandArguments="" WorkingDirectory="../../bin" PauseExecWhenProcTerminates="yes"/>
       <Debugger IsRemote="no" RemoteHostName="" RemoteHostPort="" DebuggerPath="">
-        <PostConnectCommands></PostConnectCommands>
-        <StartupCommands></StartupCommands>
+        <PostConnectCommands/>
+        <StartupCommands/>
       </Debugger>
-      <ResourceCompiler Required="no" Options=""/>
       <PreBuild>
         <Command Enabled="yes">../../../Utilities/autover/autover.exe -dte1 -u version_ovlmake.h</Command>
       </PreBuild>
@@ -195,18 +201,28 @@
         <Command Enabled="yes">../../../Utilities/autover/autover.exe -2 -u version_ovlmake.h</Command>
       </PostBuild>
       <CustomBuild Enabled="no">
-        <CleanCommand></CleanCommand>
-        <BuildCommand></BuildCommand>
-        <PreprocessFileCommand></PreprocessFileCommand>
-        <SingleFileCommand></SingleFileCommand>
-        <MakefileGenerationCommand></MakefileGenerationCommand>
+        <RebuildCommand/>
+        <CleanCommand/>
+        <BuildCommand/>
+        <PreprocessFileCommand/>
+        <SingleFileCommand/>
+        <MakefileGenerationCommand/>
         <ThirdPartyToolName>None</ThirdPartyToolName>
-        <WorkingDirectory></WorkingDirectory>
+        <WorkingDirectory/>
       </CustomBuild>
       <AdditionalRules>
-        <CustomPostBuild></CustomPostBuild>
-        <CustomPreBuild></CustomPreBuild>
+        <CustomPostBuild/>
+        <CustomPreBuild/>
       </AdditionalRules>
     </Configuration>
+    <GlobalSettings>
+      <Compiler Options="">
+        <IncludePath Value="."/>
+      </Compiler>
+      <Linker Options="">
+        <LibraryPath Value="."/>
+      </Linker>
+      <ResourceCompiler Options=""/>
+    </GlobalSettings>
   </Settings>
 </CodeLite_Project>

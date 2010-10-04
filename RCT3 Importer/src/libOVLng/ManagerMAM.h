@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 // New OVL creation library
-// Exception class
-// Copyright (C) 2007 Tobias Minch
+// Manager class for MAM structures
+// Copyright (C) 2010 Tobias Minch
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -26,25 +26,54 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef OVLEXCEPTION_H_INCLUDED
-#define OVLEXCEPTION_H_INCLUDED
+#ifndef MANAGERMAM_H_INCLUDED
+#define MANAGERMAM_H_INCLUDED
 
-#include <exception>
-#include <string>
-#include <boost/exception/all.hpp>
+#include "ManagerOVL.h"
+#include "manifoldmesh.h"
+#include "vertex.h"
 
-class EOvl: public boost::exception, public std::exception {
+class cManifoldMesh {
 public:
-    EOvl(const std::string& message);
-    virtual const char* what() const throw() {
-        return m_message.c_str();
-    }
-    virtual const std::string& swhat() const throw() {
-        return m_message;
-    }
-    ~EOvl() throw() {};
-protected:
-    std::string m_message;
+    std::string name;
+    r3::VECTOR bbox1;
+    r3::VECTOR bbox2;
+	std::vector<r3::ManifoldMeshVertex> vertices;
+	std::vector<uint16_t> indices;
+
+	cManifoldMesh() {};
+	void Fill(r3::ManifoldMesh* mam);
 };
+
+
+class ovlMAMManager: public ovlOVLManager {
+public:
+    static const char* NAME;
+    static const char* TAG;
+private:
+    std::map<std::string, cManifoldMesh> m_items;
+public:
+    ovlMAMManager(): ovlOVLManager() {};
+
+    void AddMesh(const cManifoldMesh& item);
+
+    virtual void Make(cOvlInfo* info);
+
+	virtual int GetCount(r3::cOvlType type) const {
+		if (type == r3::OVLT_COMMON)
+			return m_items.size();
+		else
+			return 0;
+	}
+
+    virtual const char* Name() const {
+        return NAME;
+    };
+    virtual const char* Tag() const {
+        return TAG;
+    };
+};
+
+
 
 #endif

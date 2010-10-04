@@ -18,19 +18,19 @@ WXException::WXException(const wxString& message, boost::exception const& ex): b
 wxString WXException::formatLong() const {
 	wxString er = "Error: " + m_message + ".";
 	{
-		boost::shared_ptr<wxString const> err = boost::get_error_info<wxe_file>(*this);
+		const wxString* err = boost::get_error_info<wxe_file>(*this);
 		if( err )
 			er += "\nFile: " + *err;
 	}
 	{
-		boost::shared_ptr<int const> err = boost::get_error_info<wxe_xml_node_line>(*this);
+		const int* err = boost::get_error_info<wxe_xml_node_line>(*this);
 		if( err ) {
 			if (*err)
 				er += wxString::Format("\nLine: %d", *err);
 		}
 	}
 	{
-		boost::shared_ptr<wxe_xml_error_infos const> err = boost::get_error_info<wxe_xml_errors>(*this);
+		const wxe_xml_error_infos* err = boost::get_error_info<wxe_xml_errors>(*this);
 		if( err ) {
 			if (err->size()) {
 				er += "\nXML errors:";

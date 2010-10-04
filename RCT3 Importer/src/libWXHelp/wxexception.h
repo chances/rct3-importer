@@ -3,7 +3,7 @@
 
 #include <exception>
 #include <vector>
-#include <boost/exception.hpp>
+#include <boost/exception/all.hpp>
 #include <wx/string.h>
 
 struct wxe_xml_error_info {

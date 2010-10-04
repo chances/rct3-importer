@@ -591,9 +591,9 @@ int DoCompile(const wxCmdLineParser& parser) {
 
     } catch (WXException& e) {
         //wxLogMessage(_("Compiling error: ")+e.wxwhat());
-        boost::shared_ptr<int const> line = boost::get_error_info<wxe_xml_node_line>(e);
-        boost::shared_ptr<wxString const> file = boost::get_error_info<wxe_file>(e);
-		boost::shared_ptr<wxe_xml_error_infos const> xmlerr = boost::get_error_info<wxe_xml_errors>(e);
+        int* line = boost::get_error_info<wxe_xml_node_line>(e);
+        wxString* file = boost::get_error_info<wxe_file>(e);
+		wxe_xml_error_infos* xmlerr = boost::get_error_info<wxe_xml_errors>(e);
 		wxString rfile = inputfilestr;
 		if (file)
 			rfile = *file;

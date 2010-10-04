@@ -34,6 +34,7 @@
 #include "ManagerBSH.h"
 #include "ManagerSHS.h"
 #include "ManagerFTX.h"
+#include "ManagerMAM.h"
 #include "OVLException.h"
 
 using namespace r3;
@@ -103,10 +104,16 @@ void ovlSVDManager::AddSVD(const cSceneryItemVisual& item) {
     } else {
         m_size += sizeof(SceneryItemVisual_V);
     }
+	
+	cLoader& loader = GetLSRManager()->reserveIndexElement(OVLT_UNIQUE, item.name, ovlSVDManager::TAG);	
+	
+	// ManifoldMesh Proxy
+    if (item.sivflags & r3::Constants::SVD::Flags::Soaked_or_Wild) {
+		if (item.proxy_ref != "")
+			loader.reserveSymbolReference(item.proxy_ref, ovlMAMManager::TAG, false);
+	}
     // SceneryItemVisualLOD pointers & structures
     m_size += item.lods.size() * (sizeof(SceneryItemVisualLOD*) + sizeof(SceneryItemVisualLOD));
-	
-	cLoader& loader = GetLSRManager()->reserveIndexElement(OVLT_UNIQUE, item.name, ovlSVDManager::TAG);
 	
 	foreach(const cSceneryItemVisualLOD& lod, item.lods) {
         GetStringTable()->AddString(lod.name);
@@ -238,7 +245,10 @@ void ovlSVDManager::Make(cOvlInfo* info) {
         }
 
         it->second.Fill(c_svd);
-
+        if (it->second.sivflags & r3::Constants::SVD::Flags::Soaked_or_Wild) {
+			if (it->second.proxy_ref != "")
+				loader.assignSymbolReference(it->second.proxy_ref, ovlMAMManager::TAG, &reinterpret_cast<SceneryItemVisual_S*>(c_svd)->s.proxy_ref, false);
+		}
 		/*
         // Symbol and Loader
         SymbolStruct* c_symbol = GetLSRManager()->MakeSymbol(OVLT_UNIQUE, GetStringTable()->FindSymbolString(it->first.c_str(), Tag()), reinterpret_cast<unsigned long*>(c_svd));

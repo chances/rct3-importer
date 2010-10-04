@@ -835,7 +835,8 @@ void ASE_freeMaterial(ASE_Material* mat)
     free(mat->diffuseMaterialMap.image_path);
     free(mat->diffuseMaterialMap.type);
     free(mat->diffuseMaterialMap.bitmap_filter);
-    for (int i = 0; i < mat->numsubmaterials; i++)
+	int i;
+    for (i = 0; i < mat->numsubmaterials; i++)
         ASE_freeMaterial(&mat->submaterials[i]);
     free(mat->submaterials);
 }

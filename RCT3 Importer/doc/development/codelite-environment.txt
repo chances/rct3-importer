@@ -1,0 +1,13 @@
+SYSINCLUDE=D:\MinGW\include
+WX3_CXX_BR=-ID:/mingw/lib/wx/include/base-unicode-static-2.9 -IC:/mingw/include/wx-2.9 -D__WXMSW__ -mthreads -DwxDEBUG_LEVEL=0
+WX3_LIB_BR=-LD:/mingw/lib  -mthreads  -lwx_baseu-2.9 -lwxregexu-2.9 -lz -lrpcrt4 -loleaut32 -lole32 -luuid -lwinspool -lwinmm -lshell32 -lcomctl32 -lcomdlg32 -lctl3d32 -ladvapi32 -lwsock32 -lgdi32
+WX3_CXX_BD=-ID:/mingw/lib/wx/include/base-unicode-static-2.9 -IC:/mingw/include/wx-2.9 -D__WXDEBUG__ -D__WXMSW__ -mthreads
+WX3_LIB_BD=-LD:/mingw/lib  -mthreads  -lwx_baseud-2.9 -lwxregexud-2.9 -lz -lrpcrt4 -loleaut32 -lole32 -luuid -lwinspool -lwinmm -lshell32 -lcomctl32 -lcomdlg32 -lctl3d32 -ladvapi32 -lwsock32 -lgdi32
+WX3_CXX_PR=-I/mingw/lib/wx/include/msw-unicode-static-2.9 -I/mingw/include/wx-2.9 -D_LARGEFILE_SOURCE=unknown -D__WXMSW__ -mthreads -DwxDEBUG_LEVEL=0
+WX3_LIB_PR=-L/mingw/lib -mthreads -L/mingw/lib -Wl,--subsystem,windows -mwindows -lwx_mswu-2.9 -lwxscintilla-2.9 -lpng -lz -ljpeg -ltiff -lwxregexu-2.9 -lz -lrpcrt4 -loleaut32 -lole32 -luuid -lwinspool -lwinmm -lshell32 -lcomctl32 -lcomdlg32 -lctl3d32 -ladvapi32 -lwsock32 -lgdi32
+WX2_CXX_PR=-ID:/mingw/lib/wx/include/msw-ansi-release-static-2.8 -IC:/mingw/include/wx-2.8 -D__WXMSW__ -mthreads
+WX2_LIB_PR=-LD:/mingw/lib  -mthreads  -Wl,--subsystem,windows -mwindows -lwx_msw-2.8 -lpng -lz -ljpeg -ltiff -lwxregex-2.8 -lz -lrpcrt4 -loleaut32 -lole32 -luuid -lwinspool -lwinmm -lshell32 -lcomctl32 -lcomdlg32 -lctl3d32 -ladvapi32 -lwsock32 -lgdi32
+WX2_CXX_PD=-ID:/mingw/lib/wx/include/msw-ansi-debug-static-2.8 -IC:/mingw//include/wx-2.8 -D__WXDEBUG__ -D__WXMSW__ -mthreads
+WX2_LIB_PD=-LD:/mingw/lib  -mthreads  -Wl,--subsystem,windows -mwindows -lwx_mswd-2.8 -lpng -lz -ljpeg -ltiff -lwxregexd-2.8 -lz -lrpcrt4 -loleaut32 -lole32 -luuid -lwinspool -lwinmm -lshell32 -lcomctl32 -lcomdlg32 -lctl3d32 -ladvapi32 -lwsock32 -lgdi32
+SYSLIB=D:/MinGW/lib
+FORMBUILDER=C:\Programme\Development\wxFormBuilder\wxFormbuilder

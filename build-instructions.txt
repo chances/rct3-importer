@@ -1,0 +1,134 @@
+Development Tools
+- MinGW
+  * Get the newest graphical installer from http://sourceforge.net/projects/mingw/files_beta/
+    Automated MinGW Installer -> mingw-get-inst -> mingw-get-inst-20100909 (at the time of this writing)
+    -> mingw-get-inst-20100909.exe 
+  * Intall. Choose "Download latest repository catalogs"
+    Intall to X:\MinGW, X being a drive on your PC. Do not change the directory (especially don't nest it deeper). !!!Replace X in all the instructions below with the drive you chose!!!
+    When selecting components, include the C++ compiler and the MinGW Developer Toolkit
+- Codelite (IDE)
+  * Download and install from http://www.codelite.org/
+  
+- SVN:
+  (Both Needed)
+  * TortoiseSVN
+    http://tortoisesvn.tigris.org/
+  * SVN:
+    http://subversion.apache.org/packages.html
+    CollabNet -> CollabNet Subversion Command-Line Client v1.6.12 (for Windows)
+	(I recommend giving them some crap in their registration form. Requiering registration for open source software is imo inacceptable. Use gishpuppy for a throwaway eMail addy.)
+	
+Get Dependencies
+Usually you should get the newest version of the lib in question, the ones I mention are the ones I used, so they should work in case the newest one gives you trouble.
+- Expat 2.0.1 http://expat.sourceforge.net/
+- zlib 1.2.5 http://www.zlib.net/
+- jpeg 8b http://www.ijg.org/
+- libpng 1.4.4 http://www.libpng.org/pub/png/libpng.html
+- tiff 4.0.0beta6 ftp://ftp.remotesensing.org/pub/libtiff/
+- freetype 2.4.2 http://www.freetype.org/
+- bzip2 1.0.6 http://www.bzip.org/
+- GraphicksMagick 1.3.12 http://www.graphicsmagick.org/
+- Boost 1.44.0 http://www.boost.org/
+  Also download the Boost JAM binary for windows.
+- cryptopp 5.6.1 http://www.cryptopp.com/
+- libxml2 2.7.7 ftp://xmlsoft.org/libxml2/
+- libxslt 1.1.26 ftp://xmlsoft.org/libxml2/
+- squish 1.10 http://code.google.com/p/libsquish/
+- wxWidgets svn/2.9 http://www.wxwidgets.org/develop/svn.htm
+
+Get RCT3 Importer sources
+Use TortoiseSVN to fetch https://rct3.svn.sourceforge.net/svnroot/rct3/trunk
+
+Setting up CodeLite
+In the Importer source code tree look for \RCT3 Importer\doc\development\codelite-environment.txt. Add the contents to CodeLite's environment (Sttings -> Environment Variables). Make sure to replace D:\MinGW with X:\MinGW (only of course if X isn't D in your case ;-)).
+We also need to adjust Windwow's system path. Open the Control Panel -> System -> Extended System Settings --> Extended -> Environment Variables. in System Variables edit "Path" and append (if not present) CodeLite's installation directory, SVN's installation path (not TortoiseSVN's!), X:\MinGW\bin and X:\MinGW\msys\1.0\bin
+Close CodeLite, we won't need it for a while. (You can leave it open, but you need to resart it before usage if you adjusted the system path afterwards)
+
+Compiling and installing the dependencies
+Important: Build and install the dependences in the order given above!
+We will build everything with the msys shell. I assume you know how to navigate it (It's a unix/linux like shell. In short, use forward slashes instead of backward slashes for directories. Assess drives as lowercase part of the path. eg if you need to go to D:\temp use cd /d/temp. Normally you can use tab completion, but it does not work on drive level)
+First unpack the library source and chdir into it in the msys shell.
+Here are the default build commands:
+1) ./configure --prefix=/mingw/ --enable-static --disable-shared
+2) make
+3) make install
+4) make clean
+- 4 is optional. It will remove all files generated during compilation, so do it if you're low on disc space. You also should run make clean before rebuilding a library if you need to do so later.
+- If you have a multi-core CPU or more than one CPU in your PC, add -jN to 2 where N is the number of cores in your PC +1 (eg if you have a quad core, use make -j5). I've successfully build all packages with this.
+In the following I will only list dependencies where you have to deviate from these instructions.
+
+zlib
+- Skip 1
+- 2) make -f win32/Makefile.gcc
+- Instead of 3:
+  * Copy zconf.h and zlib.h to X:\MinGW\include
+  * Copy libz.a to X:\MinGW\lib
+- 4) make -f win32/Makefile.gcc clean
+
+tiff
+- Add "--enable-cxx" to 1
+
+bzip2
+- Skip 1
+- Instead of 3:
+  * Copy bzlib.h to X:\MinGW\include
+  * Copy libbz2.a to X:\MinGW\lib
+
+GraphicsMagick
+- Add "--disable-dependency-tracking --without-threads --enable-openmp --without-xml --without-perl" to 1
+
+Boost
+Boost has to be built completely different, so scrap all default steps. After unpacking the source, unpack bjam.exe from the boost jam binary package to the root of the boost source.
+Unfortunately the old build command that built only the libraries we need no longer works, so I now used the command that builds everything:
+bjam --build-dir=build toolset=gcc --layout=tagged --build-type=complete stage
+This will take pretty much forever, but you're welcome to browse the jam documentation (a task that gives me major headache) to find out how to built only the libs we need (date_time, filesystem, program_options, regex and system). The --layout=tagged option is essential so the libs get named correctly. We need only the static version (eg libboost_date_time-s.a)
+To install:
+- Copy the boost folder from the boost source root to X:\MinGW\include
+  Clarification: Copy the folder, not only the contents; I mean the folder literally named "boost", not the whole boost distribution source.
+- Copy
+  libboost_date_time-s.a
+  libboost_filesystem-s.a
+  libboost_program_options-s.a
+  libboost_regex-s.a
+  libboost_system-s.a
+  from stage/lib to X:\MinGW\lib
+  
+cryptopp
+- Skip 1
+- Step 2 will end with an error, but that one happens after the library itself has been built, so just ignore it.
+- Instead of 3:
+  * Copy all .h files to X:\MinGW\include\cryptopp (you'll have to create this folder)
+  * Copy libcryptopp.a to X:\MinGW\lib
+  
+libxml2
+- Add "--with-fexceptions --without-ftp --without-http --without-threads" to 1
+
+squish
+- Skip 1
+- Before going to Step 2, you need to modify the following source files:
+  alpha.cpp
+  singlecolourfit.cpp
+  In both files add "#include <limits.h>" to the end of the include list
+  The go to step 2
+- Instead of 3:
+  * Copy squish.h to X:\MinGW\include
+  * Copy libsquish.a to X:\MinGW\lib
+
+wxWidgets
+Building wxWidgets is more complex, but only slightly so. After fetching the source from SVN, unpack wxWidgets-2.9-msys-build.zip (Find it in the same Importer source folder as the environment variable list for CodeLite) to wxWidget's folder.
+We will build two versions of wxWidgets with slightly modified default instructions.
+For both, replace step 1 with running ./do_configure
+First go to msys-build/base-unicode-release and run the modified default build chain
+Second go to msys-build/msw-unicode-release and run the modified default build chain
+
+
+Building ovlmake
+Open Codelite and open (Workspace -> Switch to workspace...) the RCT3 Importer workspace found in the RCT3 Importer source root.
+- Build autover
+- Build bin2c
+  * Copy bin2c.exe somewhere in your system path (I normally put it in X:\MinGW\msys\1.0\bin)
+- Build ovlmake (should automatically build all dependencies)
+
+
+Building the RCT3 Importer
+To be written...

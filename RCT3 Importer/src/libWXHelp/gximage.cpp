@@ -680,8 +680,8 @@ bool wxGXImage::CheckGraphicsMagick(const wxString& apppath) {
         throw Magick::Exception("'colors.mgk' not found");
     if (!wxFileName::FileExists(apppath + "log.mgk"))
         throw Magick::Exception("'log.mgk' not found");
-    if (!wxFileName::FileExists(apppath + "magic.mgk"))
-        throw Magick::Exception("'magic.mgk' not found");
+    //if (!wxFileName::FileExists(apppath + "magic.mgk"))
+    //    throw Magick::Exception("'magic.mgk' not found");
     if (!wxFileName::FileExists(apppath + "modules.mgk"))
         throw Magick::Exception("'modules.mgk' not found");
     wxString appenv = wxT("MAGICK_CONFIGURE_PATH=") + apppath;

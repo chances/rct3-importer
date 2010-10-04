@@ -96,6 +96,7 @@ public:
 	unsigned long unk11; //seen 0 so far
 	//unsigned long unk12; //seen 0 so far
 	unsigned long unk13; //billboard related
+	std::string proxy_ref; //manifold mesh
 
 	cSceneryItemVisual() {
 	    sivflags = 0;

@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
 // New OVL creation library
-// Exception class
-// Copyright (C) 2007 Tobias Minch
+// Manager class for MAM structures
+// Copyright (C) 2010 Tobias Minch
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -26,25 +26,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef OVLEXCEPTION_H_INCLUDED
-#define OVLEXCEPTION_H_INCLUDED
+#include "ManagerMAM.h"
 
-#include <exception>
-#include <string>
-#include <boost/exception/all.hpp>
+using namespace r3;
+using namespace std;
 
-class EOvl: public boost::exception, public std::exception {
-public:
-    EOvl(const std::string& message);
-    virtual const char* what() const throw() {
-        return m_message.c_str();
-    }
-    virtual const std::string& swhat() const throw() {
-        return m_message;
-    }
-    ~EOvl() throw() {};
-protected:
-    std::string m_message;
-};
-
-#endif
+const char* ovlMAMManager::NAME = "ManifoldMesh";
+const char* ovlMAMManager::TAG = "mam";

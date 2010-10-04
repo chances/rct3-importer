@@ -30,9 +30,7 @@
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/format.hpp>
-#include <boost/lambda/bind.hpp>
-#include <boost/lambda/lambda.hpp>
-namespace bll = boost::lambda;
+#include <boost/bind.hpp>
 #include <sstream>
 #include <stdio.h>
 
@@ -1382,7 +1380,7 @@ bool cSCNFile::FromModelFile(boost::shared_ptr<c3DLoader>& model) {
 
     }
 	
-	sort(lods.begin(), lods.end(), bll::bind(&cLOD::distance, bll::_1) < bll::bind(&cLOD::distance, bll::_2));
+	sort(lods.begin(), lods.end(), boost::bind(&cLOD::distance,_1) < boost::bind(&cLOD::distance,_2));
 
     return true;
 }

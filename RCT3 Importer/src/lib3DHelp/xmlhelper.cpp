@@ -27,7 +27,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <string>
-#include <boost/spirit.hpp>
+#include <boost/spirit/include/classic.hpp>
 #include <boost/algorithm/string/trim.hpp>
 
 #include "boneanim.h"
@@ -35,7 +35,7 @@
 
 using namespace r3;
 using namespace std;
-using namespace boost::spirit;
+using namespace boost::spirit::classic;
 
 bool parseFloat_(std::string& str, float& a) {
     boost::algorithm::trim(str);
