@@ -379,6 +379,7 @@
 			<ref name="cid" strip:strip="1"/>
 			<ref name="ftx"/>
 			<ref name="gsi"/>
+			<ref name="mam"/>
 			<ref name="ptd"/>
 			<ref name="qtd"/>
 			<ref name="ric"/>
@@ -1422,11 +1423,16 @@
 						<element name="boundingboxmin" ref="ovlVector"/>
 						<element name="boundingboxmax" ref="ovlVector"/>
 					</optional>
+					<ref name="mammesh"/>
+				</element>
+			</define>
+			<define name="mammesh">
+				<element name="mesh">
+					<ref name="baseattrs"/>
 					<choice>
 						<group>
 							<attribute name="meshname" type="string"/>
 							<attribute name="modelfile" type="string"/>
-							<attribute name="fudge" occurs="?" ref="impFudge"/>
 							<choice>
 								<group>
 									<attribute name="handedness" occurs="?">
@@ -1447,16 +1453,19 @@
 							</choice>
 						</group>
 						<interleave>
-							<element name="vertex" occurs="+" ref="ovlVertex"/>
+							<element name="vertex" occurs="+">
+								<attribute name="unk04" type="unsignedInt"/>
+								<element name="position" ref="ovlVector"/>
+							</element>
 							<element name="triangle" occurs="+">
 								<attribute name="a">
-									<data type="unsignedInt"/>
+									<data type="unsignedShort"/>
 								</attribute>
 								<attribute name="b">
-									<data type="unsignedInt"/>
+									<data type="unsignedShort"/>
 								</attribute>
 								<attribute name="c">
-									<data type="unsignedInt"/>
+									<data type="unsignedShort"/>
 								</attribute>
 							</element>
 						</interleave>
@@ -2405,7 +2414,7 @@
 					<attribute name="sway" occurs="?" type="float"/>
 					<attribute name="brightness" occurs="?" type="float"/>
 					<attribute name="scale" occurs="?" type="float"/>
-					<attribute name="proxy_ref" ref="MAMReference"/>
+					<attribute name="proxy_ref" occurs="?" ref="MAMReference"/>
 					<interleave>
 						<ref name="svdunknowns" occurs="?"/>
 						<ref name="svdlod" occurs="+"/>

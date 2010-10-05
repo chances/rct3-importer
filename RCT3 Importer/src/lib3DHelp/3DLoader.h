@@ -48,6 +48,7 @@
 
 class cBoneShape2;
 class cStaticShape2;
+class cManifoldMesh;
 class cSIVSettings;
 
 class c3DMesh {
@@ -317,6 +318,7 @@ public:
     virtual bool fetchObject(unsigned int index, char bone, cBoneShape2* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
     virtual bool fetchObject(unsigned int index, cBoneShape2* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
     virtual bool fetchObject(unsigned int index, std::vector<wxString>& bonenames, cBoneShape2* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform, r3::VECTOR *fudge_normal = NULL);
+    virtual bool fetchObject(unsigned int index, cManifoldMesh* sh, r3::VECTOR *bbox_min, r3::VECTOR *bbox_max, const r3::MATRIX *transform);
 
     virtual int getType() {return C3DLOADER_GENERIC;};
     inline const wxString& getName() {return m_name;};

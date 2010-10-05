@@ -35,6 +35,8 @@
 
 class cManifoldMesh {
 public:
+    typedef std::pair<std::string, cManifoldMesh> mapentry;
+	
     std::string name;
     r3::VECTOR bbox1;
     r3::VECTOR bbox2;
@@ -42,7 +44,7 @@ public:
 	std::vector<uint16_t> indices;
 
 	cManifoldMesh() {};
-	void Fill(r3::ManifoldMesh* mam);
+	void Fill(r3::ManifoldMesh* mam) const;
 };
 
 

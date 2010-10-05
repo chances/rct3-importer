@@ -156,6 +156,7 @@ private:
     void ParseCID(xmlcpp::cXmlNode& node);
     void ParseFTX(xmlcpp::cXmlNode& node);
     void ParseGSI(xmlcpp::cXmlNode& node);
+    void ParseMAM(xmlcpp::cXmlNode& node);
     void ParsePTD(xmlcpp::cXmlNode& node);
     void ParseQTD(xmlcpp::cXmlNode& node);
     void ParseRIC(xmlcpp::cXmlNode& node);

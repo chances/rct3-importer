@@ -37,11 +37,14 @@ void cRawParser::ParseSVD(cXmlNode& node) {
     cSceneryItemVisual svd;
     wxString name = ParseString(node, wxT(RAWXML_SVD), wxT("name"), NULL, useprefix);
     svd.name = name.ToAscii();
-    OPTION_PARSE(unsigned long, svd.sivflags, ParseFloat(node, wxT(RAWXML_SVD), wxT("flags")));
+    OPTION_PARSE(unsigned long, svd.sivflags, ParseUnsigned(node, wxT(RAWXML_SVD), wxT("flags")));
     OPTION_PARSE(float, svd.sway, ParseFloat(node, wxT(RAWXML_SVD), wxT("sway")));
     OPTION_PARSE(float, svd.brightness, ParseFloat(node, wxT(RAWXML_SVD), wxT("brightness")));
     OPTION_PARSE(float, svd.scale, ParseFloat(node, wxT(RAWXML_SVD), wxT("scale")));
+    ParseStringOption(svd.proxy_ref, node, wxT("proxy_ref"), NULL, useprefix);
     wxLogVerbose(wxString::Format(_("Adding svd %s to %s."), name.c_str(), m_output.GetFullPath().c_str()));
+	if ((svd.proxy_ref != "") && !(svd.sivflags & r3::Constants::SVD::Flags::Soaked_or_Wild))
+		wxLogWarning(wxString::Format(_("SVD %s has a proxy_ref set, but the structure version is vanilla. The proxy_ref will be ignored."), name));
 
     cXmlNode child(node.children());
     while (child) {

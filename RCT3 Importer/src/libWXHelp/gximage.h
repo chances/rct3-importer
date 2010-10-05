@@ -253,6 +253,7 @@ public:
     }
 
     static bool CheckGraphicsMagick(const wxString& apppath);
+	static void InitializeMagick() {Magick::InitializeMagick(NULL);}
 
 #ifdef USE_SQUISH
     const int GetDxtBufferSize(const int dxt) const {

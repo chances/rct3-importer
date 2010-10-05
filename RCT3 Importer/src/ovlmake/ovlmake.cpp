@@ -123,7 +123,7 @@ private:
 class wxCustomLog: public wxLog {
 public:
 	wxCustomLog(const wxString& file, bool brief): m_file(file), m_brief(brief) {}
-    virtual void DoLog(wxLogLevel level, const wxString& szString, time_t t) {
+    virtual void DoLogRecord(wxLogLevel level, const wxString& szString, const wxLogRecordInfo& info) {
 		const char* severity;
 		if (level <= wxLOG_Error) {
 			severity = "Error";
@@ -660,6 +660,7 @@ int main(int argc, char **argv)
 #endif
 
     // *&^$% GraphicsMagick
+	wxGXImage::InitializeMagick();
     wxFileName app = wxStandardPaths::Get().GetExecutablePath();
     if (!app.IsAbsolute())
         app.MakeAbsolute();
@@ -690,8 +691,7 @@ int main(int argc, char **argv)
     }
 
     wxLocale loc(wxLANGUAGE_ENGLISH);
-
-
+	
     static const wxCmdLineEntryDesc cmdLineDesc[] =
     {
         { wxCMD_LINE_SWITCH, "h", "help", "show this help message",

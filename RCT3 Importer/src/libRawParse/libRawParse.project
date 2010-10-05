@@ -39,6 +39,7 @@
     <File Name="RawParse_StructParse_RIT.cpp"/>
     <File Name="RawParse_StructParse_TER.cpp"/>
     <File Name="RawParse_Validation.cpp"/>
+    <File Name="RawParse_StructParse_MAM.cpp"/>
   </VirtualDirectory>
   <Settings Type="Static Library">
     <Configuration Name="DebugBaseUnicode" CompilerType="gnu g++" DebuggerType="GNU gdb debugger" Type="Static Library">

@@ -31,6 +31,7 @@
 
 #include "vertex.h"
 #include "boneanim.h"
+#include "manifoldmesh.h"
 #include "3DLoaderTypes.h"
 
 float Deg2Rad(float deg);
@@ -120,6 +121,13 @@ inline r3::VERTEX vertex22vertex(const r3::VERTEX2& v) {
     ret.color = v.color;
     ret.tu = v.tu;
     ret.tv = v.tv;
+    return ret;
+}
+
+inline r3::ManifoldMeshVertex vertex22mmvertex(const r3::VERTEX2& v) {
+    r3::ManifoldMeshVertex ret;
+    ret.position = v.position;
+	ret.unk04 = 0;
     return ret;
 }
 

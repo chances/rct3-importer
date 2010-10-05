@@ -76,6 +76,7 @@ bzip2
 
 GraphicsMagick
 - Add "--disable-dependency-tracking --without-threads --enable-openmp --without-xml --without-perl" to 1
+- After step 3, copy all .mgk files from X:\MinGW\share\GraphicsMagic-(GM version) to RCT3 Importer\bin
 
 Boost
 Boost has to be built completely different, so scrap all default steps. After unpacking the source, unpack bjam.exe from the boost jam binary package to the root of the boost source.

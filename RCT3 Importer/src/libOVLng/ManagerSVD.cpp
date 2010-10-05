@@ -109,8 +109,10 @@ void ovlSVDManager::AddSVD(const cSceneryItemVisual& item) {
 	
 	// ManifoldMesh Proxy
     if (item.sivflags & r3::Constants::SVD::Flags::Soaked_or_Wild) {
-		if (item.proxy_ref != "")
+		if (item.proxy_ref != "") {
 			loader.reserveSymbolReference(item.proxy_ref, ovlMAMManager::TAG, false);
+			//fprintf(stderr, "\n\n\nHELLO\n\n\n");
+		}
 	}
     // SceneryItemVisualLOD pointers & structures
     m_size += item.lods.size() * (sizeof(SceneryItemVisualLOD*) + sizeof(SceneryItemVisualLOD));

@@ -451,6 +451,8 @@ void cRawParser::Parse(cXmlNode& node) {
             // <gsi name="string" tex="string" top="long int" left="long int" bottom="long int" right="long int" />
             BAKE_SKIP(child);
 			ParseGSI(child);
+        } else if (child(RAWXML_MAM)) {
+            ParseMAM(child);
         } else if (child(RAWXML_PTD)) {
             BAKE_SKIP(child);
             ParsePTD(child);

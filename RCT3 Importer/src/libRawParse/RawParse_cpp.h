@@ -75,6 +75,7 @@ class cSCNFile;
 #define RAWXML_CID "cid"
 #define RAWXML_FTX "ftx"
 #define RAWXML_GSI "gsi"
+#define RAWXML_MAM "mam"
 #define RAWXML_PTD "ptd"
 #define RAWXML_QTD "qtd"
 #define RAWXML_RIC "ric"
@@ -193,6 +194,14 @@ class cSCNFile;
 #define RAWXML_FTX_FRAME_PDATA      "palettedata"
 #define RAWXML_FTX_FRAME_TDATA      "texturedata"
 #define RAWXML_FTX_FRAME_ADATA      "alphadata"
+
+#define RAWXML_MAM_BBOX1            "boundingboxmin"
+#define RAWXML_MAM_BBOX2            "boundingboxmax"
+#define RAWXML_MAM_MESH             "mesh"
+#define RAWXML_MAM_MESH_VERTEX      "vertex"
+#define RAWXML_MAM_MESH_VERTEX_P    "position"
+#define RAWXML_MAM_MESH_TRANSFORM   "transformation"
+#define RAWXML_MAM_MESH_TRIANGLE    "triangle"
 
 #define RAWXML_SHS_BBOX1            "boundingboxmin"
 #define RAWXML_SHS_BBOX2            "boundingboxmax"

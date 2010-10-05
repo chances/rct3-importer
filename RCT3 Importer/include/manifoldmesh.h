@@ -1,12 +1,12 @@
 #ifndef MANIFOLDMESH_H_INCLUDED
 #define MANIFOLDMESH_H_INCLUDED
 
-namespace r3 {
+#include "vertex.h"
 
+namespace r3 {
+	
 struct ManifoldMeshVertex {
-    float_t x;
-    float_t y;
-    float_t z;
+	VECTOR position;
     uint32_t unk04;
 };
 
